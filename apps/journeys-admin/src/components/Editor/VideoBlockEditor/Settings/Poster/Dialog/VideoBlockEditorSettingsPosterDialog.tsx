@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import { ReactElement } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import { Dialog } from '../../../../../Dialog'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
@@ -83,14 +83,28 @@ export function VideoBlockEditorSettingsPosterDialog({
   onClose
 }: VideoBlockEditorSettingsPosterDialogProps): ReactElement {
   const journey = useJourney()
+
   const [blockDelete, { error: blockDeleteError }] =
     useMutation<BlockDeleteForPosterImage>(BLOCK_DELETE_FOR_POSTER_IMAGE)
   const [videoBlockUpdate, { error: videoBlockUpdateError }] =
     useMutation<VideoBlockPosterImageUpdate>(VIDEO_BLOCK_POSTER_IMAGE_UPDATE)
-  const [imageBlockCreate, { error: imageBlockCreateError }] =
-    useMutation<PosterImageBlockCreate>(POSTER_IMAGE_BLOCK_CREATE)
-  const [imageBlockUpdate, { error: imageBlockUpdateError }] =
-    useMutation<PosterImageBlockUpdate>(POSTER_IMAGE_BLOCK_UPDATE)
+  const [
+    imageBlockCreate,
+    { error: imageBlockCreateError, loading: createLoading }
+  ] = useMutation<PosterImageBlockCreate>(POSTER_IMAGE_BLOCK_CREATE)
+  const [
+    imageBlockUpdate,
+    { error: imageBlockUpdateError, loading: updateLoading }
+  ] = useMutation<PosterImageBlockUpdate>(POSTER_IMAGE_BLOCK_UPDATE)
+
+  const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    if (createLoading || updateLoading) {
+      setLoading(true)
+    } else {
+      setLoading(false)
+    }
+  }, [createLoading, updateLoading])
 
   const deleteCoverBlock = async (): Promise<void> => {
     if (selectedBlock == null || parentBlockId == null || journey == null)
@@ -220,6 +234,7 @@ export function VideoBlockEditorSettingsPosterDialog({
         selectedBlock={selectedBlock}
         onChange={handleChange}
         onDelete={deleteCoverBlock}
+        loading={loading}
       />
     </Dialog>
   )

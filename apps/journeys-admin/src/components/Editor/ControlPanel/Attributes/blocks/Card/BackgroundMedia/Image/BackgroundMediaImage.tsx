@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui'
 import { useSnackbar } from 'notistack'
@@ -90,17 +90,24 @@ export function BackgroundMediaImage({
   const [cardBlockUpdate] = useMutation<CardBlockBackgroundImageUpdate>(
     CARD_BLOCK_COVER_IMAGE_UPDATE
   )
-  const [imageBlockCreate] = useMutation<CardBlockImageBlockCreate>(
-    CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE
-  )
-  const [imageBlockUpdate] = useMutation<CardBlockImageBlockUpdate>(
-    CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE
-  )
+  const [imageBlockCreate, { loading: createLoading }] =
+    useMutation<CardBlockImageBlockCreate>(CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE)
+  const [imageBlockUpdate, { loading: updateLoading }] =
+    useMutation<CardBlockImageBlockUpdate>(CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE)
   const [blockDelete] = useMutation<BlockDeleteForBackgroundImage>(
     BLOCK_DELETE_FOR_BACKGROUND_IMAGE
   )
   const journey = useJourney()
   const { enqueueSnackbar } = useSnackbar()
+
+  const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    if (createLoading || updateLoading) {
+      setLoading(true)
+    } else {
+      setLoading(false)
+    }
+  }, [createLoading, updateLoading])
 
   const handleImageDelete = async (): Promise<void> => {
     try {
@@ -250,6 +257,7 @@ export function BackgroundMediaImage({
       selectedBlock={imageBlock}
       onChange={handleChange}
       onDelete={handleImageDelete}
+      loading={loading}
     />
   )
 }

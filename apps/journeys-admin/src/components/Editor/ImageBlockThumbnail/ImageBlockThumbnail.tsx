@@ -1,14 +1,17 @@
 import { ReactElement } from 'react'
+import CircularProgress from '@mui/material/CircularProgress'
 import ImageIcon from '@mui/icons-material/Image'
 import Image from 'next/image'
 import Box from '@mui/material/Box'
 
 interface ImageBlockThumbnailProps {
   selectedBlock: { src: string | null; alt: string } | null
+  loading: boolean
 }
 
 export function ImageBlockThumbnail({
-  selectedBlock
+  selectedBlock,
+  loading
 }: ImageBlockThumbnailProps): ReactElement {
   return (
     <Box
@@ -24,7 +27,9 @@ export function ImageBlockThumbnail({
         overflow: 'hidden'
       }}
     >
-      {selectedBlock?.src != null ? (
+      {loading ? (
+        <CircularProgress size={20} />
+      ) : selectedBlock?.src != null ? (
         <Image
           src={selectedBlock.src}
           alt={selectedBlock.alt}

@@ -49,7 +49,7 @@ export function VideoBlockEditorSettingsPoster({
         borderRadius={2}
       >
         <Stack direction="row" justifyContent="space-around">
-          <ImageBlockThumbnail selectedBlock={selectedBlock} />
+          <ImageBlockThumbnail selectedBlock={selectedBlock} loading={false} />
           <Stack
             direction="column"
             justifyContent="center"
