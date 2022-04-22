@@ -236,12 +236,23 @@ export async function nua1(): Promise<void> {
     parentOrder: 0
   })
 
+  await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'TypographyBlock',
+    parentBlockId: card3._key,
+    content: 'Can we trust the story of Jesus?',
+    variant: 'h3',
+    color: 'primary',
+    align: 'left',
+    parentOrder: 1
+  })
+
   const question2 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'RadioQuestionBlock',
     parentBlockId: card3._key,
-    label: 'Can we trust the story of Jesus?',
-    parentOrder: 1
+    label: '',
+    parentOrder: 2
   })
 
   // fourth step
@@ -432,37 +443,6 @@ export async function nua1(): Promise<void> {
     parentOrder: 0
   })
 
-  const gridContainer = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridContainerBlock',
-    parentBlockId: card6._key,
-    spacing: 6,
-    direction: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    parentOrder: 0
-  })
-
-  const gridItemLeft = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridItemBlock',
-    parentBlockId: gridContainer._key,
-    xl: 6,
-    lg: 6,
-    sm: 6,
-    parentOrder: 0
-  })
-
-  const gridItemRight = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridItemBlock',
-    parentBlockId: gridContainer._key,
-    xl: 6,
-    lg: 6,
-    sm: 6,
-    parentOrder: 1
-  })
-
   const image3 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'ImageBlock',
@@ -481,7 +461,7 @@ export async function nua1(): Promise<void> {
     {
       journeyId: journey._key,
       __typename: 'TypographyBlock',
-      parentBlockId: gridItemLeft._key,
+      parentBlockId: card6._key,
       content: "IF IT'S TRUE...",
       variant: 'h6',
       color: 'primary',
@@ -491,7 +471,7 @@ export async function nua1(): Promise<void> {
     {
       journeyId: journey._key,
       __typename: 'TypographyBlock',
-      parentBlockId: gridItemLeft._key,
+      parentBlockId: card6._key,
       content: 'Who was this Jesus?',
       variant: 'h2',
       color: 'primary',
@@ -503,9 +483,9 @@ export async function nua1(): Promise<void> {
   const question4 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'RadioQuestionBlock',
-    parentBlockId: gridItemRight._key,
+    parentBlockId: card6._key,
     label: '',
-    parentOrder: 0
+    parentOrder: 2
   })
 
   await db.collection('blocks').saveAll([
