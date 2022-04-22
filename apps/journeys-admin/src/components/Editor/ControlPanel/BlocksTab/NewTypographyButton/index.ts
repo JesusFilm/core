@@ -1,1 +1,4 @@
-export { NewTypographyButton } from './NewTypographyButton'
+export {
+  NewTypographyButton,
+  TYPOGRAPHY_BLOCK_CREATE
+} from './NewTypographyButton'
