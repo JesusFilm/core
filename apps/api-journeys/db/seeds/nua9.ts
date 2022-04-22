@@ -10,7 +10,7 @@ import { ArangoDB } from '../db'
 const db = ArangoDB()
 
 export async function nua9(): Promise<void> {
-  const slug = 'descision'
+  const slug = 'decision'
   await db.query(aql`
         FOR journey in journeys
             FILTER journey.slug == ${slug}
@@ -28,10 +28,11 @@ export async function nua9(): Promise<void> {
     languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
-    slug: slug,
+    slug,
     status: JourneyStatus.published,
-    createdAt: new Date('2031-12-25T12:34:56.647Z'),
-    publishedAt: new Date('2031-12-25T12:34:56.647Z')
+    createdAt: new Date(),
+    publishedAt: new Date(),
+    featuredAt: new Date()
   })
 
   //   first step
