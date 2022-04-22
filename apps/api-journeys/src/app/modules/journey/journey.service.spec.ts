@@ -104,6 +104,7 @@ describe('JourneyService', () => {
         return await mockDbQueryResult(db, [journey])
       })
       await service.getAllPublishedJourneys({ featured: true })
+      expect(db.query).toHaveBeenCalled()
     })
 
     it('should filter by not featured', async () => {
@@ -123,6 +124,7 @@ describe('JourneyService', () => {
         return await mockDbQueryResult(db, [journey])
       })
       await service.getAllPublishedJourneys({ featured: false })
+      expect(db.query).toHaveBeenCalled()
     })
   })
 
