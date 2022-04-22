@@ -233,12 +233,23 @@ export async function nua2(): Promise<void> {
     parentOrder: 0
   })
 
+  await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'TypographyBlock',
+    parentBlockId: card3._key,
+    content: 'Where did his body go?',
+    variant: 'h3',
+    color: 'primary',
+    align: 'left',
+    parentOrder: 1
+  })
+
   const question2 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'RadioQuestionBlock',
     parentBlockId: card3._key,
-    label: 'Where did his body go?',
-    parentOrder: 1
+    label: '',
+    parentOrder: 2
   })
 
   // fourth step
@@ -509,16 +520,27 @@ export async function nua2(): Promise<void> {
     parentOrder: 0
   })
 
+  await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'TypographyBlock',
+    parentBlockId: card7._key,
+    content: 'What is Christianity to you?',
+    variant: 'h3',
+    color: 'primary',
+    align: 'left',
+    parentOrder: 1
+  })
+
   const question5 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'RadioQuestionBlock',
     parentBlockId: card7._key,
-    label: 'What is Christianity to you?',
+    label: '',
     action: {
       gtmEventName: 'click',
       journeyId: '3'
     },
-    parentOrder: 1
+    parentOrder: 2
   })
 
   await db.collection('blocks').saveAll([
