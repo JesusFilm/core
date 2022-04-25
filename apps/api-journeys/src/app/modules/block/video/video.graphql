@@ -34,7 +34,7 @@ type VideoBlock implements Block {
   videoId and videoVariantLanguageId both need to be set to select a video
   """
   videoVariantLanguageId: ID
-  action: Action
+  endAction: Action
 }
 
 input VideoBlockCreateInput {

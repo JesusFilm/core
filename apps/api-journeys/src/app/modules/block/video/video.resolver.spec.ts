@@ -27,7 +27,7 @@ describe('VideoBlockResolver', () => {
     autoplay: true,
     posterBlockId: 'posterBlockId',
     fullsize: true,
-    action: {
+    endAction: {
       gtmEventName: 'gtmEventName',
       url: 'https://jesusfilm.org',
       target: 'target'
@@ -35,7 +35,7 @@ describe('VideoBlockResolver', () => {
   }
 
   const actionResponse = {
-    ...block.action,
+    ...block.endAction,
     parentBlockId: block.id
   }
 
@@ -161,7 +161,7 @@ describe('VideoBlockResolver', () => {
 
   describe('action', () => {
     it('returns the action', async () => {
-      expect(await resolver.action(block as unknown as VideoBlock)).toEqual(
+      expect(await resolver.endAction(block as unknown as VideoBlock)).toEqual(
         actionResponse
       )
     })
