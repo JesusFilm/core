@@ -147,7 +147,17 @@ describe('JourneyResolver', () => {
   describe('journeys', () => {
     it('should get published journeys', async () => {
       expect(await resolver.journeys()).toEqual([journey, journey])
-      expect(service.getAllPublishedJourneys).toHaveBeenCalledWith()
+      expect(service.getAllPublishedJourneys).toHaveBeenCalledWith(undefined)
+    })
+
+    it('should get published and featured journeys', async () => {
+      expect(await resolver.journeys({ featured: true })).toEqual([
+        journey,
+        journey
+      ])
+      expect(service.getAllPublishedJourneys).toHaveBeenCalledWith({
+        featured: true
+      })
     })
   })
 

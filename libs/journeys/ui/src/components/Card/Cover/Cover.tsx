@@ -1,4 +1,11 @@
-import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
+import {
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+  useMemo
+} from 'react'
 import videojs from 'video.js'
 import { NextImage } from '@core/shared/ui'
 import { useTheme } from '@mui/material/styles'
@@ -26,8 +33,8 @@ export function Cover({
   const theme = useTheme()
   const [loading, setLoading] = useState(true)
 
-  const blurBackground =
-    imageBlock != null
+  const blurBackground = useMemo(() => {
+    return imageBlock != null
       ? blurImage(
           imageBlock.width,
           imageBlock.height,
@@ -35,6 +42,7 @@ export function Cover({
           theme.palette.background.paper
         )
       : undefined
+  }, [imageBlock, theme])
 
   useEffect(() => {
     if (videoRef.current != null) {

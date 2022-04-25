@@ -306,6 +306,7 @@ type Journey
   blocks: [Block!] @join__field(graph: JOURNEYS)
   createdAt: DateTime! @join__field(graph: JOURNEYS)
   description: String @join__field(graph: JOURNEYS)
+  featuredAt: DateTime @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
   language: Language! @join__field(graph: JOURNEYS)
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
@@ -341,6 +342,10 @@ input JourneyCreateInput {
   themeMode: ThemeMode
   themeName: ThemeName
   title: String!
+}
+
+input JourneysFilter {
+  featured: Boolean
 }
 
 enum JourneyStatus {
@@ -466,7 +471,7 @@ type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   adminJourneys: [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
-  journeys: [Journey!]! @join__field(graph: JOURNEYS)
+  journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   language(id: ID!): Language @join__field(graph: LANGUAGES)
   languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
