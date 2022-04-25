@@ -95,8 +95,6 @@ const image: ImageBlock = {
   blurhash: ''
 }
 
-// const onClose = jest.fn()
-
 describe('VideoBlockEditorSettingsPoster', () => {
   it('shows edit poster image dialog', () => {
     const { getByRole, getByTestId } = render(

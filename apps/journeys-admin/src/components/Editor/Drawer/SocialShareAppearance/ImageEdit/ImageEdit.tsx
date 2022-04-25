@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import ImageIcon from '@mui/icons-material/Image'
 import Typography from '@mui/material/Typography'
@@ -76,15 +76,6 @@ export function ImageEdit(): ReactElement {
 
   const journey = useJourney()
   const [open, setOpen] = useState(false)
-
-  const [loading, setLoading] = useState(false)
-  useEffect(() => {
-    if (createLoading || updateLoading) {
-      setLoading(true)
-    } else {
-      setLoading(false)
-    }
-  }, [createLoading, updateLoading])
 
   function handleOpen(): void {
     setOpen(true)
@@ -284,7 +275,7 @@ export function ImageEdit(): ReactElement {
           selectedBlock={journey?.primaryImageBlock ?? null}
           onChange={handleChange}
           onDelete={handleDelete}
-          loading={loading}
+          loading={createLoading || updateLoading}
         />
       </Dialog>
     </>

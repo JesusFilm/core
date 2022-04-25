@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui'
 import { useSnackbar } from 'notistack'
@@ -99,15 +99,6 @@ export function BackgroundMediaImage({
   )
   const journey = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-
-  const [loading, setLoading] = useState(false)
-  useEffect(() => {
-    if (createLoading || updateLoading) {
-      setLoading(true)
-    } else {
-      setLoading(false)
-    }
-  }, [createLoading, updateLoading])
 
   const handleImageDelete = async (): Promise<void> => {
     try {
@@ -257,7 +248,7 @@ export function BackgroundMediaImage({
       selectedBlock={imageBlock}
       onChange={handleChange}
       onDelete={handleImageDelete}
-      loading={loading}
+      loading={createLoading || updateLoading}
     />
   )
 }

@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
@@ -32,18 +32,10 @@ export function ImageOptions(): ReactElement {
   } = useEditor()
   const journey = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-  const [imageBlockUpdate, { loading: updateLoading }] =
+  const [imageBlockUpdate, { loading }] =
     useMutation<ImageBlockUpdate>(IMAGE_BLOCK_UPDATE)
-  const imageBlock = selectedBlock as TreeBlock<ImageBlock>
 
-  const [loading, setLoading] = useState(false)
-  useEffect(() => {
-    if (updateLoading) {
-      setLoading(true)
-    } else {
-      setLoading(false)
-    }
-  }, [updateLoading])
+  const imageBlock = selectedBlock as TreeBlock<ImageBlock>
 
   const updateImageBlock = async (block: ImageBlock): Promise<void> => {
     if (journey == null) return
