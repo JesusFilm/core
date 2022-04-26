@@ -32,6 +32,9 @@ function Content({ children, document }: ContentProps): ReactElement {
 
   useEffect(() => {
     document.body.style.backgroundColor = 'transparent'
+    document.head.innerHTML =
+      document.head.innerHTML +
+      '<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap" rel="stylesheet" />'
   }, [document])
 
   return <CacheProvider value={cache}>{children}</CacheProvider>
