@@ -80,8 +80,8 @@ export function VideoBlockEditorSettingsPoster({
               parentBlockId={parentBlockId}
               onClose={handleClose}
               open={open}
-              startLoading={handleStartLoading}
-              stopLoading={handleStopLoading}
+              startLoading={() => handleStartLoading}
+              stopLoading={() => handleStopLoading}
             />
           </Stack>
         </Stack>
