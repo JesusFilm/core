@@ -51,7 +51,7 @@ describe('VideoList', () => {
       )
       await waitFor(() => {
         expect(getByText(videos[0].title[0].value)).toBeInTheDocument()
-        expect(getByText(videos[4].title[0].value)).toBeInTheDocument()
+        expect(getByText(videos[7].title[0].value)).toBeInTheDocument()
       })
     })
   })
@@ -96,10 +96,9 @@ describe('VideoList', () => {
           />
         </MockedProvider>
       )
-      
       await waitFor(() => {
         expect(getByText(videos[0].title[0].value)).toBeInTheDocument()
-        expect(getByText(videos[3].title[0].value)).toBeInTheDocument()
+        expect(getByText(videos[7].title[0].value)).toBeInTheDocument()
       })
     })
   })
@@ -146,7 +145,7 @@ describe('VideoList', () => {
       )
       await waitFor(() => {
         expect(getByText(videos[0].title[0].value)).toBeInTheDocument()
-        expect(getByText(videos[3].title[0].value)).toBeInTheDocument()
+        expect(getByText(videos[7].title[0].value)).toBeInTheDocument()
       })
     })
   })
