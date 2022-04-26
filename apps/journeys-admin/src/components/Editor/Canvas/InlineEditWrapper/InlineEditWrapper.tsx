@@ -69,7 +69,7 @@ export function InlineEditWrapper({
     ) : block.__typename === 'RadioOptionBlock' ? (
       <RadioOptionEdit {...block} />
     ) : block.__typename === 'RadioQuestionBlock' ? (
-      <RadioQuestionEdit {...block} deleteSelf={handleDeleteBlock} />
+      <RadioQuestionEdit {...block} />
     ) : (
       children
     )

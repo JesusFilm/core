@@ -1,28 +1,20 @@
 import { Story, Meta } from '@storybook/react'
-import {
-  TreeBlock,
-  EditorProvider,
-  ActiveFab,
-  StoryCard
-} from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, ActiveFab } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
-import { screen, userEvent } from '@storybook/testing-library'
-import Box from '@mui/material/Box'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey as Journey
 } from '../../../../../../__generated__/GetJourney'
 import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
+import { TypographyFields } from '../../../../../../__generated__/TypographyFields'
 import {
   ThemeMode,
-  ThemeName
+  ThemeName,
+  TypographyVariant
 } from '../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { JourneyProvider } from '../../../../../libs/context'
 import { Canvas } from '../../Canvas'
-import { SelectableWrapper } from '../../SelectableWrapper'
-import { InlineEditWrapper } from '../InlineEditWrapper'
-import { RadioQuestionEdit } from './RadioQuestionEdit'
 
 const RadioQuestionEditStory = {
   ...simpleComponentConfig,
@@ -30,11 +22,35 @@ const RadioQuestionEditStory = {
   title: 'Journeys-Admin/Editor/Canvas/RadioQuestionEdit'
 }
 
+const heading: TreeBlock<TypographyFields> = {
+  id: 'typographyBlockId1',
+  __typename: 'TypographyBlock',
+  parentBlockId: 'card0.id',
+  parentOrder: 0,
+  align: null,
+  color: null,
+  content: 'Question',
+  variant: TypographyVariant.h3,
+  children: []
+}
+
+const description: TreeBlock<TypographyFields> = {
+  id: 'typographyBlockId2',
+  __typename: 'TypographyBlock',
+  parentBlockId: 'card0.id',
+  parentOrder: 1,
+  align: null,
+  color: null,
+  content: 'Description goes here',
+  variant: TypographyVariant.body2,
+  children: []
+}
+
 const block: TreeBlock<RadioQuestionFields> = {
   id: 'radioQuestionBlockId1',
   __typename: 'RadioQuestionBlock',
   parentBlockId: 'card0.id',
-  parentOrder: 0,
+  parentOrder: 2,
   label: "What's our purpose and the meaning of life?",
   description: null,
   children: [
@@ -59,13 +75,6 @@ const block: TreeBlock<RadioQuestionFields> = {
   ]
 }
 
-const filledBlock: TreeBlock<RadioQuestionFields> = {
-  ...block,
-  id: 'radioQuestionBlockId2',
-  parentOrder: 1,
-  description: "Hint: It isn't 42"
-}
-
 const steps: Array<TreeBlock<StepBlock>> = [
   {
     id: 'step0.id',
@@ -79,13 +88,29 @@ const steps: Array<TreeBlock<StepBlock>> = [
         id: 'card0.id',
         __typename: 'CardBlock',
         parentBlockId: 'step0.id',
-        coverBlockId: null,
+        coverBlockId: 'image0.id',
         parentOrder: 0,
         backgroundColor: null,
-        themeMode: ThemeMode.dark,
-        themeName: ThemeName.base,
+        themeMode: null,
+        themeName: null,
         fullscreen: false,
-        children: [block, filledBlock]
+        children: [
+          {
+            id: 'image0.id',
+            __typename: 'ImageBlock',
+            src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+            width: 1920,
+            height: 1080,
+            alt: 'image from unsplash',
+            parentBlockId: 'card6.id',
+            parentOrder: 0,
+            children: [],
+            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+          },
+          heading,
+          description,
+          block
+        ]
       }
     ]
   }
@@ -110,24 +135,7 @@ const Template: Story = ({ ...args }) => {
             activeFab: ActiveFab.Save
           }}
         >
-          {/* Cannot use sb play within iframe */}
-          <Box
-            sx={{
-              width: '348px',
-              height: '528px',
-              '& > *': {
-                height: '100%'
-              }
-            }}
-          >
-            <StoryCard themeMode={ThemeMode.dark} themeName={ThemeName.base}>
-              <SelectableWrapper block={args.selectedBlock}>
-                <InlineEditWrapper block={args.selectedBlock}>
-                  <RadioQuestionEdit {...args.selectedBlock} />
-                </InlineEditWrapper>
-              </SelectableWrapper>
-            </StoryCard>
-          </Box>
+          <Canvas />
         </EditorProvider>
       </JourneyProvider>
     </MockedProvider>
@@ -137,15 +145,6 @@ const Template: Story = ({ ...args }) => {
 export const Default = Template.bind({})
 Default.args = {
   selectedBlock: block
-}
-
-export const Description = Template.bind({})
-Description.args = {
-  selectedBlock: filledBlock
-}
-Description.play = () => {
-  const descriptionInput = screen.getAllByRole('textbox')[1]
-  userEvent.click(descriptionInput)
 }
 
 export default RadioQuestionEditStory as Meta
