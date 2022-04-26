@@ -9,6 +9,7 @@ import {
 import { ThemeProvider } from '../../../../ThemeProvider'
 import { JourneyProvider } from '../../../../../libs/context'
 import { VideoBlockEditorSettingsPoster } from './VideoBlockEditorSettingsPoster'
+import { POSTER_IMAGE_BLOCK_UPDATE } from './Dialog/VideoBlockEditorSettingsPosterDialog'
 
 const video: VideoBlock = {
   id: 'video1.id',
@@ -86,7 +87,38 @@ describe('VideoBlockEditorSettingsPoster', () => {
 
   it('shows loading circle for coverImage update', async () => {
     const { getByRole, getByTestId } = render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: POSTER_IMAGE_BLOCK_UPDATE,
+              variables: {
+                id: image.id,
+                journeyId: 'journeyId',
+                input: {
+                  src: 'http://example.com/test.jpg',
+                  alt: 'test.jpg'
+                }
+              }
+            },
+            result: {
+              data: {
+                imageBlockUpdate: {
+                  id: image.id,
+                  src: 'http://example.com/test.jpg',
+                  alt: 'test.jpg',
+                  __typename: 'ImageBlock',
+                  parentBlockId: video.id,
+                  width: image.width,
+                  height: image.height,
+                  parentOrder: image.parentOrder,
+                  blurhash: image.blurhash
+                }
+              }
+            }
+          }
+        ]}
+      >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <ThemeProvider>
             <VideoBlockEditorSettingsPoster
