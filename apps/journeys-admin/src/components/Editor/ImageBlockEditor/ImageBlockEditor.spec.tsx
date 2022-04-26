@@ -26,7 +26,6 @@ describe('ImageBlockEditor', () => {
           selectedBlock={null}
           onChange={onChange}
           onDelete={onDelete}
-          loading={false}
         />
       )
       expect(await getByTestId('imageSrcStack')).toBeInTheDocument()
@@ -41,7 +40,6 @@ describe('ImageBlockEditor', () => {
           selectedBlock={image}
           onChange={onChange}
           onDelete={onDelete}
-          loading={false}
         />
       )
       expect(await getByTestId('imageSrcStack')).toBeInTheDocument()
@@ -54,7 +52,6 @@ describe('ImageBlockEditor', () => {
           selectedBlock={image}
           onChange={onChange}
           onDelete={onDelete}
-          loading={false}
         />
       )
       const textBox = await getByRole('textbox')
@@ -78,7 +75,6 @@ describe('ImageBlockEditor', () => {
         selectedBlock={image}
         onChange={onChange}
         onDelete={onDelete}
-        loading={false}
       />
     )
     const textBox = await getByRole('textbox')
@@ -94,7 +90,6 @@ describe('ImageBlockEditor', () => {
         selectedBlock={image}
         onChange={onChange}
         onDelete={onDelete}
-        loading={false}
       />
     )
     const deleteButton = await getByRole('button')

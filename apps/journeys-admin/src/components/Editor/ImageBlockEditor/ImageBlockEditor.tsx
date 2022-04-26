@@ -15,7 +15,7 @@ interface ImageBlockEditorProps {
   showDelete?: boolean
   onChange: (block: ImageBlock) => Promise<void>
   onDelete?: () => Promise<void>
-  loading: boolean
+  loading?: boolean
 }
 
 export function ImageBlockEditor({

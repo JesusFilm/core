@@ -15,6 +15,7 @@ interface BackgroundMediaCoverImageProps {
   parentBlockId: string | undefined
   disabled?: boolean
 }
+
 export function VideoBlockEditorSettingsPoster({
   selectedBlock,
   parentBlockId,
@@ -48,7 +49,7 @@ export function VideoBlockEditorSettingsPoster({
         borderRadius={2}
       >
         <Stack direction="row" justifyContent="space-around">
-          <ImageBlockThumbnail selectedBlock={selectedBlock} loading={false} />
+          <ImageBlockThumbnail selectedBlock={selectedBlock} />
           <Stack
             direction="column"
             justifyContent="center"

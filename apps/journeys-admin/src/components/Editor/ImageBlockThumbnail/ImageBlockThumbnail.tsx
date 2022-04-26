@@ -6,7 +6,7 @@ import Box from '@mui/material/Box'
 
 interface ImageBlockThumbnailProps {
   selectedBlock: { src: string | null; alt: string } | null
-  loading: boolean
+  loading?: boolean
 }
 
 export function ImageBlockThumbnail({
@@ -27,7 +27,7 @@ export function ImageBlockThumbnail({
         overflow: 'hidden'
       }}
     >
-      {loading ? (
+      {loading === true ? (
         <CircularProgress size={20} />
       ) : selectedBlock?.src != null ? (
         <Image

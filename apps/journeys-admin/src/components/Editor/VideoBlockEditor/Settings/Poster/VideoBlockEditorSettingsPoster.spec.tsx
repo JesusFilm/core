@@ -39,6 +39,7 @@ const video: VideoBlock = {
   },
   posterBlockId: null
 }
+
 const image: ImageBlock = {
   id: 'image1.id',
   __typename: 'ImageBlock',

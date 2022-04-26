@@ -12,7 +12,7 @@ interface ImageBlockHeaderProps {
   header: string
   showDelete: boolean
   onDelete: () => Promise<void>
-  loading: boolean
+  loading?: boolean
 }
 
 export function ImageBlockHeader({

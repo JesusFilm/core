@@ -52,7 +52,6 @@ export function VideoBlockEditor({
           caption={selectedBlock?.video?.variant?.hls ?? undefined}
           showDelete={showDelete && selectedBlock?.video != null}
           onDelete={handleVideoDelete}
-          loading={false}
         />
       </Box>
       <Box>
