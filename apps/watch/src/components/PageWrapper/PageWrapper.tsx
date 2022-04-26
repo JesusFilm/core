@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import React, { ReactElement, ReactNode } from 'react'
+import React, { ReactElement } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -38,7 +38,7 @@ export function PageWrapper(): React.ReactElement {
       setState({ ...state, [anchor]: open })
     }
 
-  const menuItems = ['Videos', 'Series']
+  const menuItems = ['About', 'Contact', 'Collections']
 
   const list = (): ReactElement => (
     <Box

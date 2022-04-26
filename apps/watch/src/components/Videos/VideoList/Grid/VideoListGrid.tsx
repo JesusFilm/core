@@ -10,6 +10,7 @@ interface VideoListGridProps {
   videos: GetVideos_videos[]
   loading?: boolean
   isEnd?: boolean
+  showLoadMore?: boolean
   onLoadMore: () => Promise<void>
 }
 
@@ -17,6 +18,7 @@ export function VideoListGrid({
   loading = false,
   isEnd = false,
   onLoadMore,
+  showLoadMore = true,
   videos
 }: VideoListGridProps): ReactElement {
   return (
@@ -40,7 +42,7 @@ export function VideoListGrid({
             <VideoListCard />
           </Grid>
         ))}
-      {!isEnd && (
+      {!isEnd && showLoadMore && (
         <Grid item xs={12}>
           <LoadingButton
             data-testid="VideoListLoadMore"

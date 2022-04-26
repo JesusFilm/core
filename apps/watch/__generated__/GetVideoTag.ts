@@ -19,8 +19,21 @@ export interface GetVideoTag_videoTag {
   title: GetVideoTag_videoTag_title[];
 }
 
+export interface GetVideoTag_videoTags_title {
+  __typename: "Translation";
+  primary: boolean;
+  value: string;
+}
+
+export interface GetVideoTag_videoTags {
+  __typename: "VideoTag";
+  id: string;
+  title: GetVideoTag_videoTags_title[];
+}
+
 export interface GetVideoTag {
   videoTag: GetVideoTag_videoTag | null;
+  videoTags: GetVideoTag_videoTags[] | null;
 }
 
 export interface GetVideoTagVariables {
