@@ -1,11 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import {
+  GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../__generated__/GetJourney'
 import { ThemeProvider } from '../../../../ThemeProvider'
+import { JourneyProvider } from '../../../../../libs/context'
 import { VideoBlockEditorSettingsPoster } from './VideoBlockEditorSettingsPoster'
 
 const video: VideoBlock = {
@@ -80,5 +82,28 @@ describe('VideoBlockEditorSettingsPoster', () => {
       </MockedProvider>
     )
     expect(getByRole('button')).toBeDisabled()
+  })
+
+  it('shows loading circle for coverImage update', async () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <ThemeProvider>
+            <VideoBlockEditorSettingsPoster
+              selectedBlock={image}
+              parentBlockId={video.id}
+            />
+          </ThemeProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByTestId('posterCreateButton'))
+    const textbox = getByRole('textbox')
+    fireEvent.change(textbox, {
+      target: { value: 'http://example.com/test.jpg' }
+    })
+    fireEvent.blur(textbox)
+    await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
   })
 })
