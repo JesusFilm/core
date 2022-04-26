@@ -169,18 +169,6 @@ export async function nua9(): Promise<void> {
     parentOrder: 0
   })
 
-  const video = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'VideoBlock',
-    parentBlockId: videoCard._key,
-    videoId: '5_0-NUA1001-0-0',
-    videoVariantLanguageId: '529',
-    autoplay: true,
-    title: "What' Jesus Got to Do With Me?",
-    parentOrder: 0,
-    fullsize: true
-  })
-
   // question step!
   const questionStep = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -194,14 +182,19 @@ export async function nua9(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    __typename: 'VideoTriggerBlock',
-    parentBlockId: video._key,
-    triggerStart: 166,
+    __typename: 'VideoBlock',
+    parentBlockId: videoCard._key,
+    videoId: '5_0-NUA1001-0-0',
+    videoVariantLanguageId: '529',
+    autoplay: true,
+    title: "What' Jesus Got to Do With Me?",
+    endAt: 166,
     action: {
       gtmEventName: 'trigger',
       blockId: questionStep._key
     },
-    parentOrder: 0
+    parentOrder: 0,
+    fullsize: true
   })
 
   const image1Id = uuidv4()
