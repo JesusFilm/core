@@ -1,9 +1,10 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
 import { useSnackbar } from 'notistack'
+import { useFormik } from 'formik'
 import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
 import { useJourney } from '../../../../libs/context'
 import { Dialog } from '../../../Dialog'
@@ -30,15 +31,10 @@ export function DescriptionDialog({
   const journey = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
-  const [value, setValue] = useState(journey?.description ?? '')
-  useEffect(() => {
-    setValue(journey?.description ?? '')
-  }, [journey])
-
   const handleSubmit = async (): Promise<void> => {
     if (journey == null) return
 
-    const updatedJourney = { description: value }
+    const updatedJourney = { description: formik.values.description }
 
     try {
       await journeyUpdate({
@@ -59,9 +55,17 @@ export function DescriptionDialog({
   }
 
   const handleClose = (): void => {
-    setValue(journey?.description ?? '')
+    formik.resetForm()
     onClose()
   }
+
+  const formik = useFormik({
+    initialValues: {
+      description: journey?.description ?? ''
+    },
+    onSubmit: handleSubmit,
+    enableReinitialize: true
+  })
 
   return (
     <>
@@ -81,12 +85,14 @@ export function DescriptionDialog({
               aria-label="form-update-description"
             />
             <TextField
+              id="description"
+              name="description"
               hiddenLabel
-              value={value}
+              value={formik.values.description}
               multiline
               variant="filled"
               rows={3}
-              onChange={(e) => setValue(e.currentTarget.value)}
+              onChange={formik.handleChange}
             />
           </FormControl>
         </form>
