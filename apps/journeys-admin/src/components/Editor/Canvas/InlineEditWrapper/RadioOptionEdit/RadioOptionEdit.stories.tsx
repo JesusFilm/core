@@ -9,7 +9,8 @@ import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFi
 import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
 import {
   ThemeMode,
-  ThemeName
+  ThemeName,
+  TypographyVariant
 } from '../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 import { JourneyProvider } from '../../../../../libs/context'
@@ -83,6 +84,28 @@ const steps: Array<TreeBlock<StepBlock>> = [
             parentOrder: 0,
             children: [],
             blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+          },
+          {
+            id: 'typographyBlockId1',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 0,
+            align: null,
+            color: null,
+            content: 'Question',
+            variant: TypographyVariant.h3,
+            children: []
+          },
+          {
+            id: 'typographyBlockId2',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 1,
+            align: null,
+            color: null,
+            content: 'Description',
+            variant: TypographyVariant.body2,
+            children: []
           },
           block
         ]

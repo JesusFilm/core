@@ -192,9 +192,20 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             height: 1080,
             alt: 'random image from unsplash',
             parentBlockId: 'card2.id',
-            parentOrder: 0,
+            parentOrder: null,
             children: [],
             blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@'
+          },
+          {
+            id: 'typographyBlockId1',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card2.id',
+            parentOrder: 0,
+            align: null,
+            color: null,
+            content: 'if it’s true...',
+            variant: TypographyVariant.h6,
+            children: []
           },
           {
             id: 'typographyBlockId1',
@@ -203,8 +214,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             parentOrder: 1,
             align: null,
             color: null,
-            content: 'if it’s true...',
-            variant: TypographyVariant.h6,
+            content: 'What is Christianity to you?',
+            variant: TypographyVariant.h3,
             children: []
           },
           {
@@ -212,7 +223,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
-            label: 'What is Christianity to you?',
+            label: '',
             description: '',
             children: [
               {
@@ -287,7 +298,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             height: 1080,
             alt: 'random image from unsplash',
             parentBlockId: 'card3.id',
-            parentOrder: 0,
+            parentOrder: null,
             children: [],
             blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA'
           },
@@ -295,7 +306,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
             parentBlockId: 'card3.id',
-            parentOrder: 1,
+            parentOrder: 0,
             align: null,
             color: null,
             content: 'What do you think?',
@@ -306,7 +317,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'ButtonBlock',
             id: 'button3.id',
             parentBlockId: 'card3.id',
-            parentOrder: 2,
+            parentOrder: 1,
             label: 'Testbutton',
             buttonVariant: ButtonVariant.contained,
             buttonColor: ButtonColor.primary,
@@ -321,11 +332,22 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
+            id: 'typographyBlockId1',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card3.id',
+            parentOrder: 2,
+            align: null,
+            color: null,
+            content: 'Do you need to change to be good enough for God?',
+            variant: TypographyVariant.h3,
+            children: []
+          },
+          {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
             parentOrder: 3,
-            label: 'Do you need to change to be good enough for God?',
+            label: '',
             description: '',
             children: [
               {

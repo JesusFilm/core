@@ -41,7 +41,7 @@ const description: TreeBlock<TypographyFields> = {
   parentOrder: 1,
   align: null,
   color: null,
-  content: 'Description goes here',
+  content: 'Description',
   variant: TypographyVariant.body2,
   children: []
 }
@@ -51,7 +51,7 @@ const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
   parentBlockId: 'card0.id',
   parentOrder: 2,
-  label: "What's our purpose and the meaning of life?",
+  label: '',
   description: null,
   children: [
     {

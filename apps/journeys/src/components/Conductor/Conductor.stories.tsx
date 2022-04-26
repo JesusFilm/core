@@ -33,12 +33,34 @@ const basic: TreeBlock[] = [
         fullscreen: true,
         children: [
           {
+            id: 'typographyBlockId1',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 0,
+            align: null,
+            color: null,
+            content: 'Step 1',
+            variant: TypographyVariant.h3,
+            children: []
+          },
+          {
+            id: 'typographyBlockId2',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 1,
+            align: null,
+            color: null,
+            content: 'Start',
+            variant: TypographyVariant.body2,
+            children: []
+          },
+          {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card1.id',
-            parentOrder: 1,
-            label: 'Step 1',
-            description: 'Start',
+            parentOrder: 2,
+            label: '',
+            description: null,
             children: [
               {
                 id: 'radioOption2.id',
@@ -120,12 +142,34 @@ const basic: TreeBlock[] = [
         fullscreen: false,
         children: [
           {
+            id: 'typographyBlockId1',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card2.id',
+            parentOrder: 0,
+            align: null,
+            color: null,
+            content: 'Step 2',
+            variant: TypographyVariant.h3,
+            children: []
+          },
+          {
+            id: 'typographyBlockId2',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card2.id',
+            parentOrder: 1,
+            align: null,
+            color: null,
+            content: 'Locked',
+            variant: TypographyVariant.body2,
+            children: []
+          },
+          {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
-            parentOrder: 0,
-            label: 'Step 2',
-            description: 'Locked',
+            parentOrder: 2,
+            label: '',
+            description: null,
             children: [
               {
                 id: 'radioOption1.id',
@@ -195,10 +239,32 @@ const basic: TreeBlock[] = [
         fullscreen: false,
         children: [
           {
+            id: 'typographyBlockId1',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card3.id',
+            parentOrder: 0,
+            align: null,
+            color: null,
+            content: 'Step 3',
+            variant: TypographyVariant.h3,
+            children: []
+          },
+          {
+            id: 'typographyBlockId2',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card3.id',
+            parentOrder: 1,
+            align: null,
+            color: null,
+            content: 'No nextBlockId',
+            variant: TypographyVariant.body2,
+            children: []
+          },
+          {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
-            parentOrder: 0,
+            parentOrder: 2,
             label: 'Step 3',
             description: 'No nextBlockId',
             children: [
@@ -270,10 +336,32 @@ const basic: TreeBlock[] = [
         fullscreen: false,
         children: [
           {
+            id: 'typographyBlockId1',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card4.id',
+            parentOrder: 0,
+            align: null,
+            color: null,
+            content: 'Step 4',
+            variant: TypographyVariant.h3,
+            children: []
+          },
+          {
+            id: 'typographyBlockId2',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card4.id',
+            parentOrder: 1,
+            align: null,
+            color: null,
+            content: 'End',
+            variant: TypographyVariant.body2,
+            children: []
+          },
+          {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card4.id',
-            parentOrder: 0,
+            parentOrder: 2,
             label: 'Step 4',
             description: 'End',
             children: [
@@ -905,12 +993,34 @@ const videoBlocks: TreeBlock[] = [
         fullscreen: false,
         children: [
           {
+            id: 'typographyBlockId1',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 0,
+            align: null,
+            color: null,
+            content: 'Step 2',
+            variant: TypographyVariant.h3,
+            children: []
+          },
+          {
+            id: 'typographyBlockId2',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 1,
+            align: null,
+            color: null,
+            content: 'Locked',
+            variant: TypographyVariant.body2,
+            children: []
+          },
+          {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
-            parentBlockId: 'step2.id',
-            parentOrder: 0,
-            label: 'Step 2',
-            description: 'Locked',
+            parentBlockId: 'card2.id',
+            parentOrder: 2,
+            label: '',
+            description: null,
             children: [
               {
                 id: 'radioOption1.id',
