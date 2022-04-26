@@ -28,6 +28,41 @@ export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video {
   variant: CardBlockVideoBlockUpdate_videoBlockUpdate_video_variant | null;
 }
 
+export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateAction {
+  __typename: "NavigateAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
+export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
+export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  journey: CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type CardBlockVideoBlockUpdate_videoBlockUpdate_action = CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToJourneyAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_LinkAction;
+
 export interface CardBlockVideoBlockUpdate_videoBlockUpdate {
   __typename: "VideoBlock";
   id: string;
@@ -59,6 +94,7 @@ export interface CardBlockVideoBlockUpdate_videoBlockUpdate {
    */
   videoVariantLanguageId: string | null;
   video: CardBlockVideoBlockUpdate_videoBlockUpdate_video | null;
+  action: CardBlockVideoBlockUpdate_videoBlockUpdate_action | null;
 }
 
 export interface CardBlockVideoBlockUpdate {

@@ -42,7 +42,7 @@ export function Video({
   muted,
   posterBlockId,
   children,
-  endAction
+  action
 }: TreeBlock<VideoFields>): ReactElement {
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(
     VIDEO_RESPONSE_CREATE
@@ -62,11 +62,11 @@ export function Video({
   const blurBackground = useMemo(() => {
     return posterBlock != null
       ? blurImage(
-          posterBlock.width,
-          posterBlock.height,
-          posterBlock.blurhash,
-          theme.palette.background.paper
-        )
+        posterBlock.width,
+        posterBlock.height,
+        posterBlock.blurhash,
+        theme.palette.background.paper
+      )
       : undefined
   }, [posterBlock, theme])
 
@@ -232,11 +232,11 @@ export function Video({
                 <VideoTrigger player={playerRef.current} videoTrigger={child} />
               )
           )}
-          {endAction != null && endAt != null && (
+          {action != null && endAt != null && (
             <VideoTrigger
               player={playerRef.current}
               triggerStart={endAt}
-              triggerAction={endAction}
+              triggerAction={action}
             />
           )}
         </>

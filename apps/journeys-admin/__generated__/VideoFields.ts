@@ -26,6 +26,41 @@ export interface VideoFields_video {
   variant: VideoFields_video_variant | null;
 }
 
+export interface VideoFields_action_NavigateAction {
+  __typename: "NavigateAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
+export interface VideoFields_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface VideoFields_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
+export interface VideoFields_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  journey: VideoFields_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface VideoFields_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type VideoFields_action = VideoFields_action_NavigateAction | VideoFields_action_NavigateToBlockAction | VideoFields_action_NavigateToJourneyAction | VideoFields_action_LinkAction;
+
 export interface VideoFields {
   __typename: "VideoBlock";
   id: string;
@@ -57,4 +92,5 @@ export interface VideoFields {
    */
   videoVariantLanguageId: string | null;
   video: VideoFields_video | null;
+  action: VideoFields_action | null;
 }

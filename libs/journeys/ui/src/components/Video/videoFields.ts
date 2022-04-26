@@ -26,7 +26,7 @@ export const VIDEO_FIELDS = gql`
         hls
       }
     }
-    endAction {
+    action: endAction {
       ...ActionFields
     }
   }

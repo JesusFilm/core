@@ -301,40 +301,40 @@ export interface GetJourney_journey_blocks_VideoBlock_video {
   variant: GetJourney_journey_blocks_VideoBlock_video_variant | null;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_endAction_NavigateAction {
+export interface GetJourney_journey_blocks_VideoBlock_action_NavigateAction {
   __typename: "NavigateAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_endAction_NavigateToBlockAction {
+export interface GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_endAction_NavigateToJourneyAction_journey {
+export interface GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_endAction_NavigateToJourneyAction {
+export interface GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   parentBlockId: string;
   gtmEventName: string | null;
-  journey: GetJourney_journey_blocks_VideoBlock_endAction_NavigateToJourneyAction_journey | null;
+  journey: GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction_journey | null;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_endAction_LinkAction {
+export interface GetJourney_journey_blocks_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export type GetJourney_journey_blocks_VideoBlock_endAction = GetJourney_journey_blocks_VideoBlock_endAction_NavigateAction | GetJourney_journey_blocks_VideoBlock_endAction_NavigateToBlockAction | GetJourney_journey_blocks_VideoBlock_endAction_NavigateToJourneyAction | GetJourney_journey_blocks_VideoBlock_endAction_LinkAction;
+export type GetJourney_journey_blocks_VideoBlock_action = GetJourney_journey_blocks_VideoBlock_action_NavigateAction | GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_VideoBlock_action_LinkAction;
 
 export interface GetJourney_journey_blocks_VideoBlock {
   __typename: "VideoBlock";
@@ -367,7 +367,7 @@ export interface GetJourney_journey_blocks_VideoBlock {
    */
   videoVariantLanguageId: string | null;
   video: GetJourney_journey_blocks_VideoBlock_video | null;
-  endAction: GetJourney_journey_blocks_VideoBlock_endAction | null;
+  action: GetJourney_journey_blocks_VideoBlock_action | null;
 }
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateAction {

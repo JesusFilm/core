@@ -28,6 +28,41 @@ export interface CardBlockVideoBlockCreate_videoBlockCreate_video {
   variant: CardBlockVideoBlockCreate_videoBlockCreate_video_variant | null;
 }
 
+export interface CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateAction {
+  __typename: "NavigateAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
+export interface CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
+export interface CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  journey: CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface CardBlockVideoBlockCreate_videoBlockCreate_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type CardBlockVideoBlockCreate_videoBlockCreate_action = CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateAction | CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToJourneyAction | CardBlockVideoBlockCreate_videoBlockCreate_action_LinkAction;
+
 export interface CardBlockVideoBlockCreate_videoBlockCreate {
   __typename: "VideoBlock";
   id: string;
@@ -59,6 +94,7 @@ export interface CardBlockVideoBlockCreate_videoBlockCreate {
    */
   videoVariantLanguageId: string | null;
   video: CardBlockVideoBlockCreate_videoBlockCreate_video | null;
+  action: CardBlockVideoBlockCreate_videoBlockCreate_action | null;
 }
 
 export interface CardBlockVideoBlockCreate {

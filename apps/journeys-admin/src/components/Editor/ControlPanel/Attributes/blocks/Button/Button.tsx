@@ -42,6 +42,8 @@ export function Button({
 
   const selectedAction = actions.find((act) => act.value === action?.__typename)
 
+  console.log(selectedAction)
+
   return (
     <>
       <Attribute

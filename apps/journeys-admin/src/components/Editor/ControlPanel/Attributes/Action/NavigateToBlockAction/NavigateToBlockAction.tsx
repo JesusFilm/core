@@ -4,7 +4,8 @@ import { ReactElement } from 'react'
 import { CardPreview } from '../../../../../CardPreview'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey_blocks_ButtonBlock as ButtonBlock
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
 import { NavigateToBlockActionUpdate } from '../../../../../../../__generated__/NavigateToBlockActionUpdate'
 import { useJourney } from '../../../../../../libs/context'
@@ -32,8 +33,10 @@ export function NavigateToBlockAction(): ReactElement {
   } = useEditor()
   const journey = useJourney()
   const selectedButtonBlock = selectedBlock as
-    | TreeBlock<ButtonBlock>
+    | TreeBlock<ButtonBlock | VideoBlock>
     | undefined
+
+  console.log('i am ', selectedButtonBlock)
 
   const [navigateToBlockActionUpdate] =
     useMutation<NavigateToBlockActionUpdate>(NAVIGATE_TO_BLOCK_ACTION_UPDATE)
