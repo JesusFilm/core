@@ -128,11 +128,12 @@ export function BackgroundMediaVideo({
   ): Promise<void> => {
     if (journey == null) return
 
-    const { data } = await videoBlockCreate({
+    await videoBlockCreate({
       variables: {
         input: {
           journeyId: journey.id,
           parentBlockId: cardBlock.id,
+          isCover: true,
           ...input
         }
       },
@@ -155,22 +156,15 @@ export function BackgroundMediaVideo({
               }
             }
           })
-        }
-      }
-    })
-    await cardBlockUpdate({
-      variables: {
-        id: cardBlock.id,
-        journeyId: journey.id,
-        input: {
-          coverBlockId: data?.videoBlockCreate?.id ?? null
-        }
-      },
-      optimisticResponse: {
-        cardBlockUpdate: {
-          id: cardBlock.id,
-          coverBlockId: data?.videoBlockCreate?.id ?? null,
-          __typename: 'CardBlock'
+          cache.modify({
+            id: cache.identify({
+              __typename: cardBlock.__typename,
+              id: cardBlock.id
+            }),
+            fields: {
+              coverBlockId: () => data.videoBlockCreate.id
+            }
+          })
         }
       }
     })
@@ -207,13 +201,6 @@ export function BackgroundMediaVideo({
 
   const handleChange = async (block: TreeBlock<VideoBlock>): Promise<void> => {
     try {
-      if (
-        coverBlock != null &&
-        coverBlock?.__typename.toString() !== 'VideoBlock'
-      ) {
-        // remove existing cover block if type changed
-        await deleteCoverBlock()
-      }
       if (videoBlock == null) {
         await createVideoBlock(block)
       } else {

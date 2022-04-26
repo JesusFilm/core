@@ -5,7 +5,7 @@ import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJ
 import { SocialShareAppearance } from '.'
 
 describe('SocialShareAppearance', () => {
-  const slug = 'https://wwww.example.jpg'
+  const slug = 'untitiled-journey'
   it('should render SocialShareAppearance', () => {
     const { getByText, getByTestId, getByRole } = render(
       <MockedProvider>

@@ -303,9 +303,107 @@ describe('ControlPanel', () => {
   })
 
   it('should change to properties tab on poll button click', async () => {
+    const titleCreateResult = jest.fn(() => ({
+      data: {
+        typographyBlockCreate: {
+          id: 'typographyId.1',
+          parentBlockId: 'cardId',
+          parentOrder: 0,
+          content: 'Your Question Here?',
+          align: null,
+          color: null,
+          variant: 'h3',
+          __typename: 'TypographyBlock'
+        }
+      }
+    }))
+
+    const descriptionCreateResult = jest.fn(() => ({
+      data: {
+        typographyBlockCreate: {
+          id: 'typographyId.2',
+          parentBlockId: 'cardId',
+          parentOrder: 1,
+          content: 'Your Description Here',
+          align: null,
+          color: null,
+          variant: 'body2',
+          __typename: 'TypographyBlock'
+        }
+      }
+    }))
+
+    const radioCreateResult = jest.fn(() => ({
+      data: {
+        radioQuestionBlockCreate: {
+          __typename: 'RadioQuestionBlock',
+          id: 'uuid',
+          parentBlockId: 'cardId',
+          parentOrder: 2,
+          journeyId: 'journeyId',
+          label: '',
+          description: null
+        },
+        radioOption1: {
+          __typename: 'RadioOptionBlock',
+          id: 'radioOptionBlockId1',
+          parentBlockId: 'uuid',
+          parentOrder: 0,
+          journeyId: 'journeyId',
+          label: 'Option 1',
+          action: {
+            __typename: 'NavigateToBlockAction',
+            gtmEventName: 'gtmEventName',
+            blockId: 'def'
+          }
+        },
+        radioOption2: {
+          __typename: 'RadioOptionBlock',
+          id: 'radioOptionBlockId2',
+          parentBlockId: 'uuid',
+          parentOrder: 1,
+          journeyId: 'journeyId',
+          label: 'Option 2',
+          action: {
+            __typename: 'NavigateToBlockAction',
+            gtmEventName: 'gtmEventName',
+            blockId: 'def'
+          }
+        }
+      }
+    }))
+
     const { getByRole, getByTestId } = render(
       <MockedProvider
         mocks={[
+          {
+            request: {
+              query: TYPOGRAPHY_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  content: 'Your Question Here?',
+                  variant: 'h3'
+                }
+              }
+            },
+            result: titleCreateResult
+          },
+          {
+            request: {
+              query: TYPOGRAPHY_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  content: 'Your Description Here',
+                  variant: 'body2'
+                }
+              }
+            },
+            result: descriptionCreateResult
+          },
           {
             request: {
               query: RADIO_QUESTION_BLOCK_CREATE,
@@ -314,7 +412,7 @@ describe('ControlPanel', () => {
                   journeyId: 'journeyId',
                   id: 'uuid',
                   parentBlockId: 'cardId',
-                  label: 'Your Question Here?'
+                  label: ''
                 },
                 radioOptionBlockCreateInput1: {
                   journeyId: 'journeyId',
@@ -328,45 +426,7 @@ describe('ControlPanel', () => {
                 }
               }
             },
-            result: {
-              data: {
-                radioQuestionBlockCreate: {
-                  __typename: 'RadioQuestionBlock',
-                  id: 'uuid',
-                  parentBlockId: 'cardId',
-                  journeyId: 'journeyId',
-                  parentOrder: null,
-                  label: 'Your Question Here?',
-                  description: null
-                },
-                radioOption1: {
-                  __typename: 'RadioOptionBlock',
-                  id: 'radioOptionBlockId1',
-                  parentBlockId: 'uuid',
-                  parentOrder: null,
-                  journeyId: 'journeyId',
-                  label: 'Option 1',
-                  action: {
-                    __typename: 'NavigateToBlockAction',
-                    gtmEventName: 'gtmEventName',
-                    blockId: 'def'
-                  }
-                },
-                radioOption2: {
-                  __typename: 'RadioOptionBlock',
-                  id: 'radioOptionBlockId2',
-                  parentBlockId: 'uuid',
-                  parentOrder: null,
-                  journeyId: 'journeyId',
-                  label: 'Option 2',
-                  action: {
-                    __typename: 'NavigateToBlockAction',
-                    gtmEventName: 'gtmEventName',
-                    blockId: 'def'
-                  }
-                }
-              }
-            }
+            result: radioCreateResult
           }
         ]}
       >

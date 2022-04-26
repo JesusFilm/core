@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import {
+  CardBlock,
   VideoBlock,
   VideoBlockCreateInput,
   VideoBlockUpdateInput
@@ -13,6 +14,30 @@ import { VideoBlockResolver } from './video.resolver'
 
 describe('VideoBlockResolver', () => {
   let resolver: VideoBlockResolver, service: BlockService
+
+  const block = {
+    id: 'abc',
+    journeyId: 'journeyId',
+    parentOrder: 0,
+    videoId: 'videoId',
+    videoVariantLanguageId: 'videoVariantLanguageId',
+    startAt: 5,
+    endAt: 10,
+    muted: true,
+    autoplay: true,
+    posterBlockId: 'posterBlockId',
+    fullsize: true,
+    endAction: {
+      gtmEventName: 'gtmEventName',
+      url: 'https://jesusfilm.org',
+      target: 'target'
+    }
+  }
+
+  const actionResponse = {
+    ...block.endAction,
+    parentBlockId: block.id
+  }
 
   const blockCreate: VideoBlockCreateInput = {
     id: 'abc',
@@ -30,6 +55,16 @@ describe('VideoBlockResolver', () => {
     parentBlockId: 'parentBlockId',
     videoId: 'videoId',
     videoVariantLanguageId: 'videoVariantLanguageId'
+  }
+
+  const parentBlock: CardBlock = {
+    id: 'parentBlockId',
+    journeyId: createdBlock.journeyId,
+    __typename: 'CardBlock',
+    parentBlockId: '0',
+    parentOrder: 0,
+    coverBlockId: createdBlock.id,
+    fullscreen: true
   }
 
   const blockUpdate: VideoBlockUpdateInput = {
@@ -62,6 +97,10 @@ describe('VideoBlockResolver', () => {
     const blockService = {
       provide: BlockService,
       useFactory: () => ({
+        get: jest.fn((id) =>
+          id === createdBlock.id ? createdBlock : parentBlock
+        ),
+        removeBlockAndChildren: jest.fn((input) => input),
         save: jest.fn((input) => createdBlock),
         update: jest.fn((id, input) => updatedBlock),
         getSiblings: jest.fn(() => [])
@@ -93,6 +132,23 @@ describe('VideoBlockResolver', () => {
       )
       expect(service.save).toHaveBeenCalledWith(createdBlock)
     })
+
+    it('creates a cover VideoBlock', async () => {
+      await resolver.videoBlockCreate({ ...blockCreate, isCover: true })
+
+      expect(service.save).toHaveBeenCalledWith({
+        ...createdBlock,
+        isCover: true,
+        parentOrder: null
+      })
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
+        parentBlock.coverBlockId,
+        parentBlock.journeyId
+      )
+      expect(service.update).toHaveBeenCalledWith(parentBlock.id, {
+        coverBlockId: createdBlock.id
+      })
+    })
   })
 
   describe('videoBlockUpdate', () => {
@@ -100,6 +156,14 @@ describe('VideoBlockResolver', () => {
       expect(
         await resolver.videoBlockUpdate('blockId', 'journeyId', blockUpdate)
       ).toEqual(updatedBlock)
+    })
+  })
+
+  describe('action', () => {
+    it('returns the action', async () => {
+      expect(await resolver.endAction(block as unknown as VideoBlock)).toEqual(
+        actionResponse
+      )
     })
   })
 

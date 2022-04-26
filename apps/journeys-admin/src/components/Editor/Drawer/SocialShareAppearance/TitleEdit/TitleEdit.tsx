@@ -43,48 +43,66 @@ export function TitleEdit(): ReactElement {
     })
   }
 
-  const initialValues = {
-    seoTitle: journey?.seoTitle ?? journey?.title ?? ''
-  }
+  const initialValues =
+    journey != null
+      ? {
+          seoTitle: journey.seoTitle ?? journey.title
+        }
+      : null
+
   const seoTitleSchema = object().shape({
     seoTitle: string().max(50, 'Character limit reached')
   })
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={seoTitleSchema}
-      onSubmit={noop}
-    >
-      {({ values, touched, errors, handleChange, handleBlur }) => (
-        <Form>
-          <TextField
-            disabled={journey == null}
-            id="seoTitle"
-            name="seoTitle"
-            variant="filled"
-            label="Title"
-            fullWidth
-            multiline
-            maxRows={2}
-            value={values.seoTitle}
-            error={touched.seoTitle === true && Boolean(errors.seoTitle)}
-            helperText={
-              errors.seoTitle != null
-                ? errors.seoTitle
-                : 'Recommended length: 5 words'
-            }
-            onChange={handleChange}
-            onBlur={(e) => {
-              handleBlur(e)
-              errors.seoTitle == null && handleSubmit(e)
-            }}
-            sx={{
-              pb: 4
-            }}
-          />
-        </Form>
+    <>
+      {initialValues != null ? (
+        <Formik
+          initialValues={initialValues}
+          validationSchema={seoTitleSchema}
+          onSubmit={noop}
+        >
+          {({ values, touched, errors, handleChange, handleBlur }) => (
+            <Form>
+              <TextField
+                id="seoTitle"
+                name="seoTitle"
+                variant="filled"
+                label="Title"
+                fullWidth
+                multiline
+                maxRows={2}
+                value={values.seoTitle}
+                error={touched.seoTitle === true && Boolean(errors.seoTitle)}
+                helperText={
+                  errors.seoTitle != null
+                    ? errors.seoTitle
+                    : 'Recommended length: 5 words'
+                }
+                onChange={handleChange}
+                onBlur={(e) => {
+                  handleBlur(e)
+                  errors.seoTitle == null && handleSubmit(e)
+                }}
+                sx={{
+                  pb: 4
+                }}
+              />
+            </Form>
+          )}
+        </Formik>
+      ) : (
+        <TextField
+          variant="filled"
+          label="Title"
+          fullWidth
+          disabled
+          helperText="Recommended length: 5 words"
+          sx={{
+            pb: 4
+          }}
+        />
       )}
-    </Formik>
+    </>
   )
 }

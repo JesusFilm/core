@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode, useMemo } from 'react'
 import { ThemeProvider, NextImage } from '@core/shared/ui'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
@@ -31,8 +31,8 @@ export function Card({
     | TreeBlock<ImageFields | VideoFields>
     | undefined
 
-  const blurUrl =
-    coverBlock?.__typename === 'ImageBlock'
+  const blurUrl = useMemo(() => {
+    return coverBlock?.__typename === 'ImageBlock'
       ? blurImage(
           coverBlock.width,
           coverBlock.height,
@@ -40,6 +40,7 @@ export function Card({
           theme.palette.background.paper
         )
       : undefined
+  }, [coverBlock, theme])
 
   const renderedChildren = children
     .filter(({ id }) => id !== coverBlockId)
@@ -67,7 +68,7 @@ export function Card({
                   (block) =>
                     block.id === coverBlock.posterBlockId &&
                     block.__typename === 'ImageBlock'
-                ) as TreeBlock<ImageFields>
+                ) as TreeBlock<ImageFields> | undefined
               }
             >
               {renderedChildren}

@@ -66,12 +66,10 @@ export function ImageEdit(): ReactElement {
   const [blockDeletePrimaryImage] = useMutation<BlockDeletePrimaryImage>(
     BLOCK_DELETE_PRIMARY_IMAGE
   )
-  const [primaryImageBlockCreate] = useMutation<PrimaryImageBlockCreate>(
-    PRIMARY_IMAGE_BLOCK_CREATE
-  )
-  const [primaryImageBlockUpdate] = useMutation<PrimaryImageBlockUpdate>(
-    PRIMARY_IMAGE_BLOCK_UPDATE
-  )
+  const [primaryImageBlockCreate, { loading: createLoading }] =
+    useMutation<PrimaryImageBlockCreate>(PRIMARY_IMAGE_BLOCK_CREATE)
+  const [primaryImageBlockUpdate, { loading: updateLoading }] =
+    useMutation<PrimaryImageBlockUpdate>(PRIMARY_IMAGE_BLOCK_UPDATE)
   const [journeyPrimaryImageUpdate] = useMutation<JourneyPrimaryImageUpdate>(
     JOURNEY_PRIMARY_IMAGE_UPDATE
   )
@@ -277,6 +275,7 @@ export function ImageEdit(): ReactElement {
           selectedBlock={journey?.primaryImageBlock ?? null}
           onChange={handleChange}
           onDelete={handleDelete}
+          loading={createLoading || updateLoading}
         />
       </Dialog>
     </>

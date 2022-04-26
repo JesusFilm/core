@@ -1,5 +1,12 @@
 import videojs from 'video.js'
-import { ReactElement, useEffect, useRef, useCallback, useState } from 'react'
+import {
+  ReactElement,
+  useEffect,
+  useRef,
+  useCallback,
+  useState,
+  useMemo
+} from 'react'
 import { useMutation, gql } from '@apollo/client'
 import { NextImage } from '@core/shared/ui'
 import Box from '@mui/material/Box'
@@ -50,8 +57,8 @@ export function Video({
     (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
   ) as TreeBlock<ImageFields> | undefined
 
-  const blurBackground =
-    posterBlock != null
+  const blurBackground = useMemo(() => {
+    return posterBlock != null
       ? blurImage(
           posterBlock.width,
           posterBlock.height,
@@ -59,6 +66,7 @@ export function Video({
           theme.palette.background.paper
         )
       : undefined
+  }, [posterBlock, theme])
 
   const handleVideoResponse = useCallback(
     (videoState: VideoResponseStateEnum, videoPosition?: number): void => {
@@ -182,6 +190,9 @@ export function Video({
           alignSelf: 'center',
           height: '100%',
           minHeight: 'inherit',
+          '> .vjs-tech': {
+            objectFit: 'cover'
+          },
           '> .vjs-loading-spinner': {
             zIndex: 1
           },

@@ -77,6 +77,39 @@ const image: TreeBlock<ImageBlock> = {
   children: []
 }
 
+const video: TreeBlock<VideoBlock> = {
+  id: 'video1.id',
+  __typename: 'VideoBlock',
+  parentBlockId: 'card1.id',
+  parentOrder: 0,
+  startAt: 0,
+  endAt: null,
+  muted: false,
+  autoplay: true,
+  fullsize: true,
+  videoId: '2_0-FallingPlates',
+  videoVariantLanguageId: '529',
+  video: {
+    __typename: 'Video',
+    id: '2_0-FallingPlates',
+    title: [
+      {
+        __typename: 'Translation',
+        value: 'FallingPlates'
+      }
+    ],
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    variant: {
+      __typename: 'VideoVariant',
+      id: '2_0-FallingPlates-529',
+      hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+    }
+  },
+  posterBlockId: null,
+  children: []
+}
+
 describe('BackgroundMediaImage', () => {
   it('creates a new image cover block', async () => {
     const cache = new InMemoryCache()
@@ -85,30 +118,12 @@ describe('BackgroundMediaImage', () => {
         blocks: [{ __ref: `CardBlock:${card.id}` }],
         id: journey.id,
         __typename: 'Journey'
-      }
+      },
+      [`CardBlock:${card.id}`]: { ...card }
     })
-    const cardBlockResult = jest.fn(() => ({
-      data: {
-        cardBlockUpdate: {
-          id: card.id,
-          coverBlockId: image.id,
-          __typename: 'CardBlock'
-        }
-      }
-    }))
     const imageBlockResult = jest.fn(() => ({
       data: {
-        imageBlockCreate: {
-          id: image.id,
-          src: image.src,
-          alt: image.alt,
-          __typename: 'ImageBlock',
-          parentBlockId: card.id,
-          width: image.width,
-          height: image.height,
-          parentOrder: image.parentOrder,
-          blurhash: image.blurhash
-        }
+        imageBlockCreate: image
       }
     }))
     const { getByRole } = render(
@@ -123,24 +138,12 @@ describe('BackgroundMediaImage', () => {
                   journeyId: journey.id,
                   parentBlockId: card.id,
                   src: image.src,
-                  alt: image.alt
+                  alt: image.alt,
+                  isCover: true
                 }
               }
             },
             result: imageBlockResult
-          },
-          {
-            request: {
-              query: CARD_BLOCK_COVER_IMAGE_UPDATE,
-              variables: {
-                id: card.id,
-                journeyId: journey.id,
-                input: {
-                  coverBlockId: image.id
-                }
-              }
-            },
-            result: cardBlockResult
           }
         ]}
       >
@@ -157,47 +160,16 @@ describe('BackgroundMediaImage', () => {
     })
     fireEvent.blur(textBox)
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
-    await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
       { __ref: `CardBlock:${card.id}` },
       { __ref: `ImageBlock:${image.id}` }
     ])
+    expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toEqual(
+      image.id
+    )
   })
 
   it('replaces a video cover block', async () => {
-    const video: TreeBlock<VideoBlock> = {
-      id: 'video1.id',
-      __typename: 'VideoBlock',
-      parentBlockId: 'card1.id',
-      parentOrder: 0,
-      startAt: 0,
-      endAt: null,
-      muted: false,
-      autoplay: true,
-      fullsize: true,
-      videoId: '2_0-FallingPlates',
-      videoVariantLanguageId: '529',
-      video: {
-        __typename: 'Video',
-        id: '2_0-FallingPlates',
-        title: [
-          {
-            __typename: 'Translation',
-            value: 'FallingPlates'
-          }
-        ],
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-        variant: {
-          __typename: 'VideoVariant',
-          id: '2_0-FallingPlates-529',
-          hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-        }
-      },
-      posterBlockId: 'poster1.id',
-      children: []
-    }
-
     const videoCard: TreeBlock<CardBlock> = {
       ...card,
       coverBlockId: video.id,
@@ -206,20 +178,15 @@ describe('BackgroundMediaImage', () => {
     const cache = new InMemoryCache()
     cache.restore({
       ['Journey:' + journey.id]: {
-        blocks: [{ __ref: `CardBlock:${card.id}` }],
+        blocks: [
+          { __ref: `CardBlock:${card.id}` },
+          { __ref: `VideoBlock:${video.id}` }
+        ],
         id: journey.id,
         __typename: 'Journey'
-      }
+      },
+      [`CardBlock:${card.id}`]: { ...card, coverBlockId: video.id }
     })
-    const cardBlockResult = jest.fn(() => ({
-      data: {
-        cardBlockUpdate: {
-          id: card.id,
-          coverBlockId: image.id,
-          __typename: 'CardBlock'
-        }
-      }
-    }))
     const imageBlockResult = jest.fn(() => ({
       data: {
         imageBlockCreate: {
@@ -235,39 +202,10 @@ describe('BackgroundMediaImage', () => {
         }
       }
     }))
-    const blockDeleteResult = jest.fn(() => ({
-      data: {
-        blockDelete: []
-      }
-    }))
     const { getByRole } = render(
       <MockedProvider
         cache={cache}
         mocks={[
-          {
-            request: {
-              query: BLOCK_DELETE_FOR_BACKGROUND_IMAGE,
-              variables: {
-                id: video.id,
-                parentBlockId: card.parentBlockId,
-                journeyId: journey.id
-              }
-            },
-            result: blockDeleteResult
-          },
-          {
-            request: {
-              query: CARD_BLOCK_COVER_IMAGE_UPDATE,
-              variables: {
-                id: card.id,
-                journeyId: journey.id,
-                input: {
-                  coverBlockId: null
-                }
-              }
-            },
-            result: cardBlockResult
-          },
           {
             request: {
               query: CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
@@ -276,24 +214,12 @@ describe('BackgroundMediaImage', () => {
                   journeyId: journey.id,
                   parentBlockId: card.id,
                   src: image.src,
-                  alt: image.alt
+                  alt: image.alt,
+                  isCover: true
                 }
               }
             },
             result: imageBlockResult
-          },
-          {
-            request: {
-              query: CARD_BLOCK_COVER_IMAGE_UPDATE,
-              variables: {
-                id: card.id,
-                journeyId: journey.id,
-                input: {
-                  coverBlockId: image.id
-                }
-              }
-            },
-            result: cardBlockResult
           }
         ]}
       >
@@ -310,11 +236,14 @@ describe('BackgroundMediaImage', () => {
     })
     fireEvent.blur(textBox)
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
-    await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
       { __ref: `CardBlock:${card.id}` },
+      { __ref: `VideoBlock:${video.id}` },
       { __ref: `ImageBlock:${image.id}` }
     ])
+    expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toEqual(
+      image.id
+    )
   })
 
   describe('Existing image cover', () => {

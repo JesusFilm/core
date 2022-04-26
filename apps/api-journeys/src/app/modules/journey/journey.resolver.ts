@@ -25,7 +25,8 @@ import {
   ThemeMode,
   ThemeName,
   UserJourney,
-  UserJourneyRole
+  UserJourneyRole,
+  JourneysFilter
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
@@ -72,8 +73,8 @@ export class JourneyResolver {
   }
 
   @Query()
-  async journeys(): Promise<Journey[]> {
-    return await this.journeyService.getAllPublishedJourneys()
+  async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
+    return await this.journeyService.getAllPublishedJourneys(where)
   }
 
   @Query()

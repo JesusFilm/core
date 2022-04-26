@@ -1,4 +1,11 @@
-import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
+import {
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+  useMemo
+} from 'react'
 import videojs from 'video.js'
 import { NextImage } from '@core/shared/ui'
 import { useTheme } from '@mui/material/styles'
@@ -12,7 +19,7 @@ import 'video.js/dist/video-js.css'
 
 interface CoverProps {
   children: ReactNode
-  imageBlock: TreeBlock<ImageFields>
+  imageBlock?: TreeBlock<ImageFields>
   videoBlock?: TreeBlock<VideoFields>
 }
 
@@ -26,15 +33,16 @@ export function Cover({
   const theme = useTheme()
   const [loading, setLoading] = useState(true)
 
-  const blurBackground = blurImage(
-    imageBlock.width,
-    imageBlock.height,
-    imageBlock.blurhash,
-    theme.palette.background.paper
-  )
-
-  const imageBackground =
-    imageBlock?.src != null ? imageBlock.src : blurBackground
+  const blurBackground = useMemo(() => {
+    return imageBlock != null
+      ? blurImage(
+          imageBlock.width,
+          imageBlock.height,
+          imageBlock.blurhash,
+          theme.palette.background.paper
+        )
+      : undefined
+  }, [imageBlock, theme])
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -92,12 +100,12 @@ export function Cover({
             />
           </video>
         )}
-        {loading && imageBackground != null && (
+        {loading && imageBlock != null && blurBackground != null && (
           <NextImage
             data-testid={
               videoBlock != null ? 'VideoPosterCover' : 'CardImageCover'
             }
-            src={imageBackground}
+            src={imageBlock?.src ?? blurBackground}
             alt={imageBlock.alt}
             placeholder="blur"
             blurDataURL={blurBackground}

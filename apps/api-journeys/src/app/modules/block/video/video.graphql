@@ -34,6 +34,10 @@ type VideoBlock implements Block {
   videoId and videoVariantLanguageId both need to be set to select a video
   """
   videoVariantLanguageId: ID
+  """
+  endAction is the action that should be performed when the video ends
+  """
+  endAction: Action
 }
 
 input VideoBlockCreateInput {
@@ -66,6 +70,10 @@ input VideoBlockCreateInput {
   """
   posterBlockId: ID
   fullsize: Boolean
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
 }
 
 input VideoBlockUpdateInput {

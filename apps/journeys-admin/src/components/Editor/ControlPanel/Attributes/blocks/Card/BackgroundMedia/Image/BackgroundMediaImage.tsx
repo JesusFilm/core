@@ -85,17 +85,15 @@ export function BackgroundMediaImage({
       (child) => child.id === cardBlock?.coverBlockId
     ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock>) ?? null
 
-  const imageBlock = coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
+  const imageCover = coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
 
   const [cardBlockUpdate] = useMutation<CardBlockBackgroundImageUpdate>(
     CARD_BLOCK_COVER_IMAGE_UPDATE
   )
-  const [imageBlockCreate] = useMutation<CardBlockImageBlockCreate>(
-    CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE
-  )
-  const [imageBlockUpdate] = useMutation<CardBlockImageBlockUpdate>(
-    CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE
-  )
+  const [imageBlockCreate, { loading: createLoading }] =
+    useMutation<CardBlockImageBlockCreate>(CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE)
+  const [imageBlockUpdate, { loading: updateLoading }] =
+    useMutation<CardBlockImageBlockUpdate>(CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE)
   const [blockDelete] = useMutation<BlockDeleteForBackgroundImage>(
     BLOCK_DELETE_FOR_BACKGROUND_IMAGE
   )
@@ -152,13 +150,14 @@ export function BackgroundMediaImage({
   const createImageBlock = async (block): Promise<void> => {
     if (journey == null) return
 
-    const { data } = await imageBlockCreate({
+    await imageBlockCreate({
       variables: {
         input: {
           journeyId: journey.id,
           parentBlockId: cardBlock.id,
           src: block.src,
-          alt: block.alt
+          alt: block.alt,
+          isCover: true
         }
       },
       update(cache, { data }) {
@@ -179,23 +178,15 @@ export function BackgroundMediaImage({
               }
             }
           })
-        }
-      }
-    })
-
-    await cardBlockUpdate({
-      variables: {
-        id: cardBlock.id,
-        journeyId: journey.id,
-        input: {
-          coverBlockId: data?.imageBlockCreate.id ?? null
-        }
-      },
-      optimisticResponse: {
-        cardBlockUpdate: {
-          id: cardBlock.id,
-          coverBlockId: data?.imageBlockCreate.id ?? null,
-          __typename: 'CardBlock'
+          cache.modify({
+            id: cache.identify({
+              __typename: cardBlock.__typename,
+              id: cardBlock.id
+            }),
+            fields: {
+              coverBlockId: () => data.imageBlockCreate.id
+            }
+          })
         }
       }
     })
@@ -203,7 +194,6 @@ export function BackgroundMediaImage({
 
   const updateImageBlock = async (block: ImageBlock): Promise<void> => {
     if (journey == null) return
-
     await imageBlockUpdate({
       variables: {
         id: coverBlock.id,
@@ -218,17 +208,9 @@ export function BackgroundMediaImage({
 
   const handleChange = async (block: ImageBlock): Promise<void> => {
     try {
-      if (
-        coverBlock != null &&
-        coverBlock?.__typename.toString() !== 'ImageBlock'
-      ) {
-        // remove existing cover block if type changed
-        await deleteCoverBlock()
-      }
-
       if (block.src === '') return
 
-      if (imageBlock == null) {
+      if (imageCover == null) {
         await createImageBlock(block)
       } else {
         await updateImageBlock(block)
@@ -247,9 +229,10 @@ export function BackgroundMediaImage({
 
   return (
     <ImageBlockEditor
-      selectedBlock={imageBlock}
+      selectedBlock={imageCover}
       onChange={handleChange}
       onDelete={handleImageDelete}
+      loading={createLoading || updateLoading}
     />
   )
 }
