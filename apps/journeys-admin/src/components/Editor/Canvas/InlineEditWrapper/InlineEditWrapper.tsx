@@ -37,6 +37,11 @@ export function InlineEditWrapper({
   } = useEditor()
   const journey = useJourney()
 
+  const showEditable =
+    (activeFab === ActiveFab.Save && selectedBlock?.id === block.id) ||
+    (block.__typename === 'RadioQuestionBlock' &&
+      selectedBlock?.parentBlockId === block.id)
+
   const handleDeleteBlock = async (): Promise<void> => {
     if (journey == null) return
 
@@ -74,7 +79,5 @@ export function InlineEditWrapper({
       children
     )
 
-  return activeFab === ActiveFab.Save && selectedBlock?.id === block.id
-    ? EditComponent
-    : children
+  return showEditable ? EditComponent : children
 }

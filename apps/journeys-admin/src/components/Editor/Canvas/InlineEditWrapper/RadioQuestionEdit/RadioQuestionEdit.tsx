@@ -86,9 +86,10 @@ export function RadioQuestionEdit({
   }
 
   const addRadioOption = (
-    <Box className="MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical">
+    // Box mimics wrappers on RadioOptions so all ButtonGroup children have same type for class styling
+    <Box>
       <StyledRadioOption
-        id={`${id}-add-option`}
+        data-testid={`${id}-add-option`}
         variant="contained"
         fullWidth
         disableRipple

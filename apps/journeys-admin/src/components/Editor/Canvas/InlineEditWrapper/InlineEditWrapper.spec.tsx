@@ -172,7 +172,7 @@ describe('InlineEditWrapper', () => {
     await waitFor(() => expect(input).toBeInTheDocument())
   })
 
-  it('should edit radio option label on double click', async () => {
+  describe('Multichoice', () => {
     const option: TreeBlock<RadioOptionFields> = {
       __typename: 'RadioOptionBlock',
       parentBlockId: 'radioQuestion.id',
@@ -193,7 +193,7 @@ describe('InlineEditWrapper', () => {
       children: [option]
     }
 
-    const { getByDisplayValue, getByText, getByTestId } = render(
+    const RadioQuestionEdit = (
       <MockedProvider>
         <EditorProvider
           initialState={{
@@ -203,29 +203,57 @@ describe('InlineEditWrapper', () => {
         >
           <SelectableWrapper block={block}>
             <InlineEditWrapper block={block}>
-              <RadioQuestion
-                {...block}
-                wrappers={{
-                  Wrapper: SelectableWrapper,
-                  RadioOptionWrapper: InlineEditWrapper
-                }}
-              />
+              <RadioQuestion {...block} />
             </InlineEditWrapper>
           </SelectableWrapper>
         </EditorProvider>
       </MockedProvider>
     )
+    it('should show add option when radio question selected', async () => {
+      const { getByText, getByTestId } = render(RadioQuestionEdit)
 
-    // Select RadioQuestion
-    fireEvent.click(getByText('option'))
-    // Double click on option
-    fireEvent.click(getByText('option'))
-    fireEvent.click(getByText('option'))
-    expect(getByTestId(`selected-${option.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
-      zIndex: '1'
+      // Select RadioQuestion
+      fireEvent.click(getByText('option'))
+      expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
+        outline: '3px solid #C52D3A',
+        zIndex: '1'
+      })
+
+      await waitFor(() =>
+        expect(getByTestId(`${block.id}-add-option`)).toBeInTheDocument()
+      )
     })
-    const input = getByDisplayValue('option')
-    await waitFor(() => expect(input).toBeInTheDocument())
+
+    it('should show add option when radio option selected', async () => {
+      const { getByText, getByTestId } = render(RadioQuestionEdit)
+
+      fireEvent.click(getByText('option'))
+      fireEvent.click(getByText('option'))
+      expect(getByTestId(`selected-${option.id}`)).toHaveStyle({
+        outline: '3px solid #C52D3A',
+        zIndex: '1'
+      })
+
+      await waitFor(() =>
+        expect(getByTestId(`${block.id}-add-option`)).toBeInTheDocument()
+      )
+    })
+
+    it('should edit radio option label on double click', async () => {
+      const { getByDisplayValue, getByText, getByTestId } =
+        render(RadioQuestionEdit)
+
+      // Select RadioQuestion
+      fireEvent.click(getByText('option'))
+      // Double click on option
+      fireEvent.click(getByText('option'))
+      fireEvent.click(getByText('option'))
+      expect(getByTestId(`selected-${option.id}`)).toHaveStyle({
+        outline: '3px solid #C52D3A',
+        zIndex: '1'
+      })
+      const input = getByDisplayValue('option')
+      await waitFor(() => expect(input).toBeInTheDocument())
+    })
   })
 })
