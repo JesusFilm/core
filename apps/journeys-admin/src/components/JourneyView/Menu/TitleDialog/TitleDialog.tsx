@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
@@ -28,6 +28,9 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
   const [value, setValue] = useState(journey?.title ?? '')
+  useEffect(() => {
+    setValue(journey?.title ?? '')
+  }, [journey])
 
   const handleSubmit = async (): Promise<void> => {
     if (journey == null) return
