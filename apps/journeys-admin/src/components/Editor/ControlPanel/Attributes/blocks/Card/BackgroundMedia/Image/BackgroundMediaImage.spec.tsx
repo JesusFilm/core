@@ -159,6 +159,7 @@ describe('BackgroundMediaImage', () => {
       target: { value: image.src }
     })
     fireEvent.blur(textBox)
+    await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
     expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
       { __ref: `CardBlock:${card.id}` },
@@ -318,6 +319,7 @@ describe('BackgroundMediaImage', () => {
         target: { value: image.src }
       })
       fireEvent.blur(textBox)
+      await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(textBox).toHaveValue(image.src))
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([

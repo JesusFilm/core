@@ -113,6 +113,7 @@ describe('ImageOptions', () => {
       target: { value: image.src }
     })
     fireEvent.blur(textBox)
+    await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
   })
 })
