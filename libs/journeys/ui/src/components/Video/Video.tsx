@@ -38,9 +38,11 @@ export function Video({
   video,
   autoplay,
   startAt,
+  endAt,
   muted,
   posterBlockId,
-  children
+  children,
+  endAction
 }: TreeBlock<VideoFields>): ReactElement {
   const [videoResponseCreate] = useMutation<VideoResponseCreate>(
     VIDEO_RESPONSE_CREATE
@@ -225,10 +227,17 @@ export function Video({
             <source src={video.variant.hls} type="application/x-mpegURL" />
           </video>
           {children?.map(
-            (option) =>
-              option.__typename === 'VideoTriggerBlock' && (
-                <VideoTrigger player={playerRef.current} {...option} />
+            (child) =>
+              child.__typename === 'VideoTriggerBlock' && (
+                <VideoTrigger player={playerRef.current} videoTrigger={child} />
               )
+          )}
+          {endAction != null && endAt != null && (
+            <VideoTrigger
+              player={playerRef.current}
+              triggerStart={endAt}
+              triggerAction={endAction}
+            />
           )}
         </>
       ) : (
