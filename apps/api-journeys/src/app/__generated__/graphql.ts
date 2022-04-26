@@ -579,6 +579,7 @@ export class VideoBlock implements Block {
     video?: Nullable<Video>;
     videoId?: Nullable<string>;
     videoVariantLanguageId?: Nullable<string>;
+    endAction?: Nullable<Action>;
 }
 
 export class VideoTriggerBlock implements Block {

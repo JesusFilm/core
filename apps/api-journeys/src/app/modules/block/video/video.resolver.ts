@@ -2,6 +2,7 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { BlockService } from '../block.service'
 import {
+  Action,
   CardBlock,
   UserJourneyRole,
   VideoBlock,
@@ -13,6 +14,17 @@ import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 @Resolver('VideoBlock')
 export class VideoBlockResolver {
   constructor(private readonly blockService: BlockService) {}
+
+  @ResolveField()
+  endAction(@Parent() block: VideoBlock): Action | null {
+    if (block.endAction == null) return null
+
+    return {
+      ...block.endAction,
+      parentBlockId: block.id
+    }
+  }
+
   @Mutation()
   @UseGuards(
     RoleGuard('input.journeyId', [
