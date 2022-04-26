@@ -26,6 +26,10 @@ export function VideoBlockEditorSettingsPoster({
   const handleOpen = (): void => setOpen(true)
   const handleClose = (): void => setOpen(false)
 
+  const [loading, setLoading] = useState(false)
+  const handleStartLoading = (): void => setLoading(true)
+  const handleStopLoading = (): void => setLoading(false)
+
   return (
     <Stack direction="row" justifyContent="space-between">
       <Stack direction="column" justifyContent="center">
@@ -49,7 +53,10 @@ export function VideoBlockEditorSettingsPoster({
         borderRadius={2}
       >
         <Stack direction="row" justifyContent="space-around">
-          <ImageBlockThumbnail selectedBlock={selectedBlock} />
+          <ImageBlockThumbnail
+            selectedBlock={selectedBlock}
+            loading={loading}
+          />
           <Stack
             direction="column"
             justifyContent="center"
@@ -73,6 +80,8 @@ export function VideoBlockEditorSettingsPoster({
               parentBlockId={parentBlockId}
               onClose={handleClose}
               open={open}
+              startLoading={handleStartLoading}
+              stopLoading={handleStopLoading}
             />
           </Stack>
         </Stack>
