@@ -852,6 +852,7 @@ const videoBlocks: TreeBlock[] = [
             startAt: null,
             posterBlockId: 'image1.id',
             fullsize: true,
+            action: null,
             children: [
               {
                 id: 'trigger.id',
@@ -995,6 +996,7 @@ const videoBlocks: TreeBlock[] = [
             endAt: null,
             startAt: null,
             fullsize: true,
+            action: null,
             children: [
               {
                 id: 'posterBlockId',
@@ -1063,6 +1065,7 @@ const videoBlocks: TreeBlock[] = [
             endAt: null,
             startAt: 10,
             fullsize: true,
+            action: null,
             children: []
           }
         ]

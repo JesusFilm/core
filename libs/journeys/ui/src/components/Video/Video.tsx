@@ -62,11 +62,11 @@ export function Video({
   const blurBackground = useMemo(() => {
     return posterBlock != null
       ? blurImage(
-        posterBlock.width,
-        posterBlock.height,
-        posterBlock.blurhash,
-        theme.palette.background.paper
-      )
+          posterBlock.width,
+          posterBlock.height,
+          posterBlock.blurhash,
+          theme.palette.background.paper
+        )
       : undefined
   }, [posterBlock, theme])
 
@@ -152,11 +152,27 @@ export function Video({
             playerRef.current?.currentTime()
           )
         })
+        playerRef.current.on('timeupdate', () => {
+          if (
+            muted === true &&
+            startAt != null &&
+            endAt != null &&
+            playerRef.current?.currentTime() != null
+          ) {
+            if (
+              playerRef.current?.currentTime() < startAt ||
+              playerRef.current?.currentTime() >= endAt
+            ) {
+              playerRef.current?.currentTime(startAt ?? 0)
+            }
+          }
+        })
       }
     }
   }, [
     handleVideoResponse,
     startAt,
+    endAt,
     muted,
     autoplay,
     blockId,
@@ -229,10 +245,7 @@ export function Video({
           {children?.map(
             (child) =>
               child.__typename === 'VideoTriggerBlock' && (
-                <VideoTrigger
-                  player={playerRef.current}
-                  videoTrigger={child}
-                />
+                <VideoTrigger player={playerRef.current} videoTrigger={child} />
               )
           )}
           {muted === false && action != null && endAt != null && (

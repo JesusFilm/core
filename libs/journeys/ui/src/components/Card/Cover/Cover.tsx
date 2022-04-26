@@ -65,6 +65,20 @@ export function Cover({
       playerRef.current.on('seeked', () => {
         setLoading(false)
       })
+      playerRef.current.on('timeupdate', () => {
+        if (
+          videoBlock?.startAt != null &&
+          videoBlock?.endAt != null &&
+          playerRef.current?.currentTime() != null
+        ) {
+          if (
+            playerRef.current?.currentTime() < videoBlock?.startAt ||
+            playerRef.current?.currentTime() >= videoBlock?.endAt
+          ) {
+            playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
+          }
+        }
+      })
     }
   }, [imageBlock, theme, videoBlock, blurBackground])
 

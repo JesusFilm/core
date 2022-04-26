@@ -529,6 +529,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             endAt: null,
             posterBlockId: 'image5.id',
             fullsize: null,
+            action: null,
             children: [
               {
                 id: 'image5.id',
@@ -608,6 +609,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             endAt: null,
             posterBlockId: 'image6.id',
             fullsize: null,
+            action: null,
             children: [
               {
                 id: 'image6.id',
