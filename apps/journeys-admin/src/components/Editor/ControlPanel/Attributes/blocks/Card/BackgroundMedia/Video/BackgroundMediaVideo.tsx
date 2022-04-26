@@ -133,6 +133,7 @@ export function BackgroundMediaVideo({
         input: {
           journeyId: journey.id,
           parentBlockId: cardBlock.id,
+          isCover: true,
           ...input
         }
       },

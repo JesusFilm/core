@@ -15,6 +15,30 @@ import { VideoBlockResolver } from './video.resolver'
 describe('VideoBlockResolver', () => {
   let resolver: VideoBlockResolver, service: BlockService
 
+  const block = {
+    id: 'abc',
+    journeyId: 'journeyId',
+    parentOrder: 0,
+    videoId: 'videoId',
+    videoVariantLanguageId: 'videoVariantLanguageId',
+    startAt: 5,
+    endAt: 10,
+    muted: true,
+    autoplay: true,
+    posterBlockId: 'posterBlockId',
+    fullsize: true,
+    endAction: {
+      gtmEventName: 'gtmEventName',
+      url: 'https://jesusfilm.org',
+      target: 'target'
+    }
+  }
+
+  const actionResponse = {
+    ...block.endAction,
+    parentBlockId: block.id
+  }
+
   const blockCreate: VideoBlockCreateInput = {
     id: 'abc',
     journeyId: 'journeyId',
@@ -132,6 +156,14 @@ describe('VideoBlockResolver', () => {
       expect(
         await resolver.videoBlockUpdate('blockId', 'journeyId', blockUpdate)
       ).toEqual(updatedBlock)
+    })
+  })
+
+  describe('action', () => {
+    it('returns the action', async () => {
+      expect(await resolver.endAction(block as unknown as VideoBlock)).toEqual(
+        actionResponse
+      )
     })
   })
 

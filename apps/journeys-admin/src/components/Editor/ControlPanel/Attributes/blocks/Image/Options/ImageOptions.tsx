@@ -32,7 +32,9 @@ export function ImageOptions(): ReactElement {
   } = useEditor()
   const journey = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-  const [imageBlockUpdate] = useMutation<ImageBlockUpdate>(IMAGE_BLOCK_UPDATE)
+  const [imageBlockUpdate, { loading }] =
+    useMutation<ImageBlockUpdate>(IMAGE_BLOCK_UPDATE)
+
   const imageBlock = selectedBlock as TreeBlock<ImageBlock>
 
   const updateImageBlock = async (block: ImageBlock): Promise<void> => {
@@ -67,6 +69,7 @@ export function ImageOptions(): ReactElement {
         selectedBlock={imageBlock}
         onChange={updateImageBlock}
         showDelete={false}
+        loading={loading}
       />
     </Box>
   )
