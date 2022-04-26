@@ -14,7 +14,7 @@ describe('VideoListGrid', () => {
   })
   it('should request more videos', async () => {
     const { getByText } = render(
-      <VideoListGrid videos={videos} onLoadMore={onLoadMore} />
+      <VideoListGrid videos={videos} loading={false} onLoadMore={onLoadMore} />
     )
     fireEvent.click(getByText('Load More'))
     expect(onLoadMore).toHaveBeenCalled()
