@@ -749,6 +749,8 @@ type Video
 
 type VideoBlock implements Block {
   autoplay: Boolean
+
+  """endAction is the action that should be performed when the video ends"""
   endAction: Action
 
   """endAt dictates at which point of time the video should end"""

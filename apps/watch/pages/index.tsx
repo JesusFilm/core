@@ -4,7 +4,7 @@ import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { useQuery, gql } from '@apollo/client'
-import Fab from '@mui/material/Fab';
+import Fab from '@mui/material/Fab'
 import { VideoList } from '../src/components/Videos/VideoList/VideoList'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { GetVideoTag } from '../__generated__/GetVideoTag'
@@ -100,9 +100,7 @@ function VideoPage(): ReactElement {
 
       <Box sx={{ bgcolor: '#f7f7f7', paddingY: '5rem' }}>
         <Container maxWidth="xl">
-          <Typography variant="h2">
-            Collections
-          </Typography>
+          <Typography variant="h2">Collections</Typography>
           <Grid
             container
             spacing={2}
@@ -111,25 +109,26 @@ function VideoPage(): ReactElement {
             alignItems="center"
             sx={{ paddingY: '1rem' }}
           >
-            {jfm1Data?.videoTags?.map(item => 
+            {jfm1Data?.videoTags?.map((item) => (
               <Grid item key={item.id}>
-                <Fab variant="extended" >
+                <Fab variant="extended">
                   {item.title.find((t) => t.primary)?.value}
                 </Fab>
               </Grid>
-            )}
+            ))}
           </Grid>
         </Container>
       </Box>
 
       <Box sx={{ bgcolor: '#cfe8fc', paddingY: '5rem' }}>
         <Container maxWidth="xl">
-          {jfm1Data?.videoTags?.slice(0,3).map(item => 
+          {jfm1Data?.videoTags?.slice(0, 3).map((item) => (
             <Box key={item.id}>
               <Typography variant="h2">
                 {item.title.find((t) => t.primary)?.value}
               </Typography>
               <VideoList
+                key={item.id}
                 filter={{
                   types: [VideoType.playlist, VideoType.standalone],
                   tagId: item.id
@@ -139,7 +138,7 @@ function VideoPage(): ReactElement {
                 layout="carousel"
               />
             </Box>
-          )}
+          ))}
         </Container>
       </Box>
     </>
