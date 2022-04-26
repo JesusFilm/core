@@ -39,7 +39,7 @@ export const getStaticProps: GetStaticProps<JourneysPageProps> = async () => {
   const { data } = await client.query<GetJourneys>({
     query: gql`
       query GetJourneys {
-        journeys {
+        journeys(where: { featured: true }) {
           id
           title
           slug

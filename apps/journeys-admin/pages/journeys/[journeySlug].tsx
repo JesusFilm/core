@@ -26,7 +26,13 @@ export const GET_JOURNEY = gql`
       title
       description
       status
-      locale
+      language {
+        id
+        name {
+          value
+          primary
+        }
+      }
       createdAt
       publishedAt
       themeName

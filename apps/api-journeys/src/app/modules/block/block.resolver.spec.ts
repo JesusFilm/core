@@ -48,9 +48,8 @@ describe('BlockResolver', () => {
     provide: BlockService,
     useFactory: () => ({
       get: jest.fn(() => image1),
-      getSiblings: jest.fn(() => [image1, image2, image3]),
       removeBlockAndChildren: jest.fn(() => [image1, image2, image3]),
-      reorderSiblings: jest.fn(() => [
+      reorderBlock: jest.fn(() => [
         { id: 'image2', parentOrder: 0 },
         { id: 'image3', parentOrder: 1 },
         { id: 'image1', parentOrder: 2 }
@@ -89,53 +88,18 @@ describe('BlockResolver', () => {
 
   describe('blockOrderUpdate', () => {
     it('updates the block order', async () => {
-      await resolver.blockOrderUpdate('image1', '2', 2)
-      expect(service.reorderSiblings).toHaveBeenCalledWith([
-        image2,
-        image3,
-        image1
+      const data = await resolver.blockOrderUpdate('image1', '2', 2)
+
+      expect(service.reorderBlock).toHaveBeenCalledWith(
+        image1.id,
+        image1.journeyId,
+        2
+      )
+      expect(data).toEqual([
+        { id: 'image2', parentOrder: 0 },
+        { id: 'image3', parentOrder: 1 },
+        { id: 'image1', parentOrder: 2 }
       ])
-    })
-
-    it('does not update if block not part of current journey', async () => {
-      const data = await resolver.blockOrderUpdate('image1', '1', 2)
-
-      expect(service.reorderSiblings).toBeCalledTimes(0)
-      expect(data).toEqual([])
-    })
-
-    it('does not update if block does not have parent order', async () => {
-      const coverImage1 = { ...image1, parentOrder: undefined }
-      const blockService = {
-        provide: BlockService,
-        useFactory: () => ({
-          get: jest.fn(() => coverImage1),
-          getSiblings: jest.fn(() => [coverImage1, image2, image3]),
-          reorderSiblings: jest.fn(() => [
-            { id: 'image2', parentOrder: 0 },
-            { id: 'image3', parentOrder: 1 },
-            { id: 'image1', parentOrder: 2 }
-          ])
-        })
-      }
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          UserJourneyService,
-          BlockResolver,
-          blockService,
-          {
-            provide: 'DATABASE',
-            useFactory: () => mockDeep<Database>()
-          }
-        ]
-      }).compile()
-      resolver = module.get<BlockResolver>(BlockResolver)
-      service = await module.resolve(BlockService)
-
-      const data = await resolver.blockOrderUpdate('image1', '1', 2)
-
-      expect(service.reorderSiblings).toBeCalledTimes(0)
-      expect(data).toEqual([])
     })
   })
 })

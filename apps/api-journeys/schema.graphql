@@ -76,12 +76,13 @@ type Journey @key(fields: "id") {
   primaryImageBlock: ImageBlock
   id: ID!
   title: String!
-  locale: String!
+  language: Language!
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
   slug: String!
   publishedAt: DateTime
+  featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
   seoTitle: String
@@ -182,7 +183,7 @@ input CardBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   backgroundColor: String
-  coverBlockId: ID
+  coverBlockId: ID @deprecated(reason: "coverBlockId will be updated on Image and Video Cover block creation")
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -191,7 +192,7 @@ input CardBlockCreateInput {
 input CardBlockUpdateInput {
   parentBlockId: ID
   backgroundColor: String
-  coverBlockId: ID
+  coverBlockId: ID @deprecated(reason: "coverBlockId will be updated on Image and Video Cover block creation")
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -329,6 +330,11 @@ input ImageBlockCreateInput {
   src: String
   alt: String!
   blurhash: String
+
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -524,6 +530,7 @@ type VideoBlock implements Block {
   videoId and videoVariantLanguageId both need to be set to select a video
   """
   videoVariantLanguageId: ID
+  endAction: Action
 }
 
 input VideoBlockCreateInput {
@@ -557,6 +564,11 @@ input VideoBlockCreateInput {
   """
   posterBlockId: ID
   fullsize: Boolean
+
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
 }
 
 input VideoBlockUpdateInput {
@@ -607,6 +619,10 @@ enum JourneyStatus {
   published
 }
 
+input JourneysFilter {
+  featured: Boolean
+}
+
 input JourneyCreateInput {
   """
   ID should be unique Response UUID
@@ -614,7 +630,7 @@ input JourneyCreateInput {
   """
   id: ID
   title: String!
-  locale: String
+  languageId: String!
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
@@ -631,7 +647,7 @@ input JourneyCreateInput {
 
 input JourneyUpdateInput {
   title: String
-  locale: String
+  languageId: String
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
@@ -766,10 +782,14 @@ extend type Video @key(fields: "id primaryLanguageId") {
   primaryLanguageId: ID! @external
 }
 
+extend type Language @key(fields: "id") {
+  id: ID! @external
+}
+
 extend type Query {
   adminJourneys: [Journey!]!
   adminJourney(id: ID!, idType: IdType): Journey
-  journeys: [Journey!]!
+  journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
 }
 

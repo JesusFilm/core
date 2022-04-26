@@ -20,7 +20,26 @@ const nextConfig = {
     svgr: false
   },
   i18n: {
-    locales: ['en'],
+    locales: [
+      'ar',
+      'de',
+      'en',
+      'es',
+      'fa',
+      'fr',
+      'he',
+      'hi',
+      'id',
+      'ja',
+      'ko',
+      'pt',
+      'ru',
+      'tr',
+      'ur',
+      'vi',
+      'zh-Hans',
+      'zh-Hant'
+    ],
     defaultLocale: 'en',
     localeDetection: false
   },

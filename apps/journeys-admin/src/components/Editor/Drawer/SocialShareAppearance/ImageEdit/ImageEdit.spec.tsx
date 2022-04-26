@@ -36,7 +36,7 @@ describe('ImageEdit', () => {
   })
 
   it('should display the primaryImage', () => {
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
           value={
@@ -52,7 +52,7 @@ describe('ImageEdit', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByTestId('social-image')).toBeInTheDocument()
+    expect(getByRole('img')).toBeInTheDocument()
   })
 
   it('create the primaryImage', async () => {

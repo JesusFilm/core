@@ -23,7 +23,11 @@ const Template: Story = ({ ...args }) => (
         },
         result: {
           data: {
-            journeyPublish: { id: defaultJourney.id, __typename: 'Journey' }
+            journeyPublish: {
+              id: defaultJourney.id,
+              __typename: 'Journey',
+              status: JourneyStatus.published
+            }
           }
         }
       }

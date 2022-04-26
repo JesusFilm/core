@@ -22,8 +22,16 @@ const GET_JOURNEYS = gql`
       slug
       themeName
       themeMode
-      locale
+      language {
+        id
+        name(primary: true) {
+          value
+          primary
+        }
+      }
       status
+      seoTitle
+      seoDescription
       userJourneys {
         id
         user {

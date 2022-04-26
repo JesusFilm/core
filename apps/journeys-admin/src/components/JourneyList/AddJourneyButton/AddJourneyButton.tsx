@@ -27,6 +27,7 @@ export const JOURNEY_CREATE = gql`
         id: $journeyId
         title: $title
         description: $description
+        languageId: "529"
         themeMode: dark
       }
     ) {
@@ -38,7 +39,13 @@ export const JOURNEY_CREATE = gql`
       slug
       themeName
       themeMode
-      locale
+      language {
+        id
+        name(primary: true) {
+          value
+          primary
+        }
+      }
       status
       userJourneys {
         id

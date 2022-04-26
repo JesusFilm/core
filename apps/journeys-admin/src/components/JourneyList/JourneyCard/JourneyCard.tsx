@@ -14,6 +14,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyCardMenu } from './JourneyCardMenu'
 
@@ -106,7 +107,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
               />
             </Grid>
             {journey != null ? (
-              journey.status === 'draft' ? (
+              journey.status === JourneyStatus.draft ? (
                 <>
                   <Grid item>
                     <EditIcon color="warning" sx={{ fontSize: 13 }} />
@@ -143,7 +144,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
             <Grid item>
               <Typography variant="caption">
                 {journey != null ? (
-                  journey.locale
+                  journey.language.name.find(({ primary }) => primary)?.value
                 ) : (
                   <Skeleton variant="text" width={40} />
                 )}

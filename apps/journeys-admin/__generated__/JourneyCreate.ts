@@ -9,6 +9,18 @@ import { ThemeName, ThemeMode, JourneyStatus } from "./globalTypes";
 // GraphQL mutation operation: JourneyCreate
 // ====================================================
 
+export interface JourneyCreate_journeyCreate_language_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface JourneyCreate_journeyCreate_language {
+  __typename: "Language";
+  id: string;
+  name: JourneyCreate_journeyCreate_language_name[];
+}
+
 export interface JourneyCreate_journeyCreate_userJourneys_user {
   __typename: "User";
   id: string;
@@ -33,7 +45,7 @@ export interface JourneyCreate_journeyCreate {
   slug: string;
   themeName: ThemeName;
   themeMode: ThemeMode;
-  locale: string;
+  language: JourneyCreate_journeyCreate_language;
   status: JourneyStatus;
   userJourneys: JourneyCreate_journeyCreate_userJourneys[] | null;
 }
