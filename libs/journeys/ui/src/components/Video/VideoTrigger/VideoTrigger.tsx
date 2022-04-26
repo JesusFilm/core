@@ -2,7 +2,7 @@ import videojs from 'video.js'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
 import { handleAction } from '../../..'
-import { BlockFields_VideoBlock_endAction as Action } from '../../../libs/transformer/__generated__/BlockFields'
+import { BlockFields_VideoBlock_action as Action } from '../../../libs/transformer/__generated__/BlockFields'
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
 
 export interface VideoTriggerProps {

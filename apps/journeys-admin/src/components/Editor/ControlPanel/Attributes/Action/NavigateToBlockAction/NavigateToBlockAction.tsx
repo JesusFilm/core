@@ -32,11 +32,10 @@ export function NavigateToBlockAction(): ReactElement {
     state: { steps, selectedBlock }
   } = useEditor()
   const journey = useJourney()
-  const selectedButtonBlock = selectedBlock as
-    | TreeBlock<ButtonBlock | VideoBlock>
+  const currentBlock = selectedBlock as
+    | TreeBlock<ButtonBlock>
+    | TreeBlock<VideoBlock>
     | undefined
-
-  console.log('i am ', selectedButtonBlock)
 
   const [navigateToBlockActionUpdate] =
     useMutation<NavigateToBlockActionUpdate>(NAVIGATE_TO_BLOCK_ACTION_UPDATE)
@@ -44,13 +43,13 @@ export function NavigateToBlockAction(): ReactElement {
   const currentActionStep =
     steps?.find(
       ({ id }) =>
-        selectedButtonBlock?.action?.__typename === 'NavigateToBlockAction' &&
-        id === selectedButtonBlock?.action?.blockId
+        currentBlock?.action?.__typename === 'NavigateToBlockAction' &&
+        id === currentBlock?.action?.blockId
     ) ?? undefined
 
   async function handleSelectStep(step: TreeBlock<StepBlock>): Promise<void> {
-    if (selectedButtonBlock != null && journey != null) {
-      const { id, __typename: typeName } = selectedButtonBlock
+    if (currentBlock != null && journey != null) {
+      const { id, __typename: typeName } = currentBlock
       await navigateToBlockActionUpdate({
         variables: {
           id,

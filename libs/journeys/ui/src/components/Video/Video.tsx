@@ -229,10 +229,13 @@ export function Video({
           {children?.map(
             (child) =>
               child.__typename === 'VideoTriggerBlock' && (
-                <VideoTrigger player={playerRef.current} videoTrigger={child} />
+                <VideoTrigger
+                  player={playerRef.current}
+                  videoTrigger={child}
+                />
               )
           )}
-          {action != null && endAt != null && (
+          {muted === false && action != null && endAt != null && (
             <VideoTrigger
               player={playerRef.current}
               triggerStart={endAt}

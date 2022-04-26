@@ -94,6 +94,9 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    */
   videoVariantLanguageId: string | null;
   video: VideoBlockUpdate_videoBlockUpdate_video | null;
+  /**
+   * endAction is the action that should be performed when the video ends
+   */
   action: VideoBlockUpdate_videoBlockUpdate_action | null;
 }
 

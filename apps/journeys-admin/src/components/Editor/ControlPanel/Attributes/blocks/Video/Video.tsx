@@ -24,8 +24,6 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
     (act) => act.value === block.action?.__typename
   )
 
-  console.log(selectedAction)
-
   return (
     <>
       <Attribute
