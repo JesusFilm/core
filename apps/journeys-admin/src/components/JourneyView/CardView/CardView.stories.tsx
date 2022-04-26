@@ -44,4 +44,9 @@ ManyCards.args = {
   blocks: steps.concat(steps).concat(steps)
 }
 
+export const Loading = Template.bind({})
+Loading.args = {
+  blocks: undefined
+}
+
 export default CardViewStory as Meta

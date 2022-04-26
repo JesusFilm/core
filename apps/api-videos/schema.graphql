@@ -25,12 +25,15 @@ type Video @key(fields: "id primaryLanguageId") {
   type: VideoType!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
+  seoTitle(languageId: ID, primary: Boolean): [Translation!]!
   snippet(languageId: ID, primary: Boolean): [Translation!]!
   description(languageId: ID, primary: Boolean): [Translation!]!
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
   image: String
+  imageAlt(languageId: ID, primary: Boolean): [Translation!]!
   variantLanguages: [Language!]!
   permalink: String!
+  noIndex: Boolean
 
   """Episodes are child videos, currently only found in a playlist type"""
   episodeIds: [ID!]!

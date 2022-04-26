@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui'
-
+import { useSnackbar } from 'notistack'
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -85,42 +85,54 @@ export function BackgroundMediaImage({
       (child) => child.id === cardBlock?.coverBlockId
     ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock>) ?? null
 
-  const imageBlock = coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
+  const imageCover = coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
 
-  const [cardBlockUpdate, { error: cardBlockUpdateError }] =
-    useMutation<CardBlockBackgroundImageUpdate>(CARD_BLOCK_COVER_IMAGE_UPDATE)
-  const [imageBlockCreate, { error: imageBlockCreateError }] =
+  const [cardBlockUpdate] = useMutation<CardBlockBackgroundImageUpdate>(
+    CARD_BLOCK_COVER_IMAGE_UPDATE
+  )
+  const [imageBlockCreate, { loading: createLoading }] =
     useMutation<CardBlockImageBlockCreate>(CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE)
-  const [imageBlockUpdate, { error: imageBlockUpdateError }] =
+  const [imageBlockUpdate, { loading: updateLoading }] =
     useMutation<CardBlockImageBlockUpdate>(CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE)
-  const [blockDelete, { error: blockDeleteError }] =
-    useMutation<BlockDeleteForBackgroundImage>(
-      BLOCK_DELETE_FOR_BACKGROUND_IMAGE
-    )
-  const { id: journeyId } = useJourney()
+  const [blockDelete] = useMutation<BlockDeleteForBackgroundImage>(
+    BLOCK_DELETE_FOR_BACKGROUND_IMAGE
+  )
+  const journey = useJourney()
+  const { enqueueSnackbar } = useSnackbar()
 
   const handleImageDelete = async (): Promise<void> => {
-    await deleteCoverBlock()
+    try {
+      await deleteCoverBlock()
+      enqueueSnackbar('Image Deleted', {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    } catch (e) {
+      enqueueSnackbar(e.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
+    }
   }
 
-  const deleteCoverBlock = async (): Promise<boolean> => {
+  const deleteCoverBlock = async (): Promise<void> => {
+    if (journey == null) return
+
     await blockDelete({
       variables: {
         id: coverBlock.id,
         parentBlockId: cardBlock.parentBlockId,
-        journeyId: journeyId
+        journeyId: journey.id
       },
       update(cache, { data }) {
-        blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journeyId)
+        blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journey.id)
       }
     })
-
-    if (blockDeleteError != null) return false
 
     await cardBlockUpdate({
       variables: {
         id: cardBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           coverBlockId: null
         }
@@ -133,23 +145,25 @@ export function BackgroundMediaImage({
         }
       }
     })
-    return cardBlockUpdateError == null
   }
 
-  const createImageBlock = async (block): Promise<boolean> => {
-    const { data } = await imageBlockCreate({
+  const createImageBlock = async (block): Promise<void> => {
+    if (journey == null) return
+
+    await imageBlockCreate({
       variables: {
         input: {
-          journeyId: journeyId,
+          journeyId: journey.id,
           parentBlockId: cardBlock.id,
           src: block.src,
-          alt: block.alt
+          alt: block.alt,
+          isCover: true
         }
       },
       update(cache, { data }) {
         if (data?.imageBlockCreate != null) {
           cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = []) {
                 const newBlockRef = cache.writeFragment({
@@ -164,69 +178,61 @@ export function BackgroundMediaImage({
               }
             }
           })
+          cache.modify({
+            id: cache.identify({
+              __typename: cardBlock.__typename,
+              id: cardBlock.id
+            }),
+            fields: {
+              coverBlockId: () => data.imageBlockCreate.id
+            }
+          })
         }
       }
     })
-
-    if (imageBlockCreateError != null) return false
-
-    await cardBlockUpdate({
-      variables: {
-        id: cardBlock.id,
-        journeyId: journeyId,
-        input: {
-          coverBlockId: data?.imageBlockCreate.id ?? null
-        }
-      },
-      optimisticResponse: {
-        cardBlockUpdate: {
-          id: cardBlock.id,
-          coverBlockId: data?.imageBlockCreate.id ?? null,
-          __typename: 'CardBlock'
-        }
-      }
-    })
-    return cardBlockUpdateError == null
   }
 
-  const updateImageBlock = async (block: ImageBlock): Promise<boolean> => {
+  const updateImageBlock = async (block: ImageBlock): Promise<void> => {
+    if (journey == null) return
     await imageBlockUpdate({
       variables: {
         id: coverBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           src: block.src,
           alt: block.alt
         }
       }
     })
-    return imageBlockUpdateError == null
   }
 
   const handleChange = async (block: ImageBlock): Promise<void> => {
-    let success = true
-    if (
-      coverBlock != null &&
-      coverBlock?.__typename.toString() !== 'ImageBlock'
-    ) {
-      // remove existing cover block if type changed
-      success = await deleteCoverBlock()
-    }
+    try {
+      if (block.src === '') return
 
-    if (block.src === '' || !success) return
-
-    if (imageBlock == null) {
-      await createImageBlock(block)
-    } else {
-      await updateImageBlock(block)
+      if (imageCover == null) {
+        await createImageBlock(block)
+      } else {
+        await updateImageBlock(block)
+      }
+      enqueueSnackbar('Image Updated', {
+        variant: 'success',
+        preventDuplicate: true
+      })
+    } catch (e) {
+      enqueueSnackbar(e.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
   }
 
   return (
     <ImageBlockEditor
-      selectedBlock={imageBlock}
+      selectedBlock={imageCover}
       onChange={handleChange}
       onDelete={handleImageDelete}
+      loading={createLoading || updateLoading}
     />
   )
 }

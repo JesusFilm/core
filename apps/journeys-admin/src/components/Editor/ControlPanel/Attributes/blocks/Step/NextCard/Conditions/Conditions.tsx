@@ -36,6 +36,8 @@ export function Conditions(): ReactElement {
   const block = selectedBlock as TreeBlock<StepFields>
 
   async function handleChange(): Promise<void> {
+    if (journey == null) return
+
     await stepBlockLockUpdate({
       variables: {
         id: block.id,

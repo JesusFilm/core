@@ -65,10 +65,11 @@ describe('JourneyView/CardView', () => {
     )
     fireEvent.click(getByTestId('preview-step0.id'))
     await waitFor(() =>
-      expect(push).toHaveBeenCalledWith({
-        pathname: '/journeys/[slug]/edit',
-        query: { slug: 'my-journey', stepId: 'step0.id' }
-      })
+      expect(push).toHaveBeenCalledWith(
+        '/journeys/my-journey/edit?stepId=step0.id',
+        undefined,
+        { shallow: true }
+      )
     )
   })
 })

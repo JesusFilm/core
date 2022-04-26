@@ -7,6 +7,11 @@
 // GraphQL fragment: VideoFields
 // ====================================================
 
+export interface VideoFields_video_title {
+  __typename: "Translation";
+  value: string;
+}
+
 export interface VideoFields_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -16,6 +21,8 @@ export interface VideoFields_video_variant {
 export interface VideoFields_video {
   __typename: "Video";
   id: string;
+  title: VideoFields_video_title[];
+  image: string | null;
   variant: VideoFields_video_variant | null;
 }
 

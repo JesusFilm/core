@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
+import { screen, userEvent } from '@storybook/testing-library'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { defaultJourney } from '../../data'
 import { JourneyProvider } from '../../../../libs/context'
@@ -48,5 +49,10 @@ const Template: Story = () => {
 }
 
 export const Default = Template.bind({})
+export const Error = Template.bind({})
+Error.play = () => {
+  const button = screen.getByRole('button', { name: 'Save' })
+  userEvent.click(button)
+}
 
 export default DescriptionDialogStory as Meta

@@ -3,8 +3,8 @@ import { useMutation, gql } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
+import { useSnackbar } from 'notistack'
 import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
-import { Alert } from '../Alert'
 import { useJourney } from '../../../../libs/context'
 import { Dialog } from '../../../Dialog'
 
@@ -28,25 +28,33 @@ export function DescriptionDialog({
 }: DescriptionDialogProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneyDescUpdate>(JOURNEY_DESC_UPDATE)
   const journey = useJourney()
+  const { enqueueSnackbar } = useSnackbar()
 
   const [value, setValue] = useState(
     journey !== undefined ? journey.description : ''
   )
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false)
 
   const handleSubmit = async (): Promise<void> => {
+    if (journey == null) return
+
     const updatedJourney = { description: value }
 
-    await journeyUpdate({
-      variables: { id: journey.id, input: updatedJourney },
-      optimisticResponse: {
-        journeyUpdate: {
-          id: journey.id,
-          __typename: 'Journey',
-          ...updatedJourney
+    try {
+      await journeyUpdate({
+        variables: { id: journey.id, input: updatedJourney },
+        optimisticResponse: {
+          journeyUpdate: {
+            id: journey.id,
+            __typename: 'Journey',
+            ...updatedJourney
+          }
         }
-      }
-    }).then(() => setShowSuccessAlert(true))
+      })
+    } catch (error) {
+      enqueueSnackbar('There was an error updating description', {
+        variant: 'error'
+      })
+    }
   }
 
   const handleClose = (): void => {
@@ -81,12 +89,6 @@ export function DescriptionDialog({
           </FormControl>
         </form>
       </Dialog>
-
-      <Alert
-        open={showSuccessAlert}
-        setOpen={setShowSuccessAlert}
-        message="Description updated successfully"
-      />
     </>
   )
 }

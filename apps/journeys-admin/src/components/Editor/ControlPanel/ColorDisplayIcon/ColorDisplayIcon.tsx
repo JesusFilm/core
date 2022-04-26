@@ -43,8 +43,8 @@ export function ColorDisplayIcon({
       }}
     >
       <ThemeProvider
-        themeName={card?.themeName ?? journey.themeName ?? ThemeName.base}
-        themeMode={card?.themeMode ?? journey.themeMode ?? ThemeMode.dark}
+        themeName={card?.themeName ?? journey?.themeName ?? ThemeName.base}
+        themeMode={card?.themeMode ?? journey?.themeMode ?? ThemeMode.dark}
         nested
       >
         <Box

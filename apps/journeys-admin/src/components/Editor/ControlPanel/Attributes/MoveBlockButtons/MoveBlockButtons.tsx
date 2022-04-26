@@ -70,7 +70,7 @@ export function MoveBlockButtons({
 
   const handleMove = (move: 'up' | 'down'): (() => Promise<void>) => {
     return async () => {
-      if (selectedBlock?.parentOrder != null) {
+      if (selectedBlock?.parentOrder != null && journey != null) {
         const moveBy = move === 'up' ? -1 : 1
 
         await blockOrderUpdate({

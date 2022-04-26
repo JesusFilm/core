@@ -43,13 +43,13 @@ export function CardLayout(): ReactElement {
   const [cardBlockUpdate] = useMutation<CardBlockLayoutUpdate>(
     CARD_BLOCK_LAYOUT_UPDATE
   )
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
   const handleLayoutChange = async (selected: boolean): Promise<void> => {
-    if (cardBlock != null) {
+    if (journey != null && cardBlock != null) {
       await cardBlockUpdate({
         variables: {
           id: cardBlock.id,
-          journeyId: journeyId,
+          journeyId: journey.id,
           input: {
             fullscreen: selected
           }

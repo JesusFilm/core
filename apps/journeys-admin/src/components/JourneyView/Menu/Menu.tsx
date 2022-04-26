@@ -14,10 +14,10 @@ import DescriptionIcon from '@mui/icons-material/Description'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
 import NextLink from 'next/link'
+import { useSnackbar } from 'notistack'
 import { useJourney } from '../../../libs/context'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
-import { Alert } from './Alert'
 import { DescriptionDialog } from './DescriptionDialog/DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
 
@@ -25,6 +25,7 @@ export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
     journeyPublish(id: $id) {
       id
+      status
     }
   }
 `
@@ -39,7 +40,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
-  const [showLinkAlert, setShowLinkAlert] = useState(false)
+  const { enqueueSnackbar } = useSnackbar()
 
   const openMenu = forceOpen ?? Boolean(anchorEl)
 
@@ -49,115 +50,134 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
   }
-
   const handlePublish = async (): Promise<void> => {
+    if (journey == null) return
+
     await journeyPublish({
       variables: { id: journey.id },
       optimisticResponse: {
-        journeyPublish: { id: journey.id, __typename: 'Journey' }
+        journeyPublish: {
+          id: journey.id,
+          __typename: 'Journey',
+          status: JourneyStatus.published
+        }
       }
     })
+    setAnchorEl(null)
+    enqueueSnackbar('Journey Published', {
+      variant: 'success',
+      preventDuplicate: true
+    })
   }
-
   const handleUpdateTitle = (): void => {
     setShowTitleDialog(true)
     setAnchorEl(null)
   }
-
   const handleUpdateDescription = (): void => {
     setShowDescriptionDialog(true)
     setAnchorEl(null)
   }
-
   const handleCopyLink = async (): Promise<void> => {
-    await navigator.clipboard.writeText(`your.nextstep.is/${journey.slug}`)
-    setShowLinkAlert(true)
+    if (journey == null) return
+
+    await navigator.clipboard.writeText(
+      `https://your.nextstep.is/${journey.slug}`
+    )
+    setAnchorEl(null)
+    enqueueSnackbar('Link Copied', {
+      variant: 'success',
+      preventDuplicate: true
+    })
   }
 
   return (
     <>
-      <IconButton
-        id="single-journey-actions"
-        edge="end"
-        aria-controls="single-journey-actions"
-        aria-haspopup="true"
-        aria-expanded={openMenu ? 'true' : undefined}
-        onClick={handleShowMenu}
-      >
-        <MoreVert />
-      </IconButton>
-
-      <MuiMenu
-        id="single-journey-actions"
-        anchorEl={anchorEl}
-        open={openMenu}
-        onClose={handleCloseMenu}
-        MenuListProps={{
-          'aria-labelledby': 'journey-actions'
-        }}
-      >
-        <MenuItem
-          disabled={journey.status === JourneyStatus.draft}
-          component="a"
-          href={`http://your.nextstep.is/${journey.slug}`}
-        >
-          <ListItemIcon>
-            <AssignmentTurnedInIcon />
-          </ListItemIcon>
-          <ListItemText>Preview</ListItemText>
-        </MenuItem>
-        <MenuItem
-          disabled={journey.status === JourneyStatus.published}
-          onClick={handlePublish}
-        >
-          <ListItemIcon>
-            <VisibilityIcon />
-          </ListItemIcon>
-          <ListItemText>Publish</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleUpdateTitle}>
-          <ListItemIcon>
-            <EditIcon />
-          </ListItemIcon>
-          <ListItemText>Title</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleUpdateDescription}>
-          <ListItemIcon>
-            <DescriptionIcon />
-          </ListItemIcon>
-          <ListItemText>Description</ListItemText>
-        </MenuItem>
-        <Divider />
-        <NextLink href={`/journeys/${journey.slug}/edit`} passHref>
-          <MenuItem>
-            <ListItemIcon>
-              <ViewCarouselIcon />
-            </ListItemIcon>
-            <ListItemText>Edit Cards</ListItemText>
-          </MenuItem>
-        </NextLink>
-        <Divider />
-        <MenuItem onClick={handleCopyLink}>
-          <ListItemIcon>
-            <ContentCopyIcon />
-          </ListItemIcon>
-          <ListItemText>Copy Link</ListItemText>
-        </MenuItem>
-      </MuiMenu>
-
-      <TitleDialog
-        open={showTitleDialog}
-        onClose={() => setShowTitleDialog(false)}
-      />
-      <DescriptionDialog
-        open={showDescriptionDialog}
-        onClose={() => setShowDescriptionDialog(false)}
-      />
-      <Alert
-        open={showLinkAlert}
-        setOpen={setShowLinkAlert}
-        message="Link Copied"
-      />
+      {journey != null ? (
+        <>
+          <IconButton
+            id="single-journey-actions"
+            edge="end"
+            aria-controls="single-journey-actions"
+            aria-haspopup="true"
+            aria-expanded={openMenu ? 'true' : undefined}
+            onClick={handleShowMenu}
+          >
+            <MoreVert />
+          </IconButton>
+          <MuiMenu
+            id="single-journey-actions"
+            anchorEl={anchorEl}
+            open={openMenu}
+            onClose={handleCloseMenu}
+            MenuListProps={{
+              'aria-labelledby': 'journey-actions'
+            }}
+          >
+            <MenuItem
+              disabled={journey.status === JourneyStatus.draft}
+              component="a"
+              href={`https://your.nextstep.is/${journey.slug}`}
+              target="_blank"
+              rel="noopener"
+              onClick={handleCloseMenu}
+            >
+              <ListItemIcon>
+                <AssignmentTurnedInIcon />
+              </ListItemIcon>
+              <ListItemText>Preview</ListItemText>
+            </MenuItem>
+            <MenuItem
+              disabled={journey.status === JourneyStatus.published}
+              onClick={handlePublish}
+            >
+              <ListItemIcon>
+                <VisibilityIcon />
+              </ListItemIcon>
+              <ListItemText>Publish</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={handleUpdateTitle}>
+              <ListItemIcon>
+                <EditIcon />
+              </ListItemIcon>
+              <ListItemText>Title</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={handleUpdateDescription}>
+              <ListItemIcon>
+                <DescriptionIcon />
+              </ListItemIcon>
+              <ListItemText>Description</ListItemText>
+            </MenuItem>
+            <Divider />
+            <NextLink href={`/journeys/${journey.slug}/edit`} passHref>
+              <MenuItem>
+                <ListItemIcon>
+                  <ViewCarouselIcon />
+                </ListItemIcon>
+                <ListItemText>Edit Cards</ListItemText>
+              </MenuItem>
+            </NextLink>
+            <Divider />
+            <MenuItem onClick={handleCopyLink}>
+              <ListItemIcon>
+                <ContentCopyIcon />
+              </ListItemIcon>
+              <ListItemText>Copy Link</ListItemText>
+            </MenuItem>
+          </MuiMenu>
+          <TitleDialog
+            open={showTitleDialog}
+            onClose={() => setShowTitleDialog(false)}
+          />
+          <DescriptionDialog
+            open={showDescriptionDialog}
+            onClose={() => setShowDescriptionDialog(false)}
+          />
+        </>
+      ) : (
+        <IconButton disabled>
+          <MoreVert />
+        </IconButton>
+      )}
     </>
   )
 }

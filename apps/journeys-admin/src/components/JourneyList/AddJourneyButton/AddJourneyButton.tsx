@@ -6,6 +6,7 @@ import AddIcon from '@mui/icons-material/Add'
 import { gql, useMutation } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 import { useRouter } from 'next/router'
+import CircularProgress from '@mui/material/CircularProgress'
 import { JourneyCreate } from '../../../../__generated__/JourneyCreate'
 
 export const JOURNEY_CREATE = gql`
@@ -26,6 +27,7 @@ export const JOURNEY_CREATE = gql`
         id: $journeyId
         title: $title
         description: $description
+        languageId: "529"
         themeMode: dark
       }
     ) {
@@ -37,7 +39,13 @@ export const JOURNEY_CREATE = gql`
       slug
       themeName
       themeMode
-      locale
+      language {
+        id
+        name(primary: true) {
+          value
+          primary
+        }
+      }
       status
       userJourneys {
         id
@@ -114,7 +122,8 @@ interface AddJourneyFabProps {
 export function AddJourneyButton({
   variant
 }: AddJourneyFabProps): ReactElement {
-  const [journeyCreate] = useMutation<JourneyCreate>(JOURNEY_CREATE)
+  const [journeyCreate, { loading }] =
+    useMutation<JourneyCreate>(JOURNEY_CREATE)
   const router = useRouter()
 
   const handleClick = async (): Promise<void> => {
@@ -158,7 +167,9 @@ export function AddJourneyButton({
       }
     })
     if (data?.journeyCreate != null) {
-      void router.push(`/journeys/${data.journeyCreate.slug}/edit`)
+      void router.push(`/journeys/${data.journeyCreate.slug}/edit`, undefined, {
+        shallow: true
+      })
     }
   }
 
@@ -185,8 +196,13 @@ export function AddJourneyButton({
       color="primary"
       onClick={handleClick}
       sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 1 }}
+      disabled={loading}
     >
-      <AddRounded sx={{ mr: 3 }} />
+      {loading ? (
+        <CircularProgress size={24} sx={{ mr: 3 }} />
+      ) : (
+        <AddRounded sx={{ mr: 3 }} />
+      )}
       Add
     </Fab>
   )

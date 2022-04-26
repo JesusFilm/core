@@ -56,6 +56,7 @@ const Template: Story = ({ ...args }) => (
         selectedBlock={args.selectedBlock}
         onChange={onChange}
         onDelete={onDelete}
+        loading={args.loading}
       />
     </Box>
   </ThemeProvider>
@@ -63,12 +64,14 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  selectedBlock: null
+  selectedBlock: null,
+  loading: false
 }
 
 export const Image = Template.bind({})
 Image.args = {
-  selectedBlock: image
+  selectedBlock: image,
+  loading: false
 }
 
 export default ImageEditorStory as Meta

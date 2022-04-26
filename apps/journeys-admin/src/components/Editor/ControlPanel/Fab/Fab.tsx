@@ -9,9 +9,10 @@ import { useEditor, ActiveFab } from '@core/journeys/ui'
 interface FabProp {
   visible?: boolean
   onAddClick: () => void
+  disabled?: boolean
 }
 
-export function Fab({ visible, onAddClick }: FabProp): ReactElement {
+export function Fab({ visible, onAddClick, disabled }: FabProp): ReactElement {
   const {
     state: { activeFab },
     dispatch
@@ -33,6 +34,7 @@ export function Fab({ visible, onAddClick }: FabProp): ReactElement {
           size="large"
           color="primary"
           onClick={onAddClick}
+          disabled={disabled}
         >
           <AddRounded sx={{ mr: 3 }} />
           Add
@@ -43,6 +45,7 @@ export function Fab({ visible, onAddClick }: FabProp): ReactElement {
           size="large"
           color="primary"
           onClick={handleEditFab}
+          disabled={disabled}
         >
           <EditRounded sx={{ mr: 3 }} />
           Edit
@@ -53,6 +56,7 @@ export function Fab({ visible, onAddClick }: FabProp): ReactElement {
           size="large"
           color="primary"
           onClick={handleSaveFab}
+          disabled={disabled}
         >
           <CheckCircleRounded sx={{ mr: 3 }} />
           Done

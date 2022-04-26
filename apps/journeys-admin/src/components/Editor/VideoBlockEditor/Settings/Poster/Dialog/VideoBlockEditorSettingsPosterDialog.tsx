@@ -82,27 +82,33 @@ export function VideoBlockEditorSettingsPosterDialog({
   open,
   onClose
 }: VideoBlockEditorSettingsPosterDialogProps): ReactElement {
-  const { id: journeyId } = useJourney()
+  const journey = useJourney()
+
   const [blockDelete, { error: blockDeleteError }] =
     useMutation<BlockDeleteForPosterImage>(BLOCK_DELETE_FOR_POSTER_IMAGE)
   const [videoBlockUpdate, { error: videoBlockUpdateError }] =
     useMutation<VideoBlockPosterImageUpdate>(VIDEO_BLOCK_POSTER_IMAGE_UPDATE)
-  const [imageBlockCreate, { error: imageBlockCreateError }] =
-    useMutation<PosterImageBlockCreate>(POSTER_IMAGE_BLOCK_CREATE)
-  const [imageBlockUpdate, { error: imageBlockUpdateError }] =
-    useMutation<PosterImageBlockUpdate>(POSTER_IMAGE_BLOCK_UPDATE)
+  const [
+    imageBlockCreate,
+    { error: imageBlockCreateError, loading: createLoading }
+  ] = useMutation<PosterImageBlockCreate>(POSTER_IMAGE_BLOCK_CREATE)
+  const [
+    imageBlockUpdate,
+    { error: imageBlockUpdateError, loading: updateLoading }
+  ] = useMutation<PosterImageBlockUpdate>(POSTER_IMAGE_BLOCK_UPDATE)
 
   const deleteCoverBlock = async (): Promise<void> => {
-    if (selectedBlock == null || parentBlockId == null) return
+    if (selectedBlock == null || parentBlockId == null || journey == null)
+      return
 
     await blockDelete({
       variables: {
         id: selectedBlock.id,
         parentBlockId: selectedBlock.parentBlockId,
-        journeyId: journeyId
+        journeyId: journey.id
       },
       update(cache, { data }) {
-        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journeyId)
+        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journey.id)
       }
     })
     if (blockDeleteError != null) return
@@ -110,7 +116,7 @@ export function VideoBlockEditorSettingsPosterDialog({
     await videoBlockUpdate({
       variables: {
         id: parentBlockId,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           posterBlockId: null
         }
@@ -126,12 +132,12 @@ export function VideoBlockEditorSettingsPosterDialog({
   }
 
   const createImageBlock = async (block): Promise<boolean> => {
-    if (parentBlockId == null) return false
+    if (parentBlockId == null || journey == null) return false
 
     const { data } = await imageBlockCreate({
       variables: {
         input: {
-          journeyId: journeyId,
+          journeyId: journey.id,
           parentBlockId: parentBlockId,
           src: block.src,
           alt: block.alt
@@ -140,7 +146,7 @@ export function VideoBlockEditorSettingsPosterDialog({
       update(cache, { data }) {
         if (data?.imageBlockCreate != null) {
           cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = []) {
                 const newBlockRef = cache.writeFragment({
@@ -164,7 +170,7 @@ export function VideoBlockEditorSettingsPosterDialog({
     await videoBlockUpdate({
       variables: {
         id: parentBlockId,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           posterBlockId: data?.imageBlockCreate.id ?? null
         }
@@ -181,12 +187,12 @@ export function VideoBlockEditorSettingsPosterDialog({
   }
 
   const updateImageBlock = async (block: ImageBlock): Promise<boolean> => {
-    if (selectedBlock == null) return false
+    if (selectedBlock == null || journey == null) return false
 
     await imageBlockUpdate({
       variables: {
         id: selectedBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           src: block.src,
           alt: block.alt
@@ -219,6 +225,7 @@ export function VideoBlockEditorSettingsPosterDialog({
         selectedBlock={selectedBlock}
         onChange={handleChange}
         onDelete={deleteCoverBlock}
+        loading={createLoading || updateLoading}
       />
     </Dialog>
   )

@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { TreeBlock, journeyUiConfig } from '../..'
 import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
 import { VideoFields } from './__generated__/VideoFields'
@@ -30,6 +31,14 @@ const videoBlock: TreeBlock<VideoFields> = {
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
+    title: [
+      {
+        __typename: 'Translation',
+        value: 'FallingPlates'
+      }
+    ],
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -66,7 +75,15 @@ const Template: Story<TreeBlock<VideoFields>> = ({ ...props }) => (
       }
     ]}
   >
-    <Video {...props} />
+    <Box
+      sx={{
+        position: 'relative',
+        minHeight: 'inherit',
+        height: '100%'
+      }}
+    >
+      <Video {...props} />
+    </Box>
   </MockedProvider>
 )
 

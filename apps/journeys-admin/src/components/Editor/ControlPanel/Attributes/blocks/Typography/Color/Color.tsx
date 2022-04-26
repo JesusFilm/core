@@ -33,7 +33,7 @@ export function Color(): ReactElement {
     | undefined
 
   async function handleChange(color: TypographyColor): Promise<void> {
-    if (selectedBlock != null && color != null) {
+    if (selectedBlock != null && color != null && journey != null) {
       await typographyBlockUpdate({
         variables: {
           id: selectedBlock.id,

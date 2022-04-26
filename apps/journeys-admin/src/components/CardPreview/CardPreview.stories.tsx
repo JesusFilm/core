@@ -511,6 +511,14 @@ const steps: Array<TreeBlock<StepBlock>> = [
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
               variant: {
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
@@ -582,6 +590,14 @@ const steps: Array<TreeBlock<StepBlock>> = [
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
               variant: {
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
@@ -614,7 +630,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
 ]
 
 const Template: Story = ({ ...args }) => {
-  const [selected, setSelectedStep] = useState<TreeBlock<StepBlock>>(steps[0])
+  const [selected, setSelectedStep] = useState<TreeBlock<StepBlock>>(
+    args.steps?.[0]
+  )
+
   return (
     <MockedProvider>
       <JourneyProvider
@@ -629,7 +648,7 @@ const Template: Story = ({ ...args }) => {
         <CardPreview
           onSelect={(step) => setSelectedStep(step)}
           selected={selected}
-          steps={args.steps ?? steps}
+          steps={args.steps}
           showAddButton={args.showAddButton}
         />
       </JourneyProvider>
@@ -638,10 +657,19 @@ const Template: Story = ({ ...args }) => {
 }
 
 export const Default = Template.bind({})
+Default.args = {
+  steps
+}
 
 export const AddButton = Template.bind({})
 AddButton.args = {
+  steps,
   showAddButton: true
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  steps: undefined
 }
 
 export default CardPreviewStory as Meta

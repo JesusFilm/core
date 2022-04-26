@@ -66,7 +66,10 @@ export class VideoService extends BaseService {
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds,
-        permalink: item.permalink
+        permalink: item.permalink,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt
       }
     `)
     return await res.all()
@@ -96,7 +99,10 @@ export class VideoService extends BaseService {
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
         episodeIds: item.episodeIds,
-        permalink: item.permalink
+        permalink: item.permalink,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt
       }
     `)
     return await res.next()
@@ -129,7 +135,10 @@ export class VideoService extends BaseService {
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
         episodeIds: item.episodeIds,
-        permalink: item.permalink
+        permalink: item.permalink,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt
       }
     `)
     return await res.next()
@@ -160,7 +169,11 @@ export class VideoService extends BaseService {
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds
+        episodeIds: item.episodeIds,
+        permalink: item.permalink,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt
       }
     `)
     return await res.all()

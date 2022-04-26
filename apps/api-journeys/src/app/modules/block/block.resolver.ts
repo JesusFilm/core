@@ -1,13 +1,6 @@
 // Block resolver tests are in individual block type spec files
 
-import {
-  Args,
-  Query,
-  ResolveField,
-  Resolver,
-  Mutation,
-  Parent
-} from '@nestjs/graphql'
+import { Args, Query, ResolveField, Resolver, Mutation } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { Block, UserJourneyRole } from '../../__generated__/graphql'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
@@ -43,22 +36,7 @@ export class BlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('parentOrder') parentOrder: number
   ): Promise<Block[]> {
-    const selectedBlock: Block = await this.blockService.get(id)
-
-    if (
-      selectedBlock.journeyId === journeyId &&
-      selectedBlock.parentOrder != null
-    ) {
-      const siblings = await this.blockService.getSiblings(
-        journeyId,
-        selectedBlock.parentBlockId
-      )
-      siblings.splice(selectedBlock.parentOrder, 1)
-      siblings.splice(parentOrder, 0, selectedBlock)
-
-      return await this.blockService.reorderSiblings(siblings)
-    }
-    return []
+    return await this.blockService.reorderBlock(id, journeyId, parentOrder)
   }
 
   @Mutation()
@@ -75,19 +53,5 @@ export class BlockResolver {
       journeyId,
       parentBlockId
     )
-  }
-
-  async siblings(@Parent() block: Block): Promise<Block[]> {
-    return await this.blockService.getSiblings(
-      block.journeyId,
-      block.parentBlockId
-    )
-  }
-
-  async updateOrder(
-    @Args('id') id: string,
-    @Args('parentOrder') parentOrder: number
-  ): Promise<Block> {
-    return await this.blockService.update(id, { parentOrder })
   }
 }

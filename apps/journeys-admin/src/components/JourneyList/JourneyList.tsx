@@ -11,7 +11,7 @@ import { JourneySort, SortOrder } from './JourneySort'
 import { JourneyCard } from './JourneyCard'
 
 export interface JourneysListProps {
-  journeys: Journey[]
+  journeys?: Journey[]
 }
 
 export function JourneyList({ journeys }: JourneysListProps): ReactElement {
@@ -26,7 +26,9 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
 
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
-      {journeys.length > 0 && <AddJourneyButton variant="fab" />}
+      {journeys != null && journeys.length > 0 && (
+        <AddJourneyButton variant="fab" />
+      )}
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={2}
@@ -43,28 +45,39 @@ export function JourneyList({ journeys }: JourneysListProps): ReactElement {
         </Box>
       </Stack>
       <Box sx={{ mb: { xs: 4, sm: 5 } }} data-testid="journey-list">
-        {sortedJourneys.map((journey) => (
-          <JourneyCard key={journey.id} journey={journey} />
-        ))}
-        {sortedJourneys.length === 0 && (
-          <Card
-            variant="outlined"
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              pt: 20,
-              pb: 16,
-              borderRadius: { xs: 0, sm: 3 }
-            }}
-          >
-            <Typography variant="subtitle1" align="center" gutterBottom>
-              No journeys to display.
-            </Typography>
-            <Typography variant="caption" align="center" gutterBottom>
-              Create a journey, then find it here.
-            </Typography>
-            <AddJourneyButton variant="button" />
-          </Card>
+        {journeys != null ? (
+          <>
+            {sortedJourneys.map((journey) => (
+              <JourneyCard key={journey.id} journey={journey} />
+            ))}
+            {sortedJourneys.length === 0 && (
+              <Card
+                variant="outlined"
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  pt: 20,
+                  pb: 16,
+                  borderRadius: { xs: 0, sm: 3 }
+                }}
+              >
+                <Typography variant="subtitle1" align="center" gutterBottom>
+                  No journeys to display.
+                </Typography>
+                <Typography variant="caption" align="center" gutterBottom>
+                  Create a journey, then find it here.
+                </Typography>
+                <AddJourneyButton variant="button" />
+              </Card>
+            )}
+          </>
+        ) : (
+          <>
+            <JourneyCard />
+            <JourneyCard />
+            <JourneyCard />
+            <JourneyCard />
+          </>
         )}
       </Box>
     </Container>

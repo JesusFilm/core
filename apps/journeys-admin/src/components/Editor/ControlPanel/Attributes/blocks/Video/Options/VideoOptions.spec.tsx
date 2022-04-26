@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoList/VideoList'
 import { GET_VIDEO } from '../../../../../VideoLibrary/VideoDetails/VideoDetails'
 import { videos } from '../../../../../VideoLibrary/VideoList/VideoListData'
@@ -27,6 +28,14 @@ const video: TreeBlock<VideoBlock> = {
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
+    title: [
+      {
+        __typename: 'Translation',
+        value: 'FallingPlates'
+      }
+    ],
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -124,7 +133,9 @@ describe('VideoOptions', () => {
                 selectedBlock: video
               }}
             >
-              <VideoOptions />
+              <SnackbarProvider>
+                <VideoOptions />
+              </SnackbarProvider>
             </EditorProvider>
           </ThemeProvider>
         </JourneyProvider>

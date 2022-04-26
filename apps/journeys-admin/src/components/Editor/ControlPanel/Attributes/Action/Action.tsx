@@ -85,7 +85,11 @@ export function Action(): ReactElement {
   const [action, setAction] = useState(selectedAction?.value ?? 'none')
 
   async function navigateAction(): Promise<void> {
-    if (selectedBlock != null && state.selectedStep?.nextBlockId != null) {
+    if (
+      selectedBlock != null &&
+      state.selectedStep?.nextBlockId != null &&
+      journey != null
+    ) {
       const { id, __typename: typeName } = selectedBlock
       await navigateActionUpdate({
         variables: {
@@ -111,7 +115,7 @@ export function Action(): ReactElement {
   }
 
   async function removeAction(): Promise<void> {
-    if (selectedBlock != null) {
+    if (selectedBlock != null && journey != null) {
       const { id, __typename: typeName } = selectedBlock
       await actionDelete({
         variables: {

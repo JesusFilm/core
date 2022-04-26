@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourney'
+import { ThemeName, ThemeMode } from '../../../../../__generated__/globalTypes'
 import { Attributes } from '.'
 
 const AttributesStory = {
@@ -27,8 +28,8 @@ export const Default: Story = () => {
         parentOrder: 0,
         coverBlockId: null,
         backgroundColor: null,
-        themeMode: null,
-        themeName: null,
+        themeName: ThemeName.base,
+        themeMode: ThemeMode.dark,
         fullscreen: false,
         children: []
       }
@@ -70,8 +71,8 @@ export const WithMove: Story = () => {
         parentOrder: 0,
         coverBlockId: null,
         backgroundColor: null,
-        themeMode: null,
-        themeName: null,
+        themeName: ThemeName.base,
+        themeMode: ThemeMode.dark,
         fullscreen: false,
         children: [
           block,

@@ -22,6 +22,11 @@ Default.args = {
   value: 'https://your.nextstep.is'
 }
 
+export const Loading = Template.bind({})
+Default.args = {
+  value: undefined
+}
+
 export const Custom = Template.bind({})
 Custom.args = {
   label: 'Editor Invite URL',

@@ -39,6 +39,8 @@ export function TypographyEdit({
   const [value, setValue] = useState(content)
 
   async function handleSaveBlock(): Promise<void> {
+    if (journey == null) return
+
     const content = value.trimStart().trimEnd()
 
     if (content === '') {

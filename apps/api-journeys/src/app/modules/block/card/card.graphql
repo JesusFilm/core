@@ -37,6 +37,9 @@ input CardBlockCreateInput {
   parentBlockId: ID!
   backgroundColor: String
   coverBlockId: ID
+    @deprecated(
+      reason: "coverBlockId will be updated on Image and Video Cover block creation"
+    )
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -46,6 +49,9 @@ input CardBlockUpdateInput {
   parentBlockId: ID
   backgroundColor: String
   coverBlockId: ID
+    @deprecated(
+      reason: "coverBlockId will be updated on Image and Video Cover block creation"
+    )
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName

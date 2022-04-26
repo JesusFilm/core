@@ -3,7 +3,10 @@ import { TreeBlock } from '@core/journeys/ui'
 import Stack from '@mui/material/Stack'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
-import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
+import {
+  ThemeName,
+  ThemeMode
+} from '../../../../../../../__generated__/globalTypes'
 import { Card } from '.'
 
 const CardStory = {
@@ -20,8 +23,8 @@ export const Default: Story = () => {
     coverBlockId: null,
     parentOrder: 0,
     backgroundColor: null,
-    themeMode: null,
-    themeName: null,
+    themeMode: ThemeMode.light,
+    themeName: ThemeName.base,
     fullscreen: false,
     children: []
   }
@@ -50,7 +53,7 @@ export const Populated: Story = () => {
     parentOrder: 0,
     backgroundColor: '#00ccff',
     themeMode: ThemeMode.light,
-    themeName: null,
+    themeName: ThemeName.base,
     fullscreen: true,
     children: [
       {

@@ -52,7 +52,7 @@ export function Align(): ReactElement {
   ]
 
   async function handleChange(align: TypographyAlign): Promise<void> {
-    if (selectedBlock != null && align != null) {
+    if (selectedBlock != null && align != null && journey != null) {
       await typographyBlockUpdate({
         variables: {
           id: selectedBlock.id,

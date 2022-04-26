@@ -220,6 +220,7 @@ export class ImageBlockCreateInput {
     src?: Nullable<string>;
     alt: string;
     blurhash?: Nullable<string>;
+    isCover?: Nullable<boolean>;
 }
 
 export class ImageBlockUpdateInput {
@@ -309,6 +310,7 @@ export class VideoBlockCreateInput {
     videoVariantLanguageId?: Nullable<string>;
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
+    isCover?: Nullable<boolean>;
 }
 
 export class VideoBlockUpdateInput {
@@ -322,10 +324,14 @@ export class VideoBlockUpdateInput {
     fullsize?: Nullable<boolean>;
 }
 
+export class JourneysFilter {
+    featured?: Nullable<boolean>;
+}
+
 export class JourneyCreateInput {
     id?: Nullable<string>;
     title: string;
-    locale?: Nullable<string>;
+    languageId: string;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
     description?: Nullable<string>;
@@ -334,7 +340,7 @@ export class JourneyCreateInput {
 
 export class JourneyUpdateInput {
     title?: Nullable<string>;
-    locale?: Nullable<string>;
+    languageId?: Nullable<string>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
     description?: Nullable<string>;
@@ -416,12 +422,13 @@ export class Journey {
     primaryImageBlock?: Nullable<ImageBlock>;
     id: string;
     title: string;
-    locale: string;
+    language: Language;
     themeMode: ThemeMode;
     themeName: ThemeName;
     description?: Nullable<string>;
     slug: string;
     publishedAt?: Nullable<DateTime>;
+    featuredAt?: Nullable<DateTime>;
     createdAt: DateTime;
     status: JourneyStatus;
     seoTitle?: Nullable<string>;
@@ -572,6 +579,7 @@ export class VideoBlock implements Block {
     video?: Nullable<Video>;
     videoId?: Nullable<string>;
     videoVariantLanguageId?: Nullable<string>;
+    endAction?: Nullable<Action>;
 }
 
 export class VideoTriggerBlock implements Block {
@@ -701,12 +709,16 @@ export class Video {
     primaryLanguageId: string;
 }
 
+export class Language {
+    id: string;
+}
+
 export abstract class IQuery {
     abstract adminJourneys(): Journey[] | Promise<Journey[]>;
 
     abstract adminJourney(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 
-    abstract journeys(): Journey[] | Promise<Journey[]>;
+    abstract journeys(where?: Nullable<JourneysFilter>): Journey[] | Promise<Journey[]>;
 
     abstract journey(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 }

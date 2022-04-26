@@ -25,7 +25,8 @@ import {
   ThemeMode,
   ThemeName,
   UserJourney,
-  UserJourneyRole
+  UserJourneyRole,
+  JourneysFilter
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
@@ -72,8 +73,8 @@ export class JourneyResolver {
   }
 
   @Query()
-  async journeys(): Promise<Journey[]> {
-    return await this.journeyService.getAllPublishedJourneys()
+  async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
+    return await this.journeyService.getAllPublishedJourneys(where)
   }
 
   @Query()
@@ -107,7 +108,6 @@ export class JourneyResolver {
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           createdAt: new Date().toISOString(),
-          locale: 'en-US',
           status: JourneyStatus.draft,
           ...input
         })
@@ -181,5 +181,13 @@ export class JourneyResolver {
   @ResolveField()
   status(@Parent() { publishedAt }: Journey): JourneyStatus {
     return publishedAt == null ? JourneyStatus.draft : JourneyStatus.published
+  }
+
+  @ResolveField('language')
+  async language(
+    @Parent() journey
+  ): Promise<{ __typename: 'Language'; id: string }> {
+    // 529 (english) is default if not set
+    return { __typename: 'Language', id: journey.languageId ?? '529' }
   }
 }
