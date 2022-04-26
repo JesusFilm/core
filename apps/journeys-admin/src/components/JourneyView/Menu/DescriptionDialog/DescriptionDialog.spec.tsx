@@ -8,7 +8,7 @@ import { DescriptionDialog, JOURNEY_DESC_UPDATE } from '.'
 const onClose = jest.fn()
 
 describe('JourneyView/Menu/DescriptionDialog', () => {
-  it('should not set journey description on close', () => {
+  it('should not set journey description on close', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
@@ -24,7 +24,7 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
     })
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
 
-    expect(onClose).toBeCalled()
+    await waitFor(() => expect(onClose).toBeCalled())
   })
 
   it('should update journey description on submit', async () => {

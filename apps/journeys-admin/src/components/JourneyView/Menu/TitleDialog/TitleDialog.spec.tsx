@@ -8,7 +8,7 @@ import { TitleDialog, JOURNEY_TITLE_UPDATE } from '.'
 const onClose = jest.fn()
 
 describe('JourneyView/Menu/TitleDialog', () => {
-  it('should not set journey title on close', () => {
+  it('should not set journey title on close', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
@@ -19,10 +19,12 @@ describe('JourneyView/Menu/TitleDialog', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(getByRole('textbox'), { target: { value: 'New Journey' } })
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'New Journey' }
+    })
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
 
-    expect(onClose).toBeCalled()
+    await waitFor(() => expect(onClose).toBeCalled())
   })
 
   it('should update journey title on submit', async () => {
