@@ -168,7 +168,8 @@ describe('BackgroundMediaVideo', () => {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   videoId: '2_0-Brand_Video',
-                  videoVariantLanguageId: '529'
+                  videoVariantLanguageId: '529',
+                  isCover: true
                 }
               }
             },
@@ -238,7 +239,8 @@ describe('BackgroundMediaVideo', () => {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   videoId: '2_0-Brand_Video',
-                  videoVariantLanguageId: '529'
+                  videoVariantLanguageId: '529',
+                  isCover: true
                 }
               }
             },

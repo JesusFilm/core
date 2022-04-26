@@ -138,7 +138,8 @@ describe('BackgroundMediaImage', () => {
                   journeyId: journey.id,
                   parentBlockId: card.id,
                   src: image.src,
-                  alt: image.alt
+                  alt: image.alt,
+                  isCover: true
                 }
               }
             },
@@ -213,7 +214,8 @@ describe('BackgroundMediaImage', () => {
                   journeyId: journey.id,
                   parentBlockId: card.id,
                   src: image.src,
-                  alt: image.alt
+                  alt: image.alt,
+                  isCover: true
                 }
               }
             },

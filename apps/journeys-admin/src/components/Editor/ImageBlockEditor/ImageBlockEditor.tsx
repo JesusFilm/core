@@ -15,13 +15,15 @@ interface ImageBlockEditorProps {
   showDelete?: boolean
   onChange: (block: ImageBlock) => Promise<void>
   onDelete?: () => Promise<void>
+  loading?: boolean
 }
 
 export function ImageBlockEditor({
   selectedBlock,
   showDelete = true,
   onChange,
-  onDelete
+  onDelete,
+  loading
 }: ImageBlockEditorProps): ReactElement {
   const srcSchema = object().shape({
     src: string().url('Please enter a valid url').required('Required')
@@ -70,6 +72,7 @@ export function ImageBlockEditor({
         }
         showDelete={showDelete && selectedBlock != null}
         onDelete={handleImageDelete}
+        loading={loading}
       />
       <Stack direction="column" sx={{ pt: 3 }}>
         <form>

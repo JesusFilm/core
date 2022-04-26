@@ -530,7 +530,9 @@ type VideoBlock implements Block {
   videoId and videoVariantLanguageId both need to be set to select a video
   """
   videoVariantLanguageId: ID
-  endAction: Action
+
+  """action that should be performed when the video ends"""
+  action: Action
 }
 
 input VideoBlockCreateInput {

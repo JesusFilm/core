@@ -55,6 +55,7 @@ const Template: Story = ({ ...args }) => (
       header={args.header}
       caption={args.caption}
       onDelete={onDelete}
+      loading={args.loading}
     />
   </Box>
 )
@@ -64,7 +65,8 @@ Default.args = {
   selectedBlock: null,
   header: 'Header',
   caption: 'caption',
-  showDelete: false
+  showDelete: false,
+  loading: false
 }
 
 export const Image = Template.bind({})
@@ -72,7 +74,8 @@ Image.args = {
   selectedBlock: image,
   header: image.alt,
   caption: 'Very long caption. So long in fact that it goes over the edge.',
-  showDelete: true
+  showDelete: true,
+  loading: false
 }
 
 export default ImageEditorStory as Meta
