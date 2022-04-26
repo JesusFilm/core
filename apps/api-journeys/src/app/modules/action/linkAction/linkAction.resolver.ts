@@ -31,7 +31,13 @@ export class LinkActionResolver {
 
     if (
       !includes(
-        ['SignUpBlock', 'RadioOptionBlock', 'ButtonBlock', 'VideoTriggerBlock'],
+        [
+          'SignUpBlock',
+          'RadioOptionBlock',
+          'ButtonBlock',
+          'VideoBlock',
+          'VideoTriggerBlock'
+        ],
         block.__typename
       )
     ) {
