@@ -169,6 +169,20 @@ export async function nua1(): Promise<void> {
     parentOrder: 0
   })
 
+  const video = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'VideoBlock',
+    parentBlockId: videoCard._key,
+    videoId: '5_0-NUA0201-0-0',
+    videoVariantLanguageId: '529',
+    autoplay: true,
+    title: 'Fact or fiction',
+    description:
+      'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.',
+    fullsize: true,
+    parentOrder: 0
+  })
+
   // third step
   const step3 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -180,16 +194,9 @@ export async function nua1(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    __typename: 'VideoBlock',
-    parentBlockId: videoCard._key,
-    videoId: '5_0-NUA0201-0-0',
-    videoVariantLanguageId: '529',
-    autoplay: true,
-    title: 'Fact or fiction',
-    endAt: 133,
-    description:
-      'Watch this viral (4 minute) video about LIFE, DEATH, and the LOVE of a Savior. By the end of this short film, your faith will grow stronger. Afterward, you will receive a free special resource for continuing your spiritual journey. Watch it. Share it.',
-    fullsize: true,
+    __typename: 'VideoTriggerBlock',
+    parentBlockId: video._key,
+    triggerStart: 133,
     action: {
       gtmEventName: 'trigger',
       blockId: step3._key
@@ -293,6 +300,19 @@ export async function nua1(): Promise<void> {
     parentOrder: 0
   })
 
+  const video1 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'VideoBlock',
+    parentBlockId: videoCard1._key,
+    videoId: '5_0-NUA0201-0-0',
+    videoVariantLanguageId: '529',
+    autoplay: true,
+    title: 'Fact or fiction',
+    startAt: 134,
+    fullsize: true,
+    parentOrder: 0
+  })
+
   // fifth step
   const step5 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -304,15 +324,9 @@ export async function nua1(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    __typename: 'VideoBlock',
-    parentBlockId: videoCard1._key,
-    videoId: '5_0-NUA0201-0-0',
-    videoVariantLanguageId: '529',
-    autoplay: true,
-    title: 'Fact or fiction',
-    startAt: 134,
-    endAt: 306,
-    fullsize: true,
+    __typename: 'VideoTriggerBlock',
+    parentBlockId: video1._key,
+    triggerStart: 306,
     action: {
       gtmEventName: 'trigger',
       blockId: step5._key

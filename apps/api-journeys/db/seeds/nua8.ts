@@ -167,6 +167,18 @@ export async function nua8(): Promise<void> {
     parentOrder: 0
   })
 
+  const video = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'VideoBlock',
+    parentBlockId: videoCard._key,
+    videoId: '5_0-NUA0803-0-0',
+    videoVariantLanguageId: '529',
+    autoplay: true,
+    title: "What' Jesus Got to Do With Me?",
+    parentOrder: 0,
+    fullsize: true
+  })
+
   // third step
   const step3 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -178,19 +190,14 @@ export async function nua8(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    __typename: 'VideoBlock',
-    parentBlockId: videoCard._key,
-    videoId: '5_0-NUA0803-0-0',
-    videoVariantLanguageId: '529',
-    autoplay: true,
-    endAt: 161,
-    title: "What' Jesus Got to Do With Me?",
-    parentOrder: 0,
+    __typename: 'VideoTriggerBlock',
+    parentBlockId: video._key,
+    triggerStart: 161,
     action: {
       gtmEventName: 'trigger',
       blockId: step3._key
     },
-    fullsize: true
+    parentOrder: 0
   })
 
   const card3 = await db.collection('blocks').save({
@@ -289,6 +296,19 @@ export async function nua8(): Promise<void> {
     parentOrder: 0
   })
 
+  const video1 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'VideoBlock',
+    parentBlockId: videoCard1._key,
+    videoId: '5_0-NUA0803-0-0',
+    videoVariantLanguageId: '529',
+    autoplay: true,
+    title: "What' Jesus Got to Do With Me?",
+    startAt: 158,
+    fullsize: true,
+    parentOrder: 0
+  })
+
   // fifth step
   const step5 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -300,15 +320,9 @@ export async function nua8(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    __typename: 'VideoBlock',
-    parentBlockId: videoCard1._key,
-    videoId: '5_0-NUA0803-0-0',
-    videoVariantLanguageId: '529',
-    autoplay: true,
-    title: "What' Jesus Got to Do With Me?",
-    startAt: 158,
-    endAt: 221,
-    fullsize: true,
+    __typename: 'VideoTriggerBlock',
+    parentBlockId: video1._key,
+    triggerStart: 221,
     action: {
       gtmEventName: 'trigger',
       blockId: step5._key
@@ -426,6 +440,19 @@ export async function nua8(): Promise<void> {
     parentOrder: 0
   })
 
+  const video2 = await db.collection('blocks').save({
+    journeyId: journey._key,
+    __typename: 'VideoBlock',
+    parentBlockId: videoCard2._key,
+    videoId: '5_0-NUA0803-0-0',
+    videoVariantLanguageId: '529',
+    autoplay: true,
+    title: "What' Jesus Got to Do With Me?",
+    startAt: 221,
+    fullsize: true,
+    parentOrder: 0
+  })
+
   // seventh step
   const step7 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -437,15 +464,9 @@ export async function nua8(): Promise<void> {
 
   await db.collection('blocks').save({
     journeyId: journey._key,
-    __typename: 'VideoBlock',
-    parentBlockId: videoCard2._key,
-    videoId: '5_0-NUA0803-0-0',
-    videoVariantLanguageId: '529',
-    autoplay: true,
-    title: "What' Jesus Got to Do With Me?",
-    startAt: 221,
-    endAt: 382,
-    fullsize: true,
+    __typename: 'VideoTriggerBlock',
+    parentBlockId: video2._key,
+    triggerStart: 382,
     action: {
       gtmEventName: 'trigger',
       blockId: step7._key
