@@ -158,7 +158,8 @@ export function BackgroundMediaImage({
           journeyId: journey.id,
           parentBlockId: cardBlock.id,
           src: block.src,
-          alt: block.alt
+          alt: block.alt,
+          isCover: true
         }
       },
       update(cache, { data }) {
