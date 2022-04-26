@@ -4,7 +4,7 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
@@ -27,8 +27,8 @@ export function VideoBlockEditorSettingsPoster({
   const handleClose = (): void => setOpen(false)
 
   const [loading, setLoading] = useState(false)
-  const handleStartLoading = (): void => setLoading(true)
-  const handleStopLoading = (): void => setLoading(false)
+  const handleLoading = (): void => setLoading(true)
+  const handleLoad = (): void => setLoading(false)
 
   return (
     <Stack direction="row" justifyContent="space-between">
@@ -80,8 +80,8 @@ export function VideoBlockEditorSettingsPoster({
               parentBlockId={parentBlockId}
               onClose={handleClose}
               open={open}
-              startLoading={() => handleStartLoading}
-              stopLoading={() => handleStopLoading}
+              onLoading={() => handleLoading}
+              onLoad={() => handleLoad}
             />
           </Stack>
         </Stack>

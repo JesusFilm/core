@@ -74,8 +74,8 @@ interface VideoBlockEditorSettingsPosterDialogProps {
   parentBlockId: string | undefined
   open: boolean
   onClose: () => void
-  startLoading?: () => void
-  stopLoading?: () => void
+  onLoading?: () => void
+  onLoad?: () => void
 }
 
 export function VideoBlockEditorSettingsPosterDialog({
@@ -83,8 +83,8 @@ export function VideoBlockEditorSettingsPosterDialog({
   parentBlockId,
   open,
   onClose,
-  startLoading,
-  stopLoading
+  onLoading,
+  onLoad
 }: VideoBlockEditorSettingsPosterDialogProps): ReactElement {
   const journey = useJourney()
 
@@ -217,9 +217,9 @@ export function VideoBlockEditorSettingsPosterDialog({
   }
 
   if (createLoading || updateLoading) {
-    startLoading?.()
+    onLoading?.()
   } else {
-    stopLoading?.()
+    onLoad?.()
   }
 
   return (
