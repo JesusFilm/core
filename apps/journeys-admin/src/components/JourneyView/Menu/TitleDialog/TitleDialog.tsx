@@ -55,6 +55,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   }
 
   const handleClose = (): void => {
+    setValue(journey?.title ?? '')
     onClose()
   }
 

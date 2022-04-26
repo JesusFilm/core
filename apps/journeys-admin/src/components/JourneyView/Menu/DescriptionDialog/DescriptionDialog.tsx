@@ -30,9 +30,7 @@ export function DescriptionDialog({
   const journey = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
-  const [value, setValue] = useState(
-    journey !== undefined ? journey.description : ''
-  )
+  const [value, setValue] = useState(journey?.description ?? '')
 
   const handleSubmit = async (): Promise<void> => {
     if (journey == null) return
@@ -58,6 +56,7 @@ export function DescriptionDialog({
   }
 
   const handleClose = (): void => {
+    setValue(journey?.description ?? '')
     onClose()
   }
 
