@@ -12,6 +12,7 @@ interface ImageBlockHeaderProps {
   header: string
   showDelete: boolean
   onDelete: () => Promise<void>
+  loading?: boolean
 }
 
 export function ImageBlockHeader({
@@ -19,7 +20,8 @@ export function ImageBlockHeader({
   caption = '',
   header,
   showDelete,
-  onDelete
+  onDelete,
+  loading
 }: ImageBlockHeaderProps): ReactElement {
   return (
     <Box sx={{ mb: 4 }}>
@@ -30,7 +32,10 @@ export function ImageBlockHeader({
         justifyContent="space-between"
       >
         <Box>
-          <ImageBlockThumbnail selectedBlock={selectedBlock} />
+          <ImageBlockThumbnail
+            selectedBlock={selectedBlock}
+            loading={loading}
+          />
         </Box>
         <Stack
           direction="column"
