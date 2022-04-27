@@ -36,7 +36,7 @@ export function VideoTrigger({
       player.on('timeupdate', timeUpdate)
       return () => player.off('timeupdate', timeUpdate)
     }
-  }, [player, router, triggered, triggerAction, triggerStart])
+  }, [player, triggerStart, router, triggerAction, triggered])
 
   return <></>
 }

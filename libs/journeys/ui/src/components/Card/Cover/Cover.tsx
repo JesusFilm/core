@@ -70,13 +70,12 @@ export function Cover({
           videoBlock?.startAt != null &&
           videoBlock?.endAt != null &&
           videoBlock?.endAt > 0 &&
-          playerRef.current?.currentTime() != null
+          playerRef.current != null
         ) {
-          if (
-            playerRef.current?.currentTime() < videoBlock?.startAt ||
-            playerRef.current?.currentTime() >= videoBlock?.endAt
-          ) {
-            playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
+          const currentTime = playerRef.current.currentTime()
+          const { startAt, endAt } = videoBlock
+          if (currentTime < (startAt ?? 0) || currentTime >= endAt) {
+            playerRef.current.currentTime(startAt ?? 0)
           }
         }
       })
