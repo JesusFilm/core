@@ -74,6 +74,10 @@ export function BlockRenderer({
   const TypographyWrapper = wrappers?.TypographyWrapper ?? DefaultWrapper
   const VideoWrapper = wrappers?.VideoWrapper ?? DefaultWrapper
 
+  if (block.parentOrder === null) {
+    return <></>
+  }
+
   switch (block.__typename) {
     case 'ButtonBlock':
       return (
