@@ -24,7 +24,6 @@ export function ContentOverlay({
             xs: 'polygon(0 6vw, 100% 0, 100% 100%, 0 100%)',
             sm: 'polygon(6vh 0, 100% 0, 100% 100%, 0 100%)'
           },
-          backgroundColor: 'background.paper',
           marginTop: { xs: '-6vw', sm: 0 },
           marginLeft: { xs: 0, sm: '-6vh' },
           paddingLeft: { sm: `6vh` },
@@ -66,6 +65,7 @@ export function ContentOverlay({
             zIndex: -1,
             transform: 'scaleY(-1)',
             backgroundBlendMode: 'hard-light',
+            backgroundColor: 'background.paper',
             backgroundImage:
               backgroundSrc != null
                 ? `url(${backgroundSrc}), url(${backgroundSrc})`
@@ -134,6 +134,7 @@ export function ContentOverlay({
                   backgroundRepeat: 'no-repeat',
                   backgroundSize: '100% 100%',
                   backgroundPosition: '0% 0%',
+                  backgroundColor: 'background.paper',
                   backgroundImage:
                     backgroundSrc != null
                       ? `url(${backgroundSrc}), url(${backgroundSrc})`
