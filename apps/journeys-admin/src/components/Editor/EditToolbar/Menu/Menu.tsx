@@ -89,6 +89,7 @@ export function Menu(): ReactElement {
       <IconButton
         id="edit-journey-actions"
         edge="end"
+        aria-label="Edit Journey Actions"
         aria-controls="edit-journey-actions"
         aria-haspopup="true"
         aria-expanded={anchorEl != null ? 'true' : undefined}
