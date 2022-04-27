@@ -18,6 +18,7 @@ const video: VideoBlock = {
   muted: true,
   autoplay: true,
   fullsize: true,
+  action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
   video: {

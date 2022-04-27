@@ -46,6 +46,7 @@ const video: TreeBlock<VideoBlock> = {
   muted: true,
   autoplay: true,
   fullsize: true,
+  action: null,
   videoId: '5_0-NUA0201-0-0',
   videoVariantLanguageId: '529',
   video: {

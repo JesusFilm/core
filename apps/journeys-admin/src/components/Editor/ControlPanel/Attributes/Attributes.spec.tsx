@@ -68,6 +68,7 @@ describe('Attributes', () => {
     endAt: null,
     muted: null,
     fullsize: null,
+    action: null,
     posterBlockId: 'posterBlockId',
     videoId: '2_0-FallingPlates',
     videoVariantLanguageId: '529',

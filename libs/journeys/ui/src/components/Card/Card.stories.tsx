@@ -138,6 +138,7 @@ const video: TreeBlock<VideoFields> = {
       hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
     }
   },
+  action: null,
   fullsize: null,
   children: []
 }
