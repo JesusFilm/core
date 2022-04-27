@@ -28,8 +28,8 @@ export const videos: GetVideos_videos[] = [
     permalinks: [
       {
         value: 'the-story-of-jesus-for-children',
-        languageId: '529',
-        primary: true
+        primary: true,
+        __typename: 'Translation'
       }
     ]
   },
@@ -50,7 +50,7 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 7674, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    permalinks: [{ value: 'jesus', languageId: '529', primary: true }]
+    permalinks: [{ value: 'jesus', primary: true, __typename: 'Translation' }]
   },
   {
     id: '1_wl-0-0',
@@ -76,7 +76,11 @@ export const videos: GetVideos_videos[] = [
     __typename: 'Video',
     episodeIds: [],
     permalinks: [
-      { value: 'magdalena-directors-cut', languageId: '529', primary: true }
+      {
+        value: 'magdalena-directors-cut',
+        primary: true,
+        __typename: 'Translation'
+      }
     ]
   },
   {
@@ -98,7 +102,9 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 11530, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    permalinks: [{ value: 'book-of-acts', languageId: '529', primary: true }]
+    permalinks: [
+      { value: 'book-of-acts', primary: true, __typename: 'Translation' }
+    ]
   },
   {
     id: '2_CSF',
@@ -126,8 +132,8 @@ export const videos: GetVideos_videos[] = [
     permalinks: [
       {
         value: 'a-day-and-a-night-with-creator-sets-free',
-        languageId: '529',
-        primary: true
+        primary: true,
+        __typename: 'Translation'
       }
     ]
   },
@@ -157,8 +163,8 @@ export const videos: GetVideos_videos[] = [
     permalinks: [
       {
         value: 'life-of-jesus-gospel-of-john',
-        languageId: '529',
-        primary: true
+        primary: true,
+        __typename: 'Translation'
       }
     ]
   },
