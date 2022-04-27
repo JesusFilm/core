@@ -35,9 +35,9 @@ type VideoBlock implements Block {
   """
   videoVariantLanguageId: ID
   """
-  endAction is the action that should be performed when the video ends
+  action that should be performed when the video ends
   """
-  endAction: Action
+  action: Action
 }
 
 input VideoBlockCreateInput {
