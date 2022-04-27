@@ -41,9 +41,9 @@ export function VideoListList({
           const title = video.title.find((title) => title.primary)?.value
           const href =
             routePrefix == null
-              ? `/${video.permalinks.find((link) => link.primary)?.value}`
+              ? `/${video.permalinks.find((link) => link.primary)?.value ?? ''}`
               : `/${routePrefix}/${
-                  video.permalinks.find((link) => link.primary)?.value
+                  video.permalinks.find((link) => link.primary)?.value ?? ''
                 }`
           return (
             <Link key={index} href={href} passHref={true}>
