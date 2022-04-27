@@ -228,9 +228,9 @@ export function Video({
             <source src={video.variant.hls} type="application/x-mpegURL" />
           </video>
           {children?.map(
-            (child) =>
-              child.__typename === 'VideoTriggerBlock' && (
-                <VideoTrigger player={playerRef.current} videoTrigger={child} />
+            (option) =>
+              option.__typename === 'VideoTriggerBlock' && (
+                <VideoTrigger player={playerRef.current} {...option} />
               )
           )}
           {action != null && endAt != null && endAt > 0 && (

@@ -1,65 +1,42 @@
 import videojs from 'video.js'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
-import { handleAction } from '../../..'
-import { BlockFields_VideoBlock_action as Action } from '../../../libs/transformer/__generated__/BlockFields'
+import { TreeBlock, handleAction } from '../../..'
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
 
-export interface VideoTriggerProps {
-  videoTrigger?: VideoTriggerFields
-  triggerAction?: Action
-  triggerStart?: number
+type VideoTriggerProps = (
+  | TreeBlock<VideoTriggerFields>
+  | Pick<TreeBlock<VideoTriggerFields>, 'triggerAction' | 'triggerStart'>
+) & {
   player?: videojs.Player
 }
 
 export function VideoTrigger({
   player,
   triggerAction,
-  triggerStart,
-  videoTrigger
+  triggerStart
 }: VideoTriggerProps): ReactElement {
   const router = useRouter()
-  const [triggerAt, setTriggerAt] = useState<number | undefined>(triggerStart)
-  const [videoAction, setVideoAction] = useState<Action | undefined>(
-    triggerAction
-  )
   const [triggered, setTriggered] = useState(false)
 
   useEffect(() => {
-    if (triggerAction == null) setVideoAction(videoTrigger?.triggerAction)
-    if (triggerStart == null) setTriggerAt(videoTrigger?.triggerStart)
-
-    if (
-      player != null &&
-      !triggered &&
-      videoAction != null &&
-      triggerAt != null
-    ) {
+    if (player != null && !triggered) {
       const timeUpdate = (): void => {
-        if (player.currentTime() >= triggerAt && !player.seeking()) {
+        if (player.currentTime() >= triggerStart && !player.seeking()) {
           setTriggered(true)
           player.pause()
           if (player.isFullscreen()) {
             player.exitFullscreen()
-            setTimeout(() => handleAction(router, videoAction), 1000)
+            setTimeout(() => handleAction(router, triggerAction), 1000)
           } else {
-            handleAction(router, videoAction)
+            handleAction(router, triggerAction)
           }
         }
       }
       player.on('timeupdate', timeUpdate)
       return () => player.off('timeupdate', timeUpdate)
     }
-  }, [
-    player,
-    router,
-    triggered,
-    triggerAction,
-    triggerAt,
-    triggerStart,
-    videoAction,
-    videoTrigger
-  ])
+  }, [player, router, triggered, triggerAction, triggerStart])
 
   return <></>
 }
