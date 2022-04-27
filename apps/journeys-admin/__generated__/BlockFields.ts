@@ -352,7 +352,7 @@ export interface BlockFields_VideoBlock {
   videoVariantLanguageId: string | null;
   video: BlockFields_VideoBlock_video | null;
   /**
-   * endAction is the action that should be performed when the video ends
+   * action that should be performed when the video ends
    */
   action: BlockFields_VideoBlock_action | null;
 }

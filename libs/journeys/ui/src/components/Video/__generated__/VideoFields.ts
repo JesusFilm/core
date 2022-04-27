@@ -93,7 +93,7 @@ export interface VideoFields {
   videoVariantLanguageId: string | null;
   video: VideoFields_video | null;
   /**
-   * endAction is the action that should be performed when the video ends
+   * action that should be performed when the video ends
    */
   action: VideoFields_action | null;
 }

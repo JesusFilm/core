@@ -95,7 +95,7 @@ export interface CardBlockVideoBlockCreate_videoBlockCreate {
   videoVariantLanguageId: string | null;
   video: CardBlockVideoBlockCreate_videoBlockCreate_video | null;
   /**
-   * endAction is the action that should be performed when the video ends
+   * action that should be performed when the video ends
    */
   action: CardBlockVideoBlockCreate_videoBlockCreate_action | null;
 }

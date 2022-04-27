@@ -95,7 +95,7 @@ export interface VideoBlockCreate_videoBlockCreate {
   videoVariantLanguageId: string | null;
   video: VideoBlockCreate_videoBlockCreate_video | null;
   /**
-   * endAction is the action that should be performed when the video ends
+   * action that should be performed when the video ends
    */
   action: VideoBlockCreate_videoBlockCreate_action | null;
 }

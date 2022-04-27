@@ -364,7 +364,7 @@ export interface GetJourney_journey_blocks_VideoBlock {
   videoVariantLanguageId: string | null;
   video: GetJourney_journey_blocks_VideoBlock_video | null;
   /**
-   * endAction is the action that should be performed when the video ends
+   * action that should be performed when the video ends
    */
   action: GetJourney_journey_blocks_VideoBlock_action | null;
 }
