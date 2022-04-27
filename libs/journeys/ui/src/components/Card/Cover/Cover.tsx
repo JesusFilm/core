@@ -19,12 +19,14 @@ import 'video.js/dist/video-js.css'
 
 interface CoverProps {
   children: ReactNode
+  backgroundColor: string
   imageBlock?: TreeBlock<ImageFields>
   videoBlock?: TreeBlock<VideoFields>
 }
 
 export function Cover({
   children,
+  backgroundColor,
   imageBlock,
   videoBlock
 }: CoverProps): ReactElement {
@@ -128,7 +130,12 @@ export function Cover({
           />
         )}
       </Box>
-      <ContentOverlay backgroundSrc={blurBackground}>{children}</ContentOverlay>
+      <ContentOverlay
+        backgroundColor={backgroundColor}
+        backgroundSrc={blurBackground}
+      >
+        {children}
+      </ContentOverlay>
     </>
   )
 }
