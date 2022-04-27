@@ -69,6 +69,7 @@ export function Cover({
         if (
           videoBlock?.startAt != null &&
           videoBlock?.endAt != null &&
+          videoBlock?.endAt > 0 &&
           playerRef.current?.currentTime() != null
         ) {
           if (

@@ -155,12 +155,4 @@ NoVideoSource.args = {
   children: []
 }
 
-export const VideoLoop = Template.bind({})
-VideoLoop.args = {
-  ...videoBlock,
-  muted: true,
-  startAt: 10,
-  endAt: 30
-}
-
 export default Demo as Meta

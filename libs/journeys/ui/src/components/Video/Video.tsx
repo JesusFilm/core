@@ -152,21 +152,6 @@ export function Video({
             playerRef.current?.currentTime()
           )
         })
-        playerRef.current.on('timeupdate', () => {
-          if (
-            muted === true &&
-            startAt != null &&
-            endAt != null &&
-            playerRef.current?.currentTime() != null
-          ) {
-            if (
-              playerRef.current?.currentTime() < startAt ||
-              playerRef.current?.currentTime() >= endAt
-            ) {
-              playerRef.current?.currentTime(startAt ?? 0)
-            }
-          }
-        })
       }
     }
   }, [
@@ -248,7 +233,7 @@ export function Video({
                 <VideoTrigger player={playerRef.current} videoTrigger={child} />
               )
           )}
-          {muted === false && action != null && endAt != null && (
+          {action != null && endAt != null && (
             <VideoTrigger
               player={playerRef.current}
               triggerStart={endAt}
