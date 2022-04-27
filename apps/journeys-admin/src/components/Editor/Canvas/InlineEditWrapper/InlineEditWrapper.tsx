@@ -74,7 +74,7 @@ export function InlineEditWrapper({
     ) : block.__typename === 'RadioOptionBlock' ? (
       <RadioOptionEdit {...block} />
     ) : block.__typename === 'RadioQuestionBlock' ? (
-      <RadioQuestionEdit {...block} />
+      <RadioQuestionEdit {...block} wrappers={children.props.wrappers} />
     ) : (
       children
     )

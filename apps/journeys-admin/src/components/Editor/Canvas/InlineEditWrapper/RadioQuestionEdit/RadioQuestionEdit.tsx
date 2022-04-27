@@ -3,13 +3,16 @@ import { gql, useMutation } from '@apollo/client'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import Box from '@mui/material/Box'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
-import { RadioQuestion, StyledRadioOption, TreeBlock } from '@core/journeys/ui'
+import {
+  RadioQuestion,
+  StyledRadioOption,
+  TreeBlock,
+  WrappersProps
+} from '@core/journeys/ui'
 import { useJourney } from '../../../../../libs/context'
 import { RadioOptionBlockCreate } from '../../../../../../__generated__/RadioOptionBlockCreate'
 import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
 import { adminTheme } from '../../../../ThemeProvider/admin/theme'
-import { SelectableWrapper } from '../../SelectableWrapper'
-import { InlineEditWrapper } from '../InlineEditWrapper'
 
 const adminPrimaryColor = adminTheme.palette
   .primary as SimplePaletteColorOptions
@@ -23,11 +26,13 @@ export const RADIO_OPTION_BLOCK_CREATE = gql`
   }
 `
 
-export interface RadioQuestionEditProps
-  extends TreeBlock<RadioQuestionFields> {}
+export interface RadioQuestionEditProps extends TreeBlock<RadioQuestionFields> {
+  wrappers?: WrappersProps
+}
 
 export function RadioQuestionEdit({
   id,
+  wrappers,
   ...props
 }: RadioQuestionEditProps): ReactElement {
   const [radioOptionBlockCreate] = useMutation<RadioOptionBlockCreate>(
@@ -93,10 +98,7 @@ export function RadioQuestionEdit({
       {...props}
       id={id}
       addOption={props.children.length < 12 ? addRadioOption : undefined}
-      wrappers={{
-        Wrapper: SelectableWrapper,
-        RadioOptionWrapper: InlineEditWrapper
-      }}
+      wrappers={wrappers}
     />
   )
 }
