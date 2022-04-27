@@ -152,7 +152,6 @@ describe('InlineEditWrapper', () => {
             activeFab: ActiveFab.Add
           }}
         >
-          {' '}
           <SelectableWrapper block={block}>
             <InlineEditWrapper block={block}>
               <SignUp {...block} />
@@ -193,24 +192,38 @@ describe('InlineEditWrapper', () => {
       children: [option]
     }
 
-    const RadioQuestionEdit = (
-      <MockedProvider>
-        <EditorProvider
-          initialState={{
-            steps: [step(block)],
-            activeFab: ActiveFab.Add
-          }}
-        >
-          <SelectableWrapper block={block}>
-            <InlineEditWrapper block={block}>
-              <RadioQuestion {...block} />
-            </InlineEditWrapper>
-          </SelectableWrapper>
-        </EditorProvider>
-      </MockedProvider>
+    const radioQuestion = (
+      <SelectableWrapper block={block}>
+        <InlineEditWrapper block={block}>
+          <RadioQuestion
+            {...block}
+            wrappers={{
+              Wrapper: SelectableWrapper,
+              RadioOptionWrapper: InlineEditWrapper
+            }}
+          />
+        </InlineEditWrapper>
+      </SelectableWrapper>
     )
+
     it('should show add option when radio question selected', async () => {
-      const { getByText, getByTestId } = render(RadioQuestionEdit)
+      const { getByText, getByTestId } = render(
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step(block)],
+              activeFab: ActiveFab.Add,
+              selectedBlock: step(block)
+            }}
+          >
+            <SelectableWrapper block={block}>
+              <InlineEditWrapper block={block}>
+                {radioQuestion}
+              </InlineEditWrapper>
+            </SelectableWrapper>
+          </EditorProvider>
+        </MockedProvider>
+      )
 
       // Select RadioQuestion
       fireEvent.click(getByText('option'))
@@ -225,9 +238,19 @@ describe('InlineEditWrapper', () => {
     })
 
     it('should show add option when radio option selected', async () => {
-      const { getByText, getByTestId } = render(RadioQuestionEdit)
-
-      fireEvent.click(getByText('option'))
+      const { getByText, getByTestId } = render(
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step(block)],
+              activeFab: ActiveFab.Save,
+              selectedBlock: step(block).children[0]
+            }}
+          >
+            {radioQuestion}
+          </EditorProvider>
+        </MockedProvider>
+      )
       fireEvent.click(getByText('option'))
       expect(getByTestId(`selected-${option.id}`)).toHaveStyle({
         outline: '3px solid #C52D3A',
@@ -240,12 +263,19 @@ describe('InlineEditWrapper', () => {
     })
 
     it('should edit radio option label on double click', async () => {
-      const { getByDisplayValue, getByText, getByTestId } =
-        render(RadioQuestionEdit)
-
-      // Select RadioQuestion
-      fireEvent.click(getByText('option'))
-      // Double click on option
+      const { getByDisplayValue, getByText, getByTestId } = render(
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step(block)],
+              activeFab: ActiveFab.Save,
+              selectedBlock: step(block).children[0]
+            }}
+          >
+            {radioQuestion}
+          </EditorProvider>
+        </MockedProvider>
+      )
       fireEvent.click(getByText('option'))
       fireEvent.click(getByText('option'))
       expect(getByTestId(`selected-${option.id}`)).toHaveStyle({
