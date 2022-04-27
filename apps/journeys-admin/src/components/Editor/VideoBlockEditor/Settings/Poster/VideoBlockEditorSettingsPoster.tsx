@@ -28,7 +28,10 @@ export function VideoBlockEditorSettingsPoster({
 
   const [loading, setLoading] = useState(false)
   const handleLoading = (): void => setLoading(true)
-  const handleLoad = (): void => setLoading(false)
+  const handleLoad = (): void => {
+    console.log('here')
+    setLoading(false)
+  }
 
   return (
     <Stack direction="row" justifyContent="space-between">
@@ -80,8 +83,8 @@ export function VideoBlockEditorSettingsPoster({
               parentBlockId={parentBlockId}
               onClose={handleClose}
               open={open}
-              onLoading={() => handleLoading}
-              onLoad={() => handleLoad}
+              onLoading={handleLoading}
+              onLoad={handleLoad}
             />
           </Stack>
         </Stack>

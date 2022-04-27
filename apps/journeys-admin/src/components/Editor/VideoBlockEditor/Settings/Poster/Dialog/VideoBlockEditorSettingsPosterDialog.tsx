@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { Dialog } from '../../../../../Dialog'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
@@ -100,6 +100,15 @@ export function VideoBlockEditorSettingsPosterDialog({
     imageBlockUpdate,
     { error: imageBlockUpdateError, loading: updateLoading }
   ] = useMutation<PosterImageBlockUpdate>(POSTER_IMAGE_BLOCK_UPDATE)
+
+  useEffect(() => {
+    if (createLoading || updateLoading) {
+      onLoading?.()
+    } else {
+      onLoad?.()
+    }
+    // eslint-disable-next-line
+  }, [createLoading, updateLoading])
 
   const deleteCoverBlock = async (): Promise<void> => {
     if (selectedBlock == null || parentBlockId == null || journey == null)
@@ -214,12 +223,6 @@ export function VideoBlockEditorSettingsPosterDialog({
     } else {
       await updateImageBlock(block)
     }
-  }
-
-  if (createLoading || updateLoading) {
-    onLoading?.()
-  } else {
-    onLoad?.()
   }
 
   return (
