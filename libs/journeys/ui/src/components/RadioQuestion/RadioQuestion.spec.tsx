@@ -43,25 +43,15 @@ const block: TreeBlock<RadioQuestionFields> = {
 }
 
 describe('RadioQuestion', () => {
-  it('should render question props', () => {
-    const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <RadioQuestion {...block} />
-      </MockedProvider>
-    )
-
-    expect(getByText('Label')).toBeInTheDocument()
-    expect(getByText('Description')).toBeInTheDocument()
-  })
-
   it('should display the correct options', () => {
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <RadioQuestion {...block} />
+        <RadioQuestion {...block} addOption={<div>Add option</div>} />
       </MockedProvider>
     )
     expect(getByText('Option 1')).toBeInTheDocument()
     expect(getByText('Option 2')).toBeInTheDocument()
+    expect(getByText('Add option')).toBeInTheDocument()
   })
 
   it('should select an option onClick', async () => {
@@ -144,25 +134,6 @@ describe('RadioQuestion', () => {
     )
     fireEvent.click(buttons[1])
     expect(buttons[1]).toBeDisabled()
-  })
-
-  it('renders editable question props', () => {
-    const { getByRole } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <RadioQuestion
-          {...block}
-          editableLabel={<input aria-label="editableLabel" />}
-          editableDescription={<input aria-label="editableDescription" />}
-          addOption={<button aria-label="addOption" />}
-        />
-      </MockedProvider>
-    )
-
-    expect(getByRole('textbox', { name: 'editableLabel' })).toBeInTheDocument()
-    expect(
-      getByRole('textbox', { name: 'editableDescription' })
-    ).toBeInTheDocument()
-    expect(getByRole('button', { name: 'addOption' })).toBeInTheDocument()
   })
 
   it('should display options with wrappers', () => {
