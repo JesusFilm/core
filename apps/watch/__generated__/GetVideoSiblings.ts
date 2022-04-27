@@ -9,7 +9,7 @@ import { VideoType } from "./globalTypes";
 // GraphQL query operation: GetVideoSiblings
 // ====================================================
 
-export interface GetVideoSiblings_episodes_description {
+export interface GetVideoSiblings_episodes_snippet {
   __typename: "Translation";
   primary: boolean;
   value: string;
@@ -27,20 +27,18 @@ export interface GetVideoSiblings_episodes_variant {
   hls: string | null;
 }
 
-export interface GetVideoSiblings_episodes_episodes {
-  __typename: "Video";
-  id: string;
-}
-
 export interface GetVideoSiblings_episodes {
   __typename: "Video";
   id: string;
   type: VideoType;
   image: string | null;
-  description: GetVideoSiblings_episodes_description[];
+  snippet: GetVideoSiblings_episodes_snippet[];
   title: GetVideoSiblings_episodes_title[];
   variant: GetVideoSiblings_episodes_variant | null;
-  episodes: GetVideoSiblings_episodes_episodes[];
+  /**
+   * Episodes are child videos, currently only found in a playlist type
+   */
+  episodeIds: string[];
   permalink: string;
 }
 
