@@ -24,6 +24,7 @@ export function ContentOverlay({
             xs: 'polygon(0 6vw, 100% 0, 100% 100%, 0 100%)',
             sm: 'polygon(6vh 0, 100% 0, 100% 100%, 0 100%)'
           },
+          backgroundColor: 'background.paper',
           marginTop: { xs: '-6vw', sm: 0 },
           marginLeft: { xs: 0, sm: '-6vh' },
           paddingLeft: { sm: `6vh` },
