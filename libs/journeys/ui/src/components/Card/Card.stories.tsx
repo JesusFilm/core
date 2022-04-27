@@ -229,6 +229,7 @@ VideoCover.args = {
         }
       },
       fullsize: null,
+      action: null,
       children: [
         {
           id: 'posterBlockId',
@@ -281,6 +282,7 @@ VideoContent.args = {
       endAt: null,
       posterBlockId: null,
       fullsize: true,
+      action: null,
       children: []
     }
   ]

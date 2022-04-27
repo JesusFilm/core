@@ -65,6 +65,20 @@ export function Cover({
       playerRef.current.on('seeked', () => {
         setLoading(false)
       })
+      playerRef.current.on('timeupdate', () => {
+        if (
+          videoBlock?.startAt != null &&
+          videoBlock?.endAt != null &&
+          videoBlock?.endAt > 0 &&
+          playerRef.current != null
+        ) {
+          const currentTime = playerRef.current.currentTime()
+          const { startAt, endAt } = videoBlock
+          if (currentTime < (startAt ?? 0) || currentTime >= endAt) {
+            playerRef.current.currentTime(startAt ?? 0)
+          }
+        }
+      })
     }
   }, [imageBlock, theme, videoBlock, blurBackground])
 

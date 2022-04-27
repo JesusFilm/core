@@ -153,6 +153,7 @@ export function VideoBlockEditorSettings({
           />
           <TimeField
             showSeconds
+            value={values.endAt}
             onChange={handleChange}
             style={{ width: '100%' }}
             input={

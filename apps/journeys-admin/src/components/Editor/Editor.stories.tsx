@@ -400,6 +400,7 @@ const blocks: GetJourney_journey_blocks[] = [
     startAt: null,
     endAt: null,
     fullsize: null,
+    action: null,
     posterBlockId: 'posterBlockId'
   },
   {
