@@ -185,7 +185,9 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 3665, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    permalinks: [{ value: 'magdalena', languageId: '529', primary: true }]
+    permalinks: [
+      { value: 'magdalena', primary: true, __typename: 'Translation' }
+    ]
   },
   {
     id: '1_0-TrainV_1Install',
@@ -213,8 +215,8 @@ export const videos: GetVideos_videos[] = [
     permalinks: [
       {
         value: 'installing-the-jesus-film-media-app',
-        languageId: '529',
-        primary: true
+        primary: true,
+        __typename: 'Translation'
       }
     ]
   }
