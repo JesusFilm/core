@@ -71,6 +71,7 @@ type VideoVariant {
 extend type Query {
   videoTags: [VideoTag!]
   videoTag(id: ID!): VideoTag
+  episodes(playlistId: ID!, idType: IdType, where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!, idType: IdType): Video!
 }
