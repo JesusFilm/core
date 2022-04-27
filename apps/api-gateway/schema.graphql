@@ -737,7 +737,7 @@ type Video
   image: String @join__field(graph: VIDEOS)
   imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   noIndex: Boolean @join__field(graph: VIDEOS)
-  permalink: String! @join__field(graph: VIDEOS)
+  permalinks: [Translation!]! @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
   seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
