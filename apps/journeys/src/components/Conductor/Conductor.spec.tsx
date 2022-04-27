@@ -1,10 +1,7 @@
 import { useBreakpoints } from '@core/shared/ui'
 import { activeBlockVar, TreeBlock, treeBlocksVar } from '@core/journeys/ui'
-import {
-  fireEvent,
-  renderWithApolloClient,
-  waitFor
-} from '../../../test/testingLibrary'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { Conductor } from '.'
 
 jest.mock('../../../../../libs/shared/ui/src/', () => ({
@@ -327,8 +324,10 @@ describe('Conductor', () => {
         ]
       }
     ]
-    const { getByRole, getByTestId } = renderWithApolloClient(
-      <Conductor blocks={blocks} />
+    const { getByRole, getByTestId } = render(
+      <MockedProvider>
+        <Conductor blocks={blocks} />
+      </MockedProvider>
     )
     const conductorNextButton = getByTestId('conductorNextButton')
     expect(treeBlocksVar()).toBe(blocks)
@@ -351,7 +350,11 @@ describe('Conductor', () => {
 
   it('should not throw error if no blocks', () => {
     const blocks: TreeBlock[] = []
-    renderWithApolloClient(<Conductor blocks={blocks} />)
+    render(
+      <MockedProvider>
+        <Conductor blocks={blocks} />
+      </MockedProvider>
+    )
     expect(treeBlocksVar()).toBe(blocks)
     expect(activeBlockVar()).toBe(null)
   })
@@ -579,8 +582,10 @@ describe('Conductor', () => {
         ]
       }
     ]
-    const { getByTestId } = renderWithApolloClient(
-      <Conductor blocks={blocks} />
+    const { getByTestId } = render(
+      <MockedProvider>
+        <Conductor blocks={blocks} />
+      </MockedProvider>
     )
     const conductorNextButton = getByTestId('conductorNextButton')
     expect(treeBlocksVar()).toBe(blocks)
