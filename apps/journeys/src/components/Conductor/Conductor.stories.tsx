@@ -1074,6 +1074,273 @@ const videoBlocks: TreeBlock[] = [
   }
 ]
 
+const VideoLoop: TreeBlock[] = [
+  {
+    id: 'step0.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    locked: false,
+    nextBlockId: 'step1.id',
+    children: [
+      {
+        id: 'card0.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step0.id',
+        parentOrder: 1,
+        coverBlockId: 'video1.id',
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'typographyBlockId1',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card0.id',
+            parentOrder: 0,
+            align: null,
+            color: null,
+            content: "What's our purpose, and how did we get here?",
+            variant: TypographyVariant.h3,
+            children: []
+          },
+          {
+            id: 'typographyBlockId2',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card0.id',
+            parentOrder: 1,
+            align: null,
+            color: null,
+            content:
+              'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
+            variant: null,
+            children: []
+          },
+          {
+            __typename: 'ButtonBlock',
+            id: 'button',
+            parentBlockId: 'card0.id',
+            parentOrder: 2,
+            label: 'Watch Now',
+            buttonVariant: ButtonVariant.contained,
+            buttonColor: ButtonColor.primary,
+            size: ButtonSize.large,
+            startIconId: 'icon',
+            endIconId: null,
+            action: {
+              __typename: 'NavigateAction',
+              parentBlockId: 'button',
+              gtmEventName: 'gtmEventName'
+            },
+            children: [
+              {
+                id: 'icon',
+                __typename: 'IconBlock',
+                parentBlockId: 'button',
+                parentOrder: 0,
+                iconName: IconName.PlayArrowRounded,
+                iconColor: null,
+                iconSize: IconSize.md,
+                children: []
+              }
+            ]
+          },
+          {
+            id: 'video1.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 0,
+            autoplay: true,
+            muted: true,
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              }
+            },
+            startAt: 10,
+            endAt: 30,
+            posterBlockId: 'image1.id',
+            fullsize: true,
+            action: null,
+            children: [
+              {
+                id: 'image1.id',
+                __typename: 'ImageBlock',
+                src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+                blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+                width: 1920,
+                height: 1080,
+                alt: 'random image from unsplash',
+                parentBlockId: 'card1.id',
+                parentOrder: 0,
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'step1.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    locked: false,
+    nextBlockId: 'step2.id',
+    children: [
+      {
+        id: 'card1.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step1.id',
+        coverBlockId: null,
+        parentOrder: 0,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'video1.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 0,
+            autoplay: true,
+            muted: false,
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              }
+            },
+            startAt: 10,
+            endAt: 30,
+            posterBlockId: 'image1.id',
+            fullsize: true,
+            action: {
+              __typename: 'NavigateToBlockAction',
+              parentBlockId: 'trigger.id',
+              gtmEventName: 'gtmEventName',
+              blockId: 'step2.id'
+            },
+            children: [
+              {
+                id: 'image1.id',
+                __typename: 'ImageBlock',
+                src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+                blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+                width: 1920,
+                height: 1080,
+                alt: 'random image from unsplash',
+                parentBlockId: 'card1.id',
+                parentOrder: 0,
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'step2.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    locked: false,
+    nextBlockId: null,
+    children: [
+      {
+        id: 'card2.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step2.id',
+        coverBlockId: null,
+        parentOrder: 0,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'video2.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card2.id',
+            parentOrder: 0,
+            autoplay: true,
+            muted: true,
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              }
+            },
+            startAt: 10,
+            endAt: 30,
+            posterBlockId: 'image1.id',
+            fullsize: true,
+            action: null,
+            children: [
+              {
+                id: 'image1.id',
+                __typename: 'ImageBlock',
+                src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+                blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+                width: 1920,
+                height: 1080,
+                alt: 'random image from unsplash',
+                parentBlockId: 'card1.id',
+                parentOrder: 0,
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
+
 const Demo = {
   ...journeysConfig,
   component: Conductor,
@@ -1105,6 +1372,14 @@ WithVideo.args = {
   blocks: videoBlocks
 }
 WithVideo.parameters = {
+  chromatic: { delay: 100, diffThreshold: 0.2 }
+}
+
+export const WithVideoLoop: Story<ConductorProps> = Template.bind({})
+WithVideoLoop.args = {
+  blocks: VideoLoop
+}
+WithVideoLoop.parameters = {
   chromatic: { delay: 100, diffThreshold: 0.2 }
 }
 

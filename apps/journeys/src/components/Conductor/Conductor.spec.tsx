@@ -482,6 +482,7 @@ describe('Conductor', () => {
                 startAt: null,
                 posterBlockId: null,
                 fullsize: true,
+                action: null,
                 children: [
                   {
                     id: 'trigger.id',

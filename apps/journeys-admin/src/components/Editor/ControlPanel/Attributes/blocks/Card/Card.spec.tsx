@@ -216,6 +216,7 @@ describe('Card', () => {
             startAt: null,
             endAt: null,
             fullsize: null,
+            action: null,
             children: []
           }
         ]
@@ -278,6 +279,7 @@ describe('Card', () => {
             startAt: null,
             endAt: null,
             fullsize: null,
+            action: null,
             children: []
           }
         ]

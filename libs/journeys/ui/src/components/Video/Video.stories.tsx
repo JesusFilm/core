@@ -49,6 +49,7 @@ const videoBlock: TreeBlock<VideoFields> = {
   endAt: null,
   posterBlockId: null,
   fullsize: null,
+  action: null,
   children: []
 }
 
@@ -152,6 +153,14 @@ NoVideoSource.args = {
   posterBlockId: null,
   fullsize: null,
   children: []
+}
+
+export const VideoLoop = Template.bind({})
+VideoLoop.args = {
+  ...videoBlock,
+  muted: true,
+  startAt: 10,
+  endAt: 30
 }
 
 export default Demo as Meta

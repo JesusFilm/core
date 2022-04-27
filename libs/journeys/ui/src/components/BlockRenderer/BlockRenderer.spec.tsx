@@ -522,6 +522,7 @@ describe('BlockRenderer', () => {
       posterBlockId: null,
       parentOrder: 0,
       fullsize: null,
+      action: null,
       children: []
     }
     const { getByTestId } = render(
@@ -562,6 +563,7 @@ describe('BlockRenderer', () => {
       parentBlockId: null,
       posterBlockId: null,
       fullsize: null,
+      action: null,
       parentOrder: 0,
       children: []
     }
