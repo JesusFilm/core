@@ -4,11 +4,13 @@ import Box from '@mui/material/Box'
 
 interface ContentOverlayProps {
   children: ReactNode
+  backgroundColor: string
   backgroundSrc?: string
 }
 
 export function ContentOverlay({
   children,
+  backgroundColor,
   backgroundSrc
 }: ContentOverlayProps): ReactElement {
   const theme = useTheme()
@@ -65,7 +67,8 @@ export function ContentOverlay({
             zIndex: -1,
             transform: 'scaleY(-1)',
             backgroundBlendMode: 'hard-light',
-            backgroundColor: 'background.paper',
+            backgroundColor:
+              backgroundSrc == null ? backgroundColor : undefined,
             backgroundImage:
               backgroundSrc != null
                 ? `url(${backgroundSrc}), url(${backgroundSrc})`
@@ -134,7 +137,8 @@ export function ContentOverlay({
                   backgroundRepeat: 'no-repeat',
                   backgroundSize: '100% 100%',
                   backgroundPosition: '0% 0%',
-                  backgroundColor: 'background.paper',
+                  backgroundColor:
+                    backgroundSrc == null ? backgroundColor : undefined,
                   backgroundImage:
                     backgroundSrc != null
                       ? `url(${backgroundSrc}), url(${backgroundSrc})`

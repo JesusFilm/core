@@ -48,6 +48,9 @@ export function Card({
       <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
     ))
 
+  const cardColor =
+    backgroundColor != null ? backgroundColor : 'background.paper'
+
   return (
     <CardWrapper
       id={id}
@@ -58,10 +61,13 @@ export function Card({
       {coverBlock != null && (fullscreen == null || !fullscreen) ? (
         <>
           {coverBlock.__typename === 'ImageBlock' && (
-            <CardCover imageBlock={coverBlock}>{renderedChildren}</CardCover>
+            <CardCover backgroundColor={cardColor} imageBlock={coverBlock}>
+              {renderedChildren}
+            </CardCover>
           )}
           {coverBlock.__typename === 'VideoBlock' && (
             <CardCover
+              backgroundColor={cardColor}
               videoBlock={coverBlock}
               imageBlock={
                 coverBlock.children.find(
