@@ -28,10 +28,7 @@ export function VideoBlockEditorSettingsPoster({
 
   const [loading, setLoading] = useState(false)
   const handleLoading = (): void => setLoading(true)
-  const handleLoad = (): void => {
-    console.log('here')
-    setLoading(false)
-  }
+  const handleLoad = (): void => setLoading(false)
 
   return (
     <Stack direction="row" justifyContent="space-between">
