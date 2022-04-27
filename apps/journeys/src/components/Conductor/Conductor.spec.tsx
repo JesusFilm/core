@@ -1,7 +1,7 @@
 import { useBreakpoints } from '@core/shared/ui'
 import { activeBlockVar, TreeBlock, treeBlocksVar } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { Conductor } from '.'
 
 jest.mock('../../../../../libs/shared/ui/src/', () => ({
