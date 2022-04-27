@@ -470,6 +470,7 @@ input NavigateToJourneyActionInput {
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   adminJourneys: [Journey!]! @join__field(graph: JOURNEYS)
+  episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   language(id: ID!): Language @join__field(graph: LANGUAGES)
@@ -748,10 +749,9 @@ type Video
 }
 
 type VideoBlock implements Block {
+  """action that should be performed when the video ends"""
+  action: Action
   autoplay: Boolean
-
-  """endAction is the action that should be performed when the video ends"""
-  endAction: Action
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int

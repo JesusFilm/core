@@ -16,11 +16,11 @@ export class VideoBlockResolver {
   constructor(private readonly blockService: BlockService) {}
 
   @ResolveField()
-  endAction(@Parent() block: VideoBlock): Action | null {
-    if (block.endAction == null) return null
+  action(@Parent() block: VideoBlock): Action | null {
+    if (block.action == null) return null
 
     return {
-      ...block.endAction,
+      ...block.action,
       parentBlockId: block.id
     }
   }

@@ -217,11 +217,21 @@ const blocks: GetJourney_journey_blocks[] = [
     variant: TypographyVariant.h6
   },
   {
+    id: 'typographyBlockId1',
+    __typename: 'TypographyBlock',
+    parentBlockId: 'card2.id',
+    parentOrder: 1,
+    align: null,
+    color: null,
+    content: 'What is Christianity to you?',
+    variant: TypographyVariant.h3
+  },
+  {
     id: 'radioQuestion1.id',
     __typename: 'RadioQuestionBlock',
     parentBlockId: 'card2.id',
-    parentOrder: 1,
-    label: 'What is Christianity to you?',
+    parentOrder: 2,
+    label: '',
     description: ''
   },
   {
@@ -301,11 +311,21 @@ const blocks: GetJourney_journey_blocks[] = [
     variant: TypographyVariant.h6
   },
   {
+    id: 'typographyBlockId1',
+    __typename: 'TypographyBlock',
+    parentBlockId: 'card3.id',
+    parentOrder: 1,
+    align: null,
+    color: null,
+    content: 'Do you need to change to be good enough for God?',
+    variant: TypographyVariant.h3
+  },
+  {
     id: 'radioQuestion2.id',
     __typename: 'RadioQuestionBlock',
     parentBlockId: 'card3.id',
-    parentOrder: 1,
-    label: 'Do you need to change to be good enough for God?',
+    parentOrder: 2,
+    label: '',
     description: ''
   },
   {
