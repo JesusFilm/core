@@ -42,6 +42,13 @@ input VideosFilter {
 }
 
 extend type Query {
+  episodes(
+    playlistId: ID!
+    idType: IdType
+    where: VideosFilter
+    offset: Int
+    limit: Int
+  ): [Video!]!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!, idType: IdType): Video!
 }
