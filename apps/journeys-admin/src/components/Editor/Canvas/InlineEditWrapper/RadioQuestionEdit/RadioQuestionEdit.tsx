@@ -14,20 +14,6 @@ import { InlineEditWrapper } from '../InlineEditWrapper'
 const adminPrimaryColor = adminTheme.palette
   .primary as SimplePaletteColorOptions
 
-export const RADIO_QUESTION_BLOCK_UPDATE_CONTENT = gql`
-  mutation RadioQuestionBlockUpdateContent(
-    $id: ID!
-    $journeyId: ID!
-    $input: RadioQuestionBlockUpdateInput!
-  ) {
-    radioQuestionBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-      id
-      label
-      description
-    }
-  }
-`
-
 export const RADIO_OPTION_BLOCK_CREATE = gql`
   mutation RadioOptionBlockCreate($input: RadioOptionBlockCreateInput!) {
     radioOptionBlockCreate(input: $input) {
@@ -42,8 +28,6 @@ export interface RadioQuestionEditProps
 
 export function RadioQuestionEdit({
   id,
-  label,
-  description,
   ...props
 }: RadioQuestionEditProps): ReactElement {
   const [radioOptionBlockCreate] = useMutation<RadioOptionBlockCreate>(
@@ -108,8 +92,6 @@ export function RadioQuestionEdit({
     <RadioQuestion
       {...props}
       id={id}
-      label={label}
-      description={description}
       addOption={props.children.length < 12 ? addRadioOption : undefined}
       wrappers={{
         Wrapper: SelectableWrapper,
