@@ -233,7 +233,7 @@ export function Video({
                 <VideoTrigger player={playerRef.current} videoTrigger={child} />
               )
           )}
-          {action != null && endAt != null && (
+          {action != null && endAt != null && endAt > 0 && (
             <VideoTrigger
               player={playerRef.current}
               triggerStart={endAt}
