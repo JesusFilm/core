@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import IconButton from '@mui/material/IconButton'
-import PreviewRoundedIcon from '@mui/icons-material/PreviewRounded'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import { useJourney } from '../../../libs/context'
 import { DeleteBlock } from './DeleteBlock'
 import { Menu } from './Menu'
@@ -16,7 +16,7 @@ export function EditToolbar(): ReactElement {
         target="_blank"
         disabled={journey == null}
       >
-        <PreviewRoundedIcon />
+        <VisibilityIcon />
       </IconButton>
       <DeleteBlock variant="button" />
       <Menu />

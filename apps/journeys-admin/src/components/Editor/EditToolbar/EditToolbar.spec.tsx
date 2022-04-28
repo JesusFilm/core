@@ -39,8 +39,9 @@ describe('Edit Toolbar', () => {
       </SnackbarProvider>
     )
     const button = getAllByRole('link', { name: 'Preview' })[0]
-    expect(button).toContainElement(getByTestId('PreviewRoundedIcon'))
+    expect(button).toContainElement(getByTestId('VisibilityIcon'))
     expect(button).toHaveAttribute('href', '/api/preview?slug=untitled-journey')
+    expect(button).toHaveAttribute('target', '_blank')
     expect(button).not.toBeDisabled()
   })
 })
