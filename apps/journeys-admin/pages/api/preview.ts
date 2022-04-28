@@ -37,12 +37,14 @@ export default async function handler(
   const slug = req.query.slug as string
 
   try {
-    await fetch(
+    const response = await fetch(
       `${process.env.JOURNEYS_URL}/api/revalidate?${new URLSearchParams({
         accessToken: process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN,
         slug
       }).toString()}`
     )
+    if (!response.ok)
+      return res.status(response.status).json(await response.text())
   } catch (e) {
     return res.status(500).json({ error: 'Error revalidating' })
   }
