@@ -9,7 +9,7 @@ import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 import { CardFields } from './__generated__/CardFields'
 import { Cover as CardCover } from './Cover'
-import { FullCardCover } from './FullCardCover'
+import { ExpandedCover } from './ExpandedCover'
 
 interface CardProps extends TreeBlock<CardFields> {
   wrappers?: WrappersProps
@@ -101,7 +101,7 @@ export function Card({
           >
             {renderedChildren}
           </Box>
-          <FullCardCover coverBlock={coverBlock} />
+          <ExpandedCover coverBlock={coverBlock} />
         </Box>
       )}
     </CardWrapper>
