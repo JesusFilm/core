@@ -7,7 +7,7 @@ import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import MoreVert from '@mui/icons-material/MoreVert'
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
+import BeenHereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditIcon from '@mui/icons-material/Edit'
 import DescriptionIcon from '@mui/icons-material/Description'
@@ -116,13 +116,13 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
             <MenuItem
               disabled={journey.status === JourneyStatus.draft}
               component="a"
-              href={`https://your.nextstep.is/${journey.slug}`}
+              href={`/api/preview?slug=${journey.slug}`}
               target="_blank"
               rel="noopener"
               onClick={handleCloseMenu}
             >
               <ListItemIcon>
-                <AssignmentTurnedInIcon />
+                <VisibilityIcon />
               </ListItemIcon>
               <ListItemText>Preview</ListItemText>
             </MenuItem>
@@ -131,7 +131,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
               onClick={handlePublish}
             >
               <ListItemIcon>
-                <VisibilityIcon />
+                <BeenHereRoundedIcon />
               </ListItemIcon>
               <ListItemText>Publish</ListItemText>
             </MenuItem>
