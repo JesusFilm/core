@@ -5,9 +5,13 @@ import { blurImage, TreeBlock } from '../../..'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 
-export function FullCardCover(
-  coverBlock: TreeBlock<ImageFields | VideoFields>
-): ReactElement {
+interface FullCardCoverProps {
+  coverBlock?: TreeBlock<ImageFields | VideoFields>
+}
+
+export function FullCardCover({
+  coverBlock
+}: FullCardCoverProps): ReactElement {
   const theme = useTheme()
   const blurUrl = useMemo(() => {
     return coverBlock?.__typename === 'ImageBlock'
