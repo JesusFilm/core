@@ -147,7 +147,8 @@ describe('CardBlock', () => {
         coverBlockId="videoBlockId1"
       />
     )
-    const sourceTag = getByTestId('CardCover').querySelector('.vjs-tech source')
+    const sourceTag =
+      getByTestId('ContainedCover').querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toEqual(
       'https://arc.gt/hls/2_0-FallingPlates/529'
     )

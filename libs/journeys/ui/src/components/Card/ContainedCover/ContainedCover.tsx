@@ -17,19 +17,19 @@ import { ContentOverlay } from './ContentOverlay'
 
 import 'video.js/dist/video-js.css'
 
-interface CoverProps {
+interface ContainedCoverProps {
   children: ReactNode
   backgroundColor: string
   imageBlock?: TreeBlock<ImageFields>
   videoBlock?: TreeBlock<VideoFields>
 }
 
-export function Cover({
+export function ContainedCover({
   children,
   backgroundColor,
   imageBlock,
   videoBlock
-}: CoverProps): ReactElement {
+}: ContainedCoverProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const theme = useTheme()
@@ -87,7 +87,7 @@ export function Cover({
   return (
     <>
       <Box
-        data-testid="CardCover"
+        data-testid="ContainedCover"
         sx={{
           position: 'relative',
           flexGrow: 1,

@@ -7,7 +7,7 @@ import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 import { CardFields } from './__generated__/CardFields'
-import { Cover as CardCover } from './Cover'
+import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
 
 interface CardProps extends TreeBlock<CardFields> {
@@ -47,12 +47,12 @@ export function Card({
       {coverBlock != null && (fullscreen == null || !fullscreen) ? (
         <>
           {coverBlock.__typename === 'ImageBlock' && (
-            <CardCover backgroundColor={cardColor} imageBlock={coverBlock}>
+            <ContainedCover backgroundColor={cardColor} imageBlock={coverBlock}>
               {renderedChildren}
-            </CardCover>
+            </ContainedCover>
           )}
           {coverBlock.__typename === 'VideoBlock' && (
-            <CardCover
+            <ContainedCover
               backgroundColor={cardColor}
               videoBlock={coverBlock}
               imageBlock={
@@ -64,7 +64,7 @@ export function Card({
               }
             >
               {renderedChildren}
-            </CardCover>
+            </ContainedCover>
           )}
         </>
       ) : (
