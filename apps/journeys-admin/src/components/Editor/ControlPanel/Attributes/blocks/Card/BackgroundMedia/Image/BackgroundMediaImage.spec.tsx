@@ -319,7 +319,6 @@ describe('BackgroundMediaImage', () => {
         target: { value: image.src }
       })
       fireEvent.blur(textBox)
-      await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(textBox).toHaveValue(image.src))
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
@@ -327,6 +326,25 @@ describe('BackgroundMediaImage', () => {
         { __ref: `ImageBlock:${image.id}` }
       ])
     })
+
+    it('shows loading icon', async () => {
+      const { getByRole } = render(
+        <MockedProvider mocks={[]}>
+          <JourneyProvider value={journey}>
+            <SnackbarProvider>
+              <BackgroundMediaImage cardBlock={existingCoverBlock} />
+            </SnackbarProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+      const textbox = getByRole('textbox')
+      fireEvent.change(textbox, {
+        target: { value: image.src }
+      })
+      fireEvent.blur(textbox)
+      await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
+    })
+
     it('deletes an image block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
