@@ -5,6 +5,7 @@ import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import Divider from '@mui/material/Divider'
 import { useEditor } from '@core/journeys/ui'
 import { Theme } from '@mui/material/styles'
@@ -14,6 +15,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
 import { DeleteBlock } from '../DeleteBlock'
 import { useJourney } from '../../../../libs/context'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 export function Menu(): ReactElement {
   const {
@@ -35,6 +37,19 @@ export function Menu(): ReactElement {
   function BlockMenu(): ReactElement {
     return (
       <>
+        <MenuItem
+          disabled={journey?.status === JourneyStatus.draft}
+          component="a"
+          href={`/api/preview?slug=${journey?.slug ?? ''}`}
+          target="_blank"
+          rel="noopener"
+          onClick={handleCloseMenu}
+        >
+          <ListItemIcon>
+            <VisibilityIcon />
+          </ListItemIcon>
+          <ListItemText>Preview</ListItemText>
+        </MenuItem>
         <DeleteBlock variant="list-item" />
         {!smUp && (
           <MenuItem onClick={handleOpenSocial}>
@@ -51,6 +66,19 @@ export function Menu(): ReactElement {
   function CardMenu(): ReactElement {
     return (
       <>
+        <MenuItem
+          disabled={journey?.status === JourneyStatus.draft}
+          component="a"
+          href={`/api/preview?slug=${journey?.slug ?? ''}`}
+          target="_blank"
+          rel="noopener"
+          onClick={handleCloseMenu}
+        >
+          <ListItemIcon>
+            <VisibilityIcon />
+          </ListItemIcon>
+          <ListItemText>Preview</ListItemText>
+        </MenuItem>
         <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
         {!smUp && (
           <MenuItem onClick={handleOpenSocial}>
