@@ -67,7 +67,7 @@ describe('JourneyCardMenu', () => {
     fireEvent.click(getByRole('button'))
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'href',
-      'https://your.nextstep.is/published-journey'
+      '/api/preview?slug=published-journey'
     )
   })
 

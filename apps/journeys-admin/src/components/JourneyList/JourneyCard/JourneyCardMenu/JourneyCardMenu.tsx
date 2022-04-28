@@ -95,7 +95,7 @@ export function JourneyCardMenu({
             </ListItemText>
           </MenuItem>
         ) : (
-          <Link href={`https://your.nextstep.is/${slug}`} passHref>
+          <Link href={`/api/preview?slug=${slug}`} passHref>
             <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
               <ListItemIcon>
                 <VisibilityIcon color="secondary" />

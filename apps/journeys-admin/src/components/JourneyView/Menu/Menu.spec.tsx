@@ -61,7 +61,7 @@ describe('JourneyView/Menu', () => {
     fireEvent.click(getByRole('button'))
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'href',
-      `https://your.nextstep.is/${publishedJourney.slug}`
+      `/api/preview?slug=${publishedJourney.slug}`
     )
   })
 
