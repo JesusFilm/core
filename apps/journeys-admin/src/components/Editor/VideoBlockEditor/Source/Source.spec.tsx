@@ -84,7 +84,8 @@ describe('Source', () => {
     fireEvent.click(getByRole('button', { name: 'Select' }))
     expect(onChange).toHaveBeenCalledWith({
       videoId: '2_0-Brand_Video',
-      videoVariantLanguageId: '529'
+      videoVariantLanguageId: '529',
+      endAt: 144
     })
   })
 })
