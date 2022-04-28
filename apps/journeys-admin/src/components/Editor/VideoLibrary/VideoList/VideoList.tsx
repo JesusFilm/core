@@ -32,7 +32,11 @@ export const GET_VIDEOS = gql`
 `
 
 interface VideoListProps {
-  onSelect: (videoId: string, videoVariantLanguageId?: string) => void
+  onSelect: (
+    videoId: string,
+    videoVariantLanguageId?: string,
+    endAt?: number
+  ) => void
   currentLanguageIds?: string[]
   title?: string
 }

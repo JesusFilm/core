@@ -48,7 +48,11 @@ interface VideoDetailsProps {
   open: boolean
   id: string
   onClose: () => void
-  onSelect: (videoId: string, videoVariantLanguageId?: string) => void
+  onSelect: (
+    videoId: string,
+    videoVariantLanguageId?: string,
+    endAt?: number
+  ) => void
 }
 
 export function VideoDetails({
@@ -72,7 +76,7 @@ export function VideoDetails({
   }
 
   const handleVideoSelect = (): void => {
-    handleSelect(id, data?.video?.primaryLanguageId)
+    handleSelect(id, data?.video?.primaryLanguageId, time)
     handleClose()
   }
 

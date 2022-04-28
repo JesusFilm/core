@@ -11,7 +11,11 @@ interface VideoListItemProps {
   description?: string
   image?: string
   duration?: number
-  onSelect: (videoId: string, videoVariantLanguageId?: string) => void
+  onSelect: (
+    videoId: string,
+    videoVariantLanguageId?: string,
+    endAt?: number
+  ) => void
 }
 
 export function VideoListItem({

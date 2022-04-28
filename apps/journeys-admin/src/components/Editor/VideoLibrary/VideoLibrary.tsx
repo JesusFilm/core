@@ -16,7 +16,11 @@ export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
   open: boolean
   onClose?: () => void
-  onSelect?: (videoId: string, videoVariantLanguageId?: string) => void
+  onSelect?: (
+    videoId: string,
+    videoVariantLanguageId?: string,
+    endAt?: number
+  ) => void
 }
 
 export function VideoLibrary({
@@ -27,8 +31,13 @@ export function VideoLibrary({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [title, setTitle] = useState<string>()
 
-  const onSelect = (videoId: string, videoVariantLanguageId?: string): void => {
-    if (handleSelect != null) handleSelect(videoId, videoVariantLanguageId)
+  const onSelect = (
+    videoId: string,
+    videoVariantLanguageId?: string,
+    endAt?: number
+  ): void => {
+    if (handleSelect != null)
+      handleSelect(videoId, videoVariantLanguageId, endAt)
     if (onClose != null) onClose()
   }
 
