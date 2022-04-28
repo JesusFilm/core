@@ -19,6 +19,7 @@ interface VideoLibraryProps {
   onSelect?: (
     videoId: string,
     videoVariantLanguageId?: string,
+    startAt?: number,
     endAt?: number
   ) => void
 }
@@ -34,10 +35,11 @@ export function VideoLibrary({
   const onSelect = (
     videoId: string,
     videoVariantLanguageId?: string,
+    startAt?: number,
     endAt?: number
   ): void => {
     if (handleSelect != null)
-      handleSelect(videoId, videoVariantLanguageId, endAt)
+      handleSelect(videoId, videoVariantLanguageId, startAt, endAt)
     if (onClose != null) onClose()
   }
 

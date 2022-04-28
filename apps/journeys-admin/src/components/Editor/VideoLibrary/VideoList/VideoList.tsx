@@ -35,6 +35,7 @@ interface VideoListProps {
   onSelect: (
     videoId: string,
     videoVariantLanguageId?: string,
+    startAt?: number,
     endAt?: number
   ) => void
   currentLanguageIds?: string[]

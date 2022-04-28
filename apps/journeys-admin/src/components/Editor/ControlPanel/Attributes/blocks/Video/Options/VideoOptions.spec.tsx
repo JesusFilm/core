@@ -120,6 +120,7 @@ describe('VideoOptions', () => {
                 input: {
                   videoId: '2_0-Brand_Video',
                   videoVariantLanguageId: '529',
+                  startAt: 0,
                   endAt: 144
                 }
               }
