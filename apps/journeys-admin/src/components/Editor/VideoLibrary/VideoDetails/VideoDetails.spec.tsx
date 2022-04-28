@@ -126,7 +126,7 @@ describe('VideoDetails', () => {
       expect(getByRole('button', { name: 'Select' })).toBeEnabled()
     )
     fireEvent.click(getByRole('button', { name: 'Select' }))
-    expect(onSelect).toHaveBeenCalledWith('2_Acts7302-0-0', '529')
+    expect(onSelect).toHaveBeenCalledWith('2_Acts7302-0-0', '529', 144)
     expect(onClose).toHaveBeenCalledWith()
   })
 })

@@ -14,8 +14,9 @@ export function Source({ onChange }: SourceProps): ReactElement {
 
   const onSelect = async (
     videoId: string,
-    videoVariantLanguageId?: string
-  ): Promise<void> => await onChange({ videoId, videoVariantLanguageId })
+    videoVariantLanguageId?: string,
+    endAt?: number
+  ): Promise<void> => await onChange({ videoId, videoVariantLanguageId, endAt })
 
   return (
     <>
