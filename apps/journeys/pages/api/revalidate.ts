@@ -4,9 +4,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  // Check for secret to confirm this is a valid request
-  if (req.query.secret !== process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN) {
-    return res.status(401).json({ message: 'Invalid token' })
+  // Check for accessToken to confirm this is a valid request
+  if (req.query.accessToken !== process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN) {
+    return res.status(401).json({ message: 'Invalid access token' })
   }
 
   try {
