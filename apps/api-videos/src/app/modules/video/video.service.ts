@@ -61,7 +61,7 @@ export class VideoService extends BaseService {
     const idFilter =
       idType === IdType.databaseId
         ? aql`FILTER video._key == ${playlistId}`
-        : aql`FILTER video.permalink == ${playlistId}`
+        : aql`FILTER ${playlistId} IN video.permalinks[*].value`
 
     const res = await this.db.query(aql`
     FOR video IN ${this.collection}
@@ -89,7 +89,7 @@ export class VideoService extends BaseService {
           ], 0),
           variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
           episodeIds: item.episodeIds,
-          permalink: item.permalink,
+          permalinks: item.permalinks,
           noIndex: item.noIndex,
           seoTitle: item.seoTitle,
           imageAlt: item.imageAlt
@@ -126,7 +126,7 @@ export class VideoService extends BaseService {
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds,
-        permalink: item.permalink,
+        permalinks: item.permalinks,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
         imageAlt: item.imageAlt
@@ -159,7 +159,7 @@ export class VideoService extends BaseService {
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
         episodeIds: item.episodeIds,
-        permalink: item.permalink,
+        permalinks: item.permalinks,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
         imageAlt: item.imageAlt
@@ -175,7 +175,7 @@ export class VideoService extends BaseService {
   ): Promise<T> {
     const res = await this.db.query(aql`
     FOR item in ${this.collection}
-      FILTER item.permalink == ${permalink}
+      FILTER ${permalink} IN item.permalinks[*].value
       LIMIT 1
       RETURN {
         _key: item._key,
@@ -195,7 +195,7 @@ export class VideoService extends BaseService {
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
         episodeIds: item.episodeIds,
-        permalink: item.permalink,
+        permalinks: item.permalinks,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
         imageAlt: item.imageAlt
@@ -230,7 +230,7 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds,
-        permalink: item.permalink,
+        permalinks: item.permalinks,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
         imageAlt: item.imageAlt
