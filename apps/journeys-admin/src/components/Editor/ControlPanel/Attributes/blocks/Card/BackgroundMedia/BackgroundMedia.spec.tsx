@@ -91,6 +91,7 @@ describe('BackgroundMedia', () => {
       muted: false,
       autoplay: true,
       fullsize: false,
+      action: null,
       videoId: '2_0-FallingPlates',
       videoVariantLanguageId: '529',
       video: {

@@ -5,7 +5,7 @@ import { ThemeProvider } from '@core/shared/ui'
 import { BLOCK_FIELDS, IMAGE_FIELDS, transformer } from '@core/journeys/ui'
 import { NextSeo } from 'next-seo'
 import { Conductor } from '../src/components/Conductor'
-import client from '../src/libs/client'
+import { createApolloClient } from '../src/libs/client'
 import {
   GetJourney,
   GetJourney_journey as Journey
@@ -70,6 +70,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
 export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
   params
 }) => {
+  const client = createApolloClient()
   const { data } = await client.query<GetJourney>({
     query: gql`
       ${BLOCK_FIELDS}
@@ -114,6 +115,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  const client = createApolloClient()
   const { data } = await client.query<GetJourneySlugs>({
     query: gql`
       query GetJourneySlugs {

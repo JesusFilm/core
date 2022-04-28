@@ -25,7 +25,13 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 3680, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    permalink: 'the-story-of-jesus-for-children'
+    permalinks: [
+      {
+        value: 'the-story-of-jesus-for-children',
+        primary: true,
+        __typename: 'Translation'
+      }
+    ]
   },
   {
     id: '1_jf-0-0',
@@ -44,7 +50,7 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 7674, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    permalink: 'jesus'
+    permalinks: [{ value: 'jesus', primary: true, __typename: 'Translation' }]
   },
   {
     id: '1_wl-0-0',
@@ -69,7 +75,13 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 4952, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    permalink: 'magdalena-directors-cut'
+    permalinks: [
+      {
+        value: 'magdalena-directors-cut',
+        primary: true,
+        __typename: 'Translation'
+      }
+    ]
   },
   {
     id: '2_Acts-0-0',
@@ -90,7 +102,9 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 11530, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    permalink: 'book-of-acts'
+    permalinks: [
+      { value: 'book-of-acts', primary: true, __typename: 'Translation' }
+    ]
   },
   {
     id: '2_CSF',
@@ -115,7 +129,13 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 343, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    permalink: 'a-day-and-a-night-with-creator-sets-free'
+    permalinks: [
+      {
+        value: 'a-day-and-a-night-with-creator-sets-free',
+        primary: true,
+        __typename: 'Translation'
+      }
+    ]
   },
   {
     id: '2_GOJ-0-0',
@@ -140,7 +160,13 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 10994, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    permalink: 'life-of-jesus-gospel-of-john'
+    permalinks: [
+      {
+        value: 'life-of-jesus-gospel-of-john',
+        primary: true,
+        __typename: 'Translation'
+      }
+    ]
   },
   {
     id: 'MAG1',
@@ -159,7 +185,9 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 3665, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    permalink: 'magdalena'
+    permalinks: [
+      { value: 'magdalena', primary: true, __typename: 'Translation' }
+    ]
   },
   {
     id: '1_0-TrainV_1Install',
@@ -184,6 +212,12 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 118, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    permalink: 'installing-the-jesus-film-media-app'
+    permalinks: [
+      {
+        value: 'installing-the-jesus-film-media-app',
+        primary: true,
+        __typename: 'Translation'
+      }
+    ]
   }
 ]

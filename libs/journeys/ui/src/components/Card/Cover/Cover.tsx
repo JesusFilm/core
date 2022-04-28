@@ -19,12 +19,14 @@ import 'video.js/dist/video-js.css'
 
 interface CoverProps {
   children: ReactNode
+  backgroundColor: string
   imageBlock?: TreeBlock<ImageFields>
   videoBlock?: TreeBlock<VideoFields>
 }
 
 export function Cover({
   children,
+  backgroundColor,
   imageBlock,
   videoBlock
 }: CoverProps): ReactElement {
@@ -64,6 +66,20 @@ export function Cover({
       // Video jumps to new time and finishes loading
       playerRef.current.on('seeked', () => {
         setLoading(false)
+      })
+      playerRef.current.on('timeupdate', () => {
+        if (
+          videoBlock?.startAt != null &&
+          videoBlock?.endAt != null &&
+          videoBlock?.endAt > 0 &&
+          playerRef.current != null
+        ) {
+          const currentTime = playerRef.current.currentTime()
+          const { startAt, endAt } = videoBlock
+          if (currentTime < (startAt ?? 0) || currentTime >= endAt) {
+            playerRef.current.currentTime(startAt ?? 0)
+          }
+        }
       })
     }
   }, [imageBlock, theme, videoBlock, blurBackground])
@@ -114,7 +130,12 @@ export function Cover({
           />
         )}
       </Box>
-      <ContentOverlay backgroundSrc={blurBackground}>{children}</ContentOverlay>
+      <ContentOverlay
+        backgroundColor={backgroundColor}
+        backgroundSrc={blurBackground}
+      >
+        {children}
+      </ContentOverlay>
     </>
   )
 }

@@ -23,6 +23,7 @@ export const Default: Story = () => {
     muted: true,
     autoplay: true,
     fullsize: true,
+    action: null,
     videoId: null,
     videoVariantLanguageId: null,
     video: null,
@@ -55,6 +56,7 @@ export const Filled: Story = () => {
     muted: true,
     autoplay: true,
     fullsize: true,
+    action: null,
     videoId: '2_0-FallingPlates',
     videoVariantLanguageId: '529',
     video: {

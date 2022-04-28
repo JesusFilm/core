@@ -8,11 +8,9 @@ import {
   RadioQuestionEditProps,
   RADIO_OPTION_BLOCK_CREATE
 } from './RadioQuestionEdit'
-import { RadioQuestionEdit, RADIO_QUESTION_BLOCK_UPDATE_CONTENT } from '.'
+import { RadioQuestionEdit } from '.'
 
 describe('RadioQuestionEdit', () => {
-  const onDelete = jest.fn()
-
   const props = (
     children?: Array<TreeBlock<RadioOptionFields>>
   ): RadioQuestionEditProps => {
@@ -23,8 +21,7 @@ describe('RadioQuestionEdit', () => {
       id: 'radioQuestion.id',
       label: 'heading',
       description: 'description',
-      children: children ?? [],
-      deleteSelf: onDelete
+      children: children ?? []
     }
   }
 
@@ -37,134 +34,6 @@ describe('RadioQuestionEdit', () => {
     action: null,
     children: []
   }
-
-  it('selects the heading input by default on click', () => {
-    const { getAllByRole } = render(
-      <MockedProvider>
-        <RadioQuestionEdit {...props()} />
-      </MockedProvider>
-    )
-    const input = getAllByRole('textbox')[0]
-    fireEvent.click(input)
-    expect(input).toHaveFocus()
-    expect(input).toHaveAttribute('placeholder', 'Type your question here...')
-  })
-
-  it('saves the heading content on blur', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        radioQuestionBlockUpdate: [
-          {
-            __typename: 'RadioQuestionBlock',
-            id: 'radioQuestion.id',
-            label: 'updated heading',
-            description: 'description'
-          }
-        ]
-      }
-    }))
-
-    const { getAllByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: RADIO_QUESTION_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'radioQuestion.id',
-                journeyId: 'journeyId',
-                input: {
-                  label: 'updated heading',
-                  description: 'description'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
-          <EditorProvider>
-            <RadioQuestionEdit {...props()} />
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    const input = getAllByRole('textbox')[0]
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: '    updated heading    ' } })
-    fireEvent.blur(input)
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
-  it('saves the description content on blur', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        radioQuestionBlockUpdate: [
-          {
-            __typename: 'RadioQuestionBlock',
-            id: 'radioQuestion.id',
-            label: 'heading',
-            description: 'updated description'
-          }
-        ]
-      }
-    }))
-
-    const { getAllByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: RADIO_QUESTION_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'radioQuestion.id',
-                journeyId: 'journeyId',
-                input: {
-                  label: 'heading',
-                  description: 'updated description'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
-          <EditorProvider>
-            <RadioQuestionEdit {...props()} />
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    const input = getAllByRole('textbox')[1]
-    fireEvent.click(input)
-    fireEvent.change(input, {
-      target: { value: '    updated description    ' }
-    })
-    fireEvent.blur(input)
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
-  it('calls onDelete when heading and description deleted', async () => {
-    const { getAllByRole } = render(
-      <MockedProvider>
-        <RadioQuestionEdit {...props()} />
-      </MockedProvider>
-    )
-    const headingInput = getAllByRole('textbox')[0]
-    const descriptionInput = getAllByRole('textbox')[1]
-
-    fireEvent.click(headingInput)
-    fireEvent.change(headingInput, { target: { value: '' } })
-    fireEvent.click(descriptionInput)
-    fireEvent.change(descriptionInput, { target: { value: '' } })
-    fireEvent.blur(descriptionInput)
-
-    expect(onDelete).toHaveBeenCalled()
-  })
 
   it('adds an option on click', async () => {
     const result = jest.fn(() => ({

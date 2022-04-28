@@ -36,7 +36,12 @@ export function VideoListCard({
           </>
         )}
         {video != null && (
-          <Link href={`/${video.permalink}`} passHref={true}>
+          <Link
+            href={`/${
+              video.permalinks.find((link) => link.primary)?.value ?? ''
+            }`}
+            passHref={true}
+          >
             <CardActionArea>
               <CardMedia
                 component="img"

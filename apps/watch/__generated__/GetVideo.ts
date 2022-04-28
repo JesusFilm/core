@@ -27,6 +27,57 @@ export interface GetVideo_video_variant {
   hls: string | null;
 }
 
+export interface GetVideo_video_episodes_title {
+  __typename: "Translation";
+  primary: boolean;
+  value: string;
+}
+
+export interface GetVideo_video_episodes_imageAlt {
+  __typename: "Translation";
+  primary: boolean;
+  value: string;
+}
+
+export interface GetVideo_video_episodes_snippet {
+  __typename: "Translation";
+  primary: boolean;
+  value: string;
+}
+
+export interface GetVideo_video_episodes_permalinks {
+  __typename: "Translation";
+  primary: boolean;
+  value: string;
+}
+
+export interface GetVideo_video_episodes_variant {
+  __typename: "VideoVariant";
+  duration: number;
+  hls: string | null;
+}
+
+export interface GetVideo_video_episodes {
+  __typename: "Video";
+  id: string;
+  title: GetVideo_video_episodes_title[];
+  image: string | null;
+  imageAlt: GetVideo_video_episodes_imageAlt[];
+  snippet: GetVideo_video_episodes_snippet[];
+  permalinks: GetVideo_video_episodes_permalinks[];
+  /**
+   * Episodes are child videos, currently only found in a playlist type
+   */
+  episodeIds: string[];
+  variant: GetVideo_video_episodes_variant | null;
+}
+
+export interface GetVideo_video_permalinks {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
 export interface GetVideo_video {
   __typename: "Video";
   id: string;
@@ -35,11 +86,8 @@ export interface GetVideo_video {
   description: GetVideo_video_description[];
   title: GetVideo_video_title[];
   variant: GetVideo_video_variant | null;
-  /**
-   * Episodes are child videos, currently only found in a playlist type
-   */
-  episodeIds: string[];
-  permalink: string;
+  episodes: GetVideo_video_episodes[];
+  permalinks: GetVideo_video_permalinks[];
 }
 
 export interface GetVideo {
