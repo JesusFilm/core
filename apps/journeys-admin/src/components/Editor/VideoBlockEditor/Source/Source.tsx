@@ -12,13 +12,8 @@ interface SourceProps {
 export function Source({ onChange }: SourceProps): ReactElement {
   const [open, setOpen] = useState(false)
 
-  const onSelect = async (
-    videoId: string,
-    videoVariantLanguageId?: string,
-    startAt?: number,
-    endAt?: number
-  ): Promise<void> =>
-    await onChange({ videoId, videoVariantLanguageId, startAt, endAt })
+  const onSelect = async (block: VideoBlockUpdateInput): Promise<void> =>
+    await onChange(block)
 
   return (
     <>

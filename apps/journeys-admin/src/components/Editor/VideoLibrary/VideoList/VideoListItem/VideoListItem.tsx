@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
+import { VideoBlockUpdateInput } from '../../../../../../__generated__/globalTypes'
 import { VideoDetails } from '../../VideoDetails'
 
 interface VideoListItemProps {
@@ -11,12 +12,7 @@ interface VideoListItemProps {
   description?: string
   image?: string
   duration?: number
-  onSelect: (
-    videoId: string,
-    videoVariantLanguageId?: string,
-    startAt?: number,
-    endAt?: number
-  ) => void
+  onSelect: (block: VideoBlockUpdateInput) => void
 }
 
 export function VideoListItem({
