@@ -89,7 +89,7 @@ interface Video {
   imageAlt: Translation[]
   variants: VideoVariant[]
   tagIds: string[]
-  permalink: string
+  permalinks: Translation[]
   episodeIds: string[]
   noIndex: boolean
 }
@@ -171,7 +171,8 @@ async function digestContent(
   mediaComponent: MediaComponent
 ): Promise<void> {
   const video = await getVideo(mediaComponent.mediaComponentId)
-  if (video?.permalink != null) usedTitles.push(video.permalink)
+  if (video?.permalinks != null)
+    video.permalinks.forEach((title) => usedTitles.push(title.value))
 
   const metadataLanguageId =
     languages
@@ -241,7 +242,13 @@ async function digestContent(
     tagIds: [],
     episodeIds: [],
     variants,
-    permalink: video?.permalink ?? getSeoTitle(mediaComponent.title),
+    permalinks: video?.permalinks ?? [
+      {
+        value: getSeoTitle(mediaComponent.title),
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
     noIndex: false
   }
 
@@ -312,7 +319,8 @@ async function digestSeriesContainer(
   languages,
   video
 ): Promise<Video> {
-  if (video?.permalink != null) usedTitles.push(video.permalink)
+  if (video?.permalinks != null)
+    video.permalinks.forEach((title) => usedTitles.push(title.value))
   const metadataLanguageId =
     languages
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
@@ -378,7 +386,13 @@ async function digestSeriesContainer(
       }
     ],
     tagIds: [],
-    permalink: video?.permalink ?? getSeoTitle(mediaComponent.title),
+    permalinks: video?.permalinks ?? [
+      {
+        value: getSeoTitle(mediaComponent.title),
+        languageId: metadataLanguageId,
+        primary: true
+      }
+    ],
     episodeIds: [],
     variants,
     noIndex: false
@@ -500,7 +514,7 @@ async function main(): Promise<void> {
           episodeIds: {
             analyzers: ['identity']
           },
-          permalink: {
+          permalinks: {
             analyzers: ['identity']
           }
         }
@@ -526,9 +540,9 @@ async function main(): Promise<void> {
   }
 
   await db.collection('videos').ensureIndex({
-    name: 'permalink',
+    name: 'permalinks',
     type: 'persistent',
-    fields: ['permalink'],
+    fields: ['permalinks[*].value'],
     unique: true
   })
 

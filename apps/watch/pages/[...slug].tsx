@@ -48,14 +48,20 @@ export const GET_VIDEO = gql`
           primary
           value
         }
-        permalink
+        permalinks {
+          primary
+          value
+        }
         episodeIds
         variant {
           duration
           hls
         }
       }
-      permalink
+      permalinks {
+        value
+        primary
+      }
     }
   }
 `
@@ -79,7 +85,10 @@ export const GET_VIDEO_SIBLINGS = gql`
         hls
       }
       episodeIds
-      permalink
+      permalinks {
+        primary
+        value
+      }
     }
   }
 `

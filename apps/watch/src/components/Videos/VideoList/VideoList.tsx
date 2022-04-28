@@ -25,7 +25,10 @@ export const GET_VIDEOS = gql`
         duration
       }
       episodeIds
-      permalink
+      permalinks {
+        value
+        primary
+      }
     }
   }
 `
