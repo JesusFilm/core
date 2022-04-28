@@ -1,4 +1,4 @@
-import type { NextApiHandler } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifyIdToken } from 'next-firebase-auth'
 import fetch from 'node-fetch'
 import { initAuth } from '../../src/libs/firebaseClient/initAuth'
@@ -11,7 +11,10 @@ async function sleep(ms): Promise<void> {
   })
 }
 
-const handler: NextApiHandler = async (req, res) => {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void> {
   if (req.cookies['journeys-admin.AuthUser'] == null) {
     return res.status(400).json({ error: 'Missing Authorization header value' })
   }
@@ -47,7 +50,5 @@ const handler: NextApiHandler = async (req, res) => {
   // 300ms required to invalidate edge caches
   await sleep(300)
 
-  return res.redirect(307, `${process.env.JOURNEYS_URL}/${slug}`).json({})
+  res.redirect(307, `${process.env.JOURNEYS_URL}/${slug}`)
 }
-
-export default handler
