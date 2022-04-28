@@ -1,7 +1,6 @@
 import { ReactElement, ReactNode } from 'react'
 import { ThemeProvider } from '@core/shared/ui'
 import Paper from '@mui/material/Paper'
-import Box from '@mui/material/Box'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { TreeBlock } from '../..'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
@@ -69,40 +68,9 @@ export function Card({
           )}
         </>
       ) : (
-        <Box
-          sx={{
-            flexGrow: 1,
-            overflow: 'auto',
-            display: 'flex',
-            padding: (theme) => ({
-              xs: theme.spacing(7),
-              sm: theme.spacing(7, 10),
-              md: theme.spacing(10)
-            }),
-            borderRadius: (theme) => theme.spacing(4),
-            justifyContent: 'center'
-          }}
-        >
-          <Box
-            sx={{
-              margin: 'auto',
-              width: '100%',
-              maxWidth: 500,
-              zIndex: 1,
-              '& > *': {
-                '&:first-child': { mt: 0 },
-                '&:last-child': { mb: 0 }
-              },
-              // NextImage span
-              '> span': {
-                maxHeight: '100%'
-              }
-            }}
-          >
-            {renderedChildren}
-          </Box>
-          <ExpandedCover coverBlock={coverBlock} />
-        </Box>
+        <ExpandedCover coverBlock={coverBlock}>
+          {renderedChildren}
+        </ExpandedCover>
       )}
     </CardWrapper>
   )
