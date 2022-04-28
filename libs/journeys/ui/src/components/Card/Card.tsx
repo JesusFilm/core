@@ -1,15 +1,15 @@
-import { ReactElement, ReactNode, useMemo } from 'react'
-import { ThemeProvider, NextImage } from '@core/shared/ui'
-import { useTheme } from '@mui/material/styles'
+import { ReactElement, ReactNode } from 'react'
+import { ThemeProvider } from '@core/shared/ui'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import { SxProps } from '@mui/system/styleFunctionSx'
-import { blurImage, TreeBlock } from '../..'
+import { TreeBlock } from '../..'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 import { CardFields } from './__generated__/CardFields'
 import { Cover as CardCover } from './Cover'
+import { FullCardCover } from './FullCardCover'
 
 interface CardProps extends TreeBlock<CardFields> {
   wrappers?: WrappersProps
@@ -25,22 +25,9 @@ export function Card({
   fullscreen,
   wrappers
 }: CardProps): ReactElement {
-  const theme = useTheme()
-
   const coverBlock = children.find((block) => block.id === coverBlockId) as
     | TreeBlock<ImageFields | VideoFields>
     | undefined
-
-  const blurUrl = useMemo(() => {
-    return coverBlock?.__typename === 'ImageBlock'
-      ? blurImage(
-          coverBlock.width,
-          coverBlock.height,
-          coverBlock.blurhash,
-          theme.palette.background.paper
-        )
-      : undefined
-  }, [coverBlock, theme])
 
   const renderedChildren = children
     .filter(({ id }) => id !== coverBlockId)
@@ -114,14 +101,7 @@ export function Card({
           >
             {renderedChildren}
           </Box>
-          {blurUrl != null && coverBlock?.__typename === 'ImageBlock' && (
-            <NextImage
-              src={blurUrl}
-              alt={coverBlock.alt}
-              layout="fill"
-              objectFit="cover"
-            />
-          )}
+          <FullCardCover coverBlock={coverBlock} />
         </Box>
       )}
     </CardWrapper>

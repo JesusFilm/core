@@ -1,0 +1,1 @@
+export { FullCardCover } from './FullCardCover'
