@@ -63,6 +63,10 @@ describe('JourneyView/Menu', () => {
       'href',
       `/api/preview?slug=${publishedJourney.slug}`
     )
+    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+      'target',
+      '_blank'
+    )
   })
 
   it('should publish when clicked', async () => {

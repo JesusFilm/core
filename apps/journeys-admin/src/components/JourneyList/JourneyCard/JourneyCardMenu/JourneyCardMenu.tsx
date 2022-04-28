@@ -83,31 +83,23 @@ export function JourneyCardMenu({
           </ListItemText>
         </MenuItem>
 
-        {status === JourneyStatus.draft ? (
-          <MenuItem disabled sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
-            <ListItemIcon>
-              <VisibilityIcon color="secondary" />
-            </ListItemIcon>
-            <ListItemText>
-              <Typography variant="body1" sx={{ pl: 2 }}>
-                Preview
-              </Typography>
-            </ListItemText>
-          </MenuItem>
-        ) : (
-          <Link href={`/api/preview?slug=${slug}`} passHref>
-            <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
-              <ListItemIcon>
-                <VisibilityIcon color="secondary" />
-              </ListItemIcon>
-              <ListItemText>
-                <Typography variant="body1" sx={{ pl: 2 }}>
-                  Preview
-                </Typography>
-              </ListItemText>
-            </MenuItem>
-          </Link>
-        )}
+        <MenuItem
+          sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+          disabled={status === JourneyStatus.draft}
+          component="a"
+          href={`/api/preview?slug=${slug}`}
+          target="_blank"
+          rel="noopener"
+        >
+          <ListItemIcon>
+            <VisibilityIcon color="secondary" />
+          </ListItemIcon>
+          <ListItemText>
+            <Typography variant="body1" sx={{ pl: 2 }}>
+              Preview
+            </Typography>
+          </ListItemText>
+        </MenuItem>
       </Menu>
 
       <AccessDialog

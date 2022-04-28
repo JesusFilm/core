@@ -69,6 +69,10 @@ describe('JourneyCardMenu', () => {
       'href',
       '/api/preview?slug=published-journey'
     )
+    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+      'target',
+      '_blank'
+    )
   })
 
   it('should have a disabled preview button is journey is draft', () => {
