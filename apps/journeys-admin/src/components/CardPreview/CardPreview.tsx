@@ -168,9 +168,8 @@ export function CardPreview({
                 variant="outlined"
                 sx={{
                   display: 'flex',
-                  width: 87,
-                  height: 132,
-                  m: 1
+                  width: 89,
+                  height: 134
                 }}
               >
                 <CardActionArea
@@ -194,7 +193,8 @@ export function CardPreview({
               data-testid={`preview-${step.id}`}
               sx={{
                 width: 95,
-                height: 140
+                height: 140,
+                margin: '-3px'
               }}
             >
               <Box

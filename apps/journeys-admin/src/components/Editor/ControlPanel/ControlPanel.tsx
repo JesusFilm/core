@@ -73,7 +73,12 @@ export function ControlPanel(): ReactElement {
           />
         </Tabs>
       </Box>
-      <TabPanel name="control-panel" value={activeTab} index={0}>
+      <TabPanel
+        sx={{ height: 186 }}
+        name="control-panel"
+        value={activeTab}
+        index={0}
+      >
         <CardPreview
           selected={selectedStep}
           onSelect={handleSelectStepPreview}
@@ -81,12 +86,22 @@ export function ControlPanel(): ReactElement {
           showAddButton
         />
       </TabPanel>
-      <TabPanel name="control-panel" value={activeTab} index={1}>
+      <TabPanel
+        sx={{ height: 186 }}
+        name="control-panel"
+        value={activeTab}
+        index={1}
+      >
         {selectedBlock !== undefined && selectedStep !== undefined && (
           <Attributes selected={selectedBlock} step={selectedStep} />
         )}
       </TabPanel>
-      <TabPanel name="control-panel" value={activeTab} index={2}>
+      <TabPanel
+        sx={{ height: 186 }}
+        name="control-panel"
+        value={activeTab}
+        index={2}
+      >
         <BlocksTab />
       </TabPanel>
     </Box>

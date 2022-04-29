@@ -1,28 +1,31 @@
 import { ReactElement, ReactNode } from 'react'
+import Box from '@mui/material/Box'
+import { SxProps } from '@mui/system/styleFunctionSx'
 
 interface TabPanelProps {
   name: string
   children?: ReactNode
   value: number
   index: number
+  sx?: SxProps
 }
 export function TabPanel({
   name,
   children,
   value,
   index,
-  ...other
+  sx
 }: TabPanelProps): ReactElement {
   return (
-    <div
+    <Box
       role="tabpanel"
       hidden={value !== index}
       id={`${name}-tabpanel-${index}`}
       aria-labelledby={`${name}-tab-${index}`}
-      {...other}
+      sx={sx}
     >
       {children}
-    </div>
+    </Box>
   )
 }
 
