@@ -62,7 +62,8 @@ export function HorizontalSelect({
                   id === child.props.id
                     ? `2px solid ${theme.palette.primary.main} `
                     : '2px solid transparent',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                margin: '1px'
               }}
               onClick={() => onChange?.(child.props.id)}
             >
