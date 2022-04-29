@@ -70,7 +70,7 @@ Error.args = {
       },
       error: {
         name: 'USER_INPUT_ERROR',
-        message: 'Mocked network error'
+        message: 'Field update failed. Reload the page or try again.'
       }
     }
   ]

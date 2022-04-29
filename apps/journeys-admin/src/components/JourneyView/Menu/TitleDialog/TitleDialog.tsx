@@ -46,10 +46,17 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
         }
       })
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      if (error.message === 'Failed to fetch') {
+        enqueueSnackbar('Field update failed. Reload the page or try again.', {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      } else {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
   }
 
