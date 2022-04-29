@@ -70,23 +70,4 @@ describe('LanguageSelect', () => {
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     expect(handleChange).toHaveBeenCalledWith('496')
   })
-
-  it('should clear selection when Clear clicked', async () => {
-    const handleChange = jest.fn()
-    const result = jest.fn(() => mocks[0].result)
-    const { getByRole, getByTestId } = render(
-      <MockedProvider mocks={[{ ...mocks[0], result }]}>
-        <LanguageSelect
-          onChange={handleChange}
-          selectedLanguageId="529"
-          currentLanguageId="529"
-        />
-      </MockedProvider>
-    )
-    fireEvent.focus(getByRole('textbox'))
-    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    fireEvent.click(getByTestId('CloseIcon'))
-    expect(handleChange).toHaveBeenCalledWith(undefined)
-  })
 })

@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
 import { gql, useQuery } from '@apollo/client'
+import keyBy from 'lodash/keyBy'
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 
 interface LanguageSelectProps {
@@ -33,26 +34,25 @@ export function LanguageSelect({
   const { data, loading } = useQuery<GetLanguages>(GET_LANGUAGES, {
     variables: { languageId: currentLanguageId }
   })
-  const selectedLanguage =
-    data?.languages.find(({ id }) => id === selectedLanguageId) ?? null
+  const languages = keyBy(data?.languages ?? [], 'id')
 
   return (
     <Autocomplete
-      value={selectedLanguage}
-      isOptionEqualToValue={(option, value) => option.id === value?.id}
+      disableClearable
+      value={selectedLanguageId}
       getOptionLabel={(option) =>
-        option.name.find(({ primary }) => !primary)?.value ??
-        option.name.find(({ primary }) => primary)?.value ??
+        languages[option]?.name.find(({ primary }) => !primary)?.value ??
+        languages[option]?.name.find(({ primary }) => primary)?.value ??
         ''
       }
-      onChange={(_event, value) => handleChange(value?.id)}
-      options={data?.languages ?? []}
+      onChange={(_event, value) => handleChange(value)}
+      options={data?.languages.map(({ id }) => id) ?? []}
       loading={loading}
       disablePortal={process.env.NODE_ENV === 'test'}
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Language"
+          hiddenLabel
           InputProps={{
             ...params.InputProps,
             endAdornment: (
@@ -67,10 +67,10 @@ export function LanguageSelect({
         />
       )}
       renderOption={(props, option) => {
-        const currentLanguageName = option.name.find(
+        const currentLanguageName = languages[option]?.name.find(
           ({ primary }) => !primary
         )?.value
-        const nativeLanguageName = option.name.find(
+        const nativeLanguageName = languages[option]?.name.find(
           ({ primary }) => primary
         )?.value
         return (
@@ -81,7 +81,8 @@ export function LanguageSelect({
               </Typography>
               {nativeLanguageName != null && currentLanguageName != null && (
                 <Typography variant="body2" color="text.secondary">
-                  {option.name.find(({ primary }) => primary)?.value ?? ''}
+                  {languages[option]?.name.find(({ primary }) => primary)
+                    ?.value ?? ''}
                 </Typography>
               )}
             </Stack>
