@@ -115,4 +115,31 @@ describe('ImageOptions', () => {
     fireEvent.blur(textBox)
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
   })
+
+  it('shows loading icon', async () => {
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={journey}>
+          <SnackbarProvider>
+            <EditorProvider
+              initialState={{
+                selectedBlock: {
+                  ...image,
+                  src: 'https://example.com/image2.jpg'
+                }
+              }}
+            >
+              <ImageOptions />
+            </EditorProvider>
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const textbox = getByRole('textbox')
+    fireEvent.change(textbox, {
+      target: { value: image.src }
+    })
+    fireEvent.blur(textbox)
+    await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
+  })
 })
