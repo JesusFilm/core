@@ -22,9 +22,9 @@ describe('HorizontalSelect', () => {
         <Box id="step2.id">Option 2</Box>
       </HorizontalSelect>
     )
-    expect(getByText('Option 1').parentElement).toHaveStyle(
-      'outline: 2px solid #1976d2'
-    )
+    expect(getByText('Option 1').parentElement).toHaveStyle({
+      border: '2px solid #1976d2'
+    })
   })
 
   it('should display footer', () => {

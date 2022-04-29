@@ -81,7 +81,7 @@ describe('BackgroundColor', () => {
 
     // Palette picker
     expect(getAllByTestId('#FEFEFE')[0].parentElement).toHaveStyle({
-      outline: '2px solid #C52D3A'
+      border: '2px solid #C52D3A'
     })
     expect(getAllByTestId('#FEFEFE')[0]).toHaveStyle({
       backgroundColor: '#FEFEFE'

@@ -83,8 +83,8 @@ describe('Editor', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getByTestId('preview-step1.id').parentElement).toHaveStyle(
-      'outline: 2px solid #C52D3A'
-    )
+    expect(getByTestId('preview-step1.id').parentElement).toHaveStyle({
+      border: '2px solid #C52D3A'
+    })
   })
 })
