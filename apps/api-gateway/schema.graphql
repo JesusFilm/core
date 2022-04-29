@@ -135,6 +135,21 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
+type Country
+  @join__owner(graph: LANGUAGES)
+  @join__type(graph: LANGUAGES, key: "id")
+{
+  continent(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  id: ID! @join__field(graph: LANGUAGES)
+  image: String! @join__field(graph: LANGUAGES)
+  languages: [Language!]! @join__field(graph: LANGUAGES)
+  latitude: Float! @join__field(graph: LANGUAGES)
+  longitude: Float! @join__field(graph: LANGUAGES)
+  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  permalink(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  population: Int! @join__field(graph: LANGUAGES)
+}
+
 """DateTime custom scalar"""
 scalar DateTime
 
@@ -470,6 +485,8 @@ input NavigateToJourneyActionInput {
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   adminJourneys: [Journey!]! @join__field(graph: JOURNEYS)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
+  country(id: ID!): Country! @join__field(graph: LANGUAGES)
   episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)

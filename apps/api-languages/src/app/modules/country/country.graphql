@@ -10,22 +10,7 @@ type Country @key(fields: "id") {
   image: String!
 }
 
-type Language @key(fields: "id") {
-  id: ID!
-  bcp47: String
-  iso3: String
-  name(languageId: ID, primary: Boolean): [Translation!]!
-}
-
-type Translation {
-  value: String!
-  language: Language!
-  primary: Boolean!
-}
-
 extend type Query {
   countries: [Country!]!
   country(id: ID!): Country!
-  languages(offset: Int, limit: Int): [Language!]!
-  language(id: ID!): Language
 }
