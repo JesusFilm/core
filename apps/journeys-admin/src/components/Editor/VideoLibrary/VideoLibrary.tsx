@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import Close from '@mui/icons-material/Close'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
+import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import { VideoSearch } from './VideoSearch'
 import { VideoList } from './VideoList'
 
@@ -16,7 +17,7 @@ export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
   open: boolean
   onClose?: () => void
-  onSelect?: (videoId: string, videoVariantLanguageId?: string) => void
+  onSelect?: (block: VideoBlockUpdateInput) => void
 }
 
 export function VideoLibrary({
@@ -27,8 +28,8 @@ export function VideoLibrary({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [title, setTitle] = useState<string>()
 
-  const onSelect = (videoId: string, videoVariantLanguageId?: string): void => {
-    if (handleSelect != null) handleSelect(videoId, videoVariantLanguageId)
+  const onSelect = (block: VideoBlockUpdateInput): void => {
+    if (handleSelect != null) handleSelect(block)
     if (onClose != null) onClose()
   }
 
