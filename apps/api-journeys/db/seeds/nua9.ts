@@ -10,7 +10,7 @@ import { ArangoDB } from '../db'
 const db = ArangoDB()
 
 export async function nua9(): Promise<void> {
-  const slug = 'descision'
+  const slug = 'decision'
   await db.query(aql`
         FOR journey in journeys
             FILTER journey.slug == ${slug}
@@ -28,10 +28,11 @@ export async function nua9(): Promise<void> {
     languageId: '529',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
-    slug: slug,
+    slug,
     status: JourneyStatus.published,
-    createdAt: new Date('2031-12-25T12:34:56.647Z'),
-    publishedAt: new Date('2031-12-25T12:34:56.647Z')
+    createdAt: new Date(),
+    publishedAt: new Date(),
+    featuredAt: new Date()
   })
 
   //   first step
@@ -215,37 +216,6 @@ export async function nua9(): Promise<void> {
     parentOrder: 0
   })
 
-  const gridContainer = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridContainerBlock',
-    parentBlockId: card2._key,
-    spacing: 6,
-    direction: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    parentOrder: 0
-  })
-
-  const gridItemLeft = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridItemBlock',
-    parentBlockId: gridContainer._key,
-    xl: 6,
-    lg: 6,
-    sm: 6,
-    parentOrder: 0
-  })
-
-  const gridItemRight = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridItemBlock',
-    parentBlockId: gridContainer._key,
-    xl: 6,
-    lg: 6,
-    sm: 6,
-    parentOrder: 1
-  })
-
   await db.collection('blocks').save({
     _key: image1Id,
     journeyId: journey._key,
@@ -261,7 +231,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'TypographyBlock',
-    parentBlockId: gridItemLeft._key,
+    parentBlockId: card2._key,
     content: 'Would you like to follow Jesus Christ?',
     variant: 'h2',
     color: 'primary',
@@ -272,7 +242,7 @@ export async function nua9(): Promise<void> {
   const question1 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'RadioQuestionBlock',
-    parentBlockId: gridItemRight._key,
+    parentBlockId: card2._key,
     label: '',
     parentOrder: 2
   })
@@ -596,41 +566,10 @@ export async function nua9(): Promise<void> {
     blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH'
   })
 
-  const prayerGridContainer = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridContainerBlock',
-    parentBlockId: prayerCard4._key,
-    spacing: 6,
-    direction: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    parentOrder: 0
-  })
-
-  const prayerGridItemLeft = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridItemBlock',
-    parentBlockId: prayerGridContainer._key,
-    xl: 6,
-    lg: 6,
-    sm: 6,
-    parentOrder: 0
-  })
-
-  const prayerGridItemRight = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridItemBlock',
-    parentBlockId: prayerGridContainer._key,
-    xl: 6,
-    lg: 6,
-    sm: 6,
-    parentOrder: 1
-  })
-
   await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'TypographyBlock',
-    parentBlockId: prayerGridItemLeft._key,
+    parentBlockId: prayerCard4._key,
     content: "WHAT'S NEXT?",
     variant: 'h6',
     color: 'primary',
@@ -641,7 +580,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'TypographyBlock',
-    parentBlockId: prayerGridItemLeft._key,
+    parentBlockId: prayerCard4._key,
     content:
       'Get printable card with three most important Bible verses every new Christian should know. ',
     variant: 'h5',
@@ -797,41 +736,10 @@ export async function nua9(): Promise<void> {
     blurhash: 'LqJs65}=R%so$,s:R*jb58Iqs:bH'
   })
 
-  const alreadyGridContainer = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridContainerBlock',
-    parentBlockId: alreadyCard4._key,
-    spacing: 6,
-    direction: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    parentOrder: 0
-  })
-
-  const alreadyGridItemLeft = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridItemBlock',
-    parentBlockId: alreadyGridContainer._key,
-    xl: 6,
-    lg: 6,
-    sm: 6,
-    parentOrder: 0
-  })
-
-  const alreadyGridItemRight = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridItemBlock',
-    parentBlockId: alreadyGridContainer._key,
-    xl: 6,
-    lg: 6,
-    sm: 6,
-    parentOrder: 1
-  })
-
   await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'TypographyBlock',
-    parentBlockId: alreadyGridItemLeft._key,
+    parentBlockId: alreadyCard4._key,
     content: "WHAT'S NEXT?",
     variant: 'h6',
     color: 'primary',
@@ -842,7 +750,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'TypographyBlock',
-    parentBlockId: alreadyGridItemLeft._key,
+    parentBlockId: alreadyCard4._key,
     content: 'Get a few tips by email on how to share your faith',
     variant: 'h4',
     color: 'primary',
@@ -997,41 +905,10 @@ export async function nua9(): Promise<void> {
     blurhash: 'LOCP^oDjkBNF?wIUofs.%gM{ofkC'
   })
 
-  const noThanksGridContainer = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridContainerBlock',
-    parentBlockId: noThanksCard2._key,
-    spacing: 6,
-    direction: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    parentOrder: 0
-  })
-
-  const noThanksGridItemLeft = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridItemBlock',
-    parentBlockId: noThanksGridContainer._key,
-    xl: 6,
-    lg: 6,
-    sm: 6,
-    parentOrder: 0
-  })
-
-  const noThanksGridItemRight = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridItemBlock',
-    parentBlockId: noThanksGridContainer._key,
-    xl: 6,
-    lg: 6,
-    sm: 6,
-    parentOrder: 1
-  })
-
   await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'TypographyBlock',
-    parentBlockId: noThanksGridItemLeft._key,
+    parentBlockId: noThanksCard2._key,
     content: "WHAT'S NEXT?",
     variant: 'h6',
     color: 'primary',
@@ -1042,7 +919,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'TypographyBlock',
-    parentBlockId: noThanksGridItemLeft._key,
+    parentBlockId: noThanksCard2._key,
     content: 'Get new released videos by email.',
     variant: 'h4',
     color: 'primary',
@@ -1197,41 +1074,10 @@ export async function nua9(): Promise<void> {
     blurhash: 'LnIqS]tRx]%L~Vbc-o%1aJR%s,s.'
   })
 
-  const notSureGridContainer = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridContainerBlock',
-    parentBlockId: notSureCard2._key,
-    spacing: 6,
-    direction: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    parentOrder: 0
-  })
-
-  const notSureGridItemLeft = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridItemBlock',
-    parentBlockId: notSureGridContainer._key,
-    xl: 6,
-    lg: 6,
-    sm: 6,
-    parentOrder: 0
-  })
-
-  const notSureGridItemRight = await db.collection('blocks').save({
-    journeyId: journey._key,
-    __typename: 'GridItemBlock',
-    parentBlockId: notSureGridContainer._key,
-    xl: 6,
-    lg: 6,
-    sm: 6,
-    parentOrder: 1
-  })
-
   await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'TypographyBlock',
-    parentBlockId: notSureGridItemLeft._key,
+    parentBlockId: notSureCard2._key,
     content: "WHAT'S NEXT?",
     variant: 'h6',
     color: 'primary',
@@ -1242,7 +1088,7 @@ export async function nua9(): Promise<void> {
   await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'TypographyBlock',
-    parentBlockId: notSureGridItemLeft._key,
+    parentBlockId: notSureCard2._key,
     content: 'Get new released videos and ideas to explore your faith',
     variant: 'h4',
     color: 'primary',
@@ -1264,13 +1110,13 @@ export async function nua9(): Promise<void> {
   const signUp1 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'SignUpBlock',
-    parentBlockId: prayerGridItemRight._key,
+    parentBlockId: prayerCard4._key,
     submitLabel: 'Submit',
     action: {
       gtmEventName: 'click',
       blockId: lastStep._key
     },
-    parentOrder: 0
+    parentOrder: 2
   })
   const icon8 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -1287,13 +1133,13 @@ export async function nua9(): Promise<void> {
   const signUp2 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'SignUpBlock',
-    parentBlockId: noThanksGridItemRight._key,
+    parentBlockId: noThanksCard2._key,
     submitLabel: 'Submit',
     action: {
       gtmEventName: 'click',
       blockId: lastStep._key
     },
-    parentOrder: 0
+    parentOrder: 2
   })
   const icon9 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -1310,13 +1156,13 @@ export async function nua9(): Promise<void> {
   const signUp3 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'SignUpBlock',
-    parentBlockId: alreadyGridItemRight._key,
+    parentBlockId: alreadyCard4._key,
     submitLabel: 'Submit',
     action: {
       gtmEventName: 'click',
       blockId: lastStep._key
     },
-    parentOrder: 0
+    parentOrder: 2
   })
   const icon10 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -1333,13 +1179,13 @@ export async function nua9(): Promise<void> {
   const signUp4 = await db.collection('blocks').save({
     journeyId: journey._key,
     __typename: 'SignUpBlock',
-    parentBlockId: notSureGridItemRight._key,
+    parentBlockId: notSureCard2._key,
     submitLabel: 'Submit',
     action: {
       gtmEventName: 'click',
       blockId: lastStep._key
     },
-    parentOrder: 0
+    parentOrder: 2
   })
   const icon11 = await db.collection('blocks').save({
     journeyId: journey._key,

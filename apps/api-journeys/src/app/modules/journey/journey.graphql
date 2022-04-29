@@ -11,6 +11,7 @@ type Journey @key(fields: "id") {
   description: String
   slug: String!
   publishedAt: DateTime
+  featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
   seoTitle: String
@@ -27,10 +28,14 @@ enum JourneyStatus {
   published
 }
 
+input JourneysFilter {
+  featured: Boolean
+}
+
 extend type Query {
   adminJourneys: [Journey!]!
   adminJourney(id: ID!, idType: IdType): Journey
-  journeys: [Journey!]!
+  journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
 }
 

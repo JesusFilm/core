@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { styled } from '@mui/material/styles'
 import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
-import Typography from '@mui/material/Typography'
 import { useMutation, gql } from '@apollo/client'
 import { TreeBlock, BlockRenderer } from '../..'
 import { WrappersProps } from '../BlockRenderer'
@@ -25,8 +24,6 @@ export const RADIO_QUESTION_RESPONSE_CREATE = gql`
 interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   uuid?: () => string
   wrappers?: WrappersProps
-  editableLabel?: ReactElement
-  editableDescription?: ReactElement
   addOption?: ReactElement
 }
 
@@ -36,13 +33,9 @@ const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
 
 export function RadioQuestion({
   id: blockId,
-  label,
-  description,
   children,
   uuid = uuidv4,
   wrappers,
-  editableLabel,
-  editableDescription,
   addOption
 }: RadioQuestionProps): ReactElement {
   const [radioQuestionResponseCreate, { data }] =
@@ -88,14 +81,6 @@ export function RadioQuestion({
 
   return (
     <StyledRadioQuestion data-testid={`radioQuestion-${blockId}`}>
-      <Typography variant="h3" gutterBottom>
-        {editableLabel ?? label}
-      </Typography>
-      {(description != null || editableDescription != null) && (
-        <Typography variant="body2" gutterBottom>
-          {editableDescription ?? description}
-        </Typography>
-      )}
       <ButtonGroup orientation="vertical" variant="contained" fullWidth={true}>
         {options}
         {addOption}

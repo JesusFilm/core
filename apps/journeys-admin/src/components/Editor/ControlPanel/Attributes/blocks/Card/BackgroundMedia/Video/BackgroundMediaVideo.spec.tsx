@@ -42,10 +42,11 @@ const video: TreeBlock<VideoBlock> = {
   parentBlockId: 'cardId',
   parentOrder: 0,
   startAt: 0,
-  endAt: null,
+  endAt: 144,
   muted: true,
   autoplay: true,
   fullsize: true,
+  action: null,
   videoId: '5_0-NUA0201-0-0',
   videoVariantLanguageId: '529',
   video: {
@@ -66,6 +67,19 @@ const video: TreeBlock<VideoBlock> = {
     }
   },
   posterBlockId: null,
+  children: []
+}
+
+const image: TreeBlock<ImageBlock> = {
+  id: 'imageId',
+  __typename: 'ImageBlock',
+  parentBlockId: 'cardId',
+  parentOrder: 0,
+  src: 'https://example.com/image.jpg',
+  alt: 'https://example.com/image.jpg',
+  width: 1920,
+  height: 1080,
+  blurhash: '',
   children: []
 }
 
@@ -133,17 +147,9 @@ describe('BackgroundMediaVideo', () => {
         blocks: [{ __ref: 'CardBlock:cardId' }],
         id: 'journeyId',
         __typename: 'Journey'
-      }
+      },
+      'CardBlock:cardId': { ...card }
     })
-    const cardBlockResult = jest.fn(() => ({
-      data: {
-        cardBlockUpdate: {
-          id: 'cardId',
-          coverBlockId: video.id,
-          __typename: 'CardBlock'
-        }
-      }
-    }))
     const videoBlockResult = jest.fn(() => ({
       data: {
         videoBlockCreate: video
@@ -163,24 +169,14 @@ describe('BackgroundMediaVideo', () => {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   videoId: '2_0-Brand_Video',
-                  videoVariantLanguageId: '529'
+                  videoVariantLanguageId: '529',
+                  startAt: 0,
+                  endAt: 144,
+                  isCover: true
                 }
               }
             },
             result: videoBlockResult
-          },
-          {
-            request: {
-              query: CARD_BLOCK_COVER_VIDEO_UPDATE,
-              variables: {
-                id: 'cardId',
-                journeyId: 'journeyId',
-                input: {
-                  coverBlockId: video.id
-                }
-              }
-            },
-            result: cardBlockResult
           }
         ]}
       >
@@ -201,27 +197,15 @@ describe('BackgroundMediaVideo', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Select' }))
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
-    await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:cardId' },
       { __ref: 'VideoBlock:videoId' }
     ])
+    expect(cache.extract()['CardBlock:cardId']?.coverBlockId).toEqual(video.id)
   })
 
   it('replaces existing image cover block', async () => {
-    const image: TreeBlock<ImageBlock> = {
-      id: 'imageId',
-      __typename: 'ImageBlock',
-      parentBlockId: 'cardId',
-      parentOrder: 0,
-      src: 'https://example.com/image.jpg',
-      alt: 'https://example.com/image.jpg',
-      width: 1920,
-      height: 1080,
-      blurhash: '',
-      children: []
-    }
-    const videoCard: TreeBlock<CardBlock> = {
+    const imageCard: TreeBlock<CardBlock> = {
       ...card,
       coverBlockId: image.id,
       children: [image]
@@ -231,29 +215,16 @@ describe('BackgroundMediaVideo', () => {
       'Journey:journeyId': {
         blocks: [
           { __ref: 'CardBlock:cardId' },
-          { __ref: 'ImageBlock:imageId' }
+          { __ref: `ImageBlock:${image.id}` }
         ],
         id: 'journeyId',
         __typename: 'Journey'
-      }
+      },
+      'CardBlock:cardId': { ...card, coverBlockId: image.id }
     })
-    const cardBlockResult = jest.fn(() => ({
-      data: {
-        cardBlockUpdate: {
-          id: 'cardId',
-          coverBlockId: image.id,
-          __typename: 'CardBlock'
-        }
-      }
-    }))
     const videoBlockResult = jest.fn(() => ({
       data: {
         videoBlockCreate: video
-      }
-    }))
-    const blockDeleteResult = jest.fn(() => ({
-      data: {
-        blockDelete: []
       }
     }))
     const { getByRole, getByText } = render(
@@ -262,30 +233,7 @@ describe('BackgroundMediaVideo', () => {
         mocks={[
           getVideosMock,
           getVideoMock,
-          {
-            request: {
-              query: BLOCK_DELETE_FOR_BACKGROUND_VIDEO,
-              variables: {
-                id: image.id,
-                parentBlockId: image.parentBlockId,
-                journeyId: 'journeyId'
-              }
-            },
-            result: blockDeleteResult
-          },
-          {
-            request: {
-              query: CARD_BLOCK_COVER_VIDEO_UPDATE,
-              variables: {
-                id: 'cardId',
-                journeyId: 'journeyId',
-                input: {
-                  coverBlockId: null
-                }
-              }
-            },
-            result: cardBlockResult
-          },
+
           {
             request: {
               query: CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,
@@ -294,31 +242,21 @@ describe('BackgroundMediaVideo', () => {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   videoId: '2_0-Brand_Video',
-                  videoVariantLanguageId: '529'
+                  videoVariantLanguageId: '529',
+                  startAt: 0,
+                  endAt: 144,
+                  isCover: true
                 }
               }
             },
             result: videoBlockResult
-          },
-          {
-            request: {
-              query: CARD_BLOCK_COVER_VIDEO_UPDATE,
-              variables: {
-                id: 'cardId',
-                journeyId: 'journeyId',
-                input: {
-                  coverBlockId: video.id
-                }
-              }
-            },
-            result: cardBlockResult
           }
         ]}
       >
         <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
           <ThemeProvider>
             <SnackbarProvider>
-              <BackgroundMediaVideo cardBlock={videoCard} />
+              <BackgroundMediaVideo cardBlock={imageCard} />
             </SnackbarProvider>
           </ThemeProvider>
         </JourneyProvider>
@@ -331,13 +269,13 @@ describe('BackgroundMediaVideo', () => {
       expect(getByRole('button', { name: 'Select' })).toBeEnabled()
     )
     fireEvent.click(getByRole('button', { name: 'Select' }))
-    await waitFor(() => expect(blockDeleteResult).toHaveBeenCalled())
-    await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
     await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'CardBlock:cardId' },
+      { __ref: 'ImageBlock:imageId' },
       { __ref: 'VideoBlock:videoId' }
     ])
+    expect(cache.extract()['CardBlock:cardId']?.coverBlockId).toEqual(video.id)
   })
 
   describe('Existing video cover', () => {
@@ -378,7 +316,9 @@ describe('BackgroundMediaVideo', () => {
                   journeyId: 'journeyId',
                   input: {
                     videoId: '2_0-Brand_Video',
-                    videoVariantLanguageId: '529'
+                    videoVariantLanguageId: '529',
+                    startAt: 0,
+                    endAt: 144
                   }
                 }
               },
@@ -504,7 +444,7 @@ describe('BackgroundMediaVideo', () => {
           '00:00:00'
         )
         expect(getAllByRole('textbox', { name: 'Ends At' })[0]).toHaveValue(
-          '00:00:00'
+          '00:02:24'
         )
       })
 
@@ -540,7 +480,7 @@ describe('BackgroundMediaVideo', () => {
                     journeyId: 'journeyId',
                     input: {
                       startAt: 0,
-                      endAt: 0,
+                      endAt: 144,
                       muted: true,
                       autoplay: false
                     }
@@ -594,7 +534,7 @@ describe('BackgroundMediaVideo', () => {
                   journeyId: 'journeyId',
                   input: {
                     startAt: 0,
-                    endAt: 0,
+                    endAt: 144,
                     muted: false,
                     autoplay: true
                   }
@@ -647,7 +587,7 @@ describe('BackgroundMediaVideo', () => {
                   journeyId: 'journeyId',
                   input: {
                     startAt: 11,
-                    endAt: 0,
+                    endAt: 144,
                     autoplay: true,
                     muted: true
                   }

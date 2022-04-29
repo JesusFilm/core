@@ -1,4 +1,11 @@
-import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
+import {
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+  useMemo
+} from 'react'
 import videojs from 'video.js'
 import { NextImage } from '@core/shared/ui'
 import { useTheme } from '@mui/material/styles'
@@ -12,12 +19,14 @@ import 'video.js/dist/video-js.css'
 
 interface CoverProps {
   children: ReactNode
+  backgroundColor: string
   imageBlock?: TreeBlock<ImageFields>
   videoBlock?: TreeBlock<VideoFields>
 }
 
 export function Cover({
   children,
+  backgroundColor,
   imageBlock,
   videoBlock
 }: CoverProps): ReactElement {
@@ -26,8 +35,8 @@ export function Cover({
   const theme = useTheme()
   const [loading, setLoading] = useState(true)
 
-  const blurBackground =
-    imageBlock != null
+  const blurBackground = useMemo(() => {
+    return imageBlock != null
       ? blurImage(
           imageBlock.width,
           imageBlock.height,
@@ -35,6 +44,7 @@ export function Cover({
           theme.palette.background.paper
         )
       : undefined
+  }, [imageBlock, theme])
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -56,6 +66,20 @@ export function Cover({
       // Video jumps to new time and finishes loading
       playerRef.current.on('seeked', () => {
         setLoading(false)
+      })
+      playerRef.current.on('timeupdate', () => {
+        if (
+          videoBlock?.startAt != null &&
+          videoBlock?.endAt != null &&
+          videoBlock?.endAt > 0 &&
+          playerRef.current != null
+        ) {
+          const currentTime = playerRef.current.currentTime()
+          const { startAt, endAt } = videoBlock
+          if (currentTime < (startAt ?? 0) || currentTime >= endAt) {
+            playerRef.current.currentTime(startAt ?? 0)
+          }
+        }
       })
     }
   }, [imageBlock, theme, videoBlock, blurBackground])
@@ -106,7 +130,12 @@ export function Cover({
           />
         )}
       </Box>
-      <ContentOverlay backgroundSrc={blurBackground}>{children}</ContentOverlay>
+      <ContentOverlay
+        backgroundColor={backgroundColor}
+        backgroundSrc={blurBackground}
+      >
+        {children}
+      </ContentOverlay>
     </>
   )
 }

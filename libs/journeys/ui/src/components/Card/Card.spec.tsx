@@ -107,6 +107,7 @@ describe('CardBlock', () => {
               endAt: null,
               posterBlockId: 'posterBlockId',
               fullsize: null,
+              action: null,
               videoId: '2_0-FallingPlates',
               videoVariantLanguageId: '529',
               video: {

@@ -56,7 +56,7 @@ export class Video {
     image?: Nullable<string>;
     imageAlt: Translation[];
     variantLanguages: Language[];
-    permalink: string;
+    permalinks: Translation[];
     noIndex?: Nullable<boolean>;
     episodeIds: string[];
     episodes: Video[];
@@ -84,6 +84,8 @@ export abstract class IQuery {
     abstract videoTags(): Nullable<VideoTag[]> | Promise<Nullable<VideoTag[]>>;
 
     abstract videoTag(id: string): Nullable<VideoTag> | Promise<Nullable<VideoTag>>;
+
+    abstract episodes(playlistId: string, idType?: Nullable<IdType>, where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 
     abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 

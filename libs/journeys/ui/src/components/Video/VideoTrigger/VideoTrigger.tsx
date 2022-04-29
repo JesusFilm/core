@@ -4,7 +4,10 @@ import { ReactElement, useEffect, useState } from 'react'
 import { TreeBlock, handleAction } from '../../..'
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
 
-export interface VideoTriggerProps extends TreeBlock<VideoTriggerFields> {
+type VideoTriggerProps = (
+  | TreeBlock<VideoTriggerFields>
+  | Pick<TreeBlock<VideoTriggerFields>, 'triggerAction' | 'triggerStart'>
+) & {
   player?: videojs.Player
 }
 

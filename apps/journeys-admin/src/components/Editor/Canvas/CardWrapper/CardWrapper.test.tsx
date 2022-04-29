@@ -55,6 +55,7 @@ describe('CardWrapper', () => {
           endAt: null,
           posterBlockId: 'image5.id',
           fullsize: null,
+          action: null,
           children: [
             {
               id: 'image5.id',
@@ -101,6 +102,7 @@ describe('CardWrapper', () => {
             ],
             endAt: null,
             fullsize: null,
+            action: null,
             id: 'video5.id',
             muted: true,
             parentBlockId: 'card5.id',
@@ -170,6 +172,7 @@ describe('CardWrapper', () => {
           endAt: null,
           posterBlockId: 'image5.id',
           fullsize: null,
+          action: null,
           children: [
             {
               id: 'image5.id',
@@ -216,6 +219,7 @@ describe('CardWrapper', () => {
             ],
             endAt: null,
             fullsize: null,
+            action: null,
             id: 'video5.id',
             muted: true,
             parentBlockId: 'card5.id',
@@ -281,6 +285,7 @@ describe('CardWrapper', () => {
           endAt: null,
           posterBlockId: 'image5.id',
           fullsize: null,
+          action: null,
           children: [
             {
               id: 'image5.id',
@@ -327,6 +332,7 @@ describe('CardWrapper', () => {
             ],
             endAt: null,
             fullsize: null,
+            action: null,
             id: 'video5.id',
             muted: true,
             parentBlockId: 'card5.id',

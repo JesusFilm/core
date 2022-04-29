@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Database } from 'arangojs'
+import { Database, aql } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
   mockCollectionSaveResult,
@@ -7,7 +7,7 @@ import {
 } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators'
-
+import { AqlQuery } from 'arangojs/aql'
 import {
   JourneyStatus,
   ThemeMode,
@@ -16,15 +16,16 @@ import {
 import { JourneyService } from './journey.service'
 
 describe('JourneyService', () => {
-  let service: JourneyService
+  let service: JourneyService, db: DeepMockProxy<Database>
 
   beforeEach(async () => {
+    db = mockDeep<Database>()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         JourneyService,
         {
           provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          useFactory: () => db
         }
       ]
     }).compile()
@@ -52,9 +53,7 @@ describe('JourneyService', () => {
 
   describe('getAll', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [journey, journey])
-      )
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [journey, journey]))
     })
 
     it('should return an array of journeys', async () => {
@@ -64,9 +63,7 @@ describe('JourneyService', () => {
 
   describe('get', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [journey])
-      )
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [journey]))
     })
 
     it('should return a journey', async () => {
@@ -76,9 +73,7 @@ describe('JourneyService', () => {
 
   describe('getBySlug', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [journey])
-      )
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [journey]))
     })
 
     it('should return a journey', async () => {
@@ -87,22 +82,55 @@ describe('JourneyService', () => {
   })
 
   describe('getAllPublishedJourneys', () => {
-    beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [journey])
-      )
+    it('should return published journeys', async () => {
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [journey]))
+      expect(await service.getAllPublishedJourneys()).toEqual([journeyWithId])
     })
 
-    it('should return published journeys', async () => {
-      expect(await service.getAllPublishedJourneys()).toEqual([journeyWithId])
+    it('should filter by featured', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(
+          aql`
+          FOR journey IN undefined
+            FILTER journey.status == @value0
+              AND journey.featuredAt != null
+            RETURN journey
+        `.query
+        )
+        expect(bindVars).toEqual({
+          value0: 'published'
+        })
+        return await mockDbQueryResult(db, [journey])
+      })
+      await service.getAllPublishedJourneys({ featured: true })
+      expect(db.query).toHaveBeenCalled()
+    })
+
+    it('should filter by not featured', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(
+          aql`
+          FOR journey IN undefined
+            FILTER journey.status == @value0
+              AND journey.featuredAt == null
+            RETURN journey
+        `.query
+        )
+        expect(bindVars).toEqual({
+          value0: 'published'
+        })
+        return await mockDbQueryResult(db, [journey])
+      })
+      await service.getAllPublishedJourneys({ featured: false })
+      expect(db.query).toHaveBeenCalled()
     })
   })
 
   describe('getAllByOwnerEditor', () => {
     beforeEach(() => {
-      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
-        mockDbQueryResult(service.db, [journey])
-      )
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [journey]))
     })
 
     it('should return all for user', async () => {

@@ -96,4 +96,19 @@ describe('ImageBlockEditor', () => {
     fireEvent.click(deleteButton)
     await waitFor(() => expect(onDelete).toHaveBeenCalled())
   })
+  it('triggers onChange onPaste', async () => {
+    const { getByRole } = render(
+      <ImageBlockEditor
+        selectedBlock={image}
+        onChange={onChange}
+        onDelete={onDelete}
+      />
+    )
+    const textBox = await getByRole('textbox')
+    await fireEvent.paste(textBox, {
+      clipboardData: { getData: () => 'https://example.com/123' }
+    })
+
+    await waitFor(() => expect(onChange).toHaveBeenCalled())
+  })
 })
