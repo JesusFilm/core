@@ -119,7 +119,9 @@ export function ContainedCover({
         {loading && imageBlock != null && blurBackground != null && (
           <NextImage
             data-testid={
-              videoBlock != null ? 'VideoPosterCover' : 'CardImageCover'
+              videoBlock != null
+                ? 'VideoPosterCover'
+                : 'ContainedCardImageCover'
             }
             src={imageBlock?.src ?? blurBackground}
             alt={imageBlock.alt}

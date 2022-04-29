@@ -29,6 +29,7 @@ export function ExpandedCover({
 
   return (
     <Box
+      data-testid="ExpandedCover"
       sx={{
         flexGrow: 1,
         overflow: 'auto',
@@ -60,15 +61,14 @@ export function ExpandedCover({
       >
         {children}
       </Box>
-      {blurUrl != null && coverBlock?.__typename === 'ImageBlock' ? (
+      {blurUrl != null && coverBlock?.__typename === 'ImageBlock' && (
         <NextImage
+          data-testid="ExpandedImageCover"
           src={blurUrl}
           alt={coverBlock.alt}
           layout="fill"
           objectFit="cover"
         />
-      ) : (
-        <></>
       )}
     </Box>
   )
