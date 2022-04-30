@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { IdType } from '../../__generated__/graphql'
 import { CountryResolver } from './country.resolver'
 import { CountryService } from './country.service'
 
@@ -21,6 +22,7 @@ describe('LangaugeResolver', () => {
       provide: CountryService,
       useFactory: () => ({
         get: jest.fn(() => country),
+        getCountryByPermalink: jest.fn(() => country),
         getAll: jest.fn(() => [country, country])
       })
     }
@@ -41,6 +43,12 @@ describe('LangaugeResolver', () => {
   describe('country', () => {
     it('should return country', async () => {
       expect(await resolver.country(country.id)).toEqual(country)
+      expect(service.get).toHaveBeenCalledWith(country.id)
+    })
+
+    it('should return country by slug', async () => {
+      expect(await resolver.country(country.id, IdType.slug)).toEqual(country)
+      expect(service.getCountryByPermalink).toHaveBeenCalledWith(country.id)
     })
   })
 

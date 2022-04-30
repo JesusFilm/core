@@ -7,7 +7,7 @@ import {
   ResolveField,
   Parent
 } from '@nestjs/graphql'
-import { Country } from '../../__generated__/graphql'
+import { Country, IdType } from '../../__generated__/graphql'
 import { CountryService } from './country.service'
 
 @Resolver('Country')
@@ -20,8 +20,13 @@ export class CountryResolver {
   }
 
   @Query()
-  async country(@Args('id') id: string): Promise<Country> {
-    return await this.countryService.get(id)
+  async country(
+    @Args('id') id: string,
+    @Args('idType') idType: IdType = IdType.databaseId
+  ): Promise<Country> {
+    return idType === IdType.databaseId
+      ? await this.countryService.get(id)
+      : await this.countryService.getCountryByPermalink(id)
   }
 
   @ResolveField()

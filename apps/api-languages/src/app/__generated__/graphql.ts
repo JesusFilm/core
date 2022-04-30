@@ -7,6 +7,11 @@
 
 /* tslint:disable */
 /* eslint-disable */
+export enum IdType {
+    databaseId = "databaseId",
+    slug = "slug"
+}
+
 export class Country {
     __typename?: 'Country';
     id: string;
@@ -38,7 +43,7 @@ export class Translation {
 export abstract class IQuery {
     abstract countries(): Country[] | Promise<Country[]>;
 
-    abstract country(id: string): Country | Promise<Country>;
+    abstract country(id: string, idType?: Nullable<IdType>): Country | Promise<Country>;
 
     abstract languages(offset?: Nullable<number>, limit?: Nullable<number>): Language[] | Promise<Language[]>;
 
