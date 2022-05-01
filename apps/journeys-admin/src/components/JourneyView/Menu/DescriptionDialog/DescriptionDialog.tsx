@@ -56,7 +56,7 @@ export function DescriptionDialog({
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
     return () => {
-      resetForm({ values: { title: journey?.title } })
+      resetForm({ values: { description: journey?.description } })
       onClose()
     }
   }
