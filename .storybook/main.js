@@ -42,6 +42,12 @@ const allStories = [
   ...storiesForProject['shared-ui']
 ]
 
+console.log(
+  'PROJECTS',
+  process.env.NX_AFFECTED_APPS,
+  process.env.NX_AFFECTED_LIBS
+)
+
 module.exports = {
   stories: storiesForProject[process.env.NX_TASK_TARGET_PROJECT] || allStories,
   addons: [

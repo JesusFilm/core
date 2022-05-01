@@ -117,20 +117,31 @@ jobs:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
           restore-keys: node-modules-
+      - name: Get affected apps
+        if: ${{ github.event_name == 'pull_request' }}
+        run: echo "::set-output name=apps::$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)"
+        id: affected-apps
+      - name: Get affected libs
+        if: ${{ github.event_name == 'pull_request' }}
+        run: echo "::set-output name=libs::$(nx affected:libs --plain --base=HEAD~1 --head=HEAD)"
+        id: affected-libs
       - name: NPM Install
         run: npm install --silent
       - uses: mansagroup/nrwl-nx-action@v2
         id: build-storybook
         with:
           targets: build-storybook
+        env:
+          NX_AFFECTED_APPS: ${{ steps.affected-apps.outputs.apps }}
+          NX_AFFECTED_LIBS: ${{ steps.affected-libs.outputs.libs }}
       - name: Check for frontend changes
         id: check_files
         uses: andstor/file-existence-action@v1
         with:
-          files: 'dist/storybook/shared-storybook'
+          files: 'dist/storybook/shared-chromatic'
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests
-        if: ${{ steps.check_files.outputs.files_exists == 'true' }}
+        if: ${{ true === false }}
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         # https://www.chromatic.com/docs/github-actions#available-options
@@ -138,5 +149,5 @@ jobs:
           #👇 Chromatic projectToken, see https://storybook.js.org/tutorials/intro-to-storybook/react/en/deploy/ to obtain it
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          storybookBuildDir: 'dist/storybook/shared-storybook'
+          storybookBuildDir: 'dist/storybook/shared-chromatic'
           exitOnceUploaded: true
