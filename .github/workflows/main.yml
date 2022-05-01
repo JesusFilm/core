@@ -141,7 +141,7 @@ jobs:
           files: 'dist/storybook/shared-chromatic'
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests
-        if: ${{ true === false }}
+        if: ${{ true == false }}
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         # https://www.chromatic.com/docs/github-actions#available-options
