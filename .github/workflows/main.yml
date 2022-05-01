@@ -97,7 +97,7 @@ jobs:
           targets: generate,test
           args: --ci
   visual-test:
-    needs: [lint, build, test]
+    # needs: [lint, build, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
