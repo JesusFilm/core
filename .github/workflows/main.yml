@@ -119,13 +119,13 @@ jobs:
           restore-keys: node-modules-
       - name: Get affected apps
         if: ${{ github.event_name == 'pull_request' }}
-        run: echo "::set-output name=apps::$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)"
+        run: echo "::set-output name=apps::$(nx affected:apps --plain --base=origin/main --head=HEAD)"
         id: affected-apps
         env:
           NX_AFFECTED_APPS: ${{ steps.affected-apps.outputs.apps }}
       - name: Get affected libs
         if: ${{ github.event_name == 'pull_request' }}
-        run: echo "::set-output name=libs::$(nx affected:libs --plain --base=HEAD~1 --head=HEAD)"
+        run: echo "::set-output name=libs::$(nx affected:libs --plain --base=origin/main --head=HEAD)"
         id: affected-libs
         env:
           NX_AFFECTED_LIBS: ${{ steps.affected-libs.outputs.libs }}
