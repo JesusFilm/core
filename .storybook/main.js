@@ -42,14 +42,29 @@ const allStories = [
   ...storiesForProject['shared-ui']
 ]
 
-console.log(
-  'PROJECTS',
-  process.env.NX_AFFECTED_APPS,
-  process.env.NX_AFFECTED_LIBS
-)
+const affectedStories = () => {
+  console.log(
+    'PROJECTS',
+    process.env.NX_AFFECTED_APPS,
+    process.env.NX_AFFECTED_LIBS
+  )
+
+  const affectedProjects = NX_AFFECTED_APPS.concat(NX_AFFECTED_LIBS)
+
+  const stories = affectedProjects.map((project) => {
+    return storiesForProject[project]
+  })
+
+  console.log('stories', stories)
+
+  return undefined
+}
 
 module.exports = {
-  stories: storiesForProject[process.env.NX_TASK_TARGET_PROJECT] || allStories,
+  stories:
+    affectedStories() ||
+    storiesForProject[process.env.NX_TASK_TARGET_PROJECT] ||
+    allStories,
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
