@@ -138,9 +138,6 @@ describe('JourneyView/Menu', () => {
     fireEvent.click(menu)
     fireEvent.click(getByRole('menuitem', { name: 'Title' }))
     expect(getByRole('dialog')).toBeInTheDocument()
-    expect(
-      getByRole('group', { name: 'form-update-title' })
-    ).toBeInTheDocument()
     expect(menu).not.toHaveAttribute('aria-expanded')
   })
 
@@ -159,9 +156,6 @@ describe('JourneyView/Menu', () => {
     fireEvent.click(menu)
     fireEvent.click(getByRole('menuitem', { name: 'Description' }))
     expect(getByRole('dialog')).toBeInTheDocument()
-    expect(
-      getByRole('group', { name: 'form-update-description' })
-    ).toBeInTheDocument()
     expect(menu).not.toHaveAttribute('aria-expanded')
   })
 
