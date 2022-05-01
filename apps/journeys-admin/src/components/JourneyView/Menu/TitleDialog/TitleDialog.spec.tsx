@@ -84,8 +84,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
                   title: 'New Journey'
                 }
               }
-            },
-            error: new Error('An error occurred')
+            }
           }
         ]}
       >
@@ -100,7 +99,9 @@ describe('JourneyView/Menu/TitleDialog', () => {
     fireEvent.change(getByRole('textbox'), { target: { value: 'New Journey' } })
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() =>
-      expect(getByText('An error occurred')).toBeInTheDocument()
+      expect(
+        getByText('Field update failed. Reload the page or try again.')
+      ).toBeInTheDocument()
     )
   })
 })

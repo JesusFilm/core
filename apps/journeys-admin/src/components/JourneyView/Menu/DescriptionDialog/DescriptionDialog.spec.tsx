@@ -88,8 +88,7 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
                   description: 'New Description'
                 }
               }
-            },
-            error: new Error('An error occurred')
+            }
           }
         ]}
       >
@@ -106,7 +105,9 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
     })
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() =>
-      expect(getByText('An error occurred')).toBeInTheDocument()
+      expect(
+        getByText('Field update failed. Reload the page or try again.')
+      ).toBeInTheDocument()
     )
   })
 })
