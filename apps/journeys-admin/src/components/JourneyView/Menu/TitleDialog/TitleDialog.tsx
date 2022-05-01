@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { useSnackbar } from 'notistack'
-import { Formik, Form } from 'formik'
+import { Formik, Form, FormikValues } from 'formik'
 import { JourneyTitleUpdate } from '../../../../../__generated__/JourneyTitleUpdate'
 import { useJourney } from '../../../../libs/context'
 import { Dialog } from '../../../Dialog'
@@ -26,7 +26,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   const journey = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
-  const handleSubmit = async (values): Promise<void> => {
+  const handleSubmit = async (values: FormikValues): Promise<void> => {
     if (journey == null) return
 
     try {
@@ -46,9 +46,9 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
     }
   }
 
-  function handleClose(resetForm: () => void): () => void {
+  function handleClose(resetForm: (values: FormikValues) => void): () => void {
     return () => {
-      resetForm()
+      resetForm({ values: { title: journey?.title } })
       onClose()
     }
   }
