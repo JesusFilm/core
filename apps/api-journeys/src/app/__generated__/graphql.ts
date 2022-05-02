@@ -363,6 +363,13 @@ export class SignUpResponseCreateInput {
     email: string;
 }
 
+export class StepResponseCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    previousBlockId: string;
+    journeyId: string;
+}
+
 export class VideoResponseCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -619,6 +626,15 @@ export class SignUpResponse implements Response {
     block?: Nullable<SignUpBlock>;
 }
 
+export class StepResponse implements Response {
+    __typename?: 'StepResponse';
+    id: string;
+    userId: string;
+    previousBlockId: string;
+    journeyId: string;
+    block?: Nullable<StepBlock>;
+}
+
 export class VideoResponse implements Response {
     __typename?: 'VideoResponse';
     id: string;
@@ -692,6 +708,8 @@ export abstract class IMutation {
     abstract radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput): RadioQuestionResponse | Promise<RadioQuestionResponse>;
 
     abstract signUpResponseCreate(input: SignUpResponseCreateInput): SignUpResponse | Promise<SignUpResponse>;
+
+    abstract stepResponseCreate(input: StepResponseCreateInput): SignUpResponse | Promise<SignUpResponse>;
 
     abstract videoResponseCreate(input: VideoResponseCreateInput): VideoResponse | Promise<VideoResponse>;
 
