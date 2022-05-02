@@ -117,6 +117,8 @@ jobs:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
           restore-keys: node-modules-
+      - name: NPM Install
+        run: npm install --silent
       - name: Get affected apps
         if: ${{ github.event_name == 'pull_request' }}
         run: echo "::set-output name=apps::$(nx affected:apps --plain --base=origin/main --head=HEAD)"
@@ -129,10 +131,9 @@ jobs:
         id: affected-libs
         env:
           NX_AFFECTED_LIBS: ${{ steps.affected-libs.outputs.libs }}
-      - name: NPM Install
-        run: npm install --silent
-      - uses: mansagroup/nrwl-nx-action@v2
+      - name: Build Storybook
         id: build-storybook
+        uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: build-storybook
       - name: Check for frontend changes
