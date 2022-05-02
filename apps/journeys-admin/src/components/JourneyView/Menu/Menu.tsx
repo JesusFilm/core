@@ -11,6 +11,7 @@ import BeenHereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditIcon from '@mui/icons-material/Edit'
 import DescriptionIcon from '@mui/icons-material/Description'
+import TranslateIcon from '@mui/icons-material/Translate'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
 import NextLink from 'next/link'
@@ -18,8 +19,9 @@ import { useSnackbar } from 'notistack'
 import { useJourney } from '../../../libs/context'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
-import { DescriptionDialog } from './DescriptionDialog/DescriptionDialog'
+import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
+import { LanguageDialog } from './LanguageDialog'
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
@@ -40,6 +42,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
+  const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
   const openMenu = forceOpen ?? Boolean(anchorEl)
@@ -75,6 +78,10 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   }
   const handleUpdateDescription = (): void => {
     setShowDescriptionDialog(true)
+    setAnchorEl(null)
+  }
+  const handleUpdateLanguage = (): void => {
+    setShowLanguageDialog(true)
     setAnchorEl(null)
   }
   const handleCopyLink = async (): Promise<void> => {
@@ -147,6 +154,12 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
               </ListItemIcon>
               <ListItemText>Description</ListItemText>
             </MenuItem>
+            <MenuItem onClick={handleUpdateLanguage}>
+              <ListItemIcon>
+                <TranslateIcon />
+              </ListItemIcon>
+              <ListItemText>Language</ListItemText>
+            </MenuItem>
             <Divider />
             <NextLink href={`/journeys/${journey.slug}/edit`} passHref>
               <MenuItem>
@@ -171,6 +184,10 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
           <DescriptionDialog
             open={showDescriptionDialog}
             onClose={() => setShowDescriptionDialog(false)}
+          />
+          <LanguageDialog
+            open={showLanguageDialog}
+            onClose={() => setShowLanguageDialog(false)}
           />
         </>
       ) : (
