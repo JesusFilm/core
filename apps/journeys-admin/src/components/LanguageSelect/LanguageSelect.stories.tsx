@@ -13,13 +13,11 @@ const LanguageSelectStory = {
 }
 
 const Template: Story = ({ onChange }) => {
-  const [selectedLanguageId, setSelectedLanguageId] = useState<
-    string | undefined
-  >('529')
+  const [value, setValue] = useState<string | undefined>('529')
 
-  const handleChange = (selectedLanguageId?: string): void => {
-    setSelectedLanguageId(selectedLanguageId)
-    onChange(selectedLanguageId)
+  const handleChange = (value?: string): void => {
+    setValue(value)
+    onChange(value)
   }
 
   return (
@@ -86,7 +84,7 @@ const Template: Story = ({ onChange }) => {
     >
       <LanguageSelect
         onChange={handleChange}
-        selectedLanguageId={selectedLanguageId}
+        value={value}
         currentLanguageId="529"
       />
     </MockedProvider>
