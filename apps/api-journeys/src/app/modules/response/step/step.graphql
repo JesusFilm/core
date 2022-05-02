@@ -4,11 +4,15 @@ input StepResponseCreateInput {
   """
   id: ID
   blockId: ID!
+  previousBlockId: ID!
+  journeyId: ID!
 }
 
 type StepResponse implements Response {
   id: ID!
   userId: ID!
+  previousBlockId: ID!
+  journeyId: ID!
   block: StepBlock
 }
 
