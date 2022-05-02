@@ -53,14 +53,16 @@ const affectedStories = () => {
     process.env.NX_AFFECTED_LIBS.split(' ')
   )
 
-  const stories = affectedProjects.map((project) => {
-    if (project === 'shared-storybook') return
-    return storiesForProject[project]
-  })
+  const stories = affectedProjects
+    .map((project) => {
+      if (project === 'shared-storybook') return []
+      return storiesForProject[project]
+    })
+    .flat()
 
   console.log('stories', stories)
 
-  return undefined
+  return stories.length > 0 ? stories : undefined
 }
 
 module.exports = {
