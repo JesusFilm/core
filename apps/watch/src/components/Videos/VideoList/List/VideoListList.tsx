@@ -41,8 +41,10 @@ export function VideoListList({
           const title = video.title.find((title) => title.primary)?.value
           const href =
             routePrefix == null
-              ? `/${video.permalink}`
-              : `/${routePrefix}/${video.permalink}`
+              ? `/${video.permalinks.find((link) => link.primary)?.value ?? ''}`
+              : `/${routePrefix}/${
+                  video.permalinks.find((link) => link.primary)?.value ?? ''
+                }`
           return (
             <Link key={index} href={href} passHref={true}>
               <ListItem button component="a">

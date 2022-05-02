@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { GET_LANGUAGES } from './Drawer'
+import { GET_LANGUAGES } from '../../../../LanguageSelect/LanguageSelect'
 import { Drawer } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

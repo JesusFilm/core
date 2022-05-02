@@ -183,6 +183,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
         target: { value: image.src }
       })
       fireEvent.blur(textBox)
+      await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
@@ -260,6 +261,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
         target: { value: image.src }
       })
       fireEvent.blur(textBox)
+      await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(textBox).toHaveValue(image.src))
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
