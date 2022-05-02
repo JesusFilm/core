@@ -45,13 +45,16 @@ const allStories = [
 const affectedStories = () => {
   console.log(
     'PROJECTS',
-    process.env.NX_AFFECTED_APPS,
-    process.env.NX_AFFECTED_LIBS
+    process.env.NX_AFFECTED_APPS.split(' '),
+    process.env.NX_AFFECTED_LIBS.split(' ')
   )
 
-  const affectedProjects = NX_AFFECTED_APPS.concat(NX_AFFECTED_LIBS)
+  const affectedProjects = process.env.NX_AFFECTED_APPS.split(' ').concat(
+    process.env.NX_AFFECTED_LIBS.split(' ')
+  )
 
   const stories = affectedProjects.map((project) => {
+    if (project === 'shared-storybook') return
     return storiesForProject[project]
   })
 
