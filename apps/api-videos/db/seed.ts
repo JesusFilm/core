@@ -1,6 +1,6 @@
+import { getSeoSlug } from '@core/api-seed'
 import { aql } from 'arangojs'
 import fetch from 'node-fetch'
-import slugify from 'slugify'
 import { VideoType } from '../src/app/__generated__/graphql'
 import { ArangoDB } from './db'
 
@@ -146,26 +146,6 @@ async function getMediaComponentLanguage(
 
 const usedTitles: string[] = []
 
-function getIteration(slug: string): string {
-  const exists = usedTitles.find((t) => t === slug)
-  if (exists != null) {
-    const iteration = slug.match(/-(\d+)$/)
-    const title =
-      iteration == null
-        ? `${slug}-2`
-        : `${slug}-${parseInt(iteration[iteration.length - 1]) + 1}`
-    return getIteration(title)
-  }
-  return slug
-}
-
-function getSeoTitle(title: string): string {
-  const slug = slugify(title, { lower: true, remove: /[^a-zA-Z\d\s:]/g })
-  const newSlug = getIteration(slug)
-  usedTitles.push(newSlug)
-  return newSlug
-}
-
 async function digestContent(
   languages: Language[],
   mediaComponent: MediaComponent
@@ -244,7 +224,7 @@ async function digestContent(
     variants,
     permalinks: video?.permalinks ?? [
       {
-        value: getSeoTitle(mediaComponent.title),
+        value: getSeoSlug(mediaComponent.title, usedTitles),
         languageId: metadataLanguageId,
         primary: true
       }
@@ -388,7 +368,7 @@ async function digestSeriesContainer(
     tagIds: [],
     permalinks: video?.permalinks ?? [
       {
-        value: getSeoTitle(mediaComponent.title),
+        value: getSeoSlug(mediaComponent.title, usedTitles),
         languageId: metadataLanguageId,
         primary: true
       }

@@ -1,6 +1,6 @@
 import { aql } from 'arangojs'
 import { float } from 'aws-sdk/clients/lightsail'
-import slugify from 'slugify'
+import { getSeoSlug } from '@core/api-seed'
 import { isEmpty } from 'lodash'
 import fetch from 'node-fetch'
 import { ArangoDB } from './db'
@@ -172,26 +172,6 @@ async function getCountries(language = 'en'): Promise<MediaCountry[]> {
 
 const usedTitles: string[] = []
 
-function getIteration(slug: string): string {
-  const exists = usedTitles.find((t) => t === slug)
-  if (exists != null) {
-    const iteration = slug.match(/-(\d+)$/)
-    const title =
-      iteration == null
-        ? `${slug}-2`
-        : `${slug}-${parseInt(iteration[iteration.length - 1]) + 1}`
-    return getIteration(title)
-  }
-  return slug
-}
-
-function getSeoTitle(title: string): string {
-  const slug = slugify(title, { lower: true, remove: /[^a-zA-Z\d\s:]/g })
-  const newSlug = getIteration(slug)
-  usedTitles.push(newSlug)
-  return newSlug
-}
-
 function digestCountries(countries: MediaCountry[]): Country[] {
   console.log('countries:', '529')
   const transformedCountries: Country[] = countries.map((country) => ({
@@ -202,7 +182,11 @@ function digestCountries(countries: MediaCountry[]): Country[] {
       { value: country.continentName, languageId: '529', primary: true }
     ],
     permalink: [
-      { value: getSeoTitle(country.name), languageId: '529', primary: true }
+      {
+        value: getSeoSlug(country.name, usedTitles),
+        languageId: '529',
+        primary: true
+      }
     ],
     languageIds: country.languageIds.map((l) => l.toString()),
     latitude: country.latitude,
@@ -221,14 +205,26 @@ function digestTranslatedCountries(
   console.log('countries:', languageId)
   const transformedCountries: Country[] = countries.map((country) => ({
     _key: country.countryId.toString(),
-    name: [{ value: country.name, languageId: languageId, primary: false }],
+    name: [
+      {
+        value: isEmpty(country.name) ? '' : country.name,
+        languageId: languageId,
+        primary: false
+      }
+    ],
     population: country.counts.population.value,
     continent: [
-      { value: country.continentName, languageId: languageId, primary: false }
+      {
+        value: isEmpty(country.continentName) ? '' : country.continentName,
+        languageId: languageId,
+        primary: false
+      }
     ],
     permalink: [
       {
-        value: getSeoTitle(country.name),
+        value: isEmpty(country.name)
+          ? ''
+          : getSeoSlug(country.name, usedTitles),
         languageId: languageId,
         primary: false
       }
@@ -242,9 +238,11 @@ function digestTranslatedCountries(
     const existing = mappedCountries.find((c) => c._key === country._key)
     if (existing == null) mappedCountries.push(country)
     else {
-      existing.name.push(country.name[0])
-      existing.continent.push(country.continent[0])
-      existing.permalink.push(country.permalink[0])
+      if (country.name[0].value !== '') existing.name.push(country.name[0])
+      if (country.continent[0].value !== '')
+        existing.continent.push(country.continent[0])
+      if (country.permalink[0].value !== '')
+        existing.permalink.push(country.permalink[0])
     }
   })
 
