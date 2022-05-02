@@ -420,6 +420,7 @@ type Mutation {
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
+  stepResponseCreate(input: StepResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
@@ -620,6 +621,21 @@ input StepBlockCreateInput {
 input StepBlockUpdateInput {
   locked: Boolean
   nextBlockId: ID
+}
+
+type StepResponse implements Response {
+  block: StepBlock
+  id: ID!
+  userId: ID!
+}
+
+input StepResponseCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
 }
 
 enum ThemeMode {
