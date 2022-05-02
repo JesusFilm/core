@@ -29,7 +29,9 @@ export function DescriptionDialog({
   const journey = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
-  const handleSubmit = async (values: FormikValues): Promise<void> => {
+  const handleUpdateDescription = async (
+    values: FormikValues
+  ): Promise<void> => {
     if (journey == null) return
 
     try {
@@ -69,7 +71,7 @@ export function DescriptionDialog({
       {journey != null && (
         <Formik
           initialValues={{ description: journey.description ?? '' }}
-          onSubmit={handleSubmit}
+          onSubmit={handleUpdateDescription}
         >
           {({ values, handleChange, handleSubmit, resetForm }) => (
             <Dialog

@@ -26,7 +26,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   const journey = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
-  const handleSubmit = async (values: FormikValues): Promise<void> => {
+  const handleUpdateTitle = async (values: FormikValues): Promise<void> => {
     if (journey == null) return
 
     try {
@@ -59,7 +59,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
       {journey != null && (
         <Formik
           initialValues={{ title: journey.title }}
-          onSubmit={handleSubmit}
+          onSubmit={handleUpdateTitle}
         >
           {({ values, handleChange, handleSubmit, resetForm }) => (
             <Dialog
