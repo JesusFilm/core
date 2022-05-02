@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeMode, ThemeName } from "./globalTypes";
+import { ThemeName, ThemeMode } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepAndCardBlockCreate
@@ -70,4 +70,5 @@ export interface StepAndCardBlockCreateVariables {
   journeyId: string;
   stepId: string;
   cardId?: string | null;
+  themeName?: ThemeName | null;
 }
