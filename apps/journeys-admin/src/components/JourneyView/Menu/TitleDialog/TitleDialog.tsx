@@ -1,9 +1,8 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { useMutation, gql, ApolloError } from '@apollo/client'
-import FormControl from '@mui/material/FormControl'
-import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
 import { useSnackbar } from 'notistack'
+import { Formik, Form, FormikValues } from 'formik'
 import { JourneyTitleUpdate } from '../../../../../__generated__/JourneyTitleUpdate'
 import { useJourney } from '../../../../libs/context'
 import { Dialog } from '../../../Dialog'
@@ -27,24 +26,21 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   const journey = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
-  const [value, setValue] = useState(journey?.title ?? '')
-
-  const handleSubmit = async (): Promise<void> => {
+  const handleUpdateTitle = async (values: FormikValues): Promise<void> => {
     if (journey == null) return
-
-    const updatedJourney = { title: value }
 
     try {
       await journeyUpdate({
-        variables: { id: journey.id, input: updatedJourney },
+        variables: { id: journey.id, input: { title: values.title } },
         optimisticResponse: {
           journeyUpdate: {
             id: journey.id,
             __typename: 'Journey',
-            ...updatedJourney
+            title: values.title
           }
         }
       })
+      onClose()
     } catch (error) {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
@@ -65,37 +61,46 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
     }
   }
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    setValue(event.target.value)
-  }
-
-  const handleClose = (): void => {
-    onClose()
+  function handleClose(resetForm: (values: FormikValues) => void): () => void {
+    return () => {
+      onClose()
+      // wait for dialog animation to complete
+      setTimeout(() => resetForm({ values: { title: journey?.title } }))
+    }
   }
 
   return (
     <>
-      <Dialog
-        open={open}
-        handleClose={handleClose}
-        dialogTitle={{ title: 'Edit Title' }}
-        dialogAction={{
-          onSubmit: handleSubmit,
-          closeLabel: 'Cancel'
-        }}
-      >
-        <form onSubmit={handleSubmit}>
-          <FormControl component="fieldset" sx={{ width: '100%' }}>
-            <FormLabel component="legend" aria-label="form-update-title" />
-            <TextField
-              hiddenLabel
-              value={value}
-              variant="filled"
-              onChange={handleChange}
-            />
-          </FormControl>
-        </form>
-      </Dialog>
+      {journey != null && (
+        <Formik
+          initialValues={{ title: journey.title }}
+          onSubmit={handleUpdateTitle}
+        >
+          {({ values, handleChange, handleSubmit, resetForm }) => (
+            <Dialog
+              open={open}
+              handleClose={handleClose(resetForm)}
+              dialogTitle={{ title: 'Edit Title' }}
+              dialogAction={{
+                onSubmit: handleSubmit,
+                closeLabel: 'Cancel'
+              }}
+            >
+              <Form>
+                <TextField
+                  id="title"
+                  name="title"
+                  hiddenLabel
+                  fullWidth
+                  value={values.title}
+                  variant="filled"
+                  onChange={handleChange}
+                />
+              </Form>
+            </Dialog>
+          )}
+        </Formik>
+      )}
     </>
   )
 }
