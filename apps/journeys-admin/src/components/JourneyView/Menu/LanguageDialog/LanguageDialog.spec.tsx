@@ -68,7 +68,7 @@ describe('JourneyView/Menu/LanguageDialog', () => {
     }
   }
 
-  it('should not set journey language on close', () => {
+  it('should not set journey language on close', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getLanguagesMock]}>
         <SnackbarProvider>
@@ -79,10 +79,14 @@ describe('JourneyView/Menu/LanguageDialog', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(getByRole('textbox'), { target: { value: 'New Journey' } })
+    fireEvent.focus(getByRole('textbox'))
+    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
+    await waitFor(() => getByRole('option', { name: 'French Français' }))
+    fireEvent.click(getByRole('option', { name: 'French Français' }))
+    expect(getByRole('textbox')).toHaveValue('French')
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
-
     expect(onClose).toHaveBeenCalled()
+    await waitFor(() => expect(getByRole('textbox')).toHaveValue('English'))
   })
 
   it('should update journey language on submit', async () => {

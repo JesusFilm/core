@@ -1,6 +1,7 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import { useSnackbar } from 'notistack'
+import { Formik, Form, FormikValues } from 'formik'
 import { JourneyLanguageUpdate } from '../../../../../__generated__/JourneyLanguageUpdate'
 import { useJourney } from '../../../../libs/context'
 import { Dialog } from '../../../Dialog'
@@ -35,18 +36,18 @@ export function LanguageDialog({
   )
   const journey = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-  const [value, setValue] = useState(journey?.language?.id)
 
-  const handleSubmit = async (): Promise<void> => {
+  const handleSubmit = async (values: FormikValues): Promise<void> => {
     if (journey == null) return
 
     try {
       await journeyUpdate({
         variables: {
           id: journey.id,
-          input: { languageId: value }
+          input: { languageId: values.languageId }
         }
       })
+      onClose()
     } catch (error) {
       enqueueSnackbar('There was an error updating language', {
         variant: 'error'
@@ -54,29 +55,45 @@ export function LanguageDialog({
     }
   }
 
-  const handleChange = (value?: string): void => {
-    setValue(value)
+  function handleClose(resetForm: (values: FormikValues) => void): () => void {
+    return () => {
+      onClose()
+      // wait for dialog animation to complete
+      setTimeout(
+        () => resetForm({ values: { languageId: journey?.language?.id } }),
+        500
+      )
+    }
   }
 
   return (
     <>
-      <Dialog
-        open={open}
-        handleClose={onClose}
-        dialogTitle={{ title: 'Edit Language' }}
-        dialogAction={{
-          onSubmit: handleSubmit,
-          closeLabel: 'Cancel'
-        }}
-      >
-        <form onSubmit={handleSubmit}>
-          <LanguageSelect
-            onChange={handleChange}
-            value={value}
-            currentLanguageId="529"
-          />
-        </form>
-      </Dialog>
+      {journey != null && (
+        <Formik
+          initialValues={{ languageId: journey.language?.id }}
+          onSubmit={handleSubmit}
+        >
+          {({ values, handleSubmit, resetForm, setFieldValue }) => (
+            <Dialog
+              open={open}
+              handleClose={handleClose(resetForm)}
+              dialogTitle={{ title: 'Edit Language' }}
+              dialogAction={{
+                onSubmit: handleSubmit,
+                closeLabel: 'Cancel'
+              }}
+            >
+              <Form>
+                <LanguageSelect
+                  onChange={(value) => setFieldValue('languageId', value)}
+                  value={values.languageId}
+                  currentLanguageId="529"
+                />
+              </Form>
+            </Dialog>
+          )}
+        </Formik>
+      )}
     </>
   )
 }
