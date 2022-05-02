@@ -43,24 +43,19 @@ const allStories = [
 ]
 
 const affectedStories = () => {
-  console.log(
-    'PROJECTS',
-    process.env.NX_AFFECTED_APPS.split(' '),
-    process.env.NX_AFFECTED_LIBS.split(' ')
-  )
-
-  const affectedProjects = process.env.NX_AFFECTED_APPS.split(' ').concat(
-    process.env.NX_AFFECTED_LIBS.split(' ')
-  )
+  const affectedApps = process.env.NX_AFFECTED_APPS ?? ''
+  const affectedLibs = process.env.NX_AFFECTED_LIBS ?? ''
+  const affectedProjects = [
+    ...affectedApps.split(' '),
+    ...affectedLibs.split(' ')
+  ]
 
   const stories = affectedProjects
     .map((project) => {
-      if (project === 'shared-storybook') return []
+      if (project === 'shared-storybook' || project === '') return []
       return storiesForProject[project]
     })
     .flat()
-
-  console.log('stories', stories)
 
   return stories.length > 0 ? stories : undefined
 }

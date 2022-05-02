@@ -129,7 +129,7 @@ jobs:
         id: affected-libs
         if: ${{ github.event_name == 'pull_request' }}
         run: echo "::set-output name=libs::$(nx affected:libs --plain --base=origin/main --head=HEAD)"
-      - name: Build Storybook
+      - name: Build Affected Stories
         id: build-storybook
         env:
           NX_AFFECTED_APPS: ${{ steps.affected-apps.outputs.apps }}
@@ -144,7 +144,7 @@ jobs:
           files: 'dist/storybook/shared-storybook'
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests
-        if: ${{ true == false }}
+        if: ${{ steps.check_files.outputs.files_exists == 'true' }}
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         # https://www.chromatic.com/docs/github-actions#available-options
