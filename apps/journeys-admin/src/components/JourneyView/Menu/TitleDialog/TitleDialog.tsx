@@ -48,8 +48,9 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
     return () => {
-      resetForm({ values: { title: journey?.title } })
       onClose()
+      // wait for dialog animation to complete
+      setTimeout(() => resetForm({ values: { title: journey?.title } }))
     }
   }
 

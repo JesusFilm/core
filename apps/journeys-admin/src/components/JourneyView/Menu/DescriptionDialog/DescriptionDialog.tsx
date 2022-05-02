@@ -56,8 +56,11 @@ export function DescriptionDialog({
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
     return () => {
-      resetForm({ values: { description: journey?.description } })
       onClose()
+      // wait for dialog animation to complete
+      setTimeout(() =>
+        resetForm({ values: { description: journey?.description } })
+      )
     }
   }
 
