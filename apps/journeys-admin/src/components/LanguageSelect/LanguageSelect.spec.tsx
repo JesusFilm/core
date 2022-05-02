@@ -70,4 +70,19 @@ describe('LanguageSelect', () => {
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     expect(handleChange).toHaveBeenCalledWith('496')
   })
+
+  it('should set default value based on selectedId', async () => {
+    const result = jest.fn(() => mocks[0].result)
+    const { getByRole } = render(
+      <MockedProvider mocks={[{ ...mocks[0], result }]}>
+        <LanguageSelect
+          onChange={jest.fn()}
+          value="1106"
+          currentLanguageId="529"
+        />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByRole('textbox')).toHaveValue('German, Standard')
+  })
 })

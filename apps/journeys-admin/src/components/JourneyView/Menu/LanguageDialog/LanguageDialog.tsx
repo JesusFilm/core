@@ -54,8 +54,8 @@ export function LanguageDialog({
     }
   }
 
-  const handleChange = (selectedLanguageId?: string): void => {
-    setValue(selectedLanguageId)
+  const handleChange = (value?: string): void => {
+    setValue(value)
   }
 
   return (
@@ -72,7 +72,7 @@ export function LanguageDialog({
         <form onSubmit={handleSubmit}>
           <LanguageSelect
             onChange={handleChange}
-            selectedLanguageId={value}
+            value={value}
             currentLanguageId="529"
           />
         </form>

@@ -9,8 +9,8 @@ import keyBy from 'lodash/keyBy'
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 
 interface LanguageSelectProps {
-  onChange: (selectedLanguageId?: string) => void
-  selectedLanguageId?: string
+  onChange: (value?: string) => void
+  value?: string
   currentLanguageId: string
 }
 
@@ -28,7 +28,7 @@ export const GET_LANGUAGES = gql`
 
 export function LanguageSelect({
   onChange: handleChange,
-  selectedLanguageId,
+  value,
   currentLanguageId
 }: LanguageSelectProps): ReactElement {
   const { data, loading } = useQuery<GetLanguages>(GET_LANGUAGES, {
@@ -39,7 +39,7 @@ export function LanguageSelect({
   return (
     <Autocomplete
       disableClearable
-      value={selectedLanguageId}
+      value={value}
       getOptionLabel={(option) =>
         languages[option]?.name.find(({ primary }) => !primary)?.value ??
         languages[option]?.name.find(({ primary }) => primary)?.value ??
