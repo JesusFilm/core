@@ -99,7 +99,7 @@ export function Dialog({
           {dialogAction.closeLabel != null && (
             <Button onClick={handleClose}>{dialogAction.closeLabel}</Button>
           )}
-          <Button onClick={() => dialogAction?.onSubmit()}>
+          <Button onClick={dialogAction?.onSubmit}>
             {dialogAction.submitLabel ?? 'Save'}
           </Button>
         </DialogActions>
