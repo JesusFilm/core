@@ -366,8 +366,6 @@ export class SignUpResponseCreateInput {
 export class StepResponseCreateInput {
     id?: Nullable<string>;
     blockId: string;
-    previousBlockId: string;
-    journeyId: string;
 }
 
 export class VideoResponseCreateInput {
@@ -630,8 +628,6 @@ export class StepResponse implements Response {
     __typename?: 'StepResponse';
     id: string;
     userId: string;
-    previousBlockId: string;
-    journeyId: string;
     block?: Nullable<StepBlock>;
 }
 

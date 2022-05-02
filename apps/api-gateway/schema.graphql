@@ -626,8 +626,6 @@ input StepBlockUpdateInput {
 type StepResponse implements Response {
   block: StepBlock
   id: ID!
-  journeyId: ID!
-  previousBlockId: ID!
   userId: ID!
 }
 
@@ -638,8 +636,6 @@ input StepResponseCreateInput {
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  journeyId: ID!
-  previousBlockId: ID!
 }
 
 enum ThemeMode {

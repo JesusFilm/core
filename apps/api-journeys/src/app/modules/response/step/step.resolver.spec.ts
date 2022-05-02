@@ -9,7 +9,6 @@ describe('StepResponseResolver', () => {
     id: '1',
     __typename: 'StepResponse',
     blockId: 'block.id',
-    userId: 'user.id',
     previousBlockId: 'previousBlock.id',
     journeyId: 'journey.id'
   }
@@ -17,7 +16,7 @@ describe('StepResponseResolver', () => {
   const responseService = {
     provide: ResponseService,
     useFactory: () => ({
-      save: jest.fn(() => response)
+      save: jest.fn((response) => response)
     })
   }
 
@@ -30,7 +29,10 @@ describe('StepResponseResolver', () => {
 
   describe('StepResponse', () => {
     it('returns StepResponse', async () => {
-      expect(await resolver.stepResponseCreate(response)).toEqual(response)
+      expect(await resolver.stepResponseCreate('userId', response)).toEqual({
+        ...response,
+        userId: 'userId'
+      })
     })
   })
 })
