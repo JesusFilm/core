@@ -6,13 +6,7 @@ const withImages = require('next-images')
  **/
 const nextConfig = {
   images: {
-    domains: [
-      'images.unsplash.com',
-      'localhost',
-      'unsplash.com',
-      'external-content.duckduckgo.com',
-      'blurha.sh'
-    ]
+    domains: ['images.unsplash.com', 'localhost', 'unsplash.com']
   },
   nx: {
     // Set this to true if you would like to to use SVGR
