@@ -169,6 +169,25 @@ describe('JourneyView/Menu', () => {
     expect(menu).not.toHaveAttribute('aria-expanded')
   })
 
+  it('should handle edit journey language', () => {
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <JourneyProvider value={defaultJourney}>
+            <Menu />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const menu = getByRole('button')
+    fireEvent.click(menu)
+    fireEvent.click(getByRole('menuitem', { name: 'Language' }))
+    expect(getByRole('dialog')).toBeInTheDocument()
+    expect(getByText('Edit Language')).toBeInTheDocument()
+    expect(menu).not.toHaveAttribute('aria-expanded')
+  })
+
   it('should handle copy url', async () => {
     jest.spyOn(navigator.clipboard, 'writeText')
 

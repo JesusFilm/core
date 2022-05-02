@@ -1,23 +1,23 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { simpleComponentConfig } from '../../../../../libs/storybook'
-import { GET_LANGUAGES } from '../../../../LanguageSelect/LanguageSelect'
-import { Drawer } from '.'
+import { simpleComponentConfig } from '../../libs/storybook'
+import { GET_LANGUAGES } from './LanguageSelect'
+import { LanguageSelect } from '.'
 
-const DrawerStory = {
+const LanguageSelectStory = {
   ...simpleComponentConfig,
-  component: Drawer,
-  title: 'Journeys-Admin/Editor/VideoLibrary/LanguageFilter/Drawer',
-  argTypes: { onSelect: { action: 'onSelect' } }
+  component: LanguageSelect,
+  title: 'Journeys-Admin/LanguageSelect',
+  argTypes: { onChange: { action: 'onChange' } }
 }
 
-const Template: Story = ({ onSelect }) => {
-  const [open, setOpen] = useState(true)
-  const [selectedIds, setSelectedIds] = useState(['en'])
-  const handleChange = (selectedIds: string[]): void => {
-    setSelectedIds(selectedIds)
-    onSelect(selectedIds)
+const Template: Story = ({ onChange }) => {
+  const [value, setValue] = useState<string | undefined>('529')
+
+  const handleChange = (value?: string): void => {
+    setValue(value)
+    onChange(value)
   }
 
   return (
@@ -34,37 +34,45 @@ const Template: Story = ({ onSelect }) => {
             data: {
               languages: [
                 {
+                  __typename: 'Language',
                   id: '529',
                   name: [
                     {
                       value: 'English',
-                      primary: true
+                      primary: true,
+                      __typename: 'Translation'
                     }
                   ]
                 },
                 {
                   id: '496',
+                  __typename: 'Language',
                   name: [
                     {
                       value: 'Français',
-                      primary: true
+                      primary: true,
+                      __typename: 'Translation'
                     },
                     {
                       value: 'French',
-                      primary: false
+                      primary: false,
+                      __typename: 'Translation'
                     }
                   ]
                 },
                 {
                   id: '1106',
+                  __typename: 'Language',
                   name: [
                     {
                       value: 'Deutsch',
-                      primary: true
+                      primary: true,
+                      __typename: 'Translation'
                     },
                     {
                       value: 'German, Standard',
-                      primary: false
+                      primary: false,
+                      __typename: 'Translation'
                     }
                   ]
                 }
@@ -74,11 +82,9 @@ const Template: Story = ({ onSelect }) => {
         }
       ]}
     >
-      <Drawer
-        open={open}
-        onClose={() => setOpen(false)}
+      <LanguageSelect
         onChange={handleChange}
-        selectedIds={selectedIds}
+        value={value}
         currentLanguageId="529"
       />
     </MockedProvider>
@@ -87,4 +93,4 @@ const Template: Story = ({ onSelect }) => {
 
 export const Default = Template.bind({})
 
-export default DrawerStory as Meta
+export default LanguageSelectStory as Meta
