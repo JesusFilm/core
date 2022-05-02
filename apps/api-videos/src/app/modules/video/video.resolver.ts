@@ -15,6 +15,32 @@ import { VideoService } from './video.service'
 export class VideoResolver {
   constructor(private readonly videoService: VideoService) {}
 
+  @Query('episodes')
+  async episodesQuery(
+    @Info() info,
+    @Args('playlistId') playlistId: string,
+    @Args('idType') idType: IdType = IdType.databaseId,
+    @Args('where') where?: VideosFilter,
+    @Args('offset') offset?: number,
+    @Args('limit') limit?: number
+  ): Promise<Video[]> {
+    const variantLanguageId = info.fieldNodes[0].selectionSet.selections
+      .find(({ name }) => name.value === 'variant')
+      ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
+    return await this.videoService.filterEpisodes({
+      playlistId,
+      idType,
+      title: where?.title ?? undefined,
+      tagId: where?.tagId ?? undefined,
+      availableVariantLanguageIds:
+        where?.availableVariantLanguageIds ?? undefined,
+      variantLanguageId,
+      types: where?.types ?? undefined,
+      offset,
+      limit
+    })
+  }
+
   @Query()
   async videos(
     @Info() info,

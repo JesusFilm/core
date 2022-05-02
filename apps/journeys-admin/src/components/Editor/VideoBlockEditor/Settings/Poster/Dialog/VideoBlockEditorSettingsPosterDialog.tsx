@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { Dialog } from '../../../../../Dialog'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
@@ -74,23 +74,41 @@ interface VideoBlockEditorSettingsPosterDialogProps {
   parentBlockId: string | undefined
   open: boolean
   onClose: () => void
+  onLoading?: () => void
+  onLoad?: () => void
 }
 
 export function VideoBlockEditorSettingsPosterDialog({
   selectedBlock,
   parentBlockId,
   open,
-  onClose
+  onClose,
+  onLoading,
+  onLoad
 }: VideoBlockEditorSettingsPosterDialogProps): ReactElement {
   const journey = useJourney()
+
   const [blockDelete, { error: blockDeleteError }] =
     useMutation<BlockDeleteForPosterImage>(BLOCK_DELETE_FOR_POSTER_IMAGE)
   const [videoBlockUpdate, { error: videoBlockUpdateError }] =
     useMutation<VideoBlockPosterImageUpdate>(VIDEO_BLOCK_POSTER_IMAGE_UPDATE)
-  const [imageBlockCreate, { error: imageBlockCreateError }] =
-    useMutation<PosterImageBlockCreate>(POSTER_IMAGE_BLOCK_CREATE)
-  const [imageBlockUpdate, { error: imageBlockUpdateError }] =
-    useMutation<PosterImageBlockUpdate>(POSTER_IMAGE_BLOCK_UPDATE)
+  const [
+    imageBlockCreate,
+    { error: imageBlockCreateError, loading: createLoading }
+  ] = useMutation<PosterImageBlockCreate>(POSTER_IMAGE_BLOCK_CREATE)
+  const [
+    imageBlockUpdate,
+    { error: imageBlockUpdateError, loading: updateLoading }
+  ] = useMutation<PosterImageBlockUpdate>(POSTER_IMAGE_BLOCK_UPDATE)
+
+  useEffect(() => {
+    if (createLoading || updateLoading) {
+      onLoading?.()
+    } else {
+      onLoad?.()
+    }
+    // eslint-disable-next-line
+  }, [createLoading, updateLoading])
 
   const deleteCoverBlock = async (): Promise<void> => {
     if (selectedBlock == null || parentBlockId == null || journey == null)
@@ -220,6 +238,7 @@ export function VideoBlockEditorSettingsPosterDialog({
         selectedBlock={selectedBlock}
         onChange={handleChange}
         onDelete={deleteCoverBlock}
+        loading={createLoading || updateLoading}
       />
     </Dialog>
   )

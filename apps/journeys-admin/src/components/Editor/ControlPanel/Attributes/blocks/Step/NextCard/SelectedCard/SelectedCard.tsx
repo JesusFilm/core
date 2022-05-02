@@ -16,6 +16,8 @@ import {
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
 import { FramePortal } from '../../../../../../../FramePortal'
+import { VideoWrapper } from '../../../../../../Canvas/VideoWrapper'
+import { CardWrapper } from '../../../../../../Canvas/CardWrapper'
 
 export const STEP_BLOCK_DEFAULT_NEXT_BLOCK_UPDATE = gql`
   mutation StepBlockDefaultNextBlockUpdate(
@@ -103,6 +105,10 @@ export function SelectedCard(): ReactElement {
                         ? nextStep
                         : (selectedBlock as TreeBlock<StepFields>)
                     }
+                    wrappers={{
+                      VideoWrapper,
+                      CardWrapper
+                    }}
                   />
                 </Box>
               </ThemeProvider>

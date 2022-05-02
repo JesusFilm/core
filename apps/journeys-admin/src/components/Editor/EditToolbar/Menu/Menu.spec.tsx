@@ -48,10 +48,10 @@ describe('EditToolbar Menu', () => {
       expect(getByRole('button')).toContainElement(getByTestId('MoreVertIcon'))
       fireEvent.click(getByRole('button'))
       expect(getByRole('menu')).toBeInTheDocument()
+      expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
       expect(
         getByRole('menuitem', { name: 'Delete Block' })
       ).toBeInTheDocument()
-
       expect(
         queryByRole('menuitem', { name: 'Social Settings' })
       ).not.toBeInTheDocument()
@@ -80,6 +80,7 @@ describe('EditToolbar Menu', () => {
       expect(getByRole('button')).toContainElement(getByTestId('MoreVertIcon'))
       fireEvent.click(getByRole('button'))
       expect(getByRole('menu')).toBeInTheDocument()
+      expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
       expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
       expect(
         queryByRole('menuitem', { name: 'Social Settings' })

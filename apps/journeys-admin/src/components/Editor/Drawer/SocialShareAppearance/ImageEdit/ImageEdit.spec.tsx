@@ -137,6 +137,7 @@ describe('ImageEdit', () => {
     })
     fireEvent.blur(textBox)
 
+    await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
@@ -213,6 +214,7 @@ describe('ImageEdit', () => {
     })
     fireEvent.blur(textBox)
 
+    await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['ImageBlock:image1.id']).toEqual({
       ...image,

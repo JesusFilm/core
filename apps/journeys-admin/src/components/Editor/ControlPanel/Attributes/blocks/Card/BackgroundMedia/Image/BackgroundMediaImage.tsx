@@ -90,12 +90,10 @@ export function BackgroundMediaImage({
   const [cardBlockUpdate] = useMutation<CardBlockBackgroundImageUpdate>(
     CARD_BLOCK_COVER_IMAGE_UPDATE
   )
-  const [imageBlockCreate] = useMutation<CardBlockImageBlockCreate>(
-    CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE
-  )
-  const [imageBlockUpdate] = useMutation<CardBlockImageBlockUpdate>(
-    CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE
-  )
+  const [imageBlockCreate, { loading: createLoading }] =
+    useMutation<CardBlockImageBlockCreate>(CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE)
+  const [imageBlockUpdate, { loading: updateLoading }] =
+    useMutation<CardBlockImageBlockUpdate>(CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE)
   const [blockDelete] = useMutation<BlockDeleteForBackgroundImage>(
     BLOCK_DELETE_FOR_BACKGROUND_IMAGE
   )
@@ -158,7 +156,8 @@ export function BackgroundMediaImage({
           journeyId: journey.id,
           parentBlockId: cardBlock.id,
           src: block.src,
-          alt: block.alt
+          alt: block.alt,
+          isCover: true
         }
       },
       update(cache, { data }) {
@@ -233,6 +232,7 @@ export function BackgroundMediaImage({
       selectedBlock={imageCover}
       onChange={handleChange}
       onDelete={handleImageDelete}
+      loading={createLoading || updateLoading}
     />
   )
 }

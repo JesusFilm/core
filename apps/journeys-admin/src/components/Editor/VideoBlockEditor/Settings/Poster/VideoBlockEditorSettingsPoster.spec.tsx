@@ -1,12 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import {
+  GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../__generated__/GetJourney'
 import { ThemeProvider } from '../../../../ThemeProvider'
+import { JourneyProvider } from '../../../../../libs/context'
 import { VideoBlockEditorSettingsPoster } from './VideoBlockEditorSettingsPoster'
+import { POSTER_IMAGE_BLOCK_UPDATE } from './Dialog/VideoBlockEditorSettingsPosterDialog'
 
 const video: VideoBlock = {
   id: 'video1.id',
@@ -18,6 +21,7 @@ const video: VideoBlock = {
   muted: true,
   autoplay: true,
   fullsize: true,
+  action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
   video: {
@@ -80,5 +84,59 @@ describe('VideoBlockEditorSettingsPoster', () => {
       </MockedProvider>
     )
     expect(getByRole('button')).toBeDisabled()
+  })
+
+  it('shows loading circle for coverImage update', async () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: POSTER_IMAGE_BLOCK_UPDATE,
+              variables: {
+                id: image.id,
+                journeyId: 'journeyId',
+                input: {
+                  src: 'http://example.com/test.jpg',
+                  alt: 'test.jpg'
+                }
+              }
+            },
+            result: {
+              data: {
+                imageBlockUpdate: {
+                  id: image.id,
+                  src: 'http://example.com/test.jpg',
+                  alt: 'test.jpg',
+                  __typename: 'ImageBlock',
+                  parentBlockId: video.id,
+                  width: image.width,
+                  height: image.height,
+                  parentOrder: image.parentOrder,
+                  blurhash: image.blurhash
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <ThemeProvider>
+            <VideoBlockEditorSettingsPoster
+              selectedBlock={image}
+              parentBlockId={video.id}
+            />
+          </ThemeProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByTestId('posterCreateButton'))
+    const textbox = getByRole('textbox')
+    fireEvent.change(textbox, {
+      target: { value: 'http://example.com/test.jpg' }
+    })
+    fireEvent.blur(textbox)
+    await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
   })
 })

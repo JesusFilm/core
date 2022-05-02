@@ -24,13 +24,6 @@ export function createApolloClient(
 
   return new ApolloClient({
     link: authLink.concat(httpLink),
-    cache
+    cache: cache()
   })
 }
-
-const client = new ApolloClient({
-  uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
-  cache
-})
-
-export default client

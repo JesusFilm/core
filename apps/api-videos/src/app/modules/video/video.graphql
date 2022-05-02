@@ -25,7 +25,7 @@ type Video @key(fields: "id primaryLanguageId") {
   image: String
   imageAlt(languageId: ID, primary: Boolean): [Translation!]!
   variantLanguages: [Language!]!
-  permalink: String!
+  permalinks: [Translation!]!
   noIndex: Boolean
   """
   Episodes are child videos, currently only found in a playlist type
@@ -42,6 +42,13 @@ input VideosFilter {
 }
 
 extend type Query {
+  episodes(
+    playlistId: ID!
+    idType: IdType
+    where: VideosFilter
+    offset: Int
+    limit: Int
+  ): [Video!]!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!, idType: IdType): Video!
 }

@@ -42,10 +42,11 @@ const video: TreeBlock<VideoBlock> = {
   parentBlockId: 'cardId',
   parentOrder: 0,
   startAt: 0,
-  endAt: null,
+  endAt: 144,
   muted: true,
   autoplay: true,
   fullsize: true,
+  action: null,
   videoId: '5_0-NUA0201-0-0',
   videoVariantLanguageId: '529',
   video: {
@@ -168,7 +169,10 @@ describe('BackgroundMediaVideo', () => {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   videoId: '2_0-Brand_Video',
-                  videoVariantLanguageId: '529'
+                  videoVariantLanguageId: '529',
+                  startAt: 0,
+                  endAt: 144,
+                  isCover: true
                 }
               }
             },
@@ -238,7 +242,10 @@ describe('BackgroundMediaVideo', () => {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   videoId: '2_0-Brand_Video',
-                  videoVariantLanguageId: '529'
+                  videoVariantLanguageId: '529',
+                  startAt: 0,
+                  endAt: 144,
+                  isCover: true
                 }
               }
             },
@@ -309,7 +316,9 @@ describe('BackgroundMediaVideo', () => {
                   journeyId: 'journeyId',
                   input: {
                     videoId: '2_0-Brand_Video',
-                    videoVariantLanguageId: '529'
+                    videoVariantLanguageId: '529',
+                    startAt: 0,
+                    endAt: 144
                   }
                 }
               },
@@ -435,7 +444,7 @@ describe('BackgroundMediaVideo', () => {
           '00:00:00'
         )
         expect(getAllByRole('textbox', { name: 'Ends At' })[0]).toHaveValue(
-          '00:00:00'
+          '00:02:24'
         )
       })
 
@@ -471,7 +480,7 @@ describe('BackgroundMediaVideo', () => {
                     journeyId: 'journeyId',
                     input: {
                       startAt: 0,
-                      endAt: 0,
+                      endAt: 144,
                       muted: true,
                       autoplay: false
                     }
@@ -525,7 +534,7 @@ describe('BackgroundMediaVideo', () => {
                   journeyId: 'journeyId',
                   input: {
                     startAt: 0,
-                    endAt: 0,
+                    endAt: 144,
                     muted: false,
                     autoplay: true
                   }
@@ -578,7 +587,7 @@ describe('BackgroundMediaVideo', () => {
                   journeyId: 'journeyId',
                   input: {
                     startAt: 11,
-                    endAt: 0,
+                    endAt: 144,
                     autoplay: true,
                     muted: true
                   }

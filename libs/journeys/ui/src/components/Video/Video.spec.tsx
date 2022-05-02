@@ -16,6 +16,7 @@ const block: TreeBlock<VideoFields> = {
   muted: null,
   posterBlockId: 'posterBlockId',
   fullsize: null,
+  action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
   video: {

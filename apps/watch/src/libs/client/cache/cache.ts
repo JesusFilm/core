@@ -12,7 +12,13 @@ export const cache: InMemoryCache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
-        videos: offsetLimitPagination()
+        videos: {
+          ...offsetLimitPagination(),
+          keyArgs: [
+            'where',
+            ['tagId', 'types', 'availableVariantLanguageIds', 'title']
+          ]
+        }
       }
     }
   }

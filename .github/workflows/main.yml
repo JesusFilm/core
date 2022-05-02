@@ -119,8 +119,22 @@ jobs:
           restore-keys: node-modules-
       - name: NPM Install
         run: npm install --silent
-      - uses: mansagroup/nrwl-nx-action@v2
+      - name: nx Install
+        run: npm install -g nx --silent
+      - name: Get affected apps
+        id: affected-apps
+        if: ${{ github.event_name == 'pull_request' }}
+        run: echo "::set-output name=apps::$(nx affected:apps --plain --base=origin/main --head=HEAD)"
+      - name: Get affected libs
+        id: affected-libs
+        if: ${{ github.event_name == 'pull_request' }}
+        run: echo "::set-output name=libs::$(nx affected:libs --plain --base=origin/main --head=HEAD)"
+      - name: Build Affected Stories
         id: build-storybook
+        env:
+          NX_AFFECTED_APPS: ${{ steps.affected-apps.outputs.apps }}
+          NX_AFFECTED_LIBS: ${{ steps.affected-libs.outputs.libs }}
+        uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: build-storybook
       - name: Check for frontend changes
