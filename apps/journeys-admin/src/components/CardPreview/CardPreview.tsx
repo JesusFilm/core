@@ -36,12 +36,22 @@ export interface CardPreviewProps {
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
   ${STEP_FIELDS}
   ${CARD_FIELDS}
-  mutation StepAndCardBlockCreate($journeyId: ID!, $stepId: ID!, $cardId: ID) {
+  mutation StepAndCardBlockCreate(
+    $journeyId: ID!
+    $stepId: ID!
+    $cardId: ID
+    $themeName: ThemeName
+  ) {
     stepBlockCreate(input: { id: $stepId, journeyId: $journeyId }) {
       ...StepFields
     }
     cardBlockCreate(
-      input: { id: $cardId, journeyId: $journeyId, parentBlockId: $stepId }
+      input: {
+        id: $cardId
+        journeyId: $journeyId
+        parentBlockId: $stepId
+        themeName: $themeName
+      }
     ) {
       ...CardFields
     }
@@ -91,7 +101,8 @@ export function CardPreview({
       variables: {
         journeyId: journey.id,
         stepId,
-        cardId
+        cardId,
+        themeName: ThemeName.base
       },
       update(cache, { data }) {
         if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
