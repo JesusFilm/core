@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { useMutation, gql } from '@apollo/client'
+import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
@@ -50,8 +50,21 @@ export function DescriptionDialog({
       })
       onClose()
     } catch (error) {
-      enqueueSnackbar('There was an error updating description', {
-        variant: 'error'
+      if (error instanceof ApolloError) {
+        if (error.networkError != null) {
+          enqueueSnackbar(
+            'Field update failed. Reload the page or try again.',
+            {
+              variant: 'error',
+              preventDuplicate: true
+            }
+          )
+          return
+        }
+      }
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
       })
     }
   }
