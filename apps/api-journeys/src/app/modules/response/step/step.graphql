@@ -1,0 +1,17 @@
+input StepResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+}
+
+type StepResponse implements Response {
+  id: ID!
+  userId: ID!
+  block: StepBlock
+}
+
+extend type Mutation {
+  stepResponseCreate(input: StepResponseCreateInput!): SignUpResponse!
+}
