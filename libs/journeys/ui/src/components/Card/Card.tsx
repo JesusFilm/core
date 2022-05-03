@@ -1,8 +1,9 @@
-import { ReactElement, ReactNode } from 'react'
-import { ThemeProvider } from '@core/shared/ui'
+import { ReactElement, ReactNode, useMemo } from 'react'
+import { ThemeProvider, themes } from '@core/shared/ui'
+import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import { SxProps } from '@mui/system/styleFunctionSx'
-import { TreeBlock } from '../..'
+import { blurImage, TreeBlock } from '../..'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
@@ -24,18 +25,57 @@ export function Card({
   fullscreen,
   wrappers
 }: CardProps): ReactElement {
-  const coverBlock = children.find((block) => block.id === coverBlockId) as
-    | TreeBlock<ImageFields | VideoFields>
-    | undefined
+  const theme = useTheme()
+
+  const coverBlock = children.find(
+    (block) =>
+      block.id === coverBlockId &&
+      (block.__typename === 'ImageBlock' || block.__typename === 'VideoBlock')
+  ) as TreeBlock<ImageFields | VideoFields> | undefined
+
+  const videoBlock =
+    coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
+
+  // ImageBlock is card cover image or video poster image
+  const imageBlock =
+    coverBlock?.__typename === 'ImageBlock'
+      ? coverBlock
+      : videoBlock != null
+      ? (videoBlock.children.find(
+          (block) =>
+            block.id === videoBlock.posterBlockId &&
+            block.__typename === 'ImageBlock'
+        ) as TreeBlock<ImageFields> | undefined)
+      : undefined
+
+  const customCardTheme =
+    themeName != null && themeMode != null
+      ? themes[themeName][themeMode]
+      : undefined
+
+  const cardColor =
+    backgroundColor != null
+      ? backgroundColor
+      : customCardTheme != null
+      ? customCardTheme.palette.background.paper
+      : theme.palette.background.paper
+
+  const blurUrl = useMemo(() => {
+    return imageBlock != null
+      ? blurImage(
+          imageBlock.width,
+          imageBlock.height,
+          imageBlock.blurhash,
+          cardColor
+        )
+      : undefined
+  }, [imageBlock, cardColor])
 
   const renderedChildren = children
     .filter(({ id }) => id !== coverBlockId)
     .map((block) => (
       <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
     ))
-
-  const cardColor =
-    backgroundColor != null ? backgroundColor : 'background.paper'
 
   return (
     <CardWrapper
@@ -44,31 +84,17 @@ export function Card({
       themeMode={themeMode}
       themeName={themeName}
     >
-      {coverBlock != null && (fullscreen == null || !fullscreen) ? (
-        <>
-          {coverBlock.__typename === 'ImageBlock' && (
-            <ContainedCover backgroundColor={cardColor} imageBlock={coverBlock}>
-              {renderedChildren}
-            </ContainedCover>
-          )}
-          {coverBlock.__typename === 'VideoBlock' && (
-            <ContainedCover
-              backgroundColor={cardColor}
-              videoBlock={coverBlock}
-              imageBlock={
-                coverBlock.children.find(
-                  (block) =>
-                    block.id === coverBlock.posterBlockId &&
-                    block.__typename === 'ImageBlock'
-                ) as TreeBlock<ImageFields> | undefined
-              }
-            >
-              {renderedChildren}
-            </ContainedCover>
-          )}
-        </>
+      {coverBlock != null && !fullscreen ? (
+        <ContainedCover
+          backgroundColor={cardColor}
+          backgroundBlur={blurUrl}
+          videoBlock={videoBlock}
+          imageBlock={imageBlock}
+        >
+          {renderedChildren}
+        </ContainedCover>
       ) : (
-        <ExpandedCover coverBlock={coverBlock}>
+        <ExpandedCover backgroundBlur={blurUrl}>
           {renderedChildren}
         </ExpandedCover>
       )}

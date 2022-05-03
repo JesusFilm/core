@@ -1,32 +1,15 @@
-import { ReactElement, ReactNode, useMemo } from 'react'
-import { useTheme } from '@mui/material/styles'
-import { NextImage } from '@core/shared/ui'
+import { ReactElement, ReactNode } from 'react'
 import Box from '@mui/material/Box'
-import { blurImage, TreeBlock } from '../../..'
-import { ImageFields } from '../../Image/__generated__/ImageFields'
-import { VideoFields } from '../../Video/__generated__/VideoFields'
 
 interface ExpandedCoverProps {
   children: ReactNode
-  coverBlock?: TreeBlock<ImageFields | VideoFields>
+  backgroundBlur?: string
 }
 
 export function ExpandedCover({
   children,
-  coverBlock
+  backgroundBlur
 }: ExpandedCoverProps): ReactElement {
-  const theme = useTheme()
-  const blurUrl = useMemo(() => {
-    return coverBlock?.__typename === 'ImageBlock'
-      ? blurImage(
-          coverBlock.width,
-          coverBlock.height,
-          coverBlock.blurhash,
-          theme.palette.background.paper
-        )
-      : undefined
-  }, [coverBlock, theme])
-
   return (
     <Box
       data-testid="ExpandedCover"
@@ -52,22 +35,28 @@ export function ExpandedCover({
           '& > *': {
             '&:first-child': { mt: 0 },
             '&:last-child': { mb: 0 }
-          },
-          // NextImage span
-          '> span': {
-            maxHeight: '100%'
           }
         }}
       >
         {children}
       </Box>
-      {blurUrl != null && coverBlock?.__typename === 'ImageBlock' && (
-        <NextImage
-          data-testid="ExpandedImageCover"
-          src={blurUrl}
-          alt={coverBlock.alt}
-          layout="fill"
-          objectFit="cover"
+      {backgroundBlur != null && (
+        <Box
+          data-testid="expandedBlurBackground"
+          sx={{
+            position: 'absolute',
+            width: '100%',
+            height: '110%',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: '100% 100%',
+            backgroundPosition: '0% 0%',
+            left: 0,
+            top: '-10%',
+            zIndex: -1,
+            transform: 'scaleY(-1)',
+            backgroundBlendMode: 'hard-light',
+            backgroundImage: `url(${backgroundBlur}), url(${backgroundBlur})`
+          }}
         />
       )}
     </Box>
