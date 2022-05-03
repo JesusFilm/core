@@ -12,6 +12,11 @@ export enum IdType {
     slug = "slug"
 }
 
+export enum LanguageIdType {
+    databaseId = "databaseId",
+    bcp47 = "bcp47"
+}
+
 export class Country {
     __typename?: 'Country';
     id: string;
@@ -47,7 +52,7 @@ export abstract class IQuery {
 
     abstract languages(offset?: Nullable<number>, limit?: Nullable<number>): Language[] | Promise<Language[]>;
 
-    abstract language(id: string): Nullable<Language> | Promise<Nullable<Language>>;
+    abstract language(id: string, idType?: Nullable<LanguageIdType>): Nullable<Language> | Promise<Nullable<Language>>;
 }
 
 type Nullable<T> = T | null;

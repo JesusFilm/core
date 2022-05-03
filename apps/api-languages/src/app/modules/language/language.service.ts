@@ -17,4 +17,15 @@ export class LanguageService extends BaseService {
     `)
     return await res.all()
   }
+
+  @KeyAsId()
+  async getByBcp47<T>(_key: string): Promise<T> {
+    const res = await this.db.query(aql`
+      FOR item in ${this.collection}
+        FILTER item.bcp47 == ${_key}
+        LIMIT 1
+        RETURN item
+    `)
+    return await res.next()
+  }
 }
