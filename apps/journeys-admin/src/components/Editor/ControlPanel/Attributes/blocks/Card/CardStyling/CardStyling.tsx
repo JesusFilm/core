@@ -8,7 +8,10 @@ import Image from 'next/image'
 import { gql, useMutation } from '@apollo/client'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { HorizontalSelect } from '../../../../../../HorizontalSelect'
-import { ThemeMode } from '../../../../../../../../__generated__/globalTypes'
+import {
+  ThemeName,
+  ThemeMode
+} from '../../../../../../../../__generated__/globalTypes'
 import cardStyleLight from '../../../../../../../../public/card-style-light.svg'
 import cardStyleDark from '../../../../../../../../public/card-style-dark.svg'
 import { useJourney } from '../../../../../../../libs/context'
@@ -24,6 +27,7 @@ export const CARD_BLOCK_THEME_MODE_UPDATE = gql`
     cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
       id
       themeMode
+      themeName
     }
   }
 `
@@ -53,14 +57,16 @@ export function CardStyling(): ReactElement {
           id: cardBlock.id,
           journeyId: journey.id,
           input: {
-            themeMode
+            themeMode,
+            themeName: ThemeName.base
           }
         },
         optimisticResponse: {
           cardBlockUpdate: {
             id: cardBlock.id,
             __typename: 'CardBlock',
-            themeMode
+            themeMode,
+            themeName: ThemeName.base
           }
         }
       })
