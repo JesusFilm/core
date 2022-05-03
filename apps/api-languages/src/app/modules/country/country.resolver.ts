@@ -7,12 +7,14 @@ import {
   ResolveField,
   Parent
 } from '@nestjs/graphql'
-import { Country, IdType } from '../../__generated__/graphql'
+import { Country, IdType, Language } from '../../__generated__/graphql'
+import { LanguageService } from '../language/language.service'
 import { CountryService } from './country.service'
 
 @Resolver('Country')
 export class CountryResolver {
-  constructor(private readonly countryService: CountryService) {}
+  constructor(private readonly countryService: CountryService,
+    private readonly languageService: LanguageService) { }
 
   @Query()
   async countries(): Promise<Country[]> {
@@ -52,6 +54,11 @@ export class CountryResolver {
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
   ): void {}
+
+  @ResolveField()
+  async languages(@Parent() country: Country & { languageIds: string[] }): Promise<Language[]> {
+    return await this.languageService.getByIds(country.languageIds)
+  }
 
   @ResolveReference()
   async resolveReference(reference: {

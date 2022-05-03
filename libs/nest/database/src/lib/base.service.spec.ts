@@ -4,6 +4,8 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'
 import { Injectable } from '@nestjs/common'
 import { omit } from 'lodash'
+import { AqlQuery } from 'arangojs/aql'
+import { ArrayCursor } from 'arangojs/cursor'
 
 import { mockCollectionUpdateAllResult } from './dbMock'
 import { BaseService } from './base.service'
@@ -57,14 +59,16 @@ const blockResponse2 = omit(
 
 describe('Base Service', () => {
   let service: MockService
+  let db: DeepMockProxy<Database>
 
   beforeEach(async () => {
+    db = mockDeep<Database>()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MockService,
         {
           provide: 'DATABASE',
-          useFactory: () => mockDeep<Database>()
+          useFactory: () => db
         }
       ]
     }).compile()
@@ -91,6 +95,26 @@ describe('Base Service', () => {
         [block, block2],
         { returnNew: true }
       )
+    })
+  })
+
+  describe('getByIds', () => {
+    it('should return items by id collection', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(`
+    FOR item IN undefined
+      FILTER item._key IN @value0
+      RETURN item`)
+        expect(bindVars).toEqual({
+          value0: [block._key, block2._key]
+        })
+        return { all: () => [block, block2] } as unknown as ArrayCursor
+      })
+      expect(await service.getByIds([block._key, block2._key])).toEqual([
+        blockResponse,
+        blockResponse2
+      ])
     })
   })
 })
