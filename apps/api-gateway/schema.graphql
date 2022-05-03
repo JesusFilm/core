@@ -553,25 +553,25 @@ input RadioQuestionEventCreateInput {
 }
 
 type RadioQuestionResponse implements Response {
-  block: RadioQuestionBlock
-  id: ID!
-  radioOptionBlockId: ID!
-  userId: ID!
+  block: RadioQuestionBlock @deprecated(reason: "use event instead of response")
+  id: ID! @deprecated(reason: "use event instead of response")
+  radioOptionBlockId: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
 }
 
 input RadioQuestionResponseCreateInput {
-  blockId: ID!
+  blockId: ID
 
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  radioOptionBlockId: ID!
+  radioOptionBlockId: ID
 }
 
 interface Response {
-  id: ID!
-  userId: ID!
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
 }
 
 type SignUpBlock implements Block {
@@ -617,22 +617,22 @@ input SignUpEventCreateInput {
 }
 
 type SignUpResponse implements Response {
-  block: SignUpBlock
-  email: String!
-  id: ID!
-  name: String!
-  userId: ID!
+  block: SignUpBlock @deprecated(reason: "use event instead of response")
+  email: String! @deprecated(reason: "use event instead of response")
+  id: ID! @deprecated(reason: "use event instead of response")
+  name: String! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
 }
 
 input SignUpResponseCreateInput {
-  blockId: ID!
-  email: String!
+  blockId: ID
+  email: String
 
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  name: String!
+  name: String
 }
 
 type StepBlock implements Block {
@@ -684,13 +684,13 @@ input StepEventCreateInput {
 }
 
 type StepResponse implements Response {
-  block: StepBlock
-  id: ID!
-  userId: ID!
+  block: StepBlock @deprecated(reason: "use event instead of response")
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
 }
 
 input StepResponseCreateInput {
-  blockId: ID!
+  blockId: ID
 
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
@@ -945,28 +945,28 @@ enum VideoEventStateEnum {
 }
 
 type VideoResponse implements Response {
-  block: VideoBlock
-  id: ID!
-  position: Int
-  state: VideoResponseStateEnum!
-  userId: ID!
+  block: VideoBlock @deprecated(reason: "use event instead of response")
+  id: ID! @deprecated(reason: "use event instead of response")
+  position: Int @deprecated(reason: "use event instead of response")
+  state: VideoResponseStateEnum! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
 }
 
 input VideoResponseCreateInput {
-  blockId: ID!
+  blockId: ID
 
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
   position: Float
-  state: VideoResponseStateEnum!
+  state: VideoResponseStateEnum
 }
 
 enum VideoResponseStateEnum {
-  FINISHED
-  PAUSED
-  PLAYING
+  FINISHED @deprecated(reason: "use event instead of response")
+  PAUSED @deprecated(reason: "use event instead of response")
+  PLAYING @deprecated(reason: "use event instead of response")
 }
 
 input VideosFilter {

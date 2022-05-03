@@ -1,4 +1,4 @@
 interface Response {
-  id: ID!
-  userId: ID!
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
 }
