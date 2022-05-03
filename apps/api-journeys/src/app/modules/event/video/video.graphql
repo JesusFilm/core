@@ -1,0 +1,27 @@
+enum VideoEventStateEnum {
+  PLAYING
+  PAUSED
+  FINISHED
+}
+
+input VideoEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  state: VideoEventStateEnum!
+  position: Float
+}
+
+type VideoEvent implements Event {
+  id: ID!
+  userId: ID!
+  state: VideoEventStateEnum!
+  position: Int
+  block: VideoBlock
+}
+
+extend type Mutation {
+  videoEventCreate(input: VideoEventCreateInput!): VideoEvent!
+}

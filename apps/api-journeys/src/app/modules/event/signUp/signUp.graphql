@@ -1,0 +1,21 @@
+input SignUpEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  name: String!
+  email: String!
+}
+
+type SignUpEvent implements Event {
+  id: ID!
+  userId: ID!
+  name: String!
+  email: String!
+  block: SignUpBlock
+}
+
+extend type Mutation {
+  signUpEventCreate(input: SignUpEventCreateInput!): SignUpEvent!
+}
