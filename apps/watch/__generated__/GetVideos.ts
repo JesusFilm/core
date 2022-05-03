@@ -26,6 +26,12 @@ export interface GetVideos_videos_variant {
   duration: number;
 }
 
+export interface GetVideos_videos_permalinks {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
 export interface GetVideos_videos {
   __typename: "Video";
   id: string;
@@ -38,7 +44,7 @@ export interface GetVideos_videos {
    * Episodes are child videos, currently only found in a playlist type
    */
   episodeIds: string[];
-  permalink: string;
+  permalinks: GetVideos_videos_permalinks[];
 }
 
 export interface GetVideos {

@@ -2,7 +2,7 @@ import LinkIcon from '@mui/icons-material/Link'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { ChangeEvent, ReactElement } from 'react'
+import { ReactElement, ClipboardEvent } from 'react'
 import { object, string } from 'yup'
 import { useFormik } from 'formik'
 import { noop } from 'lodash'
@@ -29,11 +29,7 @@ export function ImageBlockEditor({
     src: string().url('Please enter a valid url').required('Required')
   })
 
-  const handleSrcChange = async (
-    event: ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
-    const src = event.target.value
-
+  const handleSrcChange = async (src: string): Promise<void> => {
     if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
       return
 
@@ -50,6 +46,12 @@ export function ImageBlockEditor({
       await onDelete()
       formik.resetForm({ values: { src: '' } })
     }
+  }
+
+  const handlePaste = async (
+    e: ClipboardEvent<HTMLDivElement>
+  ): Promise<void> => {
+    await handleSrcChange(e.clipboardData.getData('text'))
   }
 
   const formik = useFormik({
@@ -84,12 +86,15 @@ export function ImageBlockEditor({
             fullWidth
             value={formik.values.src}
             onChange={formik.handleChange}
+            onPaste={async (e) => {
+              await handlePaste(e)
+            }}
             onBlur={async (e) => {
               formik.handleBlur(e)
-              await handleSrcChange(e as ChangeEvent<HTMLInputElement>)
+              await handleSrcChange(e.target.value)
             }}
             helperText={
-              formik.touched.src === true
+              formik.errors.src != null
                 ? formik.errors.src
                 : 'Make sure image address is permanent'
             }
