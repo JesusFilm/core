@@ -7,10 +7,11 @@ import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import MoreVert from '@mui/icons-material/MoreVert'
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
+import BeenHereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditIcon from '@mui/icons-material/Edit'
 import DescriptionIcon from '@mui/icons-material/Description'
+import TranslateIcon from '@mui/icons-material/Translate'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
 import NextLink from 'next/link'
@@ -18,8 +19,9 @@ import { useSnackbar } from 'notistack'
 import { useJourney } from '../../../libs/context'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
-import { DescriptionDialog } from './DescriptionDialog/DescriptionDialog'
+import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
+import { LanguageDialog } from './LanguageDialog'
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
@@ -40,6 +42,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
+  const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
   const openMenu = forceOpen ?? Boolean(anchorEl)
@@ -75,6 +78,10 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   }
   const handleUpdateDescription = (): void => {
     setShowDescriptionDialog(true)
+    setAnchorEl(null)
+  }
+  const handleUpdateLanguage = (): void => {
+    setShowLanguageDialog(true)
     setAnchorEl(null)
   }
   const handleCopyLink = async (): Promise<void> => {
@@ -116,13 +123,13 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
             <MenuItem
               disabled={journey.status === JourneyStatus.draft}
               component="a"
-              href={`https://your.nextstep.is/${journey.slug}`}
+              href={`/api/preview?slug=${journey.slug}`}
               target="_blank"
               rel="noopener"
               onClick={handleCloseMenu}
             >
               <ListItemIcon>
-                <AssignmentTurnedInIcon />
+                <VisibilityIcon />
               </ListItemIcon>
               <ListItemText>Preview</ListItemText>
             </MenuItem>
@@ -131,7 +138,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
               onClick={handlePublish}
             >
               <ListItemIcon>
-                <VisibilityIcon />
+                <BeenHereRoundedIcon />
               </ListItemIcon>
               <ListItemText>Publish</ListItemText>
             </MenuItem>
@@ -146,6 +153,12 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
                 <DescriptionIcon />
               </ListItemIcon>
               <ListItemText>Description</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={handleUpdateLanguage}>
+              <ListItemIcon>
+                <TranslateIcon />
+              </ListItemIcon>
+              <ListItemText>Language</ListItemText>
             </MenuItem>
             <Divider />
             <NextLink href={`/journeys/${journey.slug}/edit`} passHref>
@@ -171,6 +184,10 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
           <DescriptionDialog
             open={showDescriptionDialog}
             onClose={() => setShowDescriptionDialog(false)}
+          />
+          <LanguageDialog
+            open={showLanguageDialog}
+            onClose={() => setShowLanguageDialog(false)}
           />
         </>
       ) : (

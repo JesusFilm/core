@@ -15,7 +15,7 @@ export {
   Video,
   VideoTrigger
 } from './components'
-export type { WrapperProps } from './components'
+export type { WrapperProps, WrappersProps } from './components'
 export {
   blurImage,
   handleAction,

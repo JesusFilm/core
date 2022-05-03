@@ -530,7 +530,9 @@ type VideoBlock implements Block {
   videoId and videoVariantLanguageId both need to be set to select a video
   """
   videoVariantLanguageId: ID
-  endAction: Action
+
+  """action that should be performed when the video ends"""
+  action: Action
 }
 
 input VideoBlockCreateInput {
@@ -705,6 +707,24 @@ type SignUpResponse implements Response {
   block: SignUpBlock
 }
 
+input StepResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  previousBlockId: ID!
+  journeyId: ID!
+}
+
+type StepResponse implements Response {
+  id: ID!
+  userId: ID!
+  previousBlockId: ID!
+  journeyId: ID!
+  block: StepBlock
+}
+
 enum VideoResponseStateEnum {
   PLAYING
   PAUSED
@@ -770,6 +790,7 @@ extend type Mutation {
   journeyPublish(id: ID!): Journey
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
+  stepResponseCreate(input: StepResponseCreateInput!): SignUpResponse!
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!

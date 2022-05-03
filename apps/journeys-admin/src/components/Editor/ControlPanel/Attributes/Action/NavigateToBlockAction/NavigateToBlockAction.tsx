@@ -4,7 +4,8 @@ import { ReactElement } from 'react'
 import { CardPreview } from '../../../../../CardPreview'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey_blocks_ButtonBlock as ButtonBlock
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
 import { NavigateToBlockActionUpdate } from '../../../../../../../__generated__/NavigateToBlockActionUpdate'
 import { useJourney } from '../../../../../../libs/context'
@@ -31,8 +32,9 @@ export function NavigateToBlockAction(): ReactElement {
     state: { steps, selectedBlock }
   } = useEditor()
   const journey = useJourney()
-  const selectedButtonBlock = selectedBlock as
+  const currentBlock = selectedBlock as
     | TreeBlock<ButtonBlock>
+    | TreeBlock<VideoBlock>
     | undefined
 
   const [navigateToBlockActionUpdate] =
@@ -41,13 +43,13 @@ export function NavigateToBlockAction(): ReactElement {
   const currentActionStep =
     steps?.find(
       ({ id }) =>
-        selectedButtonBlock?.action?.__typename === 'NavigateToBlockAction' &&
-        id === selectedButtonBlock?.action?.blockId
+        currentBlock?.action?.__typename === 'NavigateToBlockAction' &&
+        id === currentBlock?.action?.blockId
     ) ?? undefined
 
   async function handleSelectStep(step: TreeBlock<StepBlock>): Promise<void> {
-    if (selectedButtonBlock != null && journey != null) {
-      const { id, __typename: typeName } = selectedButtonBlock
+    if (currentBlock != null && journey != null) {
+      const { id, __typename: typeName } = currentBlock
       await navigateToBlockActionUpdate({
         variables: {
           id,

@@ -62,6 +62,7 @@ const video: TreeBlock<VideoBlock> = {
   muted: true,
   autoplay: true,
   fullsize: true,
+  action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
   video: {
@@ -182,6 +183,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
         target: { value: image.src }
       })
       fireEvent.blur(textBox)
+      await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
@@ -259,6 +261,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
         target: { value: image.src }
       })
       fireEvent.blur(textBox)
+      await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(textBox).toHaveValue(image.src))
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([

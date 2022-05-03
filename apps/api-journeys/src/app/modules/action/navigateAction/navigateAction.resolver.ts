@@ -33,7 +33,13 @@ export class NavigateActionResolver {
 
     if (
       !includes(
-        ['SignUpBlock', 'RadioOptionBlock', 'ButtonBlock', 'VideoTriggerBlock'],
+        [
+          'SignUpBlock',
+          'RadioOptionBlock',
+          'ButtonBlock',
+          'VideoBlock',
+          'VideoTriggerBlock'
+        ],
         block.__typename
       )
     ) {

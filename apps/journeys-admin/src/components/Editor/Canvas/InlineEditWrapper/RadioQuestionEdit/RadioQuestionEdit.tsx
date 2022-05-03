@@ -1,31 +1,21 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
+import Box from '@mui/material/Box'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
-import { RadioQuestion, StyledRadioOption, TreeBlock } from '@core/journeys/ui'
+import {
+  RadioQuestion,
+  StyledRadioOption,
+  TreeBlock,
+  WrappersProps
+} from '@core/journeys/ui'
 import { useJourney } from '../../../../../libs/context'
-import { RadioQuestionBlockUpdateContent } from '../../../../../../__generated__/RadioQuestionBlockUpdateContent'
 import { RadioOptionBlockCreate } from '../../../../../../__generated__/RadioOptionBlockCreate'
 import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
-import { InlineEditInput } from '../InlineEditInput'
 import { adminTheme } from '../../../../ThemeProvider/admin/theme'
 
 const adminPrimaryColor = adminTheme.palette
   .primary as SimplePaletteColorOptions
-
-export const RADIO_QUESTION_BLOCK_UPDATE_CONTENT = gql`
-  mutation RadioQuestionBlockUpdateContent(
-    $id: ID!
-    $journeyId: ID!
-    $input: RadioQuestionBlockUpdateInput!
-  ) {
-    radioQuestionBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-      id
-      label
-      description
-    }
-  }
-`
 
 export const RADIO_OPTION_BLOCK_CREATE = gql`
   mutation RadioOptionBlockCreate($input: RadioOptionBlockCreateInput!) {
@@ -37,54 +27,18 @@ export const RADIO_OPTION_BLOCK_CREATE = gql`
 `
 
 export interface RadioQuestionEditProps extends TreeBlock<RadioQuestionFields> {
-  deleteSelf: () => void
+  wrappers?: WrappersProps
 }
 
 export function RadioQuestionEdit({
   id,
-  label,
-  description,
-  deleteSelf,
+  wrappers,
   ...props
 }: RadioQuestionEditProps): ReactElement {
-  const [radioQuestionBlockUpdate] =
-    useMutation<RadioQuestionBlockUpdateContent>(
-      RADIO_QUESTION_BLOCK_UPDATE_CONTENT
-    )
   const [radioOptionBlockCreate] = useMutation<RadioOptionBlockCreate>(
     RADIO_OPTION_BLOCK_CREATE
   )
-
   const journey = useJourney()
-  const [labelValue, setLabel] = useState(label)
-  const [descriptionValue, setDescription] = useState(description ?? '')
-
-  async function handleUpdateBlock(): Promise<void> {
-    if (journey == null) return
-
-    const label = labelValue.trimStart().trimEnd()
-    const description = descriptionValue?.trimStart().trimEnd() ?? ''
-
-    if (label === '' && description === '') {
-      deleteSelf()
-    } else {
-      await radioQuestionBlockUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          input: { label, description }
-        },
-        optimisticResponse: {
-          radioQuestionBlockUpdate: {
-            id,
-            __typename: 'RadioQuestionBlock',
-            label,
-            description
-          }
-        }
-      })
-    }
-  }
 
   const handleCreateOption = async (): Promise<void> => {
     if (journey == null) return
@@ -120,62 +74,31 @@ export function RadioQuestionEdit({
     })
   }
 
-  const labelInput = (
-    <InlineEditInput
-      name={`edit-heading-${id}`}
-      multiline
-      fullWidth
-      autoFocus
-      value={labelValue}
-      placeholder="Type your question here..."
-      onBlur={handleUpdateBlock}
-      onChange={(e) => {
-        setLabel(e.currentTarget.value)
-      }}
-      onClick={(e) => e.stopPropagation()}
-    />
-  )
-
-  const descriptionInput = (
-    <InlineEditInput
-      name={`edit-description-${id}`}
-      multiline
-      fullWidth
-      value={descriptionValue}
-      placeholder="Type your description here..."
-      onBlur={handleUpdateBlock}
-      onChange={(e) => {
-        setDescription(e.currentTarget.value)
-      }}
-      onClick={(e) => e.stopPropagation()}
-    />
-  )
-
   const addRadioOption = (
-    <StyledRadioOption
-      id={`${id}-add-option`}
-      variant="contained"
-      fullWidth
-      disableRipple
-      startIcon={
-        <AddCircleRoundedIcon sx={{ color: `${adminPrimaryColor.main}` }} />
-      }
-      onClick={handleCreateOption}
-    >
-      Add New Option
-    </StyledRadioOption>
+    // Box mimics wrappers on RadioOptions so all ButtonGroup children have same type for class styling
+    <Box>
+      <StyledRadioOption
+        data-testid={`${id}-add-option`}
+        variant="contained"
+        fullWidth
+        disableRipple
+        startIcon={
+          <AddCircleRoundedIcon sx={{ color: `${adminPrimaryColor.main}` }} />
+        }
+        onClick={handleCreateOption}
+        sx={{ borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}
+      >
+        Add New Option
+      </StyledRadioOption>
+    </Box>
   )
 
   return (
     <RadioQuestion
       {...props}
       id={id}
-      label={label}
-      description={description}
-      editableLabel={labelInput}
-      editableDescription={descriptionInput}
       addOption={props.children.length < 12 ? addRadioOption : undefined}
-      wrappers={{ Wrapper: ({ children }) => children }}
+      wrappers={wrappers}
     />
   )
 }

@@ -25,7 +25,10 @@ export const GET_VIDEOS = gql`
         duration
       }
       episodeIds
-      permalink
+      permalinks {
+        value
+        primary
+      }
     }
   }
 `
@@ -34,6 +37,8 @@ interface VideoListProps {
   filter?: VideosFilter
   layout?: 'grid' | 'carousel' | 'list'
   variant?: 'small' | 'large'
+  limit?: number
+  showLoadMore?: boolean
 }
 
 function isAtEnd(count: number, limit: number, previousCount: number): boolean {
@@ -44,11 +49,12 @@ function isAtEnd(count: number, limit: number, previousCount: number): boolean {
 export function VideoList({
   layout = 'list',
   filter = {},
-  variant = 'large'
+  variant = 'large',
+  limit = 8,
+  showLoadMore = true
 }: VideoListProps): ReactElement {
   const [isEnd, setIsEnd] = useState(false)
   const [previousCount, setPreviousCount] = useState(0)
-  const limit = layout === 'grid' ? 20 : 8
   const { data, loading, fetchMore } = useQuery<GetVideos>(GET_VIDEOS, {
     variables: {
       where: filter,
@@ -85,6 +91,7 @@ export function VideoList({
         <VideoListGrid
           videos={data?.videos ?? []}
           onLoadMore={handleLoadMore}
+          showLoadMore={showLoadMore}
           loading={loading}
           isEnd={isEnd}
         />

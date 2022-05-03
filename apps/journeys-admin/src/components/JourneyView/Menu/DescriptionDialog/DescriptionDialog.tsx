@@ -1,9 +1,8 @@
-import { ReactElement, useState } from 'react'
-import { useMutation, gql } from '@apollo/client'
-import FormControl from '@mui/material/FormControl'
-import FormLabel from '@mui/material/FormLabel'
+import { ReactElement } from 'react'
+import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { useSnackbar } from 'notistack'
+import { Formik, Form, FormikValues } from 'formik'
 import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
 import { useJourney } from '../../../../libs/context'
 import { Dialog } from '../../../Dialog'
@@ -30,65 +29,90 @@ export function DescriptionDialog({
   const journey = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
-  const [value, setValue] = useState(
-    journey !== undefined ? journey.description : ''
-  )
-
-  const handleSubmit = async (): Promise<void> => {
+  const handleUpdateDescription = async (
+    values: FormikValues
+  ): Promise<void> => {
     if (journey == null) return
-
-    const updatedJourney = { description: value }
 
     try {
       await journeyUpdate({
-        variables: { id: journey.id, input: updatedJourney },
+        variables: {
+          id: journey.id,
+          input: { description: values.description }
+        },
         optimisticResponse: {
           journeyUpdate: {
             id: journey.id,
             __typename: 'Journey',
-            ...updatedJourney
+            description: values.description
           }
         }
       })
+      onClose()
     } catch (error) {
-      enqueueSnackbar('There was an error updating description', {
-        variant: 'error'
+      if (error instanceof ApolloError) {
+        if (error.networkError != null) {
+          enqueueSnackbar(
+            'Field update failed. Reload the page or try again.',
+            {
+              variant: 'error',
+              preventDuplicate: true
+            }
+          )
+          return
+        }
+      }
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
       })
     }
   }
 
-  const handleClose = (): void => {
-    onClose()
+  function handleClose(resetForm: (values: FormikValues) => void): () => void {
+    return () => {
+      onClose()
+      // wait for dialog animation to complete
+      setTimeout(() =>
+        resetForm({ values: { description: journey?.description } })
+      )
+    }
   }
 
   return (
     <>
-      <Dialog
-        open={open}
-        handleClose={handleClose}
-        dialogTitle={{ title: 'Edit Description' }}
-        dialogAction={{
-          onSubmit: handleSubmit,
-          closeLabel: 'Cancel'
-        }}
-      >
-        <form onSubmit={handleSubmit}>
-          <FormControl component="fieldset" sx={{ width: '100%' }}>
-            <FormLabel
-              component="legend"
-              aria-label="form-update-description"
-            />
-            <TextField
-              hiddenLabel
-              value={value}
-              multiline
-              variant="filled"
-              rows={3}
-              onChange={(e) => setValue(e.currentTarget.value)}
-            />
-          </FormControl>
-        </form>
-      </Dialog>
+      {journey != null && (
+        <Formik
+          initialValues={{ description: journey.description ?? '' }}
+          onSubmit={handleUpdateDescription}
+        >
+          {({ values, handleChange, handleSubmit, resetForm }) => (
+            <Dialog
+              open={open}
+              handleClose={handleClose(resetForm)}
+              dialogTitle={{ title: 'Edit Description' }}
+              dialogAction={{
+                onSubmit: handleSubmit,
+                closeLabel: 'Cancel'
+              }}
+            >
+              <Form>
+                <TextField
+                  id="description"
+                  name="description"
+                  hiddenLabel
+                  fullWidth
+                  value={values.description}
+                  multiline
+                  variant="filled"
+                  rows={3}
+                  onChange={handleChange}
+                />
+              </Form>
+            </Dialog>
+          )}
+        </Formik>
+      )}
     </>
   )
 }

@@ -34,4 +34,10 @@ describe('ImageBlockThumbnail', () => {
       expect(img).toHaveAttribute('alt', image.alt)
     })
   })
+  it('should show the loading circle', () => {
+    const { getByRole } = render(
+      <ImageBlockThumbnail selectedBlock={image} loading />
+    )
+    expect(getByRole('progressbar')).toBeInTheDocument()
+  })
 })

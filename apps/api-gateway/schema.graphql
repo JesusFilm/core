@@ -420,6 +420,7 @@ type Mutation {
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
+  stepResponseCreate(input: StepResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
@@ -470,6 +471,7 @@ input NavigateToJourneyActionInput {
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   adminJourneys: [Journey!]! @join__field(graph: JOURNEYS)
+  episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   language(id: ID!): Language @join__field(graph: LANGUAGES)
@@ -621,6 +623,25 @@ input StepBlockUpdateInput {
   nextBlockId: ID
 }
 
+type StepResponse implements Response {
+  block: StepBlock
+  id: ID!
+  journeyId: ID!
+  previousBlockId: ID!
+  userId: ID!
+}
+
+input StepResponseCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  journeyId: ID!
+  previousBlockId: ID!
+}
+
 enum ThemeMode {
   dark
   light
@@ -736,7 +757,7 @@ type Video
   image: String @join__field(graph: VIDEOS)
   imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   noIndex: Boolean @join__field(graph: VIDEOS)
-  permalink: String! @join__field(graph: VIDEOS)
+  permalinks: [Translation!]! @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
   seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
@@ -748,8 +769,9 @@ type Video
 }
 
 type VideoBlock implements Block {
+  """action that should be performed when the video ends"""
+  action: Action
   autoplay: Boolean
-  endAction: Action
 
   """endAt dictates at which point of time the video should end"""
   endAt: Int

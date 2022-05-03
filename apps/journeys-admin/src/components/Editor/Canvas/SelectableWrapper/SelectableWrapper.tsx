@@ -30,14 +30,18 @@ export function SelectableWrapper({
     block.__typename !== 'GridContainerBlock' &&
     block.__typename !== 'GridItemBlock'
 
-  const selectBlock = (block: TreeBlock): void => {
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
+  const updateEditor = (block: TreeBlock): void => {
     dispatch({
       type: 'SetActiveTabAction',
       activeTab: ActiveTab.Properties
     })
     dispatch({ type: 'SetSelectedBlockAction', block })
     dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+  }
+
+  const selectBlock = (block: TreeBlock): void => {
+    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
+    updateEditor(block)
   }
 
   const editBlock = (): void => {
@@ -48,11 +52,9 @@ export function SelectableWrapper({
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     // Allow RadioQuestion select event to be overridden by RadioOption select/edit events (no e.stopPropogation)
     if (block.__typename === 'RadioQuestionBlock') {
-      if (selectedBlock?.id === block.id) {
-        editBlock()
-      } else {
-        selectBlock(block)
-      }
+      // Directly edit RadioQuestionBlock
+      updateEditor(block)
+      editBlock()
     } else if (block.__typename === 'RadioOptionBlock') {
       e.stopPropagation()
       const parentSelected = selectedBlock?.id === block.parentBlockId
