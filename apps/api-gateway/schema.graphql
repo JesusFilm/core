@@ -138,6 +138,11 @@ input CardBlockUpdateInput {
 """DateTime custom scalar"""
 scalar DateTime
 
+interface Event {
+  id: ID!
+  userId: ID!
+}
+
 enum GridAlignItems {
   baseline
   center
@@ -414,12 +419,15 @@ type Mutation {
   radioOptionBlockUpdate(id: ID!, input: RadioOptionBlockUpdateInput!, journeyId: ID!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
   radioQuestionBlockUpdate(id: ID!, input: RadioQuestionBlockUpdateInput!, journeyId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionEventCreate(input: RadioQuestionEventCreateInput!): RadioQuestionEvent! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
   signUpBlockUpdate(id: ID!, input: SignUpBlockUpdateInput!, journeyId: ID!): SignUpBlock @join__field(graph: JOURNEYS)
+  signUpEventCreate(input: SignUpEventCreateInput!): SignUpEvent! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
+  stepEventCreate(input: StepEventCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   stepResponseCreate(input: StepResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
@@ -429,6 +437,7 @@ type Mutation {
   userJourneyRequest(idType: IdType, journeyId: ID!): UserJourney! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!, journeyId: ID!): VideoBlock! @join__field(graph: JOURNEYS)
+  videoEventCreate(input: VideoEventCreateInput!): VideoEvent! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
 }
 
@@ -526,6 +535,23 @@ input RadioQuestionBlockUpdateInput {
   parentBlockId: ID
 }
 
+type RadioQuestionEvent implements Event {
+  block: RadioQuestionBlock
+  id: ID!
+  radioOptionBlockId: ID!
+  userId: ID!
+}
+
+input RadioQuestionEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  radioOptionBlockId: ID!
+}
+
 type RadioQuestionResponse implements Response {
   block: RadioQuestionBlock
   id: ID!
@@ -569,6 +595,25 @@ input SignUpBlockUpdateInput {
   parentBlockId: ID
   submitIconId: ID
   submitLabel: String
+}
+
+type SignUpEvent implements Event {
+  block: SignUpBlock
+  email: String!
+  id: ID!
+  name: String!
+  userId: ID!
+}
+
+input SignUpEventCreateInput {
+  blockId: ID!
+  email: String!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  name: String!
 }
 
 type SignUpResponse implements Response {
@@ -621,6 +666,21 @@ input StepBlockCreateInput {
 input StepBlockUpdateInput {
   locked: Boolean
   nextBlockId: ID
+}
+
+type StepEvent implements Event {
+  block: StepBlock
+  id: ID!
+  userId: ID!
+}
+
+input StepEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
 }
 
 type StepResponse implements Response {
@@ -857,6 +917,31 @@ input VideoBlockUpdateInput {
   startAt: Int
   videoId: ID
   videoVariantLanguageId: ID
+}
+
+type VideoEvent implements Event {
+  block: VideoBlock
+  id: ID!
+  position: Int
+  state: VideoEventStateEnum!
+  userId: ID!
+}
+
+input VideoEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  position: Float
+  state: VideoEventStateEnum!
+}
+
+enum VideoEventStateEnum {
+  FINISHED
+  PAUSED
+  PLAYING
 }
 
 type VideoResponse implements Response {

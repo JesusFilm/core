@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
-import { StepResponseResolver } from './step.resolver' // change
+import { StepEventResolver } from './step.resolver'
 
 describe('StepEventResolver', () => {
-  let resolver: StepResponseResolver
+  let resolver: StepEventResolver
 
   const event = {
     id: '1',
@@ -22,14 +22,14 @@ describe('StepEventResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [StepResponseResolver, eventService]
+      providers: [StepEventResolver, eventService]
     }).compile()
-    resolver = module.get<StepResponseResolver>(StepResponseResolver)
+    resolver = module.get<StepEventResolver>(StepEventResolver)
   })
 
   describe('StepEvent', () => {
     it('returns StepEvent', async () => {
-      expect(await resolver.stepResponseCreate('userId', event)).toEqual({
+      expect(await resolver.stepEventCreate('userId', event)).toEqual({
         ...event,
         userId: 'userId'
       })

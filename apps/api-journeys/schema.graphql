@@ -611,6 +611,83 @@ type VideoTriggerBlock implements Block {
   action: Action!
 }
 
+interface Event {
+  id: ID!
+  userId: ID!
+}
+
+input RadioQuestionEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  radioOptionBlockId: ID!
+}
+
+type RadioQuestionEvent implements Event {
+  id: ID!
+  userId: ID!
+  radioOptionBlockId: ID!
+  block: RadioQuestionBlock
+}
+
+input SignUpEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  name: String!
+  email: String!
+}
+
+type SignUpEvent implements Event {
+  id: ID!
+  userId: ID!
+  name: String!
+  email: String!
+  block: SignUpBlock
+}
+
+input StepEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+}
+
+type StepEvent implements Event {
+  id: ID!
+  userId: ID!
+  block: StepBlock
+}
+
+enum VideoEventStateEnum {
+  PLAYING
+  PAUSED
+  FINISHED
+}
+
+input VideoEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  state: VideoEventStateEnum!
+  position: Float
+}
+
+type VideoEvent implements Event {
+  id: ID!
+  userId: ID!
+  state: VideoEventStateEnum!
+  position: Int
+  block: VideoBlock
+}
+
 enum IdType {
   databaseId
   slug
@@ -781,6 +858,10 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+  radioQuestionEventCreate(input: RadioQuestionEventCreateInput!): RadioQuestionEvent!
+  signUpEventCreate(input: SignUpEventCreateInput!): SignUpEvent!
+  stepEventCreate(input: StepEventCreateInput!): SignUpResponse!
+  videoEventCreate(input: VideoEventCreateInput!): VideoEvent!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey

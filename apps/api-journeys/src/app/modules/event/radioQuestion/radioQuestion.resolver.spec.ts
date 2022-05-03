@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
-import { RadioQuestionResponseResolver } from './radioQuestion.resolver' // change
+import { RadioQuestionEventResolver } from './radioQuestion.resolver'
 
-describe('RadioQuestionResponseResolver', () => {
-  let resolver: RadioQuestionResponseResolver
+describe('RadioQuestionEventResolver', () => {
+  let resolver: RadioQuestionEventResolver
 
   const event = {
     id: '1',
@@ -22,16 +22,16 @@ describe('RadioQuestionResponseResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [RadioQuestionResponseResolver, eventService]
+      providers: [RadioQuestionEventResolver, eventService]
     }).compile()
-    resolver = module.get<RadioQuestionResponseResolver>(
-      RadioQuestionResponseResolver
+    resolver = module.get<RadioQuestionEventResolver>(
+      RadioQuestionEventResolver
     )
   })
 
-  describe('radioQuestionResponseCreate', () => {
+  describe('radioQuestionEventCreate', () => {
     it('returns RadioQuestionResponse', async () => {
-      expect(await resolver.radioQuestionResponseCreate(event)).toEqual(event)
+      expect(await resolver.radioQuestionEventCreate(event)).toEqual(event)
     })
   })
 })

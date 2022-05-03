@@ -116,6 +116,12 @@ export enum TypographyAlign {
     right = "right"
 }
 
+export enum VideoEventStateEnum {
+    PLAYING = "PLAYING",
+    PAUSED = "PAUSED",
+    FINISHED = "FINISHED"
+}
+
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"
@@ -324,6 +330,31 @@ export class VideoBlockUpdateInput {
     fullsize?: Nullable<boolean>;
 }
 
+export class RadioQuestionEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    radioOptionBlockId: string;
+}
+
+export class SignUpEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    name: string;
+    email: string;
+}
+
+export class StepEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+}
+
+export class VideoEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    state: VideoEventStateEnum;
+    position?: Nullable<number>;
+}
+
 export class JourneysFilter {
     featured?: Nullable<boolean>;
 }
@@ -385,6 +416,11 @@ export interface Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+}
+
+export interface Event {
+    id: string;
+    userId: string;
 }
 
 export interface Response {
@@ -597,6 +633,39 @@ export class VideoTriggerBlock implements Block {
     action: Action;
 }
 
+export class RadioQuestionEvent implements Event {
+    __typename?: 'RadioQuestionEvent';
+    id: string;
+    userId: string;
+    radioOptionBlockId: string;
+    block?: Nullable<RadioQuestionBlock>;
+}
+
+export class SignUpEvent implements Event {
+    __typename?: 'SignUpEvent';
+    id: string;
+    userId: string;
+    name: string;
+    email: string;
+    block?: Nullable<SignUpBlock>;
+}
+
+export class StepEvent implements Event {
+    __typename?: 'StepEvent';
+    id: string;
+    userId: string;
+    block?: Nullable<StepBlock>;
+}
+
+export class VideoEvent implements Event {
+    __typename?: 'VideoEvent';
+    id: string;
+    userId: string;
+    state: VideoEventStateEnum;
+    position?: Nullable<number>;
+    block?: Nullable<VideoBlock>;
+}
+
 export class UserJourney {
     __typename?: 'UserJourney';
     journey?: Nullable<Journey>;
@@ -694,6 +763,14 @@ export abstract class IMutation {
     abstract videoBlockCreate(input: VideoBlockCreateInput): VideoBlock | Promise<VideoBlock>;
 
     abstract videoBlockUpdate(id: string, journeyId: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
+
+    abstract radioQuestionEventCreate(input: RadioQuestionEventCreateInput): RadioQuestionEvent | Promise<RadioQuestionEvent>;
+
+    abstract signUpEventCreate(input: SignUpEventCreateInput): SignUpEvent | Promise<SignUpEvent>;
+
+    abstract stepEventCreate(input: StepEventCreateInput): SignUpResponse | Promise<SignUpResponse>;
+
+    abstract videoEventCreate(input: VideoEventCreateInput): VideoEvent | Promise<VideoEvent>;
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 
