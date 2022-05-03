@@ -46,7 +46,7 @@ describe('Edit Toolbar', () => {
     expect(button).not.toBeDisabled()
   })
 
-  it('should not render preview button when journey status is draft', () => {
+  it('should render preview button as disabled when journey status is draft', () => {
     const { getAllByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
