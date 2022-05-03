@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { mockDeep } from 'jest-mock-extended'
 import { IdType } from '../../__generated__/graphql'
+import { LanguageService } from '../language/language.service'
 import { CountryResolver } from './country.resolver'
 import { CountryService } from './country.service'
 
@@ -27,7 +29,12 @@ describe('LangaugeResolver', () => {
       })
     }
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CountryResolver, countryService]
+      providers: [
+        CountryResolver,
+        countryService,
+        LanguageService,
+        { provide: 'DATABASE', useFactory: () => mockDeep<Database>() }
+      ]
     }).compile()
     resolver = module.get<CountryResolver>(CountryResolver)
     service = await module.resolve(CountryService)
