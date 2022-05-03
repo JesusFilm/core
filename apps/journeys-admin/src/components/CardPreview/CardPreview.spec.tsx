@@ -67,8 +67,7 @@ describe('CardPreview', () => {
               variables: {
                 journeyId: 'journeyId',
                 stepId: 'stepId',
-                cardId: 'cardId',
-                themeName: ThemeName.base
+                cardId: 'cardId'
               }
             },
             result: {
@@ -88,7 +87,7 @@ describe('CardPreview', () => {
                   backgroundColor: null,
                   coverBlockId: null,
                   themeMode: null,
-                  themeName: ThemeName.base,
+                  themeName: null,
                   fullscreen: false,
                   __typename: 'CardBlock'
                 }
@@ -125,7 +124,7 @@ describe('CardPreview', () => {
             parentBlockId: 'stepId',
             parentOrder: 0,
             themeMode: null,
-            themeName: ThemeName.base
+            themeName: null
           }
         ],
         id: 'stepId',
@@ -161,8 +160,7 @@ describe('CardPreview', () => {
               variables: {
                 journeyId: 'journeyId',
                 stepId: 'stepId',
-                cardId: 'cardId',
-                themeName: ThemeName.base
+                cardId: 'cardId'
               }
             },
             result: {
@@ -182,7 +180,7 @@ describe('CardPreview', () => {
                   backgroundColor: null,
                   coverBlockId: null,
                   themeMode: null,
-                  themeName: ThemeName.base,
+                  themeName: null,
                   fullscreen: false,
                   __typename: 'CardBlock'
                 }
@@ -248,8 +246,7 @@ describe('CardPreview', () => {
               variables: {
                 journeyId: 'journeyId',
                 stepId: 'stepId',
-                cardId: 'cardId',
-                themeName: ThemeName.base
+                cardId: 'cardId'
               }
             },
             result: {
@@ -269,7 +266,7 @@ describe('CardPreview', () => {
                   backgroundColor: null,
                   coverBlockId: null,
                   themeMode: null,
-                  themeName: ThemeName.base,
+                  themeName: null,
                   fullscreen: false,
                   __typename: 'CardBlock'
                 }
@@ -344,8 +341,7 @@ describe('CardPreview', () => {
               variables: {
                 journeyId: 'journeyId',
                 stepId: 'stepId',
-                cardId: 'cardId',
-                themeName: ThemeName.base
+                cardId: 'cardId'
               }
             },
             result: {
@@ -365,7 +361,7 @@ describe('CardPreview', () => {
                   backgroundColor: null,
                   coverBlockId: null,
                   themeMode: null,
-                  themeName: ThemeName.base,
+                  themeName: null,
                   fullscreen: false,
                   __typename: 'CardBlock'
                 }

@@ -66,7 +66,6 @@ export const JOURNEY_CREATE = gql`
         parentBlockId: $stepId
         journeyId: $journeyId
         coverBlockId: $imageId
-        themeName: base
       }
     ) {
       id
