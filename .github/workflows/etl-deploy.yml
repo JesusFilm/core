@@ -1,0 +1,67 @@
+name: ETL push build
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-deploy:
+    environment: Production
+    env:
+      ENV_SUFFIX: ${{ inputs.branch }}
+      ECR_REPOSITORY: jfp-arangodb-bigquery-etl
+      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      IMAGE_TAG: latest
+      KUBE_NAME: arangodb-bigquery-etl
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Verify Dockerfile changed
+        uses: tj-actions/verify-changed-files@v5.5
+        id: verify-changed-files
+        with:
+          files: |
+            resources/kube/$KUBE_NAME/Dockerfile
+            resources/kube/$KUBE_NAME/bqexport.sh
+
+      - name: Configure AWS credentials
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Login to Amazon ECR
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push the image to Amazon ECR
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          # Build a docker container and push it to ECR 
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$ENV_SUFFIX . -f resources/kube/$KUBE_NAME/Dockerfile
+          echo "Pushing image to ECR..."
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Deploy to Kubernetes cluster
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        uses: kodermax/kubectl-aws-eks@master
+        env:
+          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+        with:
+          args: set image deployment/$KUBE_NAME $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }}
+
+      - name: Verify Kubernetes deployment
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        uses: kodermax/kubectl-aws-eks@master
+        with:
+          args: rollout status deploy $KUBE_NAME
