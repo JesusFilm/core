@@ -14,7 +14,7 @@ export function EditToolbar(): ReactElement {
         aria-label="Preview"
         href={`/api/preview?slug=${journey?.slug ?? ''}`}
         target="_blank"
-        disabled={journey == null}
+        disabled={journey == null || journey?.status === 'draft'}
       >
         <VisibilityIcon />
       </IconButton>
