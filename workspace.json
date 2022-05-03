@@ -4,7 +4,6 @@
     "api-gateway": "apps/api-gateway",
     "api-journeys": "apps/api-journeys",
     "api-languages": "apps/api-languages",
-    "api-seed": "libs/api-seed",
     "api-users": "apps/api-users",
     "api-videos": "apps/api-videos",
     "apollo-logging": "libs/apollo/logging",

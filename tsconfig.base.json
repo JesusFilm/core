@@ -16,7 +16,6 @@
     "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
-      "@core/api-seed": ["libs/api-seed/src/index.ts"],
       "@core/apollo/logging": ["libs/apollo/logging/src/index.ts"],
       "@core/journeys/ui": ["libs/journeys/ui/src/index.ts"],
       "@core/nest/database": ["libs/nest/database/src/index.ts"],
