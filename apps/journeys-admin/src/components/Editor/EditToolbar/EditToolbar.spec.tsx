@@ -3,6 +3,7 @@ import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { EditToolbar } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -43,5 +44,26 @@ describe('Edit Toolbar', () => {
     expect(button).toHaveAttribute('href', '/api/preview?slug=untitled-journey')
     expect(button).toHaveAttribute('target', '_blank')
     expect(button).not.toBeDisabled()
+  })
+
+  it('should not render preview button when journey status is draft', () => {
+    const { getAllByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={
+              {
+                slug: 'untitled-journey',
+                status: JourneyStatus.draft
+              } as unknown as Journey
+            }
+          >
+            <EditToolbar />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    const button = getAllByRole('link', { name: 'Preview' })[0]
+    expect(button).toHaveAttribute('aria-disabled', 'true')
   })
 })
