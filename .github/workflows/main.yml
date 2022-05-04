@@ -97,7 +97,7 @@ jobs:
           targets: generate,test
           args: --ci
   visual-test:
-    needs: [lint, build, test]
+    # needs: [lint, build, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -144,7 +144,7 @@ jobs:
           files: 'dist/storybook/shared-storybook'
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests
-        if: ${{ steps.check_files.outputs.files_exists == 'true' }}
+        if: ${{ true == false }}
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         # https://www.chromatic.com/docs/github-actions#available-options
