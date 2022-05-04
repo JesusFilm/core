@@ -7,6 +7,7 @@ import { useQuery, gql } from '@apollo/client'
 import Fab from '@mui/material/Fab'
 import { VideoList } from '../src/components/Videos/VideoList/VideoList'
 import { PageWrapper } from '../src/components/PageWrapper'
+import { Countries } from '../src/components/Countries/Countries'
 import { GetVideoTag } from '../__generated__/GetVideoTag'
 import { VideoType } from '../__generated__/globalTypes'
 import { LanguageProvider } from '../src/libs/languageContext/LanguageContext'
@@ -60,7 +61,7 @@ function VideoPage(): ReactElement {
           </Grid>
         </Container>
       </Box>
-
+      <Countries />
       <Box sx={{ bgcolor: '#333', paddingY: '5rem' }}>
         <Container maxWidth="xl">
           <Typography variant="h3" color="white">
