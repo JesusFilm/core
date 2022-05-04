@@ -9,14 +9,13 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     id: '1',
     __typename: 'RadioQuestionSubmissionEvent',
     blockId: '2',
-    userId: '3',
     radioOptionBlockId: '4'
   }
 
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn(() => event)
+      save: jest.fn((event) => event)
     })
   }
 
@@ -31,9 +30,9 @@ describe('RadioQuestionSubmissionEventResolver', () => {
 
   describe('radioQuestionSubmissionEventCreate', () => {
     it('returns RadioQuestionSubmissionEvent', async () => {
-      expect(await resolver.radioQuestionSubmissionEventCreate(event)).toEqual(
-        event
-      )
+      expect(
+        await resolver.radioQuestionSubmissionEventCreate('userId', event)
+      ).toEqual({ ...event, userId: 'userId' })
     })
   })
 })

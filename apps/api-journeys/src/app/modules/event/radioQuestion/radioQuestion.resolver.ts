@@ -3,6 +3,7 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
+import { CurrentUserId } from '@core/nest/decorators'
 import {
   RadioQuestionSubmissionEvent,
   RadioQuestionSubmissionEventCreateInput
@@ -15,10 +16,11 @@ export class RadioQuestionSubmissionEventResolver {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async radioQuestionSubmissionEventCreate(
+    @CurrentUserId() userId: string,
     @Args('input')
     input: RadioQuestionSubmissionEventCreateInput & { __typename }
   ): Promise<RadioQuestionSubmissionEvent> {
     input.__typename = 'RadioQuestionSubmissionEvent'
-    return await this.eventService.save(input)
+    return await this.eventService.save({ ...input, userId })
   }
 }

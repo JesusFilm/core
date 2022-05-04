@@ -10,7 +10,6 @@ describe('VideoPlayEventResolver', () => {
     id: '1',
     __typename: 'VideoPlayEvent',
     blockId: '2',
-    userId: '3',
     state: VideoPlayEventStateEnum.PLAYING,
     position: 30
   }
@@ -18,7 +17,7 @@ describe('VideoPlayEventResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn(() => event)
+      save: jest.fn((event) => event)
     })
   }
 
@@ -31,7 +30,10 @@ describe('VideoPlayEventResolver', () => {
 
   describe('videoPlayEventCreate', () => {
     it('returns VideoPlayEvent', async () => {
-      expect(await resolver.videoPlayEventCreate(event)).toEqual(event)
+      expect(await resolver.videoPlayEventCreate('userid', event)).toEqual({
+        ...event,
+        userId: 'userid'
+      })
     })
   })
 })
