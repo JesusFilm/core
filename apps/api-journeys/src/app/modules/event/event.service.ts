@@ -4,5 +4,5 @@ import { DocumentCollection } from 'arangojs/collection'
 
 @Injectable()
 export class EventService extends BaseService {
-  collection: DocumentCollection = this.db.collection('responses')
+  collection: DocumentCollection = this.db.collection('events')
 }
