@@ -141,7 +141,7 @@ type Country
 {
   continent(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
   id: ID! @join__field(graph: LANGUAGES)
-  image: String! @join__field(graph: LANGUAGES)
+  image: String @join__field(graph: LANGUAGES)
   languages: [Language!]! @join__field(graph: LANGUAGES)
   latitude: Float! @join__field(graph: LANGUAGES)
   longitude: Float! @join__field(graph: LANGUAGES)

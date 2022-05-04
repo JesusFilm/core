@@ -12,7 +12,7 @@ type Country @key(fields: "id") {
   languages: [Language!]!
   latitude: Float!
   longitude: Float!
-  image: String!
+  image: String
 }
 
 extend type Query {

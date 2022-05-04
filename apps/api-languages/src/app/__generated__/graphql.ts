@@ -27,7 +27,7 @@ export class Country {
     languages: Language[];
     latitude: number;
     longitude: number;
-    image: string;
+    image?: Nullable<string>;
 }
 
 export class Language {
