@@ -1,7 +1,7 @@
 export { BlockRenderer } from './BlockRenderer'
 export type { WrapperProps, WrappersProps } from './BlockRenderer'
 export { Button } from './Button'
-export { Card, CardWrapper, CardCover } from './Card'
+export { Card, CardWrapper, ContainedCover } from './Card'
 export { Image } from './Image'
 export { GridContainer } from './GridContainer'
 export { GridItem } from './GridContainer/GridItem'
