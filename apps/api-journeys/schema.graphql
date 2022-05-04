@@ -611,6 +611,83 @@ type VideoTriggerBlock implements Block {
   action: Action!
 }
 
+interface Event {
+  id: ID!
+  userId: ID!
+}
+
+input RadioQuestionSubmissionEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  radioOptionBlockId: ID!
+}
+
+type RadioQuestionSubmissionEvent implements Event {
+  id: ID!
+  userId: ID!
+  radioOptionBlockId: ID!
+  block: RadioQuestionBlock
+}
+
+input SignUpSubmissionEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  name: String!
+  email: String!
+}
+
+type SignUpSubmissionEvent implements Event {
+  id: ID!
+  userId: ID!
+  name: String!
+  email: String!
+  block: SignUpBlock
+}
+
+input StepViewEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+}
+
+type StepViewEvent implements Event {
+  id: ID!
+  userId: ID!
+  block: StepBlock
+}
+
+enum VideoPlayEventStateEnum {
+  PLAYING
+  PAUSED
+  FINISHED
+}
+
+input VideoPlayEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  state: VideoPlayEventStateEnum!
+  position: Float
+}
+
+type VideoPlayEvent implements Event {
+  id: ID!
+  userId: ID!
+  state: VideoPlayEventStateEnum!
+  position: Int
+  block: VideoBlock
+}
+
 enum IdType {
   databaseId
   slug
@@ -672,77 +749,77 @@ input RadioQuestionResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
-  id: ID
-  blockId: ID!
-  radioOptionBlockId: ID!
+  id: ID @deprecated(reason: "use event instead of response")
+  blockId: ID @deprecated(reason: "use event instead of response")
+  radioOptionBlockId: ID @deprecated(reason: "use event instead of response")
 }
 
 type RadioQuestionResponse implements Response {
-  id: ID!
-  userId: ID!
-  radioOptionBlockId: ID!
-  block: RadioQuestionBlock
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
+  radioOptionBlockId: ID! @deprecated(reason: "use event instead of response")
+  block: RadioQuestionBlock @deprecated(reason: "use event instead of response")
 }
 
 interface Response {
-  id: ID!
-  userId: ID!
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
 }
 
 input SignUpResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
-  id: ID
-  blockId: ID!
-  name: String!
-  email: String!
+  id: ID @deprecated(reason: "use event instead of response")
+  blockId: ID @deprecated(reason: "use event instead of response")
+  name: String @deprecated(reason: "use event instead of response")
+  email: String @deprecated(reason: "use event instead of response")
 }
 
 type SignUpResponse implements Response {
-  id: ID!
-  userId: ID!
-  name: String!
-  email: String!
-  block: SignUpBlock
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
+  name: String! @deprecated(reason: "use event instead of response")
+  email: String! @deprecated(reason: "use event instead of response")
+  block: SignUpBlock @deprecated(reason: "use event instead of response")
 }
 
 input StepResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
-  id: ID
-  blockId: ID!
+  id: ID @deprecated(reason: "use event instead of response")
+  blockId: ID @deprecated(reason: "use event instead of response")
 }
 
 type StepResponse implements Response {
-  id: ID!
-  userId: ID!
-  block: StepBlock
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
+  block: StepBlock @deprecated(reason: "use event instead of response")
 }
 
 enum VideoResponseStateEnum {
-  PLAYING
-  PAUSED
-  FINISHED
+  PLAYING @deprecated(reason: "use event instead of response")
+  PAUSED @deprecated(reason: "use event instead of response")
+  FINISHED @deprecated(reason: "use event instead of response")
 }
 
 input VideoResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
-  id: ID
-  blockId: ID!
-  state: VideoResponseStateEnum!
-  position: Float
+  id: ID @deprecated(reason: "use event instead of response")
+  blockId: ID @deprecated(reason: "use event instead of response")
+  state: VideoResponseStateEnum @deprecated(reason: "use event instead of response")
+  position: Float @deprecated(reason: "use event instead of response")
 }
 
 type VideoResponse implements Response {
-  id: ID!
-  userId: ID!
-  state: VideoResponseStateEnum!
-  position: Int
-  block: VideoBlock
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
+  state: VideoResponseStateEnum! @deprecated(reason: "use event instead of response")
+  position: Int @deprecated(reason: "use event instead of response")
+  block: VideoBlock @deprecated(reason: "use event instead of response")
 }
 
 enum UserJourneyRole {
@@ -781,6 +858,10 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey

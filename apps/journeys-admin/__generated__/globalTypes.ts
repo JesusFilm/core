@@ -254,9 +254,9 @@ export interface RadioQuestionBlockCreateInput {
 }
 
 export interface RadioQuestionResponseCreateInput {
-  blockId: string;
+  blockId?: string | null;
   id?: string | null;
-  radioOptionBlockId: string;
+  radioOptionBlockId?: string | null;
 }
 
 export interface SignUpBlockCreateInput {
@@ -273,10 +273,10 @@ export interface SignUpBlockUpdateInput {
 }
 
 export interface SignUpResponseCreateInput {
-  blockId: string;
-  email: string;
+  blockId?: string | null;
+  email?: string | null;
   id?: string | null;
-  name: string;
+  name?: string | null;
 }
 
 export interface StepBlockUpdateInput {
@@ -330,10 +330,10 @@ export interface VideoBlockUpdateInput {
 }
 
 export interface VideoResponseCreateInput {
-  blockId: string;
+  blockId?: string | null;
   id?: string | null;
   position?: number | null;
-  state: VideoResponseStateEnum;
+  state?: VideoResponseStateEnum | null;
 }
 
 export interface VideosFilter {

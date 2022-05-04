@@ -15,6 +15,9 @@ async function main(): Promise<void> {
     await db.createCollection('responses', {
       keyOptions: { type: 'uuid' }
     })
+    await db.createCollection('events', {
+      keyOptions: { type: 'uuid' }
+    })
     await db.createCollection('userJourneys', { keyOptions: { type: 'uuid' } })
   } catch {}
   await db.collection('journeys').ensureIndex({

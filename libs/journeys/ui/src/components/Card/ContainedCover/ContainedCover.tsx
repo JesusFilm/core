@@ -1,50 +1,34 @@
-import {
-  ReactElement,
-  ReactNode,
-  useEffect,
-  useRef,
-  useState,
-  useMemo
-} from 'react'
+import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import { NextImage } from '@core/shared/ui'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import { TreeBlock, blurImage } from '../../..'
+import { TreeBlock } from '../../..'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { ContentOverlay } from './ContentOverlay'
 
 import 'video.js/dist/video-js.css'
 
-interface CoverProps {
+interface ContainedCoverProps {
   children: ReactNode
   backgroundColor: string
-  imageBlock?: TreeBlock<ImageFields>
   videoBlock?: TreeBlock<VideoFields>
+  imageBlock?: TreeBlock<ImageFields>
+  backgroundBlur?: string
 }
 
-export function Cover({
+export function ContainedCover({
   children,
   backgroundColor,
-  imageBlock,
-  videoBlock
-}: CoverProps): ReactElement {
+  backgroundBlur,
+  videoBlock,
+  imageBlock
+}: ContainedCoverProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const theme = useTheme()
   const [loading, setLoading] = useState(true)
-
-  const blurBackground = useMemo(() => {
-    return imageBlock != null
-      ? blurImage(
-          imageBlock.width,
-          imageBlock.height,
-          imageBlock.blurhash,
-          theme.palette.background.paper
-        )
-      : undefined
-  }, [imageBlock, theme])
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -58,7 +42,7 @@ export function Cover({
         },
         muted: true,
         loop: true,
-        poster: blurBackground
+        poster: backgroundBlur
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
@@ -82,12 +66,12 @@ export function Cover({
         }
       })
     }
-  }, [imageBlock, theme, videoBlock, blurBackground])
+  }, [imageBlock, theme, videoBlock, backgroundBlur])
 
   return (
     <>
       <Box
-        data-testid="CardCover"
+        data-testid="ContainedCover"
         sx={{
           position: 'relative',
           flexGrow: 1,
@@ -116,15 +100,17 @@ export function Cover({
             />
           </video>
         )}
-        {loading && imageBlock != null && blurBackground != null && (
+        {loading && imageBlock != null && backgroundBlur != null && (
           <NextImage
             data-testid={
-              videoBlock != null ? 'VideoPosterCover' : 'CardImageCover'
+              videoBlock != null
+                ? 'VideoPosterCover'
+                : 'ContainedCardImageCover'
             }
-            src={imageBlock?.src ?? blurBackground}
+            src={imageBlock?.src ?? backgroundBlur}
             alt={imageBlock.alt}
             placeholder="blur"
-            blurDataURL={blurBackground}
+            blurDataURL={backgroundBlur}
             layout="fill"
             objectFit="cover"
           />
@@ -132,7 +118,7 @@ export function Cover({
       </Box>
       <ContentOverlay
         backgroundColor={backgroundColor}
-        backgroundSrc={blurBackground}
+        backgroundSrc={backgroundBlur}
       >
         {children}
       </ContentOverlay>

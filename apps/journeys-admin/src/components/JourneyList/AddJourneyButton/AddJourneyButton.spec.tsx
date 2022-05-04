@@ -26,7 +26,13 @@ describe('AddJourneyButton', () => {
       description:
         'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
       id: 'journeyId',
-      languageId: '529',
+      language: {
+        id: '529',
+        name: {
+          value: 'English',
+          primary: true
+        }
+      },
       publishedAt: null,
       slug: 'untitled-journey-journeyId',
       status: 'draft',

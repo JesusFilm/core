@@ -6,13 +6,21 @@ import { SnackbarProvider } from 'notistack'
 import { DefaultSeo } from 'next-seo'
 import TagManager from 'react-gtm-module'
 import { datadogRum } from '@datadog/browser-rum'
+import { CacheProvider } from '@emotion/react'
+import type { EmotionCache } from '@emotion/cache'
+import { createEmotionCache } from '@core/shared/ui'
 import { useApollo } from '../src/libs/apolloClient'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
 initAuth()
+const clientSideEmotionCache = createEmotionCache()
 
-function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
+export default function JourneysAdminApp({
+  Component,
+  pageProps,
+  emotionCache = clientSideEmotionCache
+}: AppProps & { emotionCache?: EmotionCache }): ReactElement {
   const token =
     (pageProps.AuthUserSerialized != null
       ? (JSON.parse(pageProps.AuthUserSerialized)._token as string | null)
@@ -47,7 +55,7 @@ function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
   }, [])
 
   return (
-    <>
+    <CacheProvider value={emotionCache}>
       <DefaultSeo
         titleTemplate="%s | Next Steps"
         defaultTitle="Admin | Next Steps"
@@ -70,8 +78,6 @@ function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
           </SnackbarProvider>
         </ApolloProvider>
       </ThemeProvider>
-    </>
+    </CacheProvider>
   )
 }
-
-export default JourneysAdminApp

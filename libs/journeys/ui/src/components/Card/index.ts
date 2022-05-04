@@ -1,2 +1,2 @@
-export { Cover as CardCover } from './Cover'
+export { ContainedCover } from './ContainedCover'
 export { Card, CardWrapper } from './Card'

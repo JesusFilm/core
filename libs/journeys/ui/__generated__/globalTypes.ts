@@ -126,16 +126,16 @@ export enum VideoResponseStateEnum {
 }
 
 export interface RadioQuestionResponseCreateInput {
-  blockId: string;
+  blockId?: string | null;
   id?: string | null;
-  radioOptionBlockId: string;
+  radioOptionBlockId?: string | null;
 }
 
 export interface SignUpResponseCreateInput {
-  blockId: string;
-  email: string;
+  blockId?: string | null;
+  email?: string | null;
   id?: string | null;
-  name: string;
+  name?: string | null;
 }
 
 export interface StepResponseCreateInput {
@@ -144,10 +144,10 @@ export interface StepResponseCreateInput {
 }
 
 export interface VideoResponseCreateInput {
-  blockId: string;
+  blockId?: string | null;
   id?: string | null;
   position?: number | null;
-  state: VideoResponseStateEnum;
+  state?: VideoResponseStateEnum | null;
 }
 
 //==============================================================
