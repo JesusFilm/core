@@ -4,13 +4,21 @@ import Head from 'next/head'
 import { ApolloProvider } from '@apollo/client'
 import { SnackbarProvider } from 'notistack'
 import { DefaultSeo } from 'next-seo'
+import { CacheProvider } from '@emotion/react'
+import type { EmotionCache } from '@emotion/cache'
+import { createEmotionCache } from '@core/shared/ui'
 import { useApollo } from '../src/libs/apolloClient'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
 initAuth()
+const clientSideEmotionCache = createEmotionCache()
 
-function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
+function CustomApp({
+  Component,
+  pageProps,
+  emotionCache = clientSideEmotionCache
+}: AppProps & { emotionCache?: EmotionCache }): ReactElement {
   const apolloClient = useApollo(
     pageProps.AuthUserSerialized != null
       ? JSON.parse(pageProps.AuthUserSerialized)._token
@@ -27,7 +35,7 @@ function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
   }, [])
 
   return (
-    <>
+    <CacheProvider value={emotionCache}>
       <DefaultSeo
         titleTemplate="%s | Next Steps"
         defaultTitle="Admin | Next Steps"
@@ -50,7 +58,7 @@ function JourneysAdminApp({ Component, pageProps }: AppProps): ReactElement {
           </SnackbarProvider>
         </ApolloProvider>
       </ThemeProvider>
-    </>
+    </CacheProvider>
   )
 }
 

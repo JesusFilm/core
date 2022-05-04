@@ -5,10 +5,19 @@ import { ApolloProvider } from '@apollo/client'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { DefaultSeo } from 'next-seo'
-import { createApolloClient } from '../src/libs/client'
+import { CacheProvider } from '@emotion/react'
+import type { EmotionCache } from '@emotion/cache'
+import { createEmotionCache } from '@core/shared/ui'
 import { firebaseClient } from '../src/libs/firebaseClient'
+import { createApolloClient } from '../src/libs/client'
 
-function CustomApp({ Component, pageProps }: AppProps): ReactElement {
+const clientSideEmotionCache = createEmotionCache()
+
+function CustomApp({
+  Component,
+  pageProps,
+  emotionCache = clientSideEmotionCache
+}: AppProps & { emotionCache?: EmotionCache }): ReactElement {
   const auth = getAuth(firebaseClient)
   const [user] = useAuthState(auth)
   const client = createApolloClient(user?.accessToken)
@@ -29,7 +38,7 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
   }, [])
 
   return (
-    <>
+    <CacheProvider value={emotionCache}>
       <DefaultSeo
         titleTemplate="%s | Next Steps"
         defaultTitle="Next Steps | Helping you find the next best step on your spiritual journey"
@@ -43,7 +52,7 @@ function CustomApp({ Component, pageProps }: AppProps): ReactElement {
       <ApolloProvider client={client}>
         <Component {...pageProps} />
       </ApolloProvider>
-    </>
+    </CacheProvider>
   )
 }
 
