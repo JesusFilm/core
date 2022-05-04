@@ -50,20 +50,18 @@ const affectedStories = () => {
     ...affectedLibs.split(' ')
   ]
 
-  console.log('apps', process.env.NX_AFFECTED_APPS)
-  console.log('libs', process.env.NX_AFFECTED_LIBS)
-  console.log('target', process.env.NX_TASK_TARGET_PROJECT)
-
-  console.log('affected projects', affectedProjects)
-
   const stories = affectedProjects
     .map((project) => {
-      if (project === 'shared-storybook' || project === '') return []
+      if (
+        project === 'shared-storybook' ||
+        project === '' ||
+        project.includes('api-') ||
+        project.includes('-e2e')
+      )
+        return []
       return storiesForProject[project]
     })
     .flat()
-
-  console.log('stories', stories)
 
   return stories.length > 0 ? stories : undefined
 }
