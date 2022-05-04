@@ -3,7 +3,7 @@ import { EventService } from '../event.service'
 import { VideoPlayEventStateEnum } from '../../../__generated__/graphql'
 import { VideoPlayEventResolver } from './video.resolver'
 
-describe('VideoEventResolver', () => {
+describe('VideoPlayEventResolver', () => {
   let resolver: VideoPlayEventResolver
 
   const event = {

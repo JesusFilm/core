@@ -27,7 +27,7 @@ describe('StepViewEventResolver', () => {
     resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
   })
 
-  describe('StepViewEvent', () => {
+  describe('stepViewEventCreate', () => {
     it('returns StepViewEvent', async () => {
       expect(await resolver.stepViewEventCreate('userId', event)).toEqual({
         ...event,
