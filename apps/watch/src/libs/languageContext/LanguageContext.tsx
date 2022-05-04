@@ -1,32 +1,27 @@
-import { gql, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { createContext, ReactElement, ReactNode, useContext } from 'react'
-import { GetCurrentLanguge_language as Language } from '../../../__generated__/GetCurrentLanguge'
+import { languages } from './baseLanguages'
+
+interface LanguageName {
+  value: string
+  primary: boolean
+}
+
+interface Language {
+  id: string
+  name: LanguageName[]
+  bcp47: string | null
+}
 
 const LanguageContext = createContext({} as unknown as Language | undefined)
 
-const GET_CURRENT_LANGUAGE = gql`
-  query GetCurrentLanguge($id: ID!) {
-    language(id: $id, idType: bcp47) {
-      id
-      name {
-        value
-        primary
-      }
-      bcp47
-      iso3
-    }
-  }
-`
 export function useLanguage(): Language | undefined {
   const router = useRouter()
-  const { data } = useQuery(GET_CURRENT_LANGUAGE, {
-    variables: {
-      id: router.locale ?? router.defaultLocale
-    }
-  })
-  const context = useContext(LanguageContext)
-
+  const language =
+    languages.find(
+      (l) => l.bcp47 === router?.locale ?? router?.defaultLocale
+    ) ?? languages[0]
+  const context = useContext(createContext(language))
   return context
 }
 
@@ -36,7 +31,12 @@ interface LanguageProviderProps {
 }
 
 export function LanguageProvider({
-  children
+  children,
+  value
 }: LanguageProviderProps): ReactElement {
-  return <LanguageContext.Provider>{children}</LanguageContext.Provider>
+  return (
+    <LanguageContext.Provider value={value}>
+      {children}
+    </LanguageContext.Provider>
+  )
 }

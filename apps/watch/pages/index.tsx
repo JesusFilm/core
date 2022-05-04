@@ -9,6 +9,7 @@ import { VideoList } from '../src/components/Videos/VideoList/VideoList'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { GetVideoTag } from '../__generated__/GetVideoTag'
 import { VideoType } from '../__generated__/globalTypes'
+import { LanguageProvider } from '../src/libs/languageContext/LanguageContext'
 
 export const GET_VIDEO_TAG = gql`
   query GetVideoTag($id: ID!) {
@@ -36,7 +37,7 @@ function VideoPage(): ReactElement {
     }
   })
   return (
-    <>
+    <LanguageProvider>
       <PageWrapper />
       <Box sx={{ bgcolor: '#fff' }}>
         <Container maxWidth="xl">
@@ -141,7 +142,7 @@ function VideoPage(): ReactElement {
           ))}
         </Container>
       </Box>
-    </>
+    </LanguageProvider>
   )
 }
 
