@@ -13,8 +13,10 @@ import { CountryService } from './country.service'
 
 @Resolver('Country')
 export class CountryResolver {
-  constructor(private readonly countryService: CountryService,
-    private readonly languageService: LanguageService) { }
+  constructor(
+    private readonly countryService: CountryService,
+    private readonly languageService: LanguageService
+  ) {}
 
   @Query()
   async countries(): Promise<Country[]> {
@@ -56,7 +58,9 @@ export class CountryResolver {
   ): void {}
 
   @ResolveField()
-  async languages(@Parent() country: Country & { languageIds: string[] }): Promise<Language[]> {
+  async languages(
+    @Parent() country: Country & { languageIds: string[] }
+  ): Promise<Language[]> {
     return await this.languageService.getByIds(country.languageIds)
   }
 

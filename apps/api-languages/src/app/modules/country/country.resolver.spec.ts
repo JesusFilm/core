@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import { IdType } from '../../__generated__/graphql'
 import { LanguageService } from '../language/language.service'
