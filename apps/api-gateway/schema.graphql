@@ -392,6 +392,11 @@ type Language
   name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
 }
 
+enum LanguageIdType {
+  bcp47
+  databaseId
+}
+
 type LinkAction implements Action {
   gtmEventName: String
   parentBlockId: ID!
@@ -490,7 +495,7 @@ type Query {
   episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
-  language(id: ID!): Language @join__field(graph: LANGUAGES)
+  language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
   video(id: ID!, idType: IdType): Video! @join__field(graph: VIDEOS)
