@@ -1,17 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { VideoEventStateEnum } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
-import { VideoEventResolver } from './video.resolver'
+import { VideoPlayEventStateEnum } from '../../../__generated__/graphql'
+import { VideoPlayEventResolver } from './video.resolver'
 
 describe('VideoEventResolver', () => {
-  let resolver: VideoEventResolver
+  let resolver: VideoPlayEventResolver
 
   const event = {
     id: '1',
-    __typename: 'VideoEvent',
+    __typename: 'VideoPlayEvent',
     blockId: '2',
     userId: '3',
-    state: VideoEventStateEnum.PLAYING,
+    state: VideoPlayEventStateEnum.PLAYING,
     position: 30
   }
 
@@ -24,14 +24,14 @@ describe('VideoEventResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VideoEventResolver, eventService]
+      providers: [VideoPlayEventResolver, eventService]
     }).compile()
-    resolver = module.get<VideoEventResolver>(VideoEventResolver)
+    resolver = module.get<VideoPlayEventResolver>(VideoPlayEventResolver)
   })
 
-  describe('videoEventCreate', () => {
-    it('returns VideoEvent', async () => {
-      expect(await resolver.videoEventCreate(event)).toEqual(event)
+  describe('videoPlayEventCreate', () => {
+    it('returns VideoPlayEvent', async () => {
+      expect(await resolver.videoPlayEventCreate(event)).toEqual(event)
     })
   })
 })

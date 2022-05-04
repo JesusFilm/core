@@ -116,7 +116,7 @@ export enum TypographyAlign {
     right = "right"
 }
 
-export enum VideoEventStateEnum {
+export enum VideoPlayEventStateEnum {
     PLAYING = "PLAYING",
     PAUSED = "PAUSED",
     FINISHED = "FINISHED"
@@ -348,10 +348,10 @@ export class StepViewEventCreateInput {
     blockId: string;
 }
 
-export class VideoEventCreateInput {
+export class VideoPlayEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
-    state: VideoEventStateEnum;
+    state: VideoPlayEventStateEnum;
     position?: Nullable<number>;
 }
 
@@ -657,11 +657,11 @@ export class StepViewEvent implements Event {
     block?: Nullable<StepBlock>;
 }
 
-export class VideoEvent implements Event {
-    __typename?: 'VideoEvent';
+export class VideoPlayEvent implements Event {
+    __typename?: 'VideoPlayEvent';
     id: string;
     userId: string;
-    state: VideoEventStateEnum;
+    state: VideoPlayEventStateEnum;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -770,7 +770,7 @@ export abstract class IMutation {
 
     abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
 
-    abstract videoEventCreate(input: VideoEventCreateInput): VideoEvent | Promise<VideoEvent>;
+    abstract videoPlayEventCreate(input: VideoPlayEventCreateInput): VideoPlayEvent | Promise<VideoPlayEvent>;
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 
