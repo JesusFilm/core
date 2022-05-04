@@ -55,7 +55,7 @@ jobs:
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: kodermax/kubectl-aws-eks@master
         env:
-          KUBECTL_VERSION: 1.21.12
+          KUBECTL_VERSION: '1.21.12'
           RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
         with:
           args: set image deployment/arangodb-bigquery-etl $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }}
@@ -64,6 +64,6 @@ jobs:
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: kodermax/kubectl-aws-eks@master
         env:
-          KUBECTL_VERSION: 1.21.12
+          KUBECTL_VERSION: '1.21.12'
         with:
           args: rollout status deploy arangodb-bigquery-etl
