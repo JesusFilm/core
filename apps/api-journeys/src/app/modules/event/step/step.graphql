@@ -1,4 +1,4 @@
-input StepEventCreateInput {
+input StepViewEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
@@ -6,12 +6,12 @@ input StepEventCreateInput {
   blockId: ID!
 }
 
-type StepEvent implements Event {
+type StepViewEvent implements Event {
   id: ID!
   userId: ID!
   block: StepBlock
 }
 
 extend type Mutation {
-  stepEventCreate(input: StepEventCreateInput!): SignUpResponse!
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
 }

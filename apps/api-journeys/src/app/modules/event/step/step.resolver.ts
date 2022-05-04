@@ -4,19 +4,22 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators'
-import { StepEvent, StepEventCreateInput } from '../../../__generated__/graphql'
+import {
+  StepViewEvent,
+  StepViewEventCreateInput
+} from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
-@Resolver('StepEvent')
-export class StepEventResolver {
+@Resolver('StepViewEvent')
+export class StepViewEventResolver {
   constructor(private readonly eventService: EventService) {}
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  async stepEventCreate(
+  async stepViewEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: StepEventCreateInput & { __typename }
-  ): Promise<StepEvent> {
-    input.__typename = 'StepEvent'
+    @Args('input') input: StepViewEventCreateInput & { __typename }
+  ): Promise<StepViewEvent> {
+    input.__typename = 'StepViewEvent'
     return await this.eventService.save({ ...input, userId })
   }
 }

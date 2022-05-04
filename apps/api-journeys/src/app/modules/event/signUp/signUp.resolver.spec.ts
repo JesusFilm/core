@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
-import { SignUpEventResolver } from './signUp.resolver'
+import { SignUpSubmissionEventResolver } from './signUp.resolver'
 
 describe('SignUpEventResolver', () => {
-  let resolver: SignUpEventResolver
+  let resolver: SignUpSubmissionEventResolver
 
   const event = {
     id: '1',
-    __typename: 'SignUpEvent',
+    __typename: 'SignUpSubmissionEvent',
     blockId: '2',
     userId: '3',
     name: 'Robert Smith',
@@ -23,14 +23,16 @@ describe('SignUpEventResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SignUpEventResolver, eventService]
+      providers: [SignUpSubmissionEventResolver, eventService]
     }).compile()
-    resolver = module.get<SignUpEventResolver>(SignUpEventResolver)
+    resolver = module.get<SignUpSubmissionEventResolver>(
+      SignUpSubmissionEventResolver
+    )
   })
 
-  describe('SignUpEvent', () => {
-    it('returns SignUpEvent', async () => {
-      expect(await resolver.signUpEventCreate(event)).toEqual(event)
+  describe('signUpSubmissionEventCreate', () => {
+    it('returns SignUpSubmissionEvent', async () => {
+      expect(await resolver.signUpSubmissionEventCreate(event)).toEqual(event)
     })
   })
 })

@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
-import { RadioQuestionEventResolver } from './radioQuestion.resolver'
+import { RadioQuestionSubmissionEventResolver } from './radioQuestion.resolver'
 
-describe('RadioQuestionEventResolver', () => {
-  let resolver: RadioQuestionEventResolver
+describe('RadioQuestionSubmissionEventResolver', () => {
+  let resolver: RadioQuestionSubmissionEventResolver
 
   const event = {
     id: '1',
-    __typename: 'RadioQuestionEvent',
+    __typename: 'RadioQuestionSubmissionEvent',
     blockId: '2',
     userId: '3',
     radioOptionBlockId: '4'
@@ -22,16 +22,18 @@ describe('RadioQuestionEventResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [RadioQuestionEventResolver, eventService]
+      providers: [RadioQuestionSubmissionEventResolver, eventService]
     }).compile()
-    resolver = module.get<RadioQuestionEventResolver>(
-      RadioQuestionEventResolver
+    resolver = module.get<RadioQuestionSubmissionEventResolver>(
+      RadioQuestionSubmissionEventResolver
     )
   })
 
-  describe('radioQuestionEventCreate', () => {
-    it('returns RadioQuestionResponse', async () => {
-      expect(await resolver.radioQuestionEventCreate(event)).toEqual(event)
+  describe('radioQuestionSubmissionEventCreate', () => {
+    it('returns RadioQuestionSubmissionEvent', async () => {
+      expect(await resolver.radioQuestionSubmissionEventCreate(event)).toEqual(
+        event
+      )
     })
   })
 })

@@ -1,4 +1,4 @@
-input SignUpEventCreateInput {
+input SignUpSubmissionEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
@@ -8,7 +8,7 @@ input SignUpEventCreateInput {
   email: String!
 }
 
-type SignUpEvent implements Event {
+type SignUpSubmissionEvent implements Event {
   id: ID!
   userId: ID!
   name: String!
@@ -17,5 +17,7 @@ type SignUpEvent implements Event {
 }
 
 extend type Mutation {
-  signUpEventCreate(input: SignUpEventCreateInput!): SignUpEvent!
+  signUpSubmissionEventCreate(
+    input: SignUpSubmissionEventCreateInput!
+  ): SignUpSubmissionEvent!
 }

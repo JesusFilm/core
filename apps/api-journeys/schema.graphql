@@ -616,7 +616,7 @@ interface Event {
   userId: ID!
 }
 
-input RadioQuestionEventCreateInput {
+input RadioQuestionSubmissionEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
@@ -625,14 +625,14 @@ input RadioQuestionEventCreateInput {
   radioOptionBlockId: ID!
 }
 
-type RadioQuestionEvent implements Event {
+type RadioQuestionSubmissionEvent implements Event {
   id: ID!
   userId: ID!
   radioOptionBlockId: ID!
   block: RadioQuestionBlock
 }
 
-input SignUpEventCreateInput {
+input SignUpSubmissionEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
@@ -642,7 +642,7 @@ input SignUpEventCreateInput {
   email: String!
 }
 
-type SignUpEvent implements Event {
+type SignUpSubmissionEvent implements Event {
   id: ID!
   userId: ID!
   name: String!
@@ -650,7 +650,7 @@ type SignUpEvent implements Event {
   block: SignUpBlock
 }
 
-input StepEventCreateInput {
+input StepViewEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
@@ -658,7 +658,7 @@ input StepEventCreateInput {
   blockId: ID!
 }
 
-type StepEvent implements Event {
+type StepViewEvent implements Event {
   id: ID!
   userId: ID!
   block: StepBlock
@@ -858,9 +858,9 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
-  radioQuestionEventCreate(input: RadioQuestionEventCreateInput!): RadioQuestionEvent!
-  signUpEventCreate(input: SignUpEventCreateInput!): SignUpEvent!
-  stepEventCreate(input: StepEventCreateInput!): SignUpResponse!
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
   videoEventCreate(input: VideoEventCreateInput!): VideoEvent!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!

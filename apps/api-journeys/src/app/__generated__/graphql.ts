@@ -330,20 +330,20 @@ export class VideoBlockUpdateInput {
     fullsize?: Nullable<boolean>;
 }
 
-export class RadioQuestionEventCreateInput {
+export class RadioQuestionSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
     radioOptionBlockId: string;
 }
 
-export class SignUpEventCreateInput {
+export class SignUpSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
     name: string;
     email: string;
 }
 
-export class StepEventCreateInput {
+export class StepViewEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
 }
@@ -383,26 +383,26 @@ export class JourneyUpdateInput {
 
 export class RadioQuestionResponseCreateInput {
     id?: Nullable<string>;
-    blockId: string;
-    radioOptionBlockId: string;
+    blockId?: Nullable<string>;
+    radioOptionBlockId?: Nullable<string>;
 }
 
 export class SignUpResponseCreateInput {
     id?: Nullable<string>;
-    blockId: string;
-    name: string;
-    email: string;
+    blockId?: Nullable<string>;
+    name?: Nullable<string>;
+    email?: Nullable<string>;
 }
 
 export class StepResponseCreateInput {
     id?: Nullable<string>;
-    blockId: string;
+    blockId?: Nullable<string>;
 }
 
 export class VideoResponseCreateInput {
     id?: Nullable<string>;
-    blockId: string;
-    state: VideoResponseStateEnum;
+    blockId?: Nullable<string>;
+    state?: Nullable<VideoResponseStateEnum>;
     position?: Nullable<number>;
 }
 
@@ -633,16 +633,16 @@ export class VideoTriggerBlock implements Block {
     action: Action;
 }
 
-export class RadioQuestionEvent implements Event {
-    __typename?: 'RadioQuestionEvent';
+export class RadioQuestionSubmissionEvent implements Event {
+    __typename?: 'RadioQuestionSubmissionEvent';
     id: string;
     userId: string;
     radioOptionBlockId: string;
     block?: Nullable<RadioQuestionBlock>;
 }
 
-export class SignUpEvent implements Event {
-    __typename?: 'SignUpEvent';
+export class SignUpSubmissionEvent implements Event {
+    __typename?: 'SignUpSubmissionEvent';
     id: string;
     userId: string;
     name: string;
@@ -650,8 +650,8 @@ export class SignUpEvent implements Event {
     block?: Nullable<SignUpBlock>;
 }
 
-export class StepEvent implements Event {
-    __typename?: 'StepEvent';
+export class StepViewEvent implements Event {
+    __typename?: 'StepViewEvent';
     id: string;
     userId: string;
     block?: Nullable<StepBlock>;
@@ -764,11 +764,11 @@ export abstract class IMutation {
 
     abstract videoBlockUpdate(id: string, journeyId: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
 
-    abstract radioQuestionEventCreate(input: RadioQuestionEventCreateInput): RadioQuestionEvent | Promise<RadioQuestionEvent>;
+    abstract radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput): RadioQuestionSubmissionEvent | Promise<RadioQuestionSubmissionEvent>;
 
-    abstract signUpEventCreate(input: SignUpEventCreateInput): SignUpEvent | Promise<SignUpEvent>;
+    abstract signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput): SignUpSubmissionEvent | Promise<SignUpSubmissionEvent>;
 
-    abstract stepEventCreate(input: StepEventCreateInput): SignUpResponse | Promise<SignUpResponse>;
+    abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
 
     abstract videoEventCreate(input: VideoEventCreateInput): VideoEvent | Promise<VideoEvent>;
 

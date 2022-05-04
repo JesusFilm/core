@@ -1,4 +1,4 @@
-input RadioQuestionEventCreateInput {
+input RadioQuestionSubmissionEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
@@ -7,7 +7,7 @@ input RadioQuestionEventCreateInput {
   radioOptionBlockId: ID!
 }
 
-type RadioQuestionEvent implements Event {
+type RadioQuestionSubmissionEvent implements Event {
   id: ID!
   userId: ID!
   radioOptionBlockId: ID!
@@ -15,7 +15,7 @@ type RadioQuestionEvent implements Event {
 }
 
 extend type Mutation {
-  radioQuestionEventCreate(
-    input: RadioQuestionEventCreateInput!
-  ): RadioQuestionEvent!
+  radioQuestionSubmissionEventCreate(
+    input: RadioQuestionSubmissionEventCreateInput!
+  ): RadioQuestionSubmissionEvent!
 }

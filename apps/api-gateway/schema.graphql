@@ -419,16 +419,16 @@ type Mutation {
   radioOptionBlockUpdate(id: ID!, input: RadioOptionBlockUpdateInput!, journeyId: ID!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
   radioQuestionBlockUpdate(id: ID!, input: RadioQuestionBlockUpdateInput!, journeyId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
-  radioQuestionEventCreate(input: RadioQuestionEventCreateInput!): RadioQuestionEvent! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent! @join__field(graph: JOURNEYS)
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
   signUpBlockUpdate(id: ID!, input: SignUpBlockUpdateInput!, journeyId: ID!): SignUpBlock @join__field(graph: JOURNEYS)
-  signUpEventCreate(input: SignUpEventCreateInput!): SignUpEvent! @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
-  stepEventCreate(input: StepEventCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
   stepResponseCreate(input: StepResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
@@ -535,23 +535,6 @@ input RadioQuestionBlockUpdateInput {
   parentBlockId: ID
 }
 
-type RadioQuestionEvent implements Event {
-  block: RadioQuestionBlock
-  id: ID!
-  radioOptionBlockId: ID!
-  userId: ID!
-}
-
-input RadioQuestionEventCreateInput {
-  blockId: ID!
-
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  radioOptionBlockId: ID!
-}
-
 type RadioQuestionResponse implements Response {
   block: RadioQuestionBlock @deprecated(reason: "use event instead of response")
   id: ID! @deprecated(reason: "use event instead of response")
@@ -567,6 +550,23 @@ input RadioQuestionResponseCreateInput {
   """
   id: ID
   radioOptionBlockId: ID
+}
+
+type RadioQuestionSubmissionEvent implements Event {
+  block: RadioQuestionBlock
+  id: ID!
+  radioOptionBlockId: ID!
+  userId: ID!
+}
+
+input RadioQuestionSubmissionEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  radioOptionBlockId: ID!
 }
 
 interface Response {
@@ -597,25 +597,6 @@ input SignUpBlockUpdateInput {
   submitLabel: String
 }
 
-type SignUpEvent implements Event {
-  block: SignUpBlock
-  email: String!
-  id: ID!
-  name: String!
-  userId: ID!
-}
-
-input SignUpEventCreateInput {
-  blockId: ID!
-  email: String!
-
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  name: String!
-}
-
 type SignUpResponse implements Response {
   block: SignUpBlock @deprecated(reason: "use event instead of response")
   email: String! @deprecated(reason: "use event instead of response")
@@ -633,6 +614,25 @@ input SignUpResponseCreateInput {
   """
   id: ID
   name: String
+}
+
+type SignUpSubmissionEvent implements Event {
+  block: SignUpBlock
+  email: String!
+  id: ID!
+  name: String!
+  userId: ID!
+}
+
+input SignUpSubmissionEventCreateInput {
+  blockId: ID!
+  email: String!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  name: String!
 }
 
 type StepBlock implements Block {
@@ -668,21 +668,6 @@ input StepBlockUpdateInput {
   nextBlockId: ID
 }
 
-type StepEvent implements Event {
-  block: StepBlock
-  id: ID!
-  userId: ID!
-}
-
-input StepEventCreateInput {
-  blockId: ID!
-
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-}
-
 type StepResponse implements Response {
   block: StepBlock @deprecated(reason: "use event instead of response")
   id: ID! @deprecated(reason: "use event instead of response")
@@ -694,6 +679,21 @@ input StepResponseCreateInput {
 
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+}
+
+type StepViewEvent implements Event {
+  block: StepBlock
+  id: ID!
+  userId: ID!
+}
+
+input StepViewEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
 }
