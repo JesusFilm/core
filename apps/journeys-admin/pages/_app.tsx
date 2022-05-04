@@ -16,7 +16,7 @@ import { initAuth } from '../src/libs/firebaseClient/initAuth'
 initAuth()
 const clientSideEmotionCache = createEmotionCache()
 
-function JourneysAdminApp({
+export default function JourneysAdminApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
@@ -81,5 +81,3 @@ function JourneysAdminApp({
     </CacheProvider>
   )
 }
-
-export default JourneysAdminApp

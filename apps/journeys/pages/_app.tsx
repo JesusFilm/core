@@ -15,7 +15,7 @@ import { firebaseClient } from '../src/libs/firebaseClient'
 
 const clientSideEmotionCache = createEmotionCache()
 
-function CustomApp({
+export default function JourneysApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
@@ -76,5 +76,3 @@ function CustomApp({
     </CacheProvider>
   )
 }
-
-export default CustomApp

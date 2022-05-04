@@ -14,7 +14,7 @@ import { initAuth } from '../src/libs/firebaseClient/initAuth'
 initAuth()
 const clientSideEmotionCache = createEmotionCache()
 
-function CustomApp({
+export default function WatchAdminApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
@@ -61,5 +61,3 @@ function CustomApp({
     </CacheProvider>
   )
 }
-
-export default JourneysAdminApp

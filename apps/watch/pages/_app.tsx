@@ -13,7 +13,7 @@ import { createApolloClient } from '../src/libs/client'
 
 const clientSideEmotionCache = createEmotionCache()
 
-function CustomApp({
+export default function WatchApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
@@ -55,5 +55,3 @@ function CustomApp({
     </CacheProvider>
   )
 }
-
-export default CustomApp
