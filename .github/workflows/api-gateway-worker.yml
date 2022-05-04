@@ -126,7 +126,7 @@ jobs:
       - name: Deploy to Kubernetes cluster
         uses: kodermax/kubectl-aws-eks@master
         env:
-          KUBECTL_VERSION: '1.21.12'
+          KUBECTL_VERSION: 'v1.21.12'
           RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
         with:
           args: set image deployment/${{ inputs.name }}-$ENV_SUFFIX $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }}
@@ -134,6 +134,6 @@ jobs:
       - name: Verify Kubernetes deployment
         uses: kodermax/kubectl-aws-eks@master
         env:
-          KUBECTL_VERSION: '1.21.12'
+          KUBECTL_VERSION: 'v1.21.12'
         with:
           args: rollout status deploy ${{ inputs.name }}-$ENV_SUFFIX
