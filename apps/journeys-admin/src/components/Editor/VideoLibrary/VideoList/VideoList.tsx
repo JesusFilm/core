@@ -7,6 +7,7 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Skeleton from '@mui/material/Skeleton'
+import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
 import { GetVideos } from '../../../../../__generated__/GetVideos'
 import { VideoListItem } from './VideoListItem'
 
@@ -32,7 +33,7 @@ export const GET_VIDEOS = gql`
 `
 
 interface VideoListProps {
-  onSelect: (videoId: string, videoVariantLanguageId?: string) => void
+  onSelect: (block: VideoBlockUpdateInput) => void
   currentLanguageIds?: string[]
   title?: string
 }

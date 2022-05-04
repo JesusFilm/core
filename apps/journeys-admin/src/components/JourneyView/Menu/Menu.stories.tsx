@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../libs/storybook'
-
+import { GET_LANGUAGES } from '../../LanguageSelect/LanguageSelect'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { defaultJourney } from '../data'
 import { JourneyProvider } from '../../../libs/context'
@@ -16,6 +16,63 @@ const MenuStory = {
 const Template: Story = ({ ...args }) => (
   <MockedProvider
     mocks={[
+      {
+        request: {
+          query: GET_LANGUAGES,
+          variables: {
+            languageId: '529'
+          }
+        },
+        result: {
+          data: {
+            languages: [
+              {
+                __typename: 'Language',
+                id: '529',
+                name: [
+                  {
+                    value: 'English',
+                    primary: true,
+                    __typename: 'Translation'
+                  }
+                ]
+              },
+              {
+                id: '496',
+                __typename: 'Language',
+                name: [
+                  {
+                    value: 'Français',
+                    primary: true,
+                    __typename: 'Translation'
+                  },
+                  {
+                    value: 'French',
+                    primary: false,
+                    __typename: 'Translation'
+                  }
+                ]
+              },
+              {
+                id: '1106',
+                __typename: 'Language',
+                name: [
+                  {
+                    value: 'Deutsch',
+                    primary: true,
+                    __typename: 'Translation'
+                  },
+                  {
+                    value: 'German, Standard',
+                    primary: false,
+                    __typename: 'Translation'
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
       {
         request: {
           query: JOURNEY_PUBLISH,

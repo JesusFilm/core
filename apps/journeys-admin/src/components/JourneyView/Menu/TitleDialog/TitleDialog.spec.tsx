@@ -8,7 +8,7 @@ import { TitleDialog, JOURNEY_TITLE_UPDATE } from '.'
 const onClose = jest.fn()
 
 describe('JourneyView/Menu/TitleDialog', () => {
-  it('should not set journey title on close', () => {
+  it('should not set journey title on close', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
@@ -19,10 +19,12 @@ describe('JourneyView/Menu/TitleDialog', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(getByRole('textbox'), { target: { value: 'New Journey' } })
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'New Journey' }
+    })
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
 
-    expect(onClose).toBeCalled()
+    await waitFor(() => expect(onClose).toBeCalled())
   })
 
   it('should update journey title on submit', async () => {
@@ -72,20 +74,6 @@ describe('JourneyView/Menu/TitleDialog', () => {
   })
 
   it('shows notistack error alert when title fails to update', async () => {
-    const updatedJourney = {
-      title: 'Wrong New Journey'
-    }
-
-    const result = jest.fn(() => ({
-      data: {
-        journeyUpdate: {
-          id: defaultJourney.id,
-          __typename: 'Journey',
-          ...updatedJourney
-        }
-      }
-    }))
-
     const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
@@ -94,10 +82,11 @@ describe('JourneyView/Menu/TitleDialog', () => {
               query: JOURNEY_TITLE_UPDATE,
               variables: {
                 id: defaultJourney.id,
-                input: updatedJourney
+                input: {
+                  title: 'New Journey'
+                }
               }
-            },
-            result
+            }
           }
         ]}
       >
@@ -111,9 +100,10 @@ describe('JourneyView/Menu/TitleDialog', () => {
 
     fireEvent.change(getByRole('textbox'), { target: { value: 'New Journey' } })
     fireEvent.click(getByRole('button', { name: 'Save' }))
-
     await waitFor(() =>
-      expect(getByText('There was an error updating title')).toBeInTheDocument()
+      expect(
+        getByText('Field update failed. Reload the page or try again.')
+      ).toBeInTheDocument()
     )
   })
 })

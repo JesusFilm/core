@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
-import { GET_LANGUAGES } from './Drawer'
+import { GET_LANGUAGES } from '../../../../LanguageSelect/LanguageSelect'
 import { Drawer } from '.'
 
 const DrawerStory = {

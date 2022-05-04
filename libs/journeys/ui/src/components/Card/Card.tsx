@@ -1,15 +1,15 @@
 import { ReactElement, ReactNode, useMemo } from 'react'
-import { ThemeProvider, NextImage } from '@core/shared/ui'
+import { ThemeProvider, themes } from '@core/shared/ui'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
-import Box from '@mui/material/Box'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { blurImage, TreeBlock } from '../..'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 import { CardFields } from './__generated__/CardFields'
-import { Cover as CardCover } from './Cover'
+import { ContainedCover } from './ContainedCover'
+import { ExpandedCover } from './ExpandedCover'
 
 interface CardProps extends TreeBlock<CardFields> {
   wrappers?: WrappersProps
@@ -27,29 +27,55 @@ export function Card({
 }: CardProps): ReactElement {
   const theme = useTheme()
 
-  const coverBlock = children.find((block) => block.id === coverBlockId) as
-    | TreeBlock<ImageFields | VideoFields>
-    | undefined
+  const coverBlock = children.find(
+    (block) =>
+      block.id === coverBlockId &&
+      (block.__typename === 'ImageBlock' || block.__typename === 'VideoBlock')
+  ) as TreeBlock<ImageFields | VideoFields> | undefined
+
+  const videoBlock =
+    coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
+
+  // ImageBlock is card cover image or video poster image
+  const imageBlock =
+    coverBlock?.__typename === 'ImageBlock'
+      ? coverBlock
+      : videoBlock != null
+      ? (videoBlock.children.find(
+          (block) =>
+            block.id === videoBlock.posterBlockId &&
+            block.__typename === 'ImageBlock'
+        ) as TreeBlock<ImageFields> | undefined)
+      : undefined
+
+  const customCardTheme =
+    themeName != null && themeMode != null
+      ? themes[themeName][themeMode]
+      : undefined
+
+  const cardColor =
+    backgroundColor != null
+      ? backgroundColor
+      : customCardTheme != null
+      ? customCardTheme.palette.background.paper
+      : theme.palette.background.paper
 
   const blurUrl = useMemo(() => {
-    return coverBlock?.__typename === 'ImageBlock'
+    return imageBlock != null
       ? blurImage(
-          coverBlock.width,
-          coverBlock.height,
-          coverBlock.blurhash,
-          theme.palette.background.paper
+          imageBlock.width,
+          imageBlock.height,
+          imageBlock.blurhash,
+          cardColor
         )
       : undefined
-  }, [coverBlock, theme])
+  }, [imageBlock, cardColor])
 
   const renderedChildren = children
     .filter(({ id }) => id !== coverBlockId)
     .map((block) => (
       <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
     ))
-
-  const cardColor =
-    backgroundColor != null ? backgroundColor : 'background.paper'
 
   return (
     <CardWrapper
@@ -58,71 +84,19 @@ export function Card({
       themeMode={themeMode}
       themeName={themeName}
     >
-      {coverBlock != null && (fullscreen == null || !fullscreen) ? (
-        <>
-          {coverBlock.__typename === 'ImageBlock' && (
-            <CardCover backgroundColor={cardColor} imageBlock={coverBlock}>
-              {renderedChildren}
-            </CardCover>
-          )}
-          {coverBlock.__typename === 'VideoBlock' && (
-            <CardCover
-              backgroundColor={cardColor}
-              videoBlock={coverBlock}
-              imageBlock={
-                coverBlock.children.find(
-                  (block) =>
-                    block.id === coverBlock.posterBlockId &&
-                    block.__typename === 'ImageBlock'
-                ) as TreeBlock<ImageFields> | undefined
-              }
-            >
-              {renderedChildren}
-            </CardCover>
-          )}
-        </>
-      ) : (
-        <Box
-          sx={{
-            flexGrow: 1,
-            overflow: 'auto',
-            display: 'flex',
-            padding: (theme) => ({
-              xs: theme.spacing(7),
-              sm: theme.spacing(7, 10),
-              md: theme.spacing(10)
-            }),
-            borderRadius: (theme) => theme.spacing(4),
-            justifyContent: 'center'
-          }}
+      {coverBlock != null && !fullscreen ? (
+        <ContainedCover
+          backgroundColor={cardColor}
+          backgroundBlur={blurUrl}
+          videoBlock={videoBlock}
+          imageBlock={imageBlock}
         >
-          <Box
-            sx={{
-              margin: 'auto',
-              width: '100%',
-              maxWidth: 500,
-              zIndex: 1,
-              '& > *': {
-                '&:first-child': { mt: 0 },
-                '&:last-child': { mb: 0 }
-              },
-              // NextImage span
-              '> span': {
-                maxHeight: '100%'
-              }
-            }}
-          >
-            {renderedChildren}
-          </Box>
-          {blurUrl != null && coverBlock?.__typename === 'ImageBlock' && (
-            <NextImage
-              src={blurUrl}
-              alt={coverBlock.alt}
-              layout="fill"
-              objectFit="cover"
-            />
-          )}
-        </Box>
+          {renderedChildren}
+        </ContainedCover>
+      ) : (
+        <ExpandedCover backgroundBlur={blurUrl}>
+          {renderedChildren}
+        </ExpandedCover>
       )}
     </CardWrapper>
   )

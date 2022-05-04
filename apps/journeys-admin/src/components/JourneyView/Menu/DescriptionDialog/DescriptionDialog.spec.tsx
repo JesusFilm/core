@@ -8,7 +8,7 @@ import { DescriptionDialog, JOURNEY_DESC_UPDATE } from '.'
 const onClose = jest.fn()
 
 describe('JourneyView/Menu/DescriptionDialog', () => {
-  it('should not set journey description on close', () => {
+  it('should not set journey description on close', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
@@ -24,7 +24,7 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
     })
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
 
-    expect(onClose).toBeCalled()
+    await waitFor(() => expect(onClose).toBeCalled())
   })
 
   it('should update journey description on submit', async () => {
@@ -76,20 +76,6 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
   })
 
   it('shows notistack error alert when description fails to update', async () => {
-    const updatedJourney = {
-      description: 'Wrong New Journey'
-    }
-
-    const result = jest.fn(() => ({
-      data: {
-        journeyUpdate: {
-          id: defaultJourney.id,
-          __typename: 'Journey',
-          ...updatedJourney
-        }
-      }
-    }))
-
     const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
@@ -98,10 +84,11 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
               query: JOURNEY_DESC_UPDATE,
               variables: {
                 id: defaultJourney.id,
-                input: updatedJourney
+                input: {
+                  description: 'New Description'
+                }
               }
-            },
-            result
+            }
           }
         ]}
       >
@@ -117,10 +104,9 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
       target: { value: 'New Description' }
     })
     fireEvent.click(getByRole('button', { name: 'Save' }))
-
     await waitFor(() =>
       expect(
-        getByText('There was an error updating description')
+        getByText('Field update failed. Reload the page or try again.')
       ).toBeInTheDocument()
     )
   })

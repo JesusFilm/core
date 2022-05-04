@@ -12,11 +12,6 @@ interface SourceProps {
 export function Source({ onChange }: SourceProps): ReactElement {
   const [open, setOpen] = useState(false)
 
-  const onSelect = async (
-    videoId: string,
-    videoVariantLanguageId?: string
-  ): Promise<void> => await onChange({ videoId, videoVariantLanguageId })
-
   return (
     <>
       <Box sx={{ py: 3, px: 6, textAlign: 'center' }}>
@@ -33,7 +28,7 @@ export function Source({ onChange }: SourceProps): ReactElement {
       <VideoLibrary
         open={open}
         onClose={() => setOpen(false)}
-        onSelect={onSelect}
+        onSelect={onChange}
       />
     </>
   )

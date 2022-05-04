@@ -1,0 +1,1 @@
+export { ExpandedCover } from './ExpandedCover'

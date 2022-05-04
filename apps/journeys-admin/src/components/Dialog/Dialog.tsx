@@ -71,11 +71,6 @@ export function Dialog({
   fullscreen,
   children
 }: DialogProps): ReactElement {
-  function handleSubmit(): void {
-    dialogAction?.onSubmit()
-    handleClose()
-  }
-
   return (
     <StyledDialog
       open={open}
@@ -104,7 +99,7 @@ export function Dialog({
           {dialogAction.closeLabel != null && (
             <Button onClick={handleClose}>{dialogAction.closeLabel}</Button>
           )}
-          <Button onClick={handleSubmit}>
+          <Button onClick={dialogAction?.onSubmit}>
             {dialogAction.submitLabel ?? 'Save'}
           </Button>
         </DialogActions>
