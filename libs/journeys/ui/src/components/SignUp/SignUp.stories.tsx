@@ -9,7 +9,7 @@ import {
 } from '../..'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { IconName } from '../../../__generated__/globalTypes'
-import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
+import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
 
 const Demo = {
@@ -50,7 +50,7 @@ const Template: Story<TreeBlock<SignUpFields>> = ({
     mocks={[
       {
         request: {
-          query: SIGN_UP_RESPONSE_CREATE,
+          query: SIGN_UP_SUBMISSION_EVENT_CREATE,
           variables: {
             input: {
               id: 'uuid',
@@ -62,7 +62,7 @@ const Template: Story<TreeBlock<SignUpFields>> = ({
         },
         result: {
           data: {
-            signUpResponseCreate: {
+            signUpSubmissionEventCreate: {
               id: 'uuid',
               blockId: 'signUpBlockId1',
               name: 'Anon',

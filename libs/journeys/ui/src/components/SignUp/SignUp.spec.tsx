@@ -3,7 +3,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { TreeBlock, handleAction } from '../..'
-import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
+import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
 
 jest.mock('../../libs/action', () => {
@@ -115,7 +115,7 @@ describe('SignUp', () => {
     const mocks = [
       {
         request: {
-          query: SIGN_UP_RESPONSE_CREATE,
+          query: SIGN_UP_SUBMISSION_EVENT_CREATE,
           variables: {
             input: {
               id: 'uuid',
@@ -127,7 +127,7 @@ describe('SignUp', () => {
         },
         result: {
           data: {
-            signUpResponseCreate: {
+            signUpSubmissionEventCreate: {
               id: 'uuid',
               blockId: 'signUp0.id',
               name: 'Anon',
@@ -138,7 +138,11 @@ describe('SignUp', () => {
       }
     ]
 
-    const { getByLabelText, getByRole } = render(<SignUpMock mocks={mocks} />)
+    const { getByLabelText, getByRole } = render(
+      <MockedProvider>
+        <SignUpMock mocks={mocks} />
+      </MockedProvider>
+    )
 
     const name = getByLabelText('Name')
     const email = getByLabelText('Email')
@@ -163,9 +167,6 @@ describe('SignUp', () => {
     })
   })
 
-  // it('should show error when submit fails', async () => {
-  // })
-
   it('should be in a loading state when waiting for response', async () => {
     const { getByRole, getByLabelText } = render(
       <ApolloLoadingProvider>
@@ -186,4 +187,55 @@ describe('SignUp', () => {
     await waitFor(() => expect(submit).toHaveClass('MuiLoadingButton-loading'))
     expect(submit).toBeDisabled()
   })
+
+  it('should create submission event on click', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        signUpSubmissionEventCreate: {
+          id: 'uuid',
+          blockId: 'signUp0.id',
+          name: 'Anon',
+          email: '123abc@gmail.com'
+        }
+      }
+    }))
+
+    const mocks = [
+      {
+        request: {
+          query: SIGN_UP_SUBMISSION_EVENT_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              blockId: 'signUp0.id',
+              name: 'Anon',
+              email: '123abc@gmail.com'
+            }
+          }
+        },
+        result
+      }
+    ]
+
+    const { getByLabelText, getByRole } = render(
+      <MockedProvider>
+        <SignUpMock mocks={mocks} />
+      </MockedProvider>
+    )
+
+    const name = getByLabelText('Name')
+    const email = getByLabelText('Email')
+    const submit = getByRole('button')
+
+    fireEvent.change(name, { target: { value: 'Anon' } })
+    fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
+    fireEvent.click(submit)
+
+    await waitFor(() => {
+      expect(result).toBeCalled()
+    })
+  })
+
+  // it('should show error when submit fails', async () => {
+  // })
 })
