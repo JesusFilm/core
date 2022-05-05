@@ -73,6 +73,8 @@ export function ContainedCover({
 
   useEffect(() => {
     if (videoBlock != null) {
+      // TODO: Replace useEditor state check with visibility check (using Intersection API) to decouple admin from ui.
+      // https://hackernoon.com/tracking-element-visibility-with-react-and-the-intersection-observer-api-7dfaf3a47218
       if (selectedStep?.children[0].id !== videoBlock.parentBlockId) {
         playerRef.current?.pause()
       } else {
