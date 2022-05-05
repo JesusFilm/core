@@ -26,7 +26,7 @@ type Video @key(fields: "id primaryLanguageId") {
   imageAlt(languageId: ID, primary: Boolean): [Translation!]!
   variantLanguages: [Language!]!
   """
-   slug is a permanent link to the video. It should only be appended, not edited or deleted
+  slug is a permanent link to the video. It should only be appended, not edited or deleted
   """
   slug: [Translation!]!
   noIndex: Boolean

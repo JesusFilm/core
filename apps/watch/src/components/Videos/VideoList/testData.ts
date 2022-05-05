@@ -102,9 +102,7 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 11530, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    slug: [
-      { value: 'book-of-acts', primary: true, __typename: 'Translation' }
-    ]
+    slug: [{ value: 'book-of-acts', primary: true, __typename: 'Translation' }]
   },
   {
     id: '2_CSF',
@@ -185,9 +183,7 @@ export const videos: GetVideos_videos[] = [
     variant: { duration: 3665, __typename: 'VideoVariant' },
     __typename: 'Video',
     episodeIds: [],
-    slug: [
-      { value: 'magdalena', primary: true, __typename: 'Translation' }
-    ]
+    slug: [{ value: 'magdalena', primary: true, __typename: 'Translation' }]
   },
   {
     id: '1_0-TrainV_1Install',
