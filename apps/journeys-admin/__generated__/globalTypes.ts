@@ -272,11 +272,11 @@ export interface SignUpBlockUpdateInput {
   submitLabel?: string | null;
 }
 
-export interface SignUpResponseCreateInput {
-  blockId?: string | null;
-  email?: string | null;
+export interface SignUpSubmissionEventCreateInput {
+  blockId: string;
+  email: string;
   id?: string | null;
-  name?: string | null;
+  name: string;
 }
 
 export interface StepBlockUpdateInput {

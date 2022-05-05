@@ -131,11 +131,11 @@ export interface RadioQuestionResponseCreateInput {
   radioOptionBlockId?: string | null;
 }
 
-export interface SignUpResponseCreateInput {
-  blockId?: string | null;
-  email?: string | null;
+export interface SignUpSubmissionEventCreateInput {
+  blockId: string;
+  email: string;
   id?: string | null;
-  name?: string | null;
+  name: string;
 }
 
 export interface VideoResponseCreateInput {
