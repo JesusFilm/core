@@ -13,7 +13,7 @@ const palette = {
 }
 
 declare module '@mui/material/styles/createPalette' {
-  interface CardPaletteColorOptions {
+  export interface CardPaletteColorOptions {
     one?: string
     two?: string
     three?: string
@@ -30,7 +30,7 @@ declare module '@mui/material/styles/createPalette' {
     fourteen?: string
     fifteen?: string
   }
-  interface CardPaletteColor {
+  export interface CardPaletteColor {
     one: string
     red: string
     three: string

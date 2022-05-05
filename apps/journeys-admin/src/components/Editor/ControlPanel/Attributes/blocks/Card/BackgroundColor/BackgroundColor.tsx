@@ -19,24 +19,6 @@ import { CardBlockBackgroundColorUpdate } from '../../../../../../../../__genera
 import { Swatch } from './Swatch'
 import { PaletteColorPicker } from './PaletteColorPicker'
 
-const palette = [
-  { dark: '#C62828', light: '#FFCDD2' },
-  { dark: '#AD1457', light: '#F48FB1' },
-  { dark: '#6A1B9A', light: '#CE93D8' },
-  { dark: '#4527A0', light: '#B39DDB' },
-  { dark: '#283593', light: '#9FA8DA' },
-  { dark: '#1565C0', light: '#90CAF9' },
-  { dark: '#0277BD', light: '#81D4FA' },
-  { dark: '#006064', light: '#80DEEA' },
-  { dark: '#00695C', light: '#80CBC4' },
-  { dark: '#2E7D32', light: '#C8E6C9' },
-  { dark: '#33691E', light: '#C5E1A5' },
-  { dark: '#4E342E', light: '#D7CCC8' },
-  { dark: '#424242', light: '#E0E0E0' },
-  { dark: '#37474F', light: '#B0BEC5' },
-  { dark: '#30313D', light: '#FEFEFE' }
-]
-
 export const CARD_BLOCK_BACKGROUND_COLOR_UPDATE = gql`
   mutation CardBlockBackgroundColorUpdate(
     $id: ID!
@@ -132,8 +114,7 @@ export function BackgroundColor(): ReactElement {
   const palettePicker = (
     <PaletteColorPicker
       selectedColor={selectedColor}
-      colors={palette}
-      mode={cardTheme.palette.mode}
+      colors={cardTheme.palette.card}
       onChange={handleColorChange}
     />
   )
