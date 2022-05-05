@@ -281,12 +281,12 @@ async function getMetadataLanguageTags(): Promise<MetadataLanguageTag[]> {
 }
 
 async function main(): Promise<void> {
-  try {
+  if (!(await db.collection('languages').exists())) {
     await db.createCollection('languages', { keyOptions: { type: 'uuid' } })
-  } catch {}
-  try {
+  }
+  if (!(await db.collection('countries').exists())) {
     await db.createCollection('countries', { keyOptions: { type: 'uuid' } })
-  } catch {}
+  }
 
   await db.collection('countries').ensureIndex({
     name: 'slug',
