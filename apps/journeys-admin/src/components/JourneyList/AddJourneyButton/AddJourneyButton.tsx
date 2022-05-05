@@ -61,12 +61,7 @@ export const JOURNEY_CREATE = gql`
       id
     }
     cardBlockCreate(
-      input: {
-        id: $cardId
-        parentBlockId: $stepId
-        journeyId: $journeyId
-        coverBlockId: $imageId
-      }
+      input: { id: $cardId, parentBlockId: $stepId, journeyId: $journeyId }
     ) {
       id
     }
@@ -78,6 +73,7 @@ export const JOURNEY_CREATE = gql`
         src: "https://images.unsplash.com/photo-1524414287096-c7fb74ab3ba0?w=854&q=50"
         alt: $alt
         blurhash: "LgFiG+59PC=s|AE3XT$gnjngs7Ne"
+        isCover: true
       }
     ) {
       id

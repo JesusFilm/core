@@ -2,18 +2,14 @@ input StepResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
-  id: ID
-  blockId: ID!
-  previousBlockId: ID!
-  journeyId: ID!
+  id: ID @deprecated(reason: "use event instead of response")
+  blockId: ID @deprecated(reason: "use event instead of response")
 }
 
 type StepResponse implements Response {
-  id: ID!
-  userId: ID!
-  previousBlockId: ID!
-  journeyId: ID!
-  block: StepBlock
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
+  block: StepBlock @deprecated(reason: "use event instead of response")
 }
 
 extend type Mutation {
