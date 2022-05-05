@@ -131,10 +131,10 @@ export enum VideoType {
   standalone = "standalone",
 }
 
-export interface RadioQuestionResponseCreateInput {
-  blockId?: string | null;
+export interface RadioQuestionSubmissionEventCreateInput {
+  blockId: string;
   id?: string | null;
-  radioOptionBlockId?: string | null;
+  radioOptionBlockId: string;
 }
 
 export interface SignUpResponseCreateInput {
