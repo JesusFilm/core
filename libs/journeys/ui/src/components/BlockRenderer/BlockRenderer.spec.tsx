@@ -407,7 +407,11 @@ describe('BlockRenderer', () => {
         }
       ]
     }
-    const { getByText } = render(<BlockRenderer block={block} />)
+    const { getByText } = render(
+      <MockedProvider>
+        <BlockRenderer block={block} />
+      </MockedProvider>
+    )
     expect(getByText('Click to continue')).toBeInTheDocument()
   })
 

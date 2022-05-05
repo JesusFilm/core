@@ -15,21 +15,27 @@ export const STEP_VIEW_EVENT_CREATE = gql`
 `
 
 interface StepProps extends TreeBlock<StepFields> {
+  uuid?: () => string
   wrappers?: WrappersProps
 }
 
-export function Step({ id, children, wrappers }: StepProps): ReactElement {
+export function Step({
+  id: blockId,
+  children,
+  uuid = uuidv4,
+  wrappers
+}: StepProps): ReactElement {
   const [stepViewEventCreate] = useMutation<StepViewEventCreate>(
     STEP_VIEW_EVENT_CREATE
   )
 
   async function createResponse(blockId: string): Promise<void> {
-    const uuid = uuidv4()
+    const id = uuid()
     await stepViewEventCreate({
-      variables: { input: { id: uuid, blockId } },
+      variables: { input: { id, blockId } },
       optimisticResponse: {
         stepViewEventCreate: {
-          id: uuid,
+          id,
           __typename: 'StepViewEvent'
         }
       }
@@ -37,9 +43,9 @@ export function Step({ id, children, wrappers }: StepProps): ReactElement {
   }
 
   useEffect(() => {
-    void createResponse(id)
+    void createResponse(blockId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id])
+  }, [blockId])
 
   return (
     <>

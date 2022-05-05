@@ -1,6 +1,8 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock } from '../..'
 import { StepFields } from './__generated__/StepFields'
+import { STEP_VIEW_EVENT_CREATE } from './Step'
 import { Step } from '.'
 
 const block: TreeBlock<StepFields> = {
@@ -43,15 +45,56 @@ const block: TreeBlock<StepFields> = {
 }
 
 describe('Step', () => {
+  it('should create a stepViewEvent', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        stepViewEventCreate: {
+          id: 'uuid',
+          __typename: 'StepViewEvent'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: STEP_VIEW_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'Step1'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <Step {...block} uuid={() => 'uuid'} />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
   it('should render blocks', () => {
-    const { getByText } = render(<Step {...block} />)
+    const { getByText } = render(
+      <MockedProvider>
+        <Step {...block} />
+      </MockedProvider>
+    )
     expect(getByText('Button 1')).toBeInTheDocument()
     expect(getByText('Button 2')).toBeInTheDocument()
   })
 
   it('should render empty block', () => {
-    // eslint-disable-next-line react/no-children-prop
-    const { baseElement } = render(<Step {...block} children={[]} />)
+    const { baseElement } = render(
+      <MockedProvider>
+        {/* eslint-disable-next-line react/no-children-prop */}
+        <Step {...block} children={[]} />
+      </MockedProvider>
+    )
     expect(baseElement).toContainHTML('<body><div /></body>')
   })
 })
