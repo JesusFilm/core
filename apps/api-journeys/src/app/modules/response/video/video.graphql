@@ -1,25 +1,27 @@
 enum VideoResponseStateEnum {
-  PLAYING
-  PAUSED
-  FINISHED
+  PLAYING @deprecated(reason: "use event instead of response")
+  PAUSED @deprecated(reason: "use event instead of response")
+  FINISHED @deprecated(reason: "use event instead of response")
 }
 
 input VideoResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
-  id: ID
-  blockId: ID!
-  state: VideoResponseStateEnum!
-  position: Float
+  id: ID @deprecated(reason: "use event instead of response")
+  blockId: ID @deprecated(reason: "use event instead of response")
+  state: VideoResponseStateEnum
+    @deprecated(reason: "use event instead of response")
+  position: Float @deprecated(reason: "use event instead of response")
 }
 
 type VideoResponse implements Response {
-  id: ID!
-  userId: ID!
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
   state: VideoResponseStateEnum!
-  position: Int
-  block: VideoBlock
+    @deprecated(reason: "use event instead of response")
+  position: Int @deprecated(reason: "use event instead of response")
+  block: VideoBlock @deprecated(reason: "use event instead of response")
 }
 
 extend type Mutation {

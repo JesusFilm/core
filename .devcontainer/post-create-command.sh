@@ -17,3 +17,8 @@ npm install -g @nestjs/cli@^8.1.5
 
 # install all dependencies
 npm i
+
+# install github action runner
+curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
+sudo mv bin/act /usr/bin/
+rm -rf bin
