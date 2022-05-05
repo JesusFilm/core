@@ -10,7 +10,7 @@ import {
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
-@Resolver('StepViewEvent')
+@Resolver('ButtonClickEvent')
 export class ButtonClickEventResolver {
   constructor(private readonly eventService: EventService) {}
   @Mutation()
