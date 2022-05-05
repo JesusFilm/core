@@ -13,7 +13,7 @@ export interface GetCountries_countries_name {
   value: string;
 }
 
-export interface GetCountries_countries_permalink {
+export interface GetCountries_countries_slug {
   __typename: "Translation";
   primary: boolean;
   value: string;
@@ -34,7 +34,10 @@ export interface GetCountries_countries {
   __typename: "Country";
   id: string;
   name: GetCountries_countries_name[];
-  permalink: GetCountries_countries_permalink[];
+  /**
+   * slug is a permanent link to the country. It should only be appended, not edited or deleted
+   */
+  slug: GetCountries_countries_slug[];
   continent: GetCountries_countries_continent[];
   languages: GetCountries_countries_languages[];
   population: number;

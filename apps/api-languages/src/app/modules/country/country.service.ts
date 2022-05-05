@@ -8,17 +8,17 @@ import { DocumentCollection } from 'arangojs/collection'
 export class CountryService extends BaseService {
   collection: DocumentCollection = this.db.collection('countries')
   @KeyAsId()
-  async getCountryByPermalink<T>(permalink: string): Promise<T> {
+  async getCountryBySlug<T>(slug: string): Promise<T> {
     const res = await this.db.query(aql`
     FOR item IN ${this.collection}
-      FILTER ${permalink} IN item.permalink[*].value
+      FILTER ${slug} IN item.slug[*].value
       LIMIT 1
       RETURN {
         _key: item._key,
         name: item.name,
         population: item.population,
         continent: item.continent,
-        permalink: item.permalink,
+        slug: item.slug,
         languageIds: item.languageIds,
         latitude: item.latitude,
         longitude: item.longitude

@@ -46,7 +46,7 @@ export default function Map({ coordinates, zoom }): ReactElement {
           >
             <Popup>
               <Stack direction="row" spacing={2}>
-                <Link href={`/countries/${country.permalink[0]?.value}`}>
+                <Link href={`/countries/${country.slug[0]?.value}`}>
                   {country.name[0]?.value}
                 </Link>
                 <div style={{ width: 100 }}>

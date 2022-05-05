@@ -22,7 +22,7 @@ export const GET_COUNTRY = gql`
         primary
         value
       }
-      permalink(languageId: $languageId) {
+      slug(languageId: $languageId) {
         primary
         value
       }

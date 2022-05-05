@@ -28,7 +28,7 @@ const DEFAULT_QUERY = aql`
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds,
-        permalinks: item.permalinks,
+        slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
         imageAlt: item.imageAlt
@@ -53,7 +53,7 @@ const VIDEO_EPISODES_QUERY = aql`
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds,
-        permalinks: item.permalinks,
+        slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
         imageAlt: item.imageAlt
@@ -62,7 +62,7 @@ const VIDEO_EPISODES_QUERY = aql`
 
 const EPISODES_QUERY = aql`
     FOR video IN undefined
-      FILTER @value0 IN video.permalinks[*].value
+      FILTER @value0 IN video.slug[*].value
       LIMIT 1
       FOR item IN 
         FILTER item._key IN video.episodeIds
@@ -84,7 +84,7 @@ const EPISODES_QUERY = aql`
           ], 0),
           variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
           episodeIds: item.episodeIds,
-          permalinks: item.permalinks,
+          slug: item.slug,
           noIndex: item.noIndex,
           seoTitle: item.seoTitle,
           imageAlt: item.imageAlt

@@ -89,7 +89,7 @@ interface Video {
   imageAlt: Translation[]
   variants: VideoVariant[]
   tagIds: string[]
-  permalinks: Translation[]
+  slug: Translation[]
   episodeIds: string[]
   noIndex: boolean
 }
@@ -168,8 +168,8 @@ async function digestContent(
   mediaComponent: MediaComponent
 ): Promise<void> {
   const video = await getVideo(mediaComponent.mediaComponentId)
-  if (video?.permalinks != null)
-    video.permalinks.forEach((title) => usedTitles.push(title.value))
+  if (video?.slug != null)
+    video.slug.forEach((title) => usedTitles.push(title.value))
 
   const metadataLanguageId =
     languages
@@ -239,7 +239,7 @@ async function digestContent(
     tagIds: [],
     episodeIds: [],
     variants,
-    permalinks: video?.permalinks ?? [
+    slug: video?.slug ?? [
       {
         value: getSeoSlug(mediaComponent.title, usedTitles),
         languageId: metadataLanguageId,
@@ -316,8 +316,8 @@ async function digestSeriesContainer(
   languages,
   video
 ): Promise<Video> {
-  if (video?.permalinks != null)
-    video.permalinks.forEach((title) => usedTitles.push(title.value))
+  if (video?.slug != null)
+    video.slug.forEach((title) => usedTitles.push(title.value))
   const metadataLanguageId =
     languages
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
@@ -383,7 +383,7 @@ async function digestSeriesContainer(
       }
     ],
     tagIds: [],
-    permalinks: video?.permalinks ?? [
+    slug: video?.slug ?? [
       {
         value: getSeoSlug(mediaComponent.title, usedTitles),
         languageId: metadataLanguageId,
@@ -511,7 +511,7 @@ async function main(): Promise<void> {
           episodeIds: {
             analyzers: ['identity']
           },
-          permalinks: {
+          slug: {
             analyzers: ['identity']
           }
         }
@@ -537,9 +537,9 @@ async function main(): Promise<void> {
   }
 
   await db.collection('videos').ensureIndex({
-    name: 'permalinks',
+    name: 'slug',
     type: 'persistent',
-    fields: ['permalinks[*].value'],
+    fields: ['slug[*].value'],
     unique: true
   })
 

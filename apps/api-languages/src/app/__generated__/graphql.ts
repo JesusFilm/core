@@ -23,7 +23,7 @@ export class Country {
     name: Translation[];
     population: number;
     continent: Translation[];
-    permalink: Translation[];
+    slug: Translation[];
     languages: Language[];
     latitude: number;
     longitude: number;

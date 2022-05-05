@@ -22,8 +22,9 @@ interface ContentProps {
 function Content({ children, document }: ContentProps): ReactElement {
   const cache = useMemo(() => {
     document.head.innerHTML =
-      document.head.innerHTML +
-      '<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap" rel="stylesheet" />'
+      window.document.head.innerHTML +
+      '<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap" rel="stylesheet" />, '
+
     return createCache({
       key: 'iframe',
       container: document.head,
