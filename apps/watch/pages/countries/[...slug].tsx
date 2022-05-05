@@ -10,6 +10,7 @@ import {
   LanguageProvider,
   useLanguage
 } from '../../src/libs/languageContext/LanguageContext'
+import { Countries } from '../../src/components/Countries/Countries'
 import { GetCountry } from '../../__generated__/GetCountry'
 import { routeParser } from '../../src/libs/routeParser/routeParser'
 
@@ -74,7 +75,10 @@ function CountriesPage(): ReactElement {
               )}
             </Typography>
           </Stack>
-          <div>(Map)</div>
+          <Countries
+            coordinates={[data.country.latitude, data.country.longitude]}
+            zoom={5}
+          />
           <Typography variant="h3">Available Languages</Typography>
           {data.country.languages
             .map((language) => language.name[0]?.value)

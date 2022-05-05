@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
-import { useQuery, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import Link from 'next/link'
 
 import { PageWrapper } from '../../src/components/PageWrapper'
@@ -9,30 +9,7 @@ import {
   useLanguage
 } from '../../src/libs/languageContext/LanguageContext'
 import { GetCountries } from '../../__generated__/GetCountries'
-
-export const GET_COUNTRIES = gql`
-  query GetCountries($languageId: ID) {
-    countries {
-      id
-      name(languageId: $languageId) {
-        primary
-        value
-      }
-      permalink(languageId: $languageId) {
-        primary
-        value
-      }
-      continent(languageId: $languageId) {
-        primary
-        value
-      }
-      population
-      image
-      latitude
-      longitude
-    }
-  }
-`
+import { GET_COUNTRIES } from '../../src/libs/countries/countries.graphql'
 
 function CountriesPage(): ReactElement {
   const languageContext = useLanguage()
