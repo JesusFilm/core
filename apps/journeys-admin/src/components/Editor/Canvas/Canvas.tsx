@@ -20,7 +20,6 @@ import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
-import { CardWrapper } from './CardWrapper'
 
 const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
@@ -155,8 +154,7 @@ export function Canvas(): ReactElement {
                           RadioQuestionWrapper: InlineEditWrapper,
                           RadioOptionWrapper: InlineEditWrapper,
                           SignUpWrapper: InlineEditWrapper,
-                          VideoWrapper,
-                          CardWrapper
+                          VideoWrapper
                         }}
                       />
                     </Box>

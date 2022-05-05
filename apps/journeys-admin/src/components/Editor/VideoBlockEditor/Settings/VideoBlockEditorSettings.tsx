@@ -39,6 +39,7 @@ export function VideoBlockEditorSettings({
       startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
       endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0)
     },
+    enableReinitialize: true,
     validate: async (values) => {
       await onChange({
         ...values,

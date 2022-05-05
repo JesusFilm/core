@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: arangodb-bigquery-etl
+  labels:
+    app: arangodb-bigquery-etl
+    type: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: arangodb-bigquery-etl
+  template:
+    metadata:
+      labels:
+        app: arangodb-bigquery-etl
+    spec:
+      containers:
+        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-arangodb-bigquery-etl:latest
+          imagePullPolicy: Always
+          name: arangodb-bigquery-etl
+          envFrom:
+            - secretRef:
+                name: env-db-main
+            - secretRef:
+                name: env-gcloud

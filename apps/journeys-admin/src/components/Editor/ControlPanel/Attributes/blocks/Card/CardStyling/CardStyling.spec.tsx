@@ -185,7 +185,8 @@ describe('CardStyling', () => {
                 id: 'card1.id',
                 journeyId: 'journeyId',
                 input: {
-                  themeMode: ThemeMode.dark
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base
                 }
               }
             },

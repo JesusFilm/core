@@ -16,6 +16,7 @@ import Close from '@mui/icons-material/Close'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
 import { gql, useLazyQuery } from '@apollo/client'
+import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
 import { GetVideo } from '../../../../../__generated__/GetVideo'
 import { Drawer as LanguageDrawer } from '../LanguageFilter/Drawer/Drawer'
 import 'video.js/dist/video-js.css'
@@ -48,7 +49,7 @@ interface VideoDetailsProps {
   open: boolean
   id: string
   onClose: () => void
-  onSelect: (videoId: string, videoVariantLanguageId?: string) => void
+  onSelect: (block: VideoBlockUpdateInput) => void
 }
 
 export function VideoDetails({
@@ -72,7 +73,12 @@ export function VideoDetails({
   }
 
   const handleVideoSelect = (): void => {
-    handleSelect(id, data?.video?.primaryLanguageId)
+    handleSelect({
+      videoId: id,
+      videoVariantLanguageId: data?.video?.primaryLanguageId,
+      startAt: 0,
+      endAt: time
+    })
     handleClose()
   }
 

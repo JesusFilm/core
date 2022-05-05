@@ -92,10 +92,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   return (
     <Div100vh>
       <Stack
-        direction={breakpoints.lg ? 'column-reverse' : 'column'}
         sx={{
           justifyContent: 'center',
-          height: '100%'
+          height: '100%',
+          flexDirection: { lg: 'column-reverse' }
         }}
       >
         <Box
