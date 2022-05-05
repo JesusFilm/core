@@ -5,16 +5,21 @@ import { PaletteColorPicker } from './PaletteColorPicker'
 describe('PaletteColorPicker', () => {
   const onChange = jest.fn()
 
-  const palette = [
-    { dark: '#C62828', light: '#FFCDD2' },
-    { dark: '#30313D', light: '#FEFEFE' }
-  ]
+  const darkPalette = {
+    one: '#C62828',
+    two: '#30313D'
+  }
+
+  const lightPalette = {
+    one: '#FFCDD2',
+    two: '#FEFEFE'
+  }
+
   it('displays the palette for dark mode', () => {
     const { getByTestId } = render(
       <PaletteColorPicker
         selectedColor="#C62828"
-        colors={palette}
-        mode="dark"
+        colors={darkPalette}
         onChange={onChange}
       />
     )
@@ -27,8 +32,7 @@ describe('PaletteColorPicker', () => {
     const { getByTestId } = render(
       <PaletteColorPicker
         selectedColor="#FEFEFE"
-        colors={palette}
-        mode="light"
+        colors={lightPalette}
         onChange={onChange}
       />
     )
@@ -41,8 +45,7 @@ describe('PaletteColorPicker', () => {
     const { getByTestId } = render(
       <PaletteColorPicker
         selectedColor="#C62828"
-        colors={palette}
-        mode="dark"
+        colors={darkPalette}
         onChange={onChange}
       />
     )
