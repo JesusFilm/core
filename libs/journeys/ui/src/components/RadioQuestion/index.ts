@@ -1,1 +1,4 @@
-export { RadioQuestion, RADIO_QUESTION_RESPONSE_CREATE } from './RadioQuestion'
+export {
+  RadioQuestion,
+  RADIO_QUESTION_SUBMISSION_EVENT_CREATE
+} from './RadioQuestion'

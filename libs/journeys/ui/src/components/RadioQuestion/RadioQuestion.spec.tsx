@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { TreeBlock } from '../..'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
-import { RadioQuestion, RADIO_QUESTION_RESPONSE_CREATE } from '.'
+import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -55,12 +55,21 @@ describe('RadioQuestion', () => {
   })
 
   it('should select an option onClick', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        radioQuestionSubmissionEventCreate: {
+          id: 'uuid',
+          radioOptionBlockId: 'RadioOption1'
+        }
+      }
+    }))
+
     const { getByTestId, getAllByRole } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: RADIO_QUESTION_RESPONSE_CREATE,
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
               variables: {
                 input: {
                   id: 'uuid',
@@ -69,24 +78,17 @@ describe('RadioQuestion', () => {
                 }
               }
             },
-            result: {
-              data: {
-                radioQuestionResponseCreate: {
-                  id: 'uuid',
-                  radioOptionBlockId: 'RadioOption1'
-                }
-              }
-            }
+            result
           }
         ]}
-        addTypename={false}
       >
         <RadioQuestion {...block} uuid={() => 'uuid'} />
       </MockedProvider>
     )
     const buttons = getAllByRole('button')
     fireEvent.click(buttons[0])
-    await waitFor(() => expect(buttons[0]).toBeDisabled())
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(buttons[0]).toBeDisabled()
     expect(buttons[0]).toContainElement(
       getByTestId('RadioOptionCheckCircleIcon')
     )
@@ -98,7 +100,7 @@ describe('RadioQuestion', () => {
         mocks={[
           {
             request: {
-              query: RADIO_QUESTION_RESPONSE_CREATE,
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
               variables: {
                 input: {
                   id: 'uuid',
@@ -109,7 +111,7 @@ describe('RadioQuestion', () => {
             },
             result: {
               data: {
-                radioQuestionResponseCreate: {
+                radioQuestionSubmissionEventCreate: {
                   id: 'uuid',
                   radioOptionBlockId: 'RadioOption1'
                 }
