@@ -129,7 +129,18 @@ const blocks: GetJourney_journey_blocks[] = [
     endAt: null,
     fullsize: null,
     action: null,
-    posterBlockId: null
+    posterBlockId: 'image0.id'
+  },
+  {
+    id: 'image0.id',
+    __typename: 'ImageBlock',
+    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+    width: 1920,
+    height: 1080,
+    alt: 'random image from unsplash',
+    parentBlockId: 'video0.id',
+    parentOrder: 4,
+    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
   },
   {
     id: 'step1.id',
