@@ -2,7 +2,7 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 
 interface CountriesProps {
-  coordinates?: [float, float]
+  coordinates?: [number, number]
   zoom?: number
 }
 

@@ -25,12 +25,18 @@ export interface GetCountries_countries_continent {
   value: string;
 }
 
+export interface GetCountries_countries_languages {
+  __typename: "Language";
+  id: string;
+}
+
 export interface GetCountries_countries {
   __typename: "Country";
   id: string;
   name: GetCountries_countries_name[];
   permalink: GetCountries_countries_permalink[];
   continent: GetCountries_countries_continent[];
+  languages: GetCountries_countries_languages[];
   population: number;
   image: string | null;
   latitude: number;

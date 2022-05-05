@@ -16,6 +16,9 @@ export const GET_COUNTRIES = gql`
         primary
         value
       }
+      languages {
+        id
+      }
       population
       image
       latitude
