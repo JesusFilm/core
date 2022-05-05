@@ -1,5 +1,6 @@
 import { render, fireEvent } from '@testing-library/react'
 import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey as Journey
@@ -30,25 +31,27 @@ describe('Canvas', () => {
       children: []
     }
     const { getByTestId } = render(
-      <ThemeProvider>
-        <JourneyProvider
-          value={
-            {
-              id: 'journeyId',
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base
-            } as unknown as Journey
-          }
-        >
-          <EditorProvider
-            initialState={{
-              steps: [step0, step1]
-            }}
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyProvider
+            value={
+              {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base
+              } as unknown as Journey
+            }
           >
-            <Canvas />
-          </EditorProvider>
-        </JourneyProvider>
-      </ThemeProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step0, step1]
+              }}
+            >
+              <Canvas />
+            </EditorProvider>
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
     )
     fireEvent.click(getByTestId('step-step0.id'))
     expect(getByTestId('step-step0.id')).toHaveStyle(

@@ -43,9 +43,11 @@ export function Step({
   }
 
   useEffect(() => {
-    void createResponse(blockId)
+    if (wrappers == null) {
+      void createResponse(blockId)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blockId])
+  }, [blockId, wrappers])
 
   return (
     <>
