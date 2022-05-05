@@ -3,7 +3,7 @@ import videojs from 'video.js'
 import { NextImage } from '@core/shared/ui'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import { TreeBlock, useEditor } from '../../..'
+import { TreeBlock } from '../../..'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { ContentOverlay } from './ContentOverlay'
@@ -28,9 +28,6 @@ export function ContainedCover({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const theme = useTheme()
-  const {
-    state: { selectedStep }
-  } = useEditor()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
