@@ -467,12 +467,13 @@ async function getVideo(videoId: string): Promise<Video | undefined> {
 }
 
 async function main(): Promise<void> {
-  try {
+  if (!(await db.collection('videos').exists())) {
     await db.createCollection('videos', { keyOptions: { type: 'uuid' } })
-  } catch {}
-  try {
+  }
+
+  if (!(await db.collection('videoTags').exists())) {
     await db.createCollection('videoTags', { keyOptions: { type: 'uuid' } })
-  } catch {}
+  }
 
   await db.collection('videos').ensureIndex({
     name: 'language_id',

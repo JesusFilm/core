@@ -3,9 +3,9 @@ import { ArangoDB } from './db'
 const db = ArangoDB()
 
 async function main(): Promise<void> {
-  try {
+  if (!(await db.collection('users').exists())) {
     await db.createCollection('users', { keyOptions: { type: 'uuid' } })
-  } catch {}
+  }
   await db.collection('users').ensureIndex({
     type: 'persistent',
     fields: ['email'],

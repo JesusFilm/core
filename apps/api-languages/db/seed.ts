@@ -111,9 +111,9 @@ async function digestMediaLanguageMetadata(
 }
 
 async function main(): Promise<void> {
-  try {
+  if (!(await db.collection('languages').exists())) {
     await db.createCollection('languages', { keyOptions: { type: 'uuid' } })
-  } catch {}
+  }
   const mediaLanguages = await getMediaLanguages()
 
   for (const mediaLanguage of mediaLanguages) {
