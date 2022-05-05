@@ -27,7 +27,7 @@ export interface GetVideoSiblings_episodes_variant {
   hls: string | null;
 }
 
-export interface GetVideoSiblings_episodes_permalinks {
+export interface GetVideoSiblings_episodes_slug {
   __typename: "Translation";
   primary: boolean;
   value: string;
@@ -45,7 +45,10 @@ export interface GetVideoSiblings_episodes {
    * Episodes are child videos, currently only found in a playlist type
    */
   episodeIds: string[];
-  permalinks: GetVideoSiblings_episodes_permalinks[];
+  /**
+   * slug is a permanent link to the video. It should only be appended, not edited or deleted
+   */
+  slug: GetVideoSiblings_episodes_slug[];
 }
 
 export interface GetVideoSiblings {

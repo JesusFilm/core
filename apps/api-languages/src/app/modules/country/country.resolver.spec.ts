@@ -14,7 +14,7 @@ describe('LangaugeResolver', () => {
     name: [{ value: 'United States', languageId: '529', primary: true }],
     population: 500000000,
     continent: [{ value: 'North America', languageId: '529', primary: true }],
-    permalink: [{ value: 'United-States', languageId: '529', primary: true }],
+    slug: [{ value: 'United-States', languageId: '529', primary: true }],
     languageIds: ['529'],
     latitude: 10,
     longitude: -20.1
@@ -25,7 +25,7 @@ describe('LangaugeResolver', () => {
       provide: CountryService,
       useFactory: () => ({
         get: jest.fn(() => country),
-        getCountryByPermalink: jest.fn(() => country),
+        getCountryBySlug: jest.fn(() => country),
         getAll: jest.fn(() => [country, country])
       })
     }
@@ -56,7 +56,7 @@ describe('LangaugeResolver', () => {
 
     it('should return country by slug', async () => {
       expect(await resolver.country(country.id, IdType.slug)).toEqual(country)
-      expect(service.getCountryByPermalink).toHaveBeenCalledWith(country.id)
+      expect(service.getCountryBySlug).toHaveBeenCalledWith(country.id)
     })
   })
 
@@ -74,19 +74,17 @@ describe('LangaugeResolver', () => {
     })
   })
 
-  describe('permalink', () => {
+  describe('slug', () => {
     it('should return translations', () => {
-      expect(resolver.permalink(country)).toEqual(country.permalink)
+      expect(resolver.slug(country)).toEqual(country.slug)
     })
 
     it('should return translations filtered by countryId', () => {
-      expect(resolver.permalink(country, '529')).toEqual([country.permalink[0]])
+      expect(resolver.slug(country, '529')).toEqual([country.slug[0]])
     })
 
     it('should return translations filtered by primary', () => {
-      expect(resolver.permalink(country, undefined, true)).toEqual([
-        country.permalink[0]
-      ])
+      expect(resolver.slug(country, undefined, true)).toEqual([country.slug[0]])
     })
   })
 

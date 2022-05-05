@@ -48,7 +48,7 @@ export const GET_VIDEO = gql`
           primary
           value
         }
-        permalinks {
+        slug {
           primary
           value
         }
@@ -58,7 +58,7 @@ export const GET_VIDEO = gql`
           hls
         }
       }
-      permalinks {
+      slug {
         value
         primary
       }
@@ -85,7 +85,7 @@ export const GET_VIDEO_SIBLINGS = gql`
         hls
       }
       episodeIds
-      permalinks {
+      slug {
         primary
         value
       }

@@ -146,8 +146,12 @@ type Country
   latitude: Float! @join__field(graph: LANGUAGES)
   longitude: Float! @join__field(graph: LANGUAGES)
   name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
-  permalink(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
   population: Int! @join__field(graph: LANGUAGES)
+
+  """
+  slug is a permanent link to the country. It should only be appended, not edited or deleted
+  """
+  slug(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
 }
 
 """DateTime custom scalar"""
@@ -754,9 +758,13 @@ type Video
   image: String @join__field(graph: VIDEOS)
   imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   noIndex: Boolean @join__field(graph: VIDEOS)
-  permalinks: [Translation!]! @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
   seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+
+  """
+  slug is a permanent link to the video. It should only be appended, not edited or deleted
+  """
+  slug: [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)

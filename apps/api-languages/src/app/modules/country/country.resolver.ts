@@ -30,7 +30,7 @@ export class CountryResolver {
   ): Promise<Country> {
     return idType === IdType.databaseId
       ? await this.countryService.get(id)
-      : await this.countryService.getCountryByPermalink(id)
+      : await this.countryService.getCountryBySlug(id)
   }
 
   @ResolveField()
@@ -42,8 +42,8 @@ export class CountryResolver {
   ): void {}
 
   @ResolveField()
-  @TranslationField('permalink')
-  permalink(
+  @TranslationField('slug')
+  slug(
     @Parent() country,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean

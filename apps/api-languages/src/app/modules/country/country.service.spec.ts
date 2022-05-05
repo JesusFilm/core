@@ -10,7 +10,7 @@ const country = {
   name: [{ value: 'United States', languageId: '529', primary: true }],
   population: 500000000,
   continent: [{ value: 'North America', languageId: '529', primary: true }],
-  permalink: [{ value: 'United-States', languageId: '529', primary: true }],
+  slug: [{ value: 'United-States', languageId: '529', primary: true }],
   languageIds: ['529'],
   latitude: 10,
   longitude: -20.1
@@ -38,19 +38,19 @@ describe('CountryService', () => {
     expect(service).toBeDefined()
   })
 
-  it('should query by permalink', async () => {
+  it('should query by slug', async () => {
     db.query.mockImplementationOnce(async (q) => {
       const { query, bindVars } = q as unknown as AqlQuery
       expect(query).toEqual(`
     FOR item IN 
-      FILTER @value0 IN item.permalink[*].value
+      FILTER @value0 IN item.slug[*].value
       LIMIT 1
       RETURN {
         _key: item._key,
         name: item.name,
         population: item.population,
         continent: item.continent,
-        permalink: item.permalink,
+        slug: item.slug,
         languageIds: item.languageIds,
         latitude: item.latitude,
         longitude: item.longitude
@@ -61,8 +61,6 @@ describe('CountryService', () => {
       })
       return { next: () => country } as unknown as ArrayCursor
     })
-    expect(await service.getCountryByPermalink('United-States')).toEqual(
-      country
-    )
+    expect(await service.getCountryBySlug('United-States')).toEqual(country)
   })
 })

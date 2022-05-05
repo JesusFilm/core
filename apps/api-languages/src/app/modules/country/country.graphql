@@ -8,7 +8,10 @@ type Country @key(fields: "id") {
   name(languageId: ID, primary: Boolean): [Translation!]!
   population: Int!
   continent(languageId: ID, primary: Boolean): [Translation!]!
-  permalink(languageId: ID, primary: Boolean): [Translation!]!
+  """
+   slug is a permanent link to the country. It should only be appended, not edited or deleted
+  """
+  slug(languageId: ID, primary: Boolean): [Translation!]!
   languages: [Language!]!
   latitude: Float!
   longitude: Float!
