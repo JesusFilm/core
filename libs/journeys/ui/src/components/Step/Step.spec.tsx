@@ -77,6 +77,44 @@ describe('Step', () => {
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
+  it('should not create a stepViewEvent if there are wrappers', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        stepViewEventCreate: {
+          id: 'uuid',
+          __typename: 'StepViewEvent'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: STEP_VIEW_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'Step1'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <Step
+          {...block}
+          wrappers={{
+            Wrapper: ({ children }) => <div>{children}</div>
+          }}
+          uuid={() => 'uuid'}
+        />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
 
   it('should render blocks', () => {
     const { getByText } = render(
