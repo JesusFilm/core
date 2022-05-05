@@ -284,6 +284,11 @@ export interface StepBlockUpdateInput {
   nextBlockId?: string | null;
 }
 
+export interface StepViewEventCreateInput {
+  blockId: string;
+  id?: string | null;
+}
+
 export interface TypographyBlockCreateInput {
   align?: TypographyAlign | null;
   color?: TypographyColor | null;

@@ -144,6 +144,11 @@ export interface SignUpResponseCreateInput {
   name?: string | null;
 }
 
+export interface StepViewEventCreateInput {
+  blockId: string;
+  id?: string | null;
+}
+
 export interface VideoResponseCreateInput {
   blockId?: string | null;
   id?: string | null;
