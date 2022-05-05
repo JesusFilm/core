@@ -32,13 +32,7 @@ export function Step({
   async function createResponse(blockId: string): Promise<void> {
     const id = uuid()
     await stepViewEventCreate({
-      variables: { input: { id, blockId } },
-      optimisticResponse: {
-        stepViewEventCreate: {
-          id,
-          __typename: 'StepViewEvent'
-        }
-      }
+      variables: { input: { id, blockId } }
     })
   }
 
