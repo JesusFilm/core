@@ -46,7 +46,7 @@ const blocks: GetJourney_journey_blocks[] = [
     __typename: 'CardBlock',
     parentBlockId: 'step0.id',
     parentOrder: 0,
-    coverBlockId: 'image0.id',
+    coverBlockId: 'video0.id',
     backgroundColor: null,
     themeMode: null,
     themeName: null,
@@ -100,13 +100,45 @@ const blocks: GetJourney_journey_blocks[] = [
     iconSize: IconSize.md
   },
   {
+    __typename: 'VideoBlock',
+    id: 'video0.id',
+    parentBlockId: 'card0.id',
+    parentOrder: 0,
+    autoplay: true,
+    muted: true,
+    videoId: '2_0-FallingPlates',
+    videoVariantLanguageId: '529',
+    video: {
+      __typename: 'Video',
+      id: '2_0-FallingPlates',
+      title: [
+        {
+          __typename: 'Translation',
+          value: 'FallingPlates'
+        }
+      ],
+      image:
+        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+      variant: {
+        __typename: 'VideoVariant',
+        id: '2_0-FallingPlates-529',
+        hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+      }
+    },
+    startAt: null,
+    endAt: null,
+    fullsize: null,
+    action: null,
+    posterBlockId: 'image0.id'
+  },
+  {
     id: 'image0.id',
     __typename: 'ImageBlock',
     src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
     width: 1920,
     height: 1080,
     alt: 'random image from unsplash',
-    parentBlockId: 'card0.id',
+    parentBlockId: 'video0.id',
     parentOrder: 4,
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
   },
