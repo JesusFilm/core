@@ -260,8 +260,7 @@ function digestTranslatedCountries(
       if (country.name[0].value !== '') existing.name.push(country.name[0])
       if (country.continent[0].value !== '')
         existing.continent.push(country.continent[0])
-      if (country.slug[0].value !== '')
-        existing.slug.push(country.slug[0])
+      if (country.slug[0].value !== '') existing.slug.push(country.slug[0])
     }
   })
 
@@ -288,6 +287,14 @@ async function main(): Promise<void> {
   try {
     await db.createCollection('countries', { keyOptions: { type: 'uuid' } })
   } catch {}
+
+  await db.collection('countries').ensureIndex({
+    name: 'slug',
+    type: 'persistent',
+    fields: ['slug[*].value'],
+    unique: true
+  })
+
   const mediaLanguages = await getMediaLanguages()
 
   for (const mediaLanguage of mediaLanguages) {
