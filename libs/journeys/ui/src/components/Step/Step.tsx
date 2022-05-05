@@ -1,14 +1,14 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock } from '../..'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { StepFields } from './__generated__/StepFields'
-import { StepResponseCreate } from './__generated__/StepResponseCreate'
+import { StepViewEventCreate } from './__generated__/StepViewEventCreate'
 
-export const STEP_RESPONSE_CREATE = gql`
-  mutation StepResponseCreate($input: StepResponseCreateInput!) {
-    stepResponseCreate(input: $input) {
+export const STEP_VIEW_EVENT_CREATE = gql`
+  mutation StepViewEventCreate($input: StepViewEventCreateInput!) {
+    stepViewEventCreate(input: $input) {
       id
     }
   }
@@ -19,21 +19,27 @@ interface StepProps extends TreeBlock<StepFields> {
 }
 
 export function Step({ id, children, wrappers }: StepProps): ReactElement {
-  const [stepResponseCreate] =
-    useMutation<StepResponseCreate>(STEP_RESPONSE_CREATE)
-  const uuid = uuidv4()
+  const [stepViewEventCreate] = useMutation<StepViewEventCreate>(
+    STEP_VIEW_EVENT_CREATE
+  )
 
-  async function createResponse(): Promise<void> {
-    await stepResponseCreate({
-      variables: { input: { id: uuid, blockId: id } },
+  async function createResponse(blockId: string): Promise<void> {
+    const uuid = uuidv4()
+    await stepViewEventCreate({
+      variables: { input: { id: uuid, blockId } },
       optimisticResponse: {
-        stepResponseCreate: {
+        stepViewEventCreate: {
           id: uuid,
-          __typename: 'StepResponse'
+          __typename: 'StepViewEvent'
         }
       }
     })
   }
+
+  useEffect(() => {
+    void createResponse(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id])
 
   return (
     <>
