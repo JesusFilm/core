@@ -46,23 +46,16 @@ export function RadioQuestion({
 
   const handleClick = async (radioOptionBlockId: string): Promise<void> => {
     const id = uuid()
-    const { data } = await radioQuestionSubmissionEventCreate({
+    void radioQuestionSubmissionEventCreate({
       variables: {
         input: {
           id,
           blockId,
           radioOptionBlockId
         }
-      },
-      optimisticResponse: {
-        radioQuestionSubmissionEventCreate: {
-          id,
-          __typename: 'RadioQuestionSubmissionEvent',
-          radioOptionBlockId
-        }
       }
     })
-    data != null && setSelectedId(radioOptionBlockId)
+    setSelectedId(radioOptionBlockId)
   }
 
   const options = children?.map(
