@@ -10,13 +10,15 @@ import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock, handleAction, useEditor } from '../..'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
-import { SignUpResponseCreate } from './__generated__/SignUpResponseCreate'
+import { SignUpSubmissionEventCreate } from './__generated__/SignUpSubmissionEventCreate'
 import { SignUpFields } from './__generated__/SignUpFields'
 import { TextField } from './TextField'
 
-export const SIGN_UP_RESPONSE_CREATE = gql`
-  mutation SignUpResponseCreate($input: SignUpResponseCreateInput!) {
-    signUpResponseCreate(input: $input) {
+export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
+  mutation SignUpSubmissionEventCreate(
+    $input: SignUpSubmissionEventCreateInput!
+  ) {
+    signUpSubmissionEventCreate(input: $input) {
       id
       name
       email
@@ -51,9 +53,8 @@ export const SignUp = ({
     | undefined
 
   const router = useRouter()
-  const [signUpResponseCreate, { loading }] = useMutation<SignUpResponseCreate>(
-    SIGN_UP_RESPONSE_CREATE
-  )
+  const [signUpSubmissionEventCreate, { loading }] =
+    useMutation<SignUpSubmissionEventCreate>(SIGN_UP_SUBMISSION_EVENT_CREATE)
 
   const initialValues: SignUpFormValues = { name: '', email: '' }
   const signUpSchema = object().shape({
@@ -68,19 +69,11 @@ export const SignUp = ({
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
     const id = uuid()
-    await signUpResponseCreate({
+    await signUpSubmissionEventCreate({
       variables: {
         input: {
           id,
           blockId,
-          name: values.name,
-          email: values.email
-        }
-      },
-      optimisticResponse: {
-        signUpResponseCreate: {
-          id,
-          __typename: 'SignUpResponse',
           name: values.name,
           email: values.email
         }
