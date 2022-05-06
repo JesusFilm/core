@@ -1,2 +1,2 @@
-export { Video, VIDEO_RESPONSE_CREATE } from './Video'
+export { Video, VIDEO_PLAY_EVENT_CREATE } from './Video'
 export { VideoTrigger } from './VideoTrigger'
