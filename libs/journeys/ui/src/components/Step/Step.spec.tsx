@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock } from '../..'
 import { StepFields } from './__generated__/StepFields'
 import { Step } from '.'
@@ -44,7 +45,11 @@ const block: TreeBlock<StepFields> = {
 
 describe('Step', () => {
   it('should render blocks', () => {
-    const { getByText } = render(<Step {...block} />)
+    const { getByText } = render(
+      <MockedProvider>
+        <Step {...block} />
+      </MockedProvider>
+    )
     expect(getByText('Button 1')).toBeInTheDocument()
     expect(getByText('Button 2')).toBeInTheDocument()
   })
