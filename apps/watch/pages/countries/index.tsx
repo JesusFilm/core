@@ -24,7 +24,7 @@ function CountriesPage(): ReactElement {
       <Box>
         {data?.countries.map((country, index) => (
           <div key={index}>
-            <Link href={`/countries/${country.permalink[0]?.value}`}>
+            <Link href={`/countries/${country.slug[0]?.value}`}>
               {country.name[0]?.value}
             </Link>
           </div>
