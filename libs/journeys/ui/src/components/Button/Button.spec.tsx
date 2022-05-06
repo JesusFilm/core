@@ -1,4 +1,5 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
 import {
   ButtonVariant,
   ButtonColor,
@@ -9,7 +10,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { handleAction, TreeBlock } from '../..'
 import { ButtonFields } from './__generated__/ButtonFields'
-import { Button } from '.'
+import { Button, BUTTON_CLICK_EVENT_CREATE } from './Button'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -44,8 +45,45 @@ const block: TreeBlock<ButtonFields> = {
 }
 
 describe('Button', () => {
+  it('should creare a buttonClickEvent onClick', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        buttonClickEventCreate: {
+          __typename: 'ButtonClickEvent',
+          id: 'uuiid'
+        }
+      }
+    }))
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_CLICK_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <Button {...block} uuid={() => 'uuid'} />
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(result).toBeCalled())
+  })
+
   it('should render the button successfully', () => {
-    const { getByText, getByRole } = render(<Button {...block} />)
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <Button {...block} />
+      </MockedProvider>
+    )
     expect(getByRole('button')).toHaveClass('MuiButton-root')
     expect(getByRole('button')).toHaveClass('MuiButton-contained')
     expect(getByRole('button')).toHaveClass('MuiButton-containedSizeSmall')
@@ -54,18 +92,28 @@ describe('Button', () => {
 
   it('should render with the contained value', () => {
     const { getByRole } = render(
-      <Button {...block} buttonVariant={ButtonVariant.contained} />
+      <MockedProvider>
+        <Button {...block} buttonVariant={ButtonVariant.contained} />
+      </MockedProvider>
     )
     expect(getByRole('button')).toHaveClass('MuiButton-contained')
   })
 
   it('should render with the size value', () => {
-    const { getByRole } = render(<Button {...block} size={ButtonSize.small} />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <Button {...block} size={ButtonSize.small} />
+      </MockedProvider>
+    )
     expect(getByRole('button')).toHaveClass('MuiButton-containedSizeSmall')
   })
 
   it('should render the default color value', () => {
-    const { getByRole } = render(<Button {...block} buttonColor={null} />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <Button {...block} buttonColor={null} />
+      </MockedProvider>
+    )
     expect(getByRole('button')).toHaveClass('MuiButton-containedPrimary')
   })
 
@@ -86,7 +134,11 @@ describe('Button', () => {
         }
       ]
     }
-    const { getByTestId } = render(<Button {...iconBlock} />)
+    const { getByTestId } = render(
+      <MockedProvider>
+        <Button {...iconBlock} />
+      </MockedProvider>
+    )
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
     expect(getByTestId('CheckCircleRoundedIcon').parentElement).toHaveClass(
       'MuiButton-startIcon'
@@ -109,7 +161,11 @@ describe('Button', () => {
         }
       ]
     }
-    const { getByTestId } = render(<Button {...iconBlock} />)
+    const { getByTestId } = render(
+      <MockedProvider>
+        <Button {...iconBlock} />
+      </MockedProvider>
+    )
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
     expect(getByTestId('CheckCircleRoundedIcon').parentElement).toHaveClass(
       'MuiButton-endIcon'
@@ -118,15 +174,17 @@ describe('Button', () => {
 
   it('should call actionHandler on click', () => {
     const { getByRole } = render(
-      <Button
-        {...block}
-        action={{
-          __typename: 'NavigateToBlockAction',
-          parentBlockId: block.id,
-          gtmEventName: 'gtmEventName',
-          blockId: 'def'
-        }}
-      />
+      <MockedProvider>
+        <Button
+          {...block}
+          action={{
+            __typename: 'NavigateToBlockAction',
+            parentBlockId: block.id,
+            gtmEventName: 'gtmEventName',
+            blockId: 'def'
+          }}
+        />
+      </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
     expect(handleAction).toBeCalledWith(
