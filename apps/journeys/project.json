@@ -4,6 +4,19 @@
   "projectType": "application",
   "targets": {
     "build": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "GITOPS_SECRETS_MASTER_KEY=\"$(node -e 'process.stdout.write(require(\"crypto\").randomBytes(16).toString(\"hex\"))')\" DOPPLER_TOKEN=\"$(doppler configs tokens create temp --max-age 1m --plain)\" LIBS_SECRETS_PATH=apps/journeys/src/libs/secrets.js node ./tools/scripts/encrypt-secrets.js"
+          },
+          {
+            "command": "nx next-build journeys"
+          }
+        ]
+      }
+    },
+    "next-build": {
       "executor": "@nrwl/next:build",
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -27,26 +40,6 @@
           "buildTarget": "journeys:build:production",
           "dev": false
         }
-      }
-    },
-    "serve-all": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "nx serve api-journeys"
-          },
-          {
-            "command": "nx serve api-users"
-          },
-          {
-            "command": "nx serve api-gateway"
-          },
-          {
-            "command": "nx serve journeys"
-          }
-        ],
-        "parallel": true
       }
     },
     "export": {
@@ -103,6 +96,16 @@
           },
           {
             "command": "npx apollo client:codegen --config apps/journeys/apollo.config.js --target typescript --outputFlat apps/journeys/__generated__"
+          }
+        ]
+      }
+    },
+    "encrypt-secrets": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "GITOPS_SECRETS_MASTER_KEY=\"$(node -e 'process.stdout.write(require(\"crypto\").randomBytes(16).toString(\"hex\"))')\" DOPPLER_TOKEN=\"$(doppler configs tokens create temp --max-age 1m --plain)\" LIBS_SECRETS_PATH=apps/journeys/src/libs/secrets.js node ./tools/scripts/encrypt-secrets.js"
           }
         ]
       }

@@ -12,8 +12,10 @@ import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui'
 import { createApolloClient } from '../src/libs/client'
 import { firebaseClient } from '../src/libs/firebaseClient'
+import { loadSecrets } from '../src/libs/secrets'
 
 const clientSideEmotionCache = createEmotionCache()
+loadSecrets().populateEnv()
 
 export default function JourneysApp({
   Component,

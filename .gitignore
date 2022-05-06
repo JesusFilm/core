@@ -47,3 +47,6 @@ Thumbs.db
 
 # nx generated files
 migrations.json
+
+# doppler created files
+**/secrets.js
