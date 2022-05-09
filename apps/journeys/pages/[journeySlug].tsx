@@ -85,18 +85,37 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
       query GetJourney($id: ID!) {
         journey(id: $id, idType: slug) {
           id
-          themeName
-          themeMode
+          slug
           title
           description
-          slug
+          status
+          language {
+            id
+            name {
+              value
+              primary
+            }
+          }
+          createdAt
+          publishedAt
+          themeName
+          themeMode
           seoTitle
           seoDescription
+          blocks {
+            ...BlockFields
+          }
           primaryImageBlock {
             ...ImageFields
           }
-          blocks {
-            ...BlockFields
+          userJourneys {
+            id
+            user {
+              id
+              firstName
+              lastName
+              imageUrl
+            }
           }
         }
       }
