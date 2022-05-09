@@ -83,6 +83,22 @@ export function SelectableWrapper({
     e.stopPropagation()
   }
 
+  const videoOutlineStyles =
+    selectedBlock?.__typename === 'VideoBlock'
+      ? {
+          width: '100%',
+          height: '100%',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          outlineOffset: '-3px',
+          borderRadius: '16px',
+          '&:first-child': {
+            '& > *': { zIndex: -1 }
+          }
+        }
+      : {}
+
   return isSelectable ? (
     <Box
       data-testid={`selected-${block.id}`}
@@ -101,7 +117,8 @@ export function SelectableWrapper({
         borderRadius: block.__typename === 'RadioOptionBlock' ? '8px' : '4px',
         outline: selectedBlock?.id === block.id ? '3px solid #C52D3A' : 'none',
         outlineOffset: '5px',
-        zIndex: selectedBlock?.id === block.id ? 1 : 0
+        zIndex: selectedBlock?.id === block.id ? 1 : 0,
+        ...videoOutlineStyles
       }}
       onClickCapture={handleSelectBlock}
       onClick={blockNonSelectionEvents}

@@ -11,8 +11,6 @@
     "journeys-admin": "apps/journeys-admin",
     "journeys-admin-e2e": "apps/journeys-admin-e2e",
     "journeys-e2e": "apps/journeys-e2e",
-    "watch": "apps/watch",
-    "watch-e2e": "apps/watch-e2e",
     "journeys-ui": "libs/journeys/ui",
     "nest-database": "libs/nest/database",
     "nest-decorators": "libs/nest/decorators",
@@ -20,7 +18,9 @@
     "shared-storybook": "libs/shared/storybook",
     "shared-ui": "libs/shared/ui",
     "shared-util-graphql": "libs/shared/util-graphql",
+    "watch": "apps/watch",
     "watch-admin": "apps/watch-admin",
-    "watch-admin-e2e": "apps/watch-admin-e2e"
+    "watch-admin-e2e": "apps/watch-admin-e2e",
+    "watch-e2e": "apps/watch-e2e"
   }
 }

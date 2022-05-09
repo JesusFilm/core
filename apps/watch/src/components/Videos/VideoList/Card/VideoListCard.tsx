@@ -37,9 +37,7 @@ export function VideoListCard({
         )}
         {video != null && (
           <Link
-            href={`/${
-              video.permalinks.find((link) => link.primary)?.value ?? ''
-            }`}
+            href={`/${video.slug.find((link) => link.primary)?.value ?? ''}`}
             passHref={true}
           >
             <CardActionArea>
