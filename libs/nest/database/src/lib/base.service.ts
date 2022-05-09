@@ -36,6 +36,15 @@ export abstract class BaseService {
   }
 
   @KeyAsId()
+  async getByIds<T>(_keys: string[]): Promise<T[]> {
+    const rst = await this.db.query(aql`
+    FOR item IN ${this.collection}
+      FILTER item._key IN ${_keys}
+      RETURN item`)
+    return await rst.all()
+  }
+
+  @KeyAsId()
   async update<T, T2>(_key: string, body: T2): Promise<T> {
     const result = await this.collection.update(_key, body, { returnNew: true })
     return result.new

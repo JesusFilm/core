@@ -135,6 +135,25 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
+type Country
+  @join__owner(graph: LANGUAGES)
+  @join__type(graph: LANGUAGES, key: "id")
+{
+  continent(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  id: ID! @join__field(graph: LANGUAGES)
+  image: String! @join__field(graph: LANGUAGES)
+  languages: [Language!]! @join__field(graph: LANGUAGES)
+  latitude: Float! @join__field(graph: LANGUAGES)
+  longitude: Float! @join__field(graph: LANGUAGES)
+  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  population: Int! @join__field(graph: LANGUAGES)
+
+  """
+  slug is a permanent link to the country. It should only be appended, not edited or deleted
+  """
+  slug(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+}
+
 """DateTime custom scalar"""
 scalar DateTime
 
@@ -480,6 +499,8 @@ input NavigateToJourneyActionInput {
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   adminJourneys: [Journey!]! @join__field(graph: JOURNEYS)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
+  country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
@@ -813,9 +834,13 @@ type Video
   image: String @join__field(graph: VIDEOS)
   imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   noIndex: Boolean @join__field(graph: VIDEOS)
-  permalinks: [Translation!]! @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
   seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+
+  """
+  slug is a permanent link to the video. It should only be appended, not edited or deleted
+  """
+  slug: [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
