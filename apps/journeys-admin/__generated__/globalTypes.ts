@@ -249,7 +249,6 @@ export interface RadioOptionBlockUpdateInput {
 export interface RadioQuestionBlockCreateInput {
   id?: string | null;
   journeyId: string;
-  label: string;
   parentBlockId: string;
 }
 

@@ -131,8 +131,7 @@ export function NewRadioQuestionButton(): ReactElement {
           input: {
             journeyId: journey.id,
             id,
-            parentBlockId: card.id,
-            label: ''
+            parentBlockId: card.id
           },
           radioOptionBlockCreateInput1: {
             journeyId: journey.id,

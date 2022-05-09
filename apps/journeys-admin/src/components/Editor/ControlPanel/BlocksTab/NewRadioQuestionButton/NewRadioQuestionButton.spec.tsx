@@ -74,9 +74,7 @@ describe('RadioQuestion', () => {
           id: 'uuid',
           parentBlockId: 'cardId',
           parentOrder: 2,
-          journeyId: 'journeyId',
-          label: '',
-          description: null
+          journeyId: 'journeyId'
         },
         radioOption1: {
           __typename: 'RadioOptionBlock',
@@ -146,7 +144,6 @@ describe('RadioQuestion', () => {
                   journeyId: 'journeyId',
                   id: 'uuid',
                   parentBlockId: 'cardId',
-                  label: ''
                 },
                 radioOptionBlockCreateInput1: {
                   journeyId: 'journeyId',
@@ -224,9 +221,7 @@ describe('RadioQuestion', () => {
           id: 'uuid',
           parentBlockId: 'cardId',
           parentOrder: 2,
-          journeyId: 'journeyId',
-          label: '',
-          description: null
+          journeyId: 'journeyId'
         },
         radioOption1: {
           __typename: 'RadioOptionBlock',
@@ -295,8 +290,7 @@ describe('RadioQuestion', () => {
                 input: {
                   journeyId: 'journeyId',
                   id: 'uuid',
-                  parentBlockId: 'cardId',
-                  label: ''
+                  parentBlockId: 'cardId'
                 },
                 radioOptionBlockCreateInput1: {
                   journeyId: 'journeyId',

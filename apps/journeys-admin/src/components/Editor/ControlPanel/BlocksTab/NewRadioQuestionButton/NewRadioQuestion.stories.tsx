@@ -25,7 +25,6 @@ export const Default: Story = () => {
                 journeyId: 'journeyId',
                 id: 'uuid',
                 parentBlockId: 'cardId',
-                label: 'Your Question Here?'
               },
               radioOptionBlockCreateInput1: {
                 journeyId: 'journeyId',
@@ -46,8 +45,6 @@ export const Default: Story = () => {
                 id: 'uuid',
                 parentBlockId: 'cardId',
                 journeyId: 'journeyId',
-                label: 'Your Question Here?',
-                description: null
               },
               radioOption1: {
                 __typename: 'RadioOptionBlock',
