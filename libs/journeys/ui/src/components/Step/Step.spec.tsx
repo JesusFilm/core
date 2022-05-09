@@ -1,9 +1,17 @@
 import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock } from '../..'
 import { StepFields } from './__generated__/StepFields'
 import { STEP_VIEW_EVENT_CREATE } from './Step'
 import { Step } from '.'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 const block: TreeBlock<StepFields> = {
   __typename: 'StepBlock',
@@ -46,6 +54,7 @@ const block: TreeBlock<StepFields> = {
 
 describe('Step', () => {
   it('should create a stepViewEvent', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
     const result = jest.fn(() => ({
       data: {
         stepViewEventCreate: {
@@ -72,7 +81,7 @@ describe('Step', () => {
           }
         ]}
       >
-        <Step {...block} uuid={() => 'uuid'} />
+        <Step {...block} />
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -109,7 +118,6 @@ describe('Step', () => {
           wrappers={{
             Wrapper: ({ children }) => <div>{children}</div>
           }}
-          uuid={() => 'uuid'}
         />
       </MockedProvider>
     )
