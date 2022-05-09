@@ -29,19 +29,14 @@ export function Step({
     STEP_VIEW_EVENT_CREATE
   )
 
-  async function createResponse(blockId: string): Promise<void> {
-    const id = uuid()
-    await stepViewEventCreate({
-      variables: { input: { id, blockId } }
-    })
-  }
-
   useEffect(() => {
     if (wrappers == null) {
-      void createResponse(blockId)
+      const id = uuid()
+      void stepViewEventCreate({
+        variables: { input: { id, blockId } }
+      })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blockId, wrappers])
+  }, [blockId, wrappers, uuid, stepViewEventCreate])
 
   return (
     <>
