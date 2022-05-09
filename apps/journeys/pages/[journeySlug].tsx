@@ -2,7 +2,12 @@ import { ReactElement } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui'
-import { BLOCK_FIELDS, IMAGE_FIELDS, transformer } from '@core/journeys/ui'
+import {
+  BLOCK_FIELDS,
+  IMAGE_FIELDS,
+  transformer,
+  JourneyProvider
+} from '@core/journeys/ui'
 import { NextSeo } from 'next-seo'
 import { Conductor } from '../src/components/Conductor'
 import { createApolloClient } from '../src/libs/client'
@@ -55,14 +60,16 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
-      <ThemeProvider
-        themeName={journey.themeName}
-        themeMode={journey.themeMode}
-      >
-        {journey.blocks != null && (
-          <Conductor blocks={transformer(journey.blocks)} />
-        )}
-      </ThemeProvider>
+      <JourneyProvider value={journey}>
+        <ThemeProvider
+          themeName={journey.themeName}
+          themeMode={journey.themeMode}
+        >
+          {journey.blocks != null && (
+            <Conductor blocks={transformer(journey.blocks)} />
+          )}
+        </ThemeProvider>
+      </JourneyProvider>
     </>
   )
 }
