@@ -42,7 +42,7 @@ export function RadioQuestion({
     useMutation<RadioQuestionSubmissionEventCreate>(
       RADIO_QUESTION_SUBMISSION_EVENT_CREATE
     )
-  const [selectedId, setSelectedId] = useState('')
+  const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const handleClick = async (radioOptionBlockId: string): Promise<void> => {
     const id = uuid()
