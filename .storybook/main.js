@@ -52,13 +52,7 @@ const affectedStories = () => {
 
   const stories = affectedProjects
     .map((project) => {
-      if (
-        project === 'shared-storybook' ||
-        project === '' ||
-        project.includes('api-') ||
-        project.includes('-e2e')
-      )
-        return []
+      if (project === '') return []
       return storiesForProject[project] ?? []
     })
     .flat()

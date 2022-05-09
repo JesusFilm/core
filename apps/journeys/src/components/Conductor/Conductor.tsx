@@ -17,6 +17,7 @@ import {
   TreeBlock,
   useBlocks
 } from '@core/journeys/ui'
+// Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
 import { BlockFields_CardBlock as CardBlock } from '../../../__generated__/BlockFields'
 import { JourneyProgress } from '../JourneyProgress'
