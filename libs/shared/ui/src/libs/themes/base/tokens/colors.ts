@@ -13,46 +13,11 @@ const palette = {
 }
 
 declare module '@mui/material/styles/createPalette' {
-  export interface CardPaletteColorOptions {
-    one?: string
-    two?: string
-    three?: string
-    four?: string
-    five?: string
-    six?: string
-    seven?: string
-    eight?: string
-    nine?: string
-    ten?: string
-    eleven?: string
-    twelve?: string
-    thirteen?: string
-    fourteen?: string
-    fifteen?: string
-  }
-  export interface CardPaletteColor {
-    one: string
-    red: string
-    three: string
-    four: string
-    five: string
-    six: string
-    seven: string
-    eight: string
-    nine: string
-    ten: string
-    eleven: string
-    twelve: string
-    thirteen: string
-    fourteen: string
-    fifteen: string
-  }
-
   interface PaletteOptions {
-    card?: CardPaletteColorOptions
+    cardBackground?: string[]
   }
   interface Palette {
-    card: CardPaletteColor
+    cardBackground: string[]
   }
 }
 
@@ -91,24 +56,23 @@ export const baseColorsLight = (): Required<
         disabled: palette[700],
         disabledBackground: primary.main
       },
-      // this must only be used for background color for cards
-      card: {
-        one: '#FFCDD2',
-        two: '#F48FB1',
-        three: '#CE93D8',
-        four: '#B39DDB',
-        five: '#9FA8DA',
-        six: '#90CAF9',
-        seven: '#81D4FA',
-        eight: '#80DEEA',
-        nine: '#80CBC4',
-        ten: '#C8E6C9',
-        eleven: '#C5E1A5',
-        twelve: '#D7CCC8',
-        thirteen: '#E0E0E0',
-        fourteen: '#B0BEC5',
-        fifteen: '#FEFEFE'
-      }
+      cardBackground: [
+        '#FFCDD2',
+        '#F48FB1',
+        '#CE93D8',
+        '#B39DDB',
+        '#9FA8DA',
+        '#90CAF9',
+        '#81D4FA',
+        '#80DEEA',
+        '#80CBC4',
+        '#C8E6C9',
+        '#C5E1A5',
+        '#D7CCC8',
+        '#E0E0E0',
+        '#B0BEC5',
+        '#FEFEFE'
+      ]
     },
     components: {
       MuiButton: {
@@ -182,24 +146,23 @@ export const baseColorsDark = (): Required<
         disabled: palette[300],
         disabledBackground: primary.main
       },
-      // this must only be used for background color for cards
-      card: {
-        one: '#C62828',
-        two: '#AD1457',
-        three: '#6A1B9A',
-        four: '#4527A0',
-        five: '#283593',
-        six: '#1565C0',
-        seven: '#0277BD',
-        eight: '#006064',
-        nine: '#00695C',
-        ten: '#2E7D32',
-        eleven: '#33691E',
-        twelve: '#4E342E',
-        thirteen: '#424242',
-        fourteen: '#37474F',
-        fifteen: '#30313D'
-      }
+      cardBackground: [
+        '#C62828',
+        '#AD1457',
+        '#6A1B9A',
+        '#4527A0',
+        '#283593',
+        '#1565C0',
+        '#0277BD',
+        '#006064',
+        '#00695C',
+        '#2E7D32',
+        '#33691E',
+        '#4E342E',
+        '#424242',
+        '#37474F',
+        '#30313D'
+      ]
     },
     components: {
       MuiButton: {

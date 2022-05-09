@@ -80,10 +80,10 @@ describe('BackgroundColor', () => {
     expect(getByRole('textbox')).toHaveValue('#FEFEFE')
 
     // Palette picker
-    expect(getAllByTestId('#FEFEFE')[0].parentElement).toHaveStyle({
+    expect(getAllByTestId('15')[0].parentElement).toHaveStyle({
       outline: '2px solid #C52D3A'
     })
-    expect(getAllByTestId('#FEFEFE')[0]).toHaveStyle({
+    expect(getAllByTestId('15')[1]).toHaveStyle({
       backgroundColor: '#FEFEFE'
     })
 
@@ -117,7 +117,7 @@ describe('BackgroundColor', () => {
                 id: 'card1.id',
                 journeyId: 'journeyId',
                 input: {
-                  backgroundColor: '#B0BEC5'
+                  backgroundColor: '14'
                 }
               }
             },
@@ -134,7 +134,7 @@ describe('BackgroundColor', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByTestId('#B0BEC5')[0])
+    fireEvent.click(getAllByTestId('14')[0])
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

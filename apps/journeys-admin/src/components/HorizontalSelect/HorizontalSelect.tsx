@@ -16,6 +16,7 @@ export interface HorizontalSelectProps {
   id?: string
   children: ReactNode
   sx?: SxProps<Theme>
+  colorIndex?: number
   footer?: ReactNode
 }
 
@@ -23,6 +24,7 @@ export function HorizontalSelect({
   children,
   id,
   onChange,
+  colorIndex,
   sx,
   footer
 }: HorizontalSelectProps): ReactElement {
@@ -58,7 +60,8 @@ export function HorizontalSelect({
                 transition: '0.2s border-color ease-out',
                 position: 'relative',
                 outline: (theme) =>
-                  id === child.props.id
+                  id === child.props.id ||
+                  colorIndex?.toString() === child.props.id
                     ? `2px solid ${theme.palette.primary.main} `
                     : '2px solid transparent',
                 border: '3px solid transparent',

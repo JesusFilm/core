@@ -173,7 +173,7 @@ describe('CardBlock', () => {
     expect(queryByText('How did we get here?')).toBeInTheDocument()
   })
 
-  it('should render contained cover with image cover', () => {
+  it('should render contained cover with image cover', async () => {
     const { queryByTestId, queryAllByText } = render(
       <Card
         {...{ ...block, children: [...block.children, imageBlock] }}

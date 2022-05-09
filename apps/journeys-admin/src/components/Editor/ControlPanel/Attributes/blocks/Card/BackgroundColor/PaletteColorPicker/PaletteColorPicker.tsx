@@ -4,21 +4,31 @@ import { Swatch } from '../Swatch'
 
 interface PaletteColorPickerProps {
   selectedColor: string
-  colors: any
+  colors: string[]
+  colorIndex?: number
   onChange: (color: string) => void
 }
 
 export function PaletteColorPicker({
   selectedColor,
   colors,
+  colorIndex,
   onChange
 }: PaletteColorPickerProps): ReactElement {
-  const cardColors: string[] = Object.values(colors)
-
   return (
-    <HorizontalSelect onChange={onChange} id={selectedColor}>
-      {cardColors.map((color) => {
-        return <Swatch id={color} key={`palette-${color}`} color={color} />
+    <HorizontalSelect
+      onChange={onChange}
+      colorIndex={colorIndex}
+      id={selectedColor}
+    >
+      {colors.map((color, index) => {
+        return (
+          <Swatch
+            id={(index + 1).toString()}
+            key={`palette-${color}`}
+            color={color}
+          />
+        )
       })}
     </HorizontalSelect>
   )

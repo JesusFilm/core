@@ -55,7 +55,10 @@ export function BackgroundColor(): ReactElement {
     themes[cardBlock?.themeName ?? journey?.themeName ?? 'base'][
       cardBlock?.themeMode ?? journey?.themeMode ?? 'dark'
     ]
-
+  const cardPalette = cardTheme.palette.cardBackground
+  const colorIndex = parseInt(
+    cardBlock?.backgroundColor != null ? cardBlock.backgroundColor : ''
+  )
   const [tabValue, setTabValue] = useState(0)
   const [selectedColor, setSelectedColor] = useState(
     cardBlock?.backgroundColor ?? cardTheme.palette.background.paper
@@ -111,10 +114,16 @@ export function BackgroundColor(): ReactElement {
     }
   }, [debouncedColorChange])
 
+  useEffect(() => {
+    if (colorIndex > 0 && colorIndex <= cardPalette.length + 1)
+      setSelectedColor(cardPalette[colorIndex - 1])
+  }, [colorIndex, cardBlock, cardPalette])
+
   const palettePicker = (
     <PaletteColorPicker
       selectedColor={selectedColor}
-      colors={cardTheme.palette.card}
+      colorIndex={colorIndex}
+      colors={cardPalette}
       onChange={handleColorChange}
     />
   )

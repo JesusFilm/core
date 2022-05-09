@@ -1,5 +1,5 @@
 import { TreeBlock, useEditor } from '@core/journeys/ui'
-import { ReactElement } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import ImageIcon from '@mui/icons-material/Image'
 import Palette from '@mui/icons-material/Palette'
 import VerticalSplit from '@mui/icons-material/VerticalSplit'
@@ -40,8 +40,21 @@ export function Card({
     themes[themeName ?? journey?.themeName ?? 'base'][
       themeMode ?? journey?.themeMode ?? 'dark'
     ]
-  const selectedCardColor =
-    backgroundColor ?? cardTheme.palette.background.paper
+  const [cardColor, setCardColor] = useState<string>()
+
+  const defaultCardColor = cardTheme.palette.background.paper
+  const cardPalette = cardTheme.palette.cardBackground
+  const colorIndex = parseInt(backgroundColor != null ? backgroundColor : '')
+
+  useEffect(() => {
+    if (colorIndex > 0 && colorIndex <= cardPalette.length + 1) {
+      setCardColor(cardPalette[colorIndex - 1])
+    } else {
+      setCardColor(backgroundColor ?? defaultCardColor)
+    }
+  }, [backgroundColor, cardPalette, colorIndex, defaultCardColor])
+
+  const selectedCardColor = cardColor ?? defaultCardColor
 
   const handleBackgroundMediaClick = (): void => {
     dispatch({

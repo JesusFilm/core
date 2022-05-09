@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useMemo } from 'react'
+import { ReactElement, ReactNode, useMemo, useState, useEffect } from 'react'
 import { ThemeProvider, themes } from '@core/shared/ui'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
@@ -26,6 +26,7 @@ export function Card({
   wrappers
 }: CardProps): ReactElement {
   const theme = useTheme()
+  const [cardColor, setCardColor] = useState<string>()
 
   const coverBlock = children.find(
     (block) =>
@@ -53,12 +54,21 @@ export function Card({
       ? themes[themeName][themeMode]
       : undefined
 
-  const cardColor =
-    backgroundColor != null
-      ? backgroundColor
-      : customCardTheme != null
-      ? customCardTheme.palette.background.paper
-      : theme.palette.background.paper
+  const cardPalette = customCardTheme?.palette.cardBackground
+  const colorIndex = parseInt(backgroundColor != null ? backgroundColor : '')
+  const defaultCardColor = customCardTheme?.palette.background.paper
+
+  useEffect(() => {
+    if (cardPalette != null) {
+      if (colorIndex > 0 && colorIndex <= cardPalette.length + 1) {
+        setCardColor(cardPalette[colorIndex - 1])
+      } else if (backgroundColor == null) {
+        setCardColor(defaultCardColor)
+      } else {
+        setCardColor(backgroundColor)
+      }
+    }
+  }, [backgroundColor, cardPalette, colorIndex, defaultCardColor])
 
   const blurUrl = useMemo(() => {
     return imageBlock != null
@@ -66,10 +76,10 @@ export function Card({
           imageBlock.width,
           imageBlock.height,
           imageBlock.blurhash,
-          cardColor
+          cardColor ?? theme.palette.background.paper
         )
       : undefined
-  }, [imageBlock, cardColor])
+  }, [imageBlock, cardColor, theme.palette.background.paper])
 
   const renderedChildren = children
     .filter(({ id }) => id !== coverBlockId)
@@ -80,13 +90,15 @@ export function Card({
   return (
     <CardWrapper
       id={id}
-      backgroundColor={backgroundColor}
+      backgroundColor={
+        cardColor != null ? cardColor : theme.palette.background.paper
+      }
       themeMode={themeMode}
       themeName={themeName}
     >
-      {coverBlock != null && !fullscreen ? (
+      {coverBlock != null && !fullscreen && cardColor != null ? (
         <ContainedCover
-          backgroundColor={cardColor}
+          backgroundColor={cardColor ?? theme.palette.background.paper}
           backgroundBlur={blurUrl}
           videoBlock={videoBlock}
           imageBlock={imageBlock}
