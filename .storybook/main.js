@@ -59,7 +59,7 @@ const affectedStories = () => {
         project.includes('-e2e')
       )
         return []
-      return storiesForProject[project]
+      return storiesForProject[project] ?? []
     })
     .flat()
 
