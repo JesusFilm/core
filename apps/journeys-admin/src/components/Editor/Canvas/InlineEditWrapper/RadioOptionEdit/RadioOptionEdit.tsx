@@ -1,7 +1,6 @@
 import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { RadioOption, TreeBlock } from '@core/journeys/ui'
-import { useJourney } from '../../../../../libs/context'
+import { RadioOption, TreeBlock, useJourney } from '@core/journeys/ui'
 import { RadioOptionBlockUpdateContent } from '../../../../../../__generated__/RadioOptionBlockUpdateContent'
 import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 import { InlineEditInput } from '../InlineEditInput'

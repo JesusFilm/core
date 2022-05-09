@@ -1,11 +1,10 @@
 import { ReactElement } from 'react'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useSnackbar } from 'notistack'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from '../../../../../ImageBlockEditor'
-import { useJourney } from '../../../../../../../libs/context'
 import { ImageBlockUpdate } from '../../../../../../../../__generated__/ImageBlockUpdate'
 
 export const IMAGE_BLOCK_UPDATE = gql`

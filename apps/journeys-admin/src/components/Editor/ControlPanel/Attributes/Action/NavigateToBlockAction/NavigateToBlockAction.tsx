@@ -1,4 +1,4 @@
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
 import { CardPreview } from '../../../../../CardPreview'
@@ -8,7 +8,6 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
 import { NavigateToBlockActionUpdate } from '../../../../../../../__generated__/NavigateToBlockActionUpdate'
-import { useJourney } from '../../../../../../libs/context'
 
 export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
   mutation NavigateToBlockActionUpdate(

@@ -1,9 +1,8 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../libs/context'
 import {
   RadioQuestionEditProps,
   RADIO_OPTION_BLOCK_CREATE

@@ -6,7 +6,7 @@ import Drawer from '@mui/material/Drawer'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { CopyTextField } from '@core/shared/ui'
-import { useJourney } from '../../../libs/context'
+import { useJourney } from '@core/journeys/ui'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyDetails } from './JourneyDetails'
 

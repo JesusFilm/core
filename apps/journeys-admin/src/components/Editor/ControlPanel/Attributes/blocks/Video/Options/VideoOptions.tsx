@@ -1,11 +1,10 @@
 import { ReactElement } from 'react'
-import { useEditor, VIDEO_FIELDS } from '@core/journeys/ui'
+import { useEditor, VIDEO_FIELDS, useJourney } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { VideoBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import { VideoBlockEditor } from '../../../../../VideoBlockEditor'
 import { VideoBlockUpdate } from '../../../../../../../../__generated__/VideoBlockUpdate'
-import { useJourney } from '../../../../../../../libs/context'
 
 export const VIDEO_BLOCK_UPDATE = gql`
   ${VIDEO_FIELDS}

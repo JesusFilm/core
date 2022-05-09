@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { JourneyProvider } from '@core/journeys/ui'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { JourneyProvider } from '../../../libs/context'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { CardView, CardViewProps } from './CardView'

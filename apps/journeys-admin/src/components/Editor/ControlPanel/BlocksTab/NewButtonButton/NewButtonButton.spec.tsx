@@ -1,9 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
-import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
   ButtonVariant,

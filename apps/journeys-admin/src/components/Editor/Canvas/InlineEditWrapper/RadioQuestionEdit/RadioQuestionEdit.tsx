@@ -7,9 +7,9 @@ import {
   RadioQuestion,
   StyledRadioOption,
   TreeBlock,
-  WrappersProps
+  WrappersProps,
+  useJourney
 } from '@core/journeys/ui'
-import { useJourney } from '../../../../../libs/context'
 import { RadioOptionBlockCreate } from '../../../../../../__generated__/RadioOptionBlockCreate'
 import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
 import { adminTheme } from '../../../../ThemeProvider/admin/theme'

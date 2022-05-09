@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import MenuItem from '@mui/material/MenuItem'
 import { gql, useQuery, useMutation } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
@@ -8,7 +8,6 @@ import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownR
 import { GetJourneyNames } from '../../../../../../../__generated__/GetJourneyNames'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import { NavigateToJourneyActionUpdate } from '../../../../../../../__generated__/NavigateToJourneyActionUpdate'
-import { useJourney } from '../../../../../../libs/context'
 
 export const GET_JOURNEY_NAMES = gql`
   query GetJourneyNames {
