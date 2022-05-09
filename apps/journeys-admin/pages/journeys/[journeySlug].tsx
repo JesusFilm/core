@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
-import { BLOCK_FIELDS, IMAGE_FIELDS } from '@core/journeys/ui'
+import { BLOCK_FIELDS, IMAGE_FIELDS, JourneyProvider } from '@core/journeys/ui'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -11,7 +11,6 @@ import {
 import { NextSeo } from 'next-seo'
 import { JourneyInvite } from '../../src/components/JourneyInvite/JourneyInvite'
 import { GetJourney } from '../../__generated__/GetJourney'
-import { JourneyProvider } from '../../src/libs/context'
 import { JourneyView } from '../../src/components/JourneyView'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { Menu } from '../../src/components/JourneyView/Menu'

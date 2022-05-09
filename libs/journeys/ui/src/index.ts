@@ -47,7 +47,9 @@ export {
   isActiveBlockOrDescendant,
   activeBlockVar,
   previousBlocksVar,
-  treeBlocksVar
+  treeBlocksVar,
+  useJourney,
+  JourneyProvider
 } from './libs'
 export type {
   TreeBlock,

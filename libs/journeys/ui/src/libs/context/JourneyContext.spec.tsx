@@ -6,8 +6,8 @@ import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../__generated__/globalTypes'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+} from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
+import { GetJourney_journey as Journey } from '../../../../../../apps/journeys-admin/__generated__/GetJourney'
 import { JourneyProvider, useJourney } from '.'
 
 const checkJourney = jest.fn()

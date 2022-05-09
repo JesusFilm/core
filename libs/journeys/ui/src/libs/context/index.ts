@@ -8,3 +8,4 @@ export type {
   SetSelectedStepAction,
   SetSelectedBlockByIdAction
 } from './EditorContext'
+export { useJourney, JourneyProvider } from './JourneyContext'
