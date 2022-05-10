@@ -340,7 +340,7 @@ describe('ControlPanel', () => {
           id: 'uuid',
           parentBlockId: 'cardId',
           parentOrder: 2,
-          journeyId: 'journeyId',
+          journeyId: 'journeyId'
         },
         radioOption1: {
           __typename: 'RadioOptionBlock',
