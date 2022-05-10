@@ -14,6 +14,8 @@ export interface RadioQuestionBlockCreate_radioQuestionBlockCreate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  label: string;
+  description: string | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption1_action_NavigateAction {

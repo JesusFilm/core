@@ -12,4 +12,6 @@ export interface RadioQuestionFields {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  label: string;
+  description: string | null;
 }
