@@ -80,7 +80,8 @@ describe('VideoList', () => {
                     availableVariantLanguageIds: ['529']
                   },
                   offset: 0,
-                  limit: 8
+                  limit: 8,
+                  languageId: '529'
                 }
               },
               result: {
@@ -127,7 +128,8 @@ describe('VideoList', () => {
                     availableVariantLanguageIds: ['529']
                   },
                   offset: 0,
-                  limit: 8
+                  limit: 8,
+                  languageId: '529'
                 }
               },
               result: {
