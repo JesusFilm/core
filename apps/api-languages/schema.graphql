@@ -16,7 +16,7 @@ type Country @key(fields: "id") {
   languages: [Language!]!
   latitude: Float!
   longitude: Float!
-  image: String!
+  image: String
 }
 
 type Language @key(fields: "id") {
@@ -24,6 +24,11 @@ type Language @key(fields: "id") {
   bcp47: String
   iso3: String
   name(languageId: ID, primary: Boolean): [Translation!]!
+}
+
+enum LanguageIdType {
+  databaseId
+  bcp47
 }
 
 type Translation {
@@ -36,5 +41,5 @@ extend type Query {
   countries: [Country!]!
   country(id: ID!, idType: IdType): Country!
   languages(offset: Int, limit: Int): [Language!]!
-  language(id: ID!): Language
+  language(id: ID!, idType: LanguageIdType): Language
 }
