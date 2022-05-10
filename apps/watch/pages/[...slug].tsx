@@ -25,10 +25,10 @@ export const GET_VIDEO = gql`
       id
       type
       image
-      description(languageId: $languageId, fallback: true) {
+      description(languageId: $languageId, primary: true) {
         value
       }
-      title(languageId: $languageId, fallback: true) {
+      title(languageId: $languageId, primary: true) {
         value
       }
       variant {
@@ -37,17 +37,17 @@ export const GET_VIDEO = gql`
       }
       episodes {
         id
-        title(languageId: $languageId, fallback: true) {
+        title(languageId: $languageId, primary: true) {
           value
         }
         image
-        imageAlt(languageId: $languageId, fallback: true) {
+        imageAlt(languageId: $languageId, primary: true) {
           value
         }
-        snippet(languageId: $languageId, fallback: true) {
+        snippet(languageId: $languageId, primary: true) {
           value
         }
-        slug(languageId: $languageId, fallback: true) {
+        slug(languageId: $languageId, primary: true) {
           value
         }
         episodeIds
@@ -56,7 +56,7 @@ export const GET_VIDEO = gql`
           hls
         }
       }
-      slug(languageId: $languageId, fallback: true) {
+      slug(languageId: $languageId, primary: true) {
         value
       }
     }
@@ -69,10 +69,10 @@ export const GET_VIDEO_SIBLINGS = gql`
       id
       type
       image
-      snippet(languageId: $languageId, fallback: true) {
+      snippet(languageId: $languageId, primary: true) {
         value
       }
-      title(languageId: $languageId, fallback: true) {
+      title(languageId: $languageId, primary: true) {
         value
       }
       variant {
@@ -80,7 +80,7 @@ export const GET_VIDEO_SIBLINGS = gql`
         hls
       }
       episodeIds
-      slug(languageId: $languageId, fallback: true) {
+      slug(languageId: $languageId, primary: true) {
         value
       }
     }
@@ -91,7 +91,7 @@ export const GET_LANGUAGE = gql`
   query GetLanguage($id: ID!, $languageId: ID) {
     language(id: $id) {
       id
-      name(languageId: $languageId, fallback: true) {
+      name(languageId: $languageId, primary: true) {
         value
       }
     }

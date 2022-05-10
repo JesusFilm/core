@@ -103,7 +103,6 @@ export class VideoResolver {
     @Parent() language,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean,
-    @Args('fallback') fallback?: boolean
   ): void {}
 
   @ResolveField()
@@ -112,7 +111,6 @@ export class VideoResolver {
     @Parent() language,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean,
-    @Args('fallback') fallback?: boolean
   ): void {}
 
   @ResolveField()
@@ -121,7 +119,6 @@ export class VideoResolver {
     @Parent() language,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean,
-    @Args('fallback') fallback?: boolean
   ): void {}
 
   @ResolveField()
@@ -130,7 +127,6 @@ export class VideoResolver {
     @Parent() language,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean,
-    @Args('fallback') fallback?: boolean
   ): void {}
 
   @ResolveField()
@@ -139,7 +135,6 @@ export class VideoResolver {
     @Parent() language,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean,
-    @Args('fallback') fallback?: boolean
   ): void {}
 
   @ResolveField()
@@ -148,7 +143,6 @@ export class VideoResolver {
     @Parent() language,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean,
-    @Args('fallback') fallback?: boolean
   ): void {}
 
   @ResolveField()
@@ -157,6 +151,5 @@ export class VideoResolver {
     @Parent() language,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean,
-    @Args('fallback') fallback?: boolean
   ): void {}
 }

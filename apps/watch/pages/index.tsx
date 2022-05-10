@@ -10,19 +10,22 @@ import { PageWrapper } from '../src/components/PageWrapper'
 import { Countries } from '../src/components/Countries/Countries'
 import { GetVideoTag } from '../__generated__/GetVideoTag'
 import { VideoType } from '../__generated__/globalTypes'
-import { LanguageProvider, useLanguage } from '../src/libs/languageContext/LanguageContext'
+import {
+  LanguageProvider,
+  useLanguage
+} from '../src/libs/languageContext/LanguageContext'
 
 export const GET_VIDEO_TAG = gql`
   query GetVideoTag($id: ID!, $languageId: ID) {
     videoTag(id: $id) {
       id
-      title(languageId: $languageId, fallback: true) {
+      title(languageId: $languageId, primary: true) {
         value
       }
     }
     videoTags {
       id
-      title(languageId: $languageId, fallback: true) {
+      title(languageId: $languageId, primary: true) {
         value
       }
     }

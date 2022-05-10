@@ -39,7 +39,6 @@ export class CountryResolver {
     @Parent() country,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean,
-    @Args('fallback') fallback?: boolean
   ): void {}
 
   @ResolveField()
@@ -48,7 +47,6 @@ export class CountryResolver {
     @Parent() country,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean,
-    @Args('fallback') fallback?: boolean
   ): void {}
 
   @ResolveField()
@@ -57,7 +55,6 @@ export class CountryResolver {
     @Parent() country,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean,
-    @Args('fallback') fallback?: boolean
   ): void {}
 
   @ResolveField()

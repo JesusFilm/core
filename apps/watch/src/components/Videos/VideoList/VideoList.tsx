@@ -19,17 +19,17 @@ export const GET_VIDEOS = gql`
       id
       type
       image
-      snippet(languageId: $languageId, fallback: true) {
+      snippet(languageId: $languageId, primary: true) {
         value
       }
-      title(languageId: $languageId, fallback: true) {
+      title(languageId: $languageId, primary: true) {
         value
       }
       variant {
         duration
       }
       episodeIds
-      slug(languageId: $languageId, fallback: true) {
+      slug(languageId: $languageId, primary: true) {
         value
       }
     }

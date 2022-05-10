@@ -18,15 +18,15 @@ export const GET_COUNTRY = gql`
   query GetCountry($id: ID!, $languageId: ID) {
     country(id: $id, idType: slug) {
       id
-      name(languageId: $languageId, fallback: true) {
+      name(languageId: $languageId, primary: true) {
         primary
         value
       }
-      slug(languageId: $languageId, fallback: true) {
+      slug(languageId: $languageId, primary: true) {
         primary
         value
       }
-      continent(languageId: $languageId, fallback: true) {
+      continent(languageId: $languageId, primary: true) {
         primary
         value
       }
@@ -34,7 +34,7 @@ export const GET_COUNTRY = gql`
         id
         bcp47
         iso3
-        name(languageId: $languageId, fallback: true) {
+        name(languageId: $languageId, primary: true) {
           primary
           value
         }
