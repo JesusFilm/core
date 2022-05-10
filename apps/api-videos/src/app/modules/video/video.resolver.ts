@@ -102,7 +102,7 @@ export class VideoResolver {
   title(
     @Parent() language,
     @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean,
+    @Args('primary') primary?: boolean
   ): void {}
 
   @ResolveField()
@@ -110,7 +110,7 @@ export class VideoResolver {
   seoTitle(
     @Parent() language,
     @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean,
+    @Args('primary') primary?: boolean
   ): void {}
 
   @ResolveField()
@@ -118,7 +118,7 @@ export class VideoResolver {
   snippet(
     @Parent() language,
     @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean,
+    @Args('primary') primary?: boolean
   ): void {}
 
   @ResolveField()
@@ -126,7 +126,7 @@ export class VideoResolver {
   description(
     @Parent() language,
     @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean,
+    @Args('primary') primary?: boolean
   ): void {}
 
   @ResolveField()
@@ -134,7 +134,7 @@ export class VideoResolver {
   studyQuestions(
     @Parent() language,
     @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean,
+    @Args('primary') primary?: boolean
   ): void {}
 
   @ResolveField()
@@ -142,7 +142,7 @@ export class VideoResolver {
   imageAlt(
     @Parent() language,
     @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean,
+    @Args('primary') primary?: boolean
   ): void {}
 
   @ResolveField()
@@ -150,6 +150,6 @@ export class VideoResolver {
   slug(
     @Parent() language,
     @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean,
+    @Args('primary') primary?: boolean
   ): void {}
 }
