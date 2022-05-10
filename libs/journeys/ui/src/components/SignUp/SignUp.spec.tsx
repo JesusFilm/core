@@ -259,6 +259,37 @@ describe('SignUp', () => {
     })
   })
 
-  // it('should show error when submit fails', async () => {
-  // })
+  it('should show error when submit fails', async () => {
+    const mocks = [
+      {
+        request: {
+          query: SIGN_UP_SUBMISSION_EVENT_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              blockId: 'signUp0.id',
+              name: 'Anon',
+              email: '123abc@gmail.com'
+            }
+          }
+        },
+        error: new Error('Error')
+      }
+    ]
+
+    const { getByRole, getByLabelText, getByText } = render(
+      <SnackbarProvider>
+        <SignUpMock mocks={mocks} />
+      </SnackbarProvider>
+    )
+    const name = getByLabelText('Name')
+    const email = getByLabelText('Email')
+    const submit = getByRole('button')
+
+    fireEvent.change(name, { target: { value: 'Anon' } })
+    fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
+    fireEvent.click(submit)
+
+    expect(await waitFor(() => getByText('Error'))).toBeInTheDocument()
+  })
 })
