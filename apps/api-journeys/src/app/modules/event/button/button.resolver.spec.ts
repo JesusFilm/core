@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
+import { ButtonClickEventCreateInput } from '../../../__generated__/graphql'
 import { ButtonClickEventResolver } from './button.resolver'
 
 describe('ButtonClickEventResolver', () => {
   let resolver: ButtonClickEventResolver
 
-  const event = {
+  const input: ButtonClickEventCreateInput = {
     id: '1',
-    __typename: 'ButtonClickEvent',
     blockId: 'block.id'
   }
 
@@ -26,9 +26,10 @@ describe('ButtonClickEventResolver', () => {
   })
 
   describe('buttonClickEventCreate', () => {
-    it('returns StepViewEvent', async () => {
-      expect(await resolver.buttonClickEventCreate('userId', event)).toEqual({
-        ...event,
+    it('returns ButtonClickEvent', async () => {
+      expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
+        ...input,
+        __typename: 'ButtonClickEvent',
         userId: 'userId'
       })
     })

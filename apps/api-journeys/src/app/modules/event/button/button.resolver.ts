@@ -17,9 +17,12 @@ export class ButtonClickEventResolver {
   @UseGuards(GqlAuthGuard)
   async buttonClickEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: ButtonClickEventCreateInput & { __typename }
+    @Args('input') input: ButtonClickEventCreateInput
   ): Promise<ButtonClickEvent> {
-    input.__typename = 'ButtonClickEvent'
-    return await this.eventService.save({ ...input, userId })
+    return await this.eventService.save({
+      ...input,
+      __typename: 'ButtonClickEvent',
+      userId
+    })
   }
 }
