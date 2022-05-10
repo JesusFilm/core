@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { SnackbarProvider } from 'notistack'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { TreeBlock, handleAction } from '../..'
 import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
@@ -51,7 +52,11 @@ const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
 
 describe('SignUp', () => {
   it('should validate when fields are empty', async () => {
-    const { getByRole, getAllByText } = render(<SignUpMock />)
+    const { getByRole, getAllByText } = render(
+      <SnackbarProvider>
+        <SignUpMock />
+      </SnackbarProvider>
+    )
 
     const submit = getByRole('button')
 
@@ -65,7 +70,11 @@ describe('SignUp', () => {
   })
 
   it('should validate when name is too short', async () => {
-    const { getByLabelText, getByRole, getByText } = render(<SignUpMock />)
+    const { getByLabelText, getByRole, getByText } = render(
+      <SnackbarProvider>
+        <SignUpMock />
+      </SnackbarProvider>
+    )
 
     const name = getByLabelText('Name')
     const submit = getByRole('button')
@@ -80,7 +89,11 @@ describe('SignUp', () => {
   })
 
   it('should validate when name is too long', async () => {
-    const { getByLabelText, getByRole, getByText } = render(<SignUpMock />)
+    const { getByLabelText, getByRole, getByText } = render(
+      <SnackbarProvider>
+        <SignUpMock />
+      </SnackbarProvider>
+    )
 
     const name = getByLabelText('Name')
     const submit = getByRole('button')
@@ -97,7 +110,11 @@ describe('SignUp', () => {
   })
 
   it('should validate when email is invalid', async () => {
-    const { getByLabelText, getByRole, getByText } = render(<SignUpMock />)
+    const { getByLabelText, getByRole, getByText } = render(
+      <SnackbarProvider>
+        <SignUpMock />
+      </SnackbarProvider>
+    )
 
     const email = getByLabelText('Email')
     const submit = getByRole('button')
@@ -140,7 +157,9 @@ describe('SignUp', () => {
 
     const { getByLabelText, getByRole } = render(
       <MockedProvider>
-        <SignUpMock mocks={mocks} />
+        <SnackbarProvider>
+          <SignUpMock mocks={mocks} />
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -170,7 +189,9 @@ describe('SignUp', () => {
   it('should be in a loading state when waiting for response', async () => {
     const { getByRole, getByLabelText } = render(
       <ApolloLoadingProvider>
-        <SignUp {...block} uuid={() => 'uuid'} />
+        <SnackbarProvider>
+          <SignUp {...block} uuid={() => 'uuid'} />
+        </SnackbarProvider>
       </ApolloLoadingProvider>
     )
     const name = getByLabelText('Name')
@@ -219,7 +240,9 @@ describe('SignUp', () => {
 
     const { getByLabelText, getByRole } = render(
       <MockedProvider>
-        <SignUpMock mocks={mocks} />
+        <SnackbarProvider>
+          <SignUpMock mocks={mocks} />
+        </SnackbarProvider>
       </MockedProvider>
     )
 

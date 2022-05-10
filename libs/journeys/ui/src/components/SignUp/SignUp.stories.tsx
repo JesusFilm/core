@@ -1,6 +1,7 @@
 import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { ReactElement } from 'react'
+import { SnackbarProvider } from 'notistack'
 import {
   journeyUiConfig,
   simpleComponentConfig,
@@ -73,9 +74,11 @@ const Template: Story<TreeBlock<SignUpFields>> = ({
       }
     ]}
   >
-    <StoryCard>
-      <SignUp {...signUpProps} {...props} uuid={() => 'uuid'} />
-    </StoryCard>
+    <SnackbarProvider>
+      <StoryCard>
+        <SignUp {...signUpProps} {...props} uuid={() => 'uuid'} />
+      </StoryCard>
+    </SnackbarProvider>
   </MockedProvider>
 )
 
@@ -107,9 +110,11 @@ CustomButton.args = {
 
 const LoadingTemplate: Story<TreeBlock<SignUpFields>> = (): ReactElement => (
   <ApolloLoadingProvider>
-    <StoryCard>
-      <SignUp {...signUpProps} uuid={() => 'uuid'} />
-    </StoryCard>
+    <SnackbarProvider>
+      <StoryCard>
+        <SignUp {...signUpProps} uuid={() => 'uuid'} />
+      </StoryCard>
+    </SnackbarProvider>
   </ApolloLoadingProvider>
 )
 

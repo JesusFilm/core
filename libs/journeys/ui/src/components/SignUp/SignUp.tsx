@@ -2,11 +2,12 @@ import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
 import { useRouter } from 'next/router'
 import { object, string } from 'yup'
-import { useMutation, gql } from '@apollo/client'
+import { useMutation, gql, ApolloError } from '@apollo/client'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import Box from '@mui/material/Box'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { v4 as uuidv4 } from 'uuid'
+import { useSnackbar } from 'notistack'
 import { TreeBlock, handleAction, useEditor } from '../..'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
@@ -52,6 +53,8 @@ export const SignUp = ({
     | TreeBlock<IconFields>
     | undefined
 
+  const { enqueueSnackbar } = useSnackbar()
+
   const router = useRouter()
   const [signUpSubmissionEventCreate, { loading }] =
     useMutation<SignUpSubmissionEventCreate>(SIGN_UP_SUBMISSION_EVENT_CREATE)
@@ -69,17 +72,25 @@ export const SignUp = ({
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
     const id = uuid()
-    void signUpSubmissionEventCreate({
-      variables: {
-        input: {
-          id,
-          blockId,
-          name: values.name,
-          email: values.email
+    try {
+      await signUpSubmissionEventCreate({
+        variables: {
+          input: {
+            id,
+            blockId,
+            name: values.name,
+            email: values.email
+          }
         }
+      })
+    } catch (e) {
+      if (e instanceof ApolloError) {
+        enqueueSnackbar(e.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
       }
-      // TODO: Set server error responses when available
-    })
+    }
   }
 
   const {
@@ -95,7 +106,6 @@ export const SignUp = ({
         }
         onSubmit={(values) => {
           if (selectedBlock === undefined) {
-            // TODO: Handle server error responses when available
             void onSubmitHandler(values).then(() => {
               handleAction(router, action)
             })

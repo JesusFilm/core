@@ -10,6 +10,7 @@ import { datadogRum } from '@datadog/browser-rum'
 import { CacheProvider } from '@emotion/react'
 import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui'
+import { SnackbarProvider } from 'notistack'
 import { createApolloClient } from '../src/libs/client'
 import { firebaseClient } from '../src/libs/firebaseClient'
 
@@ -71,7 +72,9 @@ export default function JourneysApp({
         />
       </Head>
       <ApolloProvider client={client}>
-        <Component {...pageProps} />
+        <SnackbarProvider>
+          <Component {...pageProps} />
+        </SnackbarProvider>
       </ApolloProvider>
     </CacheProvider>
   )
