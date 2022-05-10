@@ -2,12 +2,7 @@ import { ReactElement } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui'
-import {
-  BLOCK_FIELDS,
-  IMAGE_FIELDS,
-  transformer,
-  JourneyProvider
-} from '@core/journeys/ui'
+import { transformer, JourneyProvider, JOURNEY_FIELDS } from '@core/journeys/ui'
 import { NextSeo } from 'next-seo'
 import { Conductor } from '../src/components/Conductor'
 import { createApolloClient } from '../src/libs/client'
@@ -80,43 +75,10 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
   const client = createApolloClient()
   const { data } = await client.query<GetJourney>({
     query: gql`
-      ${BLOCK_FIELDS}
-      ${IMAGE_FIELDS}
+      ${JOURNEY_FIELDS}
       query GetJourney($id: ID!) {
         journey(id: $id, idType: slug) {
-          id
-          slug
-          title
-          description
-          status
-          language {
-            id
-            name {
-              value
-              primary
-            }
-          }
-          createdAt
-          publishedAt
-          themeName
-          themeMode
-          seoTitle
-          seoDescription
-          blocks {
-            ...BlockFields
-          }
-          primaryImageBlock {
-            ...ImageFields
-          }
-          userJourneys {
-            id
-            user {
-              id
-              firstName
-              lastName
-              imageUrl
-            }
-          }
+          ...JourneyFields
         }
       }
     `,

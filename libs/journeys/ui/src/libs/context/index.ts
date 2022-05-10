@@ -9,3 +9,4 @@ export type {
   SetSelectedBlockByIdAction
 } from './EditorContext'
 export { useJourney, JourneyProvider } from './JourneyContext'
+export { JOURNEY_FIELDS } from './journeyFields'

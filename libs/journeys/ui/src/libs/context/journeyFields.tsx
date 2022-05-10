@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 import { BLOCK_FIELDS, IMAGE_FIELDS } from '../transformer'
 
-export const GET_JOURNEY = gql`
+export const JOURNEY_FIELDS = gql`
   ${BLOCK_FIELDS}
   ${IMAGE_FIELDS}
   fragment JourneyFields on Journey {

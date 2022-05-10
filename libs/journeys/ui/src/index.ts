@@ -49,7 +49,8 @@ export {
   previousBlocksVar,
   treeBlocksVar,
   useJourney,
-  JourneyProvider
+  JourneyProvider,
+  JOURNEY_FIELDS
 } from './libs'
 export type {
   TreeBlock,

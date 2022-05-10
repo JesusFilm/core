@@ -35,7 +35,8 @@ export {
   ActiveTab,
   ActiveFab,
   useJourney,
-  JourneyProvider
+  JourneyProvider,
+  JOURNEY_FIELDS
 } from './context'
 export type {
   SetSelectedStepAction,
