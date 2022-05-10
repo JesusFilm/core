@@ -19,15 +19,12 @@ export const GET_COUNTRY = gql`
     country(id: $id, idType: slug) {
       id
       name(languageId: $languageId, primary: true) {
-        primary
         value
       }
       slug(languageId: $languageId, primary: true) {
-        primary
         value
       }
       continent(languageId: $languageId, primary: true) {
-        primary
         value
       }
       languages {
@@ -35,7 +32,6 @@ export const GET_COUNTRY = gql`
         bcp47
         iso3
         name(languageId: $languageId, primary: true) {
-          primary
           value
         }
       }
