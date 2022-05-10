@@ -164,7 +164,6 @@ export interface ButtonBlockUpdateInput {
 
 export interface CardBlockUpdateInput {
   backgroundColor?: string | null;
-  coverBlockId?: string | null;
   fullscreen?: boolean | null;
   parentBlockId?: string | null;
   themeMode?: ThemeMode | null;
