@@ -341,8 +341,6 @@ describe('ControlPanel', () => {
           parentBlockId: 'cardId',
           parentOrder: 2,
           journeyId: 'journeyId',
-          label: '',
-          description: null
         },
         radioOption1: {
           __typename: 'RadioOptionBlock',

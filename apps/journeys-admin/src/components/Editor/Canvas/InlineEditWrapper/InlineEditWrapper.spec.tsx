@@ -187,8 +187,6 @@ describe('InlineEditWrapper', () => {
       parentBlockId: 'card.id',
       parentOrder: 0,
       id: 'radioQuestion.id',
-      label: 'heading',
-      description: 'description',
       children: [option]
     }
 

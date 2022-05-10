@@ -180,8 +180,6 @@ describe('Attributes', () => {
     const block: TreeBlock = {
       __typename: 'RadioQuestionBlock',
       id: 'RadioQuestion1',
-      label: 'Label',
-      description: 'Description',
       parentBlockId: 'RadioQuestion1',
       parentOrder: 0,
       children: []
