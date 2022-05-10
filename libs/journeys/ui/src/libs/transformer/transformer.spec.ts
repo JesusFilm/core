@@ -24,9 +24,7 @@ describe('transformer', () => {
           __typename: 'RadioQuestionBlock',
           id: 'Question1',
           parentBlockId: 'Root1',
-          parentOrder: 0,
-          label: 'Question 1',
-          description: 'Question 1 description'
+          parentOrder: 0
         },
         {
           __typename: 'RadioOptionBlock',
@@ -64,9 +62,7 @@ describe('transformer', () => {
           __typename: 'RadioQuestionBlock',
           id: 'Question2',
           parentBlockId: 'Root2',
-          parentOrder: 1,
-          label: 'Question 2',
-          description: 'Question 2 description'
+          parentOrder: 1
         }
       ])
     ).toEqual([
@@ -96,9 +92,7 @@ describe('transformer', () => {
             __typename: 'RadioQuestionBlock',
             id: 'Question1',
             parentBlockId: 'Root1',
-            parentOrder: 0,
-            label: 'Question 1',
-            description: 'Question 1 description'
+            parentOrder: 0
           }
         ],
         id: 'Root1',
@@ -134,9 +128,7 @@ describe('transformer', () => {
             __typename: 'RadioQuestionBlock',
             id: 'Question2',
             parentBlockId: 'Root2',
-            parentOrder: 1,
-            label: 'Question 2',
-            description: 'Question 2 description'
+            parentOrder: 1
           }
         ],
         id: 'Root2',
