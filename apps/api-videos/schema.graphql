@@ -1,6 +1,6 @@
 type VideoTag {
   id: ID!
-  title(languageId: ID, primary: Boolean): [Translation!]!
+  title(languageId: ID, primary: Boolean, fallback: Boolean): [Translation!]!
 }
 
 type Translation {
@@ -24,19 +24,19 @@ type Video @key(fields: "id primaryLanguageId") {
   id: ID!
   type: VideoType!
   primaryLanguageId: ID!
-  title(languageId: ID, primary: Boolean): [Translation!]!
-  seoTitle(languageId: ID, primary: Boolean): [Translation!]!
-  snippet(languageId: ID, primary: Boolean): [Translation!]!
-  description(languageId: ID, primary: Boolean): [Translation!]!
-  studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
+  title(languageId: ID, primary: Boolean, fallback: Boolean): [Translation!]!
+  seoTitle(languageId: ID, primary: Boolean, fallback: Boolean): [Translation!]!
+  snippet(languageId: ID, primary: Boolean, fallback: Boolean): [Translation!]!
+  description(languageId: ID, primary: Boolean, fallback: Boolean): [Translation!]!
+  studyQuestions(languageId: ID, primary: Boolean, fallback: Boolean): [Translation!]!
   image: String
-  imageAlt(languageId: ID, primary: Boolean): [Translation!]!
+  imageAlt(languageId: ID, primary: Boolean, fallback: Boolean): [Translation!]!
   variantLanguages: [Language!]!
 
   """
   slug is a permanent link to the video. It should only be appended, not edited or deleted
   """
-  slug: [Translation!]!
+  slug(languageId: ID, primary: Boolean, fallback: Boolean): [Translation!]!
   noIndex: Boolean
 
   """Episodes are child videos, currently only found in a playlist type"""

@@ -10,21 +10,19 @@ import { PageWrapper } from '../src/components/PageWrapper'
 import { Countries } from '../src/components/Countries/Countries'
 import { GetVideoTag } from '../__generated__/GetVideoTag'
 import { VideoType } from '../__generated__/globalTypes'
-import { LanguageProvider } from '../src/libs/languageContext/LanguageContext'
+import { LanguageProvider, useLanguage } from '../src/libs/languageContext/LanguageContext'
 
 export const GET_VIDEO_TAG = gql`
-  query GetVideoTag($id: ID!) {
+  query GetVideoTag($id: ID!, $languageId: ID) {
     videoTag(id: $id) {
       id
-      title {
-        primary
+      title(languageId: $languageId, fallback: true) {
         value
       }
     }
     videoTags {
       id
-      title {
-        primary
+      title(languageId: $languageId, fallback: true) {
         value
       }
     }
@@ -32,9 +30,11 @@ export const GET_VIDEO_TAG = gql`
 `
 
 function VideoPage(): ReactElement {
+  const languageContext = useLanguage()
   const { data: jfm1Data } = useQuery<GetVideoTag>(GET_VIDEO_TAG, {
     variables: {
-      id: 'JFM1'
+      id: 'JFM1',
+      languageId: languageContext?.id ?? '529'
     }
   })
   return (
@@ -85,7 +85,7 @@ function VideoPage(): ReactElement {
       <Box sx={{ bgcolor: '#cfe8fc', paddingY: '5rem' }}>
         <Container maxWidth="xl">
           <Typography variant="h2">
-            {jfm1Data?.videoTag?.title.find((t) => t.primary)?.value}
+            {jfm1Data?.videoTag?.title[0]?.value}
           </Typography>
           <VideoList
             filter={{
@@ -113,9 +113,7 @@ function VideoPage(): ReactElement {
           >
             {jfm1Data?.videoTags?.map((item) => (
               <Grid item key={item.id}>
-                <Fab variant="extended">
-                  {item.title.find((t) => t.primary)?.value}
-                </Fab>
+                <Fab variant="extended">{item.title[0]?.value}</Fab>
               </Grid>
             ))}
           </Grid>
@@ -126,9 +124,7 @@ function VideoPage(): ReactElement {
         <Container maxWidth="xl">
           {jfm1Data?.videoTags?.slice(0, 3).map((item) => (
             <Box key={item.id}>
-              <Typography variant="h2">
-                {item.title.find((t) => t.primary)?.value}
-              </Typography>
+              <Typography variant="h2">{item.title[0]?.value}</Typography>
               <VideoList
                 key={item.id}
                 filter={{

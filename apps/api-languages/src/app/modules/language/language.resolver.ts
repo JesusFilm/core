@@ -37,7 +37,8 @@ export class LanguageResolver {
   name(
     @Parent() language,
     @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean
+    @Args('primary') primary?: boolean,
+    @Args('fallback') fallback?: boolean
   ): void {}
 
   @ResolveReference()

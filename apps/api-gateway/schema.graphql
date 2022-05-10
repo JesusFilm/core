@@ -139,19 +139,19 @@ type Country
   @join__owner(graph: LANGUAGES)
   @join__type(graph: LANGUAGES, key: "id")
 {
-  continent(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  continent(fallback: Boolean, languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
   id: ID! @join__field(graph: LANGUAGES)
   image: String @join__field(graph: LANGUAGES)
   languages: [Language!]! @join__field(graph: LANGUAGES)
   latitude: Float! @join__field(graph: LANGUAGES)
   longitude: Float! @join__field(graph: LANGUAGES)
-  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  name(fallback: Boolean, languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
   population: Int! @join__field(graph: LANGUAGES)
 
   """
   slug is a permanent link to the country. It should only be appended, not edited or deleted
   """
-  slug(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  slug(fallback: Boolean, languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
 }
 
 """DateTime custom scalar"""
@@ -398,7 +398,7 @@ type Language
   bcp47: String @join__field(graph: LANGUAGES)
   id: ID! @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
-  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  name(fallback: Boolean, languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
 }
 
 enum LanguageIdType {
@@ -830,25 +830,25 @@ type Video
   @join__type(graph: VIDEOS, key: "id primaryLanguageId")
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
 {
-  description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  description(fallback: Boolean, languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
 
   """Episodes are child videos, currently only found in a playlist type"""
   episodeIds: [ID!]! @join__field(graph: VIDEOS)
   episodes: [Video!]! @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
-  imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  imageAlt(fallback: Boolean, languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   noIndex: Boolean @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
-  seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  seoTitle(fallback: Boolean, languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
 
   """
   slug is a permanent link to the video. It should only be appended, not edited or deleted
   """
-  slug: [Translation!]! @join__field(graph: VIDEOS)
-  snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  slug(fallback: Boolean, languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  snippet(fallback: Boolean, languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  studyQuestions(fallback: Boolean, languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  title(fallback: Boolean, languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   type: VideoType! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
@@ -1008,7 +1008,7 @@ input VideosFilter {
 
 type VideoTag {
   id: ID!
-  title(languageId: ID, primary: Boolean): [Translation!]!
+  title(fallback: Boolean, languageId: ID, primary: Boolean): [Translation!]!
 }
 
 """

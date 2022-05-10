@@ -5,14 +5,14 @@ enum IdType {
 
 type Country @key(fields: "id") {
   id: ID!
-  name(languageId: ID, primary: Boolean): [Translation!]!
+  name(languageId: ID, primary: Boolean, fallback: Boolean): [Translation!]!
   population: Int!
-  continent(languageId: ID, primary: Boolean): [Translation!]!
+  continent(languageId: ID, primary: Boolean, fallback: Boolean): [Translation!]!
 
   """
   slug is a permanent link to the country. It should only be appended, not edited or deleted
   """
-  slug(languageId: ID, primary: Boolean): [Translation!]!
+  slug(languageId: ID, primary: Boolean, fallback: Boolean): [Translation!]!
   languages: [Language!]!
   latitude: Float!
   longitude: Float!
@@ -23,7 +23,7 @@ type Language @key(fields: "id") {
   id: ID!
   bcp47: String
   iso3: String
-  name(languageId: ID, primary: Boolean): [Translation!]!
+  name(languageId: ID, primary: Boolean, fallback: Boolean): [Translation!]!
 }
 
 enum LanguageIdType {

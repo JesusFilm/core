@@ -23,7 +23,8 @@ describe('TranslationField', () => {
       name(
         _parent: { name: Translation[] },
         _languageId?: string,
-        _primary?: boolean
+        _primary?: boolean,
+        _fallback?: boolean
       ): void {}
     }
 
@@ -43,6 +44,12 @@ describe('TranslationField', () => {
 
     it('should return tranlsations filtered by languageId or primary', () => {
       expect(new Translatable().name(parent, '529', true)).toEqual(parent.name)
+    })
+
+    it('should return tranlsation fallback to primary if no language available', () => {
+      expect(new Translatable().name(parent, '602', true, true)).toEqual([
+        parent.name[0]
+      ])
     })
   })
 

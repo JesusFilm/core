@@ -1,6 +1,7 @@
 import { gql, useQuery } from '@apollo/client'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { useLanguage } from '../../../libs/languageContext/LanguageContext'
 import { GetVideos } from '../../../../__generated__/GetVideos'
 import { VideosFilter } from '../../../../__generated__/globalTypes'
 import { VideoListCarousel } from './Carousel/VideoListCarousel'
@@ -8,26 +9,28 @@ import { VideoListGrid } from './Grid/VideoListGrid'
 import { VideoListList } from './List/VideoListList'
 
 export const GET_VIDEOS = gql`
-  query GetVideos($where: VideosFilter, $offset: Int, $limit: Int) {
+  query GetVideos(
+    $where: VideosFilter
+    $offset: Int
+    $limit: Int
+    $languageId: ID
+  ) {
     videos(where: $where, offset: $offset, limit: $limit) {
       id
       type
       image
-      snippet {
-        primary
+      snippet(languageId: $languageId, fallback: true) {
         value
       }
-      title {
-        primary
+      title(languageId: $languageId, fallback: true) {
         value
       }
       variant {
         duration
       }
       episodeIds
-      slug {
+      slug(languageId: $languageId, fallback: true) {
         value
-        primary
       }
     }
   }
@@ -53,13 +56,15 @@ export function VideoList({
   limit = 8,
   showLoadMore = true
 }: VideoListProps): ReactElement {
+  const languageContext = useLanguage()
   const [isEnd, setIsEnd] = useState(false)
   const [previousCount, setPreviousCount] = useState(0)
   const { data, loading, fetchMore } = useQuery<GetVideos>(GET_VIDEOS, {
     variables: {
       where: filter,
       offset: 0,
-      limit: limit
+      limit: limit,
+      languageId: languageContext?.id ?? '529'
     }
   })
 

@@ -4,16 +4,13 @@ export const GET_COUNTRIES = gql`
   query GetCountries($languageId: ID) {
     countries {
       id
-      name(languageId: $languageId) {
-        primary
+      name(languageId: $languageId, fallback: true) {
         value
       }
-      slug(languageId: $languageId) {
-        primary
+      slug(languageId: $languageId, fallback: true) {
         value
       }
-      continent(languageId: $languageId) {
-        primary
+      continent(languageId: $languageId, fallback: true) {
         value
       }
       languages {
