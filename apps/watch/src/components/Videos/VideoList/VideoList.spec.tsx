@@ -32,7 +32,8 @@ describe('VideoList', () => {
                     availableVariantLanguageIds: ['529']
                   },
                   page: 1,
-                  limit: 8
+                  limit: 8,
+                  languageId: '529'
                 }
               },
               result: {
