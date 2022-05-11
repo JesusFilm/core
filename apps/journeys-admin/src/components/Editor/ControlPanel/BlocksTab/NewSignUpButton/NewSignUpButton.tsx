@@ -41,7 +41,7 @@ export const SIGN_UP_BLOCK_CREATE = gql`
 export function NewSignUpButton(): ReactElement {
   const [signUpBlockCreate] =
     useMutation<SignUpBlockCreate>(SIGN_UP_BLOCK_CREATE)
-  const journey = useJourney()
+  const { journey } = useJourney()
   const {
     state: { selectedStep },
     dispatch

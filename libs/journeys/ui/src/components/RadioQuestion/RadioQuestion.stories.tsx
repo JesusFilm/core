@@ -139,7 +139,6 @@ export const Default: Story<TreeBlock<RadioQuestionFields>> =
   DefaultTemplate.bind({})
 Default.args = {
   id: 'Default',
-  label: 'How can we help you know more about Jesus?',
   children,
   parentOrder: 1,
   parentBlockId: 'Step1'
@@ -150,8 +149,6 @@ export const Long: Story<TreeBlock<RadioQuestionFields>> = DefaultTemplate.bind(
 )
 Long.args = {
   id: 'Long',
-  label: 'Have you accepted Jesus in your life?',
-  description: '',
   children: longLabel,
   parentOrder: 2
 }

@@ -29,7 +29,14 @@ describe('ImageEdit', () => {
   it('should disaply placeholder icon when no image set', () => {
     const { getAllByTestId } = render(
       <MockedProvider>
-        <ImageEdit />
+        <JourneyProvider
+          value={{
+            journey: { primaryImageBlockId: null } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <ImageEdit />
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getAllByTestId('ImageIcon')).toHaveLength(2)
@@ -39,14 +46,15 @@ describe('ImageEdit', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               primaryImageBlock: {
                 src: 'img.src',
                 alt: 'image.alt'
               }
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <ImageEdit />
         </JourneyProvider>
@@ -125,7 +133,12 @@ describe('ImageEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journey.id' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <ImageEdit />
         </JourneyProvider>
       </MockedProvider>
@@ -195,12 +208,13 @@ describe('ImageEdit', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journey.id',
               primaryImageBlock: { ...image }
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <ImageEdit />
         </JourneyProvider>
@@ -287,12 +301,13 @@ describe('ImageEdit', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journey.id',
               primaryImageBlock: { ...image }
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <ImageEdit />
         </JourneyProvider>

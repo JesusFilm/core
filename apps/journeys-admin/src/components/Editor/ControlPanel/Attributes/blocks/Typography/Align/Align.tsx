@@ -26,7 +26,7 @@ export function Align(): ReactElement {
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateAlign>(
     TYPOGRAPHY_BLOCK_UPDATE_ALIGN
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TypographyBlock>

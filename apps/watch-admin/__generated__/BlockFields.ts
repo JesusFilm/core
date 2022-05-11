@@ -187,8 +187,6 @@ export interface BlockFields_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
-  description: string | null;
 }
 
 export interface BlockFields_SignUpBlock_action_NavigateAction {

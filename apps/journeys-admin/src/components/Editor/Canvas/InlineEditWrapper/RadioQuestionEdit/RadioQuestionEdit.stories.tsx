@@ -55,8 +55,6 @@ const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
   parentBlockId: 'card0.id',
   parentOrder: 2,
-  label: '',
-  description: null,
   children: [
     {
       __typename: 'RadioOptionBlock',
@@ -124,13 +122,14 @@ const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
       <JourneyProvider
-        value={
-          {
+        value={{
+          journey: {
             id: 'journeyId',
             themeMode: ThemeMode.light,
             themeName: ThemeName.base
-          } as unknown as Journey
-        }
+          } as unknown as Journey,
+          admin: true
+        }}
       >
         <EditorProvider
           initialState={{

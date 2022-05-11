@@ -98,7 +98,12 @@ describe('SignUp', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewSignUpButton />
           </EditorProvider>
@@ -184,7 +189,12 @@ describe('SignUp', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewSignUpButton />
           </EditorProvider>

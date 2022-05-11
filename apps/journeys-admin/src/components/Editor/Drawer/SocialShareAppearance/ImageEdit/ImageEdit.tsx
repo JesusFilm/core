@@ -73,7 +73,7 @@ export function ImageEdit(): ReactElement {
     JOURNEY_PRIMARY_IMAGE_UPDATE
   )
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const [open, setOpen] = useState(false)
 
   function handleOpen(): void {

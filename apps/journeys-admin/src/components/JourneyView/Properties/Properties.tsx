@@ -11,7 +11,7 @@ import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyDetails } from './JourneyDetails'
 
 export function Properties(): ReactElement {
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   return (
     <>

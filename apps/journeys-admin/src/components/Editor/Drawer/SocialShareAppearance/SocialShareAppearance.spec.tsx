@@ -1,6 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { SocialShareAppearance } from '.'
 
@@ -9,7 +10,14 @@ describe('SocialShareAppearance', () => {
   it('should render SocialShareAppearance', () => {
     const { getByText, getByTestId, getByRole } = render(
       <MockedProvider>
-        <SocialShareAppearance />
+        <JourneyProvider
+          value={{
+            journey: { status: JourneyStatus.published } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <SocialShareAppearance />
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByText('Social Image')).toBeInTheDocument()
@@ -25,7 +33,9 @@ describe('SocialShareAppearance', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ slug } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { slug } as unknown as Journey, admin: true }}
+        >
           <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
@@ -46,7 +56,9 @@ describe('SocialShareAppearance', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ slug } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { slug } as unknown as Journey, admin: true }}
+        >
           <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
@@ -65,7 +77,12 @@ describe('SocialShareAppearance', () => {
   it('should disable share buttons  and show tool tip if journey is not published', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ publishedAt: null } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { publishedAt: null } as unknown as Journey,
+            admin: true
+          }}
+        >
           <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>

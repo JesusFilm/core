@@ -39,7 +39,9 @@ function JourneySlugPage(): ReactElement {
             title={data?.journey?.title ?? 'Journey'}
             description={data?.journey?.description ?? undefined}
           />
-          <JourneyProvider value={data?.journey ?? undefined}>
+          <JourneyProvider
+            value={{ journey: data?.journey ?? undefined, admin: true }}
+          >
             <PageWrapper
               title="Journey Details"
               showDrawer

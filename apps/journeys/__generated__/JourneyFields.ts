@@ -199,8 +199,6 @@ export interface JourneyFields_blocks_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
-  description: string | null;
 }
 
 export interface JourneyFields_blocks_SignUpBlock_action_NavigateAction {
