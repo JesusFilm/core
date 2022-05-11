@@ -85,7 +85,7 @@ const Template: Story = ({ ...args }) => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey: { status } as unkown as Journey }}>
+        <JourneyProvider value={{ journey: { status } as unknown as Journey }}>
           <EditorProvider initialState={args.state}>
             <DeleteBlock variant={args.variant} />
           </EditorProvider>
