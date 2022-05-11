@@ -55,8 +55,6 @@ const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
   parentBlockId: 'card0.id',
   parentOrder: 2,
-  label: '',
-  description: null,
   children: [
     {
       __typename: 'RadioOptionBlock',

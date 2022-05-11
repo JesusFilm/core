@@ -24,7 +24,6 @@ describe('RadioQuestionBlockResolver', () => {
     parentBlockId: '3',
     parentOrder: 3,
     label: 'label',
-    description: 'description',
     action: {
       gtmEventName: 'gtmEventName',
       blockId: '4'
@@ -60,8 +59,7 @@ describe('RadioQuestionBlockResolver', () => {
     __typename: 'RadioQuestionBlock',
     parentBlockId: '2',
     parentOrder: 2,
-    journeyId: '2',
-    label: 'label'
+    journeyId: '2'
   }
 
   const blockService = {
@@ -154,9 +152,9 @@ describe('RadioQuestionBlockResolver', () => {
       await resolver.radioQuestionBlockUpdate(
         block.id,
         block.journeyId,
-        radioQuestionInput
+        block.parentBlockId
       )
-      expect(service.update).toHaveBeenCalledWith(block.id, radioQuestionInput)
+      expect(service.update).toHaveBeenCalledWith(block.id, block.parentBlockId)
     })
   })
 })
