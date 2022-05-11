@@ -611,6 +611,20 @@ type VideoTriggerBlock implements Block {
   action: Action!
 }
 
+input ButtonClickEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+}
+
+type ButtonClickEvent implements Event {
+  id: ID!
+  userId: ID!
+  block: ButtonBlock
+}
+
 interface Event {
   id: ID!
   userId: ID!
@@ -872,6 +886,7 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
