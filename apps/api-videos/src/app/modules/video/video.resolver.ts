@@ -1,3 +1,4 @@
+import { TranslationField } from '@core/nest/decorators'
 import {
   Resolver,
   Query,
@@ -95,4 +96,60 @@ export class VideoResolver {
       ? await this.videoService.getVideosByIds(video.episodeIds)
       : null
   }
+
+  @ResolveField()
+  @TranslationField('title')
+  title(
+    @Parent() language,
+    @Args('languageId') languageId?: string,
+    @Args('primary') primary?: boolean
+  ): void {}
+
+  @ResolveField()
+  @TranslationField('seoTitle')
+  seoTitle(
+    @Parent() language,
+    @Args('languageId') languageId?: string,
+    @Args('primary') primary?: boolean
+  ): void {}
+
+  @ResolveField()
+  @TranslationField('snippet')
+  snippet(
+    @Parent() language,
+    @Args('languageId') languageId?: string,
+    @Args('primary') primary?: boolean
+  ): void {}
+
+  @ResolveField()
+  @TranslationField('description')
+  description(
+    @Parent() language,
+    @Args('languageId') languageId?: string,
+    @Args('primary') primary?: boolean
+  ): void {}
+
+  @ResolveField()
+  @TranslationField('studyQuestions')
+  studyQuestions(
+    @Parent() language,
+    @Args('languageId') languageId?: string,
+    @Args('primary') primary?: boolean
+  ): void {}
+
+  @ResolveField()
+  @TranslationField('imageAlt')
+  imageAlt(
+    @Parent() language,
+    @Args('languageId') languageId?: string,
+    @Args('primary') primary?: boolean
+  ): void {}
+
+  @ResolveField()
+  @TranslationField('slug')
+  slug(
+    @Parent() language,
+    @Args('languageId') languageId?: string,
+    @Args('primary') primary?: boolean
+  ): void {}
 }

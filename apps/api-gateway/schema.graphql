@@ -876,7 +876,7 @@ type Video
   """
   slug is a permanent link to the video. It should only be appended, not edited or deleted
   """
-  slug: [Translation!]! @join__field(graph: VIDEOS)
+  slug(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
