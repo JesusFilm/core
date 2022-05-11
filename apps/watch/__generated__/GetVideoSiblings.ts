@@ -11,13 +11,11 @@ import { VideoType } from "./globalTypes";
 
 export interface GetVideoSiblings_episodes_snippet {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
 export interface GetVideoSiblings_episodes_title {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
@@ -29,7 +27,6 @@ export interface GetVideoSiblings_episodes_variant {
 
 export interface GetVideoSiblings_episodes_slug {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
@@ -57,4 +54,5 @@ export interface GetVideoSiblings {
 
 export interface GetVideoSiblingsVariables {
   playlistId: string;
+  languageId?: string | null;
 }
