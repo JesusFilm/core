@@ -5,7 +5,7 @@ import { JourneyFields as Journey } from './__generated__/JourneyFields'
 // Else JourneyView page will not load
 const JourneyContext = createContext({} as unknown as Journey | undefined)
 
-export function useJourney(): Journey | undefined {
+export function useJourney(): (Journey & { admin?: boolean }) | undefined {
   const context = useContext(JourneyContext)
 
   return context
@@ -13,7 +13,7 @@ export function useJourney(): Journey | undefined {
 
 interface JourneyProviderProps {
   children: ReactNode
-  value?: Journey
+  value?: Journey & { admin?: boolean }
 }
 
 export function JourneyProvider({

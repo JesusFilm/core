@@ -3,6 +3,7 @@ import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock } from '../..'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
+import { useJourney } from '../../libs/context/JourneyContext'
 import { StepFields } from './__generated__/StepFields'
 import { StepViewEventCreate } from './__generated__/StepViewEventCreate'
 
@@ -27,14 +28,16 @@ export function Step({
     STEP_VIEW_EVENT_CREATE
   )
 
+  const journey = useJourney()
+
   useEffect(() => {
-    if (wrappers == null) {
+    if (journey?.admin != null && !journey?.admin) {
       const id = uuidv4()
       void stepViewEventCreate({
         variables: { input: { id, blockId } }
       })
     }
-  }, [blockId, wrappers, stepViewEventCreate])
+  }, [blockId, stepViewEventCreate, journey])
 
   return (
     <>
