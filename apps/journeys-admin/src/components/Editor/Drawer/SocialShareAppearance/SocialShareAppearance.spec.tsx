@@ -1,6 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { SocialShareAppearance } from '.'
 
@@ -9,7 +10,14 @@ describe('SocialShareAppearance', () => {
   it('should render SocialShareAppearance', () => {
     const { getByText, getByTestId, getByRole } = render(
       <MockedProvider>
-        <SocialShareAppearance />
+        <JourneyProvider
+          value={{
+            journey: { status: JourneyStatus.published } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <SocialShareAppearance />
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByText('Social Image')).toBeInTheDocument()

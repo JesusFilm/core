@@ -29,7 +29,14 @@ describe('ImageEdit', () => {
   it('should disaply placeholder icon when no image set', () => {
     const { getAllByTestId } = render(
       <MockedProvider>
-        <ImageEdit />
+        <JourneyProvider
+          value={{
+            journey: { primaryImageBlockId: null } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <ImageEdit />
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getAllByTestId('ImageIcon')).toHaveLength(2)
