@@ -29,7 +29,7 @@ export function ImageOptions(): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const [imageBlockUpdate, { loading }] =
     useMutation<ImageBlockUpdate>(IMAGE_BLOCK_UPDATE)

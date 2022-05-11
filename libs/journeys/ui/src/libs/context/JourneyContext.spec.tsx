@@ -13,7 +13,7 @@ import { JourneyProvider, useJourney } from '.'
 const checkJourney = jest.fn()
 
 const TestComponent = (): ReactElement => {
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   return <Button onClick={checkJourney(journey)}>Test</Button>
 }

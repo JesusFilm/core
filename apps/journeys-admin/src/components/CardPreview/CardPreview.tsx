@@ -73,7 +73,9 @@ export function CardPreview({
   const [stepBlockNextBlockIdUpdate] = useMutation<StepBlockNextBlockIdUpdate>(
     STEP_BLOCK_NEXTBLOCKID_UPDATE
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
+  // const value = useJourney()
+  // console.log('value:', value)
 
   const handleChange = (selectedId: string): void => {
     if (steps == null) return

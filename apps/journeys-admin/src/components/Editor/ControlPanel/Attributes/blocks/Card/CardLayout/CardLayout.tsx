@@ -42,7 +42,7 @@ export function CardLayout(): ReactElement {
   const [cardBlockUpdate] = useMutation<CardBlockLayoutUpdate>(
     CARD_BLOCK_LAYOUT_UPDATE
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const handleLayoutChange = async (selected: boolean): Promise<void> => {
     if (journey != null && cardBlock != null) {
       await cardBlockUpdate({

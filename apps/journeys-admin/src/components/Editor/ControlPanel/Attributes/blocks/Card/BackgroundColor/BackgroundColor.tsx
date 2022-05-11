@@ -66,7 +66,7 @@ export function BackgroundColor(): ReactElement {
         )
   ) as TreeBlock<CardFields> | undefined
 
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   const cardTheme =
     themes[cardBlock?.themeName ?? journey?.themeName ?? 'base'][

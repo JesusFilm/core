@@ -33,7 +33,7 @@ export function Canvas(): ReactElement {
     state: { steps, selectedStep, selectedBlock },
     dispatch
   } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   useEffect(() => {
     if (swiper != null && selectedStep != null && steps != null) {

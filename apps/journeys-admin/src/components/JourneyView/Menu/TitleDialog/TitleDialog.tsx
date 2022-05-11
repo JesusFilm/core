@@ -23,7 +23,7 @@ interface TitleDialogProps {
 
 export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneyTitleUpdate>(JOURNEY_TITLE_UPDATE)
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
   const handleUpdateTitle = async (values: FormikValues): Promise<void> => {

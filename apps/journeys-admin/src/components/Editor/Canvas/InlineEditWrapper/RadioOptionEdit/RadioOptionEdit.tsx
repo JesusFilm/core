@@ -27,7 +27,7 @@ export function RadioOptionEdit({
   const [radioOptionBlockUpdate] = useMutation<RadioOptionBlockUpdateContent>(
     RADIO_OPTION_BLOCK_UPDATE_CONTENT
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const [value, setValue] = useState(label)
 
   async function handleSaveBlock(): Promise<void> {

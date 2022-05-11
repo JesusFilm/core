@@ -23,7 +23,7 @@ export function Size(): ReactElement {
   const [buttonBlockUpdate] =
     useMutation<ButtonBlockUpdateSize>(BUTTON_BLOCK_UPDATE)
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>

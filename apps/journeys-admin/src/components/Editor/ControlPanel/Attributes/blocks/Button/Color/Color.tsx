@@ -24,7 +24,7 @@ export function Color(): ReactElement {
   const [buttonBlockUpdate] =
     useMutation<ButtonBlockUpdateColor>(BUTTON_BLOCK_UPDATE)
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>

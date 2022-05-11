@@ -8,11 +8,9 @@ interface UseJourneyProps {
 
 // Must set initial context for useContext, but it will always be a journey
 // Else JourneyView page will not load
-const JourneyContext = createContext(
-  {} as unknown as UseJourneyProps | undefined
-)
+const JourneyContext = createContext({} as unknown as Journey | undefined)
 
-export function useJourney(): UseJourneyProps | undefined {
+export function useJourney(): Journey | undefined {
   const context = useContext(JourneyContext)
 
   return context
