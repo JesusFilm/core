@@ -330,6 +330,11 @@ export class VideoBlockUpdateInput {
     fullsize?: Nullable<boolean>;
 }
 
+export class ButtonClickEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+}
+
 export class JourneyViewEventCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -638,6 +643,13 @@ export class VideoTriggerBlock implements Block {
     action: Action;
 }
 
+export class ButtonClickEvent implements Event {
+    __typename?: 'ButtonClickEvent';
+    id: string;
+    userId: string;
+    block?: Nullable<ButtonBlock>;
+}
+
 export class JourneyViewEvent implements Event {
     __typename?: 'JourneyViewEvent';
     id: string;
@@ -776,9 +788,9 @@ export abstract class IMutation {
 
     abstract videoBlockUpdate(id: string, journeyId: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
 
+    abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): JourneyViewEvent | Promise<JourneyViewEvent>;
 
-    abstract radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput): RadioQuestionSubmissionEvent | Promise<RadioQuestionSubmissionEvent>;
 
     abstract signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput): SignUpSubmissionEvent | Promise<SignUpSubmissionEvent>;
 

@@ -1,8 +1,8 @@
 import { ReactElement } from 'react'
 import IconButton from '@mui/material/IconButton'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import { useJourney } from '@core/journeys/ui'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { useJourney } from '../../../libs/context'
 import { DeleteBlock } from './DeleteBlock'
 import { Menu } from './Menu'
 

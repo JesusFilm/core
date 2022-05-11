@@ -1,13 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { EditorProvider } from '@core/journeys/ui'
+import { EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { InMemoryCache } from '@apollo/client'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
   ThemeName,
   ThemeMode
 } from '../../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../../libs/context'
 import { Action, NAVIGATE_ACTION_UPDATE, ACTION_DELETE } from './Action'
 import { steps } from './data'
 

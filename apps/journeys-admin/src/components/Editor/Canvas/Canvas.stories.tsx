@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -16,7 +16,6 @@ import {
   ThemeName,
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../libs/context'
 import { Canvas } from '.'
 
 const CanvasStory = {

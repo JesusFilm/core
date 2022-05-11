@@ -29,7 +29,15 @@ export {
   previousBlocksVar,
   treeBlocksVar
 } from './useBlocks/blocks'
-export { useEditor, EditorProvider, ActiveTab, ActiveFab } from './context'
+export {
+  useEditor,
+  EditorProvider,
+  ActiveTab,
+  ActiveFab,
+  useJourney,
+  JourneyProvider,
+  JOURNEY_FIELDS
+} from './context'
 export type {
   SetSelectedStepAction,
   SetSelectedBlockByIdAction

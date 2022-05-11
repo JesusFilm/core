@@ -1,15 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
+import { JourneyViewEventCreateInput } from '../../../__generated__/graphql'
 import { JourneyViewEventResolver } from './journey.resolver'
 
 describe('JourneyViewEventResolver', () => {
   let resolver: JourneyViewEventResolver
-
-  const event = {
+  const input: JourneyViewEventCreateInput = {
     id: '1',
-    __typename: 'JourneyViewEvent',
-    blockId: 'block.id',
-    previousBlockId: 'previousBlock.id',
     journeyId: 'journey.id'
   }
 
@@ -29,8 +26,9 @@ describe('JourneyViewEventResolver', () => {
 
   describe('JourneyViewEventCreate', () => {
     it('returns journeyViewEvent', async () => {
-      expect(await resolver.journeyViewEventCreate('userId', event)).toEqual({
-        ...event,
+      expect(await resolver.journeyViewEventCreate('userId', input)).toEqual({
+        ...input,
+        __typename: 'JourneyViewEvent',
         userId: 'userId'
       })
     })

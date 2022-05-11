@@ -5,7 +5,8 @@ import {
   CARD_FIELDS,
   STEP_FIELDS,
   TreeBlock,
-  transformer
+  transformer,
+  useJourney
 } from '@core/journeys/ui'
 import { ThemeProvider } from '@core/shared/ui'
 import AddIcon from '@mui/icons-material/Add'
@@ -22,7 +23,6 @@ import { StepBlockNextBlockIdUpdate } from '../../../__generated__/StepBlockNext
 import { FramePortal } from '../FramePortal'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { HorizontalSelect } from '../HorizontalSelect'
-import { useJourney } from '../../libs/context'
 import { VideoWrapper } from '../Editor/Canvas/VideoWrapper'
 import { CardWrapper } from '../Editor/Canvas/CardWrapper'
 

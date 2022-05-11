@@ -3,10 +3,9 @@ import FormatAlignLeftRoundedIcon from '@mui/icons-material/FormatAlignLeftRound
 import FormatAlignCenterRoundedIcon from '@mui/icons-material/FormatAlignCenterRounded'
 import FormatAlignRightRoundedIcon from '@mui/icons-material/FormatAlignRightRounded'
 import { gql, useMutation } from '@apollo/client'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import { TypographyBlockUpdateAlign } from '../../../../../../../../__generated__/TypographyBlockUpdateAlign'
 import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
-import { useJourney } from '../../../../../../../libs/context'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
 

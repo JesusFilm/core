@@ -1,5 +1,10 @@
 import { Story, Meta } from '@storybook/react'
-import { TreeBlock, EditorProvider, ActiveFab } from '@core/journeys/ui'
+import {
+  TreeBlock,
+  EditorProvider,
+  ActiveFab,
+  JourneyProvider
+} from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -11,7 +16,6 @@ import {
   ThemeName
 } from '../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
-import { JourneyProvider } from '../../../../../libs/context'
 import { Canvas } from '../../Canvas'
 
 const SignUpEditStory = {

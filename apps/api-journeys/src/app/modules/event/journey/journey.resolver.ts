@@ -17,9 +17,12 @@ export class JourneyViewEventResolver {
   @UseGuards(GqlAuthGuard)
   async journeyViewEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: JourneyViewEventCreateInput & { __typename }
+    @Args('input') input: JourneyViewEventCreateInput
   ): Promise<JourneyViewEvent> {
-    input.__typename = 'JourneyViewEvent'
-    return await this.eventService.save({ ...input, userId })
+    return await this.eventService.save({
+      ...input,
+      __typename: 'JourneyViewEvent',
+      userId
+    })
   }
 }

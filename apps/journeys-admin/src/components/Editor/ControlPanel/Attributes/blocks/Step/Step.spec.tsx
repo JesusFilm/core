@@ -1,7 +1,6 @@
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '../../../../../../libs/context'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey as Journey

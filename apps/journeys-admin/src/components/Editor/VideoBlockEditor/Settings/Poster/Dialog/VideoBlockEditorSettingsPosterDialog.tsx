@@ -1,12 +1,12 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useEffect } from 'react'
+import { useJourney } from '@core/journeys/ui'
 import { Dialog } from '../../../../../Dialog'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
 import { PosterImageBlockCreate } from '../../../../../../../__generated__/PosterImageBlockCreate'
 import { PosterImageBlockUpdate } from '../../../../../../../__generated__/PosterImageBlockUpdate'
 import { VideoBlockPosterImageUpdate } from '../../../../../../../__generated__/VideoBlockPosterImageUpdate'
-import { useJourney } from '../../../../../../libs/context'
 import { ImageBlockEditor } from '../../../../ImageBlockEditor'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 

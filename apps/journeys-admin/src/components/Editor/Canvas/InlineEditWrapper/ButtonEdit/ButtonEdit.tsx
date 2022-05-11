@@ -1,7 +1,6 @@
 import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { Button, TreeBlock } from '@core/journeys/ui'
-import { useJourney } from '../../../../../libs/context'
+import { Button, TreeBlock, useJourney } from '@core/journeys/ui'
 import { ButtonBlockUpdateContent } from '../../../../../../__generated__/ButtonBlockUpdateContent'
 import { ButtonFields } from '../../../../../../__generated__/ButtonFields'
 import { InlineEditInput } from '../InlineEditInput'

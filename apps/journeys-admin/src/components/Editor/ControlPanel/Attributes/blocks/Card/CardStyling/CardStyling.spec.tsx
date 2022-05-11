@@ -1,4 +1,4 @@
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
@@ -12,7 +12,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../../../../libs/context'
 import { CardStyling, CARD_BLOCK_THEME_MODE_UPDATE } from './CardStyling'
 
 const initialBlock: TreeBlock<CardBlock> = {

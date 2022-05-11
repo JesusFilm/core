@@ -1,9 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import { Drawer } from '../../../../../Drawer'
-import { JourneyProvider } from '../../../../../../../libs/context'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import {
   ThemeName,
