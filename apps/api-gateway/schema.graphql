@@ -132,7 +132,6 @@ type CardBlock implements Block {
 
 input CardBlockCreateInput {
   backgroundColor: String
-  coverBlockId: ID
   fullscreen: Boolean
   id: ID
   journeyId: ID!
@@ -143,7 +142,6 @@ input CardBlockCreateInput {
 
 input CardBlockUpdateInput {
   backgroundColor: String
-  coverBlockId: ID
   fullscreen: Boolean
   parentBlockId: ID
   themeMode: ThemeMode
