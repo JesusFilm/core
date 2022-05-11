@@ -1,11 +1,18 @@
 import { createContext, ReactElement, ReactNode, useContext } from 'react'
 import { JourneyFields as Journey } from './__generated__/JourneyFields'
 
+interface UseJourneyProps {
+  journey?: Journey
+  admin?: boolean
+}
+
 // Must set initial context for useContext, but it will always be a journey
 // Else JourneyView page will not load
-const JourneyContext = createContext({} as unknown as Journey | undefined)
+const JourneyContext = createContext(
+  {} as unknown as UseJourneyProps | undefined
+)
 
-export function useJourney(): Journey | undefined {
+export function useJourney(): UseJourneyProps | undefined {
   const context = useContext(JourneyContext)
 
   return context
@@ -13,7 +20,7 @@ export function useJourney(): Journey | undefined {
 
 interface JourneyProviderProps {
   children: ReactNode
-  value?: Journey
+  value?: { journey?: Journey; admin?: boolean }
 }
 
 export function JourneyProvider({
