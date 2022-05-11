@@ -154,10 +154,6 @@ export interface StepViewEventCreateInput {
   id?: string | null;
 }
 
-export interface VideoResponseCreateInput {
-  blockId?: string | null
-}
-
 export interface VideoPlayEventCreateInput {
   blockId: string;
   id?: string | null;
