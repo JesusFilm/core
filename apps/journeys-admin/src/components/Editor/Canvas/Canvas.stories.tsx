@@ -249,8 +249,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'RadioQuestionBlock',
             parentOrder: 2,
             parentBlockId: 'card2.id',
-            label: 'What is Christianity to you?',
-            description: '',
             children: [
               {
                 id: 'radioOption1.id',
@@ -344,8 +342,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
             parentOrder: 2,
-            label: 'Do you need to change to be good enough for God?',
-            description: '',
             children: [
               {
                 id: 'radioOption1.id',
@@ -585,13 +581,14 @@ const Template: Story = () => {
   return (
     <MockedProvider>
       <JourneyProvider
-        value={
-          {
+        value={{
+          journey: {
             id: 'journeyId',
             themeMode: ThemeMode.light,
             themeName: ThemeName.base
-          } as unknown as Journey
-        }
+          } as unknown as Journey,
+          admin: true
+        }}
       >
         <EditorProvider initialState={{ steps: steps }}>
           <Canvas />

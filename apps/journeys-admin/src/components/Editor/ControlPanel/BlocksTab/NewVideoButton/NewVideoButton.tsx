@@ -23,7 +23,7 @@ export const VIDEO_BLOCK_CREATE = gql`
 
 export function NewVideoButton(): ReactElement {
   const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
-  const journey = useJourney()
+  const { journey } = useJourney()
   const {
     state: { selectedStep },
     dispatch

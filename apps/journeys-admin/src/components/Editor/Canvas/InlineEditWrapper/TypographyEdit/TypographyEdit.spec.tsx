@@ -65,7 +65,12 @@ describe('TypographyEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider>
             <TypographyEdit {...props} />
           </EditorProvider>
@@ -83,7 +88,14 @@ describe('TypographyEdit', () => {
   it('calls onDelete when text content deleted', async () => {
     const { getByRole } = render(
       <MockedProvider>
-        <TypographyEdit {...props} />
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <TypographyEdit {...props} />
+        </JourneyProvider>
       </MockedProvider>
     )
     const input = getByRole('textbox')

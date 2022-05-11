@@ -1,8 +1,11 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { TypographyAlign } from '../../../../../../../../__generated__/globalTypes'
-import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../../../__generated__/GetJourney'
 import { TYPOGRAPHY_BLOCK_UPDATE_ALIGN } from './Align'
 import { Align } from '.'
 
@@ -47,6 +50,7 @@ describe('Typography align selector', () => {
       data: {
         typographyBlockUpdate: {
           id: 'id',
+          journeyId: 'journeyId',
           align: TypographyAlign.right
         }
       }
@@ -59,7 +63,7 @@ describe('Typography align selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_ALIGN,
               variables: {
                 id: 'id',
-                journeyId: undefined,
+                journeyId: 'journeyId',
                 input: {
                   align: TypographyAlign.right
                 }
@@ -69,9 +73,16 @@ describe('Typography align selector', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Align />
-        </EditorProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Align />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 

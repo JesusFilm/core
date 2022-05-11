@@ -55,7 +55,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
-      <JourneyProvider value={{ ...journey, admin: false }}>
+      <JourneyProvider value={{ journey, admin: false }}>
         <ThemeProvider
           themeName={journey.themeName}
           themeMode={journey.themeMode}

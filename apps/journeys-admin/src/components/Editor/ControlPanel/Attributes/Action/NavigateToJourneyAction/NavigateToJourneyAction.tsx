@@ -40,7 +40,7 @@ export const NAVIGATE_TO_JOURNEY_ACTION_UPDATE = gql`
 
 export function NavigateToJourneyAction(): ReactElement {
   const { state } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined

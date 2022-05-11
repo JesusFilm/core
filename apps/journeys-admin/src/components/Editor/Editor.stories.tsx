@@ -262,9 +262,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'radioQuestion1.id',
     __typename: 'RadioQuestionBlock',
     parentBlockId: 'card2.id',
-    parentOrder: 2,
-    label: '',
-    description: ''
+    parentOrder: 2
   },
   {
     id: 'radioOption1.id',
@@ -356,9 +354,7 @@ const blocks: GetJourney_journey_blocks[] = [
     id: 'radioQuestion2.id',
     __typename: 'RadioQuestionBlock',
     parentBlockId: 'card3.id',
-    parentOrder: 2,
-    label: '',
-    description: ''
+    parentOrder: 2
   },
   {
     id: 'radioOption4.id',

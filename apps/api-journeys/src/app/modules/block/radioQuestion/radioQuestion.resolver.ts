@@ -7,8 +7,7 @@ import {
   RadioOptionBlockCreateInput,
   RadioQuestionBlockCreateInput,
   UserJourneyRole,
-  RadioOptionBlockUpdateInput,
-  RadioQuestionBlockUpdateInput
+  RadioOptionBlockUpdateInput
 } from '../../../__generated__/graphql'
 import { BlockService } from '../block.service'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
@@ -92,8 +91,8 @@ export class RadioQuestionBlockResolver {
   async radioQuestionBlockUpdate(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string,
-    @Args('input') input: RadioQuestionBlockUpdateInput
+    @Args('parentBlockId') parentBlockId: string
   ): Promise<RadioQuestionBlock> {
-    return await this.blockService.update(id, input)
+    return await this.blockService.update(id, parentBlockId)
   }
 }

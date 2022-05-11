@@ -133,7 +133,7 @@ const image: TreeBlock<ImageBlock> = {
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
     <ThemeProvider>
-      <JourneyProvider value={journey}>
+      <JourneyProvider value={{ journey, admin: true }}>
         <EditorProvider
           initialState={{
             ...args,

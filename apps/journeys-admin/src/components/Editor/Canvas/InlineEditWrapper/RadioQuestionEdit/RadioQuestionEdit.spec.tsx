@@ -18,8 +18,6 @@ describe('RadioQuestionEdit', () => {
       parentBlockId: 'card.id',
       parentOrder: 0,
       id: 'radioQuestion.id',
-      label: 'heading',
-      description: 'description',
       children: children ?? []
     }
   }
@@ -65,7 +63,12 @@ describe('RadioQuestionEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider>
             <RadioQuestionEdit
               {...props([
@@ -98,7 +101,12 @@ describe('RadioQuestionEdit', () => {
   it('hides add option button if over 11 options', async () => {
     const { getAllByRole } = render(
       <MockedProvider mocks={[]}>
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider>
             <RadioQuestionEdit
               {...props([

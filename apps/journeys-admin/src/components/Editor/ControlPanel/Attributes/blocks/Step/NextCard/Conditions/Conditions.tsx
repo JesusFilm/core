@@ -30,7 +30,7 @@ export function Conditions(): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
   const theme = useTheme()
   const block = selectedBlock as TreeBlock<StepFields>
 

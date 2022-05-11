@@ -132,7 +132,6 @@ type CardBlock implements Block {
 
 input CardBlockCreateInput {
   backgroundColor: String
-  coverBlockId: ID
   fullscreen: Boolean
   id: ID
   journeyId: ID!
@@ -143,7 +142,6 @@ input CardBlockCreateInput {
 
 input CardBlockUpdateInput {
   backgroundColor: String
-  coverBlockId: ID
   fullscreen: Boolean
   parentBlockId: ID
   themeMode: ThemeMode
@@ -473,7 +471,7 @@ type Mutation {
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioOptionBlockUpdate(id: ID!, input: RadioOptionBlockUpdateInput!, journeyId: ID!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
-  radioQuestionBlockUpdate(id: ID!, input: RadioQuestionBlockUpdateInput!, journeyId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, parentBlockId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent! @join__field(graph: JOURNEYS)
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
@@ -571,10 +569,8 @@ input RadioOptionBlockUpdateInput {
 }
 
 type RadioQuestionBlock implements Block {
-  description: String
   id: ID!
   journeyId: ID!
-  label: String!
   parentBlockId: ID
   parentOrder: Int
 }
@@ -582,14 +578,7 @@ type RadioQuestionBlock implements Block {
 input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
-  label: String!
   parentBlockId: ID!
-}
-
-input RadioQuestionBlockUpdateInput {
-  description: String
-  label: String
-  parentBlockId: ID
 }
 
 type RadioQuestionResponse implements Response {
@@ -876,7 +865,7 @@ type Video
   """
   slug is a permanent link to the video. It should only be appended, not edited or deleted
   """
-  slug: [Translation!]! @join__field(graph: VIDEOS)
+  slug(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)

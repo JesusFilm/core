@@ -14,20 +14,21 @@ import { routeParser } from '../src/libs/routeParser/routeParser'
 import { VideoType } from '../__generated__/globalTypes'
 import 'video.js/dist/video-js.css'
 import { VideoListList } from '../src/components/Videos/VideoList/List/VideoListList'
-import { LanguageProvider } from '../src/libs/languageContext/LanguageContext'
+import {
+  LanguageProvider,
+  useLanguage
+} from '../src/libs/languageContext/LanguageContext'
 
 export const GET_VIDEO = gql`
-  query GetVideo($id: ID!) {
+  query GetVideo($id: ID!, $languageId: ID) {
     video(id: $id, idType: slug) {
       id
       type
       image
-      description {
-        primary
+      description(languageId: $languageId, primary: true) {
         value
       }
-      title {
-        primary
+      title(languageId: $languageId, primary: true) {
         value
       }
       variant {
@@ -36,21 +37,17 @@ export const GET_VIDEO = gql`
       }
       episodes {
         id
-        title {
-          primary
+        title(languageId: $languageId, primary: true) {
           value
         }
         image
-        imageAlt {
-          primary
+        imageAlt(languageId: $languageId, primary: true) {
           value
         }
-        snippet {
-          primary
+        snippet(languageId: $languageId, primary: true) {
           value
         }
-        slug {
-          primary
+        slug(languageId: $languageId, primary: true) {
           value
         }
         episodeIds
@@ -59,26 +56,23 @@ export const GET_VIDEO = gql`
           hls
         }
       }
-      slug {
+      slug(languageId: $languageId, primary: true) {
         value
-        primary
       }
     }
   }
 `
 
 export const GET_VIDEO_SIBLINGS = gql`
-  query GetVideoSiblings($playlistId: ID!) {
+  query GetVideoSiblings($playlistId: ID!, $languageId: ID) {
     episodes(playlistId: $playlistId, idType: slug) {
       id
       type
       image
-      snippet {
-        primary
+      snippet(languageId: $languageId, primary: true) {
         value
       }
-      title {
-        primary
+      title(languageId: $languageId, primary: true) {
         value
       }
       variant {
@@ -86,8 +80,7 @@ export const GET_VIDEO_SIBLINGS = gql`
         hls
       }
       episodeIds
-      slug {
-        primary
+      slug(languageId: $languageId, primary: true) {
         value
       }
     }
@@ -95,11 +88,10 @@ export const GET_VIDEO_SIBLINGS = gql`
 `
 
 export const GET_LANGUAGE = gql`
-  query GetLanguage($id: ID!) {
+  query GetLanguage($id: ID!, $languageId: ID) {
     language(id: $id) {
       id
-      name {
-        primary
+      name(languageId: $languageId, primary: true) {
         value
       }
     }
@@ -117,23 +109,36 @@ export default function SeoFriendly(): ReactElement {
   const locale = router.locale ?? router.defaultLocale
   const { slug } = router.query
   const { routes, tags, audioLanguage, subtitleLanguage } = routeParser(slug)
+  const languageContext = useLanguage()
 
   const { data, loading } = useQuery(GET_VIDEO, {
-    variables: { id: routes?.[routes.length - 1] }
+    variables: {
+      id: routes?.[routes.length - 1],
+      languageId: languageContext?.id ?? '529'
+    }
   })
 
   const { data: audioLanguageData } = useQuery(GET_LANGUAGE, {
-    variables: { id: audioLanguage }
+    variables: {
+      id: audioLanguage,
+      languageId: router.locale ?? router.defaultLocale
+    }
   })
 
   const { data: subtitleLanguageData } = useQuery(GET_LANGUAGE, {
-    variables: { id: subtitleLanguage }
+    variables: {
+      id: subtitleLanguage,
+      languageId: router.locale ?? router.defaultLocale
+    }
   })
 
   const playlistId = routes?.[routes.length - 2]
   const { data: siblingsData } = useQuery(GET_VIDEO_SIBLINGS, {
     skip: playlistId == null,
-    variables: { playlistId: playlistId ?? '' }
+    variables: {
+      playlistId: playlistId ?? '',
+      languageId: router.locale ?? router.defaultLocale
+    }
   })
 
   useEffect(() => {
@@ -195,7 +200,7 @@ export default function SeoFriendly(): ReactElement {
               <Image
                 src={data.video.image}
                 layout="fill"
-                alt={data.video.title.find((title) => title.primary)?.value}
+                alt={data.video.title[0]?.value}
               />
             </Box>
             <Box>
@@ -218,7 +223,7 @@ export default function SeoFriendly(): ReactElement {
                   )}
                   <Stack justifyContent="center" direction="row">
                     <Typography variant="h1">
-                      {data.video.title.find((title) => title.primary)?.value}
+                      {data.video.title[0]?.value}
                     </Typography>
                   </Stack>
                   {data.video.type !== VideoType.playlist && (
@@ -228,19 +233,11 @@ export default function SeoFriendly(): ReactElement {
                       </Typography>
                       <Typography variant="subtitle1" mx={4}>
                         Audio:
-                        {
-                          audioLanguageData?.language.name.find(
-                            (n) => n.primary
-                          )?.value
-                        }
+                        {audioLanguageData?.language.name[0]?.value}
                       </Typography>
                       <Typography variant="subtitle1">
                         Subtitle:
-                        {
-                          subtitleLanguageData?.language.name.find(
-                            (n) => n.primary
-                          )?.value
-                        }
+                        {subtitleLanguageData?.language.name[0]?.value}
                       </Typography>
                     </Stack>
                   )}
@@ -250,7 +247,7 @@ export default function SeoFriendly(): ReactElement {
                     </Typography>
                   )}
                   <Typography variant="caption">
-                    {data.video.description.find((d) => d.primary).value}
+                    {data.video.description[0]?.value}
                   </Typography>
                 </Stack>
               </Stack>

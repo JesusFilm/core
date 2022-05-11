@@ -26,7 +26,7 @@ export const IMAGE_BLOCK_CREATE = gql`
 
 export function NewImageButton(): ReactElement {
   const [imageBlockCreate] = useMutation<ImageBlockCreate>(IMAGE_BLOCK_CREATE)
-  const journey = useJourney()
+  const { journey } = useJourney()
   const {
     state: { selectedStep },
     dispatch

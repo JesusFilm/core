@@ -28,7 +28,7 @@ export function SignUpEdit({
     SIGN_UP_BLOCK_UPDATE_CONTENT
   )
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const [value, setValue] = useState(submitLabel ?? '')
 
   async function handleSaveBlock(): Promise<void> {

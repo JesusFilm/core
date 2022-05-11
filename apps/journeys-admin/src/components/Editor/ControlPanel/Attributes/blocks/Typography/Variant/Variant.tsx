@@ -25,7 +25,7 @@ export function Variant(): ReactElement {
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateVariant>(
     TYPOGRAPHY_BLOCK_UPDATE_VARIANT
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TypographyBlock>

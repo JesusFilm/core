@@ -30,7 +30,7 @@ export function NavigateToBlockAction(): ReactElement {
   const {
     state: { steps, selectedBlock }
   } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
   const currentBlock = selectedBlock as
     | TreeBlock<ButtonBlock>
     | TreeBlock<VideoBlock>

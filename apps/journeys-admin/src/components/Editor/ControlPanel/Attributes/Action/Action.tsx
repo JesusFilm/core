@@ -65,7 +65,7 @@ export const actions = [
 
 export function Action(): ReactElement {
   const { state } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   // Add addtional types here to use this component for that block
   const selectedBlock = state.selectedBlock as

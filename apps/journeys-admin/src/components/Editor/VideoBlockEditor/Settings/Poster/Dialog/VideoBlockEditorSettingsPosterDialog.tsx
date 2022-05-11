@@ -86,7 +86,7 @@ export function VideoBlockEditorSettingsPosterDialog({
   onLoading,
   onLoad
 }: VideoBlockEditorSettingsPosterDialogProps): ReactElement {
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   const [blockDelete, { error: blockDeleteError }] =
     useMutation<BlockDeleteForPosterImage>(BLOCK_DELETE_FOR_POSTER_IMAGE)
