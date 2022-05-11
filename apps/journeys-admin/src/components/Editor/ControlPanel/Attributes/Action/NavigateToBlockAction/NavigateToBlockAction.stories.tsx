@@ -33,7 +33,7 @@ export const NavigateToBlock: Story = () => {
       <Box>
         <Typography>Default</Typography>
         <MockedProvider>
-          <JourneyProvider value={journeyTheme}>
+          <JourneyProvider value={{ journey: journeyTheme }}>
             <EditorProvider initialState={{ steps }}>
               <NavigateToBlockAction />
             </EditorProvider>
@@ -44,7 +44,7 @@ export const NavigateToBlock: Story = () => {
       <Box>
         <Typography>Selected card</Typography>
         <MockedProvider>
-          <JourneyProvider value={journeyTheme}>
+          <JourneyProvider value={{ journey: journeyTheme }}>
             <EditorProvider initialState={{ selectedBlock, steps }}>
               <NavigateToBlockAction />
             </EditorProvider>

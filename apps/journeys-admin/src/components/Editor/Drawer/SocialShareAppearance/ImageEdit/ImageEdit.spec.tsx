@@ -39,14 +39,14 @@ describe('ImageEdit', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               primaryImageBlock: {
                 src: 'img.src',
                 alt: 'image.alt'
               }
             } as unknown as Journey
-          }
+          }}
         >
           <ImageEdit />
         </JourneyProvider>
@@ -125,7 +125,9 @@ describe('ImageEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journey.id' } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { id: 'journey.id' } as unknown as Journey }}
+        >
           <ImageEdit />
         </JourneyProvider>
       </MockedProvider>
@@ -195,12 +197,12 @@ describe('ImageEdit', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journey.id',
               primaryImageBlock: { ...image }
             } as unknown as Journey
-          }
+          }}
         >
           <ImageEdit />
         </JourneyProvider>
@@ -287,12 +289,12 @@ describe('ImageEdit', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journey.id',
               primaryImageBlock: { ...image }
             } as unknown as Journey
-          }
+          }}
         >
           <ImageEdit />
         </JourneyProvider>

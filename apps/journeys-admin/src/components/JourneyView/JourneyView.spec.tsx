@@ -48,7 +48,7 @@ describe('JourneyView', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey }}>
             <JourneyView />
           </JourneyProvider>
         </SnackbarProvider>

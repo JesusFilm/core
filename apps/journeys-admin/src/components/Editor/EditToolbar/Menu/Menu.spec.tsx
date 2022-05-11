@@ -100,12 +100,12 @@ describe('EditToolbar Menu', () => {
         <SnackbarProvider>
           <MockedProvider>
             <JourneyProvider
-              value={
-                {
+              value={{
+                journey: {
                   id: 'journeyId',
                   slug: 'my-journey'
                 } as unknown as Journey
-              }
+              }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
                 <Menu />

@@ -58,7 +58,7 @@ const journey: Journey = {
 describe('JourneyContext', () => {
   it('should pass through the journey props', () => {
     const { getByRole } = render(
-      <JourneyProvider value={journey}>
+      <JourneyProvider value={{ journey }}>
         <TestComponent />
       </JourneyProvider>
     )

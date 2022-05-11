@@ -36,13 +36,13 @@ describe('CardPreview', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <CardPreview onSelect={onSelect} steps={[step]} />
         </JourneyProvider>
@@ -96,13 +96,13 @@ describe('CardPreview', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
         </JourneyProvider>
@@ -189,13 +189,13 @@ describe('CardPreview', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
         </JourneyProvider>
@@ -288,13 +288,13 @@ describe('CardPreview', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <CardPreview steps={[step]} onSelect={onSelect} showAddButton />
         </JourneyProvider>
@@ -383,13 +383,13 @@ describe('CardPreview', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <CardPreview steps={[step]} onSelect={onSelect} showAddButton />
         </JourneyProvider>

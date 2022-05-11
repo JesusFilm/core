@@ -90,7 +90,7 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <JourneyProvider value={args.journey}>
+    <JourneyProvider value={{ journey: args.journey }}>
       <Menu {...args} />
     </JourneyProvider>
   </MockedProvider>

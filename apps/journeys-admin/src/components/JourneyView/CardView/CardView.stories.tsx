@@ -16,13 +16,13 @@ const CardViewStory = {
 const Template: Story<Omit<CardViewProps, 'slug'>> = ({ ...args }) => (
   <MockedProvider>
     <JourneyProvider
-      value={
-        {
+      value={{
+        journey: {
           id: 'journeyId',
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base
         } as unknown as Journey
-      }
+      }}
     >
       <CardView slug="my-journey" {...args} />
     </JourneyProvider>

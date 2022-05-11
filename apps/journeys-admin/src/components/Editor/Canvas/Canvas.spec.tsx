@@ -31,13 +31,13 @@ describe('Canvas', () => {
     const { getByTestId } = render(
       <ThemeProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <EditorProvider
             initialState={{

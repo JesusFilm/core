@@ -20,12 +20,12 @@ describe('DescriptionEdit', () => {
     const { getByText } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               description: 'journey description',
               seoDescription: 'social description'
             } as unknown as Journey
-          }
+          }}
         >
           <DescriptionEdit />
         </JourneyProvider>
@@ -37,12 +37,12 @@ describe('DescriptionEdit', () => {
     const { getByText } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               description: 'journey description',
               seoDescription: null
             } as unknown as Journey
-          }
+          }}
         >
           <DescriptionEdit />
         </JourneyProvider>
@@ -54,12 +54,12 @@ describe('DescriptionEdit', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               description: null,
               seoDescription: null
             } as unknown as Journey
-          }
+          }}
         >
           <DescriptionEdit />
         </JourneyProvider>
@@ -95,7 +95,9 @@ describe('DescriptionEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journey.id' } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { id: 'journey.id' } as unknown as Journey }}
+        >
           <DescriptionEdit />
         </JourneyProvider>
       </MockedProvider>
@@ -113,7 +115,9 @@ describe('DescriptionEdit', () => {
 
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ id: 'journey.id' } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { id: 'journey.id' } as unknown as Journey }}
+        >
           <DescriptionEdit />
         </JourneyProvider>
       </MockedProvider>

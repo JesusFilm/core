@@ -17,12 +17,12 @@ describe('TitleEdit', () => {
     const { getByText } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               title: 'journey title',
               seoTitle: 'Social share title'
             } as unknown as Journey
-          }
+          }}
         >
           <TitleEdit />
         </JourneyProvider>
@@ -35,12 +35,12 @@ describe('TitleEdit', () => {
     const { getByText } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               title: 'journey title',
               seoTitle: null
             } as unknown as Journey
-          }
+          }}
         >
           <TitleEdit />
         </JourneyProvider>
@@ -77,7 +77,9 @@ describe('TitleEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journey.id' } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { id: 'journey.id' } as unknown as Journey }}
+        >
           <TitleEdit />
         </JourneyProvider>
       </MockedProvider>
@@ -94,7 +96,9 @@ describe('TitleEdit', () => {
 
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ id: 'journey.id' } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { id: 'journey.id' } as unknown as Journey }}
+        >
           <TitleEdit />
         </JourneyProvider>
       </MockedProvider>

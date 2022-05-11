@@ -167,7 +167,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey }}>
             <VideoBlockEditorSettingsPosterDialog
               selectedBlock={null}
               parentBlockId={video.id}
@@ -245,7 +245,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey }}>
             <VideoBlockEditorSettingsPosterDialog
               selectedBlock={existingImageBlock}
               parentBlockId={video.id}
@@ -324,7 +324,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey }}>
             <VideoBlockEditorSettingsPosterDialog
               selectedBlock={image}
               parentBlockId={video.id}

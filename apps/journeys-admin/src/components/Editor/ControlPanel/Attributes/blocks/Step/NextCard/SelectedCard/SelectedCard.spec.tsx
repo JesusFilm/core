@@ -65,13 +65,13 @@ describe('Selected Card', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <EditorProvider initialState={{ steps, selectedBlock }}>
             <SelectedCard />

@@ -109,7 +109,9 @@ describe('DeleteBlock', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <JourneyProvider
+            value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
               <DeleteBlock variant="button" />
             </EditorProvider>
@@ -175,7 +177,9 @@ describe('DeleteBlock', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <JourneyProvider
+            value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
               <DeleteBlock variant="list-item" />
             </EditorProvider>
@@ -239,7 +243,9 @@ describe('DeleteBlock', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <JourneyProvider
+            value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          >
             <EditorProvider initialState={{ selectedBlock }}>
               <DeleteBlock variant="button" />
             </EditorProvider>
@@ -309,7 +315,9 @@ describe('DeleteBlock', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <JourneyProvider
+            value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          >
             <EditorProvider initialState={{ selectedBlock }}>
               <DeleteBlock variant="list-item" />
             </EditorProvider>

@@ -26,13 +26,13 @@ describe('NextCard', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <EditorProvider initialState={{ selectedBlock }}>
             <NextCard />

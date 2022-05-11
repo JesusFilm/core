@@ -127,7 +127,9 @@ describe('Button', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewButtonButton />
           </EditorProvider>
@@ -234,7 +236,9 @@ describe('Button', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewButtonButton />
           </EditorProvider>

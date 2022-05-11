@@ -22,7 +22,7 @@ const Template: Story = (args) => {
 
   return (
     <MockedProvider mocks={args.mocks}>
-      <JourneyProvider value={defaultJourney}>
+      <JourneyProvider value={{ journey: defaultJourney }}>
         <DescriptionDialog open={open} onClose={() => setOpen(false)} />
       </JourneyProvider>
     </MockedProvider>

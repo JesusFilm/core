@@ -63,7 +63,9 @@ describe('Typography', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewTypographyButton />
           </EditorProvider>
@@ -118,7 +120,9 @@ describe('Typography', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewTypographyButton />
           </EditorProvider>

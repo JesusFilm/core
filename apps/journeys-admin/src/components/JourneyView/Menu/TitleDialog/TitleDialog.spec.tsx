@@ -12,7 +12,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
-          <JourneyProvider value={defaultJourney}>
+          <JourneyProvider value={{ journey: defaultJourney }}>
             <TitleDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -58,7 +58,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={defaultJourney}>
+          <JourneyProvider value={{ journey: defaultJourney }}>
             <TitleDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -91,7 +91,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={defaultJourney}>
+          <JourneyProvider value={{ journey: defaultJourney }}>
             <TitleDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>

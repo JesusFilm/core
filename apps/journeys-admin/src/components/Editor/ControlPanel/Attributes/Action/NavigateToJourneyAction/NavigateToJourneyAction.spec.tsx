@@ -77,7 +77,7 @@ describe('NavigateToJourneyAction', () => {
           }
         ]}
       >
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey }}>
           <EditorProvider initialState={{ selectedBlock }}>
             <NavigateToJourneyAction />
           </EditorProvider>
@@ -151,7 +151,7 @@ describe('NavigateToJourneyAction', () => {
         ]}
         cache={cache}
       >
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey }}>
           <EditorProvider initialState={{ selectedBlock }}>
             <NavigateToJourneyAction />
           </EditorProvider>

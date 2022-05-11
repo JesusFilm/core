@@ -44,13 +44,13 @@ describe('Step', () => {
         <MockedProvider>
           <ThemeProvider>
             <JourneyProvider
-              value={
-                {
+              value={{
+                journey: {
                   id: 'journeyId',
                   themeMode: ThemeMode.light,
                   themeName: ThemeName.base
                 } as unknown as Journey
-              }
+              }}
             >
               <EditorProvider initialState={{ selectedBlock: step }}>
                 <Drawer />

@@ -58,7 +58,9 @@ describe('SignUpEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
           <EditorProvider>
             <SignUpEdit {...props} />
           </EditorProvider>

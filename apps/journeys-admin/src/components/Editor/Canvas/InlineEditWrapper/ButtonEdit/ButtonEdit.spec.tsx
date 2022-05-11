@@ -63,7 +63,9 @@ describe('ButtonEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
           <EditorProvider>
             <ButtonEdit {...props} />
           </EditorProvider>

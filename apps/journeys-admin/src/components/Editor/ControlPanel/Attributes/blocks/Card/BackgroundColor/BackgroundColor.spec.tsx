@@ -64,7 +64,7 @@ describe('BackgroundColor', () => {
     const { getByTestId, getByRole, getAllByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <BackgroundColor />
             </EditorProvider>
@@ -125,7 +125,7 @@ describe('BackgroundColor', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <BackgroundColor />
             </EditorProvider>

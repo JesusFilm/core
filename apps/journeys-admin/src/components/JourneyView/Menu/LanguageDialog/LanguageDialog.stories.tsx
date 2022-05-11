@@ -115,7 +115,7 @@ const Template: Story = () => {
         }
       ]}
     >
-      <JourneyProvider value={defaultJourney}>
+      <JourneyProvider value={{ journey: defaultJourney }}>
         <LanguageDialog open={open} onClose={() => setOpen(false)} />
       </JourneyProvider>
     </MockedProvider>

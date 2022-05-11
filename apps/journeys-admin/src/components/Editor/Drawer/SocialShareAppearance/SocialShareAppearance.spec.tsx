@@ -25,7 +25,7 @@ describe('SocialShareAppearance', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ slug } as unknown as Journey}>
+        <JourneyProvider value={{ journey: { slug } as unknown as Journey }}>
           <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
@@ -46,7 +46,7 @@ describe('SocialShareAppearance', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ slug } as unknown as Journey}>
+        <JourneyProvider value={{ journey: { slug } as unknown as Journey }}>
           <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
@@ -65,7 +65,9 @@ describe('SocialShareAppearance', () => {
   it('should disable share buttons  and show tool tip if journey is not published', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ publishedAt: null } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { publishedAt: null } as unknown as Journey }}
+        >
           <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>

@@ -86,7 +86,9 @@ describe('MoveBlockButton', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
           <EditorProvider>
             <MoveBlockButtons selectedBlock={block2} selectedStep={step} />
           </EditorProvider>
@@ -114,7 +116,9 @@ describe('MoveBlockButton', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
           <EditorProvider>
             <MoveBlockButtons selectedBlock={block1} selectedStep={step} />
           </EditorProvider>

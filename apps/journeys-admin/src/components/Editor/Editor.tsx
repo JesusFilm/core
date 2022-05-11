@@ -30,7 +30,7 @@ export function Editor({
       : undefined
 
   return (
-    <JourneyProvider value={journey}>
+    <JourneyProvider value={{ journey }}>
       <EditorProvider
         initialState={{
           steps,

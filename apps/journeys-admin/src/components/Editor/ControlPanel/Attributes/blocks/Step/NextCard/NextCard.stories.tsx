@@ -99,7 +99,7 @@ const journeyTheme = {
 const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
-      <JourneyProvider value={journeyTheme}>
+      <JourneyProvider value={{ journey: journeyTheme }}>
         <EditorProvider
           initialState={{
             ...args,

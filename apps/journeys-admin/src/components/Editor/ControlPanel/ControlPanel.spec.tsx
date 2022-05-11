@@ -71,13 +71,13 @@ describe('ControlPanel', () => {
     const { getByTestId, getByText, getByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
             <ControlPanel />
@@ -99,13 +99,13 @@ describe('ControlPanel', () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
             <ControlPanel />
@@ -125,13 +125,13 @@ describe('ControlPanel', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
             <ControlPanel />
@@ -182,13 +182,13 @@ describe('ControlPanel', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
@@ -273,13 +273,13 @@ describe('ControlPanel', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
@@ -430,13 +430,13 @@ describe('ControlPanel', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
@@ -494,13 +494,13 @@ describe('ControlPanel', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
@@ -561,13 +561,13 @@ describe('ControlPanel', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
@@ -670,13 +670,13 @@ describe('ControlPanel', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
             } as unknown as Journey
-          }
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
