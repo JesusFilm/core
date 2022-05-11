@@ -1,9 +1,9 @@
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock, EditorProvider } from '../..'
-import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
+import { VideoPlayEventStateEnum } from '../../../__generated__/globalTypes'
 import { VideoFields } from './__generated__/VideoFields'
-import { Video, VIDEO_RESPONSE_CREATE } from '.'
+import { Video, VIDEO_PLAY_EVENT_CREATE } from '.'
 
 const block: TreeBlock<VideoFields> = {
   __typename: 'VideoBlock',
@@ -59,18 +59,18 @@ describe('Video', () => {
         mocks={[
           {
             request: {
-              query: VIDEO_RESPONSE_CREATE,
+              query: VIDEO_PLAY_EVENT_CREATE,
               variables: {
                 id: 'uuid',
                 blockId: 'video0.id',
-                state: VideoResponseStateEnum.PLAYING,
+                state: VideoPlayEventStateEnum.PLAYING,
                 position: 30
               }
             },
             result: {
               data: {
                 id: 'uuid',
-                state: VideoResponseStateEnum.PLAYING,
+                state: VideoPlayEventStateEnum.PLAYING,
                 position: 30
               }
             }

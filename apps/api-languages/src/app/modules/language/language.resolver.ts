@@ -7,7 +7,7 @@ import {
   Parent
 } from '@nestjs/graphql'
 import { TranslationField } from '@core/nest/decorators'
-import { Language } from '../../__generated__/graphql'
+import { Language, LanguageIdType } from '../../__generated__/graphql'
 import { LanguageService } from './language.service'
 
 @Resolver('Language')
@@ -23,8 +23,13 @@ export class LanguageResolver {
   }
 
   @Query()
-  async language(@Args('id') id: string): Promise<Language> {
-    return await this.languageService.get(id)
+  async language(
+    @Args('id') id: string,
+    @Args('idType') idType = LanguageIdType.databaseId
+  ): Promise<Language> {
+    return idType === LanguageIdType.databaseId
+      ? await this.languageService.get(id)
+      : await this.languageService.getByBcp47(id)
   }
 
   @ResolveField()

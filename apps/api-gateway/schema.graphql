@@ -156,7 +156,7 @@ type Country
 {
   continent(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
   id: ID! @join__field(graph: LANGUAGES)
-  image: String! @join__field(graph: LANGUAGES)
+  image: String @join__field(graph: LANGUAGES)
   languages: [Language!]! @join__field(graph: LANGUAGES)
   latitude: Float! @join__field(graph: LANGUAGES)
   longitude: Float! @join__field(graph: LANGUAGES)
@@ -404,6 +404,20 @@ input JourneyUpdateInput {
   title: String
 }
 
+type JourneyViewEvent implements Event {
+  id: ID!
+  journey: Journey
+  userId: ID!
+}
+
+input JourneyViewEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  journeyId: ID!
+}
+
 type Language
   @join__owner(graph: LANGUAGES)
   @join__type(graph: LANGUAGES, key: "id")
@@ -414,6 +428,11 @@ type Language
   id: ID! @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
   name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+}
+
+enum LanguageIdType {
+  bcp47
+  databaseId
 }
 
 type LinkAction implements Action {
@@ -450,6 +469,7 @@ type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioOptionBlockUpdate(id: ID!, input: RadioOptionBlockUpdateInput!, journeyId: ID!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
@@ -520,7 +540,7 @@ type Query {
   episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
-  language(id: ID!): Language @join__field(graph: LANGUAGES)
+  language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
   video(id: ID!, idType: IdType): Video! @join__field(graph: VIDEOS)

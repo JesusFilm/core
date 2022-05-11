@@ -630,6 +630,20 @@ interface Event {
   userId: ID!
 }
 
+input JourneyViewEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  journeyId: ID!
+}
+
+type JourneyViewEvent implements Event {
+  id: ID!
+  userId: ID!
+  journey: Journey
+}
+
 input RadioQuestionSubmissionEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -873,6 +887,7 @@ extend type Mutation {
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
