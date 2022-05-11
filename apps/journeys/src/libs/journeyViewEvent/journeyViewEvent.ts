@@ -21,8 +21,7 @@ export async function journeyViewEvent({
       }
     `,
     variables: {
-      id,
-      journeyId
+      input: { id, journeyId }
     }
   })
 }
