@@ -7,7 +7,8 @@ import {
   BlockRenderer,
   useEditor,
   ActiveTab,
-  ActiveFab
+  ActiveFab,
+  useJourney
 } from '@core/journeys/ui'
 import { ThemeProvider } from '@core/shared/ui'
 import SwiperCore from 'swiper'
@@ -15,12 +16,10 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { FramePortal } from '../../FramePortal'
 import { DRAWER_WIDTH } from '../Drawer'
 import 'swiper/swiper.min.css'
-import { useJourney } from '../../../libs/context'
 import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import { VideoWrapper } from './VideoWrapper'
-import { CardWrapper } from './CardWrapper'
 
 const EDGE_SLIDE_WIDTH = 24
 const MIN_SPACE_BETWEEN = 16
@@ -155,8 +154,7 @@ export function Canvas(): ReactElement {
                           RadioQuestionWrapper: InlineEditWrapper,
                           RadioOptionWrapper: InlineEditWrapper,
                           SignUpWrapper: InlineEditWrapper,
-                          VideoWrapper,
-                          CardWrapper
+                          VideoWrapper
                         }}
                       />
                     </Box>

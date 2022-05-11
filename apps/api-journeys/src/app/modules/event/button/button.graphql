@@ -1,0 +1,17 @@
+input ButtonClickEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+}
+
+type ButtonClickEvent implements Event {
+  id: ID!
+  userId: ID!
+  block: ButtonBlock
+}
+
+extend type Mutation {
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
+}

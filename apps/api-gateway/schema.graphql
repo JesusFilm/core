@@ -62,6 +62,21 @@ input ButtonBlockUpdateInput {
   variant: ButtonVariant
 }
 
+type ButtonClickEvent implements Event {
+  block: ButtonBlock
+  id: ID!
+  userId: ID!
+}
+
+input ButtonClickEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+}
+
 enum ButtonColor {
   error
   inherit
@@ -133,6 +148,25 @@ input CardBlockUpdateInput {
   parentBlockId: ID
   themeMode: ThemeMode
   themeName: ThemeName
+}
+
+type Country
+  @join__owner(graph: LANGUAGES)
+  @join__type(graph: LANGUAGES, key: "id")
+{
+  continent(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  id: ID! @join__field(graph: LANGUAGES)
+  image: String @join__field(graph: LANGUAGES)
+  languages: [Language!]! @join__field(graph: LANGUAGES)
+  latitude: Float! @join__field(graph: LANGUAGES)
+  longitude: Float! @join__field(graph: LANGUAGES)
+  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  population: Int! @join__field(graph: LANGUAGES)
+
+  """
+  slug is a permanent link to the country. It should only be appended, not edited or deleted
+  """
+  slug(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
 }
 
 """DateTime custom scalar"""
@@ -370,6 +404,20 @@ input JourneyUpdateInput {
   title: String
 }
 
+type JourneyViewEvent implements Event {
+  id: ID!
+  journey: Journey
+  userId: ID!
+}
+
+input JourneyViewEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  journeyId: ID!
+}
+
 type Language
   @join__owner(graph: LANGUAGES)
   @join__type(graph: LANGUAGES, key: "id")
@@ -380,6 +428,11 @@ type Language
   id: ID! @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
   name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+}
+
+enum LanguageIdType {
+  bcp47
+  databaseId
 }
 
 type LinkAction implements Action {
@@ -406,6 +459,7 @@ type Mutation {
   blockUpdateNavigateToJourneyAction(id: ID!, input: NavigateToJourneyActionInput!, journeyId: ID!): NavigateToJourneyAction! @join__field(graph: JOURNEYS)
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @join__field(graph: JOURNEYS)
   buttonBlockUpdate(id: ID!, input: ButtonBlockUpdateInput!, journeyId: ID!): ButtonBlock @join__field(graph: JOURNEYS)
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
@@ -415,6 +469,7 @@ type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioOptionBlockUpdate(id: ID!, input: RadioOptionBlockUpdateInput!, journeyId: ID!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
@@ -480,10 +535,12 @@ input NavigateToJourneyActionInput {
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   adminJourneys: [Journey!]! @join__field(graph: JOURNEYS)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
+  country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
-  language(id: ID!): Language @join__field(graph: LANGUAGES)
+  language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
   video(id: ID!, idType: IdType): Video! @join__field(graph: VIDEOS)
@@ -813,9 +870,13 @@ type Video
   image: String @join__field(graph: VIDEOS)
   imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   noIndex: Boolean @join__field(graph: VIDEOS)
-  permalinks: [Translation!]! @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
   seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+
+  """
+  slug is a permanent link to the video. It should only be appended, not edited or deleted
+  """
+  slug: [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)

@@ -4,19 +4,16 @@ on:
     branches:
       - main
 jobs:
-  build-and-deploy:
+  etl-deploy:
     environment: Production
     env:
-      ENV_SUFFIX: ${{ inputs.branch }}
       ECR_REPOSITORY: jfp-arangodb-bigquery-etl
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      IMAGE_TAG: latest
+      IMAGE_TAG: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 2
 
       - name: Verify Dockerfile changed
         uses: tj-actions/verify-changed-files@v5.5
@@ -46,15 +43,16 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$ENV_SUFFIX . -f resources/kube/arangodb-bigquery-etl/Dockerfile
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f resources/kube/arangodb-bigquery-etl/Dockerfile
           echo "Pushing image to ECR..."
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       - name: Deploy to Kubernetes cluster
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: kodermax/kubectl-aws-eks@master
         env:
+          KUBECTL_VERSION: 'v1.21.12'
           RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
         with:
           args: set image deployment/arangodb-bigquery-etl $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }}
@@ -62,5 +60,7 @@ jobs:
       - name: Verify Kubernetes deployment
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: kodermax/kubectl-aws-eks@master
+        env:
+          KUBECTL_VERSION: 'v1.21.12'
         with:
           args: rollout status deploy arangodb-bigquery-etl

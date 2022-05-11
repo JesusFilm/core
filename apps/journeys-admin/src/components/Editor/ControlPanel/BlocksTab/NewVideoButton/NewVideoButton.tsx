@@ -4,10 +4,10 @@ import {
   ActiveTab,
   useEditor,
   TreeBlock,
-  VIDEO_FIELDS
+  VIDEO_FIELDS,
+  useJourney
 } from '@core/journeys/ui'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
-import { useJourney } from '../../../../../libs/context'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { VideoBlockCreate } from '../../../../../../__generated__/VideoBlockCreate'

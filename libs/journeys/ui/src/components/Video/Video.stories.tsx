@@ -2,9 +2,9 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { TreeBlock, journeyUiConfig } from '../..'
-import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
+import { VideoPlayEventStateEnum } from '../../../__generated__/globalTypes'
 import { VideoFields } from './__generated__/VideoFields'
-import { Video, VIDEO_RESPONSE_CREATE } from '.'
+import { Video, VIDEO_PLAY_EVENT_CREATE } from '.'
 
 const Demo = {
   ...journeyUiConfig,
@@ -58,18 +58,18 @@ const Template: Story<TreeBlock<VideoFields>> = ({ ...props }) => (
     mocks={[
       {
         request: {
-          query: VIDEO_RESPONSE_CREATE,
+          query: VIDEO_PLAY_EVENT_CREATE,
           variables: {
             id: 'uuid',
             blockId: 'Video1',
-            state: VideoResponseStateEnum.PLAYING,
+            state: VideoPlayEventStateEnum.PLAYING,
             position: 0.3
           }
         },
         result: {
           data: {
             id: 'uuid',
-            state: VideoResponseStateEnum.PLAYING,
+            state: VideoPlayEventStateEnum.PLAYING,
             position: 0.3
           }
         }

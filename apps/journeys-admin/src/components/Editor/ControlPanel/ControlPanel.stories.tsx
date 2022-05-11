@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import {
@@ -17,7 +17,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../libs/context'
 import { ControlPanel } from '.'
 
 const ControlPanelStory = {

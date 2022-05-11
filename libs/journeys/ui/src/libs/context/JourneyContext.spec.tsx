@@ -1,13 +1,13 @@
 import { render, fireEvent } from '@testing-library/react'
 import { ReactElement } from 'react'
-import { TreeBlock } from '@core/journeys/ui'
 import Button from '@mui/material/Button'
+import { TreeBlock } from '../transformer'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { JourneyFields as Journey } from './__generated__/JourneyFields'
 import { JourneyProvider, useJourney } from '.'
 
 const checkJourney = jest.fn()
