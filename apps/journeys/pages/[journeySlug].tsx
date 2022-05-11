@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui'
@@ -11,12 +11,18 @@ import {
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
 import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
+import { journeyViewEvent } from '../src/libs/journeyViewEvent/journeyViewEvent'
 
 interface JourneyPageProps {
   journey: Journey
 }
 
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
+  useEffect(() => {
+    if (journey != null) {
+      void journeyViewEvent({ journeyId: journey.id })
+    }
+  }, [journey])
   return (
     <>
       <NextSeo
