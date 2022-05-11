@@ -104,7 +104,8 @@ describe('EditToolbar Menu', () => {
                 journey: {
                   id: 'journeyId',
                   slug: 'my-journey'
-                } as unknown as Journey
+                } as unknown as Journey,
+                admin: true
               }}
             >
               <EditorProvider initialState={{ selectedBlock }}>

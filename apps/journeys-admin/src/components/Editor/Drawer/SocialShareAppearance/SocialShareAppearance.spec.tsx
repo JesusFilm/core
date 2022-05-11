@@ -25,7 +25,9 @@ describe('SocialShareAppearance', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: { slug } as unknown as Journey }}>
+        <JourneyProvider
+          value={{ journey: { slug } as unknown as Journey, admin: true }}
+        >
           <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
@@ -46,7 +48,9 @@ describe('SocialShareAppearance', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: { slug } as unknown as Journey }}>
+        <JourneyProvider
+          value={{ journey: { slug } as unknown as Journey, admin: true }}
+        >
           <SocialShareAppearance />
         </JourneyProvider>
       </MockedProvider>
@@ -66,7 +70,10 @@ describe('SocialShareAppearance', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: { publishedAt: null } as unknown as Journey }}
+          value={{
+            journey: { publishedAt: null } as unknown as Journey,
+            admin: true
+          }}
         >
           <SocialShareAppearance />
         </JourneyProvider>

@@ -65,7 +65,10 @@ describe('Image', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ selectedStep }}>
             <NewImageButton />
@@ -123,7 +126,10 @@ describe('Image', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ selectedStep }}>
             <NewImageButton />

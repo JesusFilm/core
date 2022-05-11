@@ -76,7 +76,8 @@ describe('ControlPanel', () => {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
@@ -104,7 +105,8 @@ describe('ControlPanel', () => {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
@@ -130,7 +132,8 @@ describe('ControlPanel', () => {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
@@ -187,7 +190,8 @@ describe('ControlPanel', () => {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -278,7 +282,8 @@ describe('ControlPanel', () => {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -435,7 +440,8 @@ describe('ControlPanel', () => {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -499,7 +505,8 @@ describe('ControlPanel', () => {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -566,7 +573,8 @@ describe('ControlPanel', () => {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
@@ -675,7 +683,8 @@ describe('ControlPanel', () => {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>

@@ -180,7 +180,10 @@ describe('BackgroundMediaVideo', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
         >
           <ThemeProvider>
             <SnackbarProvider>
@@ -255,7 +258,10 @@ describe('BackgroundMediaVideo', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
         >
           <ThemeProvider>
             <SnackbarProvider>
@@ -330,7 +336,10 @@ describe('BackgroundMediaVideo', () => {
           ]}
         >
           <JourneyProvider
-            value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
           >
             <ThemeProvider>
               <SnackbarProvider>
@@ -413,7 +422,10 @@ describe('BackgroundMediaVideo', () => {
         >
           <ThemeProvider>
             <JourneyProvider
-              value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+              value={{
+                journey: { id: 'journeyId' } as unknown as Journey,
+                admin: true
+              }}
             >
               <SnackbarProvider>
                 <BackgroundMediaVideo cardBlock={existingCoverBlock} />
@@ -437,7 +449,10 @@ describe('BackgroundMediaVideo', () => {
         const { getAllByRole } = render(
           <MockedProvider>
             <JourneyProvider
-              value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+              value={{
+                journey: { id: 'journeyId' } as unknown as Journey,
+                admin: true
+              }}
             >
               <ThemeProvider>
                 <SnackbarProvider>
@@ -500,7 +515,10 @@ describe('BackgroundMediaVideo', () => {
             ]}
           >
             <JourneyProvider
-              value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+              value={{
+                journey: { id: 'journeyId' } as unknown as Journey,
+                admin: true
+              }}
             >
               <ThemeProvider>
                 <SnackbarProvider>
@@ -556,7 +574,10 @@ describe('BackgroundMediaVideo', () => {
           ]}
         >
           <JourneyProvider
-            value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
           >
             <ThemeProvider>
               <SnackbarProvider>
@@ -611,7 +632,10 @@ describe('BackgroundMediaVideo', () => {
           ]}
         >
           <JourneyProvider
-            value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
           >
             <ThemeProvider>
               <SnackbarProvider>
@@ -668,7 +692,10 @@ describe('BackgroundMediaVideo', () => {
         >
           <ThemeProvider>
             <JourneyProvider
-              value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+              value={{
+                journey: { id: 'journeyId' } as unknown as Journey,
+                admin: true
+              }}
             >
               <SnackbarProvider>
                 <BackgroundMediaVideo cardBlock={existingCoverBlock} />

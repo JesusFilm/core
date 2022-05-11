@@ -66,7 +66,10 @@ describe('RadioQuestionEdit', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider>
             <RadioQuestionEdit
@@ -101,7 +104,10 @@ describe('RadioQuestionEdit', () => {
     const { getAllByRole } = render(
       <MockedProvider mocks={[]}>
         <JourneyProvider
-          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider>
             <RadioQuestionEdit

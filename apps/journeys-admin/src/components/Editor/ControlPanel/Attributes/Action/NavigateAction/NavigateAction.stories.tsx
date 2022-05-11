@@ -34,7 +34,7 @@ export const Navigate: Story = () => {
       <Box>
         <Typography>Default</Typography>
         <MockedProvider>
-          <JourneyProvider value={{ journey: journeyTheme }}>
+          <JourneyProvider value={{ journey: journeyTheme, admin: true }}>
             <EditorProvider
               initialState={{
                 steps,

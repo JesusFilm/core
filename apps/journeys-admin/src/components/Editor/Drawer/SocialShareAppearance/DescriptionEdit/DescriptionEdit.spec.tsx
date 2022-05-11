@@ -24,7 +24,8 @@ describe('DescriptionEdit', () => {
             journey: {
               description: 'journey description',
               seoDescription: 'social description'
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <DescriptionEdit />
@@ -41,7 +42,8 @@ describe('DescriptionEdit', () => {
             journey: {
               description: 'journey description',
               seoDescription: null
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <DescriptionEdit />
@@ -58,7 +60,8 @@ describe('DescriptionEdit', () => {
             journey: {
               description: null,
               seoDescription: null
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <DescriptionEdit />
@@ -96,7 +99,10 @@ describe('DescriptionEdit', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { id: 'journey.id' } as unknown as Journey }}
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            admin: true
+          }}
         >
           <DescriptionEdit />
         </JourneyProvider>
@@ -116,7 +122,10 @@ describe('DescriptionEdit', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: { id: 'journey.id' } as unknown as Journey }}
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            admin: true
+          }}
         >
           <DescriptionEdit />
         </JourneyProvider>

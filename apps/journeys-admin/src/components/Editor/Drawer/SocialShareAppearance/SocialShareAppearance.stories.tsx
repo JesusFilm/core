@@ -65,7 +65,7 @@ const image: ImageBlock = {
 const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
-      <JourneyProvider value={{ journey: args.journey }}>
+      <JourneyProvider value={{ journey: args.journey, admin: true }}>
         <EditorProvider
           initialState={{
             drawerTitle: 'Social Share Appearance',

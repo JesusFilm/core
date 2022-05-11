@@ -33,7 +33,8 @@ describe('Edit Toolbar', () => {
         <MockedProvider>
           <JourneyProvider
             value={{
-              journey: { slug: 'untitled-journey' } as unknown as Journey
+              journey: { slug: 'untitled-journey' } as unknown as Journey,
+              admin: true
             }}
           >
             <EditToolbar />
@@ -57,7 +58,8 @@ describe('Edit Toolbar', () => {
               journey: {
                 slug: 'untitled-journey',
                 status: JourneyStatus.draft
-              } as unknown as Journey
+              } as unknown as Journey,
+              admin: true
             }}
           >
             <EditToolbar />

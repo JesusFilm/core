@@ -91,7 +91,7 @@ describe('ImageOptions', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <SnackbarProvider>
             <EditorProvider
               initialState={{
@@ -118,7 +118,7 @@ describe('ImageOptions', () => {
   it('shows loading icon', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <SnackbarProvider>
             <EditorProvider
               initialState={{

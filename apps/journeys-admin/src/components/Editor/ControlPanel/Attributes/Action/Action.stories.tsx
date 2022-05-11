@@ -83,7 +83,7 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <JourneyProvider value={{ journey }}>
+      <JourneyProvider value={{ journey, admin: true }}>
         <EditorProvider
           initialState={{
             ...args,

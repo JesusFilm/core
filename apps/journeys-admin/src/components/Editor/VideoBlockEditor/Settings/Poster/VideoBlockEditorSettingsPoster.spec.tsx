@@ -121,7 +121,10 @@ describe('VideoBlockEditorSettingsPoster', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
         >
           <ThemeProvider>
             <VideoBlockEditorSettingsPoster

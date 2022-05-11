@@ -24,7 +24,7 @@ describe('JourneyView/CardView', () => {
   it('should render cards', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <CardView slug="my-journey" blocks={steps} />
         </JourneyProvider>
       </MockedProvider>
@@ -34,7 +34,7 @@ describe('JourneyView/CardView', () => {
   it('should render description for 1 card', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <CardView slug="my-journey" blocks={oneStep} />
         </JourneyProvider>
       </MockedProvider>
@@ -45,7 +45,7 @@ describe('JourneyView/CardView', () => {
   it('should render description when no cards are present', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <CardView slug="my-journey" blocks={[]} />
         </JourneyProvider>
       </MockedProvider>
@@ -58,7 +58,7 @@ describe('JourneyView/CardView', () => {
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
     const { getByTestId } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <CardView slug="my-journey" blocks={steps} />
         </JourneyProvider>
       </MockedProvider>

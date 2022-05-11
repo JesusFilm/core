@@ -21,7 +21,8 @@ const Template: Story<Omit<CardViewProps, 'slug'>> = ({ ...args }) => (
           id: 'journeyId',
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base
-        } as unknown as Journey
+        } as unknown as Journey,
+        admin: true
       }}
     >
       <CardView slug="my-journey" {...args} />

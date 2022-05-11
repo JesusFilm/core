@@ -60,7 +60,7 @@ describe('CardLayout', () => {
     }
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
             <CardLayout />
           </EditorProvider>
@@ -85,7 +85,7 @@ describe('CardLayout', () => {
     }
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
             <CardLayout />
           </EditorProvider>
@@ -119,7 +119,7 @@ describe('CardLayout', () => {
     }
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <EditorProvider initialState={{ selectedBlock: step }}>
             <CardLayout />
           </EditorProvider>
@@ -174,7 +174,7 @@ describe('CardLayout', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
             <CardLayout />
           </EditorProvider>

@@ -45,7 +45,8 @@ describe('ImageEdit', () => {
                 src: 'img.src',
                 alt: 'image.alt'
               }
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <ImageEdit />
@@ -126,7 +127,10 @@ describe('ImageEdit', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { id: 'journey.id' } as unknown as Journey }}
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            admin: true
+          }}
         >
           <ImageEdit />
         </JourneyProvider>
@@ -201,7 +205,8 @@ describe('ImageEdit', () => {
             journey: {
               id: 'journey.id',
               primaryImageBlock: { ...image }
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <ImageEdit />
@@ -293,7 +298,8 @@ describe('ImageEdit', () => {
             journey: {
               id: 'journey.id',
               primaryImageBlock: { ...image }
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <ImageEdit />

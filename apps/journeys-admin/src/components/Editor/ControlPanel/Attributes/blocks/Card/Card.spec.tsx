@@ -82,7 +82,7 @@ describe('Card', () => {
     }
     it('shows background color from prop', () => {
       const { getByRole } = render(
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <Card {...card} backgroundColor="#00FFCC" />
         </JourneyProvider>
       )
@@ -92,7 +92,7 @@ describe('Card', () => {
 
     it('shows background color from card theme', () => {
       const { getByRole } = render(
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <Card
             {...card}
             themeName={ThemeName.base}
@@ -106,7 +106,7 @@ describe('Card', () => {
 
     it('shows background color from journey theme', () => {
       const { getByRole } = render(
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <Card {...card} />
         </JourneyProvider>
       )
@@ -118,7 +118,7 @@ describe('Card', () => {
       const { getByText } = render(
         <MockedProvider>
           <ThemeProvider>
-            <JourneyProvider value={{ journey }}>
+            <JourneyProvider value={{ journey, admin: true }}>
               <EditorProvider>
                 <Drawer />
                 <Card {...card} backgroundColor="#00FFCC" />

@@ -36,7 +36,8 @@ describe('Canvas', () => {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <EditorProvider

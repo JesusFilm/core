@@ -46,7 +46,10 @@ export const Default: Story = () => {
       ]}
     >
       <JourneyProvider
-        value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        value={{
+          journey: { id: 'journeyId' } as unknown as Journey,
+          admin: true
+        }}
       >
         <EditorProvider
           initialState={{

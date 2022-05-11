@@ -41,7 +41,8 @@ describe('CardPreview', () => {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <CardPreview onSelect={onSelect} steps={[step]} />
@@ -101,7 +102,8 @@ describe('CardPreview', () => {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
@@ -194,7 +196,8 @@ describe('CardPreview', () => {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
@@ -293,7 +296,8 @@ describe('CardPreview', () => {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <CardPreview steps={[step]} onSelect={onSelect} showAddButton />
@@ -388,7 +392,8 @@ describe('CardPreview', () => {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
-            } as unknown as Journey
+            } as unknown as Journey,
+            admin: true
           }}
         >
           <CardPreview steps={[step]} onSelect={onSelect} showAddButton />
