@@ -1,13 +1,12 @@
 import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, useJourney } from '@core/journeys/ui'
 import { useSnackbar } from 'notistack'
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/GetJourney'
-import { useJourney } from '../../../../../../../../libs/context'
 import { CardBlockBackgroundImageUpdate } from '../../../../../../../../../__generated__/CardBlockBackgroundImageUpdate'
 import { CardBlockImageBlockCreate } from '../../../../../../../../../__generated__/CardBlockImageBlockCreate'
 import { CardBlockImageBlockUpdate } from '../../../../../../../../../__generated__/CardBlockImageBlockUpdate'

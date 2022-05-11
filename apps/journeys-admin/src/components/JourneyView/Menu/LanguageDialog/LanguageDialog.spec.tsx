@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '../../../../libs/context'
+import { JourneyProvider } from '@core/journeys/ui'
 import { defaultJourney } from '../../data'
 import { GET_LANGUAGES } from '../../../LanguageSelect/LanguageSelect'
 import { JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'

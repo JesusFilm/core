@@ -6,14 +6,14 @@ import {
   TreeBlock,
   useEditor,
   RADIO_OPTION_FIELDS,
-  RADIO_QUESTION_FIELDS
+  RADIO_QUESTION_FIELDS,
+  useJourney
 } from '@core/journeys/ui'
 import { v4 as uuidv4 } from 'uuid'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { RadioQuestionBlockCreate } from '../../../../../../__generated__/RadioQuestionBlockCreate'
 import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
-import { useJourney } from '../../../../../libs/context'
 import { TYPOGRAPHY_BLOCK_CREATE } from '../NewTypographyButton'
 
 export const RADIO_QUESTION_BLOCK_CREATE = gql`

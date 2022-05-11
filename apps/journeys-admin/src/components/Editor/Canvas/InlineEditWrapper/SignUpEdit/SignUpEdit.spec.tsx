@@ -1,9 +1,8 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { SignUpFields } from '../../../../../../__generated__/SignUpFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../libs/context'
 import { SignUpEdit, SIGN_UP_BLOCK_UPDATE_CONTENT } from '.'
 
 describe('SignUpEdit', () => {

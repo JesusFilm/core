@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
-import { JourneyProvider } from '../../../../../libs/context'
+import { JourneyProvider } from '@core/journeys/ui'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_ImageBlock as ImageBlock

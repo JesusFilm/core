@@ -1,13 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
+import { JourneyProvider } from '@core/journeys/ui'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../__generated__/GetJourney'
 import { ThemeProvider } from '../../../../ThemeProvider'
-import { JourneyProvider } from '../../../../../libs/context'
 import { VideoBlockEditorSettingsPoster } from './VideoBlockEditorSettingsPoster'
 import { POSTER_IMAGE_BLOCK_UPDATE } from './Dialog/VideoBlockEditorSettingsPosterDialog'
 

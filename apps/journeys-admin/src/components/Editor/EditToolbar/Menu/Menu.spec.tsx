@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ThemeProvider } from '../../../ThemeProvider'
 import {
@@ -9,7 +9,6 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey as Journey
 } from '../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../libs/context'
 import { Menu } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

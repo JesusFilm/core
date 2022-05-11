@@ -6,7 +6,8 @@ import {
   BUTTON_FIELDS,
   ICON_FIELDS,
   TreeBlock,
-  useEditor
+  useEditor,
+  useJourney
 } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import { Button } from '../../Button'
@@ -17,7 +18,6 @@ import {
   ButtonColor,
   ButtonSize
 } from '../../../../../../__generated__/globalTypes'
-import { useJourney } from '../../../../../libs/context'
 
 export const BUTTON_BLOCK_CREATE = gql`
   ${BUTTON_FIELDS}
