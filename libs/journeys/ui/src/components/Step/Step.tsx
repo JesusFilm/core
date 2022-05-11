@@ -28,16 +28,16 @@ export function Step({
     STEP_VIEW_EVENT_CREATE
   )
 
-  const journey = useJourney()
+  const { admin } = useJourney()
 
   useEffect(() => {
-    if (journey?.admin != null && !journey?.admin) {
+    if (admin != null && !admin) {
       const id = uuidv4()
       void stepViewEventCreate({
         variables: { input: { id, blockId } }
       })
     }
-  }, [blockId, stepViewEventCreate, journey])
+  }, [blockId, stepViewEventCreate, admin])
 
   return (
     <>

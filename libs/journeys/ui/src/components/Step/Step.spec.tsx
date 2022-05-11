@@ -2,6 +2,7 @@ import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock } from '../..'
+import { JourneyProvider } from '../../libs/context/JourneyContext'
 import { StepFields } from './__generated__/StepFields'
 import { STEP_VIEW_EVENT_CREATE } from './Step'
 import { Step } from '.'
@@ -81,7 +82,9 @@ describe('Step', () => {
           }
         ]}
       >
-        <Step {...block} />
+        <JourneyProvider value={{ admin: false }}>
+          <Step {...block} />
+        </JourneyProvider>
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
