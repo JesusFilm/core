@@ -11,7 +11,7 @@ import {
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
 import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
-import { journeyViewEvent } from '../src/libs/journeyViewEvent/journeyViewEvent'
+import { journeyViewEvent } from '../src/libs/journeyViewEvent'
 
 interface JourneyPageProps {
   journey: Journey

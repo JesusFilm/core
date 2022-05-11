@@ -1,0 +1,1 @@
+export { journeyViewEvent } from './journeyViewEvent'
