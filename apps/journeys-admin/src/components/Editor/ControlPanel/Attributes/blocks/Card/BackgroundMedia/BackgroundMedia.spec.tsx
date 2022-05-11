@@ -1,6 +1,7 @@
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { SnackbarProvider } from 'notistack'
 
 import {
   GetJourney_journey as Journey,
@@ -15,7 +16,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../../../../libs/context'
 import { BackgroundMedia } from './BackgroundMedia'
 
 const journey: Journey = {
@@ -25,14 +25,26 @@ const journey: Journey = {
   themeMode: ThemeMode.light,
   title: 'my journey',
   slug: 'my-journey',
-  locale: 'en-US',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
-  userJourneys: []
+  userJourneys: [],
+  seoTitle: null,
+  seoDescription: null
 }
 
 describe('BackgroundMedia', () => {
@@ -52,9 +64,11 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
-              <BackgroundMedia />
+              <SnackbarProvider>
+                <BackgroundMedia />
+              </SnackbarProvider>
             </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
@@ -76,11 +90,20 @@ describe('BackgroundMedia', () => {
       muted: false,
       autoplay: true,
       fullsize: false,
+      action: null,
       videoId: '2_0-FallingPlates',
       videoVariantLanguageId: '529',
       video: {
         __typename: 'Video',
         id: '2_0-FallingPlates',
+        title: [
+          {
+            __typename: 'Translation',
+            value: 'FallingPlates'
+          }
+        ],
+        image:
+          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
         variant: {
           __typename: 'VideoVariant',
           id: '2_0-FallingPlates-529',
@@ -105,9 +128,11 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
-              <BackgroundMedia />
+              <SnackbarProvider>
+                <BackgroundMedia />
+              </SnackbarProvider>
             </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
@@ -155,9 +180,11 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <EditorProvider initialState={{ selectedBlock: step }}>
-              <BackgroundMedia />
+              <SnackbarProvider>
+                <BackgroundMedia />
+              </SnackbarProvider>
             </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>

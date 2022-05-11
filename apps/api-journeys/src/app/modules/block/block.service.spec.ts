@@ -11,6 +11,7 @@ import { DocumentCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators'
 
 import {
+  Journey,
   JourneyStatus,
   ThemeMode,
   ThemeName,
@@ -39,16 +40,16 @@ describe('BlockService', () => {
     jest.resetAllMocks()
   })
 
-  const journey = {
+  const journey: Journey = {
     id: '1',
     title: 'published',
     createdAt: '1234',
     status: JourneyStatus.published,
-    locale: 'en-US',
+    language: { id: '529' },
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     description: null,
-    primaryImageBlockId: null,
+    primaryImageBlock: null,
     slug: 'published-slug'
   }
 
@@ -169,25 +170,46 @@ describe('BlockService', () => {
     })
   })
 
-  describe('updateChildrenParentOrder', () => {
-    it('should update parent order', async () => {
-      service.getSiblingsInternal = jest.fn().mockReturnValue([
-        { _key: block._key, parentOrder: 1 },
-        { _key: block._key, parentOrder: 2 },
-        { _key: block._key, parentOrder: null }
-      ])
-      service.reorderSiblings = jest.fn().mockReturnValue([
-        { _key: block._key, parentOrder: 0 },
-        { _key: block._key, parentOrder: 1 }
-      ])
-      expect(await service.updateChildrenParentOrder('1', '2')).toEqual([
-        { _key: block._key, parentOrder: 0 },
-        { _key: block._key, parentOrder: 1 }
+  describe('reorderBlock', () => {
+    beforeEach(() => {
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [block, block])
+      )
+      service.reorderSiblings = jest.fn(
+        async () =>
+          await Promise.resolve([
+            { _key: '2', parentOrder: 0 } as unknown as Block,
+            { _key: block._key, parentOrder: 1 } as unknown as Block
+          ])
+      )
+    })
+
+    it('should update block order', async () => {
+      service.getSiblingsInternal = jest
+        .fn()
+        .mockReturnValue([block, { ...block, _key: '2', parentOrder: 1 }])
+
+      expect(await service.reorderBlock(block._key, journey.id, 1)).toEqual([
+        { id: '2', parentOrder: 0 },
+        { id: block._key, parentOrder: 1 }
       ])
       expect(service.reorderSiblings).toHaveBeenCalledWith([
-        { _key: block._key, parentOrder: 1 },
-        { _key: block._key, parentOrder: 2 }
+        { ...block, _key: '2', parentOrder: 1 },
+        block
       ])
+    })
+    it('does not update if block not part of current journey', async () => {
+      expect(
+        await service.reorderBlock(block.__typename, 'invalidJourney', 2)
+      ).toEqual([])
+      expect(service.reorderSiblings).toBeCalledTimes(0)
+    })
+
+    it('does not update if block does not have parent order', async () => {
+      service.get = jest.fn().mockReturnValue({ ...block, parentOrder: null })
+
+      expect(await service.reorderBlock(block._key, journey.id, 2)).toEqual([])
+      expect(service.reorderSiblings).toBeCalledTimes(0)
     })
   })
 
@@ -201,7 +223,7 @@ describe('BlockService', () => {
       ).remove.mockReturnValue(
         mockCollectionRemoveResult(service.collection, block)
       )
-      service.updateChildrenParentOrder = jest.fn(
+      service.reorderSiblings = jest.fn(
         async () =>
           await Promise.resolve([
             { _key: block._key, parentOrder: 0 } as unknown as Block,
@@ -211,6 +233,15 @@ describe('BlockService', () => {
     })
 
     it('should remove blocks and return siblings', async () => {
+      service.getSiblingsInternal = jest.fn().mockReturnValue([
+        { _key: block._key, parentOrder: 1 },
+        { _key: block._key, parentOrder: 2 }
+      ])
+      service.reorderSiblings = jest.fn().mockReturnValue([
+        { _key: block._key, parentOrder: 0 },
+        { _key: block._key, parentOrder: 1 }
+      ])
+
       expect(
         await service.removeBlockAndChildren(
           block._key,
@@ -221,7 +252,7 @@ describe('BlockService', () => {
         { id: block._key, parentOrder: 0 },
         { id: block._key, parentOrder: 1 }
       ])
-      expect(service.updateChildrenParentOrder).toHaveBeenCalledWith(
+      expect(service.getSiblingsInternal).toHaveBeenCalledWith(
         journey.id,
         block.parentBlockId
       )
@@ -231,7 +262,7 @@ describe('BlockService', () => {
       expect(
         await service.removeBlockAndChildren(block._key, journey.id)
       ).toEqual([])
-      expect(service.updateChildrenParentOrder).not.toHaveBeenCalled()
+      expect(service.reorderSiblings).not.toHaveBeenCalled()
     })
 
     it('should update parent order', async () => {
@@ -243,12 +274,12 @@ describe('BlockService', () => {
           { _key: block._key, new: block }
         ])
       )
-      service.getSiblings = jest.fn(
-        async () => await Promise.resolve([blockWithId, blockWithId] as Block[])
+      const siblings = [blockWithId, blockWithId] as Block[]
+
+      service.getSiblingsInternal = jest.fn(
+        async () => await Promise.resolve(siblings)
       )
-      expect(
-        await service.updateChildrenParentOrder(journey.id, block.parentBlockId)
-      ).toEqual([
+      expect(await service.reorderSiblings(siblings)).toEqual([
         { _key: block._key, parentOrder: 0 },
         { _key: block._key, parentOrder: 1 }
       ])

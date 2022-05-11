@@ -83,6 +83,11 @@ export enum IconSize {
   xl = "xl",
 }
 
+export enum JourneyStatus {
+  draft = "draft",
+  published = "published",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",
@@ -119,30 +124,30 @@ export enum TypographyVariant {
   subtitle2 = "subtitle2",
 }
 
-export enum VideoResponseStateEnum {
+export enum VideoPlayEventStateEnum {
   FINISHED = "FINISHED",
   PAUSED = "PAUSED",
   PLAYING = "PLAYING",
 }
 
 export interface RadioQuestionResponseCreateInput {
-  blockId: string;
+  blockId?: string | null;
   id?: string | null;
-  radioOptionBlockId: string;
+  radioOptionBlockId?: string | null;
 }
 
 export interface SignUpResponseCreateInput {
-  blockId: string;
-  email: string;
+  blockId?: string | null;
+  email?: string | null;
   id?: string | null;
-  name: string;
+  name?: string | null;
 }
 
-export interface VideoResponseCreateInput {
+export interface VideoPlayEventCreateInput {
   blockId: string;
   id?: string | null;
   position?: number | null;
-  state: VideoResponseStateEnum;
+  state: VideoPlayEventStateEnum;
 }
 
 //==============================================================

@@ -23,6 +23,7 @@ export interface GetVideos_videos_title {
 
 export interface GetVideos_videos_variant {
   __typename: "VideoVariant";
+  id: string;
   duration: number;
 }
 
@@ -41,4 +42,6 @@ export interface GetVideos {
 
 export interface GetVideosVariables {
   where?: VideosFilter | null;
+  limit: number;
+  offset: number;
 }

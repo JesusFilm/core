@@ -7,27 +7,42 @@ import { nua9 } from './seeds/nua9'
 const db = ArangoDB()
 
 async function main(): Promise<void> {
-  try {
+  if (!(await db.collection('journeys').exists()))
     await db.createCollection('journeys', {
       keyOptions: { type: 'uuid' }
     })
+
+  if (!(await db.collection('blocks').exists()))
     await db.createCollection('blocks', { keyOptions: { type: 'uuid' } })
+
+  if (!(await db.collection('responses').exists()))
     await db.createCollection('responses', {
       keyOptions: { type: 'uuid' }
     })
-    await db.createCollection('userJourneys', { keyOptions: { type: 'uuid' } })
-  } catch {}
+
+  if (!(await db.collection('events').exists()))
+    await db.createCollection('events', {
+      keyOptions: { type: 'uuid' }
+    })
+
+  if (!(await db.collection('userJourneys').exists()))
+    await db.createCollection('userJourneys', {
+      keyOptions: { type: 'uuid' }
+    })
+
   await db.collection('journeys').ensureIndex({
     type: 'persistent',
     fields: ['slug'],
     name: 'slug',
     unique: true
   })
+
   await db.collection('blocks').ensureIndex({
     type: 'persistent',
     fields: ['journeyId'],
     name: 'journeyId'
   })
+
   await nua1()
   await nua2()
   await nua8()

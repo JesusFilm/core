@@ -62,6 +62,21 @@ input ButtonBlockUpdateInput {
   variant: ButtonVariant
 }
 
+type ButtonClickEvent implements Event {
+  block: ButtonBlock
+  id: ID!
+  userId: ID!
+}
+
+input ButtonClickEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+}
+
 enum ButtonColor {
   error
   inherit
@@ -117,7 +132,6 @@ type CardBlock implements Block {
 
 input CardBlockCreateInput {
   backgroundColor: String
-  coverBlockId: ID
   fullscreen: Boolean
   id: ID
   journeyId: ID!
@@ -128,15 +142,38 @@ input CardBlockCreateInput {
 
 input CardBlockUpdateInput {
   backgroundColor: String
-  coverBlockId: ID
   fullscreen: Boolean
   parentBlockId: ID
   themeMode: ThemeMode
   themeName: ThemeName
 }
 
+type Country
+  @join__owner(graph: LANGUAGES)
+  @join__type(graph: LANGUAGES, key: "id")
+{
+  continent(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  id: ID! @join__field(graph: LANGUAGES)
+  image: String @join__field(graph: LANGUAGES)
+  languages: [Language!]! @join__field(graph: LANGUAGES)
+  latitude: Float! @join__field(graph: LANGUAGES)
+  longitude: Float! @join__field(graph: LANGUAGES)
+  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  population: Int! @join__field(graph: LANGUAGES)
+
+  """
+  slug is a permanent link to the country. It should only be appended, not edited or deleted
+  """
+  slug(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+}
+
 """DateTime custom scalar"""
 scalar DateTime
+
+interface Event {
+  id: ID!
+  userId: ID!
+}
 
 enum GridAlignItems {
   baseline
@@ -274,6 +311,11 @@ input ImageBlockCreateInput {
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
   journeyId: ID!
   parentBlockId: ID!
   src: String
@@ -301,10 +343,13 @@ type Journey
   blocks: [Block!] @join__field(graph: JOURNEYS)
   createdAt: DateTime! @join__field(graph: JOURNEYS)
   description: String @join__field(graph: JOURNEYS)
+  featuredAt: DateTime @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
-  locale: String! @join__field(graph: JOURNEYS)
+  language: Language! @join__field(graph: JOURNEYS)
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
   publishedAt: DateTime @join__field(graph: JOURNEYS)
+  seoDescription: String @join__field(graph: JOURNEYS)
+  seoTitle: String @join__field(graph: JOURNEYS)
   slug: String! @join__field(graph: JOURNEYS)
   status: JourneyStatus! @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
@@ -321,7 +366,7 @@ input JourneyCreateInput {
   (Provided for optimistic mutation result matching)
   """
   id: ID
-  locale: String
+  languageId: String!
 
   """
   Slug should be unique amongst all journeys
@@ -336,6 +381,10 @@ input JourneyCreateInput {
   title: String!
 }
 
+input JourneysFilter {
+  featured: Boolean
+}
+
 enum JourneyStatus {
   draft
   published
@@ -343,23 +392,45 @@ enum JourneyStatus {
 
 input JourneyUpdateInput {
   description: String
-  locale: String
+  languageId: String
   primaryImageBlockId: ID
+  seoDescription: String
+  seoTitle: String
   slug: String
   themeMode: ThemeMode
   themeName: ThemeName
   title: String
 }
 
+type JourneyViewEvent implements Event {
+  id: ID!
+  journey: Journey
+  userId: ID!
+}
+
+input JourneyViewEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  journeyId: ID!
+}
+
 type Language
   @join__owner(graph: LANGUAGES)
   @join__type(graph: LANGUAGES, key: "id")
+  @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: VIDEOS, key: "id")
 {
   bcp47: String @join__field(graph: LANGUAGES)
   id: ID! @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
   name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+}
+
+enum LanguageIdType {
+  bcp47
+  databaseId
 }
 
 type LinkAction implements Action {
@@ -386,6 +457,7 @@ type Mutation {
   blockUpdateNavigateToJourneyAction(id: ID!, input: NavigateToJourneyActionInput!, journeyId: ID!): NavigateToJourneyAction! @join__field(graph: JOURNEYS)
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @join__field(graph: JOURNEYS)
   buttonBlockUpdate(id: ID!, input: ButtonBlockUpdateInput!, journeyId: ID!): ButtonBlock @join__field(graph: JOURNEYS)
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
@@ -395,16 +467,21 @@ type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioOptionBlockUpdate(id: ID!, input: RadioOptionBlockUpdateInput!, journeyId: ID!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
-  radioQuestionBlockUpdate(id: ID!, input: RadioQuestionBlockUpdateInput!, journeyId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
+  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, parentBlockId: ID!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse! @join__field(graph: JOURNEYS)
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent! @join__field(graph: JOURNEYS)
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock! @join__field(graph: JOURNEYS)
   signUpBlockUpdate(id: ID!, input: SignUpBlockUpdateInput!, journeyId: ID!): SignUpBlock @join__field(graph: JOURNEYS)
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
+  stepResponseCreate(input: StepResponseCreateInput!): SignUpResponse! @join__field(graph: JOURNEYS)
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
@@ -413,6 +490,7 @@ type Mutation {
   userJourneyRequest(idType: IdType, journeyId: ID!): UserJourney! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!, journeyId: ID!): VideoBlock! @join__field(graph: JOURNEYS)
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
 }
 
@@ -455,13 +533,18 @@ input NavigateToJourneyActionInput {
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   adminJourneys: [Journey!]! @join__field(graph: JOURNEYS)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
+  country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
+  episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
-  journeys: [Journey!]! @join__field(graph: JOURNEYS)
-  language(id: ID!): Language @join__field(graph: LANGUAGES)
-  languages(limit: Int, page: Int): [Language!]! @join__field(graph: LANGUAGES)
+  journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
+  language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
+  languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
-  video(id: ID!): Video! @join__field(graph: VIDEOS)
-  videos(limit: Int, page: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
+  video(id: ID!, idType: IdType): Video! @join__field(graph: VIDEOS)
+  videoTag(id: ID!): VideoTag @join__field(graph: VIDEOS)
+  videoTags: [VideoTag!] @join__field(graph: VIDEOS)
+  videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 }
 
 type RadioOptionBlock implements Block {
@@ -486,10 +569,8 @@ input RadioOptionBlockUpdateInput {
 }
 
 type RadioQuestionBlock implements Block {
-  description: String
   id: ID!
   journeyId: ID!
-  label: String!
   parentBlockId: ID
   parentOrder: Int
 }
@@ -497,36 +578,46 @@ type RadioQuestionBlock implements Block {
 input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
-  label: String!
   parentBlockId: ID!
 }
 
-input RadioQuestionBlockUpdateInput {
-  description: String
-  label: String
-  parentBlockId: ID
+type RadioQuestionResponse implements Response {
+  block: RadioQuestionBlock @deprecated(reason: "use event instead of response")
+  id: ID! @deprecated(reason: "use event instead of response")
+  radioOptionBlockId: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
 }
 
-type RadioQuestionResponse implements Response {
+input RadioQuestionResponseCreateInput {
+  blockId: ID
+
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  radioOptionBlockId: ID
+}
+
+type RadioQuestionSubmissionEvent implements Event {
   block: RadioQuestionBlock
   id: ID!
   radioOptionBlockId: ID!
   userId: ID!
 }
 
-input RadioQuestionResponseCreateInput {
+input RadioQuestionSubmissionEventCreateInput {
   blockId: ID!
 
   """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
   radioOptionBlockId: ID!
 }
 
 interface Response {
-  id: ID!
-  userId: ID!
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
 }
 
 type SignUpBlock implements Block {
@@ -553,6 +644,25 @@ input SignUpBlockUpdateInput {
 }
 
 type SignUpResponse implements Response {
+  block: SignUpBlock @deprecated(reason: "use event instead of response")
+  email: String! @deprecated(reason: "use event instead of response")
+  id: ID! @deprecated(reason: "use event instead of response")
+  name: String! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
+}
+
+input SignUpResponseCreateInput {
+  blockId: ID
+  email: String
+
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  name: String
+}
+
+type SignUpSubmissionEvent implements Event {
   block: SignUpBlock
   email: String!
   id: ID!
@@ -560,12 +670,12 @@ type SignUpResponse implements Response {
   userId: ID!
 }
 
-input SignUpResponseCreateInput {
+input SignUpSubmissionEventCreateInput {
   blockId: ID!
   email: String!
 
   """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
   name: String!
@@ -602,6 +712,36 @@ input StepBlockCreateInput {
 input StepBlockUpdateInput {
   locked: Boolean
   nextBlockId: ID
+}
+
+type StepResponse implements Response {
+  block: StepBlock @deprecated(reason: "use event instead of response")
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
+}
+
+input StepResponseCreateInput {
+  blockId: ID
+
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+}
+
+type StepViewEvent implements Event {
+  block: StepBlock
+  id: ID!
+  userId: ID!
+}
+
+input StepViewEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
 }
 
 enum ThemeMode {
@@ -711,17 +851,32 @@ type Video
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
 {
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+
+  """Episodes are child videos, currently only found in a playlist type"""
+  episodeIds: [ID!]! @join__field(graph: VIDEOS)
+  episodes: [Video!]! @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
+  imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  noIndex: Boolean @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
+  seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+
+  """
+  slug is a permanent link to the video. It should only be appended, not edited or deleted
+  """
+  slug(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  type: VideoType! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
 }
 
 type VideoBlock implements Block {
+  """action that should be performed when the video ends"""
+  action: Action
   autoplay: Boolean
 
   """endAt dictates at which point of time the video should end"""
@@ -763,6 +918,11 @@ input VideoBlockCreateInput {
   endAt: Int
   fullsize: Boolean
   id: ID
+
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
   journeyId: ID!
   muted: Boolean
   parentBlockId: ID!
@@ -774,9 +934,7 @@ input VideoBlockCreateInput {
   """
   posterBlockId: ID
 
-  """
-  startAt dictates at which point of time the video should start playing
-  """
+  """startAt dictates at which point of time the video should start playing"""
   startAt: Int
 
   """
@@ -811,34 +969,66 @@ input VideoBlockUpdateInput {
   videoVariantLanguageId: ID
 }
 
-type VideoResponse implements Response {
+type VideoPlayEvent implements Event {
   block: VideoBlock
   id: ID!
   position: Int
-  state: VideoResponseStateEnum!
+  state: VideoPlayEventStateEnum!
   userId: ID!
 }
 
-input VideoResponseCreateInput {
+input VideoPlayEventCreateInput {
   blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  position: Float
+  state: VideoPlayEventStateEnum!
+}
+
+enum VideoPlayEventStateEnum {
+  FINISHED
+  PAUSED
+  PLAYING
+}
+
+type VideoResponse implements Response {
+  block: VideoBlock @deprecated(reason: "use event instead of response")
+  id: ID! @deprecated(reason: "use event instead of response")
+  position: Int @deprecated(reason: "use event instead of response")
+  state: VideoResponseStateEnum! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
+}
+
+input VideoResponseCreateInput {
+  blockId: ID
 
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
   id: ID
   position: Float
-  state: VideoResponseStateEnum!
+  state: VideoResponseStateEnum
 }
 
 enum VideoResponseStateEnum {
-  FINISHED
-  PAUSED
-  PLAYING
+  FINISHED @deprecated(reason: "use event instead of response")
+  PAUSED @deprecated(reason: "use event instead of response")
+  PLAYING @deprecated(reason: "use event instead of response")
 }
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
+  tagId: String
   title: String
+  types: [VideoType!]
+}
+
+type VideoTag {
+  id: ID!
+  title(languageId: ID, primary: Boolean): [Translation!]!
 }
 
 """
@@ -859,10 +1049,16 @@ type VideoTriggerBlock implements Block {
   triggerStart: Int!
 }
 
+enum VideoType {
+  episode
+  playlist
+  standalone
+}
+
 type VideoVariant {
   downloads: [VideoVariantDownload!]!
   duration: Int!
-  hls: String!
+  hls: String
   id: String!
   language: Language!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!

@@ -5,6 +5,7 @@ import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../__generated__/GetJourney'
+import { ThemeName, ThemeMode } from '../../../../../__generated__/globalTypes'
 import { Attributes } from '.'
 
 describe('Attributes', () => {
@@ -15,8 +16,8 @@ describe('Attributes', () => {
     parentOrder: 0,
     coverBlockId: null,
     backgroundColor: null,
-    themeMode: null,
-    themeName: null,
+    themeName: ThemeName.base,
+    themeMode: ThemeMode.light,
     fullscreen: true,
     children: []
   }
@@ -67,12 +68,21 @@ describe('Attributes', () => {
     endAt: null,
     muted: null,
     fullsize: null,
+    action: null,
     posterBlockId: 'posterBlockId',
     videoId: '2_0-FallingPlates',
     videoVariantLanguageId: '529',
     video: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
+      title: [
+        {
+          __typename: 'Translation',
+          value: 'FallingPlates'
+        }
+      ],
+      image:
+        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
       variant: {
         __typename: 'VideoVariant',
         id: '2_0-FallingPlates-529',
@@ -170,8 +180,6 @@ describe('Attributes', () => {
     const block: TreeBlock = {
       __typename: 'RadioQuestionBlock',
       id: 'RadioQuestion1',
-      label: 'Label',
-      description: 'Description',
       parentBlockId: 'RadioQuestion1',
       parentOrder: 0,
       children: []

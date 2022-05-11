@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 
 import {
@@ -7,7 +7,6 @@ import {
   GetJourney_journey_blocks_CardBlock as CardBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
-import { JourneyProvider } from '../../../../../../../libs/context'
 import {
   JourneyStatus,
   ThemeMode,
@@ -33,14 +32,26 @@ const journey: Journey = {
   themeMode: ThemeMode.light,
   title: 'my journey',
   slug: 'my-journey',
-  locale: 'en-US',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
-  userJourneys: []
+  userJourneys: [],
+  seoTitle: null,
+  seoDescription: null
 }
 
 export const Default: Story = () => {
@@ -59,7 +70,7 @@ export const Default: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={journey}>
+      <JourneyProvider value={{ journey, admin: true }}>
         <EditorProvider
           initialState={{
             selectedBlock: block,
@@ -91,7 +102,7 @@ export const Light: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={journey}>
+      <JourneyProvider value={{ journey, admin: true }}>
         <EditorProvider
           initialState={{
             selectedBlock: block,
@@ -123,7 +134,7 @@ export const Dark: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={journey}>
+      <JourneyProvider value={{ journey, admin: true }}>
         <EditorProvider
           initialState={{
             selectedBlock: block,

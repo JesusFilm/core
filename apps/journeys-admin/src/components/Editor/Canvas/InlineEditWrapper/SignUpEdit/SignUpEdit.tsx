@@ -1,7 +1,6 @@
 import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { SignUp, TreeBlock } from '@core/journeys/ui'
-import { useJourney } from '../../../../../libs/context'
+import { SignUp, TreeBlock, useJourney } from '@core/journeys/ui'
 import { SignUpBlockUpdateContent } from '../../../../../../__generated__/SignUpBlockUpdateContent'
 import { SignUpFields } from '../../../../../../__generated__/SignUpFields'
 import { InlineEditInput } from '../InlineEditInput'
@@ -29,10 +28,12 @@ export function SignUpEdit({
     SIGN_UP_BLOCK_UPDATE_CONTENT
   )
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const [value, setValue] = useState(submitLabel ?? '')
 
   async function handleSaveBlock(): Promise<void> {
+    if (journey == null) return
+
     const submitLabel = value.trim().replace(/\n/g, '')
     await signUpBlockUpdate({
       variables: {

@@ -1,4 +1,4 @@
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
@@ -13,7 +13,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../../../../libs/context'
 import { CardLayout, CARD_BLOCK_LAYOUT_UPDATE } from './CardLayout'
 
 const journey: Journey = {
@@ -23,14 +22,26 @@ const journey: Journey = {
   themeMode: ThemeMode.light,
   title: 'my journey',
   slug: 'my-journey',
-  locale: 'en-US',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
-  userJourneys: []
+  userJourneys: [],
+  seoTitle: null,
+  seoDescription: null
 }
 
 describe('CardLayout', () => {
@@ -49,7 +60,7 @@ describe('CardLayout', () => {
     }
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
             <CardLayout />
           </EditorProvider>
@@ -74,7 +85,7 @@ describe('CardLayout', () => {
     }
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
             <CardLayout />
           </EditorProvider>
@@ -108,7 +119,7 @@ describe('CardLayout', () => {
     }
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <EditorProvider initialState={{ selectedBlock: step }}>
             <CardLayout />
           </EditorProvider>
@@ -163,7 +174,7 @@ describe('CardLayout', () => {
           }
         ]}
       >
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
             <CardLayout />
           </EditorProvider>

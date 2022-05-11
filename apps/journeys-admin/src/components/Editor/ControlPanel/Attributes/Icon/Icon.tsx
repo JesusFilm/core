@@ -2,33 +2,30 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import MenuItem from '@mui/material/MenuItem'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import FormControl from '@mui/material/FormControl'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import { gql, useMutation } from '@apollo/client'
-import {
-  CheckCircleRounded,
-  PlayArrowRounded,
-  TranslateRounded,
-  RadioButtonUncheckedRounded,
-  FormatQuoteRounded,
-  LockOpenRounded,
-  ArrowForwardRounded,
-  ChatBubbleOutlineRounded,
-  LiveTvRounded,
-  MenuBookRounded,
-  ChevronRightRounded,
-  BeenhereRounded,
-  SendRounded,
-  SubscriptionsRounded,
-  ContactSupportRounded
-} from '@mui/icons-material'
+import CheckCircleRounded from '@mui/icons-material/CheckCircleRounded'
+import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
+import TranslateRounded from '@mui/icons-material/TranslateRounded'
+import RadioButtonUncheckedRounded from '@mui/icons-material/RadioButtonUncheckedRounded'
+import FormatQuoteRounded from '@mui/icons-material/FormatQuoteRounded'
+import LockOpenRounded from '@mui/icons-material/LockOpenRounded'
+import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded'
+import ChatBubbleOutlineRounded from '@mui/icons-material/ChatBubbleOutlineRounded'
+import LiveTvRounded from '@mui/icons-material/LiveTvRounded'
+import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
+import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
+import BeenhereRounded from '@mui/icons-material/BeenhereRounded'
+import SendRounded from '@mui/icons-material/SendRounded'
+import SubscriptionsRounded from '@mui/icons-material/SubscriptionsRounded'
+import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import {
   IconColor,
   IconName
 } from '../../../../../../__generated__/globalTypes'
-import { useJourney } from '../../../../../libs/context'
 import { IconFields } from '../../../../../../__generated__/IconFields'
 import { IconBlockNameUpdate } from '../../../../../../__generated__/IconBlockNameUpdate'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/GetJourney'
@@ -129,7 +126,7 @@ export function Icon({ id }: IconProps): ReactElement {
   const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
     ICON_BLOCK_NAME_UPDATE
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as IconParentBlock
 
@@ -140,6 +137,8 @@ export function Icon({ id }: IconProps): ReactElement {
   const iconName = iconBlock?.iconName ?? ''
 
   async function iconUpdate(name: IconName | null): Promise<void> {
+    if (journey == null) return
+
     await iconBlockNameUpdate({
       variables: {
         id,

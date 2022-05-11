@@ -1,6 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+
 import { TreeBlock } from '../..'
+import { RadioOptionFields } from '../RadioQuestion/RadioOption/__generated__/RadioOptionFields'
+import { RadioQuestionFields } from '../RadioQuestion/__generated__/RadioQuestionFields'
 import { BlockRenderer } from '.'
 
 describe('BlockRenderer', () => {
@@ -72,12 +75,14 @@ describe('BlockRenderer', () => {
       fullscreen: false,
       children: [
         {
-          __typename: 'RadioQuestionBlock',
-          id: 'question',
-          label: 'radio question',
-          parentBlockId: 'step',
+          id: 'typographyBlockId1',
+          __typename: 'TypographyBlock',
+          parentBlockId: null,
           parentOrder: 0,
-          description: 'description',
+          align: null,
+          color: null,
+          content: 'How did we get here?',
+          variant: null,
           children: []
         }
       ]
@@ -87,7 +92,7 @@ describe('BlockRenderer', () => {
         <BlockRenderer block={block} />
       </MockedProvider>
     )
-    expect(getByText('radio question')).toBeInTheDocument()
+    expect(getByText('How did we get here?')).toBeInTheDocument()
   })
 
   it('should render Card with general wrapper and specific wrapper', () => {
@@ -103,12 +108,14 @@ describe('BlockRenderer', () => {
       fullscreen: false,
       children: [
         {
-          __typename: 'RadioQuestionBlock',
-          id: 'question',
-          label: 'radio question',
-          parentBlockId: 'step',
+          id: 'typographyBlockId1',
+          __typename: 'TypographyBlock',
+          parentBlockId: null,
           parentOrder: 0,
-          description: 'description',
+          align: null,
+          color: null,
+          content: 'How did we get here?',
+          variant: null,
           children: []
         }
       ]
@@ -136,7 +143,7 @@ describe('BlockRenderer', () => {
       )
     ).toEqual('card-wrapper')
     expect(getByTestId('card-wrapper')).toContainElement(
-      getByText('radio question')
+      getByText('How did we get here?')
     )
   })
 
@@ -246,21 +253,30 @@ describe('BlockRenderer', () => {
   })
 
   it('should render RadioQuestion', () => {
-    const block: TreeBlock = {
+    const option: TreeBlock<RadioOptionFields> = {
+      __typename: 'RadioOptionBlock',
+      id: 'main',
+      parentBlockId: null,
+      parentOrder: 0,
+      label: 'radio option 1',
+      action: null,
+      children: []
+    }
+
+    const block: TreeBlock<RadioQuestionFields> = {
       __typename: 'RadioQuestionBlock',
       id: 'main',
       parentBlockId: null,
       parentOrder: 0,
-      label: 'radio question',
-      description: 'description',
-      children: []
+      children: [option, { ...option, label: 'radio option 2' }]
     }
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
         <BlockRenderer block={block} />
       </MockedProvider>
     )
-    expect(getByText('radio question')).toBeInTheDocument()
+    expect(getByText('radio option 1')).toBeInTheDocument()
+    expect(getByText('radio option 2')).toBeInTheDocument()
   })
 
   it('should render RadioQuestion with general wrapper and specific wrapper', () => {
@@ -269,14 +285,12 @@ describe('BlockRenderer', () => {
       id: 'main',
       parentBlockId: null,
       parentOrder: 0,
-      label: 'radio question',
-      description: 'description',
       children: []
     }
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByRole } = render(
       <MockedProvider mocks={[]} addTypename={false}>
         <BlockRenderer
-          block={block}
+          block={{ ...block }}
           wrappers={{
             Wrapper: ({ children }) => (
               <div data-testid="general-wrapper">{children}</div>
@@ -291,9 +305,12 @@ describe('BlockRenderer', () => {
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
     ).toEqual('radio-question-wrapper')
-    expect(getByTestId('radio-question-wrapper')).toContainElement(
-      getByText('radio question')
+
+    const buttonGroup = getByRole('group')
+    expect(buttonGroup).toHaveClass(
+      'MuiButtonGroup-contained MuiButtonGroup-vertical'
     )
+    expect(getByTestId('radio-question-wrapper')).toContainElement(buttonGroup)
   })
 
   it('should render SignUp', () => {
@@ -500,6 +517,14 @@ describe('BlockRenderer', () => {
       video: {
         __typename: 'Video',
         id: '2_0-FallingPlates',
+        title: [
+          {
+            __typename: 'Translation',
+            value: 'FallingPlates'
+          }
+        ],
+        image:
+          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
         variant: {
           __typename: 'VideoVariant',
           id: '2_0-FallingPlates-529',
@@ -514,6 +539,7 @@ describe('BlockRenderer', () => {
       posterBlockId: null,
       parentOrder: 0,
       fullsize: null,
+      action: null,
       children: []
     }
     const { getByTestId } = render(
@@ -533,6 +559,14 @@ describe('BlockRenderer', () => {
       video: {
         __typename: 'Video',
         id: '2_0-FallingPlates',
+        title: [
+          {
+            __typename: 'Translation',
+            value: 'FallingPlates'
+          }
+        ],
+        image:
+          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
         variant: {
           __typename: 'VideoVariant',
           id: '2_0-FallingPlates-529',
@@ -546,6 +580,7 @@ describe('BlockRenderer', () => {
       parentBlockId: null,
       posterBlockId: null,
       fullsize: null,
+      action: null,
       parentOrder: 0,
       children: []
     }

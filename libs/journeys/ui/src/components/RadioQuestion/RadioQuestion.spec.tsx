@@ -16,8 +16,6 @@ jest.mock('../../libs/action', () => {
 const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
   id: 'RadioQuestion1',
-  label: 'Label',
-  description: 'Description',
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
   children: [
@@ -43,25 +41,15 @@ const block: TreeBlock<RadioQuestionFields> = {
 }
 
 describe('RadioQuestion', () => {
-  it('should render question props', () => {
-    const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <RadioQuestion {...block} />
-      </MockedProvider>
-    )
-
-    expect(getByText('Label')).toBeInTheDocument()
-    expect(getByText('Description')).toBeInTheDocument()
-  })
-
   it('should display the correct options', () => {
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <RadioQuestion {...block} />
+        <RadioQuestion {...block} addOption={<div>Add option</div>} />
       </MockedProvider>
     )
     expect(getByText('Option 1')).toBeInTheDocument()
     expect(getByText('Option 2')).toBeInTheDocument()
+    expect(getByText('Add option')).toBeInTheDocument()
   })
 
   it('should select an option onClick', async () => {
@@ -145,25 +133,25 @@ describe('RadioQuestion', () => {
     fireEvent.click(buttons[1])
     expect(buttons[1]).toBeDisabled()
   })
-})
 
-it('should display the correct options with wrappers', () => {
-  const { getByText, getAllByTestId } = render(
-    <MockedProvider mocks={[]} addTypename={false}>
-      <RadioQuestion
-        {...block}
-        wrappers={{
-          RadioOptionWrapper: ({ children }) => (
-            <div data-testid="radioOptionWrapper">{children}</div>
-          )
-        }}
-      />
-    </MockedProvider>
-  )
-  expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
-    getByText('Option 1')
-  )
-  expect(getAllByTestId('radioOptionWrapper')[1]).toContainElement(
-    getByText('Option 2')
-  )
+  it('should display options with wrappers', () => {
+    const { getByText, getAllByTestId } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <RadioQuestion
+          {...block}
+          wrappers={{
+            RadioOptionWrapper: ({ children }) => (
+              <div data-testid="radioOptionWrapper">{children}</div>
+            )
+          }}
+        />
+      </MockedProvider>
+    )
+    expect(getAllByTestId('radioOptionWrapper')[0]).toContainElement(
+      getByText('Option 1')
+    )
+    expect(getAllByTestId('radioOptionWrapper')[1]).toContainElement(
+      getByText('Option 2')
+    )
+  })
 })

@@ -10,16 +10,14 @@ import { TreeBlock } from '@core/journeys/ui'
 import { noop } from 'lodash'
 import { useFormik } from 'formik'
 import TimeField from 'react-simple-timefield'
-import { PlayCircle, StopCircle } from '@mui/icons-material'
+import PlayCircle from '@mui/icons-material/PlayCircle'
+import StopCircle from '@mui/icons-material/StopCircle'
+import { secondsToTimeFormat, timeFormatToSeconds } from '@core/shared/ui'
 
 import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../__generated__/GetJourney'
-import {
-  secondsToTimeFormat,
-  timeFormatToSeconds
-} from '../../../../libs/timeFormat'
 import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 
@@ -41,6 +39,7 @@ export function VideoBlockEditorSettings({
       startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
       endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0)
     },
+    enableReinitialize: true,
     validate: async (values) => {
       await onChange({
         ...values,
@@ -155,6 +154,7 @@ export function VideoBlockEditorSettings({
           />
           <TimeField
             showSeconds
+            value={values.endAt}
             onChange={handleChange}
             style={{ width: '100%' }}
             input={

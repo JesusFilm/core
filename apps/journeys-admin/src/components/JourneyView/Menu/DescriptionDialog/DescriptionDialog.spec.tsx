@@ -1,18 +1,21 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '../../../../libs/context'
+import { SnackbarProvider } from 'notistack'
+import { JourneyProvider } from '@core/journeys/ui'
 import { defaultJourney } from '../../data'
 import { DescriptionDialog, JOURNEY_DESC_UPDATE } from '.'
 
 const onClose = jest.fn()
 
 describe('JourneyView/Menu/DescriptionDialog', () => {
-  it('should not set journey description on close', () => {
+  it('should not set journey description on close', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <JourneyProvider value={defaultJourney}>
-          <DescriptionDialog open onClose={onClose} />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <DescriptionDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -21,7 +24,7 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
     })
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
 
-    expect(onClose).toBeCalled()
+    await waitFor(() => expect(onClose).toBeCalled())
   })
 
   it('should update journey description on submit', async () => {
@@ -39,7 +42,7 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
       }
     }))
 
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -54,9 +57,11 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
           }
         ]}
       >
-        <JourneyProvider value={defaultJourney}>
-          <DescriptionDialog open onClose={onClose} />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <DescriptionDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -68,6 +73,41 @@ describe('JourneyView/Menu/DescriptionDialog', () => {
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
     })
-    expect(getByText('Description updated successfully')).toBeInTheDocument()
+  })
+
+  it('shows notistack error alert when description fails to update', async () => {
+    const { getByRole, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_DESC_UPDATE,
+              variables: {
+                id: defaultJourney.id,
+                input: {
+                  description: 'New Description'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <DescriptionDialog open onClose={onClose} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'New Description' }
+    })
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+    await waitFor(() =>
+      expect(
+        getByText('Field update failed. Reload the page or try again.')
+      ).toBeInTheDocument()
+    )
   })
 })

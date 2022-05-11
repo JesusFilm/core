@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider } from '@core/journeys/ui'
+import { EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -10,7 +10,6 @@ import {
   ThemeName,
   ThemeMode
 } from '../../../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import { steps } from '../data'
 import { NavigateAction } from '.'
@@ -35,7 +34,7 @@ export const Navigate: Story = () => {
       <Box>
         <Typography>Default</Typography>
         <MockedProvider>
-          <JourneyProvider value={journeyTheme}>
+          <JourneyProvider value={{ journey: journeyTheme, admin: true }}>
             <EditorProvider
               initialState={{
                 steps,

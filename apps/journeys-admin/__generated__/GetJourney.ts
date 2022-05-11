@@ -9,6 +9,18 @@ import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, Button
 // GraphQL query operation: GetJourney
 // ====================================================
 
+export interface GetJourney_journey_language_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface GetJourney_journey_language {
+  __typename: "Language";
+  id: string;
+  name: GetJourney_journey_language_name[];
+}
+
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
   parentBlockId: string;
@@ -187,8 +199,6 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  label: string;
-  description: string | null;
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateAction {
@@ -266,17 +276,59 @@ export interface GetJourney_journey_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface GetJourney_journey_blocks_VideoBlock_video_title {
+  __typename: "Translation";
+  value: string;
+}
+
 export interface GetJourney_journey_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
-  hls: string;
+  hls: string | null;
 }
 
 export interface GetJourney_journey_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
+  title: GetJourney_journey_blocks_VideoBlock_video_title[];
+  image: string | null;
   variant: GetJourney_journey_blocks_VideoBlock_video_variant | null;
 }
+
+export interface GetJourney_journey_blocks_VideoBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
+export interface GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
+export interface GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  journey: GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface GetJourney_journey_blocks_VideoBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type GetJourney_journey_blocks_VideoBlock_action = GetJourney_journey_blocks_VideoBlock_action_NavigateAction | GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_VideoBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_VideoBlock_action_LinkAction;
 
 export interface GetJourney_journey_blocks_VideoBlock {
   __typename: "VideoBlock";
@@ -309,6 +361,10 @@ export interface GetJourney_journey_blocks_VideoBlock {
    */
   videoVariantLanguageId: string | null;
   video: GetJourney_journey_blocks_VideoBlock_video | null;
+  /**
+   * action that should be performed when the video ends
+   */
+  action: GetJourney_journey_blocks_VideoBlock_action | null;
 }
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateAction {
@@ -363,7 +419,18 @@ export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | 
 
 export interface GetJourney_journey_primaryImageBlock {
   __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
   src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
 }
 
 export interface GetJourney_journey_userJourneys_user {
@@ -387,11 +454,13 @@ export interface GetJourney_journey {
   title: string;
   description: string | null;
   status: JourneyStatus;
-  locale: string;
+  language: GetJourney_journey_language;
   createdAt: any;
   publishedAt: any | null;
   themeName: ThemeName;
   themeMode: ThemeMode;
+  seoTitle: string | null;
+  seoDescription: string | null;
   blocks: GetJourney_journey_blocks[] | null;
   primaryImageBlock: GetJourney_journey_primaryImageBlock | null;
   userJourneys: GetJourney_journey_userJourneys[] | null;

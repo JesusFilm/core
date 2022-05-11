@@ -1,21 +1,12 @@
 import { gql, useMutation } from '@apollo/client'
-import { Close } from '@mui/icons-material'
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Stack,
-  Typography
-} from '@mui/material'
-import { ReactElement } from 'react'
-
+import { ReactElement, useEffect } from 'react'
+import { useJourney } from '@core/journeys/ui'
+import { Dialog } from '../../../../../Dialog'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
 import { PosterImageBlockCreate } from '../../../../../../../__generated__/PosterImageBlockCreate'
 import { PosterImageBlockUpdate } from '../../../../../../../__generated__/PosterImageBlockUpdate'
 import { VideoBlockPosterImageUpdate } from '../../../../../../../__generated__/VideoBlockPosterImageUpdate'
-import { useJourney } from '../../../../../../libs/context'
 import { ImageBlockEditor } from '../../../../ImageBlockEditor'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 
@@ -83,35 +74,54 @@ interface VideoBlockEditorSettingsPosterDialogProps {
   parentBlockId: string | undefined
   open: boolean
   onClose: () => void
+  onLoading?: () => void
+  onLoad?: () => void
 }
 
 export function VideoBlockEditorSettingsPosterDialog({
   selectedBlock,
   parentBlockId,
   open,
-  onClose
+  onClose,
+  onLoading,
+  onLoad
 }: VideoBlockEditorSettingsPosterDialogProps): ReactElement {
-  const { id: journeyId } = useJourney()
+  const { journey } = useJourney()
+
   const [blockDelete, { error: blockDeleteError }] =
     useMutation<BlockDeleteForPosterImage>(BLOCK_DELETE_FOR_POSTER_IMAGE)
   const [videoBlockUpdate, { error: videoBlockUpdateError }] =
     useMutation<VideoBlockPosterImageUpdate>(VIDEO_BLOCK_POSTER_IMAGE_UPDATE)
-  const [imageBlockCreate, { error: imageBlockCreateError }] =
-    useMutation<PosterImageBlockCreate>(POSTER_IMAGE_BLOCK_CREATE)
-  const [imageBlockUpdate, { error: imageBlockUpdateError }] =
-    useMutation<PosterImageBlockUpdate>(POSTER_IMAGE_BLOCK_UPDATE)
+  const [
+    imageBlockCreate,
+    { error: imageBlockCreateError, loading: createLoading }
+  ] = useMutation<PosterImageBlockCreate>(POSTER_IMAGE_BLOCK_CREATE)
+  const [
+    imageBlockUpdate,
+    { error: imageBlockUpdateError, loading: updateLoading }
+  ] = useMutation<PosterImageBlockUpdate>(POSTER_IMAGE_BLOCK_UPDATE)
+
+  useEffect(() => {
+    if (createLoading || updateLoading) {
+      onLoading?.()
+    } else {
+      onLoad?.()
+    }
+    // eslint-disable-next-line
+  }, [createLoading, updateLoading])
 
   const deleteCoverBlock = async (): Promise<void> => {
-    if (selectedBlock == null || parentBlockId == null) return
+    if (selectedBlock == null || parentBlockId == null || journey == null)
+      return
 
     await blockDelete({
       variables: {
         id: selectedBlock.id,
         parentBlockId: selectedBlock.parentBlockId,
-        journeyId: journeyId
+        journeyId: journey.id
       },
       update(cache, { data }) {
-        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journeyId)
+        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journey.id)
       }
     })
     if (blockDeleteError != null) return
@@ -119,7 +129,7 @@ export function VideoBlockEditorSettingsPosterDialog({
     await videoBlockUpdate({
       variables: {
         id: parentBlockId,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           posterBlockId: null
         }
@@ -135,12 +145,12 @@ export function VideoBlockEditorSettingsPosterDialog({
   }
 
   const createImageBlock = async (block): Promise<boolean> => {
-    if (parentBlockId == null) return false
+    if (parentBlockId == null || journey == null) return false
 
     const { data } = await imageBlockCreate({
       variables: {
         input: {
-          journeyId: journeyId,
+          journeyId: journey.id,
           parentBlockId: parentBlockId,
           src: block.src,
           alt: block.alt
@@ -149,7 +159,7 @@ export function VideoBlockEditorSettingsPosterDialog({
       update(cache, { data }) {
         if (data?.imageBlockCreate != null) {
           cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = []) {
                 const newBlockRef = cache.writeFragment({
@@ -173,7 +183,7 @@ export function VideoBlockEditorSettingsPosterDialog({
     await videoBlockUpdate({
       variables: {
         id: parentBlockId,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           posterBlockId: data?.imageBlockCreate.id ?? null
         }
@@ -190,12 +200,12 @@ export function VideoBlockEditorSettingsPosterDialog({
   }
 
   const updateImageBlock = async (block: ImageBlock): Promise<boolean> => {
-    if (selectedBlock == null) return false
+    if (selectedBlock == null || journey == null) return false
 
     await imageBlockUpdate({
       variables: {
         id: selectedBlock.id,
-        journeyId: journeyId,
+        journeyId: journey.id,
         input: {
           src: block.src,
           alt: block.alt
@@ -218,35 +228,18 @@ export function VideoBlockEditorSettingsPosterDialog({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
-      aria-labelledby="poster-dialog-title"
-      fullWidth={true}
-      maxWidth="xs"
+      handleClose={onClose}
+      dialogTitle={{
+        title: 'Cover Image',
+        closeButton: true
+      }}
     >
-      <DialogTitle>
-        <Stack direction="row" justifyContent="space-between">
-          <Typography
-            id="poster-dialog-title"
-            variant="subtitle1"
-            component="div"
-            justifyContent="center"
-            paddingTop={2}
-            sx={{ textTransform: 'initial' }}
-          >
-            Cover Image
-          </Typography>
-          <IconButton onClick={onClose}>
-            <Close />
-          </IconButton>
-        </Stack>
-      </DialogTitle>
-      <DialogContent sx={{ p: 0 }}>
-        <ImageBlockEditor
-          selectedBlock={selectedBlock}
-          onChange={handleChange}
-          onDelete={deleteCoverBlock}
-        />
-      </DialogContent>
+      <ImageBlockEditor
+        selectedBlock={selectedBlock}
+        onChange={handleChange}
+        onDelete={deleteCoverBlock}
+        loading={createLoading || updateLoading}
+      />
     </Dialog>
   )
 }

@@ -1,9 +1,8 @@
 import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import { TypographyColor } from '../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
-import { useJourney } from '../../../../../../../libs/context'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 import { TypographyBlockUpdateColor } from '../../../../../../../../__generated__/TypographyBlockUpdateColor'
@@ -26,14 +25,14 @@ export function Color(): ReactElement {
     TYPOGRAPHY_BLOCK_UPDATE_COLOR
   )
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TypographyBlock>
     | undefined
 
   async function handleChange(color: TypographyColor): Promise<void> {
-    if (selectedBlock != null && color != null) {
+    if (selectedBlock != null && color != null && journey != null) {
       await typographyBlockUpdate({
         variables: {
           id: selectedBlock.id,

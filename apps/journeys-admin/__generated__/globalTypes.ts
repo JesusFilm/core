@@ -130,10 +130,16 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
-export enum VideoResponseStateEnum {
+export enum VideoPlayEventStateEnum {
   FINISHED = "FINISHED",
   PAUSED = "PAUSED",
   PLAYING = "PLAYING",
+}
+
+export enum VideoType {
+  episode = "episode",
+  playlist = "playlist",
+  standalone = "standalone",
 }
 
 export interface ButtonBlockCreateInput {
@@ -158,7 +164,6 @@ export interface ButtonBlockUpdateInput {
 
 export interface CardBlockUpdateInput {
   backgroundColor?: string | null;
-  coverBlockId?: string | null;
   fullscreen?: boolean | null;
   parentBlockId?: string | null;
   themeMode?: ThemeMode | null;
@@ -184,6 +189,7 @@ export interface ImageBlockCreateInput {
   alt: string;
   blurhash?: string | null;
   id?: string | null;
+  isCover?: boolean | null;
   journeyId: string;
   parentBlockId: string;
   src?: string | null;
@@ -197,8 +203,10 @@ export interface ImageBlockUpdateInput {
 
 export interface JourneyUpdateInput {
   description?: string | null;
-  locale?: string | null;
+  languageId?: string | null;
   primaryImageBlockId?: string | null;
+  seoDescription?: string | null;
+  seoTitle?: string | null;
   slug?: string | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
@@ -240,20 +248,13 @@ export interface RadioOptionBlockUpdateInput {
 export interface RadioQuestionBlockCreateInput {
   id?: string | null;
   journeyId: string;
-  label: string;
   parentBlockId: string;
 }
 
-export interface RadioQuestionBlockUpdateInput {
-  description?: string | null;
-  label?: string | null;
-  parentBlockId?: string | null;
-}
-
 export interface RadioQuestionResponseCreateInput {
-  blockId: string;
+  blockId?: string | null;
   id?: string | null;
-  radioOptionBlockId: string;
+  radioOptionBlockId?: string | null;
 }
 
 export interface SignUpBlockCreateInput {
@@ -270,10 +271,10 @@ export interface SignUpBlockUpdateInput {
 }
 
 export interface SignUpResponseCreateInput {
-  blockId: string;
-  email: string;
+  blockId?: string | null;
+  email?: string | null;
   id?: string | null;
-  name: string;
+  name?: string | null;
 }
 
 export interface StepBlockUpdateInput {
@@ -305,6 +306,7 @@ export interface VideoBlockCreateInput {
   endAt?: number | null;
   fullsize?: boolean | null;
   id?: string | null;
+  isCover?: boolean | null;
   journeyId: string;
   muted?: boolean | null;
   parentBlockId: string;
@@ -325,16 +327,18 @@ export interface VideoBlockUpdateInput {
   videoVariantLanguageId?: string | null;
 }
 
-export interface VideoResponseCreateInput {
+export interface VideoPlayEventCreateInput {
   blockId: string;
   id?: string | null;
   position?: number | null;
-  state: VideoResponseStateEnum;
+  state: VideoPlayEventStateEnum;
 }
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
+  tagId?: string | null;
   title?: string | null;
+  types?: VideoType[] | null;
 }
 
 //==============================================================

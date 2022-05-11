@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
-import { KeyAsId } from '@core/nest/decorators'
+import { KeyAsId, idAsKey } from '@core/nest/decorators'
 
 import { Block, Journey } from '../../__generated__/graphql'
 
@@ -40,26 +40,18 @@ export class BlockService extends BaseService {
         FOR block in ${this.collection}
           FILTER block.journeyId == ${journeyId}
             AND block.parentBlockId == ${parentBlockId}
+            AND block.parentOrder != null
           SORT block.parentOrder ASC
           RETURN block
     `)
         : await this.db.query(aql`
         FOR block in ${this.collection}
           FILTER block.journeyId == ${journeyId}
+            AND block.parentOrder != null
           SORT block.parentOrder ASC
           RETURN block
     `)
     return await res.all()
-  }
-
-  async updateChildrenParentOrder(
-    journeyId: string,
-    parentBlockId: string
-  ): Promise<Block[]> {
-    const siblings = await (
-      await this.getSiblingsInternal(journeyId, parentBlockId)
-    ).filter((block) => block.parentOrder != null)
-    return await this.reorderSiblings(siblings)
   }
 
   async reorderSiblings(
@@ -70,6 +62,27 @@ export class BlockService extends BaseService {
       parentOrder: index
     }))
     return await this.updateAll(updatedSiblings)
+  }
+
+  @KeyAsId()
+  async reorderBlock(
+    id: string,
+    journeyId: string,
+    parentOrder: number
+  ): Promise<Block[]> {
+    const block = idAsKey(await this.get(id)) as Block
+
+    if (block.journeyId === journeyId && block.parentOrder != null) {
+      const siblings = await this.getSiblingsInternal(
+        journeyId,
+        block.parentBlockId
+      )
+      siblings.splice(block.parentOrder, 1)
+      siblings.splice(parentOrder, 0, block)
+
+      return await this.reorderSiblings(siblings)
+    }
+    return []
   }
 
   protected async removeAllBlocksForParentId(
@@ -103,7 +116,10 @@ export class BlockService extends BaseService {
     const result =
       parentBlockId == null
         ? []
-        : await this.updateChildrenParentOrder(journeyId, parentBlockId)
+        : await this.reorderSiblings(
+            await this.getSiblingsInternal(journeyId, parentBlockId)
+          )
+
     return result as unknown as Block[]
   }
 

@@ -1,10 +1,9 @@
 import { ReactElement } from 'react'
-import { useTheme } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
-import { useJourney } from '../../../../../../../../libs/context'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
 import { CardPreview } from '../../../../../../../CardPreview'
@@ -29,15 +28,17 @@ export function Cards(): ReactElement {
   const {
     state: { steps, selectedBlock }
   } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
   const theme = useTheme()
   const { id, nextBlockId } = selectedBlock as TreeBlock<StepFields>
 
-  const nextStep: TreeBlock<StepFields> | undefined = steps.find(
+  const nextStep: TreeBlock<StepFields> | undefined = steps?.find(
     ({ id }) => nextBlockId === id
   )
 
   async function handleSelectStep(step: TreeBlock<StepFields>): Promise<void> {
+    if (journey == null) return
+
     await stepBlockNextBlockUpdate({
       variables: {
         id,

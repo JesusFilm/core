@@ -1,1 +1,0 @@
-export { DeleteDialog } from './DeleteDialog'

@@ -6,9 +6,9 @@ import {
   useTheme,
   PaletteColor,
   PaletteOptions,
-  SimplePaletteColorOptions
+  SimplePaletteColorOptions,
+  Breakpoint
 } from '@mui/material/styles'
-import { Breakpoint } from '@mui/system'
 
 import { simpleComponentConfig, themes, useBreakpoints } from '../../../index'
 

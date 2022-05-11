@@ -67,7 +67,11 @@ describe('JourneyCardMenu', () => {
     fireEvent.click(getByRole('button'))
     expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
       'href',
-      'https://your.nextstep.is/published-journey'
+      '/api/preview?slug=published-journey'
+    )
+    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+      'target',
+      '_blank'
     )
   })
 
@@ -91,7 +95,7 @@ describe('JourneyCardMenu', () => {
   })
 
   it('should show access dialog on click', async () => {
-    const { getByRole, queryByText } = render(
+    const { getByRole, queryByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
@@ -107,7 +111,7 @@ describe('JourneyCardMenu', () => {
     fireEvent.click(getByRole('menuitem', { name: 'Access' }))
 
     expect(queryByText('Invite Other Editors')).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Close' }))
+    fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(queryByText('Invite Other Editors')).not.toBeInTheDocument()
     )

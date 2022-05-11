@@ -5,24 +5,31 @@ import {
   CARD_FIELDS,
   STEP_FIELDS,
   TreeBlock,
-  transformer
+  transformer,
+  useJourney
 } from '@core/journeys/ui'
 import { ThemeProvider } from '@core/shared/ui'
 import AddIcon from '@mui/icons-material/Add'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
+import last from 'lodash/last'
+import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
+import { StepBlockNextBlockIdUpdate } from '../../../__generated__/StepBlockNextBlockIdUpdate'
 import { FramePortal } from '../FramePortal'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { HorizontalSelect } from '../HorizontalSelect'
-import { useJourney } from '../../libs/context'
+import { VideoWrapper } from '../Editor/Canvas/VideoWrapper'
+import { CardWrapper } from '../Editor/Canvas/CardWrapper'
 
 export interface CardPreviewProps {
   onSelect?: (step: TreeBlock<StepBlock>) => void
   selected?: TreeBlock<StepBlock>
-  steps: Array<TreeBlock<StepBlock>>
+  steps?: Array<TreeBlock<StepBlock>>
   showAddButton?: boolean
 }
 
@@ -41,6 +48,19 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
   }
 `
 
+export const STEP_BLOCK_NEXTBLOCKID_UPDATE = gql`
+  mutation StepBlockNextBlockIdUpdate(
+    $id: ID!
+    $journeyId: ID!
+    $input: StepBlockUpdateInput!
+  ) {
+    stepBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      nextBlockId
+    }
+  }
+`
+
 export function CardPreview({
   steps,
   selected,
@@ -50,26 +70,33 @@ export function CardPreview({
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
     STEP_AND_CARD_BLOCK_CREATE
   )
-  const { id: journeyId, themeMode, themeName } = useJourney()
+  const [stepBlockNextBlockIdUpdate] = useMutation<StepBlockNextBlockIdUpdate>(
+    STEP_BLOCK_NEXTBLOCKID_UPDATE
+  )
+  const { journey } = useJourney()
 
   const handleChange = (selectedId: string): void => {
+    if (steps == null) return
+
     const selectedStep = steps.find(({ id }) => id === selectedId)
     selectedStep != null && onSelect?.(selectedStep)
   }
 
   const handleClick = async (): Promise<void> => {
+    if (journey == null || steps == null) return
+
     const stepId = uuidv4()
     const cardId = uuidv4()
     const { data } = await stepAndCardBlockCreate({
       variables: {
-        journeyId,
+        journeyId: journey.id,
         stepId,
         cardId
       },
       update(cache, { data }) {
         if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
           cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journeyId }),
+            id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = []) {
                 const newStepBlockRef = cache.writeFragment({
@@ -95,71 +122,156 @@ export function CardPreview({
         }
       }
     })
-    if (data?.stepBlockCreate != null)
+    if (data?.stepBlockCreate != null) {
       onSelect?.(
         transformer([
           data.stepBlockCreate,
           data.cardBlockCreate
         ])[0] as TreeBlock<StepBlock>
       )
+    }
+
+    const lastStep = last(steps)
+    // this check is required as nextBlockId is not updated when the corrseponding block is deleted
+    const validNextBlockId =
+      steps.find(({ id }) => id === lastStep?.nextBlockId) != null
+    if (!validNextBlockId && lastStep != null) {
+      await stepBlockNextBlockIdUpdate({
+        variables: {
+          id: lastStep.id,
+          journeyId: journey.id,
+          input: {
+            nextBlockId: stepId
+          }
+        },
+        optimisticResponse: {
+          stepBlockUpdate: {
+            __typename: 'StepBlock',
+            id: lastStep.id,
+            nextBlockId: stepId
+          }
+        }
+      })
+    }
   }
 
   return (
-    <HorizontalSelect
-      onChange={handleChange}
-      id={selected?.id}
-      footer={
-        showAddButton === true && (
-          <Card
-            id="CardPreviewAddButton"
-            variant="outlined"
-            sx={{
-              display: 'flex',
-              width: 87,
-              height: 132,
-              m: 1
-            }}
-          >
-            <CardActionArea
+    <>
+      {steps != null ? (
+        <HorizontalSelect
+          onChange={handleChange}
+          id={selected?.id}
+          footer={
+            showAddButton === true && (
+              <Card
+                id="CardPreviewAddButton"
+                variant="outlined"
+                sx={{
+                  display: 'flex',
+                  width: 87,
+                  height: 132,
+                  m: 1
+                }}
+              >
+                <CardActionArea
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                  }}
+                  onClick={handleClick}
+                >
+                  <AddIcon color="primary" />
+                </CardActionArea>
+              </Card>
+            )
+          }
+        >
+          {steps.map((step) => (
+            <Box
+              id={step.id}
+              key={step.id}
+              data-testid={`preview-${step.id}`}
               sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
+                width: 95,
+                height: 140
               }}
-              onClick={handleClick}
             >
-              <AddIcon color="primary" />
-            </CardActionArea>
-          </Card>
-        )
-      }
-    >
-      {steps.map((step) => (
-        <Box
-          id={step.id}
-          key={step.id}
-          data-testid={`preview-${step.id}`}
+              <Box
+                sx={{
+                  transform: 'scale(0.25)',
+                  transformOrigin: 'top left'
+                }}
+              >
+                <FramePortal width={380} height={560}>
+                  <ThemeProvider
+                    themeName={journey?.themeName ?? ThemeName.base}
+                    themeMode={journey?.themeMode ?? ThemeMode.light}
+                  >
+                    <Box sx={{ p: 4, height: '100%' }}>
+                      <BlockRenderer
+                        block={step}
+                        wrappers={{
+                          VideoWrapper,
+                          CardWrapper
+                        }}
+                      />
+                    </Box>
+                  </ThemeProvider>
+                </FramePortal>
+              </Box>
+            </Box>
+          ))}
+        </HorizontalSelect>
+      ) : (
+        <Stack
+          direction="row"
+          spacing={1}
           sx={{
-            width: 95,
-            height: 140
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            py: 5,
+            px: 6
           }}
         >
           <Box
             sx={{
-              transform: 'scale(0.25)',
-              transformOrigin: 'top left'
+              border: '3px solid transparent'
             }}
           >
-            <FramePortal width={380} height={560}>
-              <ThemeProvider themeName={themeName} themeMode={themeMode}>
-                <Box sx={{ p: 4, height: '100%' }}>
-                  <BlockRenderer block={step} />
-                </Box>
-              </ThemeProvider>
-            </FramePortal>
+            <Skeleton
+              variant="rectangular"
+              width={87}
+              height={132}
+              sx={{ m: 1, borderRadius: 1 }}
+            />
           </Box>
-        </Box>
-      ))}
-    </HorizontalSelect>
+          <Box
+            sx={{
+              border: '3px solid transparent'
+            }}
+          >
+            <Skeleton
+              variant="rectangular"
+              width={87}
+              height={132}
+              sx={{ m: 1, borderRadius: 1 }}
+            />
+          </Box>
+          <Box
+            sx={{
+              border: '3px solid transparent'
+            }}
+          >
+            <Skeleton
+              variant="rectangular"
+              width={87}
+              height={132}
+              sx={{ m: 1, borderRadius: 1 }}
+            />
+          </Box>
+        </Stack>
+      )}
+    </>
   )
 }

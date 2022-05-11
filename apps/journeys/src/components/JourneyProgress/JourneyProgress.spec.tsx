@@ -1,11 +1,11 @@
 import { activeBlockVar, TreeBlock, treeBlocksVar } from '@core/journeys/ui'
+import { render } from '@testing-library/react'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
-import { renderWithApolloClient } from '../../../test/testingLibrary'
 import { JourneyProgress } from '.'
 
 describe('JourneyProgress', () => {
   it('returns 0 when no activeBlock or treeBlocks', () => {
-    const { getByRole } = renderWithApolloClient(<JourneyProgress />)
+    const { getByRole } = render(<JourneyProgress />)
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0')
   })
 
@@ -22,7 +22,7 @@ describe('JourneyProgress', () => {
     activeBlockVar(activeBlock)
     const blocks: TreeBlock[] = [activeBlock]
     treeBlocksVar(blocks)
-    const { getByRole } = renderWithApolloClient(<JourneyProgress />)
+    const { getByRole } = render(<JourneyProgress />)
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100')
   })
 
@@ -39,7 +39,7 @@ describe('JourneyProgress', () => {
     activeBlockVar(activeBlock)
     const blocks: TreeBlock[] = []
     treeBlocksVar(blocks)
-    const { getByRole } = renderWithApolloClient(<JourneyProgress />)
+    const { getByRole } = render(<JourneyProgress />)
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0')
   })
 
@@ -85,7 +85,7 @@ describe('JourneyProgress', () => {
       }
     ]
     treeBlocksVar(blocks)
-    const { getByRole } = renderWithApolloClient(<JourneyProgress />)
+    const { getByRole } = render(<JourneyProgress />)
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0')
   })
 
@@ -131,7 +131,7 @@ describe('JourneyProgress', () => {
       }
     ]
     treeBlocksVar(blocks)
-    const { getByRole } = renderWithApolloClient(<JourneyProgress />)
+    const { getByRole } = render(<JourneyProgress />)
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50')
   })
 })

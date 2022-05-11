@@ -6,13 +6,15 @@ import {
   TreeBlock,
   useEditor,
   RADIO_OPTION_FIELDS,
-  RADIO_QUESTION_FIELDS
+  RADIO_QUESTION_FIELDS,
+  useJourney
 } from '@core/journeys/ui'
 import { v4 as uuidv4 } from 'uuid'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { RadioQuestionBlockCreate } from '../../../../../../__generated__/RadioQuestionBlockCreate'
-import { useJourney } from '../../../../../libs/context'
+import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
+import { TYPOGRAPHY_BLOCK_CREATE } from '../NewTypographyButton'
 
 export const RADIO_QUESTION_BLOCK_CREATE = gql`
   ${RADIO_QUESTION_FIELDS}
@@ -47,7 +49,10 @@ export function NewRadioQuestionButton(): ReactElement {
   const [radioQuestionBlockCreate] = useMutation<RadioQuestionBlockCreate>(
     RADIO_QUESTION_BLOCK_CREATE
   )
-  const { id: journeyId } = useJourney()
+  const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
+    TYPOGRAPHY_BLOCK_CREATE
+  )
+  const { journey } = useJourney()
   const {
     state: { selectedStep },
     dispatch
@@ -59,22 +64,83 @@ export function NewRadioQuestionButton(): ReactElement {
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
-    if (card != null) {
-      const { data } = await radioQuestionBlockCreate({
+    if (card != null && journey != null) {
+      const { data } = await typographyBlockCreate({
         variables: {
           input: {
-            journeyId,
+            journeyId: journey.id,
+            parentBlockId: card.id,
+            content: 'Your Question Here?',
+            variant: 'h3'
+          }
+        },
+        update(cache, { data }) {
+          if (data?.typographyBlockCreate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  const newBlockRef = cache.writeFragment({
+                    data: data.typographyBlockCreate,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+                  return [...existingBlockRefs, newBlockRef]
+                }
+              }
+            })
+          }
+        }
+      })
+      await typographyBlockCreate({
+        variables: {
+          input: {
+            journeyId: journey.id,
+            parentBlockId: card.id,
+            content: 'Your Description Here',
+            variant: 'body2'
+          }
+        },
+        update(cache, { data }) {
+          if (data?.typographyBlockCreate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  const newBlockRef = cache.writeFragment({
+                    data: data.typographyBlockCreate,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+                  return [...existingBlockRefs, newBlockRef]
+                }
+              }
+            })
+          }
+        }
+      })
+
+      await radioQuestionBlockCreate({
+        variables: {
+          input: {
+            journeyId: journey.id,
             id,
             parentBlockId: card.id,
-            label: 'Your Question Here?'
+            label: ''
           },
           radioOptionBlockCreateInput1: {
-            journeyId,
+            journeyId: journey.id,
             parentBlockId: id,
             label: 'Option 1'
           },
           radioOptionBlockCreateInput2: {
-            journeyId,
+            journeyId: journey.id,
             parentBlockId: id,
             label: 'Option 2'
           }
@@ -82,7 +148,7 @@ export function NewRadioQuestionButton(): ReactElement {
         update(cache, { data }) {
           if (data?.radioQuestionBlockCreate != null) {
             cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
                   const newBlockRef = cache.writeFragment({
@@ -121,10 +187,10 @@ export function NewRadioQuestionButton(): ReactElement {
           }
         }
       })
-      if (data?.radioQuestionBlockCreate != null) {
+      if (data?.typographyBlockCreate != null) {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
-          id: data.radioQuestionBlockCreate.id
+          id: data.typographyBlockCreate.id
         })
         dispatch({
           type: 'SetActiveTabAction',

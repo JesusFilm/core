@@ -1,13 +1,13 @@
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
 import { CardPreview } from '../../../../../CardPreview'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey_blocks_ButtonBlock as ButtonBlock
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/GetJourney'
 import { NavigateToBlockActionUpdate } from '../../../../../../../__generated__/NavigateToBlockActionUpdate'
-import { useJourney } from '../../../../../../libs/context'
 
 export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
   mutation NavigateToBlockActionUpdate(
@@ -27,25 +27,28 @@ export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
 `
 
 export function NavigateToBlockAction(): ReactElement {
-  const { state } = useEditor()
-  const journey = useJourney()
-  const selectedBlock = state.selectedBlock as
+  const {
+    state: { steps, selectedBlock }
+  } = useEditor()
+  const { journey } = useJourney()
+  const currentBlock = selectedBlock as
     | TreeBlock<ButtonBlock>
+    | TreeBlock<VideoBlock>
     | undefined
 
   const [navigateToBlockActionUpdate] =
     useMutation<NavigateToBlockActionUpdate>(NAVIGATE_TO_BLOCK_ACTION_UPDATE)
 
   const currentActionStep =
-    state.steps.find(
+    steps?.find(
       ({ id }) =>
-        selectedBlock?.action?.__typename === 'NavigateToBlockAction' &&
-        id === selectedBlock?.action?.blockId
+        currentBlock?.action?.__typename === 'NavigateToBlockAction' &&
+        id === currentBlock?.action?.blockId
     ) ?? undefined
 
   async function handleSelectStep(step: TreeBlock<StepBlock>): Promise<void> {
-    if (selectedBlock != null) {
-      const { id, __typename: typeName } = selectedBlock
+    if (currentBlock != null && journey != null) {
+      const { id, __typename: typeName } = currentBlock
       await navigateToBlockActionUpdate({
         variables: {
           id,
@@ -72,7 +75,7 @@ export function NavigateToBlockAction(): ReactElement {
   return (
     <CardPreview
       selected={currentActionStep}
-      steps={state.steps}
+      steps={steps}
       onSelect={handleSelectStep}
     />
   )

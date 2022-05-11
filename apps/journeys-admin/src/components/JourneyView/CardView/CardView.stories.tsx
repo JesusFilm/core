@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { JourneyProvider } from '@core/journeys/ui'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { JourneyProvider } from '../../../libs/context'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { CardView, CardViewProps } from './CardView'
@@ -16,13 +16,14 @@ const CardViewStory = {
 const Template: Story<Omit<CardViewProps, 'slug'>> = ({ ...args }) => (
   <MockedProvider>
     <JourneyProvider
-      value={
-        {
+      value={{
+        journey: {
           id: 'journeyId',
           themeMode: ThemeMode.dark,
           themeName: ThemeName.base
-        } as unknown as Journey
-      }
+        } as unknown as Journey,
+        admin: true
+      }}
     >
       <CardView slug="my-journey" {...args} />
     </JourneyProvider>
@@ -42,6 +43,11 @@ NoCards.args = {
 export const ManyCards = Template.bind({})
 ManyCards.args = {
   blocks: steps.concat(steps).concat(steps)
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  blocks: undefined
 }
 
 export default CardViewStory as Meta

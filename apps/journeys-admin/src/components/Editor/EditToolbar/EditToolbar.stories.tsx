@@ -1,8 +1,12 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
+  GetJourney_journey as Journey
+} from '../../../../__generated__/GetJourney'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { EditToolbar } from '.'
 
 const EditToolbarStory = {
@@ -26,9 +30,15 @@ export const Default: Story = () => {
 
   return (
     <MockedProvider>
-      <EditorProvider initialState={{ selectedBlock }}>
-        <EditToolbar />
-      </EditorProvider>
+      <JourneyProvider
+        value={{
+          journey: { status: JourneyStatus.published } as unknown as Journey
+        }}
+      >
+        <EditorProvider initialState={{ selectedBlock }}>
+          <EditToolbar />
+        </EditorProvider>
+      </JourneyProvider>
     </MockedProvider>
   )
 }

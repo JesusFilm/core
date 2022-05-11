@@ -1,7 +1,6 @@
 import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { Typography, TreeBlock } from '@core/journeys/ui'
-import { useJourney } from '../../../../../libs/context'
+import { Typography, TreeBlock, useJourney } from '@core/journeys/ui'
 import { TypographyBlockUpdateContent } from '../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../__generated__/TypographyFields'
 import { InlineEditInput } from '../InlineEditInput'
@@ -18,7 +17,9 @@ export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
     }
   }
 `
-interface TypographyEditProps extends TreeBlock<TypographyFields> {}
+export interface TypographyEditProps extends TreeBlock<TypographyFields> {
+  deleteSelf: () => void
+}
 
 export function TypographyEdit({
   id,
@@ -26,31 +27,39 @@ export function TypographyEdit({
   align,
   color,
   content,
+  deleteSelf,
   ...props
 }: TypographyEditProps): ReactElement {
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateContent>(
     TYPOGRAPHY_BLOCK_UPDATE_CONTENT
   )
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const [value, setValue] = useState(content)
 
   async function handleSaveBlock(): Promise<void> {
+    if (journey == null) return
+
     const content = value.trimStart().trimEnd()
-    await typographyBlockUpdate({
-      variables: {
-        id,
-        journeyId: journey.id,
-        input: { content }
-      },
-      optimisticResponse: {
-        typographyBlockUpdate: {
+
+    if (content === '') {
+      deleteSelf()
+    } else {
+      await typographyBlockUpdate({
+        variables: {
           id,
-          __typename: 'TypographyBlock',
-          content
+          journeyId: journey.id,
+          input: { content }
+        },
+        optimisticResponse: {
+          typographyBlockUpdate: {
+            id,
+            __typename: 'TypographyBlock',
+            content
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   const input = (

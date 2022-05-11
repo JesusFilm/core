@@ -5,10 +5,13 @@ import {
   TreeBlock,
   ActiveFab,
   Button,
+  RadioQuestion,
   SignUp,
   Typography
 } from '@core/journeys/ui'
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
+import { RadioOptionFields } from '../../../../../__generated__/RadioOptionFields'
+import { RadioQuestionFields } from '../../../../../__generated__/RadioQuestionFields'
 import { SignUpFields } from '../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../__generated__/StepFields'
 import { TypographyVariant } from '../../../../../__generated__/globalTypes'
@@ -127,8 +130,6 @@ describe('InlineEditWrapper', () => {
 
     const input = getByDisplayValue('test label')
     expect(input).toBeInTheDocument()
-    fireEvent.click(input)
-    expect(input).toBeInTheDocument()
   })
 
   it('should edit sign up button label on double click', async () => {
@@ -151,7 +152,6 @@ describe('InlineEditWrapper', () => {
             activeFab: ActiveFab.Add
           }}
         >
-          {' '}
           <SelectableWrapper block={block}>
             <InlineEditWrapper block={block}>
               <SignUp {...block} />
@@ -169,7 +169,119 @@ describe('InlineEditWrapper', () => {
     })
     const input = getByDisplayValue('test label')
     await waitFor(() => expect(input).toBeInTheDocument())
-    fireEvent.click(input)
-    await waitFor(() => expect(input).toBeInTheDocument())
+  })
+
+  describe('Multichoice', () => {
+    const option: TreeBlock<RadioOptionFields> = {
+      __typename: 'RadioOptionBlock',
+      parentBlockId: 'radioQuestion.id',
+      parentOrder: 0,
+      id: 'radioOption.id',
+      label: 'option',
+      action: null,
+      children: []
+    }
+
+    const block: TreeBlock<RadioQuestionFields> = {
+      __typename: 'RadioQuestionBlock',
+      parentBlockId: 'card.id',
+      parentOrder: 0,
+      id: 'radioQuestion.id',
+      children: [option]
+    }
+
+    const radioQuestion = (
+      <SelectableWrapper block={block}>
+        <InlineEditWrapper block={block}>
+          <RadioQuestion
+            {...block}
+            wrappers={{
+              Wrapper: SelectableWrapper,
+              RadioOptionWrapper: InlineEditWrapper
+            }}
+          />
+        </InlineEditWrapper>
+      </SelectableWrapper>
+    )
+
+    it('should show add option when radio question selected', async () => {
+      const { getByText, getByTestId } = render(
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step(block)],
+              activeFab: ActiveFab.Add,
+              selectedBlock: step(block)
+            }}
+          >
+            <SelectableWrapper block={block}>
+              <InlineEditWrapper block={block}>
+                {radioQuestion}
+              </InlineEditWrapper>
+            </SelectableWrapper>
+          </EditorProvider>
+        </MockedProvider>
+      )
+
+      // Select RadioQuestion
+      fireEvent.click(getByText('option'))
+      expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
+        outline: '3px solid #C52D3A',
+        zIndex: '1'
+      })
+
+      await waitFor(() =>
+        expect(getByTestId(`${block.id}-add-option`)).toBeInTheDocument()
+      )
+    })
+
+    it('should show add option when radio option selected', async () => {
+      const { getByText, getByTestId } = render(
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step(block)],
+              activeFab: ActiveFab.Save,
+              selectedBlock: step(block).children[0]
+            }}
+          >
+            {radioQuestion}
+          </EditorProvider>
+        </MockedProvider>
+      )
+      fireEvent.click(getByText('option'))
+      expect(getByTestId(`selected-${option.id}`)).toHaveStyle({
+        outline: '3px solid #C52D3A',
+        zIndex: '1'
+      })
+
+      await waitFor(() =>
+        expect(getByTestId(`${block.id}-add-option`)).toBeInTheDocument()
+      )
+    })
+
+    it('should edit radio option label on double click', async () => {
+      const { getByDisplayValue, getByText, getByTestId } = render(
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step(block)],
+              activeFab: ActiveFab.Save,
+              selectedBlock: step(block).children[0]
+            }}
+          >
+            {radioQuestion}
+          </EditorProvider>
+        </MockedProvider>
+      )
+      fireEvent.click(getByText('option'))
+      fireEvent.click(getByText('option'))
+      expect(getByTestId(`selected-${option.id}`)).toHaveStyle({
+        outline: '3px solid #C52D3A',
+        zIndex: '1'
+      })
+      const input = getByDisplayValue('option')
+      await waitFor(() => expect(input).toBeInTheDocument())
+    })
   })
 })

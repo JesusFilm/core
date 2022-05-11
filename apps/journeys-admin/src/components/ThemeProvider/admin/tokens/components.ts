@@ -8,8 +8,11 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
         root: {
           fontFamily: "'Montserrat', sans-serif",
           fontWeight: 800,
-          borderRadius: '1000px',
+          borderRadius: '12px',
           textTransform: 'none'
+        },
+        contained: {
+          boxShadow: 'none'
         }
       }
     },

@@ -86,18 +86,38 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the
 
 As an example we are going to run through the steps to get the Next Steps Journeys project running in your web browser. This example assumes you are running it from the development container.
 
-1. Make a copy of `apps/api-gateway/.env.example` with the file name `apps/api-gateway/.env.local`. Open the file and set up your own environment variables.
-1. Make a copy of `apps/api-journeys/.env.example` with the file name `apps/api-journeys/.env.local`. Open the file and set up your own environment variables.
-1. Make a copy of `apps/api-users/.env.example` with the file name `apps/api-users/.env.local`. Open the file and set up your own environment variables.
-1. Make a copy of `apps/journeys/.env` with the file name `apps/journeys/.env.local`. Open the file and set up your own environment variables.
-1. Make a copy of `apps/journeys-admin/.env` with the file name `apps/journeys/.env.local`. Open the file and set up your own environment variables.
-1. run `nx run api-journeys:seed`
-1. run `nx run api-users:seed`
-1. Starting the projects
-   - run `nx run journeys:serve-all`
-   - run `nx run journeys-admin:serve-all`
-1. in your local browser navigate to [http://localhost:4100](http://localhost:4100)
+1. Set up env files for projects: _Note - to set up environment variables, follow instructions found in the `.env.example` file for each project._
+   - Make a copy of `apps/api-gateway/.env.example` with the file name `apps/api-gateway/.env.local`. Open the file and set up your own environment variables.
+   - Make a copy of `apps/api-journeys/.env.example` with the file name `apps/api-journeys/.env.local`. Open the file and set up your own environment variables.
+   - Make a copy of `apps/api-users/.env.example` with the file name `apps/api-users/.env.local`. Open the file and set up your own environment variables.
+   - Make a copy of `apps/api-languages/.env.example` with the file name `apps/api-languages/.env.local`. Open the file and set up your own environment variables.
+   - Make a copy of `apps/api-videos/.env.example` with the file name `apps/api-videos/.env.local`. Open the file and set up your own environment variables.
+   - Make a copy of `apps/journeys/.env.example` with the file name `apps/journeys/.env.local`. Open the file and set up your own environment variables.
+   - Make a copy of `apps/journeys-admin/.env.example` with the file name `apps/journeys-admin/.env.local`. Open the file and set up your own environment variables.
+1. Seed the database
+   - run `nx run api-journeys:seed`
+   - run `nx run api-users:seed`
+   - run `nx run api-languages:seed`
+   - run `nx run api-videos:seed`
+1. Running the projects
+   - To run the journeys project:
+     1. run `nx run journeys:serve-all`
+     1. in your local browser navigate to [http://localhost:4100](http://localhost:4100)
+   - To run the journeys-admin project:
+     1. run `nx run journeys-admin:serve-all`
+     1. in your local browser navigate to [http://localhost:4200](http://localhost:4200)
+   - If you would like to run all of the projects at the same time:
+     1. run `nx run api-gateway:serve-all`
+     1. run `nx run journeys:serve`
+     1. run `nx run journeys-admin:serve`
+     1. ...plus any additional projects that may be added in the future.
 
 ## Adding to the code base
 
 New features should be merged to a `feature/*` branch where it can be refined until it's ready to be merged to `main`.
+
+# PR naming
+
+For now, please make sure your PR name does not start with a capital letter.
+eg `feat: Add NewComponent`
+Instead use `feat: add NewComponent`

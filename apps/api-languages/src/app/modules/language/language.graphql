@@ -5,7 +5,11 @@ type Language @key(fields: "id") {
   name(languageId: ID, primary: Boolean): [Translation!]!
 }
 
+enum LanguageIdType {
+  databaseId
+  bcp47
+}
 extend type Query {
-  languages(page: Int, limit: Int): [Language!]!
-  language(id: ID!): Language
+  languages(offset: Int, limit: Int): [Language!]!
+  language(id: ID!, idType: LanguageIdType): Language
 }

@@ -7,12 +7,43 @@ const withImages = require('next-images')
  **/
 const nextConfig = {
   images: {
-    domains: []
+    domains: [
+      'images.unsplash.com',
+      'localhost',
+      'unsplash.com',
+      'd1wl257kev7hsz.cloudfront.net'
+    ],
+    disableStaticImages: true
   },
   nx: {
     // Set this to true if you would like to to use SVGR
     // See: https://github.com/gregberge/svgr
     svgr: false
-  }
+  },
+  i18n: {
+    locales: [
+      'ar',
+      'de',
+      'en',
+      'es',
+      'fa',
+      'fr',
+      'he',
+      'hi',
+      'id',
+      'ja',
+      'ko',
+      'pt',
+      'ru',
+      'tr',
+      'ur',
+      'vi',
+      'zh-Hans',
+      'zh-Hant'
+    ],
+    defaultLocale: 'en',
+    localeDetection: false
+  },
+  trailingSlash: true
 }
 module.exports = withPlugins([[withImages], [withNx]], nextConfig)

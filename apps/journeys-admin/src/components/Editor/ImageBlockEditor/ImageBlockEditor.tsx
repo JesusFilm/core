@@ -1,6 +1,8 @@
-import { Link as LinkIcon } from '@mui/icons-material'
-import { Box, InputAdornment, Stack, TextField } from '@mui/material'
-import { ChangeEvent, ReactElement } from 'react'
+import LinkIcon from '@mui/icons-material/Link'
+import InputAdornment from '@mui/material/InputAdornment'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import { ReactElement, ClipboardEvent } from 'react'
 import { object, string } from 'yup'
 import { useFormik } from 'formik'
 import { noop } from 'lodash'
@@ -13,23 +15,21 @@ interface ImageBlockEditorProps {
   showDelete?: boolean
   onChange: (block: ImageBlock) => Promise<void>
   onDelete?: () => Promise<void>
+  loading?: boolean
 }
 
 export function ImageBlockEditor({
   selectedBlock,
   showDelete = true,
   onChange,
-  onDelete
+  onDelete,
+  loading
 }: ImageBlockEditorProps): ReactElement {
   const srcSchema = object().shape({
     src: string().url('Please enter a valid url').required('Required')
   })
 
-  const handleSrcChange = async (
-    event: ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
-    const src = event.target.value
-
+  const handleSrcChange = async (src: string): Promise<void> => {
     if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
       return
 
@@ -46,6 +46,12 @@ export function ImageBlockEditor({
       await onDelete()
       formik.resetForm({ values: { src: '' } })
     }
+  }
+
+  const handlePaste = async (
+    e: ClipboardEvent<HTMLDivElement>
+  ): Promise<void> => {
+    await handleSrcChange(e.clipboardData.getData('text'))
   }
 
   const formik = useFormik({
@@ -68,43 +74,41 @@ export function ImageBlockEditor({
         }
         showDelete={showDelete && selectedBlock != null}
         onDelete={handleImageDelete}
+        loading={loading}
       />
-      <Box sx={{ py: 3, px: 6 }}>
-        <Box sx={{ px: 'auto' }}>
-          <Stack direction="column">
-            <form>
-              <TextField
-                id="src"
-                name="src"
-                variant="filled"
-                label="Paste URL of image..."
-                fullWidth
-                value={formik.values.src}
-                onChange={formik.handleChange}
-                onBlur={async (e) => {
-                  formik.handleBlur(e)
-                  await handleSrcChange(e as ChangeEvent<HTMLInputElement>)
-                }}
-                helperText={
-                  formik.touched.src === true
-                    ? formik.errors.src
-                    : 'Make sure image address is permanent'
-                }
-                error={
-                  formik.touched.src === true && Boolean(formik.errors.src)
-                }
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LinkIcon />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </form>
-          </Stack>
-        </Box>
-      </Box>
+      <Stack direction="column" sx={{ pt: 3 }}>
+        <form>
+          <TextField
+            id="src"
+            name="src"
+            variant="filled"
+            label="Paste URL of image..."
+            fullWidth
+            value={formik.values.src}
+            onChange={formik.handleChange}
+            onPaste={async (e) => {
+              await handlePaste(e)
+            }}
+            onBlur={async (e) => {
+              formik.handleBlur(e)
+              await handleSrcChange(e.target.value)
+            }}
+            helperText={
+              formik.errors.src != null
+                ? formik.errors.src
+                : 'Make sure image address is permanent'
+            }
+            error={formik.touched.src === true && Boolean(formik.errors.src)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LinkIcon />
+                </InputAdornment>
+              )
+            }}
+          />
+        </form>
+      </Stack>
     </>
   )
 }

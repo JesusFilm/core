@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { JourneyProvider } from '@core/journeys/ui'
 import { simpleComponentConfig } from '../../../../libs/storybook'
-import { JourneyProvider } from '../../../../libs/context'
 import { defaultJourney, publishedJourney } from '../../data'
 import { JourneyDetails } from './JourneyDetails'
 
@@ -13,7 +13,7 @@ const JourneyDetailsStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <JourneyProvider value={args.journey}>
+    <JourneyProvider value={{ journey: args.journey, admin: true }}>
       <JourneyDetails {...args} />
     </JourneyProvider>
   </MockedProvider>
@@ -35,6 +35,11 @@ PreviousYear.args = {
     ...publishedJourney,
     createdAt: '2020-11-19T12:34:56.647Z'
   }
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  journey: undefined
 }
 
 export default JourneyDetailsStory as Meta

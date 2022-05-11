@@ -1,5 +1,10 @@
 import { Story, Meta } from '@storybook/react'
-import { TreeBlock, EditorProvider, ActiveFab } from '@core/journeys/ui'
+import {
+  TreeBlock,
+  EditorProvider,
+  ActiveFab,
+  JourneyProvider
+} from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -9,10 +14,10 @@ import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFi
 import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
 import {
   ThemeMode,
-  ThemeName
+  ThemeName,
+  TypographyVariant
 } from '../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
-import { JourneyProvider } from '../../../../../libs/context'
 import { Canvas } from '../../Canvas'
 
 const RadioOptionEditStory = {
@@ -34,8 +39,6 @@ const option1: TreeBlock<RadioOptionFields> = {
 const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
   id: 'RadioQuestion1',
-  label: 'Label',
-  description: 'Description',
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
   children: [
@@ -84,6 +87,28 @@ const steps: Array<TreeBlock<StepBlock>> = [
             children: [],
             blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
           },
+          {
+            id: 'typographyBlockId1',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 0,
+            align: null,
+            color: null,
+            content: 'Question',
+            variant: TypographyVariant.h3,
+            children: []
+          },
+          {
+            id: 'typographyBlockId2',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 1,
+            align: null,
+            color: null,
+            content: 'Description',
+            variant: TypographyVariant.body2,
+            children: []
+          },
           block
         ]
       }
@@ -95,13 +120,14 @@ const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
       <JourneyProvider
-        value={
-          {
+        value={{
+          journey: {
             id: 'journeyId',
             themeMode: ThemeMode.light,
             themeName: ThemeName.base
-          } as unknown as Journey
-        }
+          } as unknown as Journey,
+          admin: true
+        }}
       >
         <EditorProvider
           initialState={{

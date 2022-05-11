@@ -23,7 +23,7 @@ export function Step({
     state: { steps },
     dispatch
   } = useEditor()
-  const nextBlock = steps.find(({ id }) => id === nextBlockId)
+  const nextBlock = steps?.find(({ id }) => id === nextBlockId)
   const nextBlockDescendants = flatten(nextBlock?.children ?? [])
   const nextBlockHeading = nextBlockDescendants.find(
     (block) => block.__typename === 'TypographyBlock'

@@ -1,11 +1,10 @@
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey as Journey
 } from '../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../libs/context'
 import {
   ButtonVariant,
   ButtonColor,
@@ -72,13 +71,14 @@ describe('ControlPanel', () => {
     const { getByTestId, getByText, getByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
             <ControlPanel />
@@ -100,13 +100,14 @@ describe('ControlPanel', () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
             <ControlPanel />
@@ -126,13 +127,14 @@ describe('ControlPanel', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2] }}>
             <ControlPanel />
@@ -183,13 +185,14 @@ describe('ControlPanel', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
@@ -274,13 +277,14 @@ describe('ControlPanel', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
@@ -303,9 +307,105 @@ describe('ControlPanel', () => {
   })
 
   it('should change to properties tab on poll button click', async () => {
+    const titleCreateResult = jest.fn(() => ({
+      data: {
+        typographyBlockCreate: {
+          id: 'typographyId.1',
+          parentBlockId: 'cardId',
+          parentOrder: 0,
+          content: 'Your Question Here?',
+          align: null,
+          color: null,
+          variant: 'h3',
+          __typename: 'TypographyBlock'
+        }
+      }
+    }))
+
+    const descriptionCreateResult = jest.fn(() => ({
+      data: {
+        typographyBlockCreate: {
+          id: 'typographyId.2',
+          parentBlockId: 'cardId',
+          parentOrder: 1,
+          content: 'Your Description Here',
+          align: null,
+          color: null,
+          variant: 'body2',
+          __typename: 'TypographyBlock'
+        }
+      }
+    }))
+
+    const radioCreateResult = jest.fn(() => ({
+      data: {
+        radioQuestionBlockCreate: {
+          __typename: 'RadioQuestionBlock',
+          id: 'uuid',
+          parentBlockId: 'cardId',
+          parentOrder: 2,
+          journeyId: 'journeyId'
+        },
+        radioOption1: {
+          __typename: 'RadioOptionBlock',
+          id: 'radioOptionBlockId1',
+          parentBlockId: 'uuid',
+          parentOrder: 0,
+          journeyId: 'journeyId',
+          label: 'Option 1',
+          action: {
+            __typename: 'NavigateToBlockAction',
+            gtmEventName: 'gtmEventName',
+            blockId: 'def'
+          }
+        },
+        radioOption2: {
+          __typename: 'RadioOptionBlock',
+          id: 'radioOptionBlockId2',
+          parentBlockId: 'uuid',
+          parentOrder: 1,
+          journeyId: 'journeyId',
+          label: 'Option 2',
+          action: {
+            __typename: 'NavigateToBlockAction',
+            gtmEventName: 'gtmEventName',
+            blockId: 'def'
+          }
+        }
+      }
+    }))
+
     const { getByRole, getByTestId } = render(
       <MockedProvider
         mocks={[
+          {
+            request: {
+              query: TYPOGRAPHY_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  content: 'Your Question Here?',
+                  variant: 'h3'
+                }
+              }
+            },
+            result: titleCreateResult
+          },
+          {
+            request: {
+              query: TYPOGRAPHY_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  content: 'Your Description Here',
+                  variant: 'body2'
+                }
+              }
+            },
+            result: descriptionCreateResult
+          },
           {
             request: {
               query: RADIO_QUESTION_BLOCK_CREATE,
@@ -314,7 +414,7 @@ describe('ControlPanel', () => {
                   journeyId: 'journeyId',
                   id: 'uuid',
                   parentBlockId: 'cardId',
-                  label: 'Your Question Here?'
+                  label: ''
                 },
                 radioOptionBlockCreateInput1: {
                   journeyId: 'journeyId',
@@ -328,56 +428,19 @@ describe('ControlPanel', () => {
                 }
               }
             },
-            result: {
-              data: {
-                radioQuestionBlockCreate: {
-                  __typename: 'RadioQuestionBlock',
-                  id: 'uuid',
-                  parentBlockId: 'cardId',
-                  journeyId: 'journeyId',
-                  parentOrder: null,
-                  label: 'Your Question Here?',
-                  description: null
-                },
-                radioOption1: {
-                  __typename: 'RadioOptionBlock',
-                  id: 'radioOptionBlockId1',
-                  parentBlockId: 'uuid',
-                  parentOrder: null,
-                  journeyId: 'journeyId',
-                  label: 'Option 1',
-                  action: {
-                    __typename: 'NavigateToBlockAction',
-                    gtmEventName: 'gtmEventName',
-                    blockId: 'def'
-                  }
-                },
-                radioOption2: {
-                  __typename: 'RadioOptionBlock',
-                  id: 'radioOptionBlockId2',
-                  parentBlockId: 'uuid',
-                  parentOrder: null,
-                  journeyId: 'journeyId',
-                  label: 'Option 2',
-                  action: {
-                    __typename: 'NavigateToBlockAction',
-                    gtmEventName: 'gtmEventName',
-                    blockId: 'def'
-                  }
-                }
-              }
-            }
+            result: radioCreateResult
           }
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
@@ -435,13 +498,14 @@ describe('ControlPanel', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
@@ -502,13 +566,14 @@ describe('ControlPanel', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />
@@ -611,13 +676,14 @@ describe('ControlPanel', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
             <ControlPanel />

@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -16,7 +16,6 @@ import {
   ThemeName,
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../libs/context'
 import { Canvas } from '.'
 
 const CanvasStory = {
@@ -250,8 +249,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'RadioQuestionBlock',
             parentOrder: 2,
             parentBlockId: 'card2.id',
-            label: 'What is Christianity to you?',
-            description: '',
             children: [
               {
                 id: 'radioOption1.id',
@@ -345,8 +342,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
             parentOrder: 2,
-            label: 'Do you need to change to be good enough for God?',
-            description: '',
             children: [
               {
                 id: 'radioOption1.id',
@@ -411,6 +406,14 @@ const steps: Array<TreeBlock<StepBlock>> = [
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
               variant: {
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
@@ -421,6 +424,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             endAt: null,
             posterBlockId: null,
             fullsize: null,
+            action: null,
             children: []
           }
         ]
@@ -577,13 +581,14 @@ const Template: Story = () => {
   return (
     <MockedProvider>
       <JourneyProvider
-        value={
-          {
+        value={{
+          journey: {
             id: 'journeyId',
             themeMode: ThemeMode.light,
             themeName: ThemeName.base
-          } as unknown as Journey
-        }
+          } as unknown as Journey,
+          admin: true
+        }}
       >
         <EditorProvider initialState={{ steps: steps }}>
           <Canvas />

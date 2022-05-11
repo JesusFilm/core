@@ -5,7 +5,7 @@ import { object, string } from 'yup'
 import { useMutation, gql } from '@apollo/client'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
+import LoadingButton from '@mui/lab/LoadingButton'
 import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock, handleAction, useEditor } from '../..'
 import { Icon } from '../Icon'
@@ -51,7 +51,7 @@ export const SignUp = ({
     | undefined
 
   const router = useRouter()
-  const [signUpResponseCreate] = useMutation<SignUpResponseCreate>(
+  const [signUpResponseCreate, { loading }] = useMutation<SignUpResponseCreate>(
     SIGN_UP_RESPONSE_CREATE
   )
 
@@ -118,6 +118,7 @@ export const SignUp = ({
             }}
           >
             <TextField
+              data-testid="name"
               {...formikProps}
               id="name"
               name="name"
@@ -131,9 +132,10 @@ export const SignUp = ({
               label="Email"
               disabled={selectedBlock !== undefined}
             />
-            <Button
+            <LoadingButton
               type="submit"
               variant="contained"
+              loading={loading}
               size="large"
               startIcon={
                 submitIcon != null ? <Icon {...submitIcon} /> : undefined
@@ -144,7 +146,7 @@ export const SignUp = ({
               }}
             >
               {editableSubmitLabel ?? submitLabel ?? 'Submit'}
-            </Button>
+            </LoadingButton>
           </Form>
         )}
       </Formik>

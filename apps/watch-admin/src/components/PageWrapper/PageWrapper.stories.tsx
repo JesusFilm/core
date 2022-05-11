@@ -10,7 +10,7 @@ import { PageWrapper } from '.'
 const PageWrapperStory = {
   ...journeysAdminConfig,
   component: PageWrapper,
-  title: 'Journeys-Admin/PageWrapper',
+  title: 'Watch-Admin/PageWrapper',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'

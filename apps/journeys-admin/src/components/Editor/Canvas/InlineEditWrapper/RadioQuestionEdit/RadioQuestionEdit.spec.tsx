@@ -1,44 +1,47 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
-import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
+import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../libs/context'
-import { RadioQuestionEdit, RADIO_QUESTION_BLOCK_UPDATE_CONTENT } from '.'
+import {
+  RadioQuestionEditProps,
+  RADIO_OPTION_BLOCK_CREATE
+} from './RadioQuestionEdit'
+import { RadioQuestionEdit } from '.'
 
 describe('RadioQuestionEdit', () => {
-  const props: TreeBlock<RadioQuestionFields> = {
-    __typename: 'RadioQuestionBlock',
-    parentBlockId: 'card.id',
+  const props = (
+    children?: Array<TreeBlock<RadioOptionFields>>
+  ): RadioQuestionEditProps => {
+    return {
+      __typename: 'RadioQuestionBlock',
+      parentBlockId: 'card.id',
+      parentOrder: 0,
+      id: 'radioQuestion.id',
+      children: children ?? []
+    }
+  }
+
+  const option: TreeBlock<RadioOptionFields> = {
+    __typename: 'RadioOptionBlock',
+    id: 'option.id',
+    label: 'test label',
+    parentBlockId: 'card',
     parentOrder: 0,
-    id: 'radioQuestion.id',
-    label: 'heading',
-    description: 'description',
+    action: null,
     children: []
   }
-  it('selects the heading input by default on click', () => {
-    const { getAllByRole } = render(
-      <MockedProvider>
-        <RadioQuestionEdit {...props} />
-      </MockedProvider>
-    )
-    const input = getAllByRole('textbox')[0]
-    fireEvent.click(input)
-    expect(input).toHaveFocus()
-    expect(input).toHaveAttribute('placeholder', 'Type your question here...')
-  })
 
-  it('saves the heading content on blur', async () => {
+  it('adds an option on click', async () => {
     const result = jest.fn(() => ({
       data: {
-        radioQuestionBlockUpdate: [
-          {
-            __typename: 'RadioQuestionBlock',
-            id: 'radioQuestion.id',
-            label: 'updated heading',
-            description: 'description'
-          }
-        ]
+        radioOptionBlockCreate: {
+          id: 'radioOption.id',
+          parentBlockId: 'radioQuestion.id',
+          parentOrder: 0,
+          journeyId: 'journeyId',
+          label: 'Option 12'
+        }
       }
     }))
 
@@ -47,13 +50,12 @@ describe('RadioQuestionEdit', () => {
         mocks={[
           {
             request: {
-              query: RADIO_QUESTION_BLOCK_UPDATE_CONTENT,
+              query: RADIO_OPTION_BLOCK_CREATE,
               variables: {
-                id: 'radioQuestion.id',
-                journeyId: 'journeyId',
                 input: {
-                  label: 'updated heading',
-                  description: 'description'
+                  journeyId: 'journeyId',
+                  parentBlockId: 'radioQuestion.id',
+                  label: 'Option 12'
                 }
               }
             },
@@ -61,68 +63,74 @@ describe('RadioQuestionEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider>
-            <RadioQuestionEdit {...props} />
+            <RadioQuestionEdit
+              {...props([
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option
+              ])}
+            />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
     )
 
-    const input = getAllByRole('textbox')[0]
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: '    updated heading    ' } })
-    fireEvent.blur(input)
+    const buttons = getAllByRole('button')
+    expect(buttons).toHaveLength(12)
+    expect(buttons[11]).toHaveTextContent('Add New Option')
+
+    fireEvent.click(buttons[11])
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('saves the description content on blur', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        radioQuestionBlockUpdate: [
-          {
-            __typename: 'RadioQuestionBlock',
-            id: 'radioQuestion.id',
-            label: 'heading',
-            description: 'updated description'
-          }
-        ]
-      }
-    }))
-
+  it('hides add option button if over 11 options', async () => {
     const { getAllByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: RADIO_QUESTION_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'radioQuestion.id',
-                journeyId: 'journeyId',
-                input: {
-                  label: 'heading',
-                  description: 'updated description'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+      <MockedProvider mocks={[]}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider>
-            <RadioQuestionEdit {...props} />
+            <RadioQuestionEdit
+              {...props([
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option,
+                option
+              ])}
+            />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
     )
 
-    const input = getAllByRole('textbox')[1]
-    fireEvent.click(input)
-    fireEvent.change(input, {
-      target: { value: '    updated description    ' }
-    })
-    fireEvent.blur(input)
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    const buttons = getAllByRole('button')
+    expect(buttons).toHaveLength(12)
+    expect(buttons[11]).toHaveTextContent('test label')
   })
 })

@@ -12,6 +12,7 @@ const nextConfig = {
     // Set this to true if you would like to to use SVGR
     // See: https://github.com/gregberge/svgr
     svgr: false
-  }
+  },
+  productionBrowserSourceMaps: true
 }
 module.exports = withPlugins([[withImages], [withNx]], nextConfig)

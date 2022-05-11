@@ -7,11 +7,21 @@ import Stack from '@mui/material/Stack'
 import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded'
 import LockRoundedIcon from '@mui/icons-material/LockRounded'
 import { ThemeProvider } from '@core/shared/ui'
-import { useEditor, TreeBlock, BlockRenderer } from '@core/journeys/ui'
-import { useJourney } from '../../../../../../../../libs/context'
+import {
+  useEditor,
+  TreeBlock,
+  BlockRenderer,
+  useJourney
+} from '@core/journeys/ui'
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../../../__generated__/globalTypes'
 import { FramePortal } from '../../../../../../../FramePortal'
+import { VideoWrapper } from '../../../../../../Canvas/VideoWrapper'
+import { CardWrapper } from '../../../../../../Canvas/CardWrapper'
 
 export const STEP_BLOCK_DEFAULT_NEXT_BLOCK_UPDATE = gql`
   mutation StepBlockDefaultNextBlockUpdate(
@@ -32,18 +42,20 @@ export function SelectedCard(): ReactElement {
   const {
     state: { steps, selectedBlock }
   } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { id, nextBlockId, locked } = selectedBlock as TreeBlock<StepFields>
   const [nextStep, setNextStep] = useState(
-    steps.find((step) => nextBlockId === step.id)
+    steps?.find((step) => nextBlockId === step.id)
   )
 
   useEffect(() => {
-    setNextStep(steps.find((step) => nextBlockId === step.id))
+    setNextStep(steps?.find((step) => nextBlockId === step.id))
   }, [steps, nextBlockId])
 
   // TODO: Set as block itself for now, still need to manually set next block
   async function handleRemoveCustomNextStep(): Promise<void> {
+    if (journey == null) return
+
     await stepBlockDefaultNextBlockUpdate({
       variables: {
         id,
@@ -87,8 +99,8 @@ export function SelectedCard(): ReactElement {
           >
             <FramePortal width={380} height={560}>
               <ThemeProvider
-                themeName={journey.themeName}
-                themeMode={journey.themeMode}
+                themeName={journey?.themeName ?? ThemeName.base}
+                themeMode={journey?.themeMode ?? ThemeMode.light}
               >
                 <Box sx={{ p: 4, height: '100%' }}>
                   <BlockRenderer
@@ -97,6 +109,10 @@ export function SelectedCard(): ReactElement {
                         ? nextStep
                         : (selectedBlock as TreeBlock<StepFields>)
                     }
+                    wrappers={{
+                      VideoWrapper,
+                      CardWrapper
+                    }}
                   />
                 </Box>
               </ThemeProvider>

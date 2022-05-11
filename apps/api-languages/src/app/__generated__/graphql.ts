@@ -7,6 +7,29 @@
 
 /* tslint:disable */
 /* eslint-disable */
+export enum IdType {
+    databaseId = "databaseId",
+    slug = "slug"
+}
+
+export enum LanguageIdType {
+    databaseId = "databaseId",
+    bcp47 = "bcp47"
+}
+
+export class Country {
+    __typename?: 'Country';
+    id: string;
+    name: Translation[];
+    population: number;
+    continent: Translation[];
+    slug: Translation[];
+    languages: Language[];
+    latitude: number;
+    longitude: number;
+    image?: Nullable<string>;
+}
+
 export class Language {
     __typename?: 'Language';
     id: string;
@@ -23,9 +46,13 @@ export class Translation {
 }
 
 export abstract class IQuery {
-    abstract languages(page?: Nullable<number>, limit?: Nullable<number>): Language[] | Promise<Language[]>;
+    abstract countries(): Country[] | Promise<Country[]>;
 
-    abstract language(id: string): Nullable<Language> | Promise<Nullable<Language>>;
+    abstract country(id: string, idType?: Nullable<IdType>): Country | Promise<Country>;
+
+    abstract languages(offset?: Nullable<number>, limit?: Nullable<number>): Language[] | Promise<Language[]>;
+
+    abstract language(id: string, idType?: Nullable<LanguageIdType>): Nullable<Language> | Promise<Nullable<Language>>;
 }
 
 type Nullable<T> = T | null;

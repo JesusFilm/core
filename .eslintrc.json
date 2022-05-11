@@ -30,6 +30,13 @@
     "@typescript-eslint/no-empty-function": [
       "error",
       { "allow": ["decoratedFunctions"] }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": ["@mui/material", "@mui/system", "@mui/icons-material"],
+        "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*"]
+      }
     ]
   },
   "overrides": [

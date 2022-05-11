@@ -2,10 +2,9 @@ import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
 import { gql, useMutation } from '@apollo/client'
 import HorizontalRuleRoundedIcon from '@mui/icons-material/HorizontalRuleRounded'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import { TypographyBlockUpdateVariant } from '../../../../../../../../__generated__/TypographyBlockUpdateVariant'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
-import { useJourney } from '../../../../../../../libs/context'
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 
@@ -26,7 +25,7 @@ export function Variant(): ReactElement {
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateVariant>(
     TYPOGRAPHY_BLOCK_UPDATE_VARIANT
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TypographyBlock>
@@ -107,7 +106,7 @@ export function Variant(): ReactElement {
   ]
 
   async function handleChange(variant: TypographyVariant): Promise<void> {
-    if (selectedBlock != null && variant != null) {
+    if (selectedBlock != null && variant != null && journey != null) {
       await typographyBlockUpdate({
         variables: {
           id: selectedBlock.id,

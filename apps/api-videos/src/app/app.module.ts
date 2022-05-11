@@ -8,11 +8,13 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { VideoModule } from './modules/video/video.module'
 import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
 import { TranslationModule } from './modules/translation/translation.module'
+import { VideoTagModule } from './modules/tag/tag.module'
 
 @Module({
   imports: [
     TranslationModule,
     VideoModule,
+    VideoTagModule,
     VideoVariantModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,

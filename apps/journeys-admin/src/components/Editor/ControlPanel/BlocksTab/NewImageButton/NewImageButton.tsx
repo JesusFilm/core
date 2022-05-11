@@ -3,11 +3,11 @@ import {
   ActiveTab,
   useEditor,
   IMAGE_FIELDS,
-  TreeBlock
+  TreeBlock,
+  useJourney
 } from '@core/journeys/ui'
 import InsertPhotoRounded from '@mui/icons-material/InsertPhotoRounded'
 import { ReactElement } from 'react'
-import { useJourney } from '../../../../../libs/context'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
 import { Button } from '../../Button'
@@ -26,7 +26,7 @@ export const IMAGE_BLOCK_CREATE = gql`
 
 export function NewImageButton(): ReactElement {
   const [imageBlockCreate] = useMutation<ImageBlockCreate>(IMAGE_BLOCK_CREATE)
-  const { id: journeyId } = useJourney()
+  const { journey } = useJourney()
   const {
     state: { selectedStep },
     dispatch
@@ -36,11 +36,11 @@ export function NewImageButton(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    if (card != null) {
+    if (card != null && journey != null) {
       const { data } = await imageBlockCreate({
         variables: {
           input: {
-            journeyId,
+            journeyId: journey.id,
             parentBlockId: card.id,
             src: null,
             alt: 'Default Image Icon'
@@ -49,7 +49,7 @@ export function NewImageButton(): ReactElement {
         update(cache, { data }) {
           if (data?.imageBlockCreate != null) {
             cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
                   const newBlockRef = cache.writeFragment({

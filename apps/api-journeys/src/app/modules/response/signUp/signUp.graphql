@@ -2,18 +2,18 @@ input SignUpResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
-  id: ID
-  blockId: ID!
-  name: String!
-  email: String!
+  id: ID @deprecated(reason: "use event instead of response")
+  blockId: ID @deprecated(reason: "use event instead of response")
+  name: String @deprecated(reason: "use event instead of response")
+  email: String @deprecated(reason: "use event instead of response")
 }
 
 type SignUpResponse implements Response {
-  id: ID!
-  userId: ID!
-  name: String!
-  email: String!
-  block: SignUpBlock
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
+  name: String! @deprecated(reason: "use event instead of response")
+  email: String! @deprecated(reason: "use event instead of response")
+  block: SignUpBlock @deprecated(reason: "use event instead of response")
 }
 
 extend type Mutation {

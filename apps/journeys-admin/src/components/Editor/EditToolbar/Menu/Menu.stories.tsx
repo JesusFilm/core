@@ -1,12 +1,14 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
-import { EditorProvider } from '@core/journeys/ui'
-import { simpleComponentConfig } from '../../../../libs/storybook'
+import { EditorProvider, JourneyProvider } from '@core/journeys/ui'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../../libs/storybook'
+import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { Menu } from '.'
 
 const MenuStory = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: Menu,
   title: 'Journeys-Admin/Editor/EditToolbar/Menu'
 }
@@ -14,9 +16,16 @@ const MenuStory = {
 const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
-      <EditorProvider initialState={{ ...args }}>
-        <Menu />
-      </EditorProvider>
+      <JourneyProvider
+        value={{
+          journey: { status: JourneyStatus.draft } as unknown as Journey,
+          admin: true
+        }}
+      >
+        <EditorProvider initialState={{ ...args }}>
+          <Menu />
+        </EditorProvider>
+      </JourneyProvider>
     </MockedProvider>
   )
 }
@@ -55,6 +64,23 @@ Card.args = {
 Card.play = () => {
   const menuButton = screen.getByRole('button')
   userEvent.click(menuButton)
+}
+
+export const DeleteCardDialog = Template.bind({})
+DeleteCardDialog.args = {
+  selectedBlock: {
+    __typename: 'StepBlock',
+    id: 'stepId',
+    parentBlockId: 'journeyId',
+    parentOrder: 0,
+    locked: true,
+    nextBlockId: null,
+    children: []
+  }
+}
+DeleteCardDialog.play = () => {
+  userEvent.click(screen.getByRole('button'))
+  userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
 }
 
 export default MenuStory as Meta

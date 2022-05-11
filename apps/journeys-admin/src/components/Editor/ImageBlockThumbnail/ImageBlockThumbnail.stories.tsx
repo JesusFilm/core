@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { TreeBlock } from '@core/journeys/ui'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -47,18 +47,29 @@ const image: ImageBlock = {
 
 const Template: Story = ({ ...args }) => (
   <Box bgcolor="white">
-    <ImageBlockThumbnail selectedBlock={args.selectedBlock} />
+    <ImageBlockThumbnail
+      selectedBlock={args.selectedBlock}
+      loading={args.loading}
+    />
   </Box>
 )
 
 export const Default = Template.bind({})
 Default.args = {
-  selectedBlock: null
+  selectedBlock: null,
+  loading: false
 }
 
 export const Image = Template.bind({})
 Image.args = {
-  selectedBlock: image
+  selectedBlock: image,
+  loading: false
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  selectedBlock: image,
+  loading: true
 }
 
 export default ImageEditorStory as Meta

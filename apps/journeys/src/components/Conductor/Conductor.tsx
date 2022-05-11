@@ -3,6 +3,7 @@ import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
 import Box from '@mui/material/Box'
+import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
 import { useTheme } from '@mui/material/styles'
@@ -16,7 +17,9 @@ import {
   TreeBlock,
   useBlocks
 } from '@core/journeys/ui'
+// Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
+import { BlockFields_CardBlock as CardBlock } from '../../../__generated__/BlockFields'
 import { JourneyProgress } from '../JourneyProgress'
 
 export interface ConductorProps {
@@ -24,13 +27,8 @@ export interface ConductorProps {
 }
 
 export function Conductor({ blocks }: ConductorProps): ReactElement {
-  const {
-    setTreeBlocks,
-    nextActiveBlock,
-    treeBlocks,
-    activeBlock,
-    previousBlocks
-  } = useBlocks()
+  const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
+    useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
   const [showNavArrows, setShowNavArrow] = useState(true)
   const breakpoints = useBreakpoints()
@@ -55,6 +53,16 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   function handleNext(): void {
     if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
   }
+
+  const cardBlock = activeBlock?.children.find(
+    (child) => child.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock> | undefined
+
+  const videoBlockExists =
+    cardBlock?.children.some(
+      (child) =>
+        child.__typename === 'VideoBlock' && child.id !== cardBlock.coverBlockId
+    ) ?? false
 
   const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
 
@@ -85,10 +93,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   return (
     <Div100vh>
       <Stack
-        direction={breakpoints.lg ? 'column-reverse' : 'column'}
         sx={{
           justifyContent: 'center',
-          height: '100%'
+          height: '100%',
+          flexDirection: { lg: 'column-reverse' }
         }}
       >
         <Box
@@ -98,7 +106,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             pt: { lg: 0 }
           }}
         >
-          <JourneyProgress />
+          <Fade in={!videoBlockExists}>
+            <Box data-testid="journey-progress">
+              <JourneyProgress />
+            </Box>
+          </Fade>
         </Box>
         <Box
           sx={{
@@ -137,7 +149,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               >
                 <Box
                   sx={{
-                    display: 'flex',
                     px: `${gapBetweenSlides / 2}px`,
                     height: `calc(100% - ${theme.spacing(6)})`,
                     [theme.breakpoints.up('lg')]: {
@@ -145,19 +156,28 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                     }
                   }}
                 >
-                  {activeBlock?.id === block.id ||
-                  previousBlocks[previousBlocks.length - 1]?.id === block.id ? (
-                    <BlockRenderer block={block} />
-                  ) : (
-                    <CardWrapper
-                      id={block.id}
-                      backgroundColor={theme.palette.primary.light}
-                      themeMode={null}
-                      themeName={null}
+                  <CardWrapper
+                    id={block.id}
+                    backgroundColor={theme.palette.primary.light}
+                    themeMode={null}
+                    themeName={null}
+                  >
+                    <Fade
+                      in={activeBlock?.id === block.id}
+                      mountOnEnter
+                      unmountOnExit
                     >
-                      <></>
-                    </CardWrapper>
-                  )}
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          width: '100%',
+                          height: '100%'
+                        }}
+                      >
+                        <BlockRenderer block={block} />
+                      </Box>
+                    </Fade>
+                  </CardWrapper>
                 </Box>
               </SwiperSlide>
             ))}

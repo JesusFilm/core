@@ -76,14 +76,17 @@ type Journey @key(fields: "id") {
   primaryImageBlock: ImageBlock
   id: ID!
   title: String!
-  locale: String!
+  language: Language!
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
   slug: String!
   publishedAt: DateTime
+  featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
+  seoTitle: String
+  seoDescription: String
   userJourneys: [UserJourney!]
 }
 
@@ -180,7 +183,6 @@ input CardBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   backgroundColor: String
-  coverBlockId: ID
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -189,7 +191,6 @@ input CardBlockCreateInput {
 input CardBlockUpdateInput {
   parentBlockId: ID
   backgroundColor: String
-  coverBlockId: ID
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -327,6 +328,11 @@ input ImageBlockCreateInput {
   src: String
   alt: String!
   blurhash: String
+
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -349,8 +355,6 @@ type RadioQuestionBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  label: String!
-  description: String
 }
 
 input RadioOptionBlockCreateInput {
@@ -364,18 +368,11 @@ input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  label: String!
 }
 
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
-}
-
-input RadioQuestionBlockUpdateInput {
-  parentBlockId: ID
-  label: String
-  description: String
 }
 
 type SignUpBlock implements Block {
@@ -522,6 +519,9 @@ type VideoBlock implements Block {
   videoId and videoVariantLanguageId both need to be set to select a video
   """
   videoVariantLanguageId: ID
+
+  """action that should be performed when the video ends"""
+  action: Action
 }
 
 input VideoBlockCreateInput {
@@ -529,9 +529,7 @@ input VideoBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
 
-  """
-  startAt dictates at which point of time the video should start playing
-  """
+  """startAt dictates at which point of time the video should start playing"""
   startAt: Int
 
   """endAt dictates at which point of time the video should end"""
@@ -557,6 +555,11 @@ input VideoBlockCreateInput {
   """
   posterBlockId: ID
   fullsize: Boolean
+
+  """
+  True if the coverBlockId in a parent block should be set to this block's id.
+  """
+  isCover: Boolean
 }
 
 input VideoBlockUpdateInput {
@@ -597,6 +600,111 @@ type VideoTriggerBlock implements Block {
   action: Action!
 }
 
+input ButtonClickEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+}
+
+type ButtonClickEvent implements Event {
+  id: ID!
+  userId: ID!
+  block: ButtonBlock
+}
+
+interface Event {
+  id: ID!
+  userId: ID!
+}
+
+input JourneyViewEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  journeyId: ID!
+}
+
+type JourneyViewEvent implements Event {
+  id: ID!
+  userId: ID!
+  journey: Journey
+}
+
+input RadioQuestionSubmissionEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  radioOptionBlockId: ID!
+}
+
+type RadioQuestionSubmissionEvent implements Event {
+  id: ID!
+  userId: ID!
+  radioOptionBlockId: ID!
+  block: RadioQuestionBlock
+}
+
+input SignUpSubmissionEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  name: String!
+  email: String!
+}
+
+type SignUpSubmissionEvent implements Event {
+  id: ID!
+  userId: ID!
+  name: String!
+  email: String!
+  block: SignUpBlock
+}
+
+input StepViewEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+}
+
+type StepViewEvent implements Event {
+  id: ID!
+  userId: ID!
+  block: StepBlock
+}
+
+enum VideoPlayEventStateEnum {
+  PLAYING
+  PAUSED
+  FINISHED
+}
+
+input VideoPlayEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  state: VideoPlayEventStateEnum!
+  position: Float
+}
+
+type VideoPlayEvent implements Event {
+  id: ID!
+  userId: ID!
+  state: VideoPlayEventStateEnum!
+  position: Int
+  block: VideoBlock
+}
+
 enum IdType {
   databaseId
   slug
@@ -607,6 +715,10 @@ enum JourneyStatus {
   published
 }
 
+input JourneysFilter {
+  featured: Boolean
+}
+
 input JourneyCreateInput {
   """
   ID should be unique Response UUID
@@ -614,7 +726,7 @@ input JourneyCreateInput {
   """
   id: ID
   title: String!
-  locale: String
+  languageId: String!
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
@@ -631,12 +743,14 @@ input JourneyCreateInput {
 
 input JourneyUpdateInput {
   title: String
-  locale: String
+  languageId: String
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
   primaryImageBlockId: ID
   slug: String
+  seoTitle: String
+  seoDescription: String
 }
 
 type UserJourney @key(fields: "id") {
@@ -652,63 +766,77 @@ input RadioQuestionResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
-  id: ID
-  blockId: ID!
-  radioOptionBlockId: ID!
+  id: ID @deprecated(reason: "use event instead of response")
+  blockId: ID @deprecated(reason: "use event instead of response")
+  radioOptionBlockId: ID @deprecated(reason: "use event instead of response")
 }
 
 type RadioQuestionResponse implements Response {
-  id: ID!
-  userId: ID!
-  radioOptionBlockId: ID!
-  block: RadioQuestionBlock
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
+  radioOptionBlockId: ID! @deprecated(reason: "use event instead of response")
+  block: RadioQuestionBlock @deprecated(reason: "use event instead of response")
 }
 
 interface Response {
-  id: ID!
-  userId: ID!
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
 }
 
 input SignUpResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
-  id: ID
-  blockId: ID!
-  name: String!
-  email: String!
+  id: ID @deprecated(reason: "use event instead of response")
+  blockId: ID @deprecated(reason: "use event instead of response")
+  name: String @deprecated(reason: "use event instead of response")
+  email: String @deprecated(reason: "use event instead of response")
 }
 
 type SignUpResponse implements Response {
-  id: ID!
-  userId: ID!
-  name: String!
-  email: String!
-  block: SignUpBlock
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
+  name: String! @deprecated(reason: "use event instead of response")
+  email: String! @deprecated(reason: "use event instead of response")
+  block: SignUpBlock @deprecated(reason: "use event instead of response")
+}
+
+input StepResponseCreateInput {
+  """
+  ID should be unique Response UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID @deprecated(reason: "use event instead of response")
+  blockId: ID @deprecated(reason: "use event instead of response")
+}
+
+type StepResponse implements Response {
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
+  block: StepBlock @deprecated(reason: "use event instead of response")
 }
 
 enum VideoResponseStateEnum {
-  PLAYING
-  PAUSED
-  FINISHED
+  PLAYING @deprecated(reason: "use event instead of response")
+  PAUSED @deprecated(reason: "use event instead of response")
+  FINISHED @deprecated(reason: "use event instead of response")
 }
 
 input VideoResponseCreateInput {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
   """
-  id: ID
-  blockId: ID!
-  state: VideoResponseStateEnum!
-  position: Float
+  id: ID @deprecated(reason: "use event instead of response")
+  blockId: ID @deprecated(reason: "use event instead of response")
+  state: VideoResponseStateEnum @deprecated(reason: "use event instead of response")
+  position: Float @deprecated(reason: "use event instead of response")
 }
 
 type VideoResponse implements Response {
-  id: ID!
-  userId: ID!
-  state: VideoResponseStateEnum!
-  position: Int
-  block: VideoBlock
+  id: ID! @deprecated(reason: "use event instead of response")
+  userId: ID! @deprecated(reason: "use event instead of response")
+  state: VideoResponseStateEnum! @deprecated(reason: "use event instead of response")
+  position: Int @deprecated(reason: "use event instead of response")
+  block: VideoBlock @deprecated(reason: "use event instead of response")
 }
 
 enum UserJourneyRole {
@@ -738,7 +866,7 @@ extend type Mutation {
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
   radioOptionBlockUpdate(id: ID!, journeyId: ID!, input: RadioOptionBlockUpdateInput!): RadioOptionBlock!
-  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, input: RadioQuestionBlockUpdateInput!): RadioQuestionBlock!
+  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, parentBlockId: ID!): RadioQuestionBlock!
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
   signUpBlockUpdate(id: ID!, journeyId: ID!, input: SignUpBlockUpdateInput!): SignUpBlock
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
@@ -747,11 +875,18 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
+  stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
+  videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey
   radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
   signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
+  stepResponseCreate(input: StepResponseCreateInput!): SignUpResponse!
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
@@ -764,10 +899,14 @@ extend type Video @key(fields: "id primaryLanguageId") {
   primaryLanguageId: ID! @external
 }
 
+extend type Language @key(fields: "id") {
+  id: ID! @external
+}
+
 extend type Query {
   adminJourneys: [Journey!]!
   adminJourney(id: ID!, idType: IdType): Journey
-  journeys: [Journey!]!
+  journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
 }
 

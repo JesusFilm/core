@@ -24,7 +24,7 @@ export enum ActiveFab {
 }
 
 export interface EditorState {
-  steps: Array<TreeBlock<StepBlock>>
+  steps?: Array<TreeBlock<StepBlock>>
   selectedStep?: TreeBlock<StepBlock>
   selectedBlock?: TreeBlock
   selectedAttributeId?: string
@@ -106,7 +106,9 @@ export const reducer = (
       return {
         ...state,
         selectedBlock:
-          action.id != null ? searchBlocks(state.steps, action.id) : undefined
+          action.id != null
+            ? searchBlocks(state.steps ?? [], action.id)
+            : undefined
       }
     case 'SetSelectedAttributeIdAction':
       return { ...state, selectedAttributeId: action.id }

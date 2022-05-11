@@ -1,14 +1,17 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { TypographyVariant } from '../../../../../../__generated__/globalTypes'
-import { TypographyFields } from '../../../../../../__generated__/TypographyFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../libs/context'
-import { TypographyEdit, TYPOGRAPHY_BLOCK_UPDATE_CONTENT } from '.'
+import {
+  TypographyEdit,
+  TypographyEditProps,
+  TYPOGRAPHY_BLOCK_UPDATE_CONTENT
+} from '.'
 
 describe('TypographyEdit', () => {
-  const props: TreeBlock<TypographyFields> = {
+  const onDelete = jest.fn()
+  const props: TypographyEditProps = {
     __typename: 'TypographyBlock',
     parentBlockId: 'card.id',
     parentOrder: 0,
@@ -17,7 +20,8 @@ describe('TypographyEdit', () => {
     content: 'test content',
     align: null,
     color: null,
-    children: []
+    children: [],
+    deleteSelf: onDelete
   }
   it('selects the input on click', () => {
     const { getByRole } = render(
@@ -61,7 +65,12 @@ describe('TypographyEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider>
             <TypographyEdit {...props} />
           </EditorProvider>
@@ -74,5 +83,27 @@ describe('TypographyEdit', () => {
     fireEvent.change(input, { target: { value: '    updated content    ' } })
     fireEvent.blur(input)
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('calls onDelete when text content deleted', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <TypographyEdit {...props} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const input = getByRole('textbox')
+
+    fireEvent.click(input)
+    fireEvent.change(input, { target: { value: '' } })
+    fireEvent.blur(input)
+
+    expect(onDelete).toHaveBeenCalled()
   })
 })

@@ -18,6 +18,17 @@ const storiesForProject = {
   'shared-ui': [
     '../libs/shared/ui/src/**/*.stories.mdx',
     '../libs/shared/ui/src/**/*.stories.@(js|jsx|ts|tsx)'
+  ],
+  watch: [
+    '../apps/watch/src/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/watch/src/components/**/*.stories.mdx',
+    '../apps/watch/src/components/**/*.stories.@(js|jsx|ts|tsx)'
+  ],
+  'watch-admin': [
+    '../apps/watch-admin/src/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/watch-admin/src/components/**/*.stories.mdx',
+    '../apps/watch-admin/src/components/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/watch-admin/src/components/**/**/*.stories.@(js|jsx|ts|tsx)'
   ]
   // Add new UI projects here and in allStories
 }
@@ -26,11 +37,34 @@ const allStories = [
   ...storiesForProject['journeys'],
   ...storiesForProject['journeys-admin'],
   ...storiesForProject['journeys-ui'],
+  ...storiesForProject['watch'],
+  ...storiesForProject['watch-admin'],
   ...storiesForProject['shared-ui']
 ]
 
+const affectedStories = () => {
+  const affectedApps = process.env.NX_AFFECTED_APPS ?? ''
+  const affectedLibs = process.env.NX_AFFECTED_LIBS ?? ''
+  const affectedProjects = [
+    ...affectedApps.split(' '),
+    ...affectedLibs.split(' ')
+  ]
+
+  const stories = affectedProjects
+    .map((project) => {
+      if (project === '') return []
+      return storiesForProject[project] ?? []
+    })
+    .flat()
+
+  return stories.length > 0 ? stories : undefined
+}
+
 module.exports = {
-  stories: storiesForProject[process.env.NX_TASK_TARGET_PROJECT] || allStories,
+  stories:
+    affectedStories() ||
+    storiesForProject[process.env.NX_TASK_TARGET_PROJECT] ||
+    allStories,
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',

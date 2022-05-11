@@ -7,6 +7,7 @@ export {
   GridContainer,
   GridItem,
   RadioOption,
+  StyledRadioOption,
   RadioQuestion,
   SignUp,
   Step,
@@ -14,8 +15,9 @@ export {
   Video,
   VideoTrigger
 } from './components'
-export type { WrapperProps } from './components'
+export type { WrapperProps, WrappersProps } from './components'
 export {
+  blurImage,
   handleAction,
   useEditor,
   EditorProvider,
@@ -45,7 +47,10 @@ export {
   isActiveBlockOrDescendant,
   activeBlockVar,
   previousBlocksVar,
-  treeBlocksVar
+  treeBlocksVar,
+  useJourney,
+  JourneyProvider,
+  JOURNEY_FIELDS
 } from './libs'
 export type {
   TreeBlock,

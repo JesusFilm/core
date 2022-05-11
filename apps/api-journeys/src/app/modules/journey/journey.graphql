@@ -1,14 +1,21 @@
+extend type Language @key(fields: "id") {
+  id: ID! @external
+}
+
 type Journey @key(fields: "id") {
   id: ID!
   title: String!
-  locale: String!
+  language: Language!
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
   slug: String!
   publishedAt: DateTime
+  featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
+  seoTitle: String
+  seoDescription: String
 }
 
 enum IdType {
@@ -21,10 +28,14 @@ enum JourneyStatus {
   published
 }
 
+input JourneysFilter {
+  featured: Boolean
+}
+
 extend type Query {
   adminJourneys: [Journey!]!
   adminJourney(id: ID!, idType: IdType): Journey
-  journeys: [Journey!]!
+  journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
 }
 
@@ -35,7 +46,7 @@ input JourneyCreateInput {
   """
   id: ID
   title: String!
-  locale: String
+  languageId: String!
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
@@ -51,12 +62,14 @@ input JourneyCreateInput {
 
 input JourneyUpdateInput {
   title: String
-  locale: String
+  languageId: String
   themeMode: ThemeMode
   themeName: ThemeName
   description: String
   primaryImageBlockId: ID
   slug: String
+  seoTitle: String
+  seoDescription: String
 }
 
 extend type UserJourney {

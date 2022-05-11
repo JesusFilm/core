@@ -3,15 +3,17 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
-import { ColorLens } from '@mui/icons-material'
+import ColorLens from '@mui/icons-material/ColorLens'
 import Image from 'next/image'
 import { gql, useMutation } from '@apollo/client'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import { HorizontalSelect } from '../../../../../../HorizontalSelect'
-import { ThemeMode } from '../../../../../../../../__generated__/globalTypes'
+import {
+  ThemeName,
+  ThemeMode
+} from '../../../../../../../../__generated__/globalTypes'
 import cardStyleLight from '../../../../../../../../public/card-style-light.svg'
 import cardStyleDark from '../../../../../../../../public/card-style-dark.svg'
-import { useJourney } from '../../../../../../../libs/context'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
 import { CardBlockThemeModeUpdate } from '../../../../../../../../__generated__/CardBlockThemeModeUpdate'
 
@@ -24,6 +26,7 @@ export const CARD_BLOCK_THEME_MODE_UPDATE = gql`
     cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
       id
       themeMode
+      themeName
     }
   }
 `
@@ -44,23 +47,25 @@ export function CardStyling(): ReactElement {
   const [cardBlockUpdate] = useMutation<CardBlockThemeModeUpdate>(
     CARD_BLOCK_THEME_MODE_UPDATE
   )
-  const { id: journeyId } = useJourney()
+  const { journey } = useJourney()
 
   const handleChange = async (themeMode: ThemeMode): Promise<void> => {
-    if (cardBlock != null) {
+    if (journey != null && cardBlock != null) {
       await cardBlockUpdate({
         variables: {
           id: cardBlock.id,
-          journeyId,
+          journeyId: journey.id,
           input: {
-            themeMode
+            themeMode,
+            themeName: ThemeName.base
           }
         },
         optimisticResponse: {
           cardBlockUpdate: {
             id: cardBlock.id,
             __typename: 'CardBlock',
-            themeMode
+            themeMode,
+            themeName: ThemeName.base
           }
         }
       })

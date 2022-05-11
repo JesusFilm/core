@@ -1,52 +1,44 @@
 import { ReactElement } from 'react'
-import { Image as ImageIcon } from '@mui/icons-material'
+import CircularProgress from '@mui/material/CircularProgress'
+import ImageIcon from '@mui/icons-material/Image'
 import Image from 'next/image'
-import { Box } from '@mui/system'
-
-import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../__generated__/GetJourney'
+import Box from '@mui/material/Box'
 
 interface ImageBlockThumbnailProps {
-  selectedBlock: ImageBlock | null
+  selectedBlock: { src: string | null; alt: string } | null
+  loading?: boolean
 }
 
 export function ImageBlockThumbnail({
-  selectedBlock
+  selectedBlock,
+  loading
 }: ImageBlockThumbnailProps): ReactElement {
   return (
-    <div
-      style={{
-        overflow: 'hidden',
-        borderRadius: 8,
+    <Box
+      sx={{
+        display: 'flex',
+        borderRadius: 2,
         height: 55,
         width: 55,
-        backgroundColor: '#EFEFEF',
-        minWidth: 55
+        backgroundColor: 'background.default',
+        position: 'relative',
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden'
       }}
     >
-      {selectedBlock?.src != null && (
+      {loading === true ? (
+        <CircularProgress size={20} />
+      ) : selectedBlock?.src != null ? (
         <Image
           src={selectedBlock.src}
           alt={selectedBlock.alt}
-          width={55}
-          height={55}
-          object-fit="cover"
+          layout="fill"
+          objectFit="cover"
         />
+      ) : (
+        <ImageIcon data-testid="imageBlockThumbnailPlaceholder" />
       )}
-      {selectedBlock?.src == null && (
-        <Box
-          borderRadius={2}
-          sx={{
-            width: 55,
-            height: 55,
-            bgcolor: '#EFEFEF',
-            verticalAlign: 'center'
-          }}
-          justifyContent="center"
-          data-testid="imageBlockThumbnailPlaceholder"
-        >
-          <ImageIcon sx={{ marginTop: 4, marginLeft: 4 }} />
-        </Box>
-      )}
-    </div>
+    </Box>
   )
 }

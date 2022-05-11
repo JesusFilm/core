@@ -1,0 +1,17 @@
+input JourneyViewEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  journeyId: ID!
+}
+
+type JourneyViewEvent implements Event {
+  id: ID!
+  userId: ID!
+  journey: Journey
+}
+
+extend type Mutation {
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
+}

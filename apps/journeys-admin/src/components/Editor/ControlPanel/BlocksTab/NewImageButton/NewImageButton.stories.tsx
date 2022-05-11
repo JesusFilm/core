@@ -1,8 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider } from '@core/journeys/ui'
+import { EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { Story, Meta } from '@storybook/react'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
-import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { IMAGE_BLOCK_CREATE } from './NewImageButton'
 import { NewImageButton } from '.'
@@ -46,7 +45,12 @@ export const Default: Story = () => {
         }
       ]}
     >
-      <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+      <JourneyProvider
+        value={{
+          journey: { id: 'journeyId' } as unknown as Journey,
+          admin: true
+        }}
+      >
         <EditorProvider
           initialState={{
             selectedStep: {

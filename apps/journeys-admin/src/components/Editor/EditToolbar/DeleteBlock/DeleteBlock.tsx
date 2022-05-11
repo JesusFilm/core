@@ -2,15 +2,15 @@ import { ReactElement, useState } from 'react'
 import IconButton from '@mui/material/IconButton'
 import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
 import { gql, useMutation } from '@apollo/client'
-import { useEditor } from '@core/journeys/ui'
+import { useEditor, useJourney } from '@core/journeys/ui'
 import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import { useSnackbar } from 'notistack'
+import Typography from '@mui/material/Typography'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
-import { useJourney } from '../../../../libs/context'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
-import { DeleteDialog } from './DeleteDialog'
+import { Dialog } from '../../../Dialog'
 import getSelected from './utils/getSelected'
 
 export const BLOCK_DELETE = gql`
@@ -34,7 +34,7 @@ export function DeleteBlock({
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
   const { enqueueSnackbar } = useSnackbar()
 
-  const { id: journeyId } = useJourney()
+  const { journey } = useJourney()
   const {
     state: { selectedBlock, selectedStep, steps },
     dispatch
@@ -49,7 +49,7 @@ export function DeleteBlock({
   }
 
   const handleDeleteBlock = async (): Promise<void> => {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || journey == null || steps == null) return
 
     const deletedBlockParentOrder = selectedBlock.parentOrder
     const deletedBlockType = selectedBlock.__typename
@@ -59,11 +59,11 @@ export function DeleteBlock({
     const { data } = await blockDelete({
       variables: {
         id: selectedBlock.id,
-        journeyId,
+        journeyId: journey.id,
         parentBlockId: selectedBlock.parentBlockId
       },
       update(cache, { data }) {
-        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journeyId)
+        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journey.id)
       }
     })
 
@@ -93,15 +93,25 @@ export function DeleteBlock({
 
   return (
     <>
-      <DeleteDialog
-        handleDelete={handleDeleteBlock}
+      <Dialog
         open={openDialog}
         handleClose={handleCloseDialog}
-      />
+        dialogTitle={{ title: 'Delete Card?' }}
+        dialogAction={{
+          onSubmit: handleDeleteBlock,
+          submitLabel: 'Delete',
+          closeLabel: 'Cancel'
+        }}
+      >
+        <Typography>
+          Are you sure you would like to delete this card?
+        </Typography>
+      </Dialog>
       {variant === 'button' ? (
         <IconButton
           id="delete-block-actions"
           edge="end"
+          aria-label="Delete Block Actions"
           aria-controls="delete-block-actions"
           aria-haspopup="true"
           aria-expanded="true"

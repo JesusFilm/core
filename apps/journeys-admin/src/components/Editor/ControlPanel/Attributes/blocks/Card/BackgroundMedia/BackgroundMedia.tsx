@@ -1,7 +1,11 @@
 import { ReactElement, useState, MouseEvent } from 'react'
 import Box from '@mui/material/Box'
-import { ToggleButton, ToggleButtonGroup, Stack, styled } from '@mui/material'
-import { Image as ImageIcon, Videocam } from '@mui/icons-material'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
+import ImageIcon from '@mui/icons-material/Image'
+import Videocam from '@mui/icons-material/Videocam'
 import { useEditor, TreeBlock } from '@core/journeys/ui'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
 import { palette } from '../../../../../../ThemeProvider/admin/tokens/colors'
@@ -83,7 +87,9 @@ export function BackgroundMedia(): ReactElement {
         </StyledToggleButtonGroup>
       </Box>
       {blockType === 'ImageBlock' && (
-        <BackgroundMediaImage cardBlock={cardBlock} />
+        <Box sx={{ pt: 4, pb: 3, px: 6 }}>
+          <BackgroundMediaImage cardBlock={cardBlock} />
+        </Box>
       )}
       {blockType === 'VideoBlock' && (
         <BackgroundMediaVideo cardBlock={cardBlock} />

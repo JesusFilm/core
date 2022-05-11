@@ -1,4 +1,5 @@
 import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { VideoListItem } from '.'
 
@@ -10,14 +11,16 @@ const VideoListItemStory = {
 }
 
 const Template: Story = ({ onSelect, ...args }) => (
-  <VideoListItem
-    id={args.id}
-    title={args.title}
-    description={args.description}
-    image={args.image}
-    duration={args.duration}
-    onSelect={onSelect}
-  />
+  <MockedProvider>
+    <VideoListItem
+      id={args.id}
+      title={args.title}
+      description={args.description}
+      image={args.image}
+      duration={args.duration}
+      onSelect={onSelect}
+    />
+  </MockedProvider>
 )
 
 export const Default = Template.bind({})

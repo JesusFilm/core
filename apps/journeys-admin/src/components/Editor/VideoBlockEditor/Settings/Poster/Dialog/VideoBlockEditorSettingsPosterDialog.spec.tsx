@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import {
   JourneyStatus,
@@ -13,7 +13,6 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../../libs/context'
 
 import {
   VideoBlockEditorSettingsPosterDialog,
@@ -30,14 +29,26 @@ const journey: Journey = {
   themeMode: ThemeMode.light,
   title: 'my journey',
   slug: 'my-journey',
-  locale: 'en-US',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
-  userJourneys: []
+  userJourneys: [],
+  seoTitle: null,
+  seoDescription: null
 }
 
 const video: TreeBlock<VideoBlock> = {
@@ -50,11 +61,20 @@ const video: TreeBlock<VideoBlock> = {
   muted: true,
   autoplay: true,
   fullsize: true,
+  action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
+    title: [
+      {
+        __typename: 'Translation',
+        value: 'FallingPlates'
+      }
+    ],
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -147,7 +167,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <VideoBlockEditorSettingsPosterDialog
               selectedBlock={null}
               parentBlockId={video.id}
@@ -162,6 +182,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
         target: { value: image.src }
       })
       fireEvent.blur(textBox)
+      await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
@@ -224,7 +245,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <VideoBlockEditorSettingsPosterDialog
               selectedBlock={existingImageBlock}
               parentBlockId={video.id}
@@ -239,6 +260,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
         target: { value: image.src }
       })
       fireEvent.blur(textBox)
+      await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
       await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
       await waitFor(() => expect(textBox).toHaveValue(image.src))
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
@@ -302,7 +324,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <VideoBlockEditorSettingsPosterDialog
               selectedBlock={image}
               parentBlockId={video.id}

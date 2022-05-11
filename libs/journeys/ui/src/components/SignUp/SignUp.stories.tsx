@@ -7,6 +7,7 @@ import {
   StoryCard,
   TreeBlock
 } from '../..'
+import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { IconName } from '../../../__generated__/globalTypes'
 import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
@@ -15,7 +16,15 @@ const Demo = {
   ...journeyUiConfig,
   ...simpleComponentConfig,
   component: SignUp,
-  title: 'Journeys-Ui/SignUp'
+  title: 'Journeys-Ui/SignUp',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'For the SignUp Loading story - to test the loading state of the component. Fill out the form and click submit to see the loading state.'
+      }
+    }
+  }
 }
 
 const signUpProps: TreeBlock<SignUpFields> = {
@@ -95,5 +104,15 @@ CustomButton.args = {
 //   label: 'Label',
 //   description: 'Description'
 // }
+
+const LoadingTemplate: Story<TreeBlock<SignUpFields>> = (): ReactElement => (
+  <ApolloLoadingProvider>
+    <StoryCard>
+      <SignUp {...signUpProps} uuid={() => 'uuid'} />
+    </StoryCard>
+  </ApolloLoadingProvider>
+)
+
+export const Loading = LoadingTemplate.bind({})
 
 export default Demo as Meta

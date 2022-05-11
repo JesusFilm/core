@@ -3,6 +3,8 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
+import { VideoBlockUpdateInput } from '../../../../../../__generated__/globalTypes'
+import { VideoDetails } from '../../VideoDetails'
 
 interface VideoListItemProps {
   id: string
@@ -10,7 +12,7 @@ interface VideoListItemProps {
   description?: string
   image?: string
   duration?: number
-  onSelect: (videoId: string, videoVariantLanguageId?: string) => void
+  onSelect: (block: VideoBlockUpdateInput) => void
 }
 
 export function VideoListItem({
@@ -19,12 +21,16 @@ export function VideoListItem({
   description,
   image,
   duration: time = 0,
-  onSelect
+  onSelect: handleSelect
 }: VideoListItemProps): ReactElement {
-  const [open, setOpen] = useState<boolean>(false)
+  const [open, setOpen] = useState(false)
 
   const handleOpen = (): void => {
-    setOpen(!open)
+    setOpen(true)
+  }
+
+  const handleClose = (): void => {
+    setOpen(false)
   }
 
   const duration =
@@ -36,31 +42,32 @@ export function VideoListItem({
     <>
       <ListItemButton
         onClick={handleOpen}
-        sx={{ my: 1, alignItems: 'flex-start', mx: -1 }}
+        sx={{ alignItems: 'flex-start', p: 3 }}
+        divider
       >
         <ListItemText
           primary={title}
           secondary={description}
           secondaryTypographyProps={{
-            style: {
+            sx: {
               whiteSpace: 'nowrap',
               overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              paddingRight: '2rem'
+              textOverflow: 'ellipsis'
             }
           }}
+          sx={{ m: 0 }}
         />
         {image != null && (
           <Box>
             <Box
               sx={{
-                justifySelf: 'end',
                 display: 'flex',
                 alignItems: 'flex-end',
                 justifyContent: 'flex-end',
                 height: 79,
                 width: 79,
                 borderRadius: 2,
+                ml: 2,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center center',
                 backgroundImage: `url(${image})`
@@ -73,6 +80,7 @@ export function VideoListItem({
                   color: 'background.paper',
                   backgroundColor: 'rgba(0, 0, 0, 0.35)',
                   px: 1,
+                  m: 1,
                   borderRadius: 2
                 }}
               >
@@ -82,7 +90,12 @@ export function VideoListItem({
           </Box>
         )}
       </ListItemButton>
-      {/* call VideoDetails here once merged */}
+      <VideoDetails
+        id={id}
+        open={open}
+        onClose={handleClose}
+        onSelect={handleSelect}
+      />
     </>
   )
 }

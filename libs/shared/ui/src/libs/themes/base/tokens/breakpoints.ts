@@ -1,5 +1,6 @@
 import { Breakpoints, Breakpoint, ThemeOptions } from '@mui/material/styles'
-import { createBreakpoints } from '@mui/system'
+// eslint-disable-next-line no-restricted-imports
+import createBreakpoints from '@mui/system/createTheme/createBreakpoints'
 
 const minWidths: { [key in Breakpoint]: number } = {
   xs: 0, // Mobile (P)

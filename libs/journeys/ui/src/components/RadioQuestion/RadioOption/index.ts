@@ -1,2 +1,2 @@
-export { RadioOption } from './RadioOption'
+export { RadioOption, StyledRadioOption } from './RadioOption'
 export type { RadioOptionProps } from './RadioOption'

@@ -4,10 +4,10 @@ import {
   ActiveTab,
   useEditor,
   TreeBlock,
-  VIDEO_FIELDS
+  VIDEO_FIELDS,
+  useJourney
 } from '@core/journeys/ui'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
-import { useJourney } from '../../../../../libs/context'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { VideoBlockCreate } from '../../../../../../__generated__/VideoBlockCreate'
@@ -23,7 +23,7 @@ export const VIDEO_BLOCK_CREATE = gql`
 
 export function NewVideoButton(): ReactElement {
   const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
-  const { id: journeyId } = useJourney()
+  const { journey } = useJourney()
   const {
     state: { selectedStep },
     dispatch
@@ -33,11 +33,11 @@ export function NewVideoButton(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    if (card != null) {
+    if (card != null && journey != null) {
       const { data } = await videoBlockCreate({
         variables: {
           input: {
-            journeyId,
+            journeyId: journey.id,
             parentBlockId: card.id,
             autoplay: true,
             muted: false,
@@ -47,7 +47,7 @@ export function NewVideoButton(): ReactElement {
         update(cache, { data }) {
           if (data?.videoBlockCreate != null) {
             cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
                   const newBlockRef = cache.writeFragment({

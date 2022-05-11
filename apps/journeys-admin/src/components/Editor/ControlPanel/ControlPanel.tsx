@@ -39,6 +39,7 @@ export function ControlPanel(): ReactElement {
         <Fab
           visible={activeTab !== ActiveTab.Blocks}
           onAddClick={handleAddFabClick}
+          disabled={steps == null}
         />
       </Box>
       <Box
@@ -62,12 +63,13 @@ export function ControlPanel(): ReactElement {
             label="Properties"
             {...tabA11yProps('control-panel', 1)}
             sx={{ flexGrow: 1 }}
-            disabled={selectedBlock == null}
+            disabled={steps == null || selectedBlock == null}
           />
           <Tab
             label="Blocks"
             {...tabA11yProps('control-panel', 2)}
             sx={{ flexGrow: 1 }}
+            disabled={steps == null}
           />
         </Tabs>
       </Box>

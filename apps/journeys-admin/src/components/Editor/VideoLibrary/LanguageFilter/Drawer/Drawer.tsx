@@ -12,11 +12,12 @@ import { Theme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { Close } from '@mui/icons-material'
+import Close from '@mui/icons-material/Close'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { GetLanguages } from '../../../../../../__generated__/GetLanguages'
+import { GET_LANGUAGES } from '../../../../LanguageSelect/LanguageSelect'
 
 export const DRAWER_WIDTH = 328
 
@@ -27,18 +28,6 @@ interface DrawerProps {
   selectedIds: string[]
   currentLanguageId: string
 }
-
-export const GET_LANGUAGES = gql`
-  query GetLanguages($languageId: ID) {
-    languages {
-      id
-      name(languageId: $languageId, primary: true) {
-        value
-        primary
-      }
-    }
-  }
-`
 
 export function Drawer({
   open,
