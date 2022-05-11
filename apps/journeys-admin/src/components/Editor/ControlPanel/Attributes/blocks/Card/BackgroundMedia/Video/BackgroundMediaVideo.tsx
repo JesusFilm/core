@@ -87,7 +87,7 @@ export function BackgroundMediaVideo({
   const [blockDelete] = useMutation<BlockDeleteForBackgroundVideo>(
     BLOCK_DELETE_FOR_BACKGROUND_VIDEO
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const videoBlock = coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
 

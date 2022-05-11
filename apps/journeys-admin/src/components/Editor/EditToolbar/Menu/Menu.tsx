@@ -22,7 +22,7 @@ export function Menu(): ReactElement {
     dispatch
   } = useEditor()
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)

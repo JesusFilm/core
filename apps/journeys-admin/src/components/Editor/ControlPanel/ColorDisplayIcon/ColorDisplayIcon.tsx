@@ -26,7 +26,7 @@ enum DisplayColor {
 export function ColorDisplayIcon({
   color
 }: ColorDisplayIconProps): ReactElement {
-  const journey = useJourney()
+  const { journey } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()

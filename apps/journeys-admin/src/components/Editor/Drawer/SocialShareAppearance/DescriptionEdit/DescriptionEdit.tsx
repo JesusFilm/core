@@ -21,7 +21,7 @@ export function DescriptionEdit(): ReactElement {
     JOURNEY_SEO_DESCRIPTION_UPDATE
   )
 
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
     if (journey == null) return

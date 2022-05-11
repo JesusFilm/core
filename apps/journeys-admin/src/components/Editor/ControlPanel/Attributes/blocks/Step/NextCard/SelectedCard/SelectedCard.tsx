@@ -42,7 +42,7 @@ export function SelectedCard(): ReactElement {
   const {
     state: { steps, selectedBlock }
   } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { id, nextBlockId, locked } = selectedBlock as TreeBlock<StepFields>
   const [nextStep, setNextStep] = useState(
     steps?.find((step) => nextBlockId === step.id)

@@ -82,13 +82,14 @@ describe('Action', () => {
         cache={cache}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ steps, selectedBlock, selectedStep }}>
             <Action />
@@ -178,7 +179,8 @@ describe('Action', () => {
             request: {
               query: ACTION_DELETE,
               variables: {
-                id: selectedBlock?.id
+                id: selectedBlock?.id,
+                journeyId: 'journeyId'
               }
             },
             result
@@ -186,9 +188,16 @@ describe('Action', () => {
         ]}
         cache={cache}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Action />
-        </EditorProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Action />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByText('URL/Website')).toBeInTheDocument()

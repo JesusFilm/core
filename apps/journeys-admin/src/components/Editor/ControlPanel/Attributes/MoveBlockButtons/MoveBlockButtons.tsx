@@ -60,7 +60,7 @@ export function MoveBlockButtons({
   selectedStep
 }: MoveBlockButtonsProps): ReactElement {
   const [blockOrderUpdate] = useMutation<BlockOrderUpdate>(BLOCK_ORDER_UPDATE)
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   const parentBlock =
     selectedBlock.parentBlockId != null

@@ -1,7 +1,10 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
-import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
+import {
+  GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../../../__generated__/GetJourney'
 import { TypographyColor } from '../../../../../../../../__generated__/globalTypes'
 import { TYPOGRAPHY_BLOCK_UPDATE_COLOR } from './Color'
 import { Color } from '.'
@@ -59,7 +62,7 @@ describe('Typography color selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
               variables: {
                 id: 'id',
-                journeyId: undefined,
+                journeyId: 'journeyId',
                 input: {
                   color: TypographyColor.secondary
                 }
@@ -69,9 +72,16 @@ describe('Typography color selector', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Color />
-        </EditorProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Color />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Error' })).toHaveClass('Mui-selected')

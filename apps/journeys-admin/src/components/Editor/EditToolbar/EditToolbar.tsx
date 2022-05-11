@@ -7,7 +7,7 @@ import { DeleteBlock } from './DeleteBlock'
 import { Menu } from './Menu'
 
 export function EditToolbar(): ReactElement {
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   return (
     <>

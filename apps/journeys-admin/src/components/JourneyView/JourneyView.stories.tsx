@@ -19,7 +19,7 @@ const JourneyViewStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <JourneyProvider value={args.journey}>
+    <JourneyProvider value={{ journey: args.journey }}>
       <PageWrapper
         title="Journey Details"
         showDrawer

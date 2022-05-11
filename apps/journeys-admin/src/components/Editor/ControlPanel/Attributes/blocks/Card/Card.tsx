@@ -29,7 +29,7 @@ export function Card({
   children
 }: TreeBlock<CardBlock>): ReactElement {
   const { dispatch } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   const coverBlock = children.find((block) => block.id === coverBlockId) as
     | TreeBlock<ImageBlock | VideoBlock>

@@ -1,7 +1,10 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
-import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/GetJourney'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
+import {
+  GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../../../__generated__/GetJourney'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
 import { TYPOGRAPHY_BLOCK_UPDATE_VARIANT } from './Variant'
 import { Variant } from '.'
@@ -68,7 +71,7 @@ describe('Typography variant selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_VARIANT,
               variables: {
                 id: 'id',
-                journeyId: undefined,
+                journeyId: 'journeyId',
                 input: {
                   variant: TypographyVariant.overline
                 }
@@ -78,9 +81,16 @@ describe('Typography variant selector', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Variant />
-        </EditorProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Variant />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Header 1' })).toHaveClass(

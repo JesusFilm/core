@@ -122,13 +122,14 @@ const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
       <JourneyProvider
-        value={
-          {
+        value={{
+          journey: {
             id: 'journeyId',
             themeMode: ThemeMode.light,
             themeName: ThemeName.base
-          } as unknown as Journey
-        }
+          } as unknown as Journey,
+          admin: true
+        }}
       >
         <EditorProvider
           initialState={{

@@ -76,7 +76,7 @@ export const NavigateToJourney: Story = () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <EditorProvider initialState={{ selectedBlock }}>
               <NavigateToJourneyAction />
             </EditorProvider>

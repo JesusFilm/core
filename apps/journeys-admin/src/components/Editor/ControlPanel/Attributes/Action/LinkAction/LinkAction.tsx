@@ -30,7 +30,7 @@ interface LinkActionFormValues {
 
 export function LinkAction(): ReactElement {
   const { state } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined

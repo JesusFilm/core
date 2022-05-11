@@ -47,7 +47,7 @@ export function CardStyling(): ReactElement {
   const [cardBlockUpdate] = useMutation<CardBlockThemeModeUpdate>(
     CARD_BLOCK_THEME_MODE_UPDATE
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   const handleChange = async (themeMode: ThemeMode): Promise<void> => {
     if (journey != null && cardBlock != null) {
