@@ -1,13 +1,15 @@
 import { Story, Meta } from '@storybook/react'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { screen, userEvent } from '@storybook/testing-library'
 import { simpleComponentConfig } from '../../../../libs/storybook'
 import {
   GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock
+  GetJourney_journey_blocks_StepBlock as StepBlock,
+  GetJourney_journey as Journey
 } from '../../../../../__generated__/GetJourney'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { DeleteBlock, BLOCK_DELETE } from './DeleteBlock'
 
 const DeleteBlockStory = {
@@ -53,7 +55,8 @@ const selectedStep: TreeBlock<StepBlock> = {
 
 const Template: Story = ({ ...args }) => {
   const {
-    state: { selectedBlock }
+    state: { selectedBlock },
+    status
   } = args
 
   return (
@@ -82,9 +85,11 @@ const Template: Story = ({ ...args }) => {
           }
         ]}
       >
-        <EditorProvider initialState={args.state}>
-          <DeleteBlock variant={args.variant} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: { status } as unkown as Journey }}>
+          <EditorProvider initialState={args.state}>
+            <DeleteBlock variant={args.variant} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     </SnackbarProvider>
   )
@@ -97,7 +102,8 @@ Button.args = {
     selectedBlock,
     selectedStep,
     steps: [selectedStep]
-  }
+  },
+  status: JourneyStatus.published
 }
 Button.play = () => {
   const button = screen.getByRole('button')
@@ -107,7 +113,8 @@ Button.play = () => {
 export const MenuItem = Template.bind({})
 MenuItem.args = {
   variant: 'list-item',
-  state: { selectedBlock, selectedStep, steps: [selectedStep] }
+  state: { selectedBlock, selectedStep, steps: [selectedStep] },
+  status: JourneyStatus.published
 }
 MenuItem.play = () => {
   const button = screen.getByRole('menuitem')
@@ -117,12 +124,14 @@ MenuItem.play = () => {
 export const disabledButton = Template.bind({})
 disabledButton.args = {
   variant: 'button',
-  state: {}
+  state: {},
+  status: JourneyStatus.draft
 }
 export const disabledMenuItem = Template.bind({})
 disabledMenuItem.args = {
   variant: 'list-item',
-  state: {}
+  state: {},
+  status: JourneyStatus.draft
 }
 
 export default DeleteBlockStory as Meta
