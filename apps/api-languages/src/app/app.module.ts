@@ -7,9 +7,11 @@ import {
 } from '@nestjs/apollo'
 import { LanguageModule } from './modules/language/language.module'
 import { TranslationModule } from './modules/translation/translation.module'
+import { CountryModule } from './modules/country/country.module'
 
 @Module({
   imports: [
+    CountryModule,
     LanguageModule,
     TranslationModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({

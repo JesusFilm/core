@@ -1,4 +1,4 @@
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
@@ -16,7 +16,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../../../../libs/context'
 import { BackgroundMedia } from './BackgroundMedia'
 
 const journey: Journey = {

@@ -1,12 +1,11 @@
 import { render, fireEvent } from '@testing-library/react'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey as Journey
 } from '../../../../__generated__/GetJourney'
 import { ThemeProvider } from '../../ThemeProvider'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../libs/context'
 import { Canvas } from '.'
 
 describe('Canvas', () => {

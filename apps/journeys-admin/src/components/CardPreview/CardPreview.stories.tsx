@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -17,7 +17,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../libs/context'
 import { CardPreview } from '.'
 
 const CardPreviewStory = {

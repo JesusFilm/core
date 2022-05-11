@@ -14,16 +14,16 @@ import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import { TreeBlock, useEditor, blurImage } from '../..'
-import { VideoResponseStateEnum } from '../../../__generated__/globalTypes'
+import { VideoPlayEventStateEnum } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
-import { VideoResponseCreate } from './__generated__/VideoResponseCreate'
+import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
 import { VideoTrigger } from './VideoTrigger'
 import 'video.js/dist/video-js.css'
 import { VideoFields } from './__generated__/VideoFields'
 
-export const VIDEO_RESPONSE_CREATE = gql`
-  mutation VideoResponseCreate($input: VideoResponseCreateInput!) {
-    videoResponseCreate(input: $input) {
+export const VIDEO_PLAY_EVENT_CREATE = gql`
+  mutation VideoPlayEventCreate($input: VideoPlayEventCreateInput!) {
+    videoPlayEventCreate(input: $input) {
       state
       position
     }
@@ -44,8 +44,8 @@ export function Video({
   children,
   action
 }: TreeBlock<VideoFields>): ReactElement {
-  const [videoResponseCreate] = useMutation<VideoResponseCreate>(
-    VIDEO_RESPONSE_CREATE
+  const [videoPlayEventCreate] = useMutation<VideoPlayEventCreate>(
+    VIDEO_PLAY_EVENT_CREATE
   )
   const [loading, setLoading] = useState(true)
   const theme = useTheme()
@@ -70,28 +70,21 @@ export function Video({
       : undefined
   }, [posterBlock, theme])
 
-  const handleVideoResponse = useCallback(
-    (videoState: VideoResponseStateEnum, videoPosition?: number): void => {
+  const handleVideoPlayEvent = useCallback(
+    (videoState: VideoPlayEventStateEnum, videoPosition?: number): void => {
       const position = videoPosition != null ? Math.floor(videoPosition) : 0
 
-      void videoResponseCreate({
+      void videoPlayEventCreate({
         variables: {
           input: {
             blockId,
             state: videoState,
             position
           }
-        },
-        optimisticResponse: {
-          videoResponseCreate: {
-            __typename: 'VideoResponse',
-            state: videoState,
-            position
-          }
         }
       })
     },
-    [blockId, videoResponseCreate]
+    [blockId, videoPlayEventCreate]
   )
 
   useEffect(() => {
@@ -133,29 +126,29 @@ export function Video({
         })
         playerRef.current.on('playing', () => {
           if (autoplay !== true) setLoading(false)
-          handleVideoResponse(
-            VideoResponseStateEnum.PLAYING,
+          handleVideoPlayEvent(
+            VideoPlayEventStateEnum.PLAYING,
             playerRef.current?.currentTime()
           )
         })
         playerRef.current.on('pause', () => {
-          handleVideoResponse(
-            VideoResponseStateEnum.PAUSED,
+          handleVideoPlayEvent(
+            VideoPlayEventStateEnum.PAUSED,
             playerRef.current?.currentTime()
           )
         })
         playerRef.current.on('ended', () => {
           if (playerRef?.current?.isFullscreen() === true)
             playerRef.current?.exitFullscreen()
-          handleVideoResponse(
-            VideoResponseStateEnum.FINISHED,
+          handleVideoPlayEvent(
+            VideoPlayEventStateEnum.FINISHED,
             playerRef.current?.currentTime()
           )
         })
       }
     }
   }, [
-    handleVideoResponse,
+    handleVideoPlayEvent,
     startAt,
     endAt,
     muted,

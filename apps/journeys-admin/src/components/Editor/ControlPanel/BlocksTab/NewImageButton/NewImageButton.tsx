@@ -3,11 +3,11 @@ import {
   ActiveTab,
   useEditor,
   IMAGE_FIELDS,
-  TreeBlock
+  TreeBlock,
+  useJourney
 } from '@core/journeys/ui'
 import InsertPhotoRounded from '@mui/icons-material/InsertPhotoRounded'
 import { ReactElement } from 'react'
-import { useJourney } from '../../../../../libs/context'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { ImageBlockCreate } from '../../../../../../__generated__/ImageBlockCreate'
 import { Button } from '../../Button'

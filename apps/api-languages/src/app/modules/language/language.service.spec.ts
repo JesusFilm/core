@@ -87,4 +87,16 @@ describe('LanguageService', () => {
       expect(await service.remove('1')).toEqual(languageWithId)
     })
   })
+
+  describe('getByBcp47', () => {
+    beforeEach(() => {
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [language])
+      )
+    })
+
+    it('should return a language', async () => {
+      expect(await service.getByBcp47('us')).toEqual(languageWithId)
+    })
+  })
 })

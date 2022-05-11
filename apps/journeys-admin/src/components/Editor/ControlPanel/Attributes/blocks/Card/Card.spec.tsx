@@ -1,4 +1,4 @@
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
@@ -11,7 +11,6 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock
 } from '../../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../../libs/context'
 import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 import { Card } from '.'

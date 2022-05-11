@@ -16,7 +16,7 @@ interface LanguageSelectProps {
 
 export const GET_LANGUAGES = gql`
   query GetLanguages($languageId: ID) {
-    languages {
+    languages(limit: 5000) {
       id
       name(languageId: $languageId, primary: true) {
         value

@@ -89,7 +89,7 @@ interface Video {
   imageAlt: Translation[]
   variants: VideoVariant[]
   tagIds: string[]
-  permalinks: Translation[]
+  slug: Translation[]
   episodeIds: string[]
   noIndex: boolean
 }
@@ -145,34 +145,31 @@ async function getMediaComponentLanguage(
 }
 
 const usedTitles: string[] = []
-
-function getIteration(slug: string): string {
-  const exists = usedTitles.find((t) => t === slug)
-  if (exists != null) {
-    const iteration = slug.match(/-(\d+)$/)
-    const title =
-      iteration == null
-        ? `${slug}-2`
-        : `${slug}-${parseInt(iteration[iteration.length - 1]) + 1}`
-    return getIteration(title)
+function getIteration(slug: string, collection: string[]): string {
+  const exists = collection.find((t) => t === slug)
+  if (exists != null && slug !== '') {
+    const regex = slug.match(/^(.*?)-(\d+)$/)
+    const iteration = parseInt(regex?.[2] ?? '1') + 1
+    const title = regex?.[1] ?? slug
+    const value = `${title}-${iteration}`
+    return getIteration(value, collection)
   }
   return slug
 }
 
-function getSeoTitle(title: string): string {
+function getSeoSlug(title: string, collection: string[]): string {
   const slug = slugify(title, { lower: true, remove: /[^a-zA-Z\d\s:]/g })
-  const newSlug = getIteration(slug)
-  usedTitles.push(newSlug)
+  const newSlug = getIteration(slug, collection)
+  collection.push(newSlug)
   return newSlug
 }
-
 async function digestContent(
   languages: Language[],
   mediaComponent: MediaComponent
 ): Promise<void> {
   const video = await getVideo(mediaComponent.mediaComponentId)
-  if (video?.permalinks != null)
-    video.permalinks.forEach((title) => usedTitles.push(title.value))
+  if (video?.slug != null)
+    video.slug.forEach((title) => usedTitles.push(title.value))
 
   const metadataLanguageId =
     languages
@@ -242,9 +239,9 @@ async function digestContent(
     tagIds: [],
     episodeIds: [],
     variants,
-    permalinks: video?.permalinks ?? [
+    slug: video?.slug ?? [
       {
-        value: getSeoTitle(mediaComponent.title),
+        value: getSeoSlug(mediaComponent.title, usedTitles),
         languageId: metadataLanguageId,
         primary: true
       }
@@ -319,8 +316,8 @@ async function digestSeriesContainer(
   languages,
   video
 ): Promise<Video> {
-  if (video?.permalinks != null)
-    video.permalinks.forEach((title) => usedTitles.push(title.value))
+  if (video?.slug != null)
+    video.slug.forEach((title) => usedTitles.push(title.value))
   const metadataLanguageId =
     languages
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
@@ -386,9 +383,9 @@ async function digestSeriesContainer(
       }
     ],
     tagIds: [],
-    permalinks: video?.permalinks ?? [
+    slug: video?.slug ?? [
       {
-        value: getSeoTitle(mediaComponent.title),
+        value: getSeoSlug(mediaComponent.title, usedTitles),
         languageId: metadataLanguageId,
         primary: true
       }
@@ -515,7 +512,7 @@ async function main(): Promise<void> {
           episodeIds: {
             analyzers: ['identity']
           },
-          permalinks: {
+          slug: {
             analyzers: ['identity']
           }
         }
@@ -541,9 +538,9 @@ async function main(): Promise<void> {
   }
 
   await db.collection('videos').ensureIndex({
-    name: 'permalinks',
+    name: 'slug',
     type: 'persistent',
-    fields: ['permalinks[*].value'],
+    fields: ['slug[*].value'],
     unique: true
   })
 

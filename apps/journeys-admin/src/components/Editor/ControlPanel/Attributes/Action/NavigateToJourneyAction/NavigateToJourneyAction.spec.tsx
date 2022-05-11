@@ -1,8 +1,7 @@
 import { render, waitFor, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { InMemoryCache } from '@apollo/client'
-import { JourneyProvider } from '../../../../../../libs/context'
 import {
   ThemeMode,
   ThemeName,

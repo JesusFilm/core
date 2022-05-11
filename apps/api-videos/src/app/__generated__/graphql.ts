@@ -56,7 +56,7 @@ export class Video {
     image?: Nullable<string>;
     imageAlt: Translation[];
     variantLanguages: Language[];
-    permalinks: Translation[];
+    slug: Translation[];
     noIndex?: Nullable<boolean>;
     episodeIds: string[];
     episodes: Video[];

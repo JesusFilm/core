@@ -1,7 +1,6 @@
 import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { Typography, TreeBlock } from '@core/journeys/ui'
-import { useJourney } from '../../../../../libs/context'
+import { Typography, TreeBlock, useJourney } from '@core/journeys/ui'
 import { TypographyBlockUpdateContent } from '../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../__generated__/TypographyFields'
 import { InlineEditInput } from '../InlineEditInput'

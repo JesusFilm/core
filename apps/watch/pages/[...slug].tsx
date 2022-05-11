@@ -14,6 +14,7 @@ import { routeParser } from '../src/libs/routeParser/routeParser'
 import { VideoType } from '../__generated__/globalTypes'
 import 'video.js/dist/video-js.css'
 import { VideoListList } from '../src/components/Videos/VideoList/List/VideoListList'
+import { LanguageProvider } from '../src/libs/languageContext/LanguageContext'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!) {
@@ -48,7 +49,7 @@ export const GET_VIDEO = gql`
           primary
           value
         }
-        permalinks {
+        slug {
           primary
           value
         }
@@ -58,7 +59,7 @@ export const GET_VIDEO = gql`
           hls
         }
       }
-      permalinks {
+      slug {
         value
         primary
       }
@@ -85,7 +86,7 @@ export const GET_VIDEO_SIBLINGS = gql`
         hls
       }
       episodeIds
-      permalinks {
+      slug {
         primary
         value
       }
@@ -171,109 +172,112 @@ export default function SeoFriendly(): ReactElement {
 
   return (
     <div>
-      {loading && <CircularProgress />}
-      {data?.video != null && (
-        <>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              margin: '-5%',
-              width: '100vw !important',
-              height: '100%',
-              filter: 'blur(20px)',
-              overflow: 'hidden',
-              zIndex: 0,
-              opacity: 0.4
-            }}
-          >
-            <Image
-              src={data.video.image}
-              layout="fill"
-              alt={data.video.title.find((title) => title.primary)?.value}
-            />
-          </Box>
-          <Box>
-            <Stack justifyContent="center" direction="row">
-              <Stack justifyContent="center" direction="column" width="80%">
-                {data.video.variant?.hls != null && (
-                  <video
-                    ref={videoRef}
-                    className="video-js vjs-fluid"
-                    style={{
-                      alignSelf: 'center'
-                    }}
-                    playsInline
-                  >
-                    <source
-                      src={data.video.variant.hls}
-                      type="application/x-mpegURL"
-                    />
-                  </video>
-                )}
-                <Stack justifyContent="center" direction="row">
-                  <Typography variant="h1">
-                    {data.video.title.find((title) => title.primary)?.value}
-                  </Typography>
-                </Stack>
-                {data.video.type !== VideoType.playlist && (
+      <LanguageProvider>
+        {loading && <CircularProgress />}
+        {data?.video != null && (
+          <>
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                margin: '-5%',
+                width: '100vw !important',
+                height: '100%',
+                filter: 'blur(20px)',
+                overflow: 'hidden',
+                zIndex: 0,
+                opacity: 0.4
+              }}
+            >
+              <Image
+                src={data.video.image}
+                layout="fill"
+                alt={data.video.title.find((title) => title.primary)?.value}
+              />
+            </Box>
+            <Box>
+              <Stack justifyContent="center" direction="row">
+                <Stack justifyContent="center" direction="column" width="80%">
+                  {data.video.variant?.hls != null && (
+                    <video
+                      ref={videoRef}
+                      className="video-js vjs-fluid"
+                      style={{
+                        alignSelf: 'center'
+                      }}
+                      playsInline
+                    >
+                      <source
+                        src={data.video.variant.hls}
+                        type="application/x-mpegURL"
+                      />
+                    </video>
+                  )}
                   <Stack justifyContent="center" direction="row">
-                    <Typography variant="subtitle1">
-                      {secondsToMinutes(data.video.variant.duration)} min
-                    </Typography>
-                    <Typography variant="subtitle1" mx={4}>
-                      Audio:
-                      {
-                        audioLanguageData?.language.name.find((n) => n.primary)
-                          ?.value
-                      }
-                    </Typography>
-                    <Typography variant="subtitle1">
-                      Subtitle:
-                      {
-                        subtitleLanguageData?.language.name.find(
-                          (n) => n.primary
-                        )?.value
-                      }
+                    <Typography variant="h1">
+                      {data.video.title.find((title) => title.primary)?.value}
                     </Typography>
                   </Stack>
-                )}
-                {data?.video.type === VideoType.playlist && (
-                  <Typography variant="subtitle1">
-                    {data.video.episodes.length} episodes
+                  {data.video.type !== VideoType.playlist && (
+                    <Stack justifyContent="center" direction="row">
+                      <Typography variant="subtitle1">
+                        {secondsToMinutes(data.video.variant.duration)} min
+                      </Typography>
+                      <Typography variant="subtitle1" mx={4}>
+                        Audio:
+                        {
+                          audioLanguageData?.language.name.find(
+                            (n) => n.primary
+                          )?.value
+                        }
+                      </Typography>
+                      <Typography variant="subtitle1">
+                        Subtitle:
+                        {
+                          subtitleLanguageData?.language.name.find(
+                            (n) => n.primary
+                          )?.value
+                        }
+                      </Typography>
+                    </Stack>
+                  )}
+                  {data?.video.type === VideoType.playlist && (
+                    <Typography variant="subtitle1">
+                      {data.video.episodes.length} episodes
+                    </Typography>
+                  )}
+                  <Typography variant="caption">
+                    {data.video.description.find((d) => d.primary).value}
                   </Typography>
-                )}
-                <Typography variant="caption">
-                  {data.video.description.find((d) => d.primary).value}
-                </Typography>
+                </Stack>
               </Stack>
-            </Stack>
-          </Box>
-          {data.video.episodes.length > 0 && (
-            <>
-              <Typography variant="h2">Episodes</Typography>
-              <VideoListList
-                videos={data.video.episodes}
-                routePrefix={routes.join('/')}
-              />
-            </>
-          )}
-          {siblingsData?.episodes?.length > 0 && (
-            <>
-              <Typography variant="h2">Episodes</Typography>
-              <VideoListList
-                videos={siblingsData.episodes}
-                routePrefix={siblingRoute(routes).join('/')}
-              />
-            </>
-          )}
-        </>
-      )}
-      <div>Locale - {locale} </div>
-      <div>Tags - {tags.join(' ')}</div>
+            </Box>
+            {data.video.episodes.length > 0 && (
+              <>
+                <Typography variant="h2">Episodes</Typography>
+                <VideoListList
+                  videos={data.video.episodes}
+                  routePrefix={routes.join('/')}
+                />
+              </>
+            )}
+            {siblingsData?.episodes?.length > 0 && (
+              <>
+                <Typography variant="h2">Episodes</Typography>
+                <VideoListList
+                  videos={siblingsData.episodes}
+                  routePrefix={siblingRoute(routes).join('/')}
+                />
+              </>
+            )}
+          </>
+        )}
+        <div>Locale - {locale} </div>
+        <div>Tags - {tags.join(' ')}</div>
+      </LanguageProvider>
     </div>
   )
 }

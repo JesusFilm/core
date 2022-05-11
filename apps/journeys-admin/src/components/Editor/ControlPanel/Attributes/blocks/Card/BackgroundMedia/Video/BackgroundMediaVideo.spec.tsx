@@ -1,4 +1,4 @@
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
@@ -10,7 +10,6 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../../../../libs/context'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 import { GET_VIDEOS } from '../../../../../../VideoLibrary/VideoList/VideoList'
 import { GET_VIDEO } from '../../../../../../VideoLibrary/VideoDetails/VideoDetails'

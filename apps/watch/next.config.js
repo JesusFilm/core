@@ -12,7 +12,8 @@ const nextConfig = {
       'localhost',
       'unsplash.com',
       'd1wl257kev7hsz.cloudfront.net'
-    ]
+    ],
+    disableStaticImages: true
   },
   nx: {
     // Set this to true if you would like to to use SVGR

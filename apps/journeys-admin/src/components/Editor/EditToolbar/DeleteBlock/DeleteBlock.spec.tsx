@@ -1,4 +1,4 @@
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
@@ -13,7 +13,6 @@ import {
   TypographyAlign,
   TypographyColor
 } from '../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../libs/context'
 import { DeleteBlock, BLOCK_DELETE } from './DeleteBlock'
 
 const selectedBlock: TreeBlock<TypographyBlock> = {
