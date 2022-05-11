@@ -261,8 +261,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
-            label: '',
-            description: '',
             children: [
               {
                 id: 'radioOption1.id',
@@ -367,8 +365,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
             parentOrder: 2,
-            label: '',
-            description: '',
             children: [
               {
                 id: 'radioOption1.id',
