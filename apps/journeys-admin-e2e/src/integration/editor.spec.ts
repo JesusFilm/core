@@ -1,4 +1,4 @@
-describe('fact-or-fiction edit', () => {
+describe('fact-or-fiction selecting', () => {
   before(() => {
     cy.visit('/journeys/fact-or-fiction/edit')
   })
