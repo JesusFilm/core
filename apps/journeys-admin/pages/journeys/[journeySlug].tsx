@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
-import { BLOCK_FIELDS, IMAGE_FIELDS, JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider, JOURNEY_FIELDS } from '@core/journeys/ui'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -16,43 +16,10 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import { Menu } from '../../src/components/JourneyView/Menu'
 
 export const GET_JOURNEY = gql`
-  ${BLOCK_FIELDS}
-  ${IMAGE_FIELDS}
+  ${JOURNEY_FIELDS}
   query GetJourney($id: ID!) {
     journey: adminJourney(id: $id, idType: slug) {
-      id
-      slug
-      title
-      description
-      status
-      language {
-        id
-        name {
-          value
-          primary
-        }
-      }
-      createdAt
-      publishedAt
-      themeName
-      themeMode
-      seoTitle
-      seoDescription
-      blocks {
-        ...BlockFields
-      }
-      primaryImageBlock {
-        ...ImageFields
-      }
-      userJourneys {
-        id
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
+      ...JourneyFields
     }
   }
 `
