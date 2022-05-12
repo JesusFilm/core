@@ -705,6 +705,43 @@ type VideoPlayEvent implements Event {
   block: VideoBlock
 }
 
+input VideoMuteEventCreateInput {
+  id: ID!
+  blockId: ID!
+}
+
+type VideoMuteEvent implements Event {
+  id: ID!
+  userId: ID!
+  block: VideoBlock
+}
+
+input VideoFullscreenEventCreateInput {
+  id: ID!
+  blockId: ID!
+}
+
+type VideoFullscreenEvent implements Event {
+  id: ID!
+  userId: ID!
+  block: VideoBlock
+}
+
+input VideoViewEventCreateInput {
+  id: ID!
+  videoId: ID!
+  language: ID!
+  blockId: ID!
+}
+
+type VideoViewEvent implements Event {
+  id: ID!
+  userId: ID!
+  videoId: ID!
+  languageId: ID!
+  block: VideoBlock
+}
+
 enum IdType {
   databaseId
   slug
@@ -881,6 +918,9 @@ extend type Mutation {
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
+  videoMuteEventCreate(input: VideoMuteEventCreateInput!): VideoMuteEvent!
+  videoFullscreenEventCreate(input: VideoFullscreenEventCreateInput!): VideoFullscreenEvent!
+  videoViewEventCreate(input: VideoViewEventCreateInput!): VideoViewEvent!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey

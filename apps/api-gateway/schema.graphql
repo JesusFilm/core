@@ -490,8 +490,11 @@ type Mutation {
   userJourneyRequest(idType: IdType, journeyId: ID!): UserJourney! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!, journeyId: ID!): VideoBlock! @join__field(graph: JOURNEYS)
+  videoFullscreenEventCreate(input: VideoFullscreenEventCreateInput!): VideoFullscreenEvent! @join__field(graph: JOURNEYS)
+  videoMuteEventCreate(input: VideoMuteEventCreateInput!): VideoMuteEvent! @join__field(graph: JOURNEYS)
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
+  videoViewEventCreate(input: VideoViewEventCreateInput!): VideoViewEvent! @join__field(graph: JOURNEYS)
 }
 
 """
@@ -969,6 +972,28 @@ input VideoBlockUpdateInput {
   videoVariantLanguageId: ID
 }
 
+type VideoFullscreenEvent implements Event {
+  block: VideoBlock
+  id: ID!
+  userId: ID!
+}
+
+input VideoFullscreenEventCreateInput {
+  blockId: ID!
+  id: ID!
+}
+
+type VideoMuteEvent implements Event {
+  block: VideoBlock
+  id: ID!
+  userId: ID!
+}
+
+input VideoMuteEventCreateInput {
+  blockId: ID!
+  id: ID!
+}
+
 type VideoPlayEvent implements Event {
   block: VideoBlock
   id: ID!
@@ -1073,4 +1098,19 @@ type VideoVariantDownload {
 enum VideoVariantDownloadQuality {
   high
   low
+}
+
+type VideoViewEvent implements Event {
+  block: VideoBlock
+  id: ID!
+  languageId: ID!
+  userId: ID!
+  videoId: ID!
+}
+
+input VideoViewEventCreateInput {
+  blockId: ID!
+  id: ID!
+  language: ID!
+  videoId: ID!
 }

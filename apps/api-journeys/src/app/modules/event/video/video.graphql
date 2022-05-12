@@ -22,6 +22,48 @@ type VideoPlayEvent implements Event {
   block: VideoBlock
 }
 
+input VideoMuteEventCreateInput {
+  id: ID!
+  blockId: ID!
+}
+
+type VideoMuteEvent implements Event {
+  id: ID!
+  userId: ID!
+  block: VideoBlock
+}
+
+input VideoFullscreenEventCreateInput {
+  id: ID!
+  blockId: ID!
+}
+
+type VideoFullscreenEvent implements Event {
+  id: ID!
+  userId: ID!
+  block: VideoBlock
+}
+
+input VideoViewEventCreateInput {
+  id: ID!
+  videoId: ID!
+  language: ID!
+  blockId: ID!
+}
+
+type VideoViewEvent implements Event {
+  id: ID!
+  userId: ID!
+  videoId: ID!
+  languageId: ID!
+  block: VideoBlock
+}
+
 extend type Mutation {
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
+  videoMuteEventCreate(input: VideoMuteEventCreateInput!): VideoMuteEvent!
+  videoFullscreenEventCreate(
+    input: VideoFullscreenEventCreateInput!
+  ): VideoFullscreenEvent!
+  videoViewEventCreate(input: VideoViewEventCreateInput!): VideoViewEvent!
 }

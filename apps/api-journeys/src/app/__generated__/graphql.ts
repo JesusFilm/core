@@ -356,6 +356,23 @@ export class VideoPlayEventCreateInput {
     position?: Nullable<number>;
 }
 
+export class VideoMuteEventCreateInput {
+    id: string;
+    blockId: string;
+}
+
+export class VideoFullscreenEventCreateInput {
+    id: string;
+    blockId: string;
+}
+
+export class VideoViewEventCreateInput {
+    id: string;
+    videoId: string;
+    language: string;
+    blockId: string;
+}
+
 export class JourneysFilter {
     featured?: Nullable<boolean>;
 }
@@ -679,6 +696,29 @@ export class VideoPlayEvent implements Event {
     block?: Nullable<VideoBlock>;
 }
 
+export class VideoMuteEvent implements Event {
+    __typename?: 'VideoMuteEvent';
+    id: string;
+    userId: string;
+    block?: Nullable<VideoBlock>;
+}
+
+export class VideoFullscreenEvent implements Event {
+    __typename?: 'VideoFullscreenEvent';
+    id: string;
+    userId: string;
+    block?: Nullable<VideoBlock>;
+}
+
+export class VideoViewEvent implements Event {
+    __typename?: 'VideoViewEvent';
+    id: string;
+    userId: string;
+    videoId: string;
+    languageId: string;
+    block?: Nullable<VideoBlock>;
+}
+
 export class UserJourney {
     __typename?: 'UserJourney';
     journey?: Nullable<Journey>;
@@ -788,6 +828,12 @@ export abstract class IMutation {
     abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
 
     abstract videoPlayEventCreate(input: VideoPlayEventCreateInput): VideoPlayEvent | Promise<VideoPlayEvent>;
+
+    abstract videoMuteEventCreate(input: VideoMuteEventCreateInput): VideoMuteEvent | Promise<VideoMuteEvent>;
+
+    abstract videoFullscreenEventCreate(input: VideoFullscreenEventCreateInput): VideoFullscreenEvent | Promise<VideoFullscreenEvent>;
+
+    abstract videoViewEventCreate(input: VideoViewEventCreateInput): VideoViewEvent | Promise<VideoViewEvent>;
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 
