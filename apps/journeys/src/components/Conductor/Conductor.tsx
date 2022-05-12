@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState, useRef } from 'react'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
@@ -51,14 +51,19 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     JOURNEY_VIEW_EVENT_CREATE
   )
 
+  // React renders twice, see: https://github.com/reactwg/react-18/discussions/18
+  const ref = useRef(false)
   useEffect(() => {
-    const id = uuidv4()
     if (admin != null && !admin && journey != null) {
-      void journeyViewEventCreate({
-        variables: {
-          input: { id, journeyId: journey.id }
-        }
-      })
+      if (!ref.current) {
+        ref.current = true
+        const id = uuidv4()
+        void journeyViewEventCreate({
+          variables: {
+            input: { id, journeyId: journey.id }
+          }
+        })
+      }
     }
   }, [admin, journey, journeyViewEventCreate])
 
