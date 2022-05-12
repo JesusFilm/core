@@ -8,11 +8,11 @@ import {
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
-@Resolver('VideoPlayEvent')
-export class VideoPlayEventResolver {
+@Resolver('VideoEvent')
+@UseGuards(GqlAuthGuard)
+export class VideoEventResolver {
   constructor(private readonly eventService: EventService) {}
   @Mutation()
-  @UseGuards(GqlAuthGuard)
   async videoPlayEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: VideoPlayEventCreateInput & { __typename }
