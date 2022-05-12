@@ -8,7 +8,7 @@ curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/pub
 sudo yum update && sudo yum install doppler
 
 # fetch secrets from doppler
-npx nx fetch-secrets $NX_PROJECT
+npx nx fetch-secrets $APP_NAME
 
 # build project
-npx nx build $NX_PROJECT --prod
+npx nx build $APP_NAME --prod
