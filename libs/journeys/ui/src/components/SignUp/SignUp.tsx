@@ -8,7 +8,7 @@ import Box from '@mui/material/Box'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { v4 as uuidv4 } from 'uuid'
 import { useSnackbar } from 'notistack'
-import { TreeBlock, handleAction, useEditor } from '../..'
+import { TreeBlock, handleAction, useEditor, useJourney } from '../..'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { SignUpSubmissionEventCreate } from './__generated__/SignUpSubmissionEventCreate'
@@ -53,6 +53,7 @@ export const SignUp = ({
     | TreeBlock<IconFields>
     | undefined
 
+  const { admin } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
   const router = useRouter()
@@ -71,24 +72,26 @@ export const SignUp = ({
   })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
-    const id = uuid()
-    try {
-      await signUpSubmissionEventCreate({
-        variables: {
-          input: {
-            id,
-            blockId,
-            name: values.name,
-            email: values.email
+    if (admin === false) {
+      const id = uuid()
+      try {
+        await signUpSubmissionEventCreate({
+          variables: {
+            input: {
+              id,
+              blockId,
+              name: values.name,
+              email: values.email
+            }
           }
-        }
-      })
-    } catch (e) {
-      if (e instanceof ApolloError) {
-        enqueueSnackbar(e.message, {
-          variant: 'error',
-          preventDuplicate: true
         })
+      } catch (e) {
+        if (e instanceof ApolloError) {
+          enqueueSnackbar(e.message, {
+            variant: 'error',
+            preventDuplicate: true
+          })
+        }
       }
     }
   }

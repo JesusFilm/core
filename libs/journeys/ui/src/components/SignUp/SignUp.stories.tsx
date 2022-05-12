@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { ReactElement } from 'react'
 import { SnackbarProvider } from 'notistack'
 import {
+  JourneyProvider,
   journeyUiConfig,
   simpleComponentConfig,
   StoryCard,
@@ -110,11 +111,13 @@ CustomButton.args = {
 
 const LoadingTemplate: Story<TreeBlock<SignUpFields>> = (): ReactElement => (
   <ApolloLoadingProvider>
-    <SnackbarProvider>
-      <StoryCard>
-        <SignUp {...signUpProps} uuid={() => 'uuid'} />
-      </StoryCard>
-    </SnackbarProvider>
+    <JourneyProvider value={{ admin: false }}>
+      <SnackbarProvider>
+        <StoryCard>
+          <SignUp {...signUpProps} uuid={() => 'uuid'} />
+        </StoryCard>
+      </SnackbarProvider>
+    </JourneyProvider>
   </ApolloLoadingProvider>
 )
 

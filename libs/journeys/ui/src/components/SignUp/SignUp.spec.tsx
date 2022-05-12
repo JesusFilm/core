@@ -3,7 +3,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { TreeBlock, handleAction } from '../..'
+import { TreeBlock, handleAction, JourneyProvider } from '../..'
 import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
 
@@ -189,9 +189,11 @@ describe('SignUp', () => {
   it('should be in a loading state when waiting for response', async () => {
     const { getByRole, getByLabelText } = render(
       <ApolloLoadingProvider>
-        <SnackbarProvider>
-          <SignUp {...block} uuid={() => 'uuid'} />
-        </SnackbarProvider>
+        <JourneyProvider value={{ admin: false }}>
+          <SnackbarProvider>
+            <SignUp {...block} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
       </ApolloLoadingProvider>
     )
     const name = getByLabelText('Name')
@@ -240,9 +242,11 @@ describe('SignUp', () => {
 
     const { getByLabelText, getByRole } = render(
       <MockedProvider>
-        <SnackbarProvider>
-          <SignUpMock mocks={mocks} />
-        </SnackbarProvider>
+        <JourneyProvider value={{ admin: false }}>
+          <SnackbarProvider>
+            <SignUpMock mocks={mocks} />
+          </SnackbarProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -278,9 +282,11 @@ describe('SignUp', () => {
     ]
 
     const { getByRole, getByLabelText, getByText } = render(
-      <SnackbarProvider>
-        <SignUpMock mocks={mocks} />
-      </SnackbarProvider>
+      <JourneyProvider value={{ admin: false }}>
+        <SnackbarProvider>
+          <SignUpMock mocks={mocks} />
+        </SnackbarProvider>
+      </JourneyProvider>
     )
     const name = getByLabelText('Name')
     const email = getByLabelText('Email')
