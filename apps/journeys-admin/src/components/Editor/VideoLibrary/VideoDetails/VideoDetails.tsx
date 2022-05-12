@@ -99,7 +99,7 @@ export function VideoDetails({
     setSelectedIds(selectedIds)
   }
 
-  const handleNextStepBlock = async (): Promise<void> => {
+  const updateDefaultNextStep = async (): Promise<void> => {
     const nextStepId = selectedStep?.nextBlockId
     const currentBlock = selectedBlock as TreeBlock<VideoBlock> | undefined
     if (nextStepId != null && currentBlock != null && journey != null) {
@@ -136,7 +136,7 @@ export function VideoDetails({
       endAt: time
     })
     handleClose()
-    await handleNextStepBlock()
+    await updateDefaultNextStep()
   }
 
   const time = data?.video.variant?.duration ?? 0

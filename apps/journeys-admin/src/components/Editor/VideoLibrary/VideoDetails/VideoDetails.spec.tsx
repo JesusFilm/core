@@ -50,20 +50,7 @@ describe('VideoDetails', () => {
         hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
       }
     },
-    children: [
-      {
-        id: 'posterBlockId',
-        __typename: 'ImageBlock',
-        src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-        alt: 'random image from unsplash',
-        width: 1600,
-        height: 1067,
-        blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-        parentBlockId: 'video0.id',
-        parentOrder: 0,
-        children: []
-      }
-    ]
+    children: []
   }
 
   const selectedStep: TreeBlock = {
@@ -213,7 +200,7 @@ describe('VideoDetails', () => {
     expect(onClose).toHaveBeenCalledWith()
   })
 
-  it('updates video block next step block', async () => {
+  it('updates video nextBlockId to the next step by default', async () => {
     const cache = new InMemoryCache()
     cache.restore({
       'Journey:journeyId': {
