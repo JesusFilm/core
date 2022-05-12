@@ -97,13 +97,12 @@ As an example we are going to run through the steps to get the Next Steps Journe
    - run `nx run api-videos:seed`
 1. Running the projects
    - To run the journeys project:
-     1. run `nx run api-gateway:serve-all`
-     1. run `nx run journeys:serve`
+     1. run `nx run journeys:serve-all`
      1. in your local browser navigate to [http://localhost:4100](http://localhost:4100)
    - To run the journeys-admin project:
-     1. run `nx run api-gateway:serve-all`
-     1. run `nx run journeys-admin:serve`
+     1. run `nx run journeys-admin:serve-all`
      1. in your local browser navigate to [http://localhost:4200](http://localhost:4200)
+   - To run multiple projects at the same time:
      1. run `nx run api-gateway:serve-all`
      1. run `nx run journeys:serve`
      1. run `nx run journeys-admin:serve`

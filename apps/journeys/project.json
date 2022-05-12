@@ -29,6 +29,20 @@
         }
       }
     },
+    "serve-all": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "nx serve-all api-gateway"
+          },
+          {
+            "command": "nx serve journeys"
+          }
+        ],
+        "parallel": true
+      }
+    },
     "export": {
       "executor": "@nrwl/next:export",
       "options": {
