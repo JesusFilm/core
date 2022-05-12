@@ -11,7 +11,7 @@ import { VideoPlayEventCreateInput, VideoPlayEventStateEnum } from "./../../../.
 
 export interface VideoPlayEventCreate_videoPlayEventCreate {
   __typename: "VideoPlayEvent";
-  state: VideoPlayEventStateEnum;
+  state: VideoPlayEventStateEnum | null;
   position: number | null;
 }
 
