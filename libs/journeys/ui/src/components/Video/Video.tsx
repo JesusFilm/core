@@ -54,6 +54,7 @@ export function Video({
   } = useEditor()
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
+  const eventRef = useRef(false)
 
   const posterBlock = children.find(
     (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
@@ -125,11 +126,15 @@ export function Video({
           if (autoplay === true) setLoading(false)
         })
         playerRef.current.on('playing', () => {
-          if (autoplay !== true) setLoading(false)
-          handleVideoPlayEvent(
-            VideoPlayEventStateEnum.PLAYING,
-            playerRef.current?.currentTime()
-          )
+          if (!eventRef.current) {
+            eventRef.current = true
+          } else {
+            if (autoplay !== true) setLoading(false)
+            handleVideoPlayEvent(
+              VideoPlayEventStateEnum.PLAYING,
+              playerRef.current?.currentTime()
+            )
+          }
         })
         playerRef.current.on('pause', () => {
           handleVideoPlayEvent(
