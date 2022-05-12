@@ -6,7 +6,7 @@ import { GetJourney_journey as Journey } from '../../../../../../__generated__/G
 import { IMAGE_BLOCK_CREATE } from './NewImageButton'
 import { NewImageButton } from '.'
 
-describe('Image', () => {
+describe('NewImageButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
     id: 'stepId',

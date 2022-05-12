@@ -413,8 +413,7 @@ describe('ControlPanel', () => {
                 input: {
                   journeyId: 'journeyId',
                   id: 'uuid',
-                  parentBlockId: 'cardId',
-                  label: ''
+                  parentBlockId: 'cardId'
                 },
                 radioOptionBlockCreateInput1: {
                   journeyId: 'journeyId',
