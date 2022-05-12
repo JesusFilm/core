@@ -90,7 +90,7 @@ export function VideoDetails({
   const [updateVideoBlockNextStep] = useMutation<UpdateVideoBlockNextStep>(
     UPDATE_VIDEO_BLOCK_NEXT_STEP
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const {
     state: { selectedStep, selectedBlock }
   } = useEditor()
