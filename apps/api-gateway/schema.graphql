@@ -980,6 +980,10 @@ type VideoFullscreenEvent implements Event {
 
 input VideoFullscreenEventCreateInput {
   blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
   id: ID!
 }
 
@@ -991,6 +995,10 @@ type VideoMuteEvent implements Event {
 
 input VideoMuteEventCreateInput {
   blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
   id: ID!
 }
 
@@ -1110,6 +1118,10 @@ type VideoViewEvent implements Event {
 
 input VideoViewEventCreateInput {
   blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
   id: ID!
   languageId: ID!
   videoId: ID!
