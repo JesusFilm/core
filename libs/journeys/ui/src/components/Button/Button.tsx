@@ -4,7 +4,7 @@ import MuiButton from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
-import { handleAction, TreeBlock } from '../..'
+import { handleAction, TreeBlock, useJourney } from '../..'
 import { ButtonVariant } from '../../../__generated__/globalTypes'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { Icon } from '../Icon'
@@ -20,7 +20,6 @@ export const BUTTON_CLICK_EVENT_CREATE = gql`
 `
 
 export interface ButtonProps extends TreeBlock<ButtonFields> {
-  uuid?: () => string
   editableLabel?: ReactElement
 }
 
@@ -34,12 +33,14 @@ export function Button({
   endIconId,
   action,
   children,
-  uuid = uuidv4,
   editableLabel
 }: ButtonProps): ReactElement {
   const [buttonClickEventCreate] = useMutation<ButtonClickEventCreate>(
     BUTTON_CLICK_EVENT_CREATE
   )
+
+  const { admin } = useJourney()
+
   const startIcon = children.find((block) => block.id === startIconId) as
     | TreeBlock<IconFields>
     | undefined
@@ -49,15 +50,17 @@ export function Button({
     | undefined
 
   async function createEvent(): Promise<void> {
-    const id = uuid()
-    await buttonClickEventCreate({
-      variables: {
-        input: {
-          id,
-          blockId
+    if (admin === false) {
+      const id = uuidv4()
+      await buttonClickEventCreate({
+        variables: {
+          input: {
+            id,
+            blockId
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   const router = useRouter()

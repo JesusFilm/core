@@ -1,5 +1,6 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { v4 as uuidv4 } from 'uuid'
 import {
   ButtonVariant,
   ButtonColor,
@@ -8,9 +9,16 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
-import { handleAction, TreeBlock } from '../..'
+import { handleAction, TreeBlock, JourneyProvider } from '../..'
 import { ButtonFields } from './__generated__/ButtonFields'
 import { Button, BUTTON_CLICK_EVENT_CREATE } from './Button'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -46,6 +54,8 @@ const block: TreeBlock<ButtonFields> = {
 
 describe('Button', () => {
   it('should creare a buttonClickEvent onClick', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+
     const result = jest.fn(() => ({
       data: {
         buttonClickEventCreate: {
@@ -54,6 +64,7 @@ describe('Button', () => {
         }
       }
     }))
+
     const { getByRole } = render(
       <MockedProvider
         mocks={[
@@ -71,7 +82,9 @@ describe('Button', () => {
           }
         ]}
       >
-        <Button {...block} uuid={() => 'uuid'} />
+        <JourneyProvider value={{ admin: false }}>
+          <Button {...block} />
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
