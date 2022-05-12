@@ -6,7 +6,7 @@ import { ButtonClickEventResolver } from './button/button.resolver'
 import { JourneyViewEventResolver } from './journey/journey.resolver'
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion/radioQuestion.resolver'
 import { SignUpSubmissionEventResolver } from './signUp/signUp.resolver'
-import { VideoPlayEventResolver } from './video/video.resolver'
+import { VideoEventResolver } from './video/video.resolver'
 import { StepViewEventResolver } from './step/step.resolver'
 
 @Module({
@@ -19,7 +19,7 @@ import { StepViewEventResolver } from './step/step.resolver'
     RadioQuestionSubmissionEventResolver,
     SignUpSubmissionEventResolver,
     StepViewEventResolver,
-    VideoPlayEventResolver
+    VideoEventResolver
   ],
   exports: [EventService]
 })
