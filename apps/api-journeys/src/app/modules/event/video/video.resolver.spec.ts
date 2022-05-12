@@ -69,7 +69,7 @@ describe('VideoPlayEventResolver', () => {
     })
   })
 
-  describe.skip('videoViewEventCreate', () => {
+  describe('videoViewEventCreate', () => {
     it('returns VideoViewEvent', async () => {
       const event = {
         id: '1',
