@@ -13,7 +13,8 @@ import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
-import { TreeBlock, useEditor, blurImage } from '../..'
+import { v4 as uuidv4 } from 'uuid'
+import { TreeBlock, useEditor, blurImage, useJourney } from '../..'
 import { VideoPlayEventStateEnum } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
@@ -48,6 +49,7 @@ export function Video({
     VIDEO_PLAY_EVENT_CREATE
   )
   const [loading, setLoading] = useState(true)
+  const { admin } = useJourney()
   const theme = useTheme()
   const {
     state: { selectedBlock }
@@ -75,17 +77,21 @@ export function Video({
     (videoState: VideoPlayEventStateEnum, videoPosition?: number): void => {
       const position = videoPosition != null ? Math.floor(videoPosition) : 0
 
-      void videoPlayEventCreate({
-        variables: {
-          input: {
-            blockId,
-            state: videoState,
-            position
+      if (admin === false) {
+        const id = uuidv4()
+        void videoPlayEventCreate({
+          variables: {
+            input: {
+              id,
+              blockId,
+              state: videoState,
+              position
+            }
           }
-        }
-      })
+        })
+      }
     },
-    [blockId, videoPlayEventCreate]
+    [blockId, admin, videoPlayEventCreate]
   )
 
   useEffect(() => {
