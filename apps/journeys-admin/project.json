@@ -112,6 +112,16 @@
           }
         ]
       }
+    },
+    "fetch-secrets": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "doppler secrets download --no-file --format=env --project journeys-admin > apps/journeys-admin/.env"
+          }
+        ]
+      }
     }
   },
   "tags": []
