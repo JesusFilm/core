@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { BlockRenderer, TreeBlock } from '@core/journeys/ui'
 import { ThemeProvider } from '@core/shared/ui'
+import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { BlockFields as Block } from '../../../__generated__/BlockFields'
 import {
@@ -110,11 +111,13 @@ const block: TreeBlock<Block> = {
 }
 
 const Template: Story = () => (
-  <FramePortal width={356} height={536}>
-    <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-      <BlockRenderer block={block} />
-    </ThemeProvider>
-  </FramePortal>
+  <MockedProvider>
+    <FramePortal width={356} height={536}>
+      <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
+        <BlockRenderer block={block} />
+      </ThemeProvider>
+    </FramePortal>
+  </MockedProvider>
 )
 
 export const Default = Template.bind({})
