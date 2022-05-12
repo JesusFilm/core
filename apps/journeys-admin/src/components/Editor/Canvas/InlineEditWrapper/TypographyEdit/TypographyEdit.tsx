@@ -1,7 +1,6 @@
 import { ReactElement, useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { Typography, TreeBlock } from '@core/journeys/ui'
-import { useJourney } from '../../../../../libs/context'
+import { Typography, TreeBlock, useJourney } from '@core/journeys/ui'
 import { TypographyBlockUpdateContent } from '../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../__generated__/TypographyFields'
 import { InlineEditInput } from '../InlineEditInput'
@@ -35,7 +34,7 @@ export function TypographyEdit({
     TYPOGRAPHY_BLOCK_UPDATE_CONTENT
   )
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const [value, setValue] = useState(content)
 
   async function handleSaveBlock(): Promise<void> {

@@ -11,13 +11,11 @@ import { VideoType } from "./globalTypes";
 
 export interface GetVideo_video_description {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
 export interface GetVideo_video_title {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
@@ -29,25 +27,21 @@ export interface GetVideo_video_variant {
 
 export interface GetVideo_video_episodes_title {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
 export interface GetVideo_video_episodes_imageAlt {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
 export interface GetVideo_video_episodes_snippet {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
 export interface GetVideo_video_episodes_slug {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
@@ -78,7 +72,6 @@ export interface GetVideo_video_episodes {
 export interface GetVideo_video_slug {
   __typename: "Translation";
   value: string;
-  primary: boolean;
 }
 
 export interface GetVideo_video {
@@ -102,4 +95,5 @@ export interface GetVideo {
 
 export interface GetVideoVariables {
   id: string;
+  languageId?: string | null;
 }

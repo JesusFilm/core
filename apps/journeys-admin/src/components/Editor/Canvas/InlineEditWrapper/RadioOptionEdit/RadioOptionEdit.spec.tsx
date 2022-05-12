@@ -1,9 +1,8 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../libs/context'
 import { RadioOptionEdit, RADIO_OPTION_BLOCK_UPDATE_CONTENT } from '.'
 
 describe('RadioOptionEdit', () => {
@@ -60,7 +59,12 @@ describe('RadioOptionEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider>
             <RadioOptionEdit {...props} />
           </EditorProvider>

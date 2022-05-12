@@ -3,8 +3,8 @@ import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
+import { useJourney } from '@core/journeys/ui'
 import { JourneyTitleUpdate } from '../../../../../__generated__/JourneyTitleUpdate'
-import { useJourney } from '../../../../libs/context'
 import { Dialog } from '../../../Dialog'
 
 export const JOURNEY_TITLE_UPDATE = gql`
@@ -23,7 +23,7 @@ interface TitleDialogProps {
 
 export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneyTitleUpdate>(JOURNEY_TITLE_UPDATE)
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
   const handleUpdateTitle = async (values: FormikValues): Promise<void> => {

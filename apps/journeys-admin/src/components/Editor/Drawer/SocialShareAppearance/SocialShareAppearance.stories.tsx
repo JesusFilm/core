@@ -1,8 +1,7 @@
 import { Story, Meta } from '@storybook/react'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { screen, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '../../../../libs/context'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { Drawer } from '../Drawer'
 import {
@@ -66,7 +65,7 @@ const image: ImageBlock = {
 const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
-      <JourneyProvider value={args.journey}>
+      <JourneyProvider value={{ journey: args.journey, admin: true }}>
         <EditorProvider
           initialState={{
             drawerTitle: 'Social Share Appearance',

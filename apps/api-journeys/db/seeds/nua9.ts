@@ -243,7 +243,6 @@ export async function nua9(): Promise<void> {
     journeyId: journey._key,
     __typename: 'RadioQuestionBlock',
     parentBlockId: card2._key,
-    label: '',
     parentOrder: 2
   })
 

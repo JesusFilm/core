@@ -1,8 +1,12 @@
 import { ReactElement, ReactNode } from 'react'
-import { transformer, TreeBlock, EditorProvider } from '@core/journeys/ui'
+import {
+  transformer,
+  TreeBlock,
+  EditorProvider,
+  JourneyProvider
+} from '@core/journeys/ui'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
-import { JourneyProvider } from '../../libs/context'
 import { SocialShareAppearance } from './Drawer/SocialShareAppearance'
 
 interface EditorProps {
@@ -26,7 +30,7 @@ export function Editor({
       : undefined
 
   return (
-    <JourneyProvider value={journey}>
+    <JourneyProvider value={{ journey, admin: true }}>
       <EditorProvider
         initialState={{
           steps,

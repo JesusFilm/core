@@ -11,9 +11,8 @@ import Stack from '@mui/material/Stack'
 import ColorizeIcon from '@mui/icons-material/Colorize'
 import { HexColorPicker } from 'react-colorful'
 import { gql, useMutation } from '@apollo/client'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import { TabPanel, tabA11yProps, themes } from '@core/shared/ui'
-import { useJourney } from '../../../../../../../libs/context'
 import { CardFields } from '../../../../../../../../__generated__/CardFields'
 import { CardBlockBackgroundColorUpdate } from '../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 import { Swatch } from './Swatch'
@@ -67,7 +66,7 @@ export function BackgroundColor(): ReactElement {
         )
   ) as TreeBlock<CardFields> | undefined
 
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   const cardTheme =
     themes[cardBlock?.themeName ?? journey?.themeName ?? 'base'][

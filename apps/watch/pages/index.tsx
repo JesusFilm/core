@@ -7,22 +7,25 @@ import { useQuery, gql } from '@apollo/client'
 import Fab from '@mui/material/Fab'
 import { VideoList } from '../src/components/Videos/VideoList/VideoList'
 import { PageWrapper } from '../src/components/PageWrapper'
+import { Countries } from '../src/components/Countries/Countries'
 import { GetVideoTag } from '../__generated__/GetVideoTag'
 import { VideoType } from '../__generated__/globalTypes'
+import {
+  LanguageProvider,
+  useLanguage
+} from '../src/libs/languageContext/LanguageContext'
 
 export const GET_VIDEO_TAG = gql`
-  query GetVideoTag($id: ID!) {
+  query GetVideoTag($id: ID!, $languageId: ID) {
     videoTag(id: $id) {
       id
-      title {
-        primary
+      title(languageId: $languageId, primary: true) {
         value
       }
     }
     videoTags {
       id
-      title {
-        primary
+      title(languageId: $languageId, primary: true) {
         value
       }
     }
@@ -30,13 +33,15 @@ export const GET_VIDEO_TAG = gql`
 `
 
 function VideoPage(): ReactElement {
+  const languageContext = useLanguage()
   const { data: jfm1Data } = useQuery<GetVideoTag>(GET_VIDEO_TAG, {
     variables: {
-      id: 'JFM1'
+      id: 'JFM1',
+      languageId: languageContext?.id ?? '529'
     }
   })
   return (
-    <>
+    <LanguageProvider>
       <PageWrapper />
       <Box sx={{ bgcolor: '#fff' }}>
         <Container maxWidth="xl">
@@ -59,7 +64,7 @@ function VideoPage(): ReactElement {
           </Grid>
         </Container>
       </Box>
-
+      <Countries />
       <Box sx={{ bgcolor: '#333', paddingY: '5rem' }}>
         <Container maxWidth="xl">
           <Typography variant="h3" color="white">
@@ -83,7 +88,7 @@ function VideoPage(): ReactElement {
       <Box sx={{ bgcolor: '#cfe8fc', paddingY: '5rem' }}>
         <Container maxWidth="xl">
           <Typography variant="h2">
-            {jfm1Data?.videoTag?.title.find((t) => t.primary)?.value}
+            {jfm1Data?.videoTag?.title[0]?.value}
           </Typography>
           <VideoList
             filter={{
@@ -111,9 +116,7 @@ function VideoPage(): ReactElement {
           >
             {jfm1Data?.videoTags?.map((item) => (
               <Grid item key={item.id}>
-                <Fab variant="extended">
-                  {item.title.find((t) => t.primary)?.value}
-                </Fab>
+                <Fab variant="extended">{item.title[0]?.value}</Fab>
               </Grid>
             ))}
           </Grid>
@@ -124,9 +127,7 @@ function VideoPage(): ReactElement {
         <Container maxWidth="xl">
           {jfm1Data?.videoTags?.slice(0, 3).map((item) => (
             <Box key={item.id}>
-              <Typography variant="h2">
-                {item.title.find((t) => t.primary)?.value}
-              </Typography>
+              <Typography variant="h2">{item.title[0]?.value}</Typography>
               <VideoList
                 key={item.id}
                 filter={{
@@ -141,7 +142,7 @@ function VideoPage(): ReactElement {
           ))}
         </Container>
       </Box>
-    </>
+    </LanguageProvider>
   )
 }
 

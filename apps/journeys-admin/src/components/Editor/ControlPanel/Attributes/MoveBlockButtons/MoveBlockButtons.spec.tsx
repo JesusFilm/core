@@ -1,8 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../libs/context'
 import { MoveBlockButtons, BLOCK_ORDER_UPDATE } from '.'
 
 describe('MoveBlockButton', () => {
@@ -87,7 +86,12 @@ describe('MoveBlockButton', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider>
             <MoveBlockButtons selectedBlock={block2} selectedStep={step} />
           </EditorProvider>
@@ -115,7 +119,12 @@ describe('MoveBlockButton', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider>
             <MoveBlockButtons selectedBlock={block1} selectedStep={step} />
           </EditorProvider>

@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '../../../../../libs/context'
+import { JourneyProvider } from '@core/journeys/ui'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { TitleEdit, JOURNEY_SEO_TITLE_UPDATE } from './TitleEdit'
 
@@ -17,12 +17,13 @@ describe('TitleEdit', () => {
     const { getByText } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               title: 'journey title',
               seoTitle: 'Social share title'
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <TitleEdit />
         </JourneyProvider>
@@ -35,12 +36,13 @@ describe('TitleEdit', () => {
     const { getByText } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               title: 'journey title',
               seoTitle: null
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <TitleEdit />
         </JourneyProvider>
@@ -77,7 +79,12 @@ describe('TitleEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journey.id' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <TitleEdit />
         </JourneyProvider>
       </MockedProvider>
@@ -94,7 +101,12 @@ describe('TitleEdit', () => {
 
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ id: 'journey.id' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <TitleEdit />
         </JourneyProvider>
       </MockedProvider>

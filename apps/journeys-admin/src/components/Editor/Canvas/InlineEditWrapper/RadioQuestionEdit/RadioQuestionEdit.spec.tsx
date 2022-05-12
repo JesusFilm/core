@@ -1,9 +1,8 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../libs/context'
 import {
   RadioQuestionEditProps,
   RADIO_OPTION_BLOCK_CREATE
@@ -19,8 +18,6 @@ describe('RadioQuestionEdit', () => {
       parentBlockId: 'card.id',
       parentOrder: 0,
       id: 'radioQuestion.id',
-      label: 'heading',
-      description: 'description',
       children: children ?? []
     }
   }
@@ -66,7 +63,12 @@ describe('RadioQuestionEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider>
             <RadioQuestionEdit
               {...props([
@@ -99,7 +101,12 @@ describe('RadioQuestionEdit', () => {
   it('hides add option button if over 11 options', async () => {
     const { getAllByRole } = render(
       <MockedProvider mocks={[]}>
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider>
             <RadioQuestionEdit
               {...props([

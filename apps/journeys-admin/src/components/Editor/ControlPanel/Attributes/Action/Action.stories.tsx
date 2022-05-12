@@ -1,8 +1,7 @@
 import { Story, Meta } from '@storybook/react'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
-import { JourneyProvider } from '../../../../../libs/context'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
@@ -84,7 +83,7 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <JourneyProvider value={journey}>
+      <JourneyProvider value={{ journey, admin: true }}>
         <EditorProvider
           initialState={{
             ...args,

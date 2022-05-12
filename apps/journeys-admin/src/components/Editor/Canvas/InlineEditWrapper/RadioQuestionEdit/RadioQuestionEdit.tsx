@@ -7,9 +7,9 @@ import {
   RadioQuestion,
   StyledRadioOption,
   TreeBlock,
-  WrappersProps
+  WrappersProps,
+  useJourney
 } from '@core/journeys/ui'
-import { useJourney } from '../../../../../libs/context'
 import { RadioOptionBlockCreate } from '../../../../../../__generated__/RadioOptionBlockCreate'
 import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
 import { adminTheme } from '../../../../ThemeProvider/admin/theme'
@@ -38,7 +38,7 @@ export function RadioQuestionEdit({
   const [radioOptionBlockCreate] = useMutation<RadioOptionBlockCreate>(
     RADIO_OPTION_BLOCK_CREATE
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   const handleCreateOption = async (): Promise<void> => {
     if (journey == null) return

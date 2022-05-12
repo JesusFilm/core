@@ -1,4 +1,4 @@
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
@@ -16,7 +16,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../../../../libs/context'
 import { BackgroundMedia } from './BackgroundMedia'
 
 const journey: Journey = {
@@ -65,7 +64,7 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <SnackbarProvider>
                 <BackgroundMedia />
@@ -129,7 +128,7 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <SnackbarProvider>
                 <BackgroundMedia />
@@ -181,7 +180,7 @@ describe('BackgroundMedia', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <EditorProvider initialState={{ selectedBlock: step }}>
               <SnackbarProvider>
                 <BackgroundMedia />

@@ -5,9 +5,9 @@ import {
   ActiveTab,
   useEditor,
   TreeBlock,
-  TYPOGRAPHY_FIELDS
+  TYPOGRAPHY_FIELDS,
+  useJourney
 } from '@core/journeys/ui'
-import { useJourney } from '../../../../../libs/context'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'
@@ -27,7 +27,7 @@ export function NewTypographyButton(): ReactElement {
   const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
     TYPOGRAPHY_BLOCK_CREATE
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const {
     state: { selectedStep },
     dispatch

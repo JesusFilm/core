@@ -6,10 +6,10 @@ import {
   useEditor,
   ICON_FIELDS,
   SIGN_UP_FIELDS,
-  TreeBlock
+  TreeBlock,
+  useJourney
 } from '@core/journeys/ui'
 import DraftsRounded from '@mui/icons-material/DraftsRounded'
-import { useJourney } from '../../../../../libs/context'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { SignUpBlockCreate } from '../../../../../../__generated__/SignUpBlockCreate'
 import { Button } from '../../Button'
@@ -41,7 +41,7 @@ export const SIGN_UP_BLOCK_CREATE = gql`
 export function NewSignUpButton(): ReactElement {
   const [signUpBlockCreate] =
     useMutation<SignUpBlockCreate>(SIGN_UP_BLOCK_CREATE)
-  const journey = useJourney()
+  const { journey } = useJourney()
   const {
     state: { selectedStep },
     dispatch

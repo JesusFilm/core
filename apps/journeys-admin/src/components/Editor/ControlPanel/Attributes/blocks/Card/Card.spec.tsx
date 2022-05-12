@@ -1,4 +1,4 @@
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
@@ -11,7 +11,6 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock
 } from '../../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../../libs/context'
 import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 import { Card } from '.'
@@ -83,7 +82,7 @@ describe('Card', () => {
     }
     it('shows background color from prop', () => {
       const { getByRole } = render(
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <Card {...card} backgroundColor="#00FFCC" />
         </JourneyProvider>
       )
@@ -93,7 +92,7 @@ describe('Card', () => {
 
     it('shows background color from card theme', () => {
       const { getByRole } = render(
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <Card
             {...card}
             themeName={ThemeName.base}
@@ -107,7 +106,7 @@ describe('Card', () => {
 
     it('shows background color from journey theme', () => {
       const { getByRole } = render(
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <Card {...card} />
         </JourneyProvider>
       )
@@ -119,7 +118,7 @@ describe('Card', () => {
       const { getByText } = render(
         <MockedProvider>
           <ThemeProvider>
-            <JourneyProvider value={journey}>
+            <JourneyProvider value={{ journey, admin: true }}>
               <EditorProvider>
                 <Drawer />
                 <Card {...card} backgroundColor="#00FFCC" />

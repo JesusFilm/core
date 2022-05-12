@@ -1,4 +1,4 @@
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
@@ -13,7 +13,6 @@ import {
   TypographyAlign,
   TypographyColor
 } from '../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../libs/context'
 import { DeleteBlock, BLOCK_DELETE } from './DeleteBlock'
 
 const selectedBlock: TreeBlock<TypographyBlock> = {
@@ -110,7 +109,12 @@ describe('DeleteBlock', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
+          >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
               <DeleteBlock variant="button" />
             </EditorProvider>
@@ -176,7 +180,12 @@ describe('DeleteBlock', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
+          >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
               <DeleteBlock variant="list-item" />
             </EditorProvider>
@@ -240,7 +249,12 @@ describe('DeleteBlock', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
+          >
             <EditorProvider initialState={{ selectedBlock }}>
               <DeleteBlock variant="button" />
             </EditorProvider>
@@ -310,7 +324,12 @@ describe('DeleteBlock', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
+          >
             <EditorProvider initialState={{ selectedBlock }}>
               <DeleteBlock variant="list-item" />
             </EditorProvider>

@@ -12,8 +12,6 @@ type RadioQuestionBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  label: String!
-  description: String
 }
 
 input RadioOptionBlockCreateInput {
@@ -27,18 +25,11 @@ input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  label: String!
 }
 
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
-}
-
-input RadioQuestionBlockUpdateInput {
-  parentBlockId: ID
-  label: String
-  description: String
 }
 
 extend type Mutation {
@@ -54,6 +45,6 @@ extend type Mutation {
   radioQuestionBlockUpdate(
     id: ID!
     journeyId: ID!
-    input: RadioQuestionBlockUpdateInput!
+    parentBlockId: ID!
   ): RadioQuestionBlock!
 }

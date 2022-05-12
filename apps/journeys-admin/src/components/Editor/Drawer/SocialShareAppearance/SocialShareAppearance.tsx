@@ -6,13 +6,13 @@ import Button from '@mui/material/Button'
 import ToolTip from '@mui/material/Tooltip'
 import FacebookIcon from '@mui/icons-material/FacebookOutlined'
 import TwitterIcon from '@mui/icons-material/Twitter'
-import { useJourney } from '../../../../libs/context'
+import { useJourney } from '@core/journeys/ui'
 import { ImageEdit } from './ImageEdit/ImageEdit'
 import { TitleEdit } from './TitleEdit/TitleEdit'
 import { DescriptionEdit } from './DescriptionEdit/DescriptionEdit'
 
 export function SocialShareAppearance(): ReactElement {
-  const journey = useJourney()
+  const { journey } = useJourney()
   const isPublished = journey?.status === 'published'
 
   return (

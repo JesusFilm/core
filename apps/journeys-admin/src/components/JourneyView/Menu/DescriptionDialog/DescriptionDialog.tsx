@@ -3,8 +3,8 @@ import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
+import { useJourney } from '@core/journeys/ui'
 import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
-import { useJourney } from '../../../../libs/context'
 import { Dialog } from '../../../Dialog'
 
 export const JOURNEY_DESC_UPDATE = gql`
@@ -26,7 +26,7 @@ export function DescriptionDialog({
   onClose
 }: DescriptionDialogProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneyDescUpdate>(JOURNEY_DESC_UPDATE)
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
   const handleUpdateDescription = async (

@@ -1,19 +1,19 @@
 import { render, fireEvent } from '@testing-library/react'
 import { ReactElement } from 'react'
-import { TreeBlock } from '@core/journeys/ui'
 import Button from '@mui/material/Button'
+import { TreeBlock } from '../transformer'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { JourneyFields as Journey } from './__generated__/JourneyFields'
 import { JourneyProvider, useJourney } from '.'
 
 const checkJourney = jest.fn()
 
 const TestComponent = (): ReactElement => {
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   return <Button onClick={checkJourney(journey)}>Test</Button>
 }
@@ -58,7 +58,7 @@ const journey: Journey = {
 describe('JourneyContext', () => {
   it('should pass through the journey props', () => {
     const { getByRole } = render(
-      <JourneyProvider value={journey}>
+      <JourneyProvider value={{ journey }}>
         <TestComponent />
       </JourneyProvider>
     )

@@ -1,4 +1,4 @@
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
@@ -12,7 +12,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../../../../libs/context'
 import {
   BackgroundColor,
   CARD_BLOCK_BACKGROUND_COLOR_UPDATE
@@ -65,7 +64,7 @@ describe('BackgroundColor', () => {
     const { getByTestId, getByRole, getAllByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <BackgroundColor />
             </EditorProvider>
@@ -126,7 +125,7 @@ describe('BackgroundColor', () => {
         ]}
       >
         <ThemeProvider>
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <EditorProvider initialState={{ selectedBlock: card }}>
               <BackgroundColor />
             </EditorProvider>

@@ -1,8 +1,7 @@
 import { render, waitFor, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { InMemoryCache } from '@apollo/client'
-import { JourneyProvider } from '../../../../../../libs/context'
 import {
   ThemeMode,
   ThemeName,
@@ -78,7 +77,7 @@ describe('NavigateToJourneyAction', () => {
           }
         ]}
       >
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <EditorProvider initialState={{ selectedBlock }}>
             <NavigateToJourneyAction />
           </EditorProvider>
@@ -152,7 +151,7 @@ describe('NavigateToJourneyAction', () => {
         ]}
         cache={cache}
       >
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <EditorProvider initialState={{ selectedBlock }}>
             <NavigateToJourneyAction />
           </EditorProvider>

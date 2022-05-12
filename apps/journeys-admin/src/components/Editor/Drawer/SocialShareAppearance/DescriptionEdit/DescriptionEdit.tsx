@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField'
 import { Formik, Form } from 'formik'
 import { object, string } from 'yup'
 import noop from 'lodash/noop'
-import { useJourney } from '../../../../../libs/context'
+import { useJourney } from '@core/journeys/ui'
 import { JourneySeoDescriptionUpdate } from '../../../../../../__generated__/JourneySeoDescriptionUpdate'
 
 export const JOURNEY_SEO_DESCRIPTION_UPDATE = gql`
@@ -21,7 +21,7 @@ export function DescriptionEdit(): ReactElement {
     JOURNEY_SEO_DESCRIPTION_UPDATE
   )
 
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
     if (journey == null) return

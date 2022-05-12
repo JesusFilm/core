@@ -1,5 +1,5 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { InMemoryCache } from '@apollo/client'
@@ -7,7 +7,6 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../libs/context'
 import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import {
   STEP_AND_CARD_BLOCK_CREATE,
@@ -37,13 +36,14 @@ describe('CardPreview', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <CardPreview onSelect={onSelect} steps={[step]} />
         </JourneyProvider>
@@ -97,13 +97,14 @@ describe('CardPreview', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
         </JourneyProvider>
@@ -190,13 +191,14 @@ describe('CardPreview', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <CardPreview steps={[]} onSelect={onSelect} showAddButton />
         </JourneyProvider>
@@ -289,13 +291,14 @@ describe('CardPreview', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <CardPreview steps={[step]} onSelect={onSelect} showAddButton />
         </JourneyProvider>
@@ -384,13 +387,14 @@ describe('CardPreview', () => {
         ]}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <CardPreview steps={[step]} onSelect={onSelect} showAddButton />
         </JourneyProvider>

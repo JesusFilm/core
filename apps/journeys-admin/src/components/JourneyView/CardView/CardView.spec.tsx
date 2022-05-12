@@ -1,8 +1,8 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { NextRouter, useRouter } from 'next/router'
+import { JourneyProvider } from '@core/journeys/ui'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { CardView } from './CardView'
 import { steps, oneStep } from './data'
@@ -24,7 +24,7 @@ describe('JourneyView/CardView', () => {
   it('should render cards', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <CardView slug="my-journey" blocks={steps} />
         </JourneyProvider>
       </MockedProvider>
@@ -34,7 +34,7 @@ describe('JourneyView/CardView', () => {
   it('should render description for 1 card', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <CardView slug="my-journey" blocks={oneStep} />
         </JourneyProvider>
       </MockedProvider>
@@ -45,7 +45,7 @@ describe('JourneyView/CardView', () => {
   it('should render description when no cards are present', () => {
     const { getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <CardView slug="my-journey" blocks={[]} />
         </JourneyProvider>
       </MockedProvider>
@@ -58,7 +58,7 @@ describe('JourneyView/CardView', () => {
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
     const { getByTestId } = render(
       <MockedProvider>
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <CardView slug="my-journey" blocks={steps} />
         </JourneyProvider>
       </MockedProvider>

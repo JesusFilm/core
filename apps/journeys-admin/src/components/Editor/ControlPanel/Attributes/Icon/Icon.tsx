@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import MenuItem from '@mui/material/MenuItem'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import FormControl from '@mui/material/FormControl'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
@@ -26,7 +26,6 @@ import {
   IconColor,
   IconName
 } from '../../../../../../__generated__/globalTypes'
-import { useJourney } from '../../../../../libs/context'
 import { IconFields } from '../../../../../../__generated__/IconFields'
 import { IconBlockNameUpdate } from '../../../../../../__generated__/IconBlockNameUpdate'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/GetJourney'
@@ -127,7 +126,7 @@ export function Icon({ id }: IconProps): ReactElement {
   const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
     ICON_BLOCK_NAME_UPDATE
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as IconParentBlock
 

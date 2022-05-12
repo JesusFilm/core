@@ -1,4 +1,4 @@
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
@@ -11,7 +11,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../../../../libs/context'
 import { ImageOptions, IMAGE_BLOCK_UPDATE } from './ImageOptions'
 
 const journey: Journey = {
@@ -92,7 +91,7 @@ describe('ImageOptions', () => {
           }
         ]}
       >
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <SnackbarProvider>
             <EditorProvider
               initialState={{
@@ -119,7 +118,7 @@ describe('ImageOptions', () => {
   it('shows loading icon', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <SnackbarProvider>
             <EditorProvider
               initialState={{

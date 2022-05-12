@@ -36,7 +36,7 @@ type Video @key(fields: "id primaryLanguageId") {
   """
   slug is a permanent link to the video. It should only be appended, not edited or deleted
   """
-  slug: [Translation!]!
+  slug(languageId: ID, primary: Boolean): [Translation!]!
   noIndex: Boolean
 
   """Episodes are child videos, currently only found in a playlist type"""

@@ -189,7 +189,6 @@ export class CardBlockCreateInput {
     journeyId: string;
     parentBlockId: string;
     backgroundColor?: Nullable<string>;
-    coverBlockId?: Nullable<string>;
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
@@ -198,7 +197,6 @@ export class CardBlockCreateInput {
 export class CardBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     backgroundColor?: Nullable<string>;
-    coverBlockId?: Nullable<string>;
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
     themeName?: Nullable<ThemeName>;
@@ -246,18 +244,11 @@ export class RadioQuestionBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
-    label: string;
 }
 
 export class RadioOptionBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
-}
-
-export class RadioQuestionBlockUpdateInput {
-    parentBlockId?: Nullable<string>;
-    label?: Nullable<string>;
-    description?: Nullable<string>;
 }
 
 export class SignUpBlockCreateInput {
@@ -333,6 +324,11 @@ export class VideoBlockUpdateInput {
 export class ButtonClickEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+}
+
+export class JourneyViewEventCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
 }
 
 export class RadioQuestionSubmissionEventCreateInput {
@@ -573,8 +569,6 @@ export class RadioQuestionBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    label: string;
-    description?: Nullable<string>;
 }
 
 export class SignUpBlock implements Block {
@@ -643,6 +637,13 @@ export class ButtonClickEvent implements Event {
     id: string;
     userId: string;
     block?: Nullable<ButtonBlock>;
+}
+
+export class JourneyViewEvent implements Event {
+    __typename?: 'JourneyViewEvent';
+    id: string;
+    userId: string;
+    journey?: Nullable<Journey>;
 }
 
 export class RadioQuestionSubmissionEvent implements Event {
@@ -758,7 +759,7 @@ export abstract class IMutation {
 
     abstract radioOptionBlockUpdate(id: string, journeyId: string, input: RadioOptionBlockUpdateInput): RadioOptionBlock | Promise<RadioOptionBlock>;
 
-    abstract radioQuestionBlockUpdate(id: string, journeyId: string, input: RadioQuestionBlockUpdateInput): RadioQuestionBlock | Promise<RadioQuestionBlock>;
+    abstract radioQuestionBlockUpdate(id: string, journeyId: string, parentBlockId: string): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
     abstract signUpBlockCreate(input: SignUpBlockCreateInput): SignUpBlock | Promise<SignUpBlock>;
 
@@ -777,6 +778,8 @@ export abstract class IMutation {
     abstract videoBlockUpdate(id: string, journeyId: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
+
+    abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): JourneyViewEvent | Promise<JourneyViewEvent>;
 
     abstract radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput): RadioQuestionSubmissionEvent | Promise<RadioQuestionSubmissionEvent>;
 

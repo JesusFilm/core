@@ -11,13 +11,11 @@ import { VideosFilter, VideoType } from "./globalTypes";
 
 export interface GetVideos_videos_snippet {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
 export interface GetVideos_videos_title {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
@@ -29,7 +27,6 @@ export interface GetVideos_videos_variant {
 export interface GetVideos_videos_slug {
   __typename: "Translation";
   value: string;
-  primary: boolean;
 }
 
 export interface GetVideos_videos {
@@ -58,4 +55,5 @@ export interface GetVideosVariables {
   where?: VideosFilter | null;
   offset?: number | null;
   limit?: number | null;
+  languageId?: string | null;
 }

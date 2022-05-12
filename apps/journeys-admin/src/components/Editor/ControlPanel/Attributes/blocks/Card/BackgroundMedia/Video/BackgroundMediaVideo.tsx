@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { TreeBlock, VIDEO_FIELDS } from '@core/journeys/ui'
+import { TreeBlock, VIDEO_FIELDS, useJourney } from '@core/journeys/ui'
 import { gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import {
@@ -7,7 +7,6 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/GetJourney'
-import { useJourney } from '../../../../../../../../libs/context'
 import { VideoBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 import { BlockDeleteForBackgroundVideo } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundVideo'
 import { CardBlockBackgroundVideoUpdate } from '../../../../../../../../../__generated__/CardBlockBackgroundVideoUpdate'
@@ -88,7 +87,7 @@ export function BackgroundMediaVideo({
   const [blockDelete] = useMutation<BlockDeleteForBackgroundVideo>(
     BLOCK_DELETE_FOR_BACKGROUND_VIDEO
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const videoBlock = coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
 

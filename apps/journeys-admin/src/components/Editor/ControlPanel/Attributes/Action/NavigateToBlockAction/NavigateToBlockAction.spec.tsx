@@ -1,13 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor, fireEvent } from '@testing-library/react'
-import { EditorProvider } from '@core/journeys/ui'
+import { EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { InMemoryCache } from '@apollo/client'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import {
   ThemeName,
   ThemeMode
 } from '../../../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../../../libs/context'
 import { steps } from '../data'
 import {
   NavigateToBlockAction,
@@ -60,13 +59,14 @@ describe('NavigateToBlockAction', () => {
         cache={cache}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ steps, selectedBlock }}>
             <NavigateToBlockAction />

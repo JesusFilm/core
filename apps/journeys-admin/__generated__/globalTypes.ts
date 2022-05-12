@@ -130,7 +130,7 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
-export enum VideoResponseStateEnum {
+export enum VideoPlayEventStateEnum {
   FINISHED = "FINISHED",
   PAUSED = "PAUSED",
   PLAYING = "PLAYING",
@@ -169,7 +169,6 @@ export interface ButtonClickEventCreateInput {
 
 export interface CardBlockUpdateInput {
   backgroundColor?: string | null;
-  coverBlockId?: string | null;
   fullscreen?: boolean | null;
   parentBlockId?: string | null;
   themeMode?: ThemeMode | null;
@@ -254,7 +253,6 @@ export interface RadioOptionBlockUpdateInput {
 export interface RadioQuestionBlockCreateInput {
   id?: string | null;
   journeyId: string;
-  label: string;
   parentBlockId: string;
 }
 
@@ -334,11 +332,11 @@ export interface VideoBlockUpdateInput {
   videoVariantLanguageId?: string | null;
 }
 
-export interface VideoResponseCreateInput {
-  blockId?: string | null;
+export interface VideoPlayEventCreateInput {
+  blockId: string;
   id?: string | null;
   position?: number | null;
-  state?: VideoResponseStateEnum | null;
+  state: VideoPlayEventStateEnum;
 }
 
 export interface VideosFilter {
