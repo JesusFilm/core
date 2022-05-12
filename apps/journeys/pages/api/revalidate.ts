@@ -1,7 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { loadSecrets } from '../../src/libs/secrets'
-
-loadSecrets().populateEnv()
 
 export default async function handler(
   req: NextApiRequest,
