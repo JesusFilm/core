@@ -118,7 +118,7 @@
       "options": {
         "commands": [
           {
-            "command": "doppler secrets download --no-file --format=env --project journeys-admin > apps/journeys-admin/.env"
+            "command": "doppler secrets download --no-file --format=env-no-quotes --project journeys-admin > apps/journeys-admin/.env"
           }
         ]
       }
