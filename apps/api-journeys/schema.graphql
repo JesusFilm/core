@@ -730,7 +730,7 @@ type VideoFullscreenEvent implements Event {
 input VideoViewEventCreateInput {
   id: ID!
   videoId: ID!
-  language: ID!
+  languageId: ID!
   blockId: ID!
 }
 

@@ -1111,6 +1111,6 @@ type VideoViewEvent implements Event {
 input VideoViewEventCreateInput {
   blockId: ID!
   id: ID!
-  language: ID!
+  languageId: ID!
   videoId: ID!
 }

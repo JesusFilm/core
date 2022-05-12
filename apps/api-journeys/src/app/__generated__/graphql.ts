@@ -369,7 +369,7 @@ export class VideoFullscreenEventCreateInput {
 export class VideoViewEventCreateInput {
     id: string;
     videoId: string;
-    language: string;
+    languageId: string;
     blockId: string;
 }
 
