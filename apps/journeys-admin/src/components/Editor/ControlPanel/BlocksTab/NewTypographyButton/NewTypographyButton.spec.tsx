@@ -6,7 +6,7 @@ import { GetJourney_journey as Journey } from '../../../../../../__generated__/G
 import { TYPOGRAPHY_BLOCK_CREATE } from './NewTypographyButton'
 import { NewTypographyButton } from '.'
 
-describe('Typography', () => {
+describe('NewTypographyButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
     id: 'stepId',

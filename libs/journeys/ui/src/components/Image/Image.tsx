@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { NextImage } from '@core/shared/ui'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
@@ -16,12 +16,9 @@ export function Image({
   blurhash
 }: TreeBlock<ImageFields>): ReactElement {
   const theme = useTheme()
-  const placeholderSrc = blurImage(
-    width,
-    height,
-    blurhash,
-    theme.palette.background.paper
-  )
+  const placeholderSrc = useMemo(() => {
+    return blurImage(width, height, blurhash, theme.palette.background.paper)
+  }, [blurhash, width, height, theme])
 
   return (
     <Box
