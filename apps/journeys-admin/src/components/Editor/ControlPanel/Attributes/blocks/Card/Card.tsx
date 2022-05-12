@@ -1,4 +1,4 @@
-import { TreeBlock, useEditor } from '@core/journeys/ui'
+import { TreeBlock, useEditor, useJourney } from '@core/journeys/ui'
 import { ReactElement } from 'react'
 import ImageIcon from '@mui/icons-material/Image'
 import Palette from '@mui/icons-material/Palette'
@@ -7,7 +7,6 @@ import Videocam from '@mui/icons-material/Videocam'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import { themes } from '@core/shared/ui'
-import { useJourney } from '../../../../../../libs/context'
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { Attribute } from '../..'
 import {
@@ -30,7 +29,7 @@ export function Card({
   children
 }: TreeBlock<CardBlock>): ReactElement {
   const { dispatch } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   const coverBlock = children.find((block) => block.id === coverBlockId) as
     | TreeBlock<ImageBlock | VideoBlock>

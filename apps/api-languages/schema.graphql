@@ -1,8 +1,34 @@
+enum IdType {
+  databaseId
+  slug
+}
+
+type Country @key(fields: "id") {
+  id: ID!
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  population: Int!
+  continent(languageId: ID, primary: Boolean): [Translation!]!
+
+  """
+  slug is a permanent link to the country. It should only be appended, not edited or deleted
+  """
+  slug(languageId: ID, primary: Boolean): [Translation!]!
+  languages: [Language!]!
+  latitude: Float!
+  longitude: Float!
+  image: String
+}
+
 type Language @key(fields: "id") {
   id: ID!
   bcp47: String
   iso3: String
   name(languageId: ID, primary: Boolean): [Translation!]!
+}
+
+enum LanguageIdType {
+  databaseId
+  bcp47
 }
 
 type Translation {
@@ -12,6 +38,8 @@ type Translation {
 }
 
 extend type Query {
+  countries: [Country!]!
+  country(id: ID!, idType: IdType): Country!
   languages(offset: Int, limit: Int): [Language!]!
-  language(id: ID!): Language
+  language(id: ID!, idType: LanguageIdType): Language
 }

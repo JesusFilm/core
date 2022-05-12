@@ -7,8 +7,12 @@ import Stack from '@mui/material/Stack'
 import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded'
 import LockRoundedIcon from '@mui/icons-material/LockRounded'
 import { ThemeProvider } from '@core/shared/ui'
-import { useEditor, TreeBlock, BlockRenderer } from '@core/journeys/ui'
-import { useJourney } from '../../../../../../../../libs/context'
+import {
+  useEditor,
+  TreeBlock,
+  BlockRenderer,
+  useJourney
+} from '@core/journeys/ui'
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
 import {
@@ -38,7 +42,7 @@ export function SelectedCard(): ReactElement {
   const {
     state: { steps, selectedBlock }
   } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { id, nextBlockId, locked } = selectedBlock as TreeBlock<StepFields>
   const [nextStep, setNextStep] = useState(
     steps?.find((step) => nextBlockId === step.id)

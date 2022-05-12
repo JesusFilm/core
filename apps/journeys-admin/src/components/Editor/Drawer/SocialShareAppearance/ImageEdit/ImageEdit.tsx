@@ -4,9 +4,8 @@ import ImageIcon from '@mui/icons-material/Image'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
-import { IMAGE_FIELDS } from '@core/journeys/ui'
+import { IMAGE_FIELDS, useJourney } from '@core/journeys/ui'
 import Skeleton from '@mui/material/Skeleton'
-import { useJourney } from '../../../../../libs/context'
 import { Dialog } from '../../../../Dialog'
 import { ImageBlockEditor } from '../../../ImageBlockEditor'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
@@ -74,7 +73,7 @@ export function ImageEdit(): ReactElement {
     JOURNEY_PRIMARY_IMAGE_UPDATE
   )
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const [open, setOpen] = useState(false)
 
   function handleOpen(): void {

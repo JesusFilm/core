@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '../../../../libs/context'
+import { JourneyProvider } from '@core/journeys/ui'
 import { defaultJourney } from '../../data'
 import { TitleDialog, JOURNEY_TITLE_UPDATE } from '.'
 
@@ -12,7 +12,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
-          <JourneyProvider value={defaultJourney}>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
             <TitleDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -58,7 +58,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={defaultJourney}>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
             <TitleDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -91,7 +91,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={defaultJourney}>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
             <TitleDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>

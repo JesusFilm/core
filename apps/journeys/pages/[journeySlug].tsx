@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui'
-import { BLOCK_FIELDS, IMAGE_FIELDS, transformer } from '@core/journeys/ui'
+import { transformer, JourneyProvider, JOURNEY_FIELDS } from '@core/journeys/ui'
 import { NextSeo } from 'next-seo'
 import { Conductor } from '../src/components/Conductor'
 import { createApolloClient } from '../src/libs/client'
@@ -55,14 +55,16 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
-      <ThemeProvider
-        themeName={journey.themeName}
-        themeMode={journey.themeMode}
-      >
-        {journey.blocks != null && (
-          <Conductor blocks={transformer(journey.blocks)} />
-        )}
-      </ThemeProvider>
+      <JourneyProvider value={{ journey, admin: false }}>
+        <ThemeProvider
+          themeName={journey.themeName}
+          themeMode={journey.themeMode}
+        >
+          {journey.blocks != null && (
+            <Conductor blocks={transformer(journey.blocks)} />
+          )}
+        </ThemeProvider>
+      </JourneyProvider>
     </>
   )
 }
@@ -73,24 +75,10 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
   const client = createApolloClient()
   const { data } = await client.query<GetJourney>({
     query: gql`
-      ${BLOCK_FIELDS}
-      ${IMAGE_FIELDS}
+      ${JOURNEY_FIELDS}
       query GetJourney($id: ID!) {
         journey(id: $id, idType: slug) {
-          id
-          themeName
-          themeMode
-          title
-          description
-          slug
-          seoTitle
-          seoDescription
-          primaryImageBlock {
-            ...ImageFields
-          }
-          blocks {
-            ...BlockFields
-          }
+          ...JourneyFields
         }
       }
     `,

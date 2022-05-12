@@ -1,10 +1,9 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { SnackbarProvider } from 'notistack'
 import { SignUpFields } from '../../../../../../__generated__/SignUpFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../libs/context'
 import { SignUpEdit, SIGN_UP_BLOCK_UPDATE_CONTENT } from '.'
 
 describe('SignUpEdit', () => {
@@ -62,6 +61,7 @@ describe('SignUpEdit', () => {
           }
         ]}
       >
+<<<<<<< HEAD
         <SnackbarProvider>
           <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
             <EditorProvider>
@@ -69,6 +69,18 @@ describe('SignUpEdit', () => {
             </EditorProvider>
           </JourneyProvider>
         </SnackbarProvider>
+=======
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider>
+            <SignUpEdit {...props} />
+          </EditorProvider>
+        </JourneyProvider>
+>>>>>>> origin
       </MockedProvider>
     )
 

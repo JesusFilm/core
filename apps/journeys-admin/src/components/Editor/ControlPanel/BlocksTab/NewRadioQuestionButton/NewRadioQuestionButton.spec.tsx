@@ -1,8 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { TYPOGRAPHY_BLOCK_CREATE } from '../NewTypographyButton'
 import { RADIO_QUESTION_BLOCK_CREATE } from './NewRadioQuestionButton'
@@ -14,7 +13,7 @@ jest.mock('uuid', () => ({
   v4: () => 'uuid'
 }))
 
-describe('RadioQuestion', () => {
+describe('NewRadioQuestionButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
     id: 'stepId',
@@ -74,9 +73,7 @@ describe('RadioQuestion', () => {
           id: 'uuid',
           parentBlockId: 'cardId',
           parentOrder: 2,
-          journeyId: 'journeyId',
-          label: '',
-          description: null
+          journeyId: 'journeyId'
         },
         radioOption1: {
           __typename: 'RadioOptionBlock',
@@ -145,8 +142,7 @@ describe('RadioQuestion', () => {
                 input: {
                   journeyId: 'journeyId',
                   id: 'uuid',
-                  parentBlockId: 'cardId',
-                  label: ''
+                  parentBlockId: 'cardId'
                 },
                 radioOptionBlockCreateInput1: {
                   journeyId: 'journeyId',
@@ -164,7 +160,12 @@ describe('RadioQuestion', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewRadioQuestionButton />
           </EditorProvider>
@@ -224,9 +225,7 @@ describe('RadioQuestion', () => {
           id: 'uuid',
           parentBlockId: 'cardId',
           parentOrder: 2,
-          journeyId: 'journeyId',
-          label: '',
-          description: null
+          journeyId: 'journeyId'
         },
         radioOption1: {
           __typename: 'RadioOptionBlock',
@@ -295,8 +294,7 @@ describe('RadioQuestion', () => {
                 input: {
                   journeyId: 'journeyId',
                   id: 'uuid',
-                  parentBlockId: 'cardId',
-                  label: ''
+                  parentBlockId: 'cardId'
                 },
                 radioOptionBlockCreateInput1: {
                   journeyId: 'journeyId',
@@ -314,7 +312,12 @@ describe('RadioQuestion', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewRadioQuestionButton />
           </EditorProvider>

@@ -1,4 +1,4 @@
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
@@ -14,7 +14,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../../../../../libs/context'
 import {
   BackgroundMediaImage,
   CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
@@ -148,7 +147,7 @@ describe('BackgroundMediaImage', () => {
           }
         ]}
       >
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <SnackbarProvider>
             <BackgroundMediaImage cardBlock={card} />
           </SnackbarProvider>
@@ -224,7 +223,7 @@ describe('BackgroundMediaImage', () => {
           }
         ]}
       >
-        <JourneyProvider value={journey}>
+        <JourneyProvider value={{ journey, admin: true }}>
           <SnackbarProvider>
             <BackgroundMediaImage cardBlock={videoCard} />
           </SnackbarProvider>
@@ -307,7 +306,7 @@ describe('BackgroundMediaImage', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <SnackbarProvider>
               <BackgroundMediaImage cardBlock={existingCoverBlock} />
             </SnackbarProvider>
@@ -330,7 +329,7 @@ describe('BackgroundMediaImage', () => {
     it('shows loading icon', async () => {
       const { getByRole } = render(
         <MockedProvider mocks={[]}>
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <SnackbarProvider>
               <BackgroundMediaImage cardBlock={existingCoverBlock} />
             </SnackbarProvider>
@@ -402,7 +401,7 @@ describe('BackgroundMediaImage', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <SnackbarProvider>
               <BackgroundMediaImage cardBlock={existingCoverBlock} />
             </SnackbarProvider>

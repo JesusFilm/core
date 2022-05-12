@@ -269,8 +269,6 @@ describe('BlockRenderer', () => {
       id: 'main',
       parentBlockId: null,
       parentOrder: 0,
-      label: '',
-      description: null,
       children: [option, { ...option, label: 'radio option 2' }]
     }
     const { getByText } = render(
@@ -288,8 +286,6 @@ describe('BlockRenderer', () => {
       id: 'main',
       parentBlockId: null,
       parentOrder: 0,
-      label: '',
-      description: null,
       children: []
     }
     const { getByTestId, getByRole } = render(

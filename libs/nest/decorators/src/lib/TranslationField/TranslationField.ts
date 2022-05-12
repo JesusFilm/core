@@ -45,8 +45,10 @@ function filterTranslations(
   if (translations == null || (languageId == null && primary == null))
     return translations
 
-  return translations.filter(
-    ({ languageId: _languageId, primary: _primary }) =>
-      _languageId === languageId || _primary === primary
-  )
+  return translations
+    .filter(
+      ({ languageId: _languageId, primary: _primary }) =>
+        _languageId === languageId || _primary === primary
+    )
+    .sort((a, b) => (a.primary ? 1 : -1))
 }

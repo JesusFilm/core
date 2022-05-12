@@ -4,8 +4,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { gql, useMutation } from '@apollo/client'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import { TreeBlock, useEditor } from '@core/journeys/ui'
-import { useJourney } from '../../../../../../../../libs/context'
+import { TreeBlock, useEditor, useJourney } from '@core/journeys/ui'
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
 
 import { StepBlockLockUpdate } from '../../../../../../../../../__generated__/StepBlockLockUpdate'
@@ -31,7 +30,7 @@ export function Conditions(): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
   const theme = useTheme()
   const block = selectedBlock as TreeBlock<StepFields>
 

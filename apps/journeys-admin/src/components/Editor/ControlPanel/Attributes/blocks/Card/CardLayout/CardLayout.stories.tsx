@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 
 import {
@@ -7,7 +7,6 @@ import {
   GetJourney_journey_blocks_CardBlock as CardBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
-import { JourneyProvider } from '../../../../../../../libs/context'
 import {
   ThemeMode,
   ThemeName,
@@ -71,7 +70,7 @@ export const Default: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={journey}>
+      <JourneyProvider value={{ journey, admin: true }}>
         <EditorProvider
           initialState={{
             selectedBlock: block,
@@ -103,7 +102,7 @@ export const FullScreen: Story = () => {
 
   return (
     <MockedProvider>
-      <JourneyProvider value={journey}>
+      <JourneyProvider value={{ journey, admin: true }}>
         <EditorProvider
           initialState={{
             selectedBlock: block,

@@ -1,9 +1,8 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider } from '@core/journeys/ui'
+import { EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { TypographyVariant } from '../../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../libs/context'
 import {
   TypographyEdit,
   TypographyEditProps,
@@ -66,7 +65,12 @@ describe('TypographyEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider>
             <TypographyEdit {...props} />
           </EditorProvider>
@@ -84,7 +88,14 @@ describe('TypographyEdit', () => {
   it('calls onDelete when text content deleted', async () => {
     const { getByRole } = render(
       <MockedProvider>
-        <TypographyEdit {...props} />
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <TypographyEdit {...props} />
+        </JourneyProvider>
       </MockedProvider>
     )
     const input = getByRole('textbox')

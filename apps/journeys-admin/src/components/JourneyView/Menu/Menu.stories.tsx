@@ -1,10 +1,10 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { JourneyProvider } from '@core/journeys/ui'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { GET_LANGUAGES } from '../../LanguageSelect/LanguageSelect'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { defaultJourney } from '../data'
-import { JourneyProvider } from '../../../libs/context'
 import { Menu, JOURNEY_PUBLISH } from './Menu'
 
 const MenuStory = {
@@ -90,7 +90,7 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <JourneyProvider value={args.journey}>
+    <JourneyProvider value={{ journey: args.journey, admin: true }}>
       <Menu {...args} />
     </JourneyProvider>
   </MockedProvider>

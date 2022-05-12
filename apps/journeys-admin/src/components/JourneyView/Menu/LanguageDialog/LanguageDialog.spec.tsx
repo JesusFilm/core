@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '../../../../libs/context'
+import { JourneyProvider } from '@core/journeys/ui'
 import { defaultJourney } from '../../data'
 import { GET_LANGUAGES } from '../../../LanguageSelect/LanguageSelect'
 import { JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
@@ -72,7 +72,7 @@ describe('JourneyView/Menu/LanguageDialog', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getLanguagesMock]}>
         <SnackbarProvider>
-          <JourneyProvider value={defaultJourney}>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
             <LanguageDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -134,7 +134,7 @@ describe('JourneyView/Menu/LanguageDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={defaultJourney}>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
             <LanguageDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
@@ -154,7 +154,7 @@ describe('JourneyView/Menu/LanguageDialog', () => {
     const { getByRole, getByText } = render(
       <MockedProvider mocks={[getLanguagesMock]}>
         <SnackbarProvider>
-          <JourneyProvider value={defaultJourney}>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
             <LanguageDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>

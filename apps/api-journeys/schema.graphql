@@ -183,7 +183,6 @@ input CardBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   backgroundColor: String
-  coverBlockId: ID @deprecated(reason: "coverBlockId will be updated on Image and Video Cover block creation")
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -192,7 +191,6 @@ input CardBlockCreateInput {
 input CardBlockUpdateInput {
   parentBlockId: ID
   backgroundColor: String
-  coverBlockId: ID @deprecated(reason: "coverBlockId will be updated on Image and Video Cover block creation")
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
@@ -357,8 +355,6 @@ type RadioQuestionBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  label: String!
-  description: String
 }
 
 input RadioOptionBlockCreateInput {
@@ -372,18 +368,11 @@ input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  label: String!
 }
 
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
   label: String
-}
-
-input RadioQuestionBlockUpdateInput {
-  parentBlockId: ID
-  label: String
-  description: String
 }
 
 type SignUpBlock implements Block {
@@ -611,9 +600,37 @@ type VideoTriggerBlock implements Block {
   action: Action!
 }
 
+input ButtonClickEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+}
+
+type ButtonClickEvent implements Event {
+  id: ID!
+  userId: ID!
+  block: ButtonBlock
+}
+
 interface Event {
   id: ID!
   userId: ID!
+}
+
+input JourneyViewEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  journeyId: ID!
+}
+
+type JourneyViewEvent implements Event {
+  id: ID!
+  userId: ID!
+  journey: Journey
 }
 
 input RadioQuestionSubmissionEventCreateInput {
@@ -849,7 +866,7 @@ extend type Mutation {
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock!
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock!
   radioOptionBlockUpdate(id: ID!, journeyId: ID!, input: RadioOptionBlockUpdateInput!): RadioOptionBlock!
-  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, input: RadioQuestionBlockUpdateInput!): RadioQuestionBlock!
+  radioQuestionBlockUpdate(id: ID!, journeyId: ID!, parentBlockId: ID!): RadioQuestionBlock!
   signUpBlockCreate(input: SignUpBlockCreateInput!): SignUpBlock!
   signUpBlockUpdate(id: ID!, journeyId: ID!, input: SignUpBlockUpdateInput!): SignUpBlock
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
@@ -858,6 +875,8 @@ extend type Mutation {
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!

@@ -1,5 +1,10 @@
 import { Story, Meta } from '@storybook/react'
-import { TreeBlock, EditorProvider, ActiveFab } from '@core/journeys/ui'
+import {
+  TreeBlock,
+  EditorProvider,
+  ActiveFab,
+  JourneyProvider
+} from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -13,7 +18,6 @@ import {
   TypographyVariant
 } from '../../../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
-import { JourneyProvider } from '../../../../../libs/context'
 import { Canvas } from '../../Canvas'
 
 const RadioOptionEditStory = {
@@ -35,8 +39,6 @@ const option1: TreeBlock<RadioOptionFields> = {
 const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
   id: 'RadioQuestion1',
-  label: 'Label',
-  description: 'Description',
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
   children: [
@@ -118,13 +120,14 @@ const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
       <JourneyProvider
-        value={
-          {
+        value={{
+          journey: {
             id: 'journeyId',
             themeMode: ThemeMode.light,
             themeName: ThemeName.base
-          } as unknown as Journey
-        }
+          } as unknown as Journey,
+          admin: true
+        }}
       >
         <EditorProvider
           initialState={{

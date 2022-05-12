@@ -29,8 +29,6 @@ describe('searchBlocks', () => {
           {
             __typename: 'RadioQuestionBlock',
             id: 'RadioQuestion1',
-            label: 'Label',
-            description: 'Description',
             parentBlockId: 'RadioQuestion1',
             parentOrder: 1,
             children: [

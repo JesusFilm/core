@@ -252,7 +252,6 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'RadioQuestionBlock',
     parentBlockId: card3._key,
-    label: '',
     parentOrder: 2
   })
 
@@ -485,7 +484,6 @@ export async function nua1(): Promise<void> {
     journeyId: journey._key,
     __typename: 'RadioQuestionBlock',
     parentBlockId: card6._key,
-    label: '',
     parentOrder: 2
   })
 

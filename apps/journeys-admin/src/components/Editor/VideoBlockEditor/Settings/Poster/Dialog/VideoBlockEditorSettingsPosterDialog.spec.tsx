@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { TreeBlock } from '@core/journeys/ui'
+import { TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import {
   JourneyStatus,
@@ -13,7 +13,6 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../../libs/context'
 
 import {
   VideoBlockEditorSettingsPosterDialog,
@@ -168,7 +167,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <VideoBlockEditorSettingsPosterDialog
               selectedBlock={null}
               parentBlockId={video.id}
@@ -246,7 +245,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <VideoBlockEditorSettingsPosterDialog
               selectedBlock={existingImageBlock}
               parentBlockId={video.id}
@@ -325,7 +324,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
             }
           ]}
         >
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <VideoBlockEditorSettingsPosterDialog
               selectedBlock={image}
               parentBlockId={video.id}

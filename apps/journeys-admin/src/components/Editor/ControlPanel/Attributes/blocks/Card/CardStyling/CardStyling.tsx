@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import ColorLens from '@mui/icons-material/ColorLens'
 import Image from 'next/image'
 import { gql, useMutation } from '@apollo/client'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import { HorizontalSelect } from '../../../../../../HorizontalSelect'
 import {
   ThemeName,
@@ -14,7 +14,6 @@ import {
 } from '../../../../../../../../__generated__/globalTypes'
 import cardStyleLight from '../../../../../../../../public/card-style-light.svg'
 import cardStyleDark from '../../../../../../../../public/card-style-dark.svg'
-import { useJourney } from '../../../../../../../libs/context'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../../../__generated__/GetJourney'
 import { CardBlockThemeModeUpdate } from '../../../../../../../../__generated__/CardBlockThemeModeUpdate'
 
@@ -48,7 +47,7 @@ export function CardStyling(): ReactElement {
   const [cardBlockUpdate] = useMutation<CardBlockThemeModeUpdate>(
     CARD_BLOCK_THEME_MODE_UPDATE
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   const handleChange = async (themeMode: ThemeMode): Promise<void> => {
     if (journey != null && cardBlock != null) {

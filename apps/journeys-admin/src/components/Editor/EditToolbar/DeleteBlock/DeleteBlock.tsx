@@ -2,14 +2,13 @@ import { ReactElement, useState } from 'react'
 import IconButton from '@mui/material/IconButton'
 import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
 import { gql, useMutation } from '@apollo/client'
-import { useEditor } from '@core/journeys/ui'
+import { useEditor, useJourney } from '@core/journeys/ui'
 import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import { useSnackbar } from 'notistack'
 import Typography from '@mui/material/Typography'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
-import { useJourney } from '../../../../libs/context'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { Dialog } from '../../../Dialog'
 import getSelected from './utils/getSelected'
@@ -35,7 +34,7 @@ export function DeleteBlock({
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
   const { enqueueSnackbar } = useSnackbar()
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const {
     state: { selectedBlock, selectedStep, steps },
     dispatch

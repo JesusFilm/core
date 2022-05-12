@@ -14,19 +14,21 @@ import { routeParser } from '../src/libs/routeParser/routeParser'
 import { VideoType } from '../__generated__/globalTypes'
 import 'video.js/dist/video-js.css'
 import { VideoListList } from '../src/components/Videos/VideoList/List/VideoListList'
+import {
+  LanguageProvider,
+  useLanguage
+} from '../src/libs/languageContext/LanguageContext'
 
 export const GET_VIDEO = gql`
-  query GetVideo($id: ID!) {
+  query GetVideo($id: ID!, $languageId: ID) {
     video(id: $id, idType: slug) {
       id
       type
       image
-      description {
-        primary
+      description(languageId: $languageId, primary: true) {
         value
       }
-      title {
-        primary
+      title(languageId: $languageId, primary: true) {
         value
       }
       variant {
@@ -35,21 +37,17 @@ export const GET_VIDEO = gql`
       }
       episodes {
         id
-        title {
-          primary
+        title(languageId: $languageId, primary: true) {
           value
         }
         image
-        imageAlt {
-          primary
+        imageAlt(languageId: $languageId, primary: true) {
           value
         }
-        snippet {
-          primary
+        snippet(languageId: $languageId, primary: true) {
           value
         }
-        permalinks {
-          primary
+        slug(languageId: $languageId, primary: true) {
           value
         }
         episodeIds
@@ -58,26 +56,23 @@ export const GET_VIDEO = gql`
           hls
         }
       }
-      permalinks {
+      slug(languageId: $languageId, primary: true) {
         value
-        primary
       }
     }
   }
 `
 
 export const GET_VIDEO_SIBLINGS = gql`
-  query GetVideoSiblings($playlistId: ID!) {
+  query GetVideoSiblings($playlistId: ID!, $languageId: ID) {
     episodes(playlistId: $playlistId, idType: slug) {
       id
       type
       image
-      snippet {
-        primary
+      snippet(languageId: $languageId, primary: true) {
         value
       }
-      title {
-        primary
+      title(languageId: $languageId, primary: true) {
         value
       }
       variant {
@@ -85,8 +80,7 @@ export const GET_VIDEO_SIBLINGS = gql`
         hls
       }
       episodeIds
-      permalinks {
-        primary
+      slug(languageId: $languageId, primary: true) {
         value
       }
     }
@@ -94,11 +88,10 @@ export const GET_VIDEO_SIBLINGS = gql`
 `
 
 export const GET_LANGUAGE = gql`
-  query GetLanguage($id: ID!) {
+  query GetLanguage($id: ID!, $languageId: ID) {
     language(id: $id) {
       id
-      name {
-        primary
+      name(languageId: $languageId, primary: true) {
         value
       }
     }
@@ -116,23 +109,36 @@ export default function SeoFriendly(): ReactElement {
   const locale = router.locale ?? router.defaultLocale
   const { slug } = router.query
   const { routes, tags, audioLanguage, subtitleLanguage } = routeParser(slug)
+  const languageContext = useLanguage()
 
   const { data, loading } = useQuery(GET_VIDEO, {
-    variables: { id: routes?.[routes.length - 1] }
+    variables: {
+      id: routes?.[routes.length - 1],
+      languageId: languageContext?.id ?? '529'
+    }
   })
 
   const { data: audioLanguageData } = useQuery(GET_LANGUAGE, {
-    variables: { id: audioLanguage }
+    variables: {
+      id: audioLanguage,
+      languageId: router.locale ?? router.defaultLocale
+    }
   })
 
   const { data: subtitleLanguageData } = useQuery(GET_LANGUAGE, {
-    variables: { id: subtitleLanguage }
+    variables: {
+      id: subtitleLanguage,
+      languageId: router.locale ?? router.defaultLocale
+    }
   })
 
   const playlistId = routes?.[routes.length - 2]
   const { data: siblingsData } = useQuery(GET_VIDEO_SIBLINGS, {
     skip: playlistId == null,
-    variables: { playlistId: playlistId ?? '' }
+    variables: {
+      playlistId: playlistId ?? '',
+      languageId: router.locale ?? router.defaultLocale
+    }
   })
 
   useEffect(() => {
@@ -171,109 +177,104 @@ export default function SeoFriendly(): ReactElement {
 
   return (
     <div>
-      {loading && <CircularProgress />}
-      {data?.video != null && (
-        <>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              margin: '-5%',
-              width: '100vw !important',
-              height: '100%',
-              filter: 'blur(20px)',
-              overflow: 'hidden',
-              zIndex: 0,
-              opacity: 0.4
-            }}
-          >
-            <Image
-              src={data.video.image}
-              layout="fill"
-              alt={data.video.title.find((title) => title.primary)?.value}
-            />
-          </Box>
-          <Box>
-            <Stack justifyContent="center" direction="row">
-              <Stack justifyContent="center" direction="column" width="80%">
-                {data.video.variant?.hls != null && (
-                  <video
-                    ref={videoRef}
-                    className="video-js vjs-fluid"
-                    style={{
-                      alignSelf: 'center'
-                    }}
-                    playsInline
-                  >
-                    <source
-                      src={data.video.variant.hls}
-                      type="application/x-mpegURL"
-                    />
-                  </video>
-                )}
-                <Stack justifyContent="center" direction="row">
-                  <Typography variant="h1">
-                    {data.video.title.find((title) => title.primary)?.value}
-                  </Typography>
-                </Stack>
-                {data.video.type !== VideoType.playlist && (
+      <LanguageProvider>
+        {loading && <CircularProgress />}
+        {data?.video != null && (
+          <>
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                margin: '-5%',
+                width: '100vw !important',
+                height: '100%',
+                filter: 'blur(20px)',
+                overflow: 'hidden',
+                zIndex: 0,
+                opacity: 0.4
+              }}
+            >
+              <Image
+                src={data.video.image}
+                layout="fill"
+                alt={data.video.title[0]?.value}
+              />
+            </Box>
+            <Box>
+              <Stack justifyContent="center" direction="row">
+                <Stack justifyContent="center" direction="column" width="80%">
+                  {data.video.variant?.hls != null && (
+                    <video
+                      ref={videoRef}
+                      className="video-js vjs-fluid"
+                      style={{
+                        alignSelf: 'center'
+                      }}
+                      playsInline
+                    >
+                      <source
+                        src={data.video.variant.hls}
+                        type="application/x-mpegURL"
+                      />
+                    </video>
+                  )}
                   <Stack justifyContent="center" direction="row">
-                    <Typography variant="subtitle1">
-                      {secondsToMinutes(data.video.variant.duration)} min
-                    </Typography>
-                    <Typography variant="subtitle1" mx={4}>
-                      Audio:
-                      {
-                        audioLanguageData?.language.name.find((n) => n.primary)
-                          ?.value
-                      }
-                    </Typography>
-                    <Typography variant="subtitle1">
-                      Subtitle:
-                      {
-                        subtitleLanguageData?.language.name.find(
-                          (n) => n.primary
-                        )?.value
-                      }
+                    <Typography variant="h1">
+                      {data.video.title[0]?.value}
                     </Typography>
                   </Stack>
-                )}
-                {data?.video.type === VideoType.playlist && (
-                  <Typography variant="subtitle1">
-                    {data.video.episodes.length} episodes
+                  {data.video.type !== VideoType.playlist && (
+                    <Stack justifyContent="center" direction="row">
+                      <Typography variant="subtitle1">
+                        {secondsToMinutes(data.video.variant.duration)} min
+                      </Typography>
+                      <Typography variant="subtitle1" mx={4}>
+                        Audio:
+                        {audioLanguageData?.language.name[0]?.value}
+                      </Typography>
+                      <Typography variant="subtitle1">
+                        Subtitle:
+                        {subtitleLanguageData?.language.name[0]?.value}
+                      </Typography>
+                    </Stack>
+                  )}
+                  {data?.video.type === VideoType.playlist && (
+                    <Typography variant="subtitle1">
+                      {data.video.episodes.length} episodes
+                    </Typography>
+                  )}
+                  <Typography variant="caption">
+                    {data.video.description[0]?.value}
                   </Typography>
-                )}
-                <Typography variant="caption">
-                  {data.video.description.find((d) => d.primary).value}
-                </Typography>
+                </Stack>
               </Stack>
-            </Stack>
-          </Box>
-          {data.video.episodes.length > 0 && (
-            <>
-              <Typography variant="h2">Episodes</Typography>
-              <VideoListList
-                videos={data.video.episodes}
-                routePrefix={routes.join('/')}
-              />
-            </>
-          )}
-          {siblingsData?.episodes?.length > 0 && (
-            <>
-              <Typography variant="h2">Episodes</Typography>
-              <VideoListList
-                videos={siblingsData.episodes}
-                routePrefix={siblingRoute(routes).join('/')}
-              />
-            </>
-          )}
-        </>
-      )}
-      <div>Locale - {locale} </div>
-      <div>Tags - {tags.join(' ')}</div>
+            </Box>
+            {data.video.episodes.length > 0 && (
+              <>
+                <Typography variant="h2">Episodes</Typography>
+                <VideoListList
+                  videos={data.video.episodes}
+                  routePrefix={routes.join('/')}
+                />
+              </>
+            )}
+            {siblingsData?.episodes?.length > 0 && (
+              <>
+                <Typography variant="h2">Episodes</Typography>
+                <VideoListList
+                  videos={siblingsData.episodes}
+                  routePrefix={siblingRoute(routes).join('/')}
+                />
+              </>
+            )}
+          </>
+        )}
+        <div>Locale - {locale} </div>
+        <div>Tags - {tags.join(' ')}</div>
+      </LanguageProvider>
     </div>
   )
 }

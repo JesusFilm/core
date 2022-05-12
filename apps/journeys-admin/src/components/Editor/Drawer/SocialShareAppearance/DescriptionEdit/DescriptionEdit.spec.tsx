@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '../../../../../libs/context'
+import { JourneyProvider } from '@core/journeys/ui'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
   DescriptionEdit,
@@ -20,12 +20,13 @@ describe('DescriptionEdit', () => {
     const { getByText } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               description: 'journey description',
               seoDescription: 'social description'
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <DescriptionEdit />
         </JourneyProvider>
@@ -37,12 +38,13 @@ describe('DescriptionEdit', () => {
     const { getByText } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               description: 'journey description',
               seoDescription: null
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <DescriptionEdit />
         </JourneyProvider>
@@ -54,12 +56,13 @@ describe('DescriptionEdit', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               description: null,
               seoDescription: null
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <DescriptionEdit />
         </JourneyProvider>
@@ -95,7 +98,12 @@ describe('DescriptionEdit', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journey.id' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <DescriptionEdit />
         </JourneyProvider>
       </MockedProvider>
@@ -113,7 +121,12 @@ describe('DescriptionEdit', () => {
 
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <JourneyProvider value={{ id: 'journey.id' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <DescriptionEdit />
         </JourneyProvider>
       </MockedProvider>

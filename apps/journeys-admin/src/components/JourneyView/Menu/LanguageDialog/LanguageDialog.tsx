@@ -2,8 +2,8 @@ import { ReactElement } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
+import { useJourney } from '@core/journeys/ui'
 import { JourneyLanguageUpdate } from '../../../../../__generated__/JourneyLanguageUpdate'
-import { useJourney } from '../../../../libs/context'
 import { Dialog } from '../../../Dialog'
 import { LanguageSelect } from '../../../LanguageSelect'
 
@@ -34,7 +34,7 @@ export function LanguageDialog({
   const [journeyUpdate] = useMutation<JourneyLanguageUpdate>(
     JOURNEY_LANGUAGE_UPDATE
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
   const handleSubmit = async (values: FormikValues): Promise<void> => {

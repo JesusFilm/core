@@ -36,12 +36,7 @@ export function VideoListCard({
           </>
         )}
         {video != null && (
-          <Link
-            href={`/${
-              video.permalinks.find((link) => link.primary)?.value ?? ''
-            }`}
-            passHref={true}
-          >
+          <Link href={`/${video.slug[0]?.value ?? ''}`} passHref={true}>
             <CardActionArea>
               <CardMedia
                 component="img"
@@ -50,7 +45,7 @@ export function VideoListCard({
               />
               <CardContent>
                 <Typography variant="subtitle2">
-                  {video.title[0].value}
+                  {video.title[0]?.value}
                 </Typography>
                 {video.type !== VideoType.playlist && (
                   <Typography variant="caption">

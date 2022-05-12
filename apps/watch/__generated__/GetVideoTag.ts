@@ -9,7 +9,6 @@
 
 export interface GetVideoTag_videoTag_title {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
@@ -21,7 +20,6 @@ export interface GetVideoTag_videoTag {
 
 export interface GetVideoTag_videoTags_title {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
@@ -38,4 +36,5 @@ export interface GetVideoTag {
 
 export interface GetVideoTagVariables {
   id: string;
+  languageId?: string | null;
 }

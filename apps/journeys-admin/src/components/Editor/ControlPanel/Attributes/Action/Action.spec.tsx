@@ -1,13 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { EditorProvider } from '@core/journeys/ui'
+import { EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { InMemoryCache } from '@apollo/client'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
   ThemeName,
   ThemeMode
 } from '../../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../../../libs/context'
 import { Action, NAVIGATE_ACTION_UPDATE, ACTION_DELETE } from './Action'
 import { steps } from './data'
 
@@ -83,13 +82,14 @@ describe('Action', () => {
         cache={cache}
       >
         <JourneyProvider
-          value={
-            {
+          value={{
+            journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
               themeName: ThemeName.base
-            } as unknown as Journey
-          }
+            } as unknown as Journey,
+            admin: true
+          }}
         >
           <EditorProvider initialState={{ steps, selectedBlock, selectedStep }}>
             <Action />
@@ -179,7 +179,8 @@ describe('Action', () => {
             request: {
               query: ACTION_DELETE,
               variables: {
-                id: selectedBlock?.id
+                id: selectedBlock?.id,
+                journeyId: 'journeyId'
               }
             },
             result
@@ -187,9 +188,16 @@ describe('Action', () => {
         ]}
         cache={cache}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Action />
-        </EditorProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Action />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByText('URL/Website')).toBeInTheDocument()

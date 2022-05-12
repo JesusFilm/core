@@ -35,16 +35,12 @@ export function VideoListList({
     <List data-testid="video-list-list">
       {(videos.length ?? 0) > 0 &&
         videos.map((video, index) => {
-          const snippet = video.snippet.find(
-            (snippet) => snippet.primary
-          )?.value
-          const title = video.title.find((title) => title.primary)?.value
+          const snippet = video.snippet[0]?.value
+          const title = video.title[0]?.value
           const href =
             routePrefix == null
-              ? `/${video.permalinks.find((link) => link.primary)?.value ?? ''}`
-              : `/${routePrefix}/${
-                  video.permalinks.find((link) => link.primary)?.value ?? ''
-                }`
+              ? `/${video.slug[0]?.value ?? ''}`
+              : `/${routePrefix}/${video.slug[0]?.value ?? ''}`
           return (
             <Link key={index} href={href} passHref={true}>
               <ListItem button component="a">

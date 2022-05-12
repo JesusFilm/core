@@ -1,13 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { JourneyProvider } from '../../../../../libs/context'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { VIDEO_BLOCK_CREATE } from './NewVideoButton'
 import { NewVideoButton } from '.'
 
-describe('Video', () => {
+describe('NewVideoButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
     id: 'stepId',
@@ -45,7 +44,8 @@ describe('Video', () => {
           endAt: null,
           posterBlockId: null,
           video: null,
-          fullsize: true
+          fullsize: true,
+          videoId: null
         }
       }
     }))
@@ -69,7 +69,12 @@ describe('Video', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewVideoButton />
           </EditorProvider>
@@ -104,7 +109,10 @@ describe('Video', () => {
           posterBlockId: null,
           video: null,
           __typename: 'VideoBlock',
-          fullsize: true
+          fullsize: true,
+          videoId: null,
+          videoVariantLanguageId: null,
+          action: null
         }
       }
     }))
@@ -129,7 +137,12 @@ describe('Video', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewVideoButton />
           </EditorProvider>

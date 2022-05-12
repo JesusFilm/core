@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoList/VideoList'
@@ -9,7 +9,6 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/GetJourney'
-import { JourneyProvider } from '../../../../../../../libs/context'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import { VideoOptions, VIDEO_BLOCK_UPDATE } from './VideoOptions'
 
@@ -129,7 +128,12 @@ describe('VideoOptions', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <ThemeProvider>
             <EditorProvider
               initialState={{

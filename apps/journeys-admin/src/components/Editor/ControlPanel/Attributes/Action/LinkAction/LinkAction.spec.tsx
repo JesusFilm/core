@@ -1,8 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor, fireEvent } from '@testing-library/react'
-import { EditorProvider } from '@core/journeys/ui'
+import { EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { InMemoryCache } from '@apollo/client'
 import { steps } from '../data'
+import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import { LinkAction, LINK_ACTION_UPDATE } from './LinkAction'
 
 describe('LinkAction', () => {
@@ -43,7 +44,7 @@ describe('LinkAction', () => {
     const result = jest.fn(() => ({
       data: {
         blockUpdateLinkAction: {
-          id: 'journeyId',
+          id: selectedBlock.id,
           gtmEventName: 'gtmEventName',
           url: 'https://www.github.com'
         }
@@ -58,6 +59,7 @@ describe('LinkAction', () => {
               query: LINK_ACTION_UPDATE,
               variables: {
                 id: selectedBlock.id,
+                journeyId: 'journeyId',
                 input: {
                   url: 'https://www.github.com'
                 }
@@ -68,9 +70,16 @@ describe('LinkAction', () => {
         ]}
         cache={cache}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <LinkAction />
-        </EditorProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <LinkAction />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.change(getByRole('textbox'), {

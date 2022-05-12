@@ -11,13 +11,11 @@ import { VideoType } from "./globalTypes";
 
 export interface GetVideo_video_description {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
 export interface GetVideo_video_title {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
@@ -29,25 +27,21 @@ export interface GetVideo_video_variant {
 
 export interface GetVideo_video_episodes_title {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
 export interface GetVideo_video_episodes_imageAlt {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
 export interface GetVideo_video_episodes_snippet {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
-export interface GetVideo_video_episodes_permalinks {
+export interface GetVideo_video_episodes_slug {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
@@ -64,7 +58,10 @@ export interface GetVideo_video_episodes {
   image: string | null;
   imageAlt: GetVideo_video_episodes_imageAlt[];
   snippet: GetVideo_video_episodes_snippet[];
-  permalinks: GetVideo_video_episodes_permalinks[];
+  /**
+   * slug is a permanent link to the video. It should only be appended, not edited or deleted
+   */
+  slug: GetVideo_video_episodes_slug[];
   /**
    * Episodes are child videos, currently only found in a playlist type
    */
@@ -72,10 +69,9 @@ export interface GetVideo_video_episodes {
   variant: GetVideo_video_episodes_variant | null;
 }
 
-export interface GetVideo_video_permalinks {
+export interface GetVideo_video_slug {
   __typename: "Translation";
   value: string;
-  primary: boolean;
 }
 
 export interface GetVideo_video {
@@ -87,7 +83,10 @@ export interface GetVideo_video {
   title: GetVideo_video_title[];
   variant: GetVideo_video_variant | null;
   episodes: GetVideo_video_episodes[];
-  permalinks: GetVideo_video_permalinks[];
+  /**
+   * slug is a permanent link to the video. It should only be appended, not edited or deleted
+   */
+  slug: GetVideo_video_slug[];
 }
 
 export interface GetVideo {
@@ -96,4 +95,5 @@ export interface GetVideo {
 
 export interface GetVideoVariables {
   id: string;
+  languageId?: string | null;
 }

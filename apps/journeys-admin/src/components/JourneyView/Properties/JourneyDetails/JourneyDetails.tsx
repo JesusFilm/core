@@ -7,11 +7,11 @@ import CheckCircleRounded from '@mui/icons-material/CheckCircleRounded'
 import EditRounded from '@mui/icons-material/EditRounded'
 import EventRounded from '@mui/icons-material/EventRounded'
 import TranslateRounded from '@mui/icons-material/TranslateRounded'
+import { useJourney } from '@core/journeys/ui'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { useJourney } from '../../../../libs/context'
 
 export function JourneyDetails(): ReactElement {
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   return (
     <>

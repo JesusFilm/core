@@ -7,9 +7,8 @@ import Typography from '@mui/material/Typography'
 import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import { gql, useMutation } from '@apollo/client'
-import { TreeBlock, searchBlocks } from '@core/journeys/ui'
+import { TreeBlock, searchBlocks, useJourney } from '@core/journeys/ui'
 import { BlockOrderUpdate } from '../../../../../../__generated__/BlockOrderUpdate'
-import { useJourney } from '../../../../../libs/context'
 
 const StyledMoveButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -61,7 +60,7 @@ export function MoveBlockButtons({
   selectedStep
 }: MoveBlockButtonsProps): ReactElement {
   const [blockOrderUpdate] = useMutation<BlockOrderUpdate>(BLOCK_ORDER_UPDATE)
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   const parentBlock =
     selectedBlock.parentBlockId != null

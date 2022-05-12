@@ -1,7 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider } from '@core/journeys/ui'
-import { JourneyProvider } from '../../../../libs/context'
+import { EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { BlocksTab } from '.'
@@ -19,7 +18,12 @@ const BlocksTabStory = {
 export const Default: Story = () => {
   return (
     <MockedProvider mocks={[]}>
-      <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+      <JourneyProvider
+        value={{
+          journey: { id: 'journeyId' } as unknown as Journey,
+          admin: true
+        }}
+      >
         <EditorProvider
           initialState={{
             selectedStep: {

@@ -1,10 +1,9 @@
 import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import { ButtonColor } from '../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../../../ColorDisplayIcon'
 import { ButtonBlockUpdateColor } from '../../../../../../../../__generated__/ButtonBlockUpdateColor'
-import { useJourney } from '../../../../../../../libs/context'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
 
@@ -25,7 +24,7 @@ export function Color(): ReactElement {
   const [buttonBlockUpdate] =
     useMutation<ButtonBlockUpdateColor>(BUTTON_BLOCK_UPDATE)
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>

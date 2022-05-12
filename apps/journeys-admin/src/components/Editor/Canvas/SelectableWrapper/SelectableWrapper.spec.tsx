@@ -91,8 +91,6 @@ describe('SelectableWrapper', () => {
   const radioQuestionBlock: TreeBlock<RadioQuestionFields> = {
     __typename: 'RadioQuestionBlock',
     id: 'RadioQuestion1',
-    label: 'Label',
-    description: 'Description',
     parentBlockId: 'parent.id',
     parentOrder: 0,
     children: [

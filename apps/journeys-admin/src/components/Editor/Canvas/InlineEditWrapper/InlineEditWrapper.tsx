@@ -1,12 +1,16 @@
 import { ReactElement } from 'react'
 import { useMutation } from '@apollo/client'
-import { useEditor, ActiveFab, WrapperProps } from '@core/journeys/ui'
+import {
+  useEditor,
+  ActiveFab,
+  WrapperProps,
+  useJourney
+} from '@core/journeys/ui'
 import { TypographyFields } from '../../../../../__generated__/TypographyFields'
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
 import { RadioQuestionFields } from '../../../../../__generated__/RadioQuestionFields'
 import { RadioOptionFields } from '../../../../../__generated__/RadioOptionFields'
 import { SignUpFields } from '../../../../../__generated__/SignUpFields'
-import { useJourney } from '../../../../libs/context'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { BLOCK_DELETE } from '../../EditToolbar/DeleteBlock/DeleteBlock'
@@ -35,7 +39,7 @@ export function InlineEditWrapper({
     state: { selectedBlock, activeFab, selectedStep },
     dispatch
   } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   const showEditable =
     (activeFab === ActiveFab.Save && selectedBlock?.id === block.id) ||

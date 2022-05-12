@@ -1,5 +1,5 @@
 import { ReactElement, useState } from 'react'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
@@ -15,7 +15,6 @@ import {
 } from '../../../../../../__generated__/GetJourney'
 import { NavigateActionUpdate } from '../../../../../../__generated__/NavigateActionUpdate'
 import { ActionDelete } from '../../../../../../__generated__/ActionDelete'
-import { useJourney } from '../../../../../libs/context'
 import { NavigateAction } from './NavigateAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { NavigateToJourneyAction } from './NavigateToJourneyAction'
@@ -66,7 +65,7 @@ export const actions = [
 
 export function Action(): ReactElement {
   const { state } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   // Add addtional types here to use this component for that block
   const selectedBlock = state.selectedBlock as

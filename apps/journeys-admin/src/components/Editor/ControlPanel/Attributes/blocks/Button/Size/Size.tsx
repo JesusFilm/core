@@ -1,9 +1,8 @@
 import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { useEditor, TreeBlock } from '@core/journeys/ui'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import { ButtonSize } from '../../../../../../../../__generated__/globalTypes'
 import { ButtonBlockUpdateSize } from '../../../../../../../../__generated__/ButtonBlockUpdateSize'
-import { useJourney } from '../../../../../../../libs/context'
 import { ToggleButtonGroup } from '../../../ToggleButtonGroup'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../../__generated__/GetJourney'
 
@@ -24,7 +23,7 @@ export function Size(): ReactElement {
   const [buttonBlockUpdate] =
     useMutation<ButtonBlockUpdateSize>(BUTTON_BLOCK_UPDATE)
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>

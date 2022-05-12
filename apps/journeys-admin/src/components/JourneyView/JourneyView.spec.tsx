@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '../../libs/context'
+import { JourneyProvider } from '@core/journeys/ui'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -48,7 +48,7 @@ describe('JourneyView', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <JourneyProvider value={journey}>
+          <JourneyProvider value={{ journey, admin: true }}>
             <JourneyView />
           </JourneyProvider>
         </SnackbarProvider>

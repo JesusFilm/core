@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import {
@@ -17,7 +17,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../../libs/context'
 import { ControlPanel } from '.'
 
 const ControlPanelStory = {
@@ -266,8 +265,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'RadioQuestionBlock',
             parentOrder: 2,
             parentBlockId: 'card2.id',
-            label: '',
-            description: '',
             children: [
               {
                 id: 'radioOption1.id',
@@ -372,8 +369,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
             parentOrder: 2,
-            label: '',
-            description: '',
             children: [
               {
                 id: 'radioOption1.id',
@@ -613,13 +608,14 @@ const Template: Story = (args) => {
   return (
     <MockedProvider>
       <JourneyProvider
-        value={
-          {
+        value={{
+          journey: {
             id: 'journeyId',
             themeMode: ThemeMode.dark,
             themeName: ThemeName.base
-          } as unknown as Journey
-        }
+          } as unknown as Journey,
+          admin: true
+        }}
       >
         <EditorProvider
           initialState={{

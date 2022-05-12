@@ -41,8 +41,11 @@ describe('TranslationField', () => {
       ])
     })
 
-    it('should return tranlsations filtered by languageId or primary', () => {
-      expect(new Translatable().name(parent, '529', true)).toEqual(parent.name)
+    it('should return tranlsations filtered by languageId or primary and sorted by not-primary', () => {
+      expect(new Translatable().name(parent, '529', true)).toEqual([
+        parent.name[1],
+        parent.name[0]
+      ])
     })
   })
 
@@ -91,10 +94,10 @@ describe('TranslationField', () => {
       ).toEqual([[parent.studyQuestions[0][0]]])
     })
 
-    it('should return array of tranlsations filtered by languageId or primary', () => {
-      expect(new Translatable().studyQuestions(parent, '529', true)).toEqual(
-        parent.studyQuestions
-      )
+    it('should return array of tranlsations filtered by languageId or primary and sorted by primary', () => {
+      expect(new Translatable().studyQuestions(parent, '529', true)).toEqual([
+        [parent.studyQuestions[0][1], parent.studyQuestions[0][0]]
+      ])
     })
   })
 })

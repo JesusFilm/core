@@ -7,14 +7,13 @@ import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Divider from '@mui/material/Divider'
-import { useEditor } from '@core/journeys/ui'
+import { useEditor, useJourney } from '@core/journeys/ui'
 import { Theme } from '@mui/material/styles'
 import SettingsIcon from '@mui/icons-material/Settings'
 import NextLink from 'next/link'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
 import { DeleteBlock } from '../DeleteBlock'
-import { useJourney } from '../../../../libs/context'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 export function Menu(): ReactElement {
@@ -23,7 +22,7 @@ export function Menu(): ReactElement {
     dispatch
   } = useEditor()
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
