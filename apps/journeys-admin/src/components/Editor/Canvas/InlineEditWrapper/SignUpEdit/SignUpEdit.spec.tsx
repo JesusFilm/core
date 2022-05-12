@@ -61,26 +61,18 @@ describe('SignUpEdit', () => {
           }
         ]}
       >
-<<<<<<< HEAD
         <SnackbarProvider>
-          <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
+          >
             <EditorProvider>
               <SignUpEdit {...props} />
             </EditorProvider>
           </JourneyProvider>
         </SnackbarProvider>
-=======
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <EditorProvider>
-            <SignUpEdit {...props} />
-          </EditorProvider>
-        </JourneyProvider>
->>>>>>> origin
       </MockedProvider>
     )
 
