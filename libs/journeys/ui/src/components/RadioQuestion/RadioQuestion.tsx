@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles'
 import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { useMutation, gql } from '@apollo/client'
-import { TreeBlock, BlockRenderer } from '../..'
+import { TreeBlock, BlockRenderer, useJourney } from '../..'
 import { WrappersProps } from '../BlockRenderer'
 import { RadioOption } from './RadioOption'
 import { RadioQuestionSubmissionEventCreate } from './__generated__/RadioQuestionSubmissionEventCreate'
@@ -42,19 +42,22 @@ export function RadioQuestion({
     useMutation<RadioQuestionSubmissionEventCreate>(
       RADIO_QUESTION_SUBMISSION_EVENT_CREATE
     )
+  const { admin } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const handleClick = async (radioOptionBlockId: string): Promise<void> => {
     const id = uuid()
-    void radioQuestionSubmissionEventCreate({
-      variables: {
-        input: {
-          id,
-          blockId,
-          radioOptionBlockId
+    if (admin != null && !admin) {
+      void radioQuestionSubmissionEventCreate({
+        variables: {
+          input: {
+            id,
+            blockId,
+            radioOptionBlockId
+          }
         }
-      }
-    })
+      })
+    }
     setSelectedId(radioOptionBlockId)
   }
 

@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { TreeBlock } from '../..'
+import { TreeBlock, JourneyProvider } from '../..'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
 
@@ -80,7 +80,9 @@ describe('RadioQuestion', () => {
           }
         ]}
       >
-        <RadioQuestion {...block} uuid={() => 'uuid'} />
+        <JourneyProvider value={{ admin: false }}>
+          <RadioQuestion {...block} uuid={() => 'uuid'} />
+        </JourneyProvider>
       </MockedProvider>
     )
     const buttons = getAllByRole('button')
