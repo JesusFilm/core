@@ -9,6 +9,7 @@ import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey as Journey
 } from '../../../../../__generated__/GetJourney'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { Menu } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -38,9 +39,18 @@ describe('EditToolbar Menu', () => {
       const { getByRole, getByTestId, queryByRole } = render(
         <SnackbarProvider>
           <MockedProvider>
-            <EditorProvider initialState={{ selectedBlock }}>
-              <Menu />
-            </EditorProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  status: JourneyStatus.draft
+                } as unknown as Journey,
+                admin: true
+              }}
+            >
+              <EditorProvider initialState={{ selectedBlock }}>
+                <Menu />
+              </EditorProvider>
+            </JourneyProvider>
           </MockedProvider>
         </SnackbarProvider>
       )
@@ -70,9 +80,18 @@ describe('EditToolbar Menu', () => {
       const { getByRole, getByTestId, queryByRole } = render(
         <SnackbarProvider>
           <MockedProvider>
-            <EditorProvider initialState={{ selectedBlock }}>
-              <Menu />
-            </EditorProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  status: JourneyStatus.draft
+                } as unknown as Journey,
+                admin: true
+              }}
+            >
+              <EditorProvider initialState={{ selectedBlock }}>
+                <Menu />
+              </EditorProvider>
+            </JourneyProvider>
           </MockedProvider>
         </SnackbarProvider>
       )
@@ -100,12 +119,13 @@ describe('EditToolbar Menu', () => {
         <SnackbarProvider>
           <MockedProvider>
             <JourneyProvider
-              value={
-                {
+              value={{
+                journey: {
                   id: 'journeyId',
                   slug: 'my-journey'
-                } as unknown as Journey
-              }
+                } as unknown as Journey,
+                admin: true
+              }}
             >
               <EditorProvider initialState={{ selectedBlock }}>
                 <Menu />
@@ -140,11 +160,20 @@ describe('EditToolbar Menu', () => {
       const { getByRole, getByText } = render(
         <SnackbarProvider>
           <MockedProvider>
-            <EditorProvider initialState={{ selectedBlock }}>
-              <ThemeProvider>
-                <Menu />
-              </ThemeProvider>
-            </EditorProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  status: JourneyStatus.draft
+                } as unknown as Journey,
+                admin: true
+              }}
+            >
+              <EditorProvider initialState={{ selectedBlock }}>
+                <ThemeProvider>
+                  <Menu />
+                </ThemeProvider>
+              </EditorProvider>
+            </JourneyProvider>
           </MockedProvider>
         </SnackbarProvider>
       )
@@ -173,11 +202,20 @@ describe('EditToolbar Menu', () => {
       const { getByRole, getByText } = render(
         <SnackbarProvider>
           <MockedProvider>
-            <EditorProvider initialState={{ selectedBlock }}>
-              <ThemeProvider>
-                <Menu />
-              </ThemeProvider>
-            </EditorProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  status: JourneyStatus.draft
+                } as unknown as Journey,
+                admin: true
+              }}
+            >
+              <EditorProvider initialState={{ selectedBlock }}>
+                <ThemeProvider>
+                  <Menu />
+                </ThemeProvider>
+              </EditorProvider>
+            </JourneyProvider>
           </MockedProvider>
         </SnackbarProvider>
       )

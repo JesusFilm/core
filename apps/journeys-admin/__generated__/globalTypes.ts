@@ -164,7 +164,6 @@ export interface ButtonBlockUpdateInput {
 
 export interface CardBlockUpdateInput {
   backgroundColor?: string | null;
-  coverBlockId?: string | null;
   fullscreen?: boolean | null;
   parentBlockId?: string | null;
   themeMode?: ThemeMode | null;
@@ -249,7 +248,6 @@ export interface RadioOptionBlockUpdateInput {
 export interface RadioQuestionBlockCreateInput {
   id?: string | null;
   journeyId: string;
-  label: string;
   parentBlockId: string;
 }
 

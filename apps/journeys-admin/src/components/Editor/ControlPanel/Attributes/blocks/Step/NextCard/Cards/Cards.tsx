@@ -28,7 +28,7 @@ export function Cards(): ReactElement {
   const {
     state: { steps, selectedBlock }
   } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
   const theme = useTheme()
   const { id, nextBlockId } = selectedBlock as TreeBlock<StepFields>
 

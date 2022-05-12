@@ -47,8 +47,6 @@ describe('Conductor', () => {
                 __typename: 'RadioQuestionBlock',
                 parentBlockId: 'card1.id',
                 parentOrder: 0,
-                label: 'Step 1',
-                description: 'Start',
                 children: [
                   {
                     id: 'radioOption2.id',
@@ -122,8 +120,6 @@ describe('Conductor', () => {
                 __typename: 'RadioQuestionBlock',
                 parentBlockId: 'card2.id',
                 parentOrder: 0,
-                label: 'Step 2',
-                description: 'Locked',
                 children: [
                   {
                     id: 'radioOption1.id',
@@ -197,8 +193,6 @@ describe('Conductor', () => {
                 __typename: 'RadioQuestionBlock',
                 parentBlockId: 'card3.id',
                 parentOrder: 0,
-                label: 'Step 3',
-                description: 'No nextBlockId',
                 children: [
                   {
                     id: 'radioOption1.id',
@@ -272,8 +266,6 @@ describe('Conductor', () => {
                 __typename: 'RadioQuestionBlock',
                 parentBlockId: 'card4.id',
                 parentOrder: 0,
-                label: 'Step 4',
-                description: 'End',
                 children: [
                   {
                     id: 'radioOption1.id',
@@ -385,8 +377,6 @@ describe('Conductor', () => {
                 __typename: 'RadioQuestionBlock',
                 parentBlockId: 'card1.id',
                 parentOrder: 0,
-                label: 'Step 1',
-                description: 'Start',
                 children: [
                   {
                     id: 'radioOption2.id',
@@ -531,8 +521,6 @@ describe('Conductor', () => {
                 __typename: 'RadioQuestionBlock',
                 parentBlockId: 'card3.id',
                 parentOrder: 0,
-                label: 'Step 3',
-                description: 'No nextBlockId',
                 children: [
                   {
                     id: 'radioOption1.id',

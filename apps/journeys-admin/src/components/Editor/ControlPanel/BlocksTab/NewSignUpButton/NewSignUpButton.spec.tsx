@@ -14,7 +14,7 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-describe('SignUp', () => {
+describe('NewSignUpButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
     id: 'stepId',
@@ -98,7 +98,12 @@ describe('SignUp', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewSignUpButton />
           </EditorProvider>
@@ -184,7 +189,12 @@ describe('SignUp', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewSignUpButton />
           </EditorProvider>

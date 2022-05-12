@@ -9,7 +9,6 @@
 
 export interface GetLanguage_language_name {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
@@ -25,4 +24,5 @@ export interface GetLanguage {
 
 export interface GetLanguageVariables {
   id: string;
+  languageId?: string | null;
 }

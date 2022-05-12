@@ -9,19 +9,16 @@
 
 export interface GetCountries_countries_name {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
 export interface GetCountries_countries_slug {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 
 export interface GetCountries_countries_continent {
   __typename: "Translation";
-  primary: boolean;
   value: string;
 }
 

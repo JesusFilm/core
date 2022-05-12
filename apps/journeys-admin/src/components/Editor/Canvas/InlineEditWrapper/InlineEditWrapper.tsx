@@ -39,7 +39,7 @@ export function InlineEditWrapper({
     state: { selectedBlock, activeFab, selectedStep },
     dispatch
   } = useEditor()
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   const showEditable =
     (activeFab === ActiveFab.Save && selectedBlock?.id === block.id) ||

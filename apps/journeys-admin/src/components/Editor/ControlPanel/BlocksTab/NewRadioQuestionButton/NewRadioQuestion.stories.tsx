@@ -23,8 +23,7 @@ export const Default: Story = () => {
               input: {
                 journeyId: 'journeyId',
                 id: 'uuid',
-                parentBlockId: 'cardId',
-                label: 'Your Question Here?'
+                parentBlockId: 'cardId'
               },
               radioOptionBlockCreateInput1: {
                 journeyId: 'journeyId',
@@ -44,9 +43,7 @@ export const Default: Story = () => {
                 __typename: 'RadioQuestionBlock',
                 id: 'uuid',
                 parentBlockId: 'cardId',
-                journeyId: 'journeyId',
-                label: 'Your Question Here?',
-                description: null
+                journeyId: 'journeyId'
               },
               radioOption1: {
                 __typename: 'RadioOptionBlock',
@@ -78,7 +75,12 @@ export const Default: Story = () => {
       ]}
       addTypename={false}
     >
-      <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+      <JourneyProvider
+        value={{
+          journey: { id: 'journeyId' } as unknown as Journey,
+          admin: true
+        }}
+      >
         <EditorProvider
           initialState={{
             selectedStep: {

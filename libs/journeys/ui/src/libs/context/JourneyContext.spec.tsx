@@ -13,7 +13,7 @@ import { JourneyProvider, useJourney } from '.'
 const checkJourney = jest.fn()
 
 const TestComponent = (): ReactElement => {
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   return <Button onClick={checkJourney(journey)}>Test</Button>
 }
@@ -58,7 +58,7 @@ const journey: Journey = {
 describe('JourneyContext', () => {
   it('should pass through the journey props', () => {
     const { getByRole } = render(
-      <JourneyProvider value={journey}>
+      <JourneyProvider value={{ journey }}>
         <TestComponent />
       </JourneyProvider>
     )

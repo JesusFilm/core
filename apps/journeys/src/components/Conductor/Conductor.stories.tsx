@@ -59,8 +59,6 @@ const basic: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card1.id',
             parentOrder: 2,
-            label: '',
-            description: null,
             children: [
               {
                 id: 'radioOption2.id',
@@ -168,8 +166,6 @@ const basic: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
-            label: '',
-            description: null,
             children: [
               {
                 id: 'radioOption1.id',
@@ -265,8 +261,6 @@ const basic: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
             parentOrder: 2,
-            label: 'Step 3',
-            description: 'No nextBlockId',
             children: [
               {
                 id: 'radioOption1.id',
@@ -362,8 +356,6 @@ const basic: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card4.id',
             parentOrder: 2,
-            label: 'Step 4',
-            description: 'End',
             children: [
               {
                 id: 'radioOption1.id',
@@ -635,8 +627,6 @@ const imageBlocks: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'step2.id',
             parentOrder: 2,
-            label: '',
-            description: '',
             children: [
               {
                 id: 'radioOption1.id',
@@ -741,8 +731,6 @@ const imageBlocks: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'step2.id',
             parentOrder: 2,
-            label: '',
-            description: '',
             children: [
               {
                 id: 'radioOption1.id',
@@ -1020,8 +1008,6 @@ const videoBlocks: TreeBlock[] = [
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
-            label: '',
-            description: null,
             children: [
               {
                 id: 'radioOption1.id',

@@ -34,7 +34,7 @@ export function LanguageDialog({
   const [journeyUpdate] = useMutation<JourneyLanguageUpdate>(
     JOURNEY_LANGUAGE_UPDATE
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
   const handleSubmit = async (values: FormikValues): Promise<void> => {

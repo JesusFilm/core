@@ -26,7 +26,7 @@ export function DescriptionDialog({
   onClose
 }: DescriptionDialogProps): ReactElement {
   const [journeyUpdate] = useMutation<JourneyDescUpdate>(JOURNEY_DESC_UPDATE)
-  const journey = useJourney()
+  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
   const handleUpdateDescription = async (

@@ -11,7 +11,7 @@ import { useJourney } from '@core/journeys/ui'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 export function JourneyDetails(): ReactElement {
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   return (
     <>

@@ -34,7 +34,7 @@ export function TypographyEdit({
     TYPOGRAPHY_BLOCK_UPDATE_CONTENT
   )
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const [value, setValue] = useState(content)
 
   async function handleSaveBlock(): Promise<void> {

@@ -21,7 +21,7 @@ export function TitleEdit(): ReactElement {
     JOURNEY_SEO_TITLE_UPDATE
   )
 
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   async function handleSubmit(e: React.FocusEvent): Promise<void> {
     if (journey == null) return

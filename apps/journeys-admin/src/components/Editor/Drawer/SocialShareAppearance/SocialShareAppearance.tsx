@@ -12,7 +12,7 @@ import { TitleEdit } from './TitleEdit/TitleEdit'
 import { DescriptionEdit } from './DescriptionEdit/DescriptionEdit'
 
 export function SocialShareAppearance(): ReactElement {
-  const journey = useJourney()
+  const { journey } = useJourney()
   const isPublished = journey?.status === 'published'
 
   return (

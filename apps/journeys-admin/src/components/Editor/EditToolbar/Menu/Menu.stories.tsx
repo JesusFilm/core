@@ -1,8 +1,10 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
-import { EditorProvider } from '@core/journeys/ui'
+import { EditorProvider, JourneyProvider } from '@core/journeys/ui'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../libs/storybook'
+import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { Menu } from '.'
 
 const MenuStory = {
@@ -14,9 +16,16 @@ const MenuStory = {
 const Template: Story = ({ ...args }) => {
   return (
     <MockedProvider>
-      <EditorProvider initialState={{ ...args }}>
-        <Menu />
-      </EditorProvider>
+      <JourneyProvider
+        value={{
+          journey: { status: JourneyStatus.draft } as unknown as Journey,
+          admin: true
+        }}
+      >
+        <EditorProvider initialState={{ ...args }}>
+          <Menu />
+        </EditorProvider>
+      </JourneyProvider>
     </MockedProvider>
   )
 }

@@ -11,7 +11,7 @@ import { Properties } from './Properties'
 import { CardView } from './CardView'
 
 export function JourneyView(): ReactElement {
-  const journey = useJourney()
+  const { journey } = useJourney()
   const blocks =
     journey?.blocks != null
       ? (transformer(journey.blocks) as Array<TreeBlock<StepBlock>>)

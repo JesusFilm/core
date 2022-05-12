@@ -34,7 +34,7 @@ export function DeleteBlock({
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
   const { enqueueSnackbar } = useSnackbar()
 
-  const journey = useJourney()
+  const { journey } = useJourney()
   const {
     state: { selectedBlock, selectedStep, steps },
     dispatch

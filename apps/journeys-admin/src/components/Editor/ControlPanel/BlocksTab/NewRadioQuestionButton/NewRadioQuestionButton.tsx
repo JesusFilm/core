@@ -52,7 +52,7 @@ export function NewRadioQuestionButton(): ReactElement {
   const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
     TYPOGRAPHY_BLOCK_CREATE
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
   const {
     state: { selectedStep },
     dispatch
@@ -131,8 +131,7 @@ export function NewRadioQuestionButton(): ReactElement {
           input: {
             journeyId: journey.id,
             id,
-            parentBlockId: card.id,
-            label: ''
+            parentBlockId: card.id
           },
           radioOptionBlockCreateInput1: {
             journeyId: journey.id,

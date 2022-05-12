@@ -16,8 +16,6 @@ jest.mock('../../libs/action', () => {
 const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
   id: 'RadioQuestion1',
-  label: 'Label',
-  description: 'Description',
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
   children: [

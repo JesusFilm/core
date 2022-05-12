@@ -1,9 +1,12 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
 import { IconName } from '../../../../../../__generated__/globalTypes'
 import { IconFields } from '../../../../../../__generated__/IconFields'
-import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../__generated__/GetJourney'
 import { ICON_BLOCK_NAME_UPDATE } from './Icon'
 import { Icon } from '.'
 
@@ -98,6 +101,7 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
+                journeyId: 'journeyId',
                 input: {
                   name: IconName.ArrowForwardRounded
                 }
@@ -107,9 +111,16 @@ describe('Icon', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
-          <Icon id={testIcon.id} />
-        </EditorProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
+            <Icon id={testIcon.id} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -140,6 +151,7 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
+                journeyId: 'journeyId',
                 input: {
                   name: null
                 }
@@ -149,9 +161,16 @@ describe('Icon', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Icon id={icon.id} />
-        </EditorProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Icon id={icon.id} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.mouseDown(getByRole('button', { name: 'icon-name' }))
@@ -181,6 +200,7 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
+                journeyId: 'journeyId',
                 input: {
                   name: IconName.BeenhereRounded
                 }
@@ -190,9 +210,16 @@ describe('Icon', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Icon id={icon.id} />
-        </EditorProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Icon id={icon.id} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.mouseDown(getByRole('button', { name: 'icon-name' }))

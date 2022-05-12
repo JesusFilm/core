@@ -38,7 +38,7 @@ export function RadioQuestionEdit({
   const [radioOptionBlockCreate] = useMutation<RadioOptionBlockCreate>(
     RADIO_OPTION_BLOCK_CREATE
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   const handleCreateOption = async (): Promise<void> => {
     if (journey == null) return

@@ -26,7 +26,7 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
   const [iconBlockColorUpdate] = useMutation<IconBlockColorUpdate>(
     ICON_BLOCK_COLOR_UPDATE
   )
-  const journey = useJourney()
+  const { journey } = useJourney()
 
   async function handleChange(color: IconColor): Promise<void> {
     if (color !== iconColor && color != null && journey != null) {

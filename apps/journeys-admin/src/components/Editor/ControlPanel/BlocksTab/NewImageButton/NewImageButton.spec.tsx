@@ -6,7 +6,7 @@ import { GetJourney_journey as Journey } from '../../../../../../__generated__/G
 import { IMAGE_BLOCK_CREATE } from './NewImageButton'
 import { NewImageButton } from '.'
 
-describe('Image', () => {
+describe('NewImageButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
     id: 'stepId',
@@ -64,7 +64,12 @@ describe('Image', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewImageButton />
           </EditorProvider>
@@ -120,7 +125,12 @@ describe('Image', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ id: 'journeyId' } as unknown as Journey}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
           <EditorProvider initialState={{ selectedStep }}>
             <NewImageButton />
           </EditorProvider>
