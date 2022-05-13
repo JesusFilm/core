@@ -136,6 +136,11 @@ export enum VideoType {
   standalone = "standalone",
 }
 
+export interface ButtonClickEventCreateInput {
+  blockId: string;
+  id?: string | null;
+}
+
 export interface RadioQuestionSubmissionEventCreateInput {
   blockId: string;
   id?: string | null;

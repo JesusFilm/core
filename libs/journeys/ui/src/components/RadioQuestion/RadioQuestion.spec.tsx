@@ -80,7 +80,7 @@ describe('RadioQuestion', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ admin: false }}>
+        <JourneyProvider>
           <RadioQuestion {...block} uuid={() => 'uuid'} />
         </JourneyProvider>
       </MockedProvider>

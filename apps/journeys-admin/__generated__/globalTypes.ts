@@ -162,6 +162,11 @@ export interface ButtonBlockUpdateInput {
   variant?: ButtonVariant | null;
 }
 
+export interface ButtonClickEventCreateInput {
+  blockId: string;
+  id?: string | null;
+}
+
 export interface CardBlockUpdateInput {
   backgroundColor?: string | null;
   fullscreen?: boolean | null;

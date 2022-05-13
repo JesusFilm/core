@@ -130,6 +130,11 @@ export enum VideoPlayEventStateEnum {
   PLAYING = "PLAYING",
 }
 
+export interface ButtonClickEventCreateInput {
+  blockId: string;
+  id?: string | null;
+}
+
 export interface RadioQuestionSubmissionEventCreateInput {
   blockId: string;
   id?: string | null;
