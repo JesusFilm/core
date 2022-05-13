@@ -74,8 +74,8 @@ jobs:
         env:
           DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
           DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
-          NEXT_PUBLIC_FIREBASE_CONFIG_JSON: ${{ secrets.NEXT_PUBLIC_FIREBASE_CONFIG_JSON }}
-          COOKIE_SECRET_CURRENT: ${{ secrets.COOKIE_SECRET_CURRENT }}
+          DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
+          DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
         with:
           targets: fetch-secrets,generate,build
   test:
