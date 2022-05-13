@@ -23,7 +23,11 @@ describe('BlockRenderer', () => {
       action: null,
       children: []
     }
-    const { getByText } = render(<BlockRenderer block={block} />)
+    const { getByText } = render(
+      <MockedProvider>
+        <BlockRenderer block={block} />
+      </MockedProvider>
+    )
     expect(getByText('Click to continue')).toBeInTheDocument()
   })
 
@@ -43,17 +47,19 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId, getByText } = render(
-      <BlockRenderer
-        block={block}
-        wrappers={{
-          Wrapper: ({ children }) => (
-            <div data-testid="general-wrapper">{children}</div>
-          ),
-          ButtonWrapper: ({ children }) => (
-            <div data-testid="button-wrapper">{children}</div>
-          )
-        }}
-      />
+      <MockedProvider>
+        <BlockRenderer
+          block={block}
+          wrappers={{
+            Wrapper: ({ children }) => (
+              <div data-testid="general-wrapper">{children}</div>
+            ),
+            ButtonWrapper: ({ children }) => (
+              <div data-testid="button-wrapper">{children}</div>
+            )
+          }}
+        />
+      </MockedProvider>
     )
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
@@ -408,7 +414,11 @@ describe('BlockRenderer', () => {
         }
       ]
     }
-    const { getByText } = render(<BlockRenderer block={block} />)
+    const { getByText } = render(
+      <MockedProvider>
+        <BlockRenderer block={block} />
+      </MockedProvider>
+    )
     expect(getByText('Click to continue')).toBeInTheDocument()
   })
 
