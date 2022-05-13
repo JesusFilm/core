@@ -31,7 +31,7 @@ export function Step({
   const { admin } = useJourney()
 
   useEffect(() => {
-    if (admin != null && !admin) {
+    if (!admin) {
       const id = uuidv4()
       void stepViewEventCreate({
         variables: { input: { id, blockId } }

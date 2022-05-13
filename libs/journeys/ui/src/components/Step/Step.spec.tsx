@@ -82,7 +82,7 @@ describe('Step', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ admin: false }}>
+        <JourneyProvider>
           <Step {...block} />
         </JourneyProvider>
       </MockedProvider>
@@ -90,6 +90,8 @@ describe('Step', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
   it('should not create a stepViewEvent if there are wrappers', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+
     const result = jest.fn(() => ({
       data: {
         stepViewEventCreate: {
@@ -116,12 +118,14 @@ describe('Step', () => {
           }
         ]}
       >
-        <Step
-          {...block}
-          wrappers={{
-            Wrapper: ({ children }) => <div>{children}</div>
-          }}
-        />
+        <JourneyProvider>
+          <Step
+            {...block}
+            wrappers={{
+              Wrapper: ({ children }) => <div>{children}</div>
+            }}
+          />
+        </JourneyProvider>
       </MockedProvider>
     )
     await waitFor(() => expect(result).not.toHaveBeenCalled())
