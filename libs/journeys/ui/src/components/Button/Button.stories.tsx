@@ -10,7 +10,7 @@ import {
   IconSize
 } from '../../../__generated__/globalTypes'
 import { ButtonFields } from './__generated__/ButtonFields'
-import { Button } from './Button'
+import { Button } from '.'
 
 const ButtonDemo = {
   ...journeyUiConfig,
