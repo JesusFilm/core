@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock } from '../..'
 import { RadioOptionFields } from '../RadioQuestion/RadioOption/__generated__/RadioOptionFields'
@@ -336,7 +337,9 @@ describe('BlockRenderer', () => {
     }
     const { getByLabelText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <BlockRenderer block={block} />
+        <SnackbarProvider>
+          <BlockRenderer block={block} />
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByLabelText('Name')).toBeInTheDocument()
@@ -360,17 +363,19 @@ describe('BlockRenderer', () => {
     }
     const { getByTestId, getByLabelText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
-        <BlockRenderer
-          block={block}
-          wrappers={{
-            Wrapper: ({ children }) => (
-              <div data-testid="general-wrapper">{children}</div>
-            ),
-            SignUpWrapper: ({ children }) => (
-              <div data-testid="sign-up-wrapper">{children}</div>
-            )
-          }}
-        />
+        <SnackbarProvider>
+          <BlockRenderer
+            block={block}
+            wrappers={{
+              Wrapper: ({ children }) => (
+                <div data-testid="general-wrapper">{children}</div>
+              ),
+              SignUpWrapper: ({ children }) => (
+                <div data-testid="sign-up-wrapper">{children}</div>
+              )
+            }}
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(
