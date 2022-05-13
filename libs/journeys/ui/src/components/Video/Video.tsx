@@ -145,6 +145,17 @@ export function Video({
             playerRef.current?.currentTime()
           )
         })
+        playerRef.current.on('timeupdate', () => {
+          if (playerRef.current != null) {
+            if (
+              action == null &&
+              endAt != null &&
+              playerRef.current.currentTime() >= endAt
+            ) {
+              playerRef.current?.pause()
+            }
+          }
+        })
       }
     }
   }, [
@@ -152,6 +163,7 @@ export function Video({
     startAt,
     endAt,
     muted,
+    action,
     autoplay,
     blockId,
     posterBlock,
