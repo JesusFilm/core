@@ -62,11 +62,11 @@ export function Video({
   const blurBackground = useMemo(() => {
     return posterBlock != null
       ? blurImage(
-          posterBlock.width,
-          posterBlock.height,
-          posterBlock.blurhash,
-          theme.palette.background.paper
-        )
+        posterBlock.width,
+        posterBlock.height,
+        posterBlock.blurhash,
+        theme.palette.background.paper
+      )
       : undefined
   }, [posterBlock, theme])
 
@@ -152,7 +152,7 @@ export function Video({
               endAt != null &&
               playerRef.current.currentTime() >= endAt
             ) {
-              playerRef.current?.pause()
+              playerRef.current.pause()
             }
           }
         })
