@@ -82,7 +82,7 @@ describe('Button', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ admin: false }}>
+        <JourneyProvider>
           <Button {...block} />
         </JourneyProvider>
       </MockedProvider>

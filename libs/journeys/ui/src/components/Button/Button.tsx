@@ -50,7 +50,7 @@ export function Button({
     | undefined
 
   async function createEvent(): Promise<void> {
-    if (admin === false) {
+    if (!admin) {
       const id = uuidv4()
       await buttonClickEventCreate({
         variables: {
