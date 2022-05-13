@@ -67,7 +67,14 @@
     "type-check": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "npx tsc -b apps/journeys/tsconfig.json"
+        "commands": [
+          {
+            "command": "test -f apps/journeys/secrets/firebase.json || (echo '{}' > apps/journeys/secrets/firebase.json)"
+          },
+          {
+            "command": "npx tsc -b apps/journeys/tsconfig.json"
+          }
+        ]
       }
     },
     "demo": {
@@ -107,6 +114,9 @@
         "commands": [
           {
             "command": "doppler secrets download --no-file --format=env-no-quotes --project journeys > apps/journeys/.env"
+          },
+          {
+            "command": "nx fetch-firebase-secrets journeys"
           }
         ]
       }
