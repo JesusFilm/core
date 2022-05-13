@@ -141,10 +141,10 @@ export interface ButtonClickEventCreateInput {
   id?: string | null;
 }
 
-export interface RadioQuestionResponseCreateInput {
-  blockId?: string | null;
+export interface RadioQuestionSubmissionEventCreateInput {
+  blockId: string;
   id?: string | null;
-  radioOptionBlockId?: string | null;
+  radioOptionBlockId: string;
 }
 
 export interface SignUpResponseCreateInput {
@@ -152,6 +152,11 @@ export interface SignUpResponseCreateInput {
   email?: string | null;
   id?: string | null;
   name?: string | null;
+}
+
+export interface StepViewEventCreateInput {
+  blockId: string;
+  id?: string | null;
 }
 
 export interface VideoPlayEventCreateInput {
