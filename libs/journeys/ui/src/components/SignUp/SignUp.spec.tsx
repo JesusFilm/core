@@ -189,7 +189,7 @@ describe('SignUp', () => {
   it('should be in a loading state when waiting for response', async () => {
     const { getByRole, getByLabelText } = render(
       <ApolloLoadingProvider>
-        <JourneyProvider value={{ admin: false }}>
+        <JourneyProvider>
           <SnackbarProvider>
             <SignUp {...block} uuid={() => 'uuid'} />
           </SnackbarProvider>
@@ -242,7 +242,7 @@ describe('SignUp', () => {
 
     const { getByLabelText, getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ admin: false }}>
+        <JourneyProvider>
           <SnackbarProvider>
             <SignUpMock mocks={mocks} />
           </SnackbarProvider>
@@ -282,7 +282,7 @@ describe('SignUp', () => {
     ]
 
     const { getByRole, getByLabelText, getByText } = render(
-      <JourneyProvider value={{ admin: false }}>
+      <JourneyProvider>
         <SnackbarProvider>
           <SignUpMock mocks={mocks} />
         </SnackbarProvider>

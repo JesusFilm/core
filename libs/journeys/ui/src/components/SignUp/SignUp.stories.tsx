@@ -111,7 +111,7 @@ CustomButton.args = {
 
 const LoadingTemplate: Story<TreeBlock<SignUpFields>> = (): ReactElement => (
   <ApolloLoadingProvider>
-    <JourneyProvider value={{ admin: false }}>
+    <JourneyProvider>
       <SnackbarProvider>
         <StoryCard>
           <SignUp {...signUpProps} uuid={() => 'uuid'} />

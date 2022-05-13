@@ -72,7 +72,7 @@ export const SignUp = ({
   })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
-    if (admin != null && !admin) {
+    if (!admin) {
       const id = uuid()
       try {
         await signUpSubmissionEventCreate({
