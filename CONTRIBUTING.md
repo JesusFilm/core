@@ -89,7 +89,7 @@ As an example we are going to run through the steps to get the Next Steps Journe
 1. Get invited to Jesus Film Doppler account. Send an email to our [Doppler Administrator](tataihono.nikora@jesusfilm.org).
 1. Login to Doppler by running `doppler login`
 1. Fetch environment variables
-   - run `nx run-many --target=fetch-secrets --all`
+   - run `DOPPLER_CONFIG=dev nx run-many --target=fetch-secrets --all`
 1. Seed the database
    - run `nx run api-journeys:seed`
    - run `nx run api-users:seed`
