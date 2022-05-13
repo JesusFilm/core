@@ -67,14 +67,7 @@
     "type-check": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": [
-          {
-            "command": "test -f apps/journeys-admin/secrets/firebase.json || (echo '{}' > apps/journeys-admin/secrets/firebase.json)"
-          },
-          {
-            "command": "npx tsc -b apps/journeys-admin/tsconfig.json"
-          }
-        ]
+        "command": "npx tsc -b apps/journeys-admin/tsconfig.json"
       }
     },
     "demo": {
@@ -114,19 +107,6 @@
         "commands": [
           {
             "command": "doppler secrets download --no-file --format=env-no-quotes --project journeys-admin > apps/journeys-admin/.env"
-          },
-          {
-            "command": "nx fetch-firebase-secrets journeys-admin"
-          }
-        ]
-      }
-    },
-    "fetch-firebase-secrets": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "DOPPLER_TOKEN=$DOPPLER_FIREBASE_TOKEN doppler secrets get PUBLIC_FIREBASE_CONFIG_JSON --project firebase --plain > apps/journeys-admin/secrets/firebase.json"
           }
         ]
       }

@@ -47,6 +47,3 @@ Thumbs.db
 
 # nx generated files
 migrations.json
-
-**/secrets/*
-!**/secrets/.gitkeep
