@@ -100,6 +100,16 @@
           }
         ]
       }
+    },
+    "fetch-secrets": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_WATCH_TOKEN doppler secrets download --no-file --format=env --project watch > apps/watch/.env"
+          }
+        ]
+      }
     }
   },
   "tags": []

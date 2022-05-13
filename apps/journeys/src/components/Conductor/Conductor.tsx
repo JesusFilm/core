@@ -54,7 +54,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   // React renders twice, see: https://github.com/reactwg/react-18/discussions/18
   const ref = useRef(false)
   useEffect(() => {
-    if (admin != null && !admin && journey != null) {
+    if (!admin && journey != null) {
       if (!ref.current) {
         ref.current = true
         const id = uuidv4()

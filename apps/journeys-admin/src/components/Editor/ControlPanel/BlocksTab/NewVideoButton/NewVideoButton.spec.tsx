@@ -6,7 +6,7 @@ import { GetJourney_journey as Journey } from '../../../../../../__generated__/G
 import { VIDEO_BLOCK_CREATE } from './NewVideoButton'
 import { NewVideoButton } from '.'
 
-describe('Video', () => {
+describe('NewVideoButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
     id: 'stepId',
@@ -44,7 +44,8 @@ describe('Video', () => {
           endAt: null,
           posterBlockId: null,
           video: null,
-          fullsize: true
+          fullsize: true,
+          videoId: null
         }
       }
     }))
@@ -108,7 +109,10 @@ describe('Video', () => {
           posterBlockId: null,
           video: null,
           __typename: 'VideoBlock',
-          fullsize: true
+          fullsize: true,
+          videoId: null,
+          videoVariantLanguageId: null,
+          action: null
         }
       }
     }))

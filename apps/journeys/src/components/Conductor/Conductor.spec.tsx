@@ -67,8 +67,7 @@ describe('Conductor', () => {
       >
         <JourneyProvider
           value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            admin: false
+            journey: { id: 'journeyId' } as unknown as Journey
           }}
         >
           <Conductor blocks={[]} />
