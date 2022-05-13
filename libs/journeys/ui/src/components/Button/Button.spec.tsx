@@ -11,7 +11,8 @@ import {
 } from '../../../__generated__/globalTypes'
 import { handleAction, TreeBlock, JourneyProvider } from '../..'
 import { ButtonFields } from './__generated__/ButtonFields'
-import { Button, BUTTON_CLICK_EVENT_CREATE } from './Button'
+import { BUTTON_CLICK_EVENT_CREATE } from './Button'
+import { Button } from '.'
 
 jest.mock('uuid', () => ({
   __esModule: true,
