@@ -11,7 +11,7 @@ services:
         USER_GID: 1000
 
     volumes:
-      - ..:/workspace:delegated
+      - ..:/workspaces:delegated
       - core-node-doppler:/home/node/.doppler
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
