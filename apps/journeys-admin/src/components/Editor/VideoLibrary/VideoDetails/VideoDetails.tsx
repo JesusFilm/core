@@ -15,9 +15,12 @@ import Check from '@mui/icons-material/Check'
 import Close from '@mui/icons-material/Close'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
 import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
 import { GetVideo } from '../../../../../__generated__/GetVideo'
+import { UpdateVideoBlockNextStep } from '../../../../../__generated__/UpdateVideoBlockNextStep'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../__generated__/BlockFields'
 import { Drawer as LanguageDrawer } from '../LanguageFilter/Drawer/Drawer'
 import 'video.js/dist/video-js.css'
 
@@ -40,6 +43,23 @@ export const GET_VIDEO = gql`
         duration
         hls
       }
+    }
+  }
+`
+
+export const UPDATE_VIDEO_BLOCK_NEXT_STEP = gql`
+  mutation UpdateVideoBlockNextStep(
+    $id: ID!
+    $journeyId: ID!
+    $input: NavigateToBlockActionInput!
+  ) {
+    blockUpdateNavigateToBlockAction(
+      id: $id
+      journeyId: $journeyId
+      input: $input
+    ) {
+      gtmEventName
+      blockId
     }
   }
 `
@@ -71,8 +91,44 @@ export function VideoDetails({
   const handleChange = (selectedIds: string[]): void => {
     setSelectedIds(selectedIds)
   }
+  const [updateVideoBlockNextStep] = useMutation<UpdateVideoBlockNextStep>(
+    UPDATE_VIDEO_BLOCK_NEXT_STEP
+  )
+  const { journey } = useJourney()
+  const {
+    state: { selectedStep, selectedBlock }
+  } = useEditor()
 
-  const handleVideoSelect = (): void => {
+  const updateDefaultNextStep = async (): Promise<void> => {
+    const nextStepId = selectedStep?.nextBlockId
+    const currentBlock = selectedBlock as TreeBlock<VideoBlock> | undefined
+    if (nextStepId != null && currentBlock != null && journey != null) {
+      await updateVideoBlockNextStep({
+        variables: {
+          id: currentBlock.id,
+          journeyId: journey.id,
+          input: {
+            blockId: nextStepId
+          }
+        },
+        update(cache, { data }) {
+          if (data?.blockUpdateNavigateToBlockAction != null) {
+            cache.modify({
+              id: cache.identify({
+                __typename: 'VideoBlock',
+                id: currentBlock.id
+              }),
+              fields: {
+                action: () => data?.blockUpdateNavigateToBlockAction
+              }
+            })
+          }
+        }
+      })
+    }
+  }
+
+  const handleVideoSelect = async (): Promise<void> => {
     handleSelect({
       videoId: id,
       videoVariantLanguageId: data?.video?.primaryLanguageId,
@@ -80,6 +136,7 @@ export function VideoDetails({
       endAt: time
     })
     handleClose()
+    await updateDefaultNextStep()
   }
 
   const time = data?.video.variant?.duration ?? 0
