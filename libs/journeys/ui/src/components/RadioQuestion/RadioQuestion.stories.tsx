@@ -3,10 +3,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig, StoryCard, TreeBlock } from '../..'
 import { TypographyVariant } from '../../../__generated__/globalTypes'
 import { Typography } from '../Typography'
-import { RadioQuestion } from './RadioQuestion'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import { RadioOptionFields } from './RadioOption/__generated__/RadioOptionFields'
-import { RADIO_QUESTION_RESPONSE_CREATE } from '.'
+import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
 
 const typographyProps: TreeBlock = {
   __typename: 'TypographyBlock',
@@ -95,7 +94,7 @@ const DefaultTemplate: Story<TreeBlock<RadioQuestionFields>> = ({
     mocks={[
       {
         request: {
-          query: RADIO_QUESTION_RESPONSE_CREATE,
+          query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
           variables: {
             input: {
               id: 'uuid',
@@ -106,7 +105,7 @@ const DefaultTemplate: Story<TreeBlock<RadioQuestionFields>> = ({
         },
         result: {
           data: {
-            radioQuestionResponseCreate: {
+            radioQuestionSubmissionEventCreate: {
               id: 'uuid',
               radioOptionBlockId: 'RadioOption1'
             }

@@ -2,24 +2,23 @@ import { init } from 'next-firebase-auth'
 import absoluteUrl from 'next-absolute-url'
 
 export function initAuth(): void {
-  const firebaseAdminInitConfig = JSON.parse(
-    process.env.GOOGLE_APPLICATION_JSON ?? '{}'
-  )
-
   init({
     loginAPIEndpoint: '/api/login',
     logoutAPIEndpoint: '/api/logout',
     firebaseAdminInitConfig: {
       credential: {
-        projectId: firebaseAdminInitConfig.project_id ?? '',
-        clientEmail: firebaseAdminInitConfig.client_email ?? '',
-        privateKey: firebaseAdminInitConfig.private_key
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? '',
+        clientEmail: process.env.PRIVATE_FIREBASE_CLIENT_EMAIL ?? '',
+        privateKey: process.env.PRIVATE_FIREBASE_PRIVATE_KEY ?? ''
       },
       databaseURL: ''
     },
-    firebaseClientInitConfig: JSON.parse(
-      process.env.NEXT_PUBLIC_FIREBASE_CONFIG_JSON ?? '{}'
-    ),
+    firebaseClientInitConfig: {
+      apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '',
+      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+    },
     cookies: {
       name: 'journeys-admin',
       keys: [
