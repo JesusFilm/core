@@ -86,14 +86,10 @@ We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the
 
 As an example we are going to run through the steps to get the Next Steps Journeys project running in your web browser. This example assumes you are running it from the development container.
 
-1. Set up env files for projects: _Note - to set up environment variables, follow instructions found in the `.env.example` file for each project._
-   - Make a copy of `apps/api-gateway/.env.example` with the file name `apps/api-gateway/.env.local`. Open the file and set up your own environment variables.
-   - Make a copy of `apps/api-journeys/.env.example` with the file name `apps/api-journeys/.env.local`. Open the file and set up your own environment variables.
-   - Make a copy of `apps/api-users/.env.example` with the file name `apps/api-users/.env.local`. Open the file and set up your own environment variables.
-   - Make a copy of `apps/api-languages/.env.example` with the file name `apps/api-languages/.env.local`. Open the file and set up your own environment variables.
-   - Make a copy of `apps/api-videos/.env.example` with the file name `apps/api-videos/.env.local`. Open the file and set up your own environment variables.
-   - Make a copy of `apps/journeys/.env.example` with the file name `apps/journeys/.env.local`. Open the file and set up your own environment variables.
-   - Make a copy of `apps/journeys-admin/.env.example` with the file name `apps/journeys-admin/.env.local`. Open the file and set up your own environment variables.
+1. Get invited to Jesus Film Doppler account. Send an email to our [Doppler Administrator](tataihono.nikora@jesusfilm.org).
+1. Login to Doppler by running `doppler login`
+1. Fetch environment variables
+   - run `DOPPLER_CONFIG=dev nx run-many --target=fetch-secrets --all`
 1. Seed the database
    - run `nx run api-journeys:seed`
    - run `nx run api-users:seed`
@@ -106,7 +102,7 @@ As an example we are going to run through the steps to get the Next Steps Journe
    - To run the journeys-admin project:
      1. run `nx run journeys-admin:serve-all`
      1. in your local browser navigate to [http://localhost:4200](http://localhost:4200)
-   - If you would like to run all of the projects at the same time:
+   - To run multiple projects at the same time:
      1. run `nx run api-gateway:serve-all`
      1. run `nx run journeys:serve`
      1. run `nx run journeys-admin:serve`

@@ -136,17 +136,27 @@ export enum VideoType {
   standalone = "standalone",
 }
 
-export interface RadioQuestionResponseCreateInput {
-  blockId?: string | null;
+export interface ButtonClickEventCreateInput {
+  blockId: string;
   id?: string | null;
-  radioOptionBlockId?: string | null;
 }
 
-export interface SignUpResponseCreateInput {
-  blockId?: string | null;
-  email?: string | null;
+export interface RadioQuestionSubmissionEventCreateInput {
+  blockId: string;
   id?: string | null;
-  name?: string | null;
+  radioOptionBlockId: string;
+}
+
+export interface SignUpSubmissionEventCreateInput {
+  blockId: string;
+  email: string;
+  id?: string | null;
+  name: string;
+}
+
+export interface StepViewEventCreateInput {
+  blockId: string;
+  id?: string | null;
 }
 
 export interface VideoPlayEventCreateInput {
