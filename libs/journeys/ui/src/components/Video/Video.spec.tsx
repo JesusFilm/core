@@ -55,28 +55,7 @@ const block: TreeBlock<VideoFields> = {
 describe('Video', () => {
   it('should render the video through mediaComponentId and languageId successfully', () => {
     const { getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: VIDEO_PLAY_EVENT_CREATE,
-              variables: {
-                id: 'uuid',
-                blockId: 'video0.id',
-                state: VideoPlayEventStateEnum.PLAYING,
-                position: 30
-              }
-            },
-            result: {
-              data: {
-                id: 'uuid',
-                state: VideoPlayEventStateEnum.PLAYING,
-                position: 30
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider>
         <Video {...block} />
       </MockedProvider>
     )

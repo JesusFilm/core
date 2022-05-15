@@ -153,11 +153,29 @@ export interface StepViewEventCreateInput {
   id?: string | null;
 }
 
+export interface VideoCompleteEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  position?: number | null;
+}
+
+export interface VideoPauseEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  position?: number | null;
+}
+
 export interface VideoPlayEventCreateInput {
   blockId: string;
   id?: string | null;
   position?: number | null;
   state?: VideoPlayEventStateEnum | null;
+}
+
+export interface VideoStartEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  position?: number | null;
 }
 
 //==============================================================
