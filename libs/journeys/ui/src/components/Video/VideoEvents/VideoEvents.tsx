@@ -15,6 +15,7 @@ export const VIDEO_START_EVENT_CREATE = gql`
     }
   }
 `
+
 export const VIDEO_PLAY_EVENT_CREATE = gql`
   mutation VideoPlayEventCreate($input: VideoPlayEventCreateInput!) {
     videoPlayEventCreate(input: $input) {
@@ -36,6 +37,7 @@ export const VIDEO_COMPLETE_EVENT_CREATE = gql`
     }
   }
 `
+
 export const VIDEO_EXPAND_EVENT_CREATE = gql`
   mutation VideoExpandEventCreate($input: VideoExpandEventCreateInput!) {
     videoExpandEventCreate(input: $input) {
@@ -54,11 +56,13 @@ export const VIDEO_COLLAPSE_EVENT_CREATE = gql`
 export interface VideoEventsProps {
   player: videojs.Player
   blockId: string
+  videoPosition: number
 }
 
 export function VideoEvents({
   player,
-  blockId
+  blockId,
+  videoPosition
 }: VideoEventsProps): ReactElement {
   const [videoStartEventCreate] = useMutation<VideoStartEventCreate>(
     VIDEO_START_EVENT_CREATE
