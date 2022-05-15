@@ -135,6 +135,11 @@ export interface ButtonClickEventCreateInput {
   id?: string | null;
 }
 
+export interface JourneyViewEventCreateInput {
+  id?: string | null;
+  journeyId: string;
+}
+
 export interface RadioQuestionSubmissionEventCreateInput {
   blockId: string;
   id?: string | null;

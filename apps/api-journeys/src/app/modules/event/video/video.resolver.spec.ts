@@ -1,25 +1,33 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
-import { VideoEventResolver } from './video.resolver'
+import {
+  VideoStartEventResolver,
+  VideoPlayEventResolver,
+  VideoPuaseEventResolver,
+  VideoCompleteEventResolver,
+  VideoCollapseEventResolver,
+  VideoExpandEventResolver,
+  VideoProgressEventResolver
+} from './video.resolver'
 
-describe('VideoPlayEventResolver', () => {
-  let resolver: VideoEventResolver
-
-  const eventService = {
-    provide: EventService,
-    useFactory: () => ({
-      save: jest.fn((event) => event)
-    })
-  }
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [VideoEventResolver, eventService]
-    }).compile()
-    resolver = module.get<VideoEventResolver>(VideoEventResolver)
-  })
-
+describe('VideoResolver', () => {
   describe('videoStartEventCreate', () => {
+    let resolver: VideoStartEventResolver
+
+    const eventService = {
+      provide: EventService,
+      useFactory: () => ({
+        save: jest.fn((event) => event)
+      })
+    }
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [VideoStartEventResolver, eventService]
+      }).compile()
+      resolver = module.get<VideoStartEventResolver>(VideoStartEventResolver)
+    })
+
     it('returns VideoStartEvent', async () => {
       const event = {
         id: '1',
@@ -36,6 +44,22 @@ describe('VideoPlayEventResolver', () => {
   })
 
   describe('videoPlayEventCreate', () => {
+    let resolver: VideoPlayEventResolver
+
+    const eventService = {
+      provide: EventService,
+      useFactory: () => ({
+        save: jest.fn((event) => event)
+      })
+    }
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [VideoPlayEventResolver, eventService]
+      }).compile()
+      resolver = module.get<VideoPlayEventResolver>(VideoPlayEventResolver)
+    })
+
     it('returns VideoPlayEvent', async () => {
       const event = {
         id: '1',
@@ -52,6 +76,22 @@ describe('VideoPlayEventResolver', () => {
   })
 
   describe('videoPauseEventCreate', () => {
+    let resolver: VideoPuaseEventResolver
+
+    const eventService = {
+      provide: EventService,
+      useFactory: () => ({
+        save: jest.fn((event) => event)
+      })
+    }
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [VideoPuaseEventResolver, eventService]
+      }).compile()
+      resolver = module.get<VideoPuaseEventResolver>(VideoPuaseEventResolver)
+    })
+
     it('returns VideoPauseEvent', async () => {
       const event = {
         id: '1',
@@ -68,6 +108,24 @@ describe('VideoPlayEventResolver', () => {
   })
 
   describe('videoCompleteEventCreate', () => {
+    let resolver: VideoCompleteEventResolver
+
+    const eventService = {
+      provide: EventService,
+      useFactory: () => ({
+        save: jest.fn((event) => event)
+      })
+    }
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [VideoCompleteEventResolver, eventService]
+      }).compile()
+      resolver = module.get<VideoCompleteEventResolver>(
+        VideoCompleteEventResolver
+      )
+    })
+
     it('returns VideoCompleteEvent', async () => {
       const event = {
         id: '1',
@@ -84,6 +142,22 @@ describe('VideoPlayEventResolver', () => {
   })
 
   describe('videoExpandEventCreate', () => {
+    let resolver: VideoExpandEventResolver
+
+    const eventService = {
+      provide: EventService,
+      useFactory: () => ({
+        save: jest.fn((event) => event)
+      })
+    }
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [VideoExpandEventResolver, eventService]
+      }).compile()
+      resolver = module.get<VideoExpandEventResolver>(VideoExpandEventResolver)
+    })
+
     it('returns VideoExpandEvent', async () => {
       const event = {
         id: '1',
@@ -100,6 +174,24 @@ describe('VideoPlayEventResolver', () => {
   })
 
   describe('videoCollapseEventCreate', () => {
+    let resolver: VideoCollapseEventResolver
+
+    const eventService = {
+      provide: EventService,
+      useFactory: () => ({
+        save: jest.fn((event) => event)
+      })
+    }
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [VideoCollapseEventResolver, eventService]
+      }).compile()
+      resolver = module.get<VideoCollapseEventResolver>(
+        VideoCollapseEventResolver
+      )
+    })
+
     it('returns VideoCollapseEvent', async () => {
       const event = {
         id: '1',
@@ -116,6 +208,24 @@ describe('VideoPlayEventResolver', () => {
   })
 
   describe('videoProgressEventCreate', () => {
+    let resolver: VideoProgressEventResolver
+
+    const eventService = {
+      provide: EventService,
+      useFactory: () => ({
+        save: jest.fn((event) => event)
+      })
+    }
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [VideoProgressEventResolver, eventService]
+      }).compile()
+      resolver = module.get<VideoProgressEventResolver>(
+        VideoProgressEventResolver
+      )
+    })
+
     it('returns VideoProgressEvent', async () => {
       const event = {
         id: '1',
