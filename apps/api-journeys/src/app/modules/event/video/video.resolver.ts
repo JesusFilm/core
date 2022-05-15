@@ -40,7 +40,6 @@ export class VideoStartEventResolver {
 @UseGuards(GqlAuthGuard)
 export class VideoPlayEventResolver {
   constructor(private readonly eventService: EventService) {}
-
   @Mutation()
   async videoPlayEventCreate(
     @CurrentUserId() userId: string,
