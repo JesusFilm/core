@@ -20,11 +20,10 @@ import {
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
-@Resolver('VideoEvent')
+@Resolver('VideoStartEvent')
 @UseGuards(GqlAuthGuard)
-export class VideoEventResolver {
+export class VideoStartEventResolver {
   constructor(private readonly eventService: EventService) {}
-
   @Mutation()
   async videoStartEventCreate(
     @CurrentUserId() userId: string,
@@ -33,7 +32,11 @@ export class VideoEventResolver {
     input.__typename = 'VideoStartEvent'
     return await this.eventService.save({ ...input, userId })
   }
-
+}
+@Resolver('VideoPlayEvent')
+@UseGuards(GqlAuthGuard)
+export class VideoPlayEventResolver {
+  constructor(private readonly eventService: EventService) {}
   @Mutation()
   async videoPlayEventCreate(
     @CurrentUserId() userId: string,
@@ -42,7 +45,11 @@ export class VideoEventResolver {
     input.__typename = 'VideoPlayEvent'
     return await this.eventService.save({ ...input, userId })
   }
-
+}
+@Resolver('VideoPauseEvent')
+@UseGuards(GqlAuthGuard)
+export class VideoPuaseEventResolver {
+  constructor(private readonly eventService: EventService) {}
   @Mutation()
   async videoPauseEventCreate(
     @CurrentUserId() userId: string,
@@ -51,7 +58,11 @@ export class VideoEventResolver {
     input.__typename = 'VideoPauseEvent'
     return await this.eventService.save({ ...input, userId })
   }
-
+}
+@Resolver('VideoCompleteEvent')
+@UseGuards(GqlAuthGuard)
+export class VideoCompleteEventResolver {
+  constructor(private readonly eventService: EventService) {}
   @Mutation()
   async videoCompleteEventCreate(
     @CurrentUserId() userId: string,
@@ -60,7 +71,11 @@ export class VideoEventResolver {
     input.__typename = 'VideoCompleteEvent'
     return await this.eventService.save({ ...input, userId })
   }
-
+}
+@Resolver('VideoExpandEvent')
+@UseGuards(GqlAuthGuard)
+export class VideoExpandEventResolver {
+  constructor(private readonly eventService: EventService) {}
   @Mutation()
   async videoExpandEventCreate(
     @CurrentUserId() userId: string,
@@ -69,7 +84,11 @@ export class VideoEventResolver {
     input.__typename = 'VideoExpandEvent'
     return await this.eventService.save({ ...input, userId })
   }
-
+}
+@Resolver('VideoCollapseEvent')
+@UseGuards(GqlAuthGuard)
+export class VideoCollapseEventResolver {
+  constructor(private readonly eventService: EventService) {}
   @Mutation()
   async videoCollapseEventCreate(
     @CurrentUserId() userId: string,
@@ -78,7 +97,11 @@ export class VideoEventResolver {
     input.__typename = 'VideoCollapseEvent'
     return await this.eventService.save({ ...input, userId })
   }
-
+}
+@Resolver('VideoProgressEvent')
+@UseGuards(GqlAuthGuard)
+export class VideoProgressEventResolver {
+  constructor(private readonly eventService: EventService) {}
   @Mutation()
   async videoProgressEventCreate(
     @CurrentUserId() userId: string,
