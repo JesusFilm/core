@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
 import { journeyUiConfig, StoryCard, TreeBlock } from '../../..'
 import {
@@ -18,9 +19,11 @@ const Demo = {
 }
 
 const DefaultTemplate: Story<TreeBlock<GridItemFields>> = ({ ...props }) => (
-  <StoryCard>
-    <GridItem {...props} />
-  </StoryCard>
+  <MockedProvider>
+    <StoryCard>
+      <GridItem {...props} />
+    </StoryCard>
+  </MockedProvider>
 )
 
 const childrenOne: TreeBlock[] = [
