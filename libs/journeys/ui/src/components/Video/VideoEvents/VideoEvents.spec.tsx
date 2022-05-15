@@ -1,26 +1,25 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render } from '@testing-library/react'
+import videojs from 'video.js'
 import { MockedProvider } from '@apollo/client/testing'
 import { VideoEvents, VIDEO_START_EVENT_CREATE } from './VideoEvents'
 
 describe('VideoEvents', () => {
+  const video = document.createElement('video')
+  document.body.appendChild(video)
+
   const props = {
-    player: {
-      __typename: 'Video',
-      id: '2_0-FallingPlates',
-      title: [
-        {
-          __typename: 'Translation',
-          value: 'FallingPlates'
-        }
-      ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-      variant: {
-        __typename: 'VideoVariant',
-        id: '2_0-FallingPlates-529',
-        hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+    player: videojs(video, {
+      autoplay: true,
+      muted: true,
+      controls: true,
+      controlBar: {
+        playToggle: true,
+        progressControl: {
+          seekBar: true
+        },
+        fullscreenToggle: true
       }
-    },
+    }),
     blockId: 'video0.id',
     videoPosition: 0
   }

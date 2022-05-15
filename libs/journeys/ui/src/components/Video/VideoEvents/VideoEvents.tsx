@@ -14,7 +14,6 @@ export const VIDEO_START_EVENT_CREATE = gql`
     }
   }
 `
-
 export const VIDEO_PLAY_EVENT_CREATE = gql`
   mutation VideoPlayEventCreate($input: VideoPlayEventCreateInput!) {
     videoPlayEventCreate(input: $input) {

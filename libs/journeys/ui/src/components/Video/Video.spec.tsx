@@ -1,9 +1,8 @@
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock, EditorProvider } from '../..'
-import { VideoPlayEventStateEnum } from '../../../__generated__/globalTypes'
 import { VideoFields } from './__generated__/VideoFields'
-import { Video, VIDEO_PLAY_EVENT_CREATE } from '.'
+import { Video } from '.'
 
 const block: TreeBlock<VideoFields> = {
   __typename: 'VideoBlock',
