@@ -1,34 +1,77 @@
-import { render } from '@testing-library/react'
+import { render, waitFor, act, cleanup } from '@testing-library/react'
 import videojs from 'video.js'
 import { MockedProvider } from '@apollo/client/testing'
-import { VideoEvents, VIDEO_START_EVENT_CREATE } from './VideoEvents'
+import { v4 as uuidv4 } from 'uuid'
+import {
+  VideoEvents,
+  VideoEventsProps,
+  VIDEO_START_EVENT_CREATE,
+  VIDEO_PLAY_EVENT_CREATE,
+  VIDEO_PAUSE_EVENT_CREATE,
+  VIDEO_COMPLETE_EVENT_CREATE
+} from './VideoEvents'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('VideoEvents', () => {
-  const video = document.createElement('video')
-  document.body.appendChild(video)
+  let props: VideoEventsProps
+  beforeEach(() => {
+    const video = document.createElement('video')
+    document.body.appendChild(video)
 
-  const props = {
-    player: videojs(video, {
-      autoplay: true,
-      muted: true,
-      controls: true,
-      controlBar: {
-        playToggle: true,
-        progressControl: {
-          seekBar: true
-        },
-        fullscreenToggle: true
+    props = {
+      player: videojs(video, {
+        autoplay: false,
+        muted: true,
+        controls: true,
+        controlBar: {
+          playToggle: true,
+          progressControl: {
+            seekBar: true
+          },
+          fullscreenToggle: true
+        }
+      }),
+      blockId: 'video0.id'
+    }
+  })
+  afterEach(() => {
+    cleanup()
+  })
+
+  mockUuidv4.mockReturnValue('uuid')
+
+  const startMock = {
+    request: {
+      query: VIDEO_START_EVENT_CREATE,
+      variables: {
+        input: { id: 'uuid', blockId: 'video0.id', position: 0 }
       }
-    }),
-    blockId: 'video0.id',
-    videoPosition: 0
+    },
+    result: {
+      data: {
+        videoStartEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoStartEvent',
+          position: 0
+        }
+      }
+    }
   }
 
-  it('should create start event', () => {
+  it('should create start event', async () => {
     const result = jest.fn(() => ({
       data: {
-        id: 'uuid',
-        position: 30
+        videoStartEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoStartEvent',
+          position: 0
+        }
       }
     }))
 
@@ -39,9 +82,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_START_EVENT_CREATE,
               variables: {
-                id: 'uuid',
-                blockId: 'video0.id',
-                position: 30
+                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
               }
             },
             result
@@ -51,5 +92,112 @@ describe('VideoEvents', () => {
         <VideoEvents {...props} />
       </MockedProvider>
     )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should create play event', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        videoPlayEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoPlayEvent',
+          position: 0
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          startMock,
+          {
+            request: {
+              query: VIDEO_PLAY_EVENT_CREATE,
+              variables: {
+                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <VideoEvents {...props} />
+      </MockedProvider>
+    )
+    act(() => {
+      props.player.trigger('playing')
+    })
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should create pause event', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        videoPauseEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoPauseEvent',
+          position: 0
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          startMock,
+          {
+            request: {
+              query: VIDEO_PAUSE_EVENT_CREATE,
+              variables: {
+                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <VideoEvents {...props} />
+      </MockedProvider>
+    )
+    act(() => {
+      props.player.trigger('pause')
+    })
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should create complete event', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        videoCompleteEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoCompleteEvent',
+          position: 0
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          startMock,
+          {
+            request: {
+              query: VIDEO_COMPLETE_EVENT_CREATE,
+              variables: {
+                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <VideoEvents {...props} />
+      </MockedProvider>
+    )
+    act(() => {
+      props.player.trigger('ended')
+    })
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

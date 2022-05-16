@@ -36,7 +36,7 @@ export const VIDEO_COMPLETE_EVENT_CREATE = gql`
   }
 `
 
-interface VideoEventsProps {
+export interface VideoEventsProps {
   player: videojs.Player
   blockId: string
 }
@@ -59,56 +59,49 @@ export function VideoEvents({
   )
 
   useEffect(() => {
-    const videoPosition = player.currentTime()
-    const position = videoPosition != null ? Math.floor(videoPosition) : 0
-
     player.on('ready', () => {
-      const id = uuidv4()
       void videoStartEventCreate({
         variables: {
           input: {
-            id,
+            id: uuidv4(),
             blockId,
-            position
+            position: player.currentTime()
           }
         }
       })
     })
 
     player.on('playing', () => {
-      const id = uuidv4()
       void videoPlayEventCreate({
         variables: {
           input: {
-            id,
+            id: uuidv4(),
             blockId,
-            position
+            position: player.currentTime()
           }
         }
       })
     })
 
     player.on('pause', () => {
-      const id = uuidv4()
       void videoPauseEventCreate({
         variables: {
           input: {
-            id,
+            id: uuidv4(),
             blockId,
-            position
+            position: player.currentTime()
           }
         }
       })
     })
 
     player.on('ended', () => {
-      const id = uuidv4()
       void videoCompleteEventCreate({
         variables: {
           input: {
-            id,
+            id: uuidv4(),
             blockId,
-            position
+            position: player.currentTime()
           }
         }
       })
