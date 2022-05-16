@@ -1,7 +1,6 @@
 import { ReactElement, useEffect } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import videojs from 'video.js'
-import { v4 as uuidv4 } from 'uuid'
 import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
 import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
 import { VideoPauseEventCreate } from './__generated__/VideoPauseEventCreate'
@@ -63,7 +62,6 @@ export function VideoEvents({
       void videoStartEventCreate({
         variables: {
           input: {
-            id: uuidv4(),
             blockId,
             position: player.currentTime()
           }
@@ -75,7 +73,6 @@ export function VideoEvents({
       void videoPlayEventCreate({
         variables: {
           input: {
-            id: uuidv4(),
             blockId,
             position: player.currentTime()
           }
@@ -87,7 +84,6 @@ export function VideoEvents({
       void videoPauseEventCreate({
         variables: {
           input: {
-            id: uuidv4(),
             blockId,
             position: player.currentTime()
           }
@@ -99,7 +95,6 @@ export function VideoEvents({
       void videoCompleteEventCreate({
         variables: {
           input: {
-            id: uuidv4(),
             blockId,
             position: player.currentTime()
           }

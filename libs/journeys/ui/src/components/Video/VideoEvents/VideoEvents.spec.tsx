@@ -1,7 +1,6 @@
 import { render, waitFor, act, cleanup } from '@testing-library/react'
 import videojs from 'video.js'
 import { MockedProvider } from '@apollo/client/testing'
-import { v4 as uuidv4 } from 'uuid'
 import {
   VideoEvents,
   VideoEventsProps,
@@ -10,13 +9,6 @@ import {
   VIDEO_PAUSE_EVENT_CREATE,
   VIDEO_COMPLETE_EVENT_CREATE
 } from './VideoEvents'
-
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: jest.fn()
-}))
-
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('VideoEvents', () => {
   let props: VideoEventsProps
@@ -44,13 +36,13 @@ describe('VideoEvents', () => {
     cleanup()
   })
 
-  mockUuidv4.mockReturnValue('uuid')
+  // mockUuidv4.mockReturnValue('uuid')
 
   const startMock = {
     request: {
       query: VIDEO_START_EVENT_CREATE,
       variables: {
-        input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+        input: { blockId: 'video0.id', position: 0 }
       }
     },
     result: {
@@ -82,7 +74,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_START_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 0 }
               }
             },
             result
@@ -115,7 +107,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PLAY_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 0 }
               }
             },
             result
@@ -150,7 +142,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PAUSE_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 0 }
               }
             },
             result
@@ -185,7 +177,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_COMPLETE_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 0 }
               }
             },
             result
