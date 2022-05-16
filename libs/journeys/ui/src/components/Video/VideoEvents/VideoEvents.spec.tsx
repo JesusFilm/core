@@ -103,23 +103,7 @@ describe('VideoEvents', () => {
     render(
       <MockedProvider
         mocks={[
-          {
-            request: {
-              query: VIDEO_START_EVENT_CREATE,
-              variables: {
-                input: { blockId: 'video0.id', position: 0 }
-              }
-            },
-            result: {
-              data: {
-                videoStartEventCreate: {
-                  id: 'uuid',
-                  __typename: 'VideoStartEvent',
-                  position: 0
-                }
-              }
-            }
-          },
+          startMock,
           {
             request: {
               query: VIDEO_PLAY_EVENT_CREATE,
@@ -223,8 +207,6 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
-      props.player.currentTime(0)
-      props.player.trigger('ready')
       props.player.currentTime(50.5)
       props.player.trigger('ended')
     })
