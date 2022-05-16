@@ -193,7 +193,6 @@ export function Video({
                 <VideoTrigger player={playerRef.current} {...option} />
               )
           )}
-          {console.log(startAt, endAt)}
           {action != null && endAt != null && endAt > 0 && (
             <VideoTrigger
               player={playerRef.current}
