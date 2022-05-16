@@ -337,7 +337,19 @@ export interface VideoBlockUpdateInput {
   videoVariantLanguageId?: string | null;
 }
 
+export interface VideoCollapseEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  position?: number | null;
+}
+
 export interface VideoCompleteEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  position?: number | null;
+}
+
+export interface VideoExpandEventCreateInput {
   blockId: string;
   id?: string | null;
   position?: number | null;
