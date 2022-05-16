@@ -170,7 +170,7 @@ export function Video({
         }
       }}
     >
-      {playerRef.current != null && startAt != null && endAt != null && (
+      {playerRef.current != null && (
         <VideoEvents
           player={playerRef.current}
           blockId={blockId}
@@ -193,6 +193,7 @@ export function Video({
                 <VideoTrigger player={playerRef.current} {...option} />
               )
           )}
+          {console.log(startAt, endAt)}
           {action != null && endAt != null && endAt > 0 && (
             <VideoTrigger
               player={playerRef.current}

@@ -56,8 +56,8 @@ export const VIDEO_COLLAPSE_EVENT_CREATE = gql`
 export interface VideoEventsProps {
   player: videojs.Player
   blockId: string
-  startAt: number
-  endAt: number
+  startAt?: number
+  endAt?: number
 }
 
 export function VideoEvents({
@@ -88,13 +88,14 @@ export function VideoEvents({
   const firstTrigger = useRef(false)
   const secondTrigger = useRef(false)
   const thirdTrigger = useRef(false)
+  const start = startAt ?? 0
+  const end = endAt ?? 0
+  const firstTriggerTime = (end - start) / 4 + start
+  const secondTriggerTime = (end - start) / 2 + start
+  const thirdTriggerTime = ((end - start) * 3) / 4 + start
 
   const calc = useCallback(
     (currentTime: number): number | null => {
-      const firstTriggerTime = (endAt - startAt) / 4 + startAt
-      const secondTriggerTime = (endAt - startAt) / 2 + startAt
-      const thirdTriggerTime = ((endAt - startAt) * 3) / 4 + startAt
-
       let result
 
       if (!firstTrigger.current && currentTime > firstTriggerTime) {
@@ -112,7 +113,7 @@ export function VideoEvents({
 
       return result
     },
-    [startAt, endAt]
+    [firstTriggerTime, secondTriggerTime, thirdTriggerTime]
   )
 
   useEffect(() => {
