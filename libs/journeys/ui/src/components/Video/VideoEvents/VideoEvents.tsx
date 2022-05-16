@@ -56,8 +56,8 @@ export const VIDEO_COLLAPSE_EVENT_CREATE = gql`
 export interface VideoEventsProps {
   player: videojs.Player
   blockId: string
-  startAt?: number
-  endAt?: number
+  startAt: number | null
+  endAt: number | null
 }
 
 export function VideoEvents({
@@ -110,7 +110,6 @@ export function VideoEvents({
       } else {
         result = null
       }
-
       return result
     },
     [firstTriggerTime, secondTriggerTime, thirdTriggerTime]
