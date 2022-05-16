@@ -341,7 +341,7 @@ export interface VideoPlayEventCreateInput {
   blockId: string;
   id?: string | null;
   position?: number | null;
-  state: VideoPlayEventStateEnum;
+  state?: VideoPlayEventStateEnum | null;
 }
 
 export interface VideosFilter {

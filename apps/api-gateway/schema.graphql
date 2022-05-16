@@ -490,8 +490,14 @@ type Mutation {
   userJourneyRequest(idType: IdType, journeyId: ID!): UserJourney! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!, journeyId: ID!): VideoBlock! @join__field(graph: JOURNEYS)
+  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent! @join__field(graph: JOURNEYS)
+  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent! @join__field(graph: JOURNEYS)
+  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent! @join__field(graph: JOURNEYS)
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent! @join__field(graph: JOURNEYS)
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent! @join__field(graph: JOURNEYS)
+  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @join__field(graph: JOURNEYS)
   videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse! @join__field(graph: JOURNEYS)
+  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent! @join__field(graph: JOURNEYS)
 }
 
 """
@@ -969,11 +975,79 @@ input VideoBlockUpdateInput {
   videoVariantLanguageId: ID
 }
 
+type VideoCollapseEvent implements Event {
+  block: VideoBlock
+  id: ID!
+  position: Int
+  userId: ID!
+}
+
+input VideoCollapseEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  position: Int
+}
+
+type VideoCompleteEvent implements Event {
+  block: VideoBlock
+  id: ID!
+  position: Int
+  userId: ID!
+}
+
+input VideoCompleteEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  position: Int
+}
+
+type VideoExpandEvent implements Event {
+  block: VideoBlock
+  id: ID!
+  position: Int
+  userId: ID!
+}
+
+input VideoExpandEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  position: Int
+}
+
+type VideoPauseEvent implements Event {
+  block: VideoBlock
+  id: ID!
+  position: Int
+  userId: ID!
+}
+
+input VideoPauseEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  position: Int
+}
+
 type VideoPlayEvent implements Event {
   block: VideoBlock
   id: ID!
   position: Int
-  state: VideoPlayEventStateEnum!
+  state: VideoPlayEventStateEnum @deprecated(reason: "State will be split into different events")
   userId: ID!
 }
 
@@ -984,14 +1058,35 @@ input VideoPlayEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  position: Float
-  state: VideoPlayEventStateEnum!
+  position: Int
+  state: VideoPlayEventStateEnum
 }
 
 enum VideoPlayEventStateEnum {
-  FINISHED
-  PAUSED
-  PLAYING
+  FINISHED @deprecated(reason: "No longer using state")
+  PAUSED @deprecated(reason: "No longer using state")
+  PLAYING @deprecated(reason: "No longer using state")
+}
+
+type VideoProgressEvent implements Event {
+  block: VideoBlock
+  id: ID!
+  position: Int
+  progress: Int!
+  userId: ID!
+}
+
+input VideoProgressEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  position: Int
+
+  """Progress of the video based on the startAt and endAt values of video"""
+  progress: Int!
 }
 
 type VideoResponse implements Response {
@@ -1024,6 +1119,23 @@ input VideosFilter {
   tagId: String
   title: String
   types: [VideoType!]
+}
+
+type VideoStartEvent implements Event {
+  block: VideoBlock
+  id: ID!
+  postition: Int
+  userId: ID!
+}
+
+input VideoStartEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  position: Int
 }
 
 type VideoTag {
