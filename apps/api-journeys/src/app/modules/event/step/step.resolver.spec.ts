@@ -30,10 +30,7 @@ describe('StepViewEventResolver', () => {
     it('returns StepViewEvent', async () => {
       expect(await resolver.stepViewEventCreate('userId', input)).toEqual({
         ...input,
-<<<<<<< HEAD
         __typename: 'StepViewEvent',
-=======
->>>>>>> b3b3c7f5 (chore: fix naming)
         userId: 'userId'
       })
     })

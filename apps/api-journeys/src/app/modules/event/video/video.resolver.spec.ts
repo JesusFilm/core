@@ -37,10 +37,7 @@ describe('VideoResolver', () => {
 
       expect(await resolver.videoStartEventCreate('userid', input)).toEqual({
         ...input,
-<<<<<<< HEAD
         __typename: 'VideoStartEvent',
-=======
->>>>>>> b3b3c7f5 (chore: fix naming)
         userId: 'userid'
       })
     })
@@ -72,10 +69,7 @@ describe('VideoResolver', () => {
 
       expect(await resolver.videoPlayEventCreate('userid', input)).toEqual({
         ...input,
-<<<<<<< HEAD
         __typename: 'VideoPlayEvent',
-=======
->>>>>>> b3b3c7f5 (chore: fix naming)
         userId: 'userid'
       })
     })
@@ -107,10 +101,7 @@ describe('VideoResolver', () => {
 
       expect(await resolver.videoPauseEventCreate('userid', input)).toEqual({
         ...input,
-<<<<<<< HEAD
         __typename: 'VideoPauseEvent',
-=======
->>>>>>> b3b3c7f5 (chore: fix naming)
         userId: 'userid'
       })
     })
@@ -144,10 +135,7 @@ describe('VideoResolver', () => {
 
       expect(await resolver.videoCompleteEventCreate('userid', input)).toEqual({
         ...input,
-<<<<<<< HEAD
         __typename: 'VideoCompleteEvent',
-=======
->>>>>>> b3b3c7f5 (chore: fix naming)
         userId: 'userid'
       })
     })
@@ -179,10 +167,7 @@ describe('VideoResolver', () => {
 
       expect(await resolver.videoExpandEventCreate('userid', input)).toEqual({
         ...input,
-<<<<<<< HEAD
         __typename: 'VideoExpandEvent',
-=======
->>>>>>> b3b3c7f5 (chore: fix naming)
         userId: 'userid'
       })
     })
@@ -216,10 +201,7 @@ describe('VideoResolver', () => {
 
       expect(await resolver.videoCollapseEventCreate('userid', input)).toEqual({
         ...input,
-<<<<<<< HEAD
         __typename: 'VideoCollapseEvent',
-=======
->>>>>>> b3b3c7f5 (chore: fix naming)
         userId: 'userid'
       })
     })
@@ -254,10 +236,7 @@ describe('VideoResolver', () => {
 
       expect(await resolver.videoProgressEventCreate('userid', input)).toEqual({
         ...input,
-<<<<<<< HEAD
         __typename: 'VideoProgressEvent',
-=======
->>>>>>> b3b3c7f5 (chore: fix naming)
         userId: 'userid'
       })
     })

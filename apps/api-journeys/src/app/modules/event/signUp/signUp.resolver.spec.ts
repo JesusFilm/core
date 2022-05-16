@@ -32,15 +32,11 @@ describe('SignUpEventResolver', () => {
     it('returns SignUpSubmissionEvent', async () => {
       expect(
         await resolver.signUpSubmissionEventCreate('userId', input)
-<<<<<<< HEAD
       ).toEqual({
         ...input,
         __typename: 'SignUpSubmissionEvent',
         userId: 'userId'
       })
-=======
-      ).toEqual({ ...input, userId: 'userId' })
->>>>>>> b3b3c7f5 (chore: fix naming)
     })
   })
 })
