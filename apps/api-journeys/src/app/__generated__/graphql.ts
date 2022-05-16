@@ -349,11 +349,48 @@ export class StepViewEventCreateInput {
     blockId: string;
 }
 
+export class VideoStartEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    position?: Nullable<number>;
+}
+
 export class VideoPlayEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
-    state: VideoPlayEventStateEnum;
+    state?: Nullable<VideoPlayEventStateEnum>;
     position?: Nullable<number>;
+}
+
+export class VideoPauseEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    position?: Nullable<number>;
+}
+
+export class VideoCompleteEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    position?: Nullable<number>;
+}
+
+export class VideoExpandEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    position?: Nullable<number>;
+}
+
+export class VideoCollapseEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    position?: Nullable<number>;
+}
+
+export class VideoProgressEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    position?: Nullable<number>;
+    progress: number;
 }
 
 export class JourneysFilter {
@@ -670,12 +707,61 @@ export class StepViewEvent implements Event {
     block?: Nullable<StepBlock>;
 }
 
+export class VideoStartEvent implements Event {
+    __typename?: 'VideoStartEvent';
+    id: string;
+    userId: string;
+    postition?: Nullable<number>;
+    block?: Nullable<VideoBlock>;
+}
+
 export class VideoPlayEvent implements Event {
     __typename?: 'VideoPlayEvent';
     id: string;
     userId: string;
-    state: VideoPlayEventStateEnum;
+    state?: Nullable<VideoPlayEventStateEnum>;
     position?: Nullable<number>;
+    block?: Nullable<VideoBlock>;
+}
+
+export class VideoPauseEvent implements Event {
+    __typename?: 'VideoPauseEvent';
+    id: string;
+    userId: string;
+    position?: Nullable<number>;
+    block?: Nullable<VideoBlock>;
+}
+
+export class VideoCompleteEvent implements Event {
+    __typename?: 'VideoCompleteEvent';
+    id: string;
+    userId: string;
+    position?: Nullable<number>;
+    block?: Nullable<VideoBlock>;
+}
+
+export class VideoExpandEvent implements Event {
+    __typename?: 'VideoExpandEvent';
+    id: string;
+    userId: string;
+    position?: Nullable<number>;
+    block?: Nullable<VideoBlock>;
+}
+
+export class VideoCollapseEvent implements Event {
+    __typename?: 'VideoCollapseEvent';
+    id: string;
+    userId: string;
+    position?: Nullable<number>;
+    block?: Nullable<VideoBlock>;
+}
+
+export class VideoProgressEvent implements Event {
+    __typename?: 'VideoProgressEvent';
+    id: string;
+    userId: string;
+    position?: Nullable<number>;
+    progress: number;
     block?: Nullable<VideoBlock>;
 }
 
@@ -787,7 +873,19 @@ export abstract class IMutation {
 
     abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
 
+    abstract videoStartEventCreate(input: VideoStartEventCreateInput): VideoStartEvent | Promise<VideoStartEvent>;
+
     abstract videoPlayEventCreate(input: VideoPlayEventCreateInput): VideoPlayEvent | Promise<VideoPlayEvent>;
+
+    abstract videoPauseEventCreate(input: VideoPauseEventCreateInput): VideoPauseEvent | Promise<VideoPauseEvent>;
+
+    abstract videoCompleteEventCreate(input: VideoCompleteEventCreateInput): VideoCompleteEvent | Promise<VideoCompleteEvent>;
+
+    abstract videoExpandEventCreate(input: VideoExpandEventCreateInput): VideoExpandEvent | Promise<VideoExpandEvent>;
+
+    abstract videoCollapseEventCreate(input: VideoCollapseEventCreateInput): VideoCollapseEvent | Promise<VideoCollapseEvent>;
+
+    abstract videoProgressEventCreate(input: VideoProgressEventCreateInput): VideoProgressEvent | Promise<VideoProgressEvent>;
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 

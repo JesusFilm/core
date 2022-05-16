@@ -5,9 +5,8 @@ import { StepViewEventResolver } from './step.resolver'
 describe('StepViewEventResolver', () => {
   let resolver: StepViewEventResolver
 
-  const event = {
+  const input = {
     id: '1',
-    __typename: 'StepViewEvent',
     blockId: 'block.id',
     previousBlockId: 'previousBlock.id',
     journeyId: 'journey.id'
@@ -16,7 +15,7 @@ describe('StepViewEventResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((event) => event)
+      save: jest.fn((input) => input)
     })
   }
 
@@ -29,8 +28,9 @@ describe('StepViewEventResolver', () => {
 
   describe('stepViewEventCreate', () => {
     it('returns StepViewEvent', async () => {
-      expect(await resolver.stepViewEventCreate('userId', event)).toEqual({
-        ...event,
+      expect(await resolver.stepViewEventCreate('userId', input)).toEqual({
+        ...input,
+        __typename: 'StepViewEvent',
         userId: 'userId'
       })
     })

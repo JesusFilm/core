@@ -5,9 +5,8 @@ import { SignUpSubmissionEventResolver } from './signUp.resolver'
 describe('SignUpEventResolver', () => {
   let resolver: SignUpSubmissionEventResolver
 
-  const event = {
+  const input = {
     id: '1',
-    __typename: 'SignUpSubmissionEvent',
     blockId: '2',
     name: 'Robert Smith',
     email: 'robert.smith@jesusfilm.org'
@@ -16,7 +15,7 @@ describe('SignUpEventResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((event) => event)
+      save: jest.fn((input) => input)
     })
   }
 
@@ -32,8 +31,12 @@ describe('SignUpEventResolver', () => {
   describe('signUpSubmissionEventCreate', () => {
     it('returns SignUpSubmissionEvent', async () => {
       expect(
-        await resolver.signUpSubmissionEventCreate('userId', event)
-      ).toEqual({ ...event, userId: 'userId' })
+        await resolver.signUpSubmissionEventCreate('userId', input)
+      ).toEqual({
+        ...input,
+        __typename: 'SignUpSubmissionEvent',
+        userId: 'userId'
+      })
     })
   })
 })
