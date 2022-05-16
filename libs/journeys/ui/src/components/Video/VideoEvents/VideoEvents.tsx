@@ -82,9 +82,6 @@ export function VideoEvents({
   )
 
   useEffect(() => {
-    const videoPosition = player.currentTime()
-    const position = videoPosition != null ? Math.floor(videoPosition) : 0
-
     player.on('ready', () => {
       void videoStartEventCreate({
         variables: {
