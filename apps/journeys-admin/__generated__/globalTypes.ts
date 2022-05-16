@@ -337,30 +337,24 @@ export interface VideoBlockUpdateInput {
   videoVariantLanguageId?: string | null;
 }
 
-<<<<<<< HEAD
 export interface VideoCollapseEventCreateInput {
   blockId: string;
   id?: string | null;
   position?: number | null;
 }
 
-=======
->>>>>>> 955f3e67 (chore: ran codegen)
 export interface VideoCompleteEventCreateInput {
   blockId: string;
   id?: string | null;
   position?: number | null;
 }
 
-<<<<<<< HEAD
 export interface VideoExpandEventCreateInput {
   blockId: string;
   id?: string | null;
   position?: number | null;
 }
 
-=======
->>>>>>> 955f3e67 (chore: ran codegen)
 export interface VideoPauseEventCreateInput {
   blockId: string;
   id?: string | null;
