@@ -10,6 +10,7 @@ import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoTrigger } from './VideoTrigger'
 import 'video.js/dist/video-js.css'
 import { VideoFields } from './__generated__/VideoFields'
+import { VideoEvents } from './VideoEvents'
 
 const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'
@@ -157,6 +158,9 @@ export function Video({
         }
       }}
     >
+      {playerRef.current != null && (
+        <VideoEvents player={playerRef.current} blockId={blockId} />
+      )}
       {video?.variant?.hls != null ? (
         <>
           <video

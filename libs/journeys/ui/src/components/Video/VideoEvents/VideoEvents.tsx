@@ -39,13 +39,11 @@ export const VIDEO_COMPLETE_EVENT_CREATE = gql`
 interface VideoEventsProps {
   player: videojs.Player
   blockId: string
-  videoPosition: number
 }
 
 export function VideoEvents({
   player,
-  blockId,
-  videoPosition
+  blockId
 }: VideoEventsProps): ReactElement {
   const [videoStartEventCreate] = useMutation<VideoStartEventCreate>(
     VIDEO_START_EVENT_CREATE
@@ -60,9 +58,10 @@ export function VideoEvents({
     VIDEO_COMPLETE_EVENT_CREATE
   )
 
-  const position = videoPosition != null ? Math.floor(videoPosition) : 0
-
   useEffect(() => {
+    const videoPosition = player.currentTime()
+    const position = videoPosition != null ? Math.floor(videoPosition) : 0
+
     player.on('ready', () => {
       const id = uuidv4()
       void videoStartEventCreate({
@@ -76,7 +75,7 @@ export function VideoEvents({
       })
     })
 
-    player.on('player', () => {
+    player.on('playing', () => {
       const id = uuidv4()
       void videoPlayEventCreate({
         variables: {
@@ -117,7 +116,6 @@ export function VideoEvents({
   }, [
     blockId,
     player,
-    position,
     videoStartEventCreate,
     videoPlayEventCreate,
     videoPauseEventCreate,
