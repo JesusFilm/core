@@ -90,7 +90,7 @@ export function VideoEvents({
   const thirdTrigger = useRef(false)
 
   const calc = useCallback(
-    (currentTime: number): number | undefined => {
+    (currentTime: number): number | null => {
       const firstTriggerTime = (endAt - startAt) / 4 + startAt
       const secondTriggerTime = (endAt - startAt) / 2 + startAt
       const thirdTriggerTime = ((endAt - startAt) * 3) / 4 + startAt
@@ -107,7 +107,7 @@ export function VideoEvents({
         result = 75
         thirdTrigger.current = true
       } else {
-        result = undefined
+        result = null
       }
 
       return result
