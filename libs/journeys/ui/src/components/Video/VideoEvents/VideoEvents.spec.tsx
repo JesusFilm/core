@@ -36,8 +36,6 @@ describe('VideoEvents', () => {
     cleanup()
   })
 
-  // mockUuidv4.mockReturnValue('uuid')
-
   const startMock = {
     request: {
       query: VIDEO_START_EVENT_CREATE,
