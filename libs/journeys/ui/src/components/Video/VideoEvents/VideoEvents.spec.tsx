@@ -187,7 +187,7 @@ describe('VideoEvents', () => {
     )
     act(() => {
       props.player.trigger('ready')
-      props.player.currentTime(50)
+      props.player.currentTime(50.5)
       props.player.trigger('ended')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
