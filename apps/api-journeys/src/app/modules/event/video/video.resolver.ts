@@ -27,10 +27,13 @@ export class VideoStartEventResolver {
   @Mutation()
   async videoStartEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: VideoStartEventCreateInput & { __typename }
+    @Args('input') input: VideoStartEventCreateInput
   ): Promise<VideoStartEvent> {
-    input.__typename = 'VideoStartEvent'
-    return await this.eventService.save({ ...input, userId })
+    return await this.eventService.save({
+      ...input,
+      __typename: 'VideoStartEvent',
+      userId
+    })
   }
 }
 @Resolver('VideoPlayEvent')

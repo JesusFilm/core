@@ -5,7 +5,7 @@ import { RadioQuestionSubmissionEventResolver } from './radioQuestion.resolver'
 describe('RadioQuestionSubmissionEventResolver', () => {
   let resolver: RadioQuestionSubmissionEventResolver
 
-  const event = {
+  const input = {
     id: '1',
     __typename: 'RadioQuestionSubmissionEvent',
     blockId: '2',
@@ -15,7 +15,7 @@ describe('RadioQuestionSubmissionEventResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((event) => event)
+      save: jest.fn((input) => input)
     })
   }
 
@@ -31,8 +31,8 @@ describe('RadioQuestionSubmissionEventResolver', () => {
   describe('radioQuestionSubmissionEventCreate', () => {
     it('returns RadioQuestionSubmissionEvent', async () => {
       expect(
-        await resolver.radioQuestionSubmissionEventCreate('userId', event)
-      ).toEqual({ ...event, userId: 'userId' })
+        await resolver.radioQuestionSubmissionEventCreate('userId', input)
+      ).toEqual({ ...input, userId: 'userId' })
     })
   })
 })
