@@ -94,7 +94,7 @@ export function VideoEvents({
   const secondTriggerTime = (end - start) / 2 + start
   const thirdTriggerTime = ((end - start) * 3) / 4 + start
 
-  const calc = useCallback(
+  const progressCalc = useCallback(
     (currentTime: number): number | null => {
       let result
 
@@ -184,7 +184,7 @@ export function VideoEvents({
   }, [
     blockId,
     player,
-    calc,
+    progressCalc,
     videoStartEventCreate,
     videoPlayEventCreate,
     videoPauseEventCreate,
