@@ -38,8 +38,6 @@ describe('VideoEvents', () => {
     cleanup()
   })
 
-  // mockUuidv4.mockReturnValue('uuid')
-
   const startMock = {
     request: {
       query: VIDEO_START_EVENT_CREATE,
@@ -214,7 +212,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_EXPAND_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 0 }
               }
             },
             result
@@ -225,7 +223,6 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
-      // props.player.trigger('fullsceenchange')
       props.player.enterFullWindow()
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -250,7 +247,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_EXPAND_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 0 }
               }
             },
             result: {
@@ -267,7 +264,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_COLLAPSE_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 0 }
               }
             },
             result

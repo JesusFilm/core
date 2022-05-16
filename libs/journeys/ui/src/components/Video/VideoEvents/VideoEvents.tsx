@@ -129,7 +129,6 @@ export function VideoEvents({
         void videoExpandEventCreate({
           variables: {
             input: {
-              id: uuidv4(),
               blockId,
               position: player.currentTime()
             }
@@ -139,7 +138,6 @@ export function VideoEvents({
         void videoCollapseEventCreate({
           variables: {
             input: {
-              id: uuidv4(),
               blockId,
               position: player.currentTime()
             }
