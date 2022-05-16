@@ -162,7 +162,7 @@ describe('VideoEvents', () => {
         videoCompleteEventCreate: {
           id: 'uuid',
           __typename: 'VideoCompleteEvent',
-          position: 0
+          position: 50
         }
       }
     }))
@@ -175,7 +175,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_COMPLETE_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 50 }
               }
             },
             result
@@ -186,6 +186,8 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
+      props.player.trigger('ready')
+      props.player.currentTime(50)
       props.player.trigger('ended')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
