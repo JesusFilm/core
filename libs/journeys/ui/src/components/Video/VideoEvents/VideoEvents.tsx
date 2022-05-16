@@ -6,8 +6,6 @@ import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
 import { VideoPauseEventCreate } from './__generated__/VideoPauseEventCreate'
 import { VideoCompleteEventCreate } from './__generated__/VideoCompleteEventCreate'
 
-// ADD COMMENT, REMOVE LATER
-
 export const VIDEO_START_EVENT_CREATE = gql`
   mutation VideoStartEventCreate($input: VideoStartEventCreateInput!) {
     videoStartEventCreate(input: $input) {
