@@ -7,7 +7,6 @@ describe('SignUpEventResolver', () => {
 
   const input = {
     id: '1',
-    __typename: 'SignUpSubmissionEvent',
     blockId: '2',
     name: 'Robert Smith',
     email: 'robert.smith@jesusfilm.org'
@@ -33,7 +32,11 @@ describe('SignUpEventResolver', () => {
     it('returns SignUpSubmissionEvent', async () => {
       expect(
         await resolver.signUpSubmissionEventCreate('userId', input)
-      ).toEqual({ ...input, userId: 'userId' })
+      ).toEqual({
+        ...input,
+        __typename: 'SignUpSubmissionEvent',
+        userId: 'userId'
+      })
     })
   })
 })

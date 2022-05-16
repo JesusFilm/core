@@ -7,7 +7,6 @@ describe('RadioQuestionSubmissionEventResolver', () => {
 
   const input = {
     id: '1',
-    __typename: 'RadioQuestionSubmissionEvent',
     blockId: '2',
     radioOptionBlockId: '4'
   }
@@ -32,7 +31,11 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     it('returns RadioQuestionSubmissionEvent', async () => {
       expect(
         await resolver.radioQuestionSubmissionEventCreate('userId', input)
-      ).toEqual({ ...input, userId: 'userId' })
+      ).toEqual({
+        ...input,
+        __typename: 'RadioQuestionSubmissionEvent',
+        userId: 'userId'
+      })
     })
   })
 })

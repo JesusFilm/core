@@ -107,10 +107,13 @@ export class VideoCollapseEventResolver {
   @Mutation()
   async videoCollapseEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: VideoCollapseEventCreateInput & { __typename }
+    @Args('input') input: VideoCollapseEventCreateInput
   ): Promise<VideoCollapseEvent> {
-    input.__typename = 'VideoCollapseEvent'
-    return await this.eventService.save({ ...input, userId })
+    return await this.eventService.save({
+      ...input,
+      __typename: 'VideoCollapseEvent',
+      userId
+    })
   }
 }
 @Resolver('VideoProgressEvent')

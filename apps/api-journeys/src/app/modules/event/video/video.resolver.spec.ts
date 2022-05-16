@@ -31,13 +31,13 @@ describe('VideoResolver', () => {
     it('returns VideoStartEvent', async () => {
       const input = {
         id: '1',
-        __typename: 'VideoStartEvent',
         blockId: '2',
         position: 30
       }
 
       expect(await resolver.videoStartEventCreate('userid', input)).toEqual({
         ...input,
+        __typename: 'VideoStartEvent',
         userId: 'userid'
       })
     })
@@ -63,13 +63,13 @@ describe('VideoResolver', () => {
     it('returns VideoPlayEvent', async () => {
       const input = {
         id: '1',
-        __typename: 'VideoPlayEvent',
         blockId: '2',
         position: 30
       }
 
       expect(await resolver.videoPlayEventCreate('userid', input)).toEqual({
         ...input,
+        __typename: 'VideoPlayEvent',
         userId: 'userid'
       })
     })
@@ -95,13 +95,13 @@ describe('VideoResolver', () => {
     it('returns VideoPauseEvent', async () => {
       const input = {
         id: '1',
-        __typename: 'VideoPauseEvent',
         blockId: '2',
         position: 30
       }
 
       expect(await resolver.videoPauseEventCreate('userid', input)).toEqual({
         ...input,
+        __typename: 'VideoPauseEvent',
         userId: 'userid'
       })
     })
@@ -129,13 +129,13 @@ describe('VideoResolver', () => {
     it('returns VideoCompleteEvent', async () => {
       const input = {
         id: '1',
-        __typename: 'VideoCompleteEvent',
         blockId: '2',
         position: 30
       }
 
       expect(await resolver.videoCompleteEventCreate('userid', input)).toEqual({
         ...input,
+        __typename: 'VideoCompleteEvent',
         userId: 'userid'
       })
     })
@@ -161,13 +161,13 @@ describe('VideoResolver', () => {
     it('returns VideoExpandEvent', async () => {
       const input = {
         id: '1',
-        __typename: 'VideoExpandEvent',
         blockId: '2',
         position: 30
       }
 
       expect(await resolver.videoExpandEventCreate('userid', input)).toEqual({
         ...input,
+        __typename: 'VideoExpandEvent',
         userId: 'userid'
       })
     })
@@ -195,13 +195,13 @@ describe('VideoResolver', () => {
     it('returns VideoCollapseEvent', async () => {
       const input = {
         id: '1',
-        __typename: 'VideoCollapseEvent',
         blockId: '2',
         position: 30
       }
 
       expect(await resolver.videoCollapseEventCreate('userid', input)).toEqual({
         ...input,
+        __typename: 'VideoCollapseEvent',
         userId: 'userid'
       })
     })
@@ -229,7 +229,6 @@ describe('VideoResolver', () => {
     it('returns VideoProgressEvent', async () => {
       const input = {
         id: '1',
-        __typename: 'VideoProgressEvent',
         blockId: '2',
         position: 30,
         progress: 25
@@ -237,6 +236,7 @@ describe('VideoResolver', () => {
 
       expect(await resolver.videoProgressEventCreate('userid', input)).toEqual({
         ...input,
+        __typename: 'VideoProgressEvent',
         userId: 'userid'
       })
     })
