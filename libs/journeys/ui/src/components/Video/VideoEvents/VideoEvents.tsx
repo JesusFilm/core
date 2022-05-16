@@ -1,5 +1,5 @@
-import { ReactElement, useEffect } from 'react'
 import { gql, useMutation } from '@apollo/client'
+import { ReactElement, useEffect, useCallback, useRef } from 'react'
 import videojs from 'video.js'
 import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
 import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
@@ -38,11 +38,15 @@ export const VIDEO_COMPLETE_EVENT_CREATE = gql`
 export interface VideoEventsProps {
   player: videojs.Player
   blockId: string
+  startAt: number
+  endAt: number
 }
 
 export function VideoEvents({
   player,
-  blockId
+  blockId,
+  startAt,
+  endAt
 }: VideoEventsProps): ReactElement {
   const [videoStartEventCreate] = useMutation<VideoStartEventCreate>(
     VIDEO_START_EVENT_CREATE
@@ -55,6 +59,36 @@ export function VideoEvents({
   )
   const [videoCompleteEventCreate] = useMutation<VideoCompleteEventCreate>(
     VIDEO_COMPLETE_EVENT_CREATE
+  )
+
+  const firstTrigger = useRef(false)
+  const secondTrigger = useRef(false)
+  const thirdTrigger = useRef(false)
+
+  const calc = useCallback(
+    (currentTime: number): string | undefined => {
+      const firstTriggerTime = (endAt - startAt) / 4 + startAt
+      const secondTriggerTime = (endAt - startAt) / 2 + startAt
+      const thirdTriggerTime = ((endAt - startAt) * 3) / 4 + startAt
+
+      let result
+
+      if (!firstTrigger.current && currentTime > firstTriggerTime) {
+        result = 'PROGRESS 25%'
+        firstTrigger.current = true
+      } else if (!secondTrigger.current && currentTime > secondTriggerTime) {
+        result = 'PROGRESS 50%'
+        secondTrigger.current = true
+      } else if (!thirdTrigger.current && currentTime > thirdTriggerTime) {
+        result = 'PROGRESS 75%'
+        thirdTrigger.current = true
+      } else {
+        result = 'error'
+      }
+
+      return result !== 'error' ? result : undefined
+    },
+    [startAt, endAt]
   )
 
   useEffect(() => {
@@ -101,9 +135,14 @@ export function VideoEvents({
         }
       })
     })
+
+    player.on('timeupdate', () => {
+      console.log(player.currentTime() != null && calc(player.currentTime()))
+    })
   }, [
     blockId,
     player,
+    calc,
     videoStartEventCreate,
     videoPlayEventCreate,
     videoPauseEventCreate,
