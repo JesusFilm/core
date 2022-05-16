@@ -56,13 +56,11 @@ export const VIDEO_COLLAPSE_EVENT_CREATE = gql`
 export interface VideoEventsProps {
   player: videojs.Player
   blockId: string
-  videoPosition: number
 }
 
 export function VideoEvents({
   player,
-  blockId,
-  videoPosition
+  blockId
 }: VideoEventsProps): ReactElement {
   const [videoStartEventCreate] = useMutation<VideoStartEventCreate>(
     VIDEO_START_EVENT_CREATE
@@ -84,6 +82,9 @@ export function VideoEvents({
   )
 
   useEffect(() => {
+    const videoPosition = player.currentTime()
+    const position = videoPosition != null ? Math.floor(videoPosition) : 0
+
     player.on('ready', () => {
       void videoStartEventCreate({
         variables: {
