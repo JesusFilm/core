@@ -31,7 +31,9 @@ describe('VideoEvents', () => {
           fullscreenToggle: true
         }
       }),
-      blockId: 'video0.id'
+      blockId: 'video0.id',
+      startAt: 0,
+      endAt: 1
     }
   })
   afterEach(() => {
