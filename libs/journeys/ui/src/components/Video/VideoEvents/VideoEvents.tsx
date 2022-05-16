@@ -90,7 +90,7 @@ export function VideoEvents({
   const thirdTrigger = useRef(false)
 
   const calc = useCallback(
-    (currentTime: number): string | undefined => {
+    (currentTime: number): number | undefined => {
       const firstTriggerTime = (endAt - startAt) / 4 + startAt
       const secondTriggerTime = (endAt - startAt) / 2 + startAt
       const thirdTriggerTime = ((endAt - startAt) * 3) / 4 + startAt
@@ -98,19 +98,19 @@ export function VideoEvents({
       let result
 
       if (!firstTrigger.current && currentTime > firstTriggerTime) {
-        result = 'PROGRESS 25%'
+        result = 25
         firstTrigger.current = true
       } else if (!secondTrigger.current && currentTime > secondTriggerTime) {
-        result = 'PROGRESS 50%'
+        result = 50
         secondTrigger.current = true
       } else if (!thirdTrigger.current && currentTime > thirdTriggerTime) {
-        result = 'PROGRESS 75%'
+        result = 75
         thirdTrigger.current = true
       } else {
-        result = 'error'
+        result = undefined
       }
 
-      return result !== 'error' ? result : undefined
+      return result
     },
     [startAt, endAt]
   )
