@@ -97,7 +97,7 @@ export function VideoEvents({
     VIDEO_PROGRESS_EVENT_CREATE
   )
 
-  const eventCreate = useCallback(
+  const progressEventCreate = useCallback(
     (progress: number): void => {
       void videoProgressEventCreate({
         variables: {
@@ -112,31 +112,42 @@ export function VideoEvents({
     [blockId, player, videoProgressEventCreate]
   )
 
-  const firstTrigger = useRef(true)
-  const secondTrigger = useRef(false)
-  const thirdTrigger = useRef(false)
   const start = startAt ?? 0
   const end = endAt ?? player.duration()
-  const firstTriggerTime = (end - start) / 4 + start
-  const secondTriggerTime = (end - start) / 2 + start
-  const thirdTriggerTime = ((end - start) * 3) / 4 + start
+  const triggerOneRef = useRef(true)
+  const triggerTwoRef = useRef(false)
+  const triggerThreeRef = useRef(false)
+  const triggerOnePosition = (end - start) / 4 + start
+  const triggerTwoPosition = (end - start) / 2 + start
+  const triggerThreePosition = ((end - start) * 3) / 4 + start
 
-  const progressCalc = useCallback(
-    (currentTime: number): void => {
-      if (firstTrigger.current && currentTime >= firstTriggerTime) {
-        firstTrigger.current = false
-        secondTrigger.current = true
-        void eventCreate(25)
-      } else if (secondTrigger.current && currentTime >= secondTriggerTime) {
-        secondTrigger.current = false
-        thirdTrigger.current = true
-        void eventCreate(50)
-      } else if (thirdTrigger.current && currentTime >= thirdTriggerTime) {
-        thirdTrigger.current = false
-        void eventCreate(75)
+  const progressEvent = useCallback(
+    (currentPosition: number): void => {
+      if (triggerOneRef.current && currentPosition >= triggerOnePosition) {
+        triggerOneRef.current = false
+        triggerTwoRef.current = true
+        void progressEventCreate(25)
+      } else if (
+        triggerTwoRef.current &&
+        currentPosition >= triggerTwoPosition
+      ) {
+        triggerTwoRef.current = false
+        triggerThreeRef.current = true
+        void progressEventCreate(50)
+      } else if (
+        triggerThreeRef.current &&
+        currentPosition >= triggerThreePosition
+      ) {
+        triggerThreeRef.current = false
+        void progressEventCreate(75)
       }
     },
-    [firstTriggerTime, secondTriggerTime, thirdTriggerTime, eventCreate]
+    [
+      triggerOnePosition,
+      triggerTwoPosition,
+      triggerThreePosition,
+      progressEventCreate
+    ]
   )
 
   useEffect(() => {
@@ -207,12 +218,12 @@ export function VideoEvents({
     })
 
     player.on('timeupdate', () => {
-      progressCalc(player.currentTime())
+      progressEvent(player.currentTime())
     })
   }, [
     blockId,
     player,
-    progressCalc,
+    progressEvent,
     videoStartEventCreate,
     videoPlayEventCreate,
     videoPauseEventCreate,
