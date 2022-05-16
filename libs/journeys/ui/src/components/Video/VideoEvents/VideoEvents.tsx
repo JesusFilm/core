@@ -1,5 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useEffect } from 'react'
+import { gql, useMutation } from '@apollo/client'
 import videojs from 'video.js'
 import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
 import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
