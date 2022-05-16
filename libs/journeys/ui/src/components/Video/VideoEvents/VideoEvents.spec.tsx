@@ -245,6 +245,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
+      props.player.currentTime(0.1)
       props.player.enterFullWindow()
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -297,6 +298,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
+      props.player.currentTime(0.1)
       props.player.enterFullWindow()
       props.player.exitFullscreen()
     })
