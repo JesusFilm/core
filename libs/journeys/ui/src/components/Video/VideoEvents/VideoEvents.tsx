@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import { ReactElement, useEffect, useRef } from 'react'
+import { ReactElement, useEffect } from 'react'
 import videojs from 'video.js'
 import { v4 as uuidv4 } from 'uuid'
 import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
@@ -63,33 +63,6 @@ export function VideoEvents({
     VIDEO_COMPLETE_EVENT_CREATE
   )
 
-  const firstTrigger = useRef(false)
-  const secondTrigger = useRef(false)
-  const thirdTrigger = useRef(false)
-
-  function calc(currentTime: number): string | undefined {
-    const firstTriggerTime = (endAt - startAt) / 4 + startAt
-    const secondTriggerTime = (endAt - startAt) / 2 + startAt
-    const thirdTriggerTime = ((endAt - startAt) * 3) / 4 + startAt
-
-    let result
-
-    if (!firstTrigger.current && currentTime > firstTriggerTime) {
-      result = 'PROGRESS 25%'
-      firstTrigger.current = true
-    } else if (!secondTrigger.current && currentTime > secondTriggerTime) {
-      result = 'PROGRESS 50%'
-      secondTrigger.current = true
-    } else if (!thirdTrigger.current && currentTime > thirdTriggerTime) {
-      result = 'PROGRESS 75%'
-      thirdTrigger.current = true
-    } else {
-      result = 'error'
-    }
-
-    return result !== 'error' ? result : undefined
-  }
-
   useEffect(() => {
     player.on('ready', () => {
       void videoStartEventCreate({
@@ -145,10 +118,6 @@ export function VideoEvents({
       } else if (!player.isFullscreen()) {
         console.log('FULLSCREEN COLLAPSE')
       }
-    })
-
-    player.on('timeupdate', () => {
-      console.log(player.currentTime() != null && calc(player.currentTime()))
     })
   }, [
     blockId,
