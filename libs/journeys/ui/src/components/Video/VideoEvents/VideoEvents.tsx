@@ -7,6 +7,7 @@ import { VideoPauseEventCreate } from './__generated__/VideoPauseEventCreate'
 import { VideoCompleteEventCreate } from './__generated__/VideoCompleteEventCreate'
 import { VideoExpandEventCreate } from './__generated__/VideoExpandEventCreate'
 import { VideoCollapseEventCreate } from './__generated__/VideoCollapseEventCreate'
+import { VideoProgressEventCreate } from './__generated__/VideoProgressEventCreate'
 
 export const VIDEO_START_EVENT_CREATE = gql`
   mutation VideoStartEventCreate($input: VideoStartEventCreateInput!) {
@@ -52,6 +53,14 @@ export const VIDEO_COLLAPSE_EVENT_CREATE = gql`
     }
   }
 `
+export const VIDEO_PROGRESS_EVENT_CREATE = gql`
+  mutation VideoProgressEventCreate($input: VideoProgressEventCreateInput!) {
+    videoProgressEventCreate(input: $input) {
+      id
+      progress
+    }
+  }
+`
 
 export interface VideoEventsProps {
   player: videojs.Player
@@ -83,6 +92,9 @@ export function VideoEvents({
   )
   const [videoCollapseEventCreate] = useMutation<VideoCollapseEventCreate>(
     VIDEO_COLLAPSE_EVENT_CREATE
+  )
+  const [videoProgressEventCreate] = useMutation<VideoProgressEventCreate>(
+    VIDEO_PROGRESS_EVENT_CREATE
   )
 
   const firstTrigger = useRef(false)
@@ -181,6 +193,23 @@ export function VideoEvents({
         })
       }
     })
+
+    player.on('timeupdate', () => {
+      const progress =
+        player.currentTime() != null && progressCalc(player.currentTime())
+
+      if (progress != null) {
+        void videoProgressEventCreate({
+          variables: {
+            input: {
+              blockId,
+              position: Math.floor(player.currentTime()),
+              progress
+            }
+          }
+        })
+      }
+    })
   }, [
     blockId,
     player,
@@ -190,7 +219,8 @@ export function VideoEvents({
     videoPauseEventCreate,
     videoCompleteEventCreate,
     videoExpandEventCreate,
-    videoCollapseEventCreate
+    videoCollapseEventCreate,
+    videoProgressEventCreate
   ])
 
   return <></>
