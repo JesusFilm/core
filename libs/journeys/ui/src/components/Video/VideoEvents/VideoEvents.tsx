@@ -5,6 +5,8 @@ import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
 import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
 import { VideoPauseEventCreate } from './__generated__/VideoPauseEventCreate'
 import { VideoCompleteEventCreate } from './__generated__/VideoCompleteEventCreate'
+import { VideoExpandEventCreate } from './__generated__/VideoExpandEventCreate'
+import { VideoCollapseEventCreate } from './__generated__/VideoCollapseEventCreate'
 
 export const VIDEO_START_EVENT_CREATE = gql`
   mutation VideoStartEventCreate($input: VideoStartEventCreateInput!) {
@@ -34,6 +36,20 @@ export const VIDEO_COMPLETE_EVENT_CREATE = gql`
     }
   }
 `
+export const VIDEO_EXPAND_EVENT_CREATE = gql`
+  mutation VideoExpandEventCreate($input: VideoExpandEventCreateInput!) {
+    videoExpandEventCreate(input: $input) {
+      id
+    }
+  }
+`
+export const VIDEO_COLLAPSE_EVENT_CREATE = gql`
+  mutation VideoCollapseEventCreate($input: VideoCollapseEventCreateInput!) {
+    videoCollapseEventCreate(input: $input) {
+      id
+    }
+  }
+`
 
 export interface VideoEventsProps {
   player: videojs.Player
@@ -55,6 +71,12 @@ export function VideoEvents({
   )
   const [videoCompleteEventCreate] = useMutation<VideoCompleteEventCreate>(
     VIDEO_COMPLETE_EVENT_CREATE
+  )
+  const [videoExpandEventCreate] = useMutation<VideoExpandEventCreate>(
+    VIDEO_EXPAND_EVENT_CREATE
+  )
+  const [videoCollapseEventCreate] = useMutation<VideoCollapseEventCreate>(
+    VIDEO_COLLAPSE_EVENT_CREATE
   )
 
   useEffect(() => {
@@ -101,13 +123,37 @@ export function VideoEvents({
         }
       })
     })
+
+    player.on('fullscreenchange', () => {
+      if (player.isFullscreen()) {
+        void videoExpandEventCreate({
+          variables: {
+            input: {
+              blockId,
+              position: Math.floor(player.currentTime())
+            }
+          }
+        })
+      } else if (!player.isFullscreen()) {
+        void videoCollapseEventCreate({
+          variables: {
+            input: {
+              blockId,
+              position: Math.floor(player.currentTime())
+            }
+          }
+        })
+      }
+    })
   }, [
     blockId,
     player,
     videoStartEventCreate,
     videoPlayEventCreate,
     videoPauseEventCreate,
-    videoCompleteEventCreate
+    videoCompleteEventCreate,
+    videoExpandEventCreate,
+    videoCollapseEventCreate
   ])
 
   return <></>

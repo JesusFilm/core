@@ -7,7 +7,9 @@ import {
   VIDEO_START_EVENT_CREATE,
   VIDEO_PLAY_EVENT_CREATE,
   VIDEO_PAUSE_EVENT_CREATE,
-  VIDEO_COMPLETE_EVENT_CREATE
+  VIDEO_COMPLETE_EVENT_CREATE,
+  VIDEO_EXPAND_EVENT_CREATE,
+  VIDEO_COLLAPSE_EVENT_CREATE
 } from './VideoEvents'
 
 describe('VideoEvents', () => {
@@ -209,6 +211,96 @@ describe('VideoEvents', () => {
     act(() => {
       props.player.currentTime(50.5)
       props.player.trigger('ended')
+    })
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should create expand event', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        videoExpandEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoExpandEvent',
+          position: 0
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          startMock,
+          {
+            request: {
+              query: VIDEO_EXPAND_EVENT_CREATE,
+              variables: {
+                input: { blockId: 'video0.id', position: 0 }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <VideoEvents {...props} />
+      </MockedProvider>
+    )
+    act(() => {
+      props.player.currentTime(0.1)
+      props.player.enterFullWindow()
+    })
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should create collapse event', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        videoCollapseEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoCollapseEvent',
+          position: 0
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          startMock,
+          {
+            request: {
+              query: VIDEO_EXPAND_EVENT_CREATE,
+              variables: {
+                input: { blockId: 'video0.id', position: 0 }
+              }
+            },
+            result: {
+              data: {
+                videoExpandEventCreate: {
+                  id: 'uuid',
+                  __typename: 'VideoExpandEvent',
+                  position: 0
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: VIDEO_COLLAPSE_EVENT_CREATE,
+              variables: {
+                input: { blockId: 'video0.id', position: 0 }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <VideoEvents {...props} />
+      </MockedProvider>
+    )
+    act(() => {
+      props.player.currentTime(0.1)
+      props.player.enterFullWindow()
+      props.player.exitFullscreen()
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
