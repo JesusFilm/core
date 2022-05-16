@@ -17,9 +17,12 @@ export class StepViewEventResolver {
   @UseGuards(GqlAuthGuard)
   async stepViewEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: StepViewEventCreateInput & { __typename }
+    @Args('input') input: StepViewEventCreateInput
   ): Promise<StepViewEvent> {
-    input.__typename = 'StepViewEvent'
-    return await this.eventService.save({ ...input, userId })
+    return await this.eventService.save({
+      ...input,
+      __typename: 'StepViewEvent',
+      userId
+    })
   }
 }

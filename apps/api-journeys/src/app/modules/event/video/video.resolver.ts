@@ -40,10 +40,13 @@ export class VideoPlayEventResolver {
   @Mutation()
   async videoPlayEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: VideoPlayEventCreateInput & { __typename }
+    @Args('input') input: VideoPlayEventCreateInput
   ): Promise<VideoPlayEvent> {
-    input.__typename = 'VideoPlayEvent'
-    return await this.eventService.save({ ...input, userId })
+    return await this.eventService.save({
+      ...input,
+      __typename: 'VideoPlayEvent',
+      userId
+    })
   }
 }
 @Resolver('VideoPauseEvent')
@@ -53,10 +56,13 @@ export class VideoPuaseEventResolver {
   @Mutation()
   async videoPauseEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: VideoPauseEventCreateInput & { __typename }
+    @Args('input') input: VideoPauseEventCreateInput
   ): Promise<VideoPauseEvent> {
-    input.__typename = 'VideoPauseEvent'
-    return await this.eventService.save({ ...input, userId })
+    return await this.eventService.save({
+      ...input,
+      __typename: 'VideoPauseEvent',
+      userId
+    })
   }
 }
 @Resolver('VideoCompleteEvent')
@@ -66,10 +72,13 @@ export class VideoCompleteEventResolver {
   @Mutation()
   async videoCompleteEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: VideoCompleteEventCreateInput & { __typename }
+    @Args('input') input: VideoCompleteEventCreateInput
   ): Promise<VideoCompleteEvent> {
-    input.__typename = 'VideoCompleteEvent'
-    return await this.eventService.save({ ...input, userId })
+    return await this.eventService.save({
+      ...input,
+      __typename: 'VideoCompleteEvent',
+      userId
+    })
   }
 }
 @Resolver('VideoExpandEvent')
@@ -79,10 +88,13 @@ export class VideoExpandEventResolver {
   @Mutation()
   async videoExpandEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: VideoExpandEventCreateInput & { __typename }
+    @Args('input') input: VideoExpandEventCreateInput
   ): Promise<VideoExpandEvent> {
-    input.__typename = 'VideoExpandEvent'
-    return await this.eventService.save({ ...input, userId })
+    return await this.eventService.save({
+      ...input,
+      __typename: 'VideoExpandEvent',
+      userId
+    })
   }
 }
 @Resolver('VideoCollapseEvent')
@@ -105,9 +117,12 @@ export class VideoProgressEventResolver {
   @Mutation()
   async videoProgressEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: VideoProgressEventCreateInput & { __typename }
+    @Args('input') input: VideoProgressEventCreateInput
   ): Promise<VideoProgressEvent> {
-    input.__typename = 'VideoProgressEvent'
-    return await this.eventService.save({ ...input, userId })
+    return await this.eventService.save({
+      ...input,
+      __typename: 'VideoProgressEvent',
+      userId
+    })
   }
 }
