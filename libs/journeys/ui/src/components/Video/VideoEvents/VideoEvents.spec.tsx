@@ -7,7 +7,8 @@ import {
   VIDEO_START_EVENT_CREATE,
   VIDEO_PLAY_EVENT_CREATE,
   VIDEO_PAUSE_EVENT_CREATE,
-  VIDEO_COMPLETE_EVENT_CREATE
+  VIDEO_COMPLETE_EVENT_CREATE,
+  VIDEO_PROGRESS_EVENT_CREATE
 } from './VideoEvents'
 
 describe('VideoEvents', () => {
@@ -31,7 +32,7 @@ describe('VideoEvents', () => {
       }),
       blockId: 'video0.id',
       startAt: 0,
-      endAt: 1
+      endAt: 100
     }
   })
   afterEach(() => {
@@ -191,5 +192,116 @@ describe('VideoEvents', () => {
       props.player.trigger('ended')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should create progress event', async () => {
+    const resultStart = jest.fn(() => ({
+      data: {
+        videoStartEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoStartEvent',
+          position: 0
+        }
+      }
+    }))
+
+    const resultOne = jest.fn(() => ({
+      data: {
+        videoProgressEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoProgressEvent',
+          position: 26,
+          progress: 25
+        }
+      }
+    }))
+    const resultTwo = jest.fn(() => ({
+      data: {
+        videoProgressEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoProgressEvent',
+          position: 51,
+          progress: 50
+        }
+      }
+    }))
+    const resultThree = jest.fn(() => ({
+      data: {
+        videoProgressEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoProgressEvent',
+          position: 76,
+          progress: 75
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_START_EVENT_CREATE,
+              variables: {
+                input: { blockId: 'video0.id', position: 0 }
+              }
+            },
+            result: resultStart
+          },
+          {
+            request: {
+              query: VIDEO_PROGRESS_EVENT_CREATE,
+              variables: {
+                input: { blockId: 'video0.id', position: 26, progress: 25 }
+              }
+            },
+            result: resultOne
+          },
+          {
+            request: {
+              query: VIDEO_PROGRESS_EVENT_CREATE,
+              variables: {
+                input: { blockId: 'video0.id', position: 51, progress: 50 }
+              }
+            },
+            result: resultTwo
+          },
+          {
+            request: {
+              query: VIDEO_PROGRESS_EVENT_CREATE,
+              variables: {
+                input: { blockId: 'video0.id', position: 76, progress: 75 }
+              }
+            },
+            result: resultThree
+          }
+        ]}
+      >
+        <VideoEvents {...props} />
+      </MockedProvider>
+    )
+
+    act(() => {
+      props.player.currentTime(0)
+    })
+    await waitFor(() => expect(resultStart).toHaveBeenCalled())
+
+    act(() => {
+      props.player.currentTime(26)
+      props.player.trigger('timeupdate')
+    })
+    await waitFor(() => expect(resultOne).toHaveBeenCalled())
+
+    act(() => {
+      props.player.currentTime(51)
+      props.player.trigger('timeupdate')
+    })
+    await waitFor(() => expect(resultTwo).toHaveBeenCalled())
+
+    act(() => {
+      props.player.currentTime(76)
+      props.player.trigger('timeupdate')
+    })
+    await waitFor(() => expect(resultThree).toHaveBeenCalled())
   })
 })
