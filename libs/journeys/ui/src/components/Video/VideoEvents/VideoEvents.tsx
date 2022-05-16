@@ -63,7 +63,7 @@ export function VideoEvents({
         variables: {
           input: {
             blockId,
-            position: player.currentTime()
+            position: Math.floor(Math.floor(player.currentTime()))
           }
         }
       })
@@ -74,7 +74,7 @@ export function VideoEvents({
         variables: {
           input: {
             blockId,
-            position: player.currentTime()
+            position: Math.floor(player.currentTime())
           }
         }
       })
@@ -85,7 +85,7 @@ export function VideoEvents({
         variables: {
           input: {
             blockId,
-            position: player.currentTime()
+            position: Math.floor(player.currentTime())
           }
         }
       })
@@ -96,7 +96,7 @@ export function VideoEvents({
         variables: {
           input: {
             blockId,
-            position: player.currentTime()
+            position: Math.floor(player.currentTime())
           }
         }
       })
