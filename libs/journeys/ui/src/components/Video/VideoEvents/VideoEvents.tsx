@@ -85,7 +85,7 @@ export function VideoEvents({
         variables: {
           input: {
             blockId,
-            position: Math.floor(Math.floor(player.currentTime()))
+            position: Math.floor(player.currentTime())
           }
         }
       })

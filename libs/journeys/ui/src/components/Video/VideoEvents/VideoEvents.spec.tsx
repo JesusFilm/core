@@ -84,6 +84,9 @@ describe('VideoEvents', () => {
         <VideoEvents {...props} />
       </MockedProvider>
     )
+    act(() => {
+      props.player.currentTime(0.1)
+    })
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
@@ -118,6 +121,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
+      props.player.currentTime(0.1)
       props.player.trigger('playing')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -153,6 +157,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
+      props.player.currentTime(0.1)
       props.player.trigger('pause')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -164,7 +169,7 @@ describe('VideoEvents', () => {
         videoCompleteEventCreate: {
           id: 'uuid',
           __typename: 'VideoCompleteEvent',
-          position: 0
+          position: 50
         }
       }
     }))
@@ -172,12 +177,28 @@ describe('VideoEvents', () => {
     render(
       <MockedProvider
         mocks={[
-          startMock,
+          {
+            request: {
+              query: VIDEO_START_EVENT_CREATE,
+              variables: {
+                input: { blockId: 'video0.id', position: 50 }
+              }
+            },
+            result: {
+              data: {
+                videoStartEventCreate: {
+                  id: 'uuid',
+                  __typename: 'VideoStartEvent',
+                  position: 50
+                }
+              }
+            }
+          },
           {
             request: {
               query: VIDEO_COMPLETE_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 50 }
               }
             },
             result
@@ -188,6 +209,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
+      props.player.currentTime(50.5)
       props.player.trigger('ended')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
