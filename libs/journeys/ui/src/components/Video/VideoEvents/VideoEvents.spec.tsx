@@ -368,7 +368,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PROGRESS_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 26, progress: 25 }
+                input: { blockId: 'video0.id', position: 25, progress: 25 }
               }
             },
             result: resultOne
@@ -377,7 +377,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PROGRESS_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 51, progress: 50 }
+                input: { blockId: 'video0.id', position: 50, progress: 50 }
               }
             },
             result: resultTwo
@@ -386,7 +386,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PROGRESS_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 76, progress: 75 }
+                input: { blockId: 'video0.id', position: 75, progress: 75 }
               }
             },
             result: resultThree
@@ -403,19 +403,19 @@ describe('VideoEvents', () => {
     await waitFor(() => expect(resultStart).toHaveBeenCalled())
 
     act(() => {
-      props.player.currentTime(26)
+      props.player.currentTime(25)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultOne).toHaveBeenCalled())
 
     act(() => {
-      props.player.currentTime(51)
+      props.player.currentTime(50)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultTwo).toHaveBeenCalled())
 
     act(() => {
-      props.player.currentTime(76)
+      props.player.currentTime(75)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultThree).toHaveBeenCalled())

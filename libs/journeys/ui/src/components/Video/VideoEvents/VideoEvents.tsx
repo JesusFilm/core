@@ -97,34 +97,46 @@ export function VideoEvents({
     VIDEO_PROGRESS_EVENT_CREATE
   )
 
-  const firstTrigger = useRef(false)
+  const eventCreate = useCallback(
+    (progress: number): void => {
+      void videoProgressEventCreate({
+        variables: {
+          input: {
+            blockId,
+            position: Math.floor(player.currentTime()),
+            progress
+          }
+        }
+      })
+    },
+    [blockId, player, videoProgressEventCreate]
+  )
+
+  const firstTrigger = useRef(true)
   const secondTrigger = useRef(false)
   const thirdTrigger = useRef(false)
   const start = startAt ?? 0
-  const end = endAt ?? 0
+  const end = endAt ?? player.duration()
   const firstTriggerTime = (end - start) / 4 + start
   const secondTriggerTime = (end - start) / 2 + start
   const thirdTriggerTime = ((end - start) * 3) / 4 + start
 
   const progressCalc = useCallback(
-    (currentTime: number): number | null => {
-      let result
-
-      if (!firstTrigger.current && currentTime > firstTriggerTime) {
-        result = 25
-        firstTrigger.current = true
-      } else if (!secondTrigger.current && currentTime > secondTriggerTime) {
-        result = 50
+    (currentTime: number): void => {
+      if (firstTrigger.current && currentTime >= firstTriggerTime) {
+        firstTrigger.current = false
         secondTrigger.current = true
-      } else if (!thirdTrigger.current && currentTime > thirdTriggerTime) {
-        result = 75
+        void eventCreate(25)
+      } else if (secondTrigger.current && currentTime >= secondTriggerTime) {
+        secondTrigger.current = false
         thirdTrigger.current = true
-      } else {
-        result = null
+        void eventCreate(50)
+      } else if (thirdTrigger.current && currentTime >= thirdTriggerTime) {
+        thirdTrigger.current = false
+        void eventCreate(75)
       }
-      return result
     },
-    [firstTriggerTime, secondTriggerTime, thirdTriggerTime]
+    [firstTriggerTime, secondTriggerTime, thirdTriggerTime, eventCreate]
   )
 
   useEffect(() => {
@@ -195,20 +207,7 @@ export function VideoEvents({
     })
 
     player.on('timeupdate', () => {
-      const progress =
-        player.currentTime() != null && progressCalc(player.currentTime())
-
-      if (progress != null) {
-        void videoProgressEventCreate({
-          variables: {
-            input: {
-              blockId,
-              position: Math.floor(player.currentTime()),
-              progress
-            }
-          }
-        })
-      }
+      progressCalc(player.currentTime())
     })
   }, [
     blockId,
