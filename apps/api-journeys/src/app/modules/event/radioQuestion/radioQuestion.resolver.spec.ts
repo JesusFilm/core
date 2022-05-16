@@ -31,15 +31,11 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     it('returns RadioQuestionSubmissionEvent', async () => {
       expect(
         await resolver.radioQuestionSubmissionEventCreate('userId', input)
-<<<<<<< HEAD
       ).toEqual({
         ...input,
         __typename: 'RadioQuestionSubmissionEvent',
         userId: 'userId'
       })
-=======
-      ).toEqual({ ...input, userId: 'userId' })
->>>>>>> b3b3c7f5 (chore: fix naming)
     })
   })
 })
