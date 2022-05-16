@@ -115,6 +115,7 @@ export function VideoEvents({
   const firstTrigger = useRef(true)
   const secondTrigger = useRef(false)
   const thirdTrigger = useRef(false)
+  const fourthTrigger = useRef(false)
   const start = startAt ?? 0
   const end = endAt ?? player.duration()
   const firstTriggerTime = (end - start) / 4 + start
@@ -133,10 +134,30 @@ export function VideoEvents({
         void eventCreate(50)
       } else if (thirdTrigger.current && currentTime >= thirdTriggerTime) {
         thirdTrigger.current = false
+        fourthTrigger.current = true
         void eventCreate(75)
+      } else if (fourthTrigger.current && currentTime >= end) {
+        fourthTrigger.current = false
+        void videoCompleteEventCreate({
+          variables: {
+            input: {
+              blockId,
+              position: Math.floor(player.currentTime())
+            }
+          }
+        })
       }
     },
-    [firstTriggerTime, secondTriggerTime, thirdTriggerTime, eventCreate]
+    [
+      blockId,
+      player,
+      end,
+      firstTriggerTime,
+      secondTriggerTime,
+      thirdTriggerTime,
+      eventCreate,
+      videoCompleteEventCreate
+    ]
   )
 
   useEffect(() => {
@@ -164,17 +185,6 @@ export function VideoEvents({
 
     player.on('pause', () => {
       void videoPauseEventCreate({
-        variables: {
-          input: {
-            blockId,
-            position: Math.floor(player.currentTime())
-          }
-        }
-      })
-    })
-
-    player.on('ended', () => {
-      void videoCompleteEventCreate({
         variables: {
           input: {
             blockId,
