@@ -178,6 +178,13 @@ export interface VideoPlayEventCreateInput {
   state?: VideoPlayEventStateEnum | null;
 }
 
+export interface VideoProgressEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  position?: number | null;
+  progress: number;
+}
+
 export interface VideoStartEventCreateInput {
   blockId: string;
   id?: string | null;

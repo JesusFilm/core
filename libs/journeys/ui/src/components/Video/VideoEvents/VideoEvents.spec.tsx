@@ -215,6 +215,7 @@ describe('VideoEvents', () => {
         }
       }
     }))
+
     const resultTwo = jest.fn(() => ({
       data: {
         videoProgressEventCreate: {
@@ -225,6 +226,7 @@ describe('VideoEvents', () => {
         }
       }
     }))
+
     const resultThree = jest.fn(() => ({
       data: {
         videoProgressEventCreate: {
