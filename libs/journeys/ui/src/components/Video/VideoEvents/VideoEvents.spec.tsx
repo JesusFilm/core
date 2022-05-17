@@ -365,24 +365,24 @@ describe('VideoEvents', () => {
     )
 
     act(() => {
-      props.player.currentTime(0)
+      props.player.currentTime(0.1)
     })
     await waitFor(() => expect(resultStart).toHaveBeenCalled())
 
     act(() => {
-      props.player.currentTime(25)
+      props.player.currentTime(25.1)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultOne).toHaveBeenCalled())
 
     act(() => {
-      props.player.currentTime(50)
+      props.player.currentTime(50.1)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultTwo).toHaveBeenCalled())
 
     act(() => {
-      props.player.currentTime(75)
+      props.player.currentTime(75.1)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultThree).toHaveBeenCalled())
