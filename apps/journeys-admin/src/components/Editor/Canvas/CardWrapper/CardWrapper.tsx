@@ -20,8 +20,21 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
           }
         }
       }
+      if (
+        child.id === block.coverBlockId &&
+        child.__typename === 'ImageBlock'
+      ) {
+        if (child.blurhash == null) {
+          return child
+        }
+        return {
+          ...child,
+          blurhash: null
+        }
+      }
       return child
     })
+
     return (
       <Card
         {...{ ...block, children: blocks }}

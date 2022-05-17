@@ -115,6 +115,19 @@ export function ContainedCover({
             objectFit="cover"
           />
         )}
+        {loading && imageBlock != null && (
+          <NextImage
+            data-testid={
+              videoBlock != null
+                ? 'VideoPosterCover'
+                : 'ContainedCardImageCover'
+            }
+            src={imageBlock.src}
+            alt={imageBlock.alt}
+            layout="fill"
+            objectFir="cover"
+          />
+        )}
       </Box>
       <ContentOverlay
         backgroundColor={backgroundColor}

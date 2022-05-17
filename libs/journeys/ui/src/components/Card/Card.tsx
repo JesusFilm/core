@@ -61,7 +61,7 @@ export function Card({
       : theme.palette.background.paper
 
   const blurUrl = useMemo(() => {
-    return imageBlock != null
+    return imageBlock?.blurhash != null
       ? blurImage(
           imageBlock.width,
           imageBlock.height,
