@@ -116,12 +116,6 @@ export enum TypographyAlign {
     right = "right"
 }
 
-export enum VideoPlayEventStateEnum {
-    PLAYING = "PLAYING",
-    PAUSED = "PAUSED",
-    FINISHED = "FINISHED"
-}
-
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"
@@ -130,12 +124,6 @@ export enum IdType {
 export enum JourneyStatus {
     draft = "draft",
     published = "published"
-}
-
-export enum VideoResponseStateEnum {
-    PLAYING = "PLAYING",
-    PAUSED = "PAUSED",
-    FINISHED = "FINISHED"
 }
 
 export enum UserJourneyRole {
@@ -358,7 +346,6 @@ export class VideoStartEventCreateInput {
 export class VideoPlayEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
-    state?: Nullable<VideoPlayEventStateEnum>;
     position?: Nullable<number>;
 }
 
@@ -419,31 +406,6 @@ export class JourneyUpdateInput {
     seoDescription?: Nullable<string>;
 }
 
-export class RadioQuestionResponseCreateInput {
-    id?: Nullable<string>;
-    blockId?: Nullable<string>;
-    radioOptionBlockId?: Nullable<string>;
-}
-
-export class SignUpResponseCreateInput {
-    id?: Nullable<string>;
-    blockId?: Nullable<string>;
-    name?: Nullable<string>;
-    email?: Nullable<string>;
-}
-
-export class StepResponseCreateInput {
-    id?: Nullable<string>;
-    blockId?: Nullable<string>;
-}
-
-export class VideoResponseCreateInput {
-    id?: Nullable<string>;
-    blockId?: Nullable<string>;
-    state?: Nullable<VideoResponseStateEnum>;
-    position?: Nullable<number>;
-}
-
 export interface Action {
     parentBlockId: string;
     gtmEventName?: Nullable<string>;
@@ -457,11 +419,6 @@ export interface Block {
 }
 
 export interface Event {
-    id: string;
-    userId: string;
-}
-
-export interface Response {
     id: string;
     userId: string;
 }
@@ -719,7 +676,6 @@ export class VideoPlayEvent implements Event {
     __typename?: 'VideoPlayEvent';
     id: string;
     userId: string;
-    state?: Nullable<VideoPlayEventStateEnum>;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -773,39 +729,6 @@ export class UserJourney {
     journeyId: string;
     role: UserJourneyRole;
     user?: Nullable<User>;
-}
-
-export class RadioQuestionResponse implements Response {
-    __typename?: 'RadioQuestionResponse';
-    id: string;
-    userId: string;
-    radioOptionBlockId: string;
-    block?: Nullable<RadioQuestionBlock>;
-}
-
-export class SignUpResponse implements Response {
-    __typename?: 'SignUpResponse';
-    id: string;
-    userId: string;
-    name: string;
-    email: string;
-    block?: Nullable<SignUpBlock>;
-}
-
-export class StepResponse implements Response {
-    __typename?: 'StepResponse';
-    id: string;
-    userId: string;
-    block?: Nullable<StepBlock>;
-}
-
-export class VideoResponse implements Response {
-    __typename?: 'VideoResponse';
-    id: string;
-    userId: string;
-    state: VideoResponseStateEnum;
-    position?: Nullable<number>;
-    block?: Nullable<VideoBlock>;
 }
 
 export abstract class IMutation {
@@ -892,14 +815,6 @@ export abstract class IMutation {
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
     abstract journeyPublish(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
-
-    abstract radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput): RadioQuestionResponse | Promise<RadioQuestionResponse>;
-
-    abstract signUpResponseCreate(input: SignUpResponseCreateInput): SignUpResponse | Promise<SignUpResponse>;
-
-    abstract stepResponseCreate(input: StepResponseCreateInput): SignUpResponse | Promise<SignUpResponse>;
-
-    abstract videoResponseCreate(input: VideoResponseCreateInput): VideoResponse | Promise<VideoResponse>;
 
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 
