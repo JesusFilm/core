@@ -16,7 +16,7 @@ input VideoStartEventCreateInput {
 type VideoStartEvent implements Event {
   id: ID!
   userId: ID!
-  postition: Int
+  position: Int
   block: VideoBlock
 }
 

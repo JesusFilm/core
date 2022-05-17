@@ -1124,7 +1124,7 @@ input VideosFilter {
 type VideoStartEvent implements Event {
   block: VideoBlock
   id: ID!
-  postition: Int
+  position: Int
   userId: ID!
 }
 
