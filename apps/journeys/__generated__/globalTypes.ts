@@ -124,12 +124,6 @@ export enum TypographyVariant {
   subtitle2 = "subtitle2",
 }
 
-export enum VideoPlayEventStateEnum {
-  FINISHED = "FINISHED",
-  PAUSED = "PAUSED",
-  PLAYING = "PLAYING",
-}
-
 export interface ButtonClickEventCreateInput {
   blockId: string;
   id?: string | null;
@@ -186,7 +180,6 @@ export interface VideoPlayEventCreateInput {
   blockId: string;
   id?: string | null;
   position?: number | null;
-  state?: VideoPlayEventStateEnum | null;
 }
 
 export interface VideoStartEventCreateInput {
