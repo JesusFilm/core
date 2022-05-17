@@ -1,9 +1,8 @@
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { TreeBlock, EditorProvider } from '../..'
-import { VideoPlayEventStateEnum } from '../../../__generated__/globalTypes'
 import { VideoFields } from './__generated__/VideoFields'
-import { Video, VIDEO_PLAY_EVENT_CREATE } from '.'
+import { Video } from '.'
 
 const block: TreeBlock<VideoFields> = {
   __typename: 'VideoBlock',
@@ -55,28 +54,7 @@ const block: TreeBlock<VideoFields> = {
 describe('Video', () => {
   it('should render the video through mediaComponentId and languageId successfully', () => {
     const { getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: VIDEO_PLAY_EVENT_CREATE,
-              variables: {
-                id: 'uuid',
-                blockId: 'video0.id',
-                state: VideoPlayEventStateEnum.PLAYING,
-                position: 30
-              }
-            },
-            result: {
-              data: {
-                id: 'uuid',
-                state: VideoPlayEventStateEnum.PLAYING,
-                position: 30
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider>
         <Video {...block} />
       </MockedProvider>
     )
