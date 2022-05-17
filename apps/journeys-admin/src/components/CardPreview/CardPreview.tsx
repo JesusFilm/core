@@ -23,7 +23,7 @@ import { StepBlockNextBlockIdUpdate } from '../../../__generated__/StepBlockNext
 import { VideoBlockSetDefaultAction } from '../../../__generated__/VideoBlockSetDefaultAction'
 import {
   BlockFields_CardBlock as CardBlock,
-  BlockFields_VideoBlock as VideoBlock,
+  BlockFields_VideoBlock as VideoBlock
 } from '../../../__generated__/BlockFields'
 import { FramePortal } from '../FramePortal'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
@@ -186,13 +186,15 @@ export function CardPreview({
     const videoBlock = prevCard?.children.find(
       (block) => block.__typename === 'VideoBlock'
     ) as unknown as TreeBlock<VideoBlock>
-    // const validVideoNextBlockId =
-    //   videoBlock?.action != null ||
-    //   (videoBlock?.action?.__typename === 'NavigateToBlockAction' &&
-    //     steps?.find(({ id }) => id === videoBlock?.action?.blockId) != null)
+    const validVideoNextBlockId =
+      steps.find(
+        ({ id }) =>
+          videoBlock?.action?.__typename === 'NavigateToBlockAction' &&
+          videoBlock?.action?.blockId === id
+      ) != null
 
     if (
-      // validVideoNextBlockId &&
+      !validVideoNextBlockId &&
       prevCard != null &&
       videoBlock != null &&
       prevCard.coverBlockId !== videoBlock.id
