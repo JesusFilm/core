@@ -2,7 +2,6 @@ import { render, waitFor, act, cleanup } from '@testing-library/react'
 import videojs from 'video.js'
 import { MockedProvider } from '@apollo/client/testing'
 import {
-  VideoEvents,
   VideoEventsProps,
   VIDEO_START_EVENT_CREATE,
   VIDEO_PLAY_EVENT_CREATE,
@@ -12,6 +11,7 @@ import {
   VIDEO_COLLAPSE_EVENT_CREATE,
   VIDEO_PROGRESS_EVENT_CREATE
 } from './VideoEvents'
+import { VideoEvents } from '.'
 
 describe('VideoEvents', () => {
   let props: VideoEventsProps
