@@ -41,24 +41,6 @@ describe('VideoEvents', () => {
     cleanup()
   })
 
-  const startMock = {
-    request: {
-      query: VIDEO_START_EVENT_CREATE,
-      variables: {
-        input: { blockId: 'video0.id', position: 0 }
-      }
-    },
-    result: {
-      data: {
-        videoStartEventCreate: {
-          id: 'uuid',
-          __typename: 'VideoStartEvent',
-          position: 0
-        }
-      }
-    }
-  }
-
   it('should create start event', async () => {
     const result = jest.fn(() => ({
       data: {
@@ -89,6 +71,7 @@ describe('VideoEvents', () => {
     )
     act(() => {
       props.player.currentTime(0)
+      props.player.trigger('timeupdate')
     })
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -108,7 +91,6 @@ describe('VideoEvents', () => {
     render(
       <MockedProvider
         mocks={[
-          startMock,
           {
             request: {
               query: VIDEO_PLAY_EVENT_CREATE,
@@ -125,7 +107,7 @@ describe('VideoEvents', () => {
     )
     act(() => {
       props.player.currentTime(0)
-      props.player.trigger('playing')
+      props.player.trigger('play')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
@@ -144,7 +126,6 @@ describe('VideoEvents', () => {
     render(
       <MockedProvider
         mocks={[
-          startMock,
           {
             request: {
               query: VIDEO_PAUSE_EVENT_CREATE,
@@ -232,7 +213,6 @@ describe('VideoEvents', () => {
     render(
       <MockedProvider
         mocks={[
-          startMock,
           {
             request: {
               query: VIDEO_EXPAND_EVENT_CREATE,
@@ -268,7 +248,6 @@ describe('VideoEvents', () => {
     render(
       <MockedProvider
         mocks={[
-          startMock,
           {
             request: {
               query: VIDEO_EXPAND_EVENT_CREATE,
@@ -399,6 +378,7 @@ describe('VideoEvents', () => {
 
     act(() => {
       props.player.currentTime(0)
+      props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultStart).toHaveBeenCalled())
 
