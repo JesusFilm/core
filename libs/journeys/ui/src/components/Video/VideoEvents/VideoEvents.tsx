@@ -133,18 +133,20 @@ export function VideoEvents({
   // PLAY event
   useEffect(() => {
     function playListener(): void {
-      void videoPlayEventCreate({
-        variables: {
-          input: {
-            blockId,
-            position: player.currentTime()
+      const currentTime = player.currentTime()
+      if (currentTime >= start)
+        void videoPlayEventCreate({
+          variables: {
+            input: {
+              blockId,
+              position: player.currentTime()
+            }
           }
-        }
-      })
+        })
     }
     player.on('play', playListener)
     return () => player.off('play', playListener)
-  }, [player, videoPlayEventCreate, blockId])
+  }, [player, videoPlayEventCreate, blockId, start])
 
   // PAUSE event
   useEffect(() => {
@@ -217,7 +219,8 @@ export function VideoEvents({
   // START event
   useEffect(() => {
     function startListener(): void {
-      if (!calledStart) {
+      const currentTime = player.currentTime()
+      if (!calledStart && currentTime >= start) {
         void videoStartEventCreate({
           variables: {
             input: {
@@ -230,7 +233,7 @@ export function VideoEvents({
     }
     player.on('timeupdate', startListener)
     return () => player.off('timeupdate', startListener)
-  }, [player, blockId, calledStart, videoStartEventCreate])
+  }, [player, blockId, calledStart, videoStartEventCreate, start])
 
   // PROGRESS 25% event
   useEffect(() => {
