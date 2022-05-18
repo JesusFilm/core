@@ -17,9 +17,12 @@ export class SignUpSubmissionEventResolver {
   @UseGuards(GqlAuthGuard)
   async signUpSubmissionEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: SignUpSubmissionEventCreateInput & { __typename }
+    @Args('input') input: SignUpSubmissionEventCreateInput
   ): Promise<SignUpSubmissionEvent> {
-    input.__typename = 'SignUpSubmissionEvent'
-    return await this.eventService.save({ ...input, userId })
+    return await this.eventService.save({
+      ...input,
+      __typename: 'SignUpSubmissionEvent',
+      userId
+    })
   }
 }

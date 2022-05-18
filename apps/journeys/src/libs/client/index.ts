@@ -1,1 +1,0 @@
-export { createApolloClient } from './client'

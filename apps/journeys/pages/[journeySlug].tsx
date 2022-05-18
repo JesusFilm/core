@@ -5,7 +5,7 @@ import { ThemeProvider } from '@core/shared/ui'
 import { transformer, JourneyProvider, JOURNEY_FIELDS } from '@core/journeys/ui'
 import { NextSeo } from 'next-seo'
 import { Conductor } from '../src/components/Conductor'
-import { createApolloClient } from '../src/libs/client'
+import { apolloClient } from '../src/libs/apolloClient'
 import {
   GetJourney,
   GetJourney_journey as Journey
@@ -55,7 +55,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
-      <JourneyProvider value={{ journey, admin: false }}>
+      <JourneyProvider value={{ journey }}>
         <ThemeProvider
           themeName={journey.themeName}
           themeMode={journey.themeMode}
@@ -72,8 +72,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
 export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
   params
 }) => {
-  const client = createApolloClient()
-  const { data } = await client.query<GetJourney>({
+  const { data } = await apolloClient.query<GetJourney>({
     query: gql`
       ${JOURNEY_FIELDS}
       query GetJourney($id: ID!) {
@@ -103,8 +102,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const client = createApolloClient()
-  const { data } = await client.query<GetJourneySlugs>({
+  const { data } = await apolloClient.query<GetJourneySlugs>({
     query: gql`
       query GetJourneySlugs {
         journeys {

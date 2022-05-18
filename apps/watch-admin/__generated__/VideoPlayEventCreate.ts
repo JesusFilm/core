@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoPlayEventCreateInput, VideoPlayEventStateEnum } from "./globalTypes";
+import { VideoPlayEventCreateInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: VideoPlayEventCreate
@@ -11,8 +11,7 @@ import { VideoPlayEventCreateInput, VideoPlayEventStateEnum } from "./globalType
 
 export interface VideoPlayEventCreate_videoPlayEventCreate {
   __typename: "VideoPlayEvent";
-  state: VideoPlayEventStateEnum;
-  position: number | null;
+  id: string;
 }
 
 export interface VideoPlayEventCreate {

@@ -34,13 +34,7 @@
       "options": {
         "commands": [
           {
-            "command": "nx serve api-journeys"
-          },
-          {
-            "command": "nx serve api-users"
-          },
-          {
-            "command": "nx serve api-gateway"
+            "command": "nx serve-all api-gateway"
           },
           {
             "command": "nx serve journeys"
@@ -103,6 +97,16 @@
           },
           {
             "command": "npx apollo client:codegen --config apps/journeys/apollo.config.js --target typescript --outputFlat apps/journeys/__generated__"
+          }
+        ]
+      }
+    },
+    "fetch-secrets": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project journeys > apps/journeys/.env"
           }
         ]
       }

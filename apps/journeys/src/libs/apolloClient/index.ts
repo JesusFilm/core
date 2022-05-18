@@ -1,0 +1,1 @@
+export { apolloClient } from './apolloClient'

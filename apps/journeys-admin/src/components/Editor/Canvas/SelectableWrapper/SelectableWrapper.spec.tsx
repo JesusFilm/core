@@ -11,6 +11,7 @@ import {
   SignUp,
   Typography
 } from '@core/journeys/ui'
+import { SnackbarProvider } from 'notistack'
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
 import { SignUpFields } from '../../../../../__generated__/SignUpFields'
 import { ImageFields } from '../../../../../__generated__/ImageFields'
@@ -132,34 +133,36 @@ describe('SelectableWrapper', () => {
   it('should select blocks on click', async () => {
     const { getByRole, getByTestId, getByText } = render(
       <MockedProvider>
-        <EditorProvider
-          initialState={{
-            steps: [
-              step([imageBlock, typographyBlock, buttonBlock, signUpBlock])
-            ],
-            activeFab: ActiveFab.Add
-          }}
-        >
-          <SelectableWrapper block={imageBlock}>
-            <Image {...imageBlock} alt={'imageAlt'} />
-          </SelectableWrapper>
-          {/* Video */}
-          <SelectableWrapper block={typographyBlock}>
-            <Typography {...typographyBlock} />
-          </SelectableWrapper>
-          <SelectableWrapper block={buttonBlock}>
-            <Button {...buttonBlock} />
-          </SelectableWrapper>
-          <SelectableWrapper block={signUpBlock}>
-            <SignUp {...signUpBlock} />
-          </SelectableWrapper>
-          <SelectableWrapper block={radioQuestionBlock}>
-            <RadioQuestion
-              {...radioQuestionBlock}
-              wrappers={{ Wrapper: SelectableWrapper }}
-            />
-          </SelectableWrapper>
-        </EditorProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              steps: [
+                step([imageBlock, typographyBlock, buttonBlock, signUpBlock])
+              ],
+              activeFab: ActiveFab.Add
+            }}
+          >
+            <SelectableWrapper block={imageBlock}>
+              <Image {...imageBlock} alt={'imageAlt'} />
+            </SelectableWrapper>
+            {/* Video */}
+            <SelectableWrapper block={typographyBlock}>
+              <Typography {...typographyBlock} />
+            </SelectableWrapper>
+            <SelectableWrapper block={buttonBlock}>
+              <Button {...buttonBlock} />
+            </SelectableWrapper>
+            <SelectableWrapper block={signUpBlock}>
+              <SignUp {...signUpBlock} />
+            </SelectableWrapper>
+            <SelectableWrapper block={radioQuestionBlock}>
+              <RadioQuestion
+                {...radioQuestionBlock}
+                wrappers={{ Wrapper: SelectableWrapper }}
+              />
+            </SelectableWrapper>
+          </EditorProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 

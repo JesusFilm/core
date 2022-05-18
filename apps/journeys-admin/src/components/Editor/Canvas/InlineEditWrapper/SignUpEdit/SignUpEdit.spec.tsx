@@ -1,6 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
+import { SnackbarProvider } from 'notistack'
 import { SignUpFields } from '../../../../../../__generated__/SignUpFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { SignUpEdit, SIGN_UP_BLOCK_UPDATE_CONTENT } from '.'
@@ -19,7 +20,9 @@ describe('SignUpEdit', () => {
   it('selects the input on click', async () => {
     const { getByRole } = render(
       <MockedProvider>
-        <SignUpEdit {...props} />
+        <SnackbarProvider>
+          <SignUpEdit {...props} />
+        </SnackbarProvider>
       </MockedProvider>
     )
     const input = getByRole('textbox', { name: '' })
@@ -58,16 +61,18 @@ describe('SignUpEdit', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <EditorProvider>
-            <SignUpEdit {...props} />
-          </EditorProvider>
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider>
+              <SignUpEdit {...props} />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 

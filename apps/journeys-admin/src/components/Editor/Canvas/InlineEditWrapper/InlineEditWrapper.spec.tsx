@@ -9,6 +9,7 @@ import {
   SignUp,
   Typography
 } from '@core/journeys/ui'
+import { SnackbarProvider } from 'notistack'
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
 import { RadioOptionFields } from '../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../__generated__/RadioQuestionFields'
@@ -146,18 +147,20 @@ describe('InlineEditWrapper', () => {
 
     const { getByDisplayValue, getByText, getByTestId } = render(
       <MockedProvider>
-        <EditorProvider
-          initialState={{
-            steps: [step(block)],
-            activeFab: ActiveFab.Add
-          }}
-        >
-          <SelectableWrapper block={block}>
-            <InlineEditWrapper block={block}>
-              <SignUp {...block} />
-            </InlineEditWrapper>
-          </SelectableWrapper>
-        </EditorProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step(block)],
+              activeFab: ActiveFab.Add
+            }}
+          >
+            <SelectableWrapper block={block}>
+              <InlineEditWrapper block={block}>
+                <SignUp {...block} />
+              </InlineEditWrapper>
+            </SelectableWrapper>
+          </EditorProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 

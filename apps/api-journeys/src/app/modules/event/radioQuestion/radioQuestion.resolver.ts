@@ -18,9 +18,12 @@ export class RadioQuestionSubmissionEventResolver {
   async radioQuestionSubmissionEventCreate(
     @CurrentUserId() userId: string,
     @Args('input')
-    input: RadioQuestionSubmissionEventCreateInput & { __typename }
+    input: RadioQuestionSubmissionEventCreateInput
   ): Promise<RadioQuestionSubmissionEvent> {
-    input.__typename = 'RadioQuestionSubmissionEvent'
-    return await this.eventService.save({ ...input, userId })
+    return await this.eventService.save({
+      ...input,
+      __typename: 'RadioQuestionSubmissionEvent',
+      userId
+    })
   }
 }
