@@ -115,7 +115,7 @@ export function ContainedCover({
             objectFit="cover"
           />
         )}
-        {loading && imageBlock != null && (
+        {loading && imageBlock != null && imageBlock.src != null && (
           <NextImage
             data-testid={
               videoBlock != null
@@ -125,7 +125,7 @@ export function ContainedCover({
             src={imageBlock.src}
             alt={imageBlock.alt}
             layout="fill"
-            objectFir="cover"
+            objectFit="cover"
           />
         )}
       </Box>

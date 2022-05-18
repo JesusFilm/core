@@ -61,7 +61,8 @@ export function Card({
       : theme.palette.background.paper
 
   const blurUrl = useMemo(() => {
-    return imageBlock?.blurhash != null
+    return imageBlock != null &&
+      (imageBlock.blurhash !== '' || videoBlock?.video?.variant?.hls != null)
       ? blurImage(
           imageBlock.width,
           imageBlock.height,
@@ -69,7 +70,7 @@ export function Card({
           cardColor
         )
       : undefined
-  }, [imageBlock, cardColor])
+  }, [imageBlock, cardColor, videoBlock?.video?.variant?.hls])
 
   const renderedChildren = children
     .filter(({ id }) => id !== coverBlockId)

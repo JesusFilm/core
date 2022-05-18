@@ -368,4 +368,134 @@ describe('CardWrapper', () => {
       {}
     )
   })
+
+  it('should set blurhash to an empty string', () => {
+    const Container = (_props: {
+      wrappers: Record<string, never>
+    }): ReactElement => <></>
+    const block: TreeBlock = {
+      id: 'card5.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step5.id',
+      coverBlockId: 'image.id',
+      parentOrder: 0,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: [
+        {
+          __typename: 'ImageBlock',
+          parentBlockId: 'card5.id',
+          parentOrder: 0,
+          id: 'image.id',
+          src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+          alt: 'random image from unsplash',
+          width: 1600,
+          height: 1067,
+          blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+          children: []
+        }
+      ]
+    }
+    render(
+      <CardWrapper block={block}>
+        <Container wrappers={{}} />
+      </CardWrapper>
+    )
+    expect(Card).toHaveBeenCalledWith(
+      {
+        id: 'card5.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step5.id',
+        coverBlockId: 'image.id',
+        parentOrder: 0,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            __typename: 'ImageBlock',
+            parentBlockId: 'card5.id',
+            parentOrder: 0,
+            id: 'image.id',
+            src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+            alt: 'random image from unsplash',
+            width: 1600,
+            height: 1067,
+            blurhash: '',
+            children: []
+          }
+        ],
+        wrappers: {}
+      },
+      {}
+    )
+  })
+
+  it('should where blurhash is not set', () => {
+    const Container = (_props: {
+      wrappers: Record<string, never>
+    }): ReactElement => <></>
+    const block: TreeBlock = {
+      id: 'card5.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step5.id',
+      coverBlockId: 'image.id',
+      parentOrder: 0,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: [
+        {
+          __typename: 'ImageBlock',
+          parentBlockId: 'card5.id',
+          parentOrder: 0,
+          id: 'image.id',
+          src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+          alt: 'random image from unsplash',
+          width: 1600,
+          height: 1067,
+          blurhash: '',
+          children: []
+        }
+      ]
+    }
+    render(
+      <CardWrapper block={block}>
+        <Container wrappers={{}} />
+      </CardWrapper>
+    )
+    expect(Card).toHaveBeenCalledWith(
+      {
+        id: 'card5.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step5.id',
+        coverBlockId: 'image.id',
+        parentOrder: 0,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            __typename: 'ImageBlock',
+            parentBlockId: 'card5.id',
+            parentOrder: 0,
+            id: 'image.id',
+            src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+            alt: 'random image from unsplash',
+            width: 1600,
+            height: 1067,
+            blurhash: '',
+            children: []
+          }
+        ],
+        wrappers: {}
+      },
+      {}
+    )
+  })
 })

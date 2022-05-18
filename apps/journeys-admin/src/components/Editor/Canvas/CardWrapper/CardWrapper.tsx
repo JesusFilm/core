@@ -29,7 +29,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
         }
         return {
           ...child,
-          blurhash: null
+          blurhash: ''
         }
       }
       return child

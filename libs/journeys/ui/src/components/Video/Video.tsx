@@ -39,7 +39,7 @@ export function Video({
   ) as TreeBlock<ImageFields> | undefined
 
   const blurBackground = useMemo(() => {
-    return posterBlock != null
+    return posterBlock != null && video?.variant?.hls != null
       ? blurImage(
           posterBlock.width,
           posterBlock.height,
@@ -47,7 +47,7 @@ export function Video({
           theme.palette.background.paper
         )
       : undefined
-  }, [posterBlock, theme])
+  }, [posterBlock, theme, video?.variant?.hls])
 
   useEffect(() => {
     if (videoRef.current != null) {

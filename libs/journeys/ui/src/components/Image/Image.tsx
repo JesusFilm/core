@@ -17,7 +17,9 @@ export function Image({
 }: TreeBlock<ImageFields>): ReactElement {
   const theme = useTheme()
   const placeholderSrc = useMemo(() => {
-    return blurImage(width, height, blurhash, theme.palette.background.paper)
+    return blurhash != null
+      ? blurImage(width, height, blurhash, theme.palette.background.paper)
+      : undefined
   }, [blurhash, width, height, theme])
 
   return (

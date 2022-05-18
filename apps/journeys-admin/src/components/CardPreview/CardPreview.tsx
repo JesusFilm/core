@@ -24,6 +24,7 @@ import { FramePortal } from '../FramePortal'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { HorizontalSelect } from '../HorizontalSelect'
 import { VideoWrapper } from '../Editor/Canvas/VideoWrapper'
+import { ImageWrapper } from '../Editor/Canvas/ImageWrapper'
 import { CardWrapper } from '../Editor/Canvas/CardWrapper'
 
 export interface CardPreviewProps {
@@ -213,6 +214,7 @@ export function CardPreview({
                         block={step}
                         wrappers={{
                           VideoWrapper,
+                          ImageWrapper,
                           CardWrapper
                         }}
                       />
