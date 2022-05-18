@@ -161,22 +161,6 @@ export function VideoEvents({
     return () => player.off('pause', pauseListener)
   }, [player, videoPauseEventCreate, blockId])
 
-  // COMPELTE event
-  useEffect(() => {
-    function endedListener(): void {
-      void videoCompleteEventCreate({
-        variables: {
-          input: {
-            blockId,
-            position: player.currentTime()
-          }
-        }
-      })
-    }
-    player.on('ended', endedListener)
-    return () => player.off('ended', endedListener)
-  }, [player, videoCompleteEventCreate, blockId])
-
   // EXPAND event
   useEffect(() => {
     function expandListener(): void {
