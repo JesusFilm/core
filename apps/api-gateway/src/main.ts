@@ -38,7 +38,8 @@ const server = new ApolloServer({
     if (
       process.env.GOOGLE_APPLICATION_JSON == null ||
       process.env.GOOGLE_APPLICATION_JSON === '' ||
-      token == null
+      token == null ||
+      token === ''
     )
       return {}
     try {
