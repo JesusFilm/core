@@ -88,7 +88,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
-      props.player.currentTime(0.1)
+      props.player.currentTime(0)
     })
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -124,7 +124,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
-      props.player.currentTime(0.1)
+      props.player.currentTime(0)
       props.player.trigger('playing')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -160,7 +160,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
-      props.player.currentTime(0.1)
+      props.player.currentTime(0)
       props.player.trigger('pause')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -212,7 +212,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
-      props.player.currentTime(50.5)
+      props.player.currentTime(50)
       props.player.trigger('ended')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -248,7 +248,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
-      props.player.currentTime(0.1)
+      props.player.currentTime(0)
       props.player.enterFullWindow()
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -301,7 +301,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
-      props.player.currentTime(0.1)
+      props.player.currentTime(0)
       props.player.enterFullWindow()
       props.player.exitFullscreen()
     })
@@ -398,24 +398,24 @@ describe('VideoEvents', () => {
     )
 
     act(() => {
-      props.player.currentTime(0.1)
+      props.player.currentTime(0)
     })
     await waitFor(() => expect(resultStart).toHaveBeenCalled())
 
     act(() => {
-      props.player.currentTime(25.1)
+      props.player.currentTime(25)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultOne).toHaveBeenCalled())
 
     act(() => {
-      props.player.currentTime(50.1)
+      props.player.currentTime(50)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultTwo).toHaveBeenCalled())
 
     act(() => {
-      props.player.currentTime(75.1)
+      props.player.currentTime(75)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultThree).toHaveBeenCalled())
