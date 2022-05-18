@@ -978,7 +978,7 @@ input VideoBlockUpdateInput {
 type VideoCollapseEvent implements Event {
   block: VideoBlock
   id: ID!
-  position: Int
+  position: Float
   userId: ID!
 }
 
@@ -989,13 +989,13 @@ input VideoCollapseEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  position: Int
+  position: Float
 }
 
 type VideoCompleteEvent implements Event {
   block: VideoBlock
   id: ID!
-  position: Int
+  position: Float
   userId: ID!
 }
 
@@ -1006,13 +1006,13 @@ input VideoCompleteEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  position: Int
+  position: Float
 }
 
 type VideoExpandEvent implements Event {
   block: VideoBlock
   id: ID!
-  position: Int
+  position: Float
   userId: ID!
 }
 
@@ -1023,13 +1023,13 @@ input VideoExpandEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  position: Int
+  position: Float
 }
 
 type VideoPauseEvent implements Event {
   block: VideoBlock
   id: ID!
-  position: Int
+  position: Float
   userId: ID!
 }
 
@@ -1040,13 +1040,13 @@ input VideoPauseEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  position: Int
+  position: Float
 }
 
 type VideoPlayEvent implements Event {
   block: VideoBlock
   id: ID!
-  position: Int
+  position: Float
   state: VideoPlayEventStateEnum @deprecated(reason: "State will be split into different events")
   userId: ID!
 }
@@ -1058,7 +1058,7 @@ input VideoPlayEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  position: Int
+  position: Float
   state: VideoPlayEventStateEnum
 }
 
@@ -1071,7 +1071,7 @@ enum VideoPlayEventStateEnum {
 type VideoProgressEvent implements Event {
   block: VideoBlock
   id: ID!
-  position: Int
+  position: Float
   progress: Int!
   userId: ID!
 }
@@ -1083,7 +1083,7 @@ input VideoProgressEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  position: Int
+  position: Float
 
   """Progress of the video based on the startAt and endAt values of video"""
   progress: Int!
@@ -1124,7 +1124,7 @@ input VideosFilter {
 type VideoStartEvent implements Event {
   block: VideoBlock
   id: ID!
-  postition: Int
+  position: Float
   userId: ID!
 }
 
@@ -1135,7 +1135,7 @@ input VideoStartEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  position: Int
+  position: Float
 }
 
 type VideoTag {
