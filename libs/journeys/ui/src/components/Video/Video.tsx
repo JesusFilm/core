@@ -93,6 +93,17 @@ export function Video({
           if (playerRef?.current?.isFullscreen() === true)
             playerRef.current?.exitFullscreen()
         })
+        playerRef.current.on('timeupdate', () => {
+          if (playerRef.current != null) {
+            if (
+              action == null &&
+              endAt != null &&
+              playerRef.current.currentTime() >= endAt
+            ) {
+              playerRef.current.pause()
+            }
+          }
+        })
       }
     }
   }, [
@@ -100,6 +111,7 @@ export function Video({
     endAt,
     muted,
     autoplay,
+    action,
     blockId,
     posterBlock,
     selectedBlock,
