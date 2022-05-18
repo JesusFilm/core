@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import { useState } from 'react'
+import Box from '@mui/material/Box'
 import { simpleComponentConfig } from '../../libs/storybook'
 import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
 import { LanguageSelect, LanguageSelectOption } from '.'
@@ -9,7 +10,11 @@ const LanguageSelectStory = {
   ...simpleComponentConfig,
   component: LanguageSelect,
   title: 'Journeys-Admin/LanguageSelect',
-  argTypes: { onChange: { action: 'onChange' } }
+  argTypes: { onChange: { action: 'onChange' } },
+  parameters: {
+    ...simpleComponentConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const languages: Language[] = [
@@ -71,12 +76,14 @@ const Template: Story = ({ onChange }) => {
   }
 
   return (
-    <LanguageSelect
-      onChange={handleChange}
-      value={value}
-      languages={languages}
-      loading={false}
-    />
+    <Box sx={{ m: 4 }}>
+      <LanguageSelect
+        onChange={handleChange}
+        value={value}
+        languages={languages}
+        loading={false}
+      />
+    </Box>
   )
 }
 

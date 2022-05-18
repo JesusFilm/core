@@ -41,7 +41,6 @@ export function LanguageSelect({
   }, [languages])
 
   const sortedOptions = useMemo(() => {
-    // console.log('options', options, selectedLanguage)
     if (options !== []) {
       return options.sort((a, b) => {
         return (a.localName ?? a.nativeName ?? '').localeCompare(
