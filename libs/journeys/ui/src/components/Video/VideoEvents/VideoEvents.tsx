@@ -96,9 +96,9 @@ export function VideoEvents({
 
   const start = startAt ?? 0
   const end = endAt ?? player.duration()
-  const position25 = Math.floor((end - start) / 4 + start)
-  const position50 = Math.floor((end - start) / 2 + start)
-  const position75 = Math.floor(((end - start) * 3) / 4 + start)
+  const position25 = (end - start) / 4 + start
+  const position50 = (end - start) / 2 + start
+  const position75 = ((end - start) * 3) / 4 + start
 
   const [videoProgressEventCreate25, { called: called25 }] =
     useMutation<VideoProgressEventCreate>(VIDEO_PROGRESS_EVENT_CREATE, {
@@ -137,7 +137,7 @@ export function VideoEvents({
         variables: {
           input: {
             blockId,
-            position: Math.floor(player.currentTime())
+            position: player.currentTime()
           }
         }
       })
@@ -152,7 +152,7 @@ export function VideoEvents({
         variables: {
           input: {
             blockId,
-            position: Math.floor(player.currentTime())
+            position: player.currentTime()
           }
         }
       })
@@ -167,7 +167,7 @@ export function VideoEvents({
         variables: {
           input: {
             blockId,
-            position: Math.floor(player.currentTime())
+            position: player.currentTime()
           }
         }
       })
@@ -182,7 +182,7 @@ export function VideoEvents({
         variables: {
           input: {
             blockId,
-            position: Math.floor(player.currentTime())
+            position: player.currentTime()
           }
         }
       })
@@ -198,7 +198,7 @@ export function VideoEvents({
           variables: {
             input: {
               blockId,
-              position: Math.floor(player.currentTime())
+              position: player.currentTime()
             }
           }
         })
@@ -207,7 +207,7 @@ export function VideoEvents({
           variables: {
             input: {
               blockId,
-              position: Math.floor(player.currentTime())
+              position: player.currentTime()
             }
           }
         })
