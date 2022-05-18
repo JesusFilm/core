@@ -10,13 +10,13 @@ input VideoStartEventCreateInput {
   """
   id: ID
   blockId: ID!
-  position: Int
+  position: Float
 }
 
 type VideoStartEvent implements Event {
   id: ID!
   userId: ID!
-  postition: Int
+  position: Float
   block: VideoBlock
 }
 
@@ -28,7 +28,7 @@ input VideoPlayEventCreateInput {
   blockId: ID!
   state: VideoPlayEventStateEnum
     @deprecated(reason: "State will be split into different events")
-  position: Int
+  position: Float
 }
 
 type VideoPlayEvent implements Event {
@@ -36,7 +36,7 @@ type VideoPlayEvent implements Event {
   userId: ID!
   state: VideoPlayEventStateEnum
     @deprecated(reason: "State will be split into different events")
-  position: Int
+  position: Float
   block: VideoBlock
 }
 
@@ -46,13 +46,13 @@ input VideoPauseEventCreateInput {
   """
   id: ID
   blockId: ID!
-  position: Int
+  position: Float
 }
 
 type VideoPauseEvent implements Event {
   id: ID!
   userId: ID!
-  position: Int
+  position: Float
   block: VideoBlock
 }
 
@@ -62,13 +62,13 @@ input VideoCompleteEventCreateInput {
   """
   id: ID
   blockId: ID!
-  position: Int
+  position: Float
 }
 
 type VideoCompleteEvent implements Event {
   id: ID!
   userId: ID!
-  position: Int
+  position: Float
   block: VideoBlock
 }
 
@@ -78,13 +78,13 @@ input VideoExpandEventCreateInput {
   """
   id: ID
   blockId: ID!
-  position: Int
+  position: Float
 }
 
 type VideoExpandEvent implements Event {
   id: ID!
   userId: ID!
-  position: Int
+  position: Float
   block: VideoBlock
 }
 
@@ -94,13 +94,13 @@ input VideoCollapseEventCreateInput {
   """
   id: ID
   blockId: ID!
-  position: Int
+  position: Float
 }
 
 type VideoCollapseEvent implements Event {
   id: ID!
   userId: ID!
-  position: Int
+  position: Float
   block: VideoBlock
 }
 
@@ -110,7 +110,7 @@ input VideoProgressEventCreateInput {
   """
   id: ID
   blockId: ID!
-  position: Int
+  position: Float
   """
   Progress of the video based on the startAt and endAt values of video
   """
@@ -120,7 +120,7 @@ input VideoProgressEventCreateInput {
 type VideoProgressEvent implements Event {
   id: ID!
   userId: ID!
-  position: Int
+  position: Float
   progress: Int!
   block: VideoBlock
 }

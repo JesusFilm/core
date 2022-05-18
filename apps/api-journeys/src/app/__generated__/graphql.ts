@@ -711,7 +711,7 @@ export class VideoStartEvent implements Event {
     __typename?: 'VideoStartEvent';
     id: string;
     userId: string;
-    postition?: Nullable<number>;
+    position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
 

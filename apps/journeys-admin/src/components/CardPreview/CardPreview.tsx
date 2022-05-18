@@ -20,6 +20,11 @@ import last from 'lodash/last'
 import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { StepBlockNextBlockIdUpdate } from '../../../__generated__/StepBlockNextBlockIdUpdate'
+import { VideoBlockSetDefaultAction } from '../../../__generated__/VideoBlockSetDefaultAction'
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_VideoBlock as VideoBlock
+} from '../../../__generated__/BlockFields'
 import { FramePortal } from '../FramePortal'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { HorizontalSelect } from '../HorizontalSelect'
@@ -62,6 +67,23 @@ export const STEP_BLOCK_NEXTBLOCKID_UPDATE = gql`
   }
 `
 
+export const VIDEO_BLOCK_SET_DEFAULT_ACTION = gql`
+  mutation VideoBlockSetDefaultAction(
+    $id: ID!
+    $journeyId: ID!
+    $input: NavigateToBlockActionInput!
+  ) {
+    blockUpdateNavigateToBlockAction(
+      id: $id
+      journeyId: $journeyId
+      input: $input
+    ) {
+      gtmEventName
+      blockId
+    }
+  }
+`
+
 export function CardPreview({
   steps,
   selected,
@@ -73,6 +95,9 @@ export function CardPreview({
   )
   const [stepBlockNextBlockIdUpdate] = useMutation<StepBlockNextBlockIdUpdate>(
     STEP_BLOCK_NEXTBLOCKID_UPDATE
+  )
+  const [videoBlockSetDefaultAction] = useMutation<VideoBlockSetDefaultAction>(
+    VIDEO_BLOCK_SET_DEFAULT_ACTION
   )
   const { journey } = useJourney()
 
@@ -132,14 +157,14 @@ export function CardPreview({
       )
     }
 
-    const lastStep = last(steps)
+    const prevStep = last(steps)
     // this check is required as nextBlockId is not updated when the corrseponding block is deleted
     const validNextBlockId =
-      steps.find(({ id }) => id === lastStep?.nextBlockId) != null
-    if (!validNextBlockId && lastStep != null) {
+      steps.find(({ id }) => id === prevStep?.nextBlockId) != null
+    if (!validNextBlockId && prevStep != null) {
       await stepBlockNextBlockIdUpdate({
         variables: {
-          id: lastStep.id,
+          id: prevStep.id,
           journeyId: journey.id,
           input: {
             nextBlockId: stepId
@@ -148,8 +173,52 @@ export function CardPreview({
         optimisticResponse: {
           stepBlockUpdate: {
             __typename: 'StepBlock',
-            id: lastStep.id,
+            id: prevStep.id,
             nextBlockId: stepId
+          }
+        }
+      })
+    }
+
+    // this sets video block default action to navigate to the newly created step
+    const prevCard = prevStep?.children.find(
+      (block) => block.__typename === 'CardBlock'
+    ) as unknown as TreeBlock<CardBlock>
+    const videoBlock = prevCard?.children.find(
+      (block) => block.__typename === 'VideoBlock'
+    ) as unknown as TreeBlock<VideoBlock>
+    const validVideoNextBlockId =
+      steps.find(
+        ({ id }) =>
+          videoBlock?.action?.__typename === 'NavigateToBlockAction' &&
+          videoBlock?.action?.blockId === id
+      ) != null
+
+    if (
+      !validVideoNextBlockId &&
+      prevCard != null &&
+      videoBlock != null &&
+      prevCard.coverBlockId !== videoBlock.id
+    ) {
+      await videoBlockSetDefaultAction({
+        variables: {
+          id: videoBlock.id,
+          journeyId: journey.id,
+          input: {
+            blockId: stepId
+          }
+        },
+        update(cache, { data }) {
+          if (data?.blockUpdateNavigateToBlockAction != null) {
+            cache.modify({
+              id: cache.identify({
+                __typename: 'VideoBlock',
+                id: videoBlock.id
+              }),
+              fields: {
+                action: () => data?.blockUpdateNavigateToBlockAction
+              }
+            })
           }
         }
       })
