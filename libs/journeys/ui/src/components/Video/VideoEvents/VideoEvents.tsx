@@ -75,9 +75,8 @@ export function VideoEvents({
   startAt,
   endAt
 }: VideoEventsProps): ReactElement {
-  const [videoStartEventCreate] = useMutation<VideoStartEventCreate>(
-    VIDEO_START_EVENT_CREATE
-  )
+  const [videoStartEventCreate, { called: calledStart }] =
+    useMutation<VideoStartEventCreate>(VIDEO_START_EVENT_CREATE)
   const [videoPlayEventCreate] = useMutation<VideoPlayEventCreate>(
     VIDEO_PLAY_EVENT_CREATE
   )
@@ -130,23 +129,9 @@ export function VideoEvents({
   const [videoCompleteEventCreate, { called: calledComplete }] =
     useMutation<VideoCompleteEventCreate>(VIDEO_COMPLETE_EVENT_CREATE)
 
+  // PLAY event
   useEffect(() => {
-    function readyListener(): void {
-      void videoStartEventCreate({
-        variables: {
-          input: {
-            blockId,
-            position: player.currentTime()
-          }
-        }
-      })
-    }
-    player.on('ready', readyListener)
-    return () => player.off('ready', readyListener)
-  }, [player, videoStartEventCreate, blockId])
-
-  useEffect(() => {
-    function playingListener(): void {
+    function playListener(): void {
       void videoPlayEventCreate({
         variables: {
           input: {
@@ -156,10 +141,11 @@ export function VideoEvents({
         }
       })
     }
-    player.on('playing', playingListener)
-    return () => player.off('playing', playingListener)
+    player.on('play', playListener)
+    return () => player.off('play', playListener)
   }, [player, videoPlayEventCreate, blockId])
 
+  // PAUSE event
   useEffect(() => {
     function pauseListener(): void {
       void videoPauseEventCreate({
@@ -175,8 +161,25 @@ export function VideoEvents({
     return () => player.off('pause', pauseListener)
   }, [player, videoPauseEventCreate, blockId])
 
+  // COMPELTE event
   useEffect(() => {
-    function fullscreenchangeListener(): void {
+    function endedListener(): void {
+      void videoCompleteEventCreate({
+        variables: {
+          input: {
+            blockId,
+            position: player.currentTime()
+          }
+        }
+      })
+    }
+    player.on('ended', endedListener)
+    return () => player.off('ended', endedListener)
+  }, [player, videoCompleteEventCreate, blockId])
+
+  // EXPAND event
+  useEffect(() => {
+    function expandListener(): void {
       if (player.isFullscreen()) {
         void videoExpandEventCreate({
           variables: {
@@ -186,7 +189,16 @@ export function VideoEvents({
             }
           }
         })
-      } else if (!player.isFullscreen()) {
+      }
+    }
+    player.on('fullscreenchange', expandListener)
+    return () => player.off('fullscreenchange', expandListener)
+  }, [player, videoExpandEventCreate, blockId])
+
+  // COLLAPSE event
+  useEffect(() => {
+    function collapseListener(): void {
+      if (!player.isFullscreen()) {
         void videoCollapseEventCreate({
           variables: {
             input: {
@@ -197,18 +209,57 @@ export function VideoEvents({
         })
       }
     }
-    player.on('fullscreenchange', fullscreenchangeListener)
-    return () => player.off('fullscreenchange', fullscreenchangeListener)
-  }, [player, videoExpandEventCreate, videoCollapseEventCreate, blockId])
+    player.on('fullscreenchange', collapseListener)
+    return () => player.off('fullscreenchange', collapseListener)
+  }, [player, videoCollapseEventCreate, blockId])
 
+  // START event
   useEffect(() => {
-    function timeupdateListener(): void {
+    function startListener(): void {
+      if (!calledStart) {
+        void videoStartEventCreate({
+          variables: {
+            input: {
+              blockId,
+              position: player.currentTime()
+            }
+          }
+        })
+      }
+    }
+    player.on('timeupdate', startListener)
+    return () => player.off('timeupdate', startListener)
+  }, [player, blockId, calledStart, videoStartEventCreate])
+
+  // PROGRESS 25% event
+  useEffect(() => {
+    function timeupdate25Listener(): void {
       const currentPosition = player.currentTime()
       if (!called25 && currentPosition >= position25) {
         void videoProgressEventCreate25()
-      } else if (!called50 && currentPosition >= position50) {
+      }
+    }
+    player.on('timeupdate', timeupdate25Listener)
+    return () => player.off('timeupdate', timeupdate25Listener)
+  }, [player, position25, called25, videoProgressEventCreate25])
+
+  // PROGRESS 50% event
+  useEffect(() => {
+    function timeupdate50Listener(): void {
+      const currentPosition = player.currentTime()
+      if (!called50 && currentPosition >= position50) {
         void videoProgressEventCreate50()
-      } else if (!called75 && currentPosition >= position75) {
+      }
+    }
+    player.on('timeupdate', timeupdate50Listener)
+    return () => player.off('timeupdate', timeupdate50Listener)
+  }, [player, position50, called50, videoProgressEventCreate50])
+
+  // PROGRESS 75% event
+  useEffect(() => {
+    function timeupdate75Listener(): void {
+      const currentPosition = player.currentTime()
+      if (!called75 && currentPosition >= position75) {
         void videoProgressEventCreate75()
       } else if (!calledComplete && currentPosition >= end) {
         void videoCompleteEventCreate({
@@ -221,24 +272,9 @@ export function VideoEvents({
         })
       }
     }
-    player.on('timeupdate', timeupdateListener)
-    return () => player.off('timeupdate', timeupdateListener)
-  }, [
-    blockId,
-    player,
-    position25,
-    position50,
-    position75,
-    end,
-    called25,
-    called50,
-    called75,
-    calledComplete,
-    videoProgressEventCreate25,
-    videoProgressEventCreate50,
-    videoProgressEventCreate75,
-    videoCompleteEventCreate
-  ])
+    player.on('timeupdate', timeupdate75Listener)
+    return () => player.off('timeupdate', timeupdate75Listener)
+  }, [player, position75, called75, videoProgressEventCreate75])
 
   return <></>
 }
