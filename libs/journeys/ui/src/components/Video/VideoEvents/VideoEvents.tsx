@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import { ReactElement, useEffect, useCallback, useRef } from 'react'
+import { ReactElement, useEffect } from 'react'
 import videojs from 'video.js'
 import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
 import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
@@ -93,65 +93,46 @@ export function VideoEvents({
   const [videoCollapseEventCreate] = useMutation<VideoCollapseEventCreate>(
     VIDEO_COLLAPSE_EVENT_CREATE
   )
-  const [videoProgressEventCreate] = useMutation<VideoProgressEventCreate>(
-    VIDEO_PROGRESS_EVENT_CREATE
-  )
-
-  const progressEventCreate = useCallback(
-    (progress: number): void => {
-      void videoProgressEventCreate({
-        variables: {
-          input: {
-            blockId,
-            position: Math.floor(player.currentTime()),
-            progress
-          }
-        }
-      })
-    },
-    [blockId, player, videoProgressEventCreate]
-  )
 
   const start = startAt ?? 0
   const end = endAt ?? player.duration()
-  const triggerOneRef = useRef(true)
-  const triggerTwoRef = useRef(false)
-  const triggerThreeRef = useRef(false)
-  const triggerOnePosition = (end - start) / 4 + start
-  const triggerTwoPosition = (end - start) / 2 + start
-  const triggerThreePosition = ((end - start) * 3) / 4 + start
+  const position25 = Math.floor((end - start) / 4 + start)
+  const position50 = Math.floor((end - start) / 2 + start)
+  const position75 = Math.floor(((end - start) * 3) / 4 + start)
 
-  const progressEvent = useCallback(
-    (currentPosition: number): void => {
-      if (triggerOneRef.current && currentPosition >= triggerOnePosition) {
-        triggerOneRef.current = false
-        triggerTwoRef.current = true
-        void progressEventCreate(25)
-      } else if (
-        triggerTwoRef.current &&
-        currentPosition >= triggerTwoPosition
-      ) {
-        triggerTwoRef.current = false
-        triggerThreeRef.current = true
-        void progressEventCreate(50)
-      } else if (
-        triggerThreeRef.current &&
-        currentPosition >= triggerThreePosition
-      ) {
-        triggerThreeRef.current = false
-        void progressEventCreate(75)
+  const [videoProgressEventCreate25, { called: called25 }] =
+    useMutation<VideoProgressEventCreate>(VIDEO_PROGRESS_EVENT_CREATE, {
+      variables: {
+        input: {
+          blockId,
+          position: position25,
+          progress: 25
+        }
       }
-    },
-    [
-      triggerOnePosition,
-      triggerTwoPosition,
-      triggerThreePosition,
-      progressEventCreate
-    ]
-  )
+    })
+  const [videoProgressEventCreate50, { called: called50 }] =
+    useMutation<VideoProgressEventCreate>(VIDEO_PROGRESS_EVENT_CREATE, {
+      variables: {
+        input: {
+          blockId,
+          position: position50,
+          progress: 50
+        }
+      }
+    })
+  const [videoProgressEventCreate75, { called: called75 }] =
+    useMutation<VideoProgressEventCreate>(VIDEO_PROGRESS_EVENT_CREATE, {
+      variables: {
+        input: {
+          blockId,
+          position: position75,
+          progress: 75
+        }
+      }
+    })
 
   useEffect(() => {
-    player.on('ready', () => {
+    function readyListener(): void {
       void videoStartEventCreate({
         variables: {
           input: {
@@ -160,9 +141,13 @@ export function VideoEvents({
           }
         }
       })
-    })
+    }
+    player.on('ready', readyListener)
+    return () => player.off('ready', readyListener)
+  }, [player, videoStartEventCreate, blockId])
 
-    player.on('playing', () => {
+  useEffect(() => {
+    function playingListener(): void {
       void videoPlayEventCreate({
         variables: {
           input: {
@@ -171,9 +156,13 @@ export function VideoEvents({
           }
         }
       })
-    })
+    }
+    player.on('playing', playingListener)
+    return () => player.off('playing', playingListener)
+  }, [player, videoPlayEventCreate, blockId])
 
-    player.on('pause', () => {
+  useEffect(() => {
+    function pauseListener(): void {
       void videoPauseEventCreate({
         variables: {
           input: {
@@ -182,9 +171,13 @@ export function VideoEvents({
           }
         }
       })
-    })
+    }
+    player.on('pause', pauseListener)
+    return () => player.off('pause', pauseListener)
+  }, [player, videoPauseEventCreate, blockId])
 
-    player.on('ended', () => {
+  useEffect(() => {
+    function endedListener(): void {
       void videoCompleteEventCreate({
         variables: {
           input: {
@@ -193,9 +186,13 @@ export function VideoEvents({
           }
         }
       })
-    })
+    }
+    player.on('ended', endedListener)
+    return () => player.off('ended', endedListener)
+  }, [player, videoCompleteEventCreate, blockId])
 
-    player.on('fullscreenchange', () => {
+  useEffect(() => {
+    function fullscreenchangeListener(): void {
       if (player.isFullscreen()) {
         void videoExpandEventCreate({
           variables: {
@@ -215,22 +212,35 @@ export function VideoEvents({
           }
         })
       }
-    })
+    }
+    player.on('fullscreenchange', fullscreenchangeListener)
+    return () => player.off('fullscreenchange', fullscreenchangeListener)
+  }, [player, videoExpandEventCreate, videoCollapseEventCreate, blockId])
 
-    player.on('timeupdate', () => {
-      progressEvent(player.currentTime())
-    })
+  useEffect(() => {
+    function timeupdateListener(): void {
+      const currentPosition = player.currentTime()
+      if (!called25 && currentPosition >= position25) {
+        void videoProgressEventCreate25()
+      } else if (!called50 && currentPosition >= position50) {
+        void videoProgressEventCreate50()
+      } else if (!called75 && currentPosition >= position75) {
+        void videoProgressEventCreate75()
+      }
+    }
+    player.on('timeupdate', timeupdateListener)
+    return () => player.off('timeupdate', timeupdateListener)
   }, [
-    blockId,
     player,
-    progressEvent,
-    videoStartEventCreate,
-    videoPlayEventCreate,
-    videoPauseEventCreate,
-    videoCompleteEventCreate,
-    videoExpandEventCreate,
-    videoCollapseEventCreate,
-    videoProgressEventCreate
+    position25,
+    position50,
+    position75,
+    called25,
+    called50,
+    called75,
+    videoProgressEventCreate25,
+    videoProgressEventCreate50,
+    videoProgressEventCreate75
   ])
 
   return <></>
