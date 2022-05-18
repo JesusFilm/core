@@ -38,7 +38,8 @@ describe('Source', () => {
             request: {
               query: GET_VIDEO,
               variables: {
-                id: '2_0-Brand_Video'
+                id: '2_0-Brand_Video',
+                languageId: '529'
               }
             },
             result: {
@@ -65,7 +66,20 @@ describe('Source', () => {
                     id: 'variantA',
                     duration: 144,
                     hls: 'https://arc.gt/opsgn'
-                  }
+                  },
+                  variantLanguages: [
+                    {
+                      __typename: 'Language',
+                      id: '529',
+                      name: [
+                        {
+                          value: 'English',
+                          primary: true,
+                          __typename: 'Translation'
+                        }
+                      ]
+                    }
+                  ]
                 }
               }
             }
@@ -82,11 +96,13 @@ describe('Source', () => {
       expect(getByRole('button', { name: 'Select' })).toBeEnabled()
     )
     fireEvent.click(getByRole('button', { name: 'Select' }))
-    expect(onChange).toHaveBeenCalledWith({
-      videoId: '2_0-Brand_Video',
-      videoVariantLanguageId: '529',
-      startAt: 0,
-      endAt: 144
-    })
+    await waitFor(() =>
+      expect(onChange).toHaveBeenCalledWith({
+        videoId: '2_0-Brand_Video',
+        videoVariantLanguageId: '529',
+        startAt: 0,
+        endAt: 144
+      })
+    )
   })
 })

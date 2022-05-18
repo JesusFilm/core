@@ -1,15 +1,15 @@
 import { Story, Meta } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
 import { useState } from 'react'
-import { simpleComponentConfig } from '../../libs/storybook'
-import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
-import { LanguageSelect, LanguageSelectOption } from '.'
+import { simpleComponentConfig } from '../../../../libs/storybook'
+import { GetVideo_video_variantLanguages as Language } from '../../../../../__generated__/GetVideo'
+import { LanguageSelectOption } from '../../../LanguageSelect'
+import { VideoLanguage } from '.'
 
-const LanguageSelectStory = {
+const VideoLanguageStory = {
   ...simpleComponentConfig,
-  component: LanguageSelect,
-  title: 'Journeys-Admin/LanguageSelect',
-  argTypes: { onChange: { action: 'onChange' } }
+  component: VideoLanguage,
+  title: 'Journeys-Admin/Editor/VideoLibrary/VideoLanguage',
+  argTypes: { onSelect: { action: 'onSelect' } }
 }
 
 const languages: Language[] = [
@@ -58,22 +58,24 @@ const languages: Language[] = [
   }
 ]
 
-const Template: Story = ({ onChange }) => {
-  const [value, setValue] = useState<LanguageSelectOption | undefined>({
+const Template: Story = ({ onSelect }) => {
+  const [open, setOpen] = useState(true)
+  const [language, setLanguage] = useState<LanguageSelectOption>({
     id: '529',
     localName: undefined,
     nativeName: 'English'
   })
-
-  const handleChange = (value?: LanguageSelectOption): void => {
-    setValue(value)
-    onChange(value)
+  const handleChange = (language: LanguageSelectOption): void => {
+    setLanguage(language)
+    onSelect(language)
   }
 
   return (
-    <LanguageSelect
+    <VideoLanguage
+      open={open}
+      onClose={() => setOpen(false)}
       onChange={handleChange}
-      value={value}
+      language={language}
       languages={languages}
       loading={false}
     />
@@ -81,9 +83,5 @@ const Template: Story = ({ onChange }) => {
 }
 
 export const Default = Template.bind({})
-Default.play = () => {
-  const button = screen.getByRole('button', { name: 'Open' })
-  userEvent.click(button)
-}
 
-export default LanguageSelectStory as Meta
+export default VideoLanguageStory as Meta
