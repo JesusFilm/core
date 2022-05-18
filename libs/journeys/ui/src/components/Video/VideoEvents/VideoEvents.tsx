@@ -84,9 +84,6 @@ export function VideoEvents({
   const [videoPauseEventCreate] = useMutation<VideoPauseEventCreate>(
     VIDEO_PAUSE_EVENT_CREATE
   )
-  const [videoCompleteEventCreate] = useMutation<VideoCompleteEventCreate>(
-    VIDEO_COMPLETE_EVENT_CREATE
-  )
   const [videoExpandEventCreate] = useMutation<VideoExpandEventCreate>(
     VIDEO_EXPAND_EVENT_CREATE
   )
@@ -130,6 +127,8 @@ export function VideoEvents({
         }
       }
     })
+  const [videoCompleteEventCreate, { called: calledComplete }] =
+    useMutation<VideoCompleteEventCreate>(VIDEO_COMPLETE_EVENT_CREATE)
 
   useEffect(() => {
     function readyListener(): void {
@@ -177,21 +176,6 @@ export function VideoEvents({
   }, [player, videoPauseEventCreate, blockId])
 
   useEffect(() => {
-    function endedListener(): void {
-      void videoCompleteEventCreate({
-        variables: {
-          input: {
-            blockId,
-            position: player.currentTime()
-          }
-        }
-      })
-    }
-    player.on('ended', endedListener)
-    return () => player.off('ended', endedListener)
-  }, [player, videoCompleteEventCreate, blockId])
-
-  useEffect(() => {
     function fullscreenchangeListener(): void {
       if (player.isFullscreen()) {
         void videoExpandEventCreate({
@@ -226,21 +210,34 @@ export function VideoEvents({
         void videoProgressEventCreate50()
       } else if (!called75 && currentPosition >= position75) {
         void videoProgressEventCreate75()
+      } else if (!calledComplete && currentPosition >= end) {
+        void videoCompleteEventCreate({
+          variables: {
+            input: {
+              blockId,
+              position: currentPosition
+            }
+          }
+        })
       }
     }
     player.on('timeupdate', timeupdateListener)
     return () => player.off('timeupdate', timeupdateListener)
   }, [
+    blockId,
     player,
     position25,
     position50,
     position75,
+    end,
     called25,
     called50,
     called75,
+    calledComplete,
     videoProgressEventCreate25,
     videoProgressEventCreate50,
-    videoProgressEventCreate75
+    videoProgressEventCreate75,
+    videoCompleteEventCreate
   ])
 
   return <></>

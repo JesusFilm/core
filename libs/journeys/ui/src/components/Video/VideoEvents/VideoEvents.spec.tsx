@@ -166,58 +166,6 @@ describe('VideoEvents', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('should create complete event', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        videoCompleteEventCreate: {
-          id: 'uuid',
-          __typename: 'VideoCompleteEvent',
-          position: 50
-        }
-      }
-    }))
-
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: VIDEO_START_EVENT_CREATE,
-              variables: {
-                input: { blockId: 'video0.id', position: 50 }
-              }
-            },
-            result: {
-              data: {
-                videoStartEventCreate: {
-                  id: 'uuid',
-                  __typename: 'VideoStartEvent',
-                  position: 50
-                }
-              }
-            }
-          },
-          {
-            request: {
-              query: VIDEO_COMPLETE_EVENT_CREATE,
-              variables: {
-                input: { blockId: 'video0.id', position: 50 }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <VideoEvents {...props} />
-      </MockedProvider>
-    )
-    act(() => {
-      props.player.currentTime(50)
-      props.player.trigger('ended')
-    })
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
   it('should create expand event', async () => {
     const result = jest.fn(() => ({
       data: {
@@ -308,7 +256,7 @@ describe('VideoEvents', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('should create progress event', async () => {
+  it('should create progress event and complete event', async () => {
     const resultStart = jest.fn(() => ({
       data: {
         videoStartEventCreate: {
@@ -352,6 +300,16 @@ describe('VideoEvents', () => {
       }
     }))
 
+    const resultComplete = jest.fn(() => ({
+      data: {
+        videoCompleteEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoCompleteEvent',
+          position: 100
+        }
+      }
+    }))
+
     render(
       <MockedProvider
         mocks={[
@@ -390,6 +348,15 @@ describe('VideoEvents', () => {
               }
             },
             result: resultThree
+          },
+          {
+            request: {
+              query: VIDEO_COMPLETE_EVENT_CREATE,
+              variables: {
+                input: { blockId: 'video0.id', position: 100 }
+              }
+            },
+            result: resultComplete
           }
         ]}
       >
@@ -419,5 +386,11 @@ describe('VideoEvents', () => {
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultThree).toHaveBeenCalled())
+
+    act(() => {
+      props.player.currentTime(100)
+      props.player.trigger('timeupdate')
+    })
+    await waitFor(() => expect(resultComplete).toHaveBeenCalled())
   })
 })
