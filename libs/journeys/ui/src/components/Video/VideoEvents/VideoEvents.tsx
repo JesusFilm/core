@@ -164,7 +164,7 @@ export function VideoEvents({
     return () => player.off('pause', pauseListener)
   }, [player, videoPauseEventCreate, blockId])
 
-  // COMPELTE event
+  // COMPELETE event
   useEffect(() => {
     function endedListener(): void {
       void videoCompleteEventCreate({
