@@ -2,7 +2,6 @@ import { render, waitFor, act, cleanup } from '@testing-library/react'
 import videojs from 'video.js'
 import { MockedProvider } from '@apollo/client/testing'
 import {
-  VideoEvents,
   VideoEventsProps,
   VIDEO_START_EVENT_CREATE,
   VIDEO_PLAY_EVENT_CREATE,
@@ -12,6 +11,7 @@ import {
   VIDEO_COLLAPSE_EVENT_CREATE,
   VIDEO_PROGRESS_EVENT_CREATE
 } from './VideoEvents'
+import { VideoEvents } from '.'
 
 describe('VideoEvents', () => {
   let props: VideoEventsProps
@@ -40,24 +40,6 @@ describe('VideoEvents', () => {
   afterEach(() => {
     cleanup()
   })
-
-  const startMock = {
-    request: {
-      query: VIDEO_START_EVENT_CREATE,
-      variables: {
-        input: { blockId: 'video0.id', position: 0 }
-      }
-    },
-    result: {
-      data: {
-        videoStartEventCreate: {
-          id: 'uuid',
-          __typename: 'VideoStartEvent',
-          position: 0
-        }
-      }
-    }
-  }
 
   it('should create start event', async () => {
     const result = jest.fn(() => ({
@@ -89,6 +71,7 @@ describe('VideoEvents', () => {
     )
     act(() => {
       props.player.currentTime(0)
+      props.player.trigger('timeupdate')
     })
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -100,7 +83,7 @@ describe('VideoEvents', () => {
         videoPlayEventCreate: {
           id: 'uuid',
           __typename: 'VideoPlayEvent',
-          position: 0
+          position: 0.12
         }
       }
     }))
@@ -108,12 +91,11 @@ describe('VideoEvents', () => {
     render(
       <MockedProvider
         mocks={[
-          startMock,
           {
             request: {
               query: VIDEO_PLAY_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 0.12 }
               }
             },
             result
@@ -124,8 +106,8 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
-      props.player.currentTime(0)
-      props.player.trigger('playing')
+      props.player.currentTime(0.12)
+      props.player.trigger('play')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
@@ -136,7 +118,7 @@ describe('VideoEvents', () => {
         videoPauseEventCreate: {
           id: 'uuid',
           __typename: 'VideoPauseEvent',
-          position: 0
+          position: 0.34
         }
       }
     }))
@@ -144,12 +126,11 @@ describe('VideoEvents', () => {
     render(
       <MockedProvider
         mocks={[
-          startMock,
           {
             request: {
               query: VIDEO_PAUSE_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 0.34 }
               }
             },
             result
@@ -160,7 +141,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
-      props.player.currentTime(0)
+      props.player.currentTime(0.34)
       props.player.trigger('pause')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -172,7 +153,7 @@ describe('VideoEvents', () => {
         videoExpandEventCreate: {
           id: 'uuid',
           __typename: 'VideoExpandEvent',
-          position: 0
+          position: 0.56
         }
       }
     }))
@@ -180,12 +161,11 @@ describe('VideoEvents', () => {
     render(
       <MockedProvider
         mocks={[
-          startMock,
           {
             request: {
               query: VIDEO_EXPAND_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 0.56 }
               }
             },
             result
@@ -196,7 +176,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
-      props.player.currentTime(0)
+      props.player.currentTime(0.56)
       props.player.enterFullWindow()
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -216,12 +196,11 @@ describe('VideoEvents', () => {
     render(
       <MockedProvider
         mocks={[
-          startMock,
           {
             request: {
               query: VIDEO_EXPAND_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 0.78 }
               }
             },
             result: {
@@ -229,7 +208,7 @@ describe('VideoEvents', () => {
                 videoExpandEventCreate: {
                   id: 'uuid',
                   __typename: 'VideoExpandEvent',
-                  position: 0
+                  position: 0.78
                 }
               }
             }
@@ -238,7 +217,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_COLLAPSE_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0 }
+                input: { blockId: 'video0.id', position: 0.78 }
               }
             },
             result
@@ -249,7 +228,7 @@ describe('VideoEvents', () => {
       </MockedProvider>
     )
     act(() => {
-      props.player.currentTime(0)
+      props.player.currentTime(0.78)
       props.player.enterFullWindow()
       props.player.exitFullscreen()
     })
@@ -272,7 +251,7 @@ describe('VideoEvents', () => {
         videoProgressEventCreate: {
           id: 'uuid',
           __typename: 'VideoProgressEvent',
-          position: 26,
+          position: 25,
           progress: 25
         }
       }
@@ -283,7 +262,7 @@ describe('VideoEvents', () => {
         videoProgressEventCreate: {
           id: 'uuid',
           __typename: 'VideoProgressEvent',
-          position: 51,
+          position: 50,
           progress: 50
         }
       }
@@ -294,7 +273,7 @@ describe('VideoEvents', () => {
         videoProgressEventCreate: {
           id: 'uuid',
           __typename: 'VideoProgressEvent',
-          position: 76,
+          position: 75,
           progress: 75
         }
       }
@@ -366,23 +345,24 @@ describe('VideoEvents', () => {
 
     act(() => {
       props.player.currentTime(0)
+      props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultStart).toHaveBeenCalled())
 
     act(() => {
-      props.player.currentTime(25)
+      props.player.currentTime(25.1)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultOne).toHaveBeenCalled())
 
     act(() => {
-      props.player.currentTime(50)
+      props.player.currentTime(50.2)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultTwo).toHaveBeenCalled())
 
     act(() => {
-      props.player.currentTime(75)
+      props.player.currentTime(75.3)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultThree).toHaveBeenCalled())
