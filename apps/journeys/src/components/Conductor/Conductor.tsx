@@ -22,6 +22,7 @@ import { gql, useMutation } from '@apollo/client'
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
+import TagManager from 'react-gtm-module'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { BlockFields_CardBlock as CardBlock } from '../../../__generated__/BlockFields'
 import { JourneyProgress } from '../JourneyProgress'
@@ -57,6 +58,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       void journeyViewEventCreate({
         variables: {
           input: { id, journeyId: journey.id }
+        }
+      })
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'journey_view',
+          journeyId: journey.id,
+          eventId: id
         }
       })
     }

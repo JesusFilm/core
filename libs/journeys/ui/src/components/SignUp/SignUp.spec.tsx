@@ -2,6 +2,7 @@ import { ReactElement } from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
+import TagManager from 'react-gtm-module'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { TreeBlock, handleAction, JourneyProvider } from '../..'
 import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
@@ -15,6 +16,17 @@ jest.mock('../../libs/action', () => {
     handleAction: jest.fn()
   }
 })
+
+jest.mock('react-gtm-module', () => ({
+  __esModule: true,
+  default: {
+    dataLayer: jest.fn()
+  }
+}))
+
+const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
+  typeof TagManager.dataLayer
+>
 
 jest.mock('next/router', () => ({
   useRouter() {
@@ -260,6 +272,62 @@ describe('SignUp', () => {
 
     await waitFor(() => {
       expect(result).toBeCalled()
+    })
+  })
+
+  it('should add submission event to dataLayer', async () => {
+    const mocks = [
+      {
+        request: {
+          query: SIGN_UP_SUBMISSION_EVENT_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              blockId: 'signUp0.id',
+              name: 'Anon',
+              email: '123abc@gmail.com'
+            }
+          }
+        },
+        result: {
+          data: {
+            signUpSubmissionEventCreate: {
+              id: 'uuid',
+              blockId: 'signUp0.id',
+              name: 'Anon',
+              email: '123abc@gmail.com'
+            }
+          }
+        }
+      }
+    ]
+
+    const { getByLabelText, getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <SignUpMock mocks={mocks} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const name = getByLabelText('Name')
+    const email = getByLabelText('Email')
+    const submit = getByRole('button')
+
+    fireEvent.change(name, { target: { value: 'Anon' } })
+    fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
+    fireEvent.click(submit)
+
+    await waitFor(() => {
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'sign_up_submission',
+          eventId: 'uuid',
+          blockId: 'signUp0.id'
+        }
+      })
     })
   })
 
