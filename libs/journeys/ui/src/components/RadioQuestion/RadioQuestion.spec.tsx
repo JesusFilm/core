@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
+import TagManager from 'react-gtm-module'
 import { TreeBlock, JourneyProvider } from '../..'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
@@ -12,6 +13,17 @@ jest.mock('../../libs/action', () => {
     handleAction: jest.fn()
   }
 })
+
+jest.mock('react-gtm-module', () => ({
+  __esModule: true,
+  default: {
+    dataLayer: jest.fn()
+  }
+}))
+
+const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
+  typeof TagManager.dataLayer
+>
 
 const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
@@ -156,6 +168,51 @@ describe('RadioQuestion', () => {
     )
     expect(getAllByTestId('radioOptionWrapper')[1]).toContainElement(
       getByText('Option 2')
+    )
+  })
+
+  it('should add radio submission to dataLayer', async () => {
+    const { getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption1'
+                }
+              }
+            },
+            result: {
+              data: {
+                radioQuestionSubmissionEventCreate: {
+                  id: 'uuid',
+                  radioOptionBlockId: 'RadioOption1'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <RadioQuestion {...block} uuid={() => 'uuid'} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const buttons = getAllByRole('button')
+    fireEvent.click(buttons[0])
+    await waitFor(() =>
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'radio_question_submission',
+          eventId: 'uuid',
+          blockId: 'RadioQuestion1',
+          radioOptionSelectedId: 'RadioOption1'
+        }
+      })
     )
   })
 })
