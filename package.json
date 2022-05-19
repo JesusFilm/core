@@ -53,7 +53,7 @@
     "@nestjs/platform-express": "^8.3.1",
     "@nrwl/next": "13.2.2",
     "apollo-datasource": "^3.3.1",
-    "apollo-server": "^3.6.3",
+    "apollo-server": "^3.7.0",
     "arangojs": "^7.6.1",
     "aws-sdk": "^2.1062.0",
     "axios": "^0.26.1",
