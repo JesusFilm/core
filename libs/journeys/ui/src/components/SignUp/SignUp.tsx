@@ -85,14 +85,13 @@ export const SignUp = ({
               email: values.email
             }
           }
-        }).then(() => {
-          TagManager.dataLayer({
-            dataLayer: {
-              event: 'sign_up_submission',
-              eventId: id,
-              blockId
-            }
-          })
+        })
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'sign_up_submission',
+            eventId: id,
+            blockId
+          }
         })
       } catch (e) {
         if (e instanceof ApolloError) {

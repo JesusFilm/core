@@ -46,9 +46,9 @@ export function RadioQuestion({
   const { admin } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
-  const handleClick = async (radioOptionBlockId: string): Promise<void> => {
-    const id = uuid()
-    if (admin != null && !admin) {
+  const handleClick = (radioOptionBlockId: string): void => {
+    if (!admin) {
+      const id = uuid()
       void radioQuestionSubmissionEventCreate({
         variables: {
           input: {
@@ -58,15 +58,15 @@ export function RadioQuestion({
           }
         }
       })
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'radio_question_submission',
+          eventId: id,
+          blockId,
+          radioOptionSelectedId: radioOptionBlockId
+        }
+      })
     }
-    TagManager.dataLayer({
-      dataLayer: {
-        event: 'radio_question_submission',
-        eventId: id,
-        blockId,
-        radioOptionSelectedId: radioOptionBlockId
-      }
-    })
     setSelectedId(radioOptionBlockId)
   }
 

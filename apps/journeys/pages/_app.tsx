@@ -54,6 +54,8 @@ export default function JourneysApp({
     return onAuthStateChanged(auth, (user) => {
       if (user != null) {
         TagManager.dataLayer({ dataLayer: { userId: user.uid } })
+      } else {
+        TagManager.dataLayer({ dataLayer: { userId: undefined } })
       }
     })
   }, [])

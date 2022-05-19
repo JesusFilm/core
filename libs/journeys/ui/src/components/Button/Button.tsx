@@ -50,7 +50,7 @@ export function Button({
     | TreeBlock<IconFields>
     | undefined
 
-  async function createEvent(): Promise<void> {
+  function createEvent(): void {
     if (!admin) {
       const id = uuidv4()
       void buttonClickEventCreate({
