@@ -40,12 +40,7 @@ export function Video({
 
   const blurBackground = useMemo(() => {
     return posterBlock != null
-      ? blurImage(
-          posterBlock.width,
-          posterBlock.height,
-          posterBlock.blurhash,
-          theme.palette.background.paper
-        )
+      ? blurImage(posterBlock.blurhash, theme.palette.background.paper)
       : undefined
   }, [posterBlock, theme])
 

@@ -160,12 +160,7 @@ describe('CardBlock', () => {
       />
     )
 
-    expect(blurImage).toBeCalledWith(
-      imageBlock.width,
-      imageBlock.height,
-      imageBlock.blurhash,
-      '#fff'
-    )
+    expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
     expect(getByTestId('ExpandedCover')).toBeInTheDocument()
     await waitFor(() =>
       expect(getByTestId('expandedBlurBackground')).toBeInTheDocument()
@@ -182,12 +177,7 @@ describe('CardBlock', () => {
     )
     const standaloneImageBlock = queryByTestId(`image-${imageBlock.id}`)
 
-    expect(blurImage).toBeCalledWith(
-      imageBlock.width,
-      imageBlock.height,
-      imageBlock.blurhash,
-      '#fff'
-    )
+    expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
     expect(queryByTestId('ContainedCover')).toBeInTheDocument()
     expect(queryByTestId('ContainedCardImageCover')).toHaveAccessibleName(
       'random image from unsplash'
@@ -205,12 +195,7 @@ describe('CardBlock', () => {
     )
     const standaloneVideoBlock = queryByTestId(`video-${videoBlock.id}`)
 
-    expect(blurImage).toBeCalledWith(
-      imageBlock.width,
-      imageBlock.height,
-      imageBlock.blurhash,
-      '#fff'
-    )
+    expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
     expect(queryByTestId('ContainedCover')).toBeInTheDocument()
     expect(queryByTestId('VideoPosterCover')).toHaveAccessibleName(
       'random image from unsplash - video'

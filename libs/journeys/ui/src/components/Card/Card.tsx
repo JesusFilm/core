@@ -62,12 +62,7 @@ export function Card({
 
   const blurUrl = useMemo(() => {
     return imageBlock != null
-      ? blurImage(
-          imageBlock.width,
-          imageBlock.height,
-          imageBlock.blurhash,
-          cardColor
-        )
+      ? blurImage(imageBlock.blurhash, cardColor)
       : undefined
   }, [imageBlock, cardColor])
 
