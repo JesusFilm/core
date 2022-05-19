@@ -38,7 +38,14 @@ export function Step({
         variables: { input: { id, blockId } }
       })
       TagManager.dataLayer({
-        dataLayer: { event: 'step_view', blockId, eventId: id }
+        dataLayer: {
+          event: 'step_view',
+          journeyId: undefined,
+          eventId: id,
+          blockId,
+          videoPosition: undefined,
+          videoProgress: undefined
+        }
       })
     }
   }, [blockId, stepViewEventCreate, admin])

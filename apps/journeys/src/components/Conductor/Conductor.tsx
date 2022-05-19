@@ -64,7 +64,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         dataLayer: {
           event: 'journey_view',
           journeyId: journey.id,
-          eventId: id
+          eventId: id,
+          blockId: undefined,
+          videoPosition: undefined,
+          videoProgres: undefined
         }
       })
     }

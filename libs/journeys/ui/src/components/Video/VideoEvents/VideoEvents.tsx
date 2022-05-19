@@ -125,9 +125,11 @@ export function VideoEvents({
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_play',
-            blockId,
+            journeyId: undefined,
             eventId: id,
-            videoPosition: currentTime
+            blockId,
+            videoPosition: currentTime,
+            videoProgress: undefined
           }
         })
       }
@@ -153,9 +155,11 @@ export function VideoEvents({
       TagManager.dataLayer({
         dataLayer: {
           event: 'video_pause',
-          blockId,
+          journeyId: undefined,
           eventId: id,
-          videoPosition: currentPosition
+          blockId,
+          videoPosition: currentPosition,
+          videoProgress: undefined
         }
       })
     }
@@ -181,9 +185,11 @@ export function VideoEvents({
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_expand',
-            blockId,
+            journeyId: undefined,
             eventId: id,
-            videoPosition: currentPosition
+            blockId,
+            videoPosition: currentPosition,
+            videoProgress: undefined
           }
         })
       }
@@ -210,9 +216,11 @@ export function VideoEvents({
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_collapse',
-            blockId,
+            journeyId: undefined,
             eventId: id,
-            videoPosition: currentPosition
+            blockId,
+            videoPosition: currentPosition,
+            videoProgress: undefined
           }
         })
       }
@@ -239,9 +247,11 @@ export function VideoEvents({
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_start',
-            blockId,
+            journeyId: undefined,
             eventId: id,
-            videoPosition: currentPosition
+            blockId,
+            videoPosition: currentPosition,
+            videoProgress: undefined
           }
         })
       }
@@ -269,8 +279,9 @@ export function VideoEvents({
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_progress',
-            blockId,
+            journeyId: undefined,
             eventId: id,
+            blockId,
             videoPosition: currentPosition,
             videoProgress: 25
           }
@@ -300,8 +311,9 @@ export function VideoEvents({
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_progress',
-            blockId,
+            journeyId: undefined,
             eventId: id,
+            blockId,
             videoPosition: currentPosition,
             videoProgress: 50
           }
@@ -331,8 +343,9 @@ export function VideoEvents({
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_progress',
-            blockId,
+            journeyId: undefined,
             eventId: id,
+            blockId,
             videoPosition: currentPosition,
             videoProgress: 75
           }
@@ -361,9 +374,11 @@ export function VideoEvents({
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_complete',
-            blockId,
+            journeyId: undefined,
             eventId: id,
-            videoPosition: currentPosition
+            blockId,
+            videoPosition: currentPosition,
+            videoProgress: undefined
           }
         })
       }
