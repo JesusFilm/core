@@ -11,6 +11,7 @@ export const config: EnvironmentConfig = {
     host: '0.0.0.0'
   },
   cors: {
+    maxAge: 86400, // 24 hours in seconds
     origin: [
       // apollo studio
       'https://studio.apollographql.com',

@@ -10,5 +10,8 @@ export const config: EnvironmentConfig = {
     port: 4000,
     host: '0.0.0.0'
   },
-  cors: false
+  cors: {
+    maxAge: 86400, // 24 hours in seconds
+    origin: '*'
+  }
 }
