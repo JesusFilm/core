@@ -105,7 +105,8 @@ const getVideoMock = {
   request: {
     query: GET_VIDEO,
     variables: {
-      id: '2_0-Brand_Video'
+      id: '2_0-Brand_Video',
+      languageId: '529'
     }
   },
   result: {
@@ -132,7 +133,20 @@ const getVideoMock = {
           id: 'variantA',
           duration: 144,
           hls: 'https://arc.gt/opsgn'
-        }
+        },
+        variantLanguages: [
+          {
+            __typename: 'Language',
+            id: '529',
+            name: [
+              {
+                value: 'English',
+                primary: true,
+                __typename: 'Translation'
+              }
+            ]
+          }
+        ]
       }
     }
   }
