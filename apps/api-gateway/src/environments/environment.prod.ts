@@ -9,5 +9,21 @@ export const config: EnvironmentConfig = {
   listenOptions: {
     port: 4000,
     host: '0.0.0.0'
+  },
+  cors: {
+    origin: [
+      // apollo studio
+      'https://studio.apollographql.com',
+      // any project deployed on the jesusfilm vercel account
+      /-jesusfilm\.vercel\.app$/,
+      // journeys-admin
+      'https://journeys-admin.vercel.app',
+      'https://admin.nextstep.is',
+      // journeys
+      'https://journeys-phi.vercel.app',
+      'https://your.nextstep.is',
+      // watch
+      'https://watch-one.vercel.app'
+    ]
   }
 }
