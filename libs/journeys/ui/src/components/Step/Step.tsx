@@ -40,11 +40,8 @@ export function Step({
       TagManager.dataLayer({
         dataLayer: {
           event: 'step_view',
-          journeyId: undefined,
           eventId: id,
-          blockId,
-          videoPosition: undefined,
-          videoProgress: undefined
+          blockId
         }
       })
     }

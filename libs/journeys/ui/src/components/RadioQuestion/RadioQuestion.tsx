@@ -62,11 +62,9 @@ export function RadioQuestion({
     TagManager.dataLayer({
       dataLayer: {
         event: 'radio_question_submission',
-        journeyId: undefined,
         eventId: id,
         blockId,
-        videoPosition: undefined,
-        videoProgress: undefined
+        radioOptionSelectedId: radioOptionBlockId
       }
     })
     setSelectedId(radioOptionBlockId)

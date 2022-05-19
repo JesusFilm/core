@@ -89,11 +89,8 @@ export const SignUp = ({
           TagManager.dataLayer({
             dataLayer: {
               event: 'sign_up_submission',
-              journeyId: undefined,
               eventId: id,
-              blockId,
-              videoPosition: undefined,
-              videoProgress: undefined
+              blockId
             }
           })
         })

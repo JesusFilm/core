@@ -64,11 +64,8 @@ export function Button({
       TagManager.dataLayer({
         dataLayer: {
           event: 'button_click',
-          journeyId: undefined,
           eventId: id,
-          blockId,
-          videoPosition: undefined,
-          videoProgress: undefined
+          blockId
         }
       })
     }
