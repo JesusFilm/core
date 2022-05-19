@@ -43,14 +43,14 @@ export function SelectedCard(): ReactElement {
     state: { steps, selectedBlock }
   } = useEditor()
   const { journey } = useJourney()
-  const { id, nextBlockId, locked } = selectedBlock as TreeBlock<StepFields>
+  const currentBlock = selectedBlock as TreeBlock<StepFields>
   const [nextStep, setNextStep] = useState(
-    steps?.find((step) => nextBlockId === step.id)
+    steps?.find((step) => currentBlock?.nextBlockId === step.id)
   )
 
   useEffect(() => {
-    setNextStep(steps?.find((step) => nextBlockId === step.id))
-  }, [steps, nextBlockId])
+    setNextStep(steps?.find((step) => currentBlock?.nextBlockId === step.id))
+  }, [steps, currentBlock])
 
   // TODO: Set as block itself for now, still need to manually set next block
   async function handleRemoveCustomNextStep(): Promise<void> {
@@ -58,23 +58,23 @@ export function SelectedCard(): ReactElement {
 
     await stepBlockDefaultNextBlockUpdate({
       variables: {
-        id,
+        id: currentBlock?.id,
         journeyId: journey.id,
         input: {
-          nextBlockId: id
+          nextBlockId: currentBlock?.id
         }
       },
       optimisticResponse: {
         stepBlockUpdate: {
-          id,
+          id: currentBlock.id,
           __typename: 'StepBlock',
-          nextBlockId: id
+          nextBlockId: currentBlock.id
         }
       }
     })
   }
 
-  return (
+  return currentBlock != null ? (
     <Stack
       direction="row"
       justifyContent="space-between"
@@ -83,9 +83,9 @@ export function SelectedCard(): ReactElement {
     >
       <Stack direction="row" spacing={4}>
         <Box
-          id={id}
-          key={id}
-          data-testid={`next-step-${id}`}
+          id={currentBlock.id}
+          key={currentBlock.id}
+          data-testid={`next-step-${currentBlock.id}`}
           sx={{
             width: 58,
             height: 90
@@ -104,11 +104,7 @@ export function SelectedCard(): ReactElement {
               >
                 <Box sx={{ p: 4, height: '100%' }}>
                   <BlockRenderer
-                    block={
-                      nextStep != null
-                        ? nextStep
-                        : (selectedBlock as TreeBlock<StepFields>)
-                    }
+                    block={nextStep != null ? nextStep : currentBlock}
                     wrappers={{
                       VideoWrapper,
                       CardWrapper
@@ -121,7 +117,7 @@ export function SelectedCard(): ReactElement {
         </Box>
         <Stack direction="column" justifyContent="center">
           <Typography variant="subtitle2">Selected Step</Typography>
-          {locked && (
+          {currentBlock.locked && (
             <Stack direction="row" spacing={1}>
               <LockRoundedIcon
                 sx={{ fontSize: '18px', color: 'secondary.light' }}
@@ -133,7 +129,7 @@ export function SelectedCard(): ReactElement {
           )}
         </Stack>
       </Stack>
-      {nextStep != null && nextStep.id !== id && (
+      {nextStep != null && nextStep.id !== currentBlock.id && (
         <IconButton
           onClick={handleRemoveCustomNextStep}
           data-testid="removeCustomNextStep"
@@ -142,5 +138,7 @@ export function SelectedCard(): ReactElement {
         </IconButton>
       )}
     </Stack>
+  ) : (
+    <></>
   )
 }

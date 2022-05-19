@@ -30,10 +30,10 @@ export function Cards(): ReactElement {
   } = useEditor()
   const { journey } = useJourney()
   const theme = useTheme()
-  const { id, nextBlockId } = selectedBlock as TreeBlock<StepFields>
+  const currentBlock = selectedBlock as TreeBlock<StepFields>
 
   const nextStep: TreeBlock<StepFields> | undefined = steps?.find(
-    ({ id }) => nextBlockId === id
+    ({ id }) => currentBlock != null && currentBlock.nextBlockId === id
   )
 
   async function handleSelectStep(step: TreeBlock<StepFields>): Promise<void> {
@@ -41,7 +41,7 @@ export function Cards(): ReactElement {
 
     await stepBlockNextBlockUpdate({
       variables: {
-        id,
+        id: currentBlock.id,
         journeyId: journey.id,
         input: {
           nextBlockId: step.id
@@ -49,7 +49,7 @@ export function Cards(): ReactElement {
       },
       optimisticResponse: {
         stepBlockUpdate: {
-          id,
+          id: currentBlock.id,
           __typename: 'StepBlock',
           nextBlockId: step.id
         }
