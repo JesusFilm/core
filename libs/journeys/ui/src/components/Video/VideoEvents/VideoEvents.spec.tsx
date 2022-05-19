@@ -1,6 +1,7 @@
 import { render, waitFor, act, cleanup } from '@testing-library/react'
 import videojs from 'video.js'
 import { MockedProvider } from '@apollo/client/testing'
+import { v4 as uuidv4 } from 'uuid'
 import {
   VideoEventsProps,
   VIDEO_START_EVENT_CREATE,
@@ -12,6 +13,13 @@ import {
   VIDEO_PROGRESS_EVENT_CREATE
 } from './VideoEvents'
 import { VideoEvents } from '.'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+mockUuidv4.mockReturnValue('uuid')
 
 describe('VideoEvents', () => {
   let props: VideoEventsProps
@@ -59,7 +67,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_START_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0 }
+                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
               }
             },
             result
@@ -95,7 +103,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PLAY_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0.12 }
+                input: { id: 'uuid', blockId: 'video0.id', position: 0.12 }
               }
             },
             result
@@ -130,7 +138,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PAUSE_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0.34 }
+                input: { id: 'uuid', blockId: 'video0.id', position: 0.34 }
               }
             },
             result
@@ -165,7 +173,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_EXPAND_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0.56 }
+                input: { id: 'uuid', blockId: 'video0.id', position: 0.56 }
               }
             },
             result
@@ -200,7 +208,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_EXPAND_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0.78 }
+                input: { id: 'uuid', blockId: 'video0.id', position: 0.78 }
               }
             },
             result: {
@@ -217,7 +225,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_COLLAPSE_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0.78 }
+                input: { id: 'uuid', blockId: 'video0.id', position: 0.78 }
               }
             },
             result
@@ -296,7 +304,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_START_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 0 }
+                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
               }
             },
             result: resultStart
@@ -305,7 +313,12 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PROGRESS_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 25, progress: 25 }
+                input: {
+                  id: 'uuid',
+                  blockId: 'video0.id',
+                  position: 25,
+                  progress: 25
+                }
               }
             },
             result: resultOne
@@ -314,7 +327,12 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PROGRESS_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 50, progress: 50 }
+                input: {
+                  id: 'uuid',
+                  blockId: 'video0.id',
+                  position: 50,
+                  progress: 50
+                }
               }
             },
             result: resultTwo
@@ -323,7 +341,12 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PROGRESS_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 75, progress: 75 }
+                input: {
+                  id: 'uuid',
+                  blockId: 'video0.id',
+                  position: 75,
+                  progress: 75
+                }
               }
             },
             result: resultThree
@@ -332,7 +355,7 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_COMPLETE_EVENT_CREATE,
               variables: {
-                input: { blockId: 'video0.id', position: 100 }
+                input: { id: 'uuid', blockId: 'video0.id', position: 100 }
               }
             },
             result: resultComplete
