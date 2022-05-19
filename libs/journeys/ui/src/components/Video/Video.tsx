@@ -171,7 +171,12 @@ export function Video({
       }}
     >
       {playerRef.current != null && (
-        <VideoEvents player={playerRef.current} blockId={blockId} />
+        <VideoEvents
+          player={playerRef.current}
+          blockId={blockId}
+          startAt={startAt}
+          endAt={endAt}
+        />
       )}
       {video?.variant?.hls != null ? (
         <>
