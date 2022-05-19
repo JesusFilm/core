@@ -8,6 +8,7 @@ import {
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+// import TagManager from 'react-gtm-module'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { JOURNEY_VIEW_EVENT_CREATE } from './Conductor'
 import { Conductor } from '.'
@@ -24,6 +25,16 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
+// jest.mock('react-gtm-module', () => ({
+//   __esModule: true,
+//   dataLayer: jest.fn()
+// }))
+
+// const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
+//   typeof TagManager.dataLayer
+// >
+
+// expect(mockedDataLayer).toHaveBeenCaleldWith({dataLayer:{...}})
 beforeEach(() => {
   const useBreakpointsMock = useBreakpoints as jest.Mock
   useBreakpointsMock.mockReturnValue({

@@ -8,6 +8,7 @@ import Box from '@mui/material/Box'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { v4 as uuidv4 } from 'uuid'
 import { useSnackbar } from 'notistack'
+import TagManager from 'react-gtm-module'
 import { TreeBlock, handleAction, useEditor, useJourney } from '../..'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
@@ -84,6 +85,14 @@ export const SignUp = ({
               email: values.email
             }
           }
+        }).then(() => {
+          TagManager.dataLayer({
+            dataLayer: {
+              event: 'sign_up_submission',
+              blockId,
+              eventId: id
+            }
+          })
         })
       } catch (e) {
         if (e instanceof ApolloError) {

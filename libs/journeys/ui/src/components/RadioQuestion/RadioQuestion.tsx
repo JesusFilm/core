@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles'
 import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { useMutation, gql } from '@apollo/client'
+import TagManager from 'react-gtm-module'
 import { TreeBlock, BlockRenderer, useJourney } from '../..'
 import { WrappersProps } from '../BlockRenderer'
 import { RadioOption } from './RadioOption'
@@ -58,6 +59,9 @@ export function RadioQuestion({
         }
       })
     }
+    TagManager.dataLayer({
+      dataLayer: { event: 'radio_question_submission', blockId, eventId: id }
+    })
     setSelectedId(radioOptionBlockId)
   }
 

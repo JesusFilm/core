@@ -1,6 +1,7 @@
 import { ReactElement, useEffect } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
+import TagManager from 'react-gtm-module'
 import { TreeBlock } from '../..'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { useJourney } from '../../libs/context/JourneyContext'
@@ -35,6 +36,9 @@ export function Step({
       const id = uuidv4()
       void stepViewEventCreate({
         variables: { input: { id, blockId } }
+      })
+      TagManager.dataLayer({
+        dataLayer: { event: 'step_view', blockId, eventId: id }
       })
     }
   }, [blockId, stepViewEventCreate, admin])

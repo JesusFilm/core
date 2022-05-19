@@ -4,6 +4,7 @@ import MuiButton from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
+import TagManager from 'react-gtm-module'
 import { handleAction, TreeBlock, useJourney } from '../..'
 import { ButtonVariant } from '../../../__generated__/globalTypes'
 import { IconFields } from '../Icon/__generated__/IconFields'
@@ -52,12 +53,19 @@ export function Button({
   async function createEvent(): Promise<void> {
     if (!admin) {
       const id = uuidv4()
-      await buttonClickEventCreate({
+      void buttonClickEventCreate({
         variables: {
           input: {
             id,
             blockId
           }
+        }
+      })
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'button_click',
+          blockId,
+          eventId: id
         }
       })
     }

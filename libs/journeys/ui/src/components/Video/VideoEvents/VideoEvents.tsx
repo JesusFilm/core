@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useEffect } from 'react'
 import videojs from 'video.js'
+import TagManager from 'react-gtm-module'
 import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
 import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
 import { VideoPauseEventCreate } from './__generated__/VideoPauseEventCreate'
@@ -133,7 +134,7 @@ export function VideoEvents({
   useEffect(() => {
     function playListener(): void {
       const currentTime = player.currentTime()
-      if (currentTime >= start)
+      if (currentTime >= start) {
         void videoPlayEventCreate({
           variables: {
             input: {
@@ -142,6 +143,15 @@ export function VideoEvents({
             }
           }
         })
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'video_play',
+            blockId,
+            // eventId: id,
+            videoPosition: currentTime
+          }
+        })
+      }
     }
     player.on('play', playListener)
     return () => player.off('play', playListener)
@@ -150,12 +160,21 @@ export function VideoEvents({
   // PAUSE event
   useEffect(() => {
     function pauseListener(): void {
+      const currentPosition = player.currentTime()
       void videoPauseEventCreate({
         variables: {
           input: {
             blockId,
-            position: player.currentTime()
+            position: currentPosition
           }
+        }
+      })
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'video_pause',
+          blockId,
+          // eventId: id,
+          videoPosition: currentPosition
         }
       })
     }
@@ -166,13 +185,22 @@ export function VideoEvents({
   // EXPAND event
   useEffect(() => {
     function expandListener(): void {
+      const currentPosition = player.currentTime()
       if (player.isFullscreen()) {
         void videoExpandEventCreate({
           variables: {
             input: {
               blockId,
-              position: player.currentTime()
+              position: currentPosition
             }
+          }
+        })
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'video_expand',
+            blockId,
+            // eventId: id,
+            videoPosition: currentPosition
           }
         })
       }
@@ -184,13 +212,22 @@ export function VideoEvents({
   // COLLAPSE event
   useEffect(() => {
     function collapseListener(): void {
+      const currentPosition = player.currentTime()
       if (!player.isFullscreen()) {
         void videoCollapseEventCreate({
           variables: {
             input: {
               blockId,
-              position: player.currentTime()
+              position: currentPosition
             }
+          }
+        })
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'video_collapse',
+            blockId,
+            // eventId: id,
+            videoPosition: currentPosition
           }
         })
       }
@@ -202,14 +239,22 @@ export function VideoEvents({
   // START event
   useEffect(() => {
     function startListener(): void {
-      const currentTime = player.currentTime()
-      if (!calledStart && currentTime >= start) {
+      const currentPosition = player.currentTime()
+      if (!calledStart && currentPosition >= start) {
         void videoStartEventCreate({
           variables: {
             input: {
               blockId,
-              position: player.currentTime()
+              position: currentPosition
             }
+          }
+        })
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'video_start',
+            blockId,
+            // eventId: id,
+            videoPosition: currentPosition
           }
         })
       }
@@ -223,12 +268,22 @@ export function VideoEvents({
     function timeupdate25Listener(): void {
       const currentPosition = player.currentTime()
       if (!called25 && currentPosition >= position25) {
+        console.log('HERE')
         void videoProgressEventCreate25()
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'video_progress',
+            blockId,
+            // eventId: id,
+            videoPosition: currentPosition,
+            videoProgress: 25
+          }
+        })
       }
     }
     player.on('timeupdate', timeupdate25Listener)
     return () => player.off('timeupdate', timeupdate25Listener)
-  }, [player, position25, called25, videoProgressEventCreate25])
+  }, [blockId, player, position25, called25, videoProgressEventCreate25])
 
   // PROGRESS 50% event
   useEffect(() => {
@@ -236,11 +291,20 @@ export function VideoEvents({
       const currentPosition = player.currentTime()
       if (!called50 && currentPosition >= position50) {
         void videoProgressEventCreate50()
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'video_progress',
+            blockId,
+            // eventId: id,
+            videoPosition: currentPosition,
+            videoProgress: 50
+          }
+        })
       }
     }
     player.on('timeupdate', timeupdate50Listener)
     return () => player.off('timeupdate', timeupdate50Listener)
-  }, [player, position50, called50, videoProgressEventCreate50])
+  }, [blockId, player, position50, called50, videoProgressEventCreate50])
 
   // PROGRESS 75% event
   useEffect(() => {
@@ -248,11 +312,20 @@ export function VideoEvents({
       const currentPosition = player.currentTime()
       if (!called75 && currentPosition >= position75) {
         void videoProgressEventCreate75()
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'video_progress',
+            blockId,
+            // eventId: id,
+            videoPosition: currentPosition,
+            videoProgress: 75
+          }
+        })
       }
     }
     player.on('timeupdate', timeupdate75Listener)
     return () => player.off('timeupdate', timeupdate75Listener)
-  }, [player, position75, called75, videoProgressEventCreate75])
+  }, [blockId, player, position75, called75, videoProgressEventCreate75])
 
   // COMPLETE event
   useEffect(() => {
@@ -265,6 +338,14 @@ export function VideoEvents({
               blockId,
               position: currentPosition
             }
+          }
+        })
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'video_complete',
+            blockId,
+            // eventId: id,
+            videoPosition: currentPosition
           }
         })
       }
