@@ -10,7 +10,13 @@ import { steps } from './data'
 const CardViewStory = {
   ...journeysAdminConfig,
   component: CardView,
-  title: 'Journeys-Admin/JourneyView/CardView'
+  title: 'Journeys-Admin/JourneyView/CardView',
+  parameters: {
+    chromatic: {
+      ...journeysAdminConfig.parameters.chromatic,
+      diffThreshold: 0.75
+    }
+  }
 }
 
 const Template: Story<Omit<CardViewProps, 'slug'>> = ({ ...args }) => (

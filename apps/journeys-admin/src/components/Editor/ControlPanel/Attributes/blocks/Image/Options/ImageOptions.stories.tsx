@@ -14,7 +14,11 @@ const ImageOptionsStory = {
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Image/ImageOptions',
   parameters: {
     ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    chromatic: {
+      ...journeysAdminConfig.parameters.chromatic,
+      diffThreshold: 0.75
+    }
   }
 }
 
