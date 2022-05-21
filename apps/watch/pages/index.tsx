@@ -5,11 +5,12 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { useQuery, gql } from '@apollo/client'
 import Fab from '@mui/material/Fab'
+import Stack from '@mui/material/Stack'
 import { VideoList } from '../src/components/Videos/VideoList/VideoList'
 import { PageWrapper } from '../src/components/PageWrapper'
-import { Countries } from '../src/components/Countries/Countries'
 import { GetVideoTag } from '../__generated__/GetVideoTag'
 import { VideoType } from '../__generated__/globalTypes'
+import { theme } from '../src/components/ThemeProvider/ThemeProvider'
 import {
   LanguageProvider,
   useLanguage
@@ -43,28 +44,38 @@ function VideoPage(): ReactElement {
   return (
     <LanguageProvider>
       <PageWrapper />
-      <Box sx={{ bgcolor: '#fff' }}>
-        <Container maxWidth="xl">
-          <Grid
-            container
-            direction="row"
-            justifyContent="start"
-            alignItems="center"
-            sx={{ minHeight: '50vh', paddingY: '5rem' }}
-          >
-            <Grid item>
-              <Typography variant="h2">
-                Equip a Team to Reach the Unreached With JESUS
+      <Box
+        sx={{ backgroundImage: 'url(/images/jesus-header.png)', height: 776 }}
+      >
+        <Container maxWidth="xl" style={{ paddingTop: 350 }}>
+          <Stack direction="row" justifyContent="space-between">
+            <Box>
+              <Typography
+                variant="h2"
+                color={theme.palette.secondary.contrastText}
+              >
+                Until Everyone
               </Typography>
-              <Typography variant="h4">
-                You can reach people in their heart language with Jesus&apos;
-                love and forgiveness and help change lives.
+              <Typography
+                variant="h2"
+                color={theme.palette.secondary.contrastText}
+              >
+                <u style={{ textDecorationColor: theme.palette.primary.main }}>
+                  Sees Jesus
+                </u>
+                .
               </Typography>
-            </Grid>
-          </Grid>
+            </Box>
+            <Typography
+              variant="h6"
+              color={theme.palette.secondary.contrastText}
+            >
+              The story of the gospel in 78 videos in 1800 languages.
+            </Typography>
+          </Stack>
         </Container>
       </Box>
-      <Countries />
+
       <Box sx={{ bgcolor: '#333', paddingY: '5rem' }}>
         <Container maxWidth="xl">
           <Typography variant="h3" color="white">

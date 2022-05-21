@@ -10,6 +10,8 @@ import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui'
 import { firebaseClient } from '../src/libs/firebaseClient'
 import { createApolloClient } from '../src/libs/client'
+import { ThemeProvider } from '../src/components/ThemeProvider'
+import '../public/fonts/fonts.css'
 
 const clientSideEmotionCache = createEmotionCache()
 
@@ -50,7 +52,9 @@ export default function WatchApp({
         />
       </Head>
       <ApolloProvider client={client}>
-        <Component {...pageProps} />
+        <ThemeProvider>
+          <Component {...pageProps} />
+        </ThemeProvider>
       </ApolloProvider>
     </CacheProvider>
   )
