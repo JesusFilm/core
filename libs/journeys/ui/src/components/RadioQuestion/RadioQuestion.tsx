@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles'
 import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { useMutation, gql } from '@apollo/client'
+import TagManager from 'react-gtm-module'
 import { TreeBlock, BlockRenderer, useJourney } from '../..'
 import { WrappersProps } from '../BlockRenderer'
 import { RadioOption } from './RadioOption'
@@ -45,9 +46,9 @@ export function RadioQuestion({
   const { admin } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
-  const handleClick = async (radioOptionBlockId: string): Promise<void> => {
-    const id = uuid()
-    if (admin != null && !admin) {
+  const handleClick = (radioOptionBlockId: string): void => {
+    if (!admin) {
+      const id = uuid()
       void radioQuestionSubmissionEventCreate({
         variables: {
           input: {
@@ -55,6 +56,14 @@ export function RadioQuestion({
             blockId,
             radioOptionBlockId
           }
+        }
+      })
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'radio_question_submission',
+          eventId: id,
+          blockId,
+          radioOptionSelectedId: radioOptionBlockId
         }
       })
     }

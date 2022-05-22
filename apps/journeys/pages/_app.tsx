@@ -1,9 +1,7 @@
 import { AppProps } from 'next/app'
 import Head from 'next/head'
-import { ReactElement, useCallback, useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { ApolloProvider } from '@apollo/client'
-import { useAuthState } from 'react-firebase-hooks/auth'
-import { getAuth, signInAnonymously } from 'firebase/auth'
 import { DefaultSeo } from 'next-seo'
 import TagManager from 'react-gtm-module'
 import { datadogRum } from '@datadog/browser-rum'
@@ -11,7 +9,8 @@ import { CacheProvider } from '@emotion/react'
 import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui'
 import { SnackbarProvider } from 'notistack'
-import { createApolloClient } from '../src/libs/client'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { apolloClient } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
 
 const clientSideEmotionCache = createEmotionCache()
@@ -21,24 +20,18 @@ export default function JourneysApp({
   pageProps,
   emotionCache = clientSideEmotionCache
 }: AppProps & { emotionCache?: EmotionCache }): ReactElement {
-  const auth = getAuth(firebaseClient)
-  const [user] = useAuthState(auth)
-  const client = createApolloClient(user?.accessToken)
-  const signIn = useCallback(async (): Promise<void> => {
-    await signInAnonymously(auth)
-  }, [auth])
-
   useEffect(() => {
-    void signIn()
-  }, [signIn])
-
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_GTM_ID != null)
+    if (
+      process.env.NEXT_PUBLIC_GTM_ID != null &&
+      process.env.NEXT_PUBLIC_GTM_ID !== ''
+    )
       TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID })
 
     if (
       process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
-      process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null
+      process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
+      process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
+      process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== ''
     )
       datadogRum.init({
         applicationId: process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID,
@@ -57,6 +50,14 @@ export default function JourneysApp({
     if (jssStyles != null) {
       jssStyles.parentElement?.removeChild(jssStyles)
     }
+    const auth = getAuth(firebaseClient)
+    return onAuthStateChanged(auth, (user) => {
+      if (user != null) {
+        TagManager.dataLayer({ dataLayer: { userId: user.uid } })
+      } else {
+        TagManager.dataLayer({ dataLayer: { userId: undefined } })
+      }
+    })
   }, [])
 
   return (
@@ -71,7 +72,7 @@ export default function JourneysApp({
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
       </Head>
-      <ApolloProvider client={client}>
+      <ApolloProvider client={apolloClient}>
         <SnackbarProvider>
           <Component {...pageProps} />
         </SnackbarProvider>

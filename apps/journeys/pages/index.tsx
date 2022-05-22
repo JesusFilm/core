@@ -6,7 +6,7 @@ import { ThemeProvider } from '@core/shared/ui'
 import Link from 'next/link'
 import { GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
-import { createApolloClient } from '../src/libs/client'
+import { apolloClient } from '../src/libs/apolloClient'
 import {
   GetJourneys,
   GetJourneys_journeys as Journey
@@ -36,8 +36,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
 }
 
 export const getStaticProps: GetStaticProps<JourneysPageProps> = async () => {
-  const client = createApolloClient()
-  const { data } = await client.query<GetJourneys>({
+  const { data } = await apolloClient.query<GetJourneys>({
     query: gql`
       query GetJourneys {
         journeys(where: { featured: true }) {

@@ -1,6 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { v4 as uuidv4 } from 'uuid'
+import TagManager from 'react-gtm-module'
 import {
   ButtonVariant,
   ButtonColor,
@@ -20,6 +21,17 @@ jest.mock('uuid', () => ({
 }))
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+
+jest.mock('react-gtm-module', () => ({
+  __esModule: true,
+  default: {
+    dataLayer: jest.fn()
+  }
+}))
+
+const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
+  typeof TagManager.dataLayer
+>
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -54,7 +66,7 @@ const block: TreeBlock<ButtonFields> = {
 }
 
 describe('Button', () => {
-  it('should creare a buttonClickEvent onClick', async () => {
+  it('should create a buttonClickEvent onClick', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 
     const result = jest.fn(() => ({
@@ -90,6 +102,49 @@ describe('Button', () => {
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toBeCalled())
+  })
+
+  it('should add buttonClickEvent to dataLayer', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_CLICK_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button'
+                }
+              }
+            },
+            result: {
+              data: {
+                buttonClickEventCreate: {
+                  __typename: 'ButtonClickEvent',
+                  id: 'uuiid'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <Button {...block} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    await waitFor(() =>
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'button_click',
+          eventId: 'uuid',
+          blockId: 'button'
+        }
+      })
+    )
   })
 
   it('should render the button successfully', () => {
