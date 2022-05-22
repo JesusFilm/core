@@ -12,6 +12,8 @@ const CardViewStory = {
   component: CardView,
   title: 'Journeys-Admin/JourneyView/CardView',
   parameters: {
+    ...journeysAdminConfig.parameters,
+    layout: 'fullscreen',
     chromatic: {
       ...journeysAdminConfig.parameters.chromatic,
       diffThreshold: 0.75

@@ -12,6 +12,7 @@ const UserMenuStory = {
   title: 'Journeys-Admin/PageWrapper/NavigationDrawer/UserMenu',
   parameters: {
     chromatic: {
+      ...simpleComponentConfig.parameters.chromatic,
       disableSnapshot: false
     }
   }
