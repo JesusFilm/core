@@ -681,12 +681,6 @@ type StepViewEvent implements Event {
   block: StepBlock
 }
 
-enum VideoPlayEventStateEnum {
-  PLAYING @deprecated(reason: "No longer using state")
-  PAUSED @deprecated(reason: "No longer using state")
-  FINISHED @deprecated(reason: "No longer using state")
-}
-
 input VideoStartEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -709,15 +703,13 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
-  state: VideoPlayEventStateEnum @deprecated(reason: "State will be split into different events")
-  position: Float
+  position: Int
 }
 
 type VideoPlayEvent implements Event {
   id: ID!
   userId: ID!
-  state: VideoPlayEventStateEnum @deprecated(reason: "State will be split into different events")
-  position: Float
+  position: Int
   block: VideoBlock
 }
 
@@ -862,83 +854,6 @@ type UserJourney @key(fields: "id") {
   user: User
 }
 
-input RadioQuestionResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID @deprecated(reason: "use event instead of response")
-  blockId: ID @deprecated(reason: "use event instead of response")
-  radioOptionBlockId: ID @deprecated(reason: "use event instead of response")
-}
-
-type RadioQuestionResponse implements Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-  radioOptionBlockId: ID! @deprecated(reason: "use event instead of response")
-  block: RadioQuestionBlock @deprecated(reason: "use event instead of response")
-}
-
-interface Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-}
-
-input SignUpResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID @deprecated(reason: "use event instead of response")
-  blockId: ID @deprecated(reason: "use event instead of response")
-  name: String @deprecated(reason: "use event instead of response")
-  email: String @deprecated(reason: "use event instead of response")
-}
-
-type SignUpResponse implements Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-  name: String! @deprecated(reason: "use event instead of response")
-  email: String! @deprecated(reason: "use event instead of response")
-  block: SignUpBlock @deprecated(reason: "use event instead of response")
-}
-
-input StepResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID @deprecated(reason: "use event instead of response")
-  blockId: ID @deprecated(reason: "use event instead of response")
-}
-
-type StepResponse implements Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-  block: StepBlock @deprecated(reason: "use event instead of response")
-}
-
-enum VideoResponseStateEnum {
-  PLAYING @deprecated(reason: "use event instead of response")
-  PAUSED @deprecated(reason: "use event instead of response")
-  FINISHED @deprecated(reason: "use event instead of response")
-}
-
-input VideoResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID @deprecated(reason: "use event instead of response")
-  blockId: ID @deprecated(reason: "use event instead of response")
-  state: VideoResponseStateEnum @deprecated(reason: "use event instead of response")
-  position: Float @deprecated(reason: "use event instead of response")
-}
-
-type VideoResponse implements Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-  state: VideoResponseStateEnum! @deprecated(reason: "use event instead of response")
-  position: Int @deprecated(reason: "use event instead of response")
-  block: VideoBlock @deprecated(reason: "use event instead of response")
-}
-
 enum UserJourneyRole {
   inviteRequested
   editor
@@ -990,10 +905,6 @@ extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey
-  radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
-  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
-  stepResponseCreate(input: StepResponseCreateInput!): SignUpResponse!
-  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
