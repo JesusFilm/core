@@ -19,7 +19,6 @@ const NavigateToBlockActionStory = {
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates',
   parameters: {
     ...simpleComponentConfig.parameters,
-    layout: 'fullscreen',
     chromatic: {
       ...simpleComponentConfig.parameters.chromatic,
       diffThreshold: 0.75
