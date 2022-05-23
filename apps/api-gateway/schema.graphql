@@ -65,6 +65,7 @@ input ButtonBlockUpdateInput {
 type ButtonClickEvent implements Event {
   block: ButtonBlock
   id: ID!
+  stepName: String!
   userId: ID!
 }
 
@@ -75,6 +76,7 @@ input ButtonClickEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  stepName: String!
 }
 
 enum ButtonColor {
@@ -405,6 +407,7 @@ input JourneyUpdateInput {
 type JourneyViewEvent implements Event {
   id: ID!
   journey: Journey
+  title: String!
   userId: ID!
 }
 
@@ -414,6 +417,7 @@ input JourneyViewEventCreateInput {
   """
   id: ID
   journeyId: ID!
+  title: String!
 }
 
 type Language
@@ -587,6 +591,7 @@ type RadioQuestionSubmissionEvent implements Event {
   block: RadioQuestionBlock
   id: ID!
   radioOptionBlockId: ID!
+  stepName: String!
   userId: ID!
 }
 
@@ -598,6 +603,7 @@ input RadioQuestionSubmissionEventCreateInput {
   """
   id: ID
   radioOptionBlockId: ID!
+  stepName: String!
 }
 
 type SignUpBlock implements Block {
@@ -628,6 +634,7 @@ type SignUpSubmissionEvent implements Event {
   email: String!
   id: ID!
   name: String!
+  stepName: String!
   userId: ID!
 }
 
@@ -640,6 +647,7 @@ input SignUpSubmissionEventCreateInput {
   """
   id: ID
   name: String!
+  stepName: String!
 }
 
 type StepBlock implements Block {
@@ -678,6 +686,7 @@ input StepBlockUpdateInput {
 type StepViewEvent implements Event {
   block: StepBlock
   id: ID!
+  stepName: String!
   userId: ID!
 }
 
@@ -688,6 +697,7 @@ input StepViewEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  stepName: String!
 }
 
 enum ThemeMode {

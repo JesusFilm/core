@@ -4,11 +4,13 @@ input StepViewEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepName: String!
 }
 
 type StepViewEvent implements Event {
   id: ID!
   userId: ID!
+  stepName: String!
   block: StepBlock
 }
 

@@ -606,11 +606,13 @@ input ButtonClickEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepName: String!
 }
 
 type ButtonClickEvent implements Event {
   id: ID!
   userId: ID!
+  stepName: String!
   block: ButtonBlock
 }
 
@@ -625,11 +627,13 @@ input JourneyViewEventCreateInput {
   """
   id: ID
   journeyId: ID!
+  title: String!
 }
 
 type JourneyViewEvent implements Event {
   id: ID!
   userId: ID!
+  title: String!
   journey: Journey
 }
 
@@ -640,12 +644,14 @@ input RadioQuestionSubmissionEventCreateInput {
   id: ID
   blockId: ID!
   radioOptionBlockId: ID!
+  stepName: String!
 }
 
 type RadioQuestionSubmissionEvent implements Event {
   id: ID!
   userId: ID!
   radioOptionBlockId: ID!
+  stepName: String!
   block: RadioQuestionBlock
 }
 
@@ -657,6 +663,7 @@ input SignUpSubmissionEventCreateInput {
   blockId: ID!
   name: String!
   email: String!
+  stepName: String!
 }
 
 type SignUpSubmissionEvent implements Event {
@@ -664,6 +671,7 @@ type SignUpSubmissionEvent implements Event {
   userId: ID!
   name: String!
   email: String!
+  stepName: String!
   block: SignUpBlock
 }
 
@@ -673,11 +681,13 @@ input StepViewEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepName: String!
 }
 
 type StepViewEvent implements Event {
   id: ID!
   userId: ID!
+  stepName: String!
   block: StepBlock
 }
 

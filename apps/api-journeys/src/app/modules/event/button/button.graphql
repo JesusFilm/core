@@ -4,11 +4,13 @@ input ButtonClickEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepName: String!
 }
 
 type ButtonClickEvent implements Event {
   id: ID!
   userId: ID!
+  stepName: String!
   block: ButtonBlock
 }
 

@@ -5,12 +5,14 @@ input RadioQuestionSubmissionEventCreateInput {
   id: ID
   blockId: ID!
   radioOptionBlockId: ID!
+  stepName: String!
 }
 
 type RadioQuestionSubmissionEvent implements Event {
   id: ID!
   userId: ID!
   radioOptionBlockId: ID!
+  stepName: String!
   block: RadioQuestionBlock
 }
 

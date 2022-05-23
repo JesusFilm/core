@@ -4,11 +4,13 @@ input JourneyViewEventCreateInput {
   """
   id: ID
   journeyId: ID!
+  title: String!
 }
 
 type JourneyViewEvent implements Event {
   id: ID!
   userId: ID!
+  title: String!
   journey: Journey
 }
 

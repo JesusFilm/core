@@ -312,17 +312,20 @@ export class VideoBlockUpdateInput {
 export class ButtonClickEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepName: string;
 }
 
 export class JourneyViewEventCreateInput {
     id?: Nullable<string>;
     journeyId: string;
+    title: string;
 }
 
 export class RadioQuestionSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
     radioOptionBlockId: string;
+    stepName: string;
 }
 
 export class SignUpSubmissionEventCreateInput {
@@ -330,11 +333,13 @@ export class SignUpSubmissionEventCreateInput {
     blockId: string;
     name: string;
     email: string;
+    stepName: string;
 }
 
 export class StepViewEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepName: string;
 }
 
 export class VideoStartEventCreateInput {
@@ -630,6 +635,7 @@ export class ButtonClickEvent implements Event {
     __typename?: 'ButtonClickEvent';
     id: string;
     userId: string;
+    stepName: string;
     block?: Nullable<ButtonBlock>;
 }
 
@@ -637,6 +643,7 @@ export class JourneyViewEvent implements Event {
     __typename?: 'JourneyViewEvent';
     id: string;
     userId: string;
+    title: string;
     journey?: Nullable<Journey>;
 }
 
@@ -645,6 +652,7 @@ export class RadioQuestionSubmissionEvent implements Event {
     id: string;
     userId: string;
     radioOptionBlockId: string;
+    stepName: string;
     block?: Nullable<RadioQuestionBlock>;
 }
 
@@ -654,6 +662,7 @@ export class SignUpSubmissionEvent implements Event {
     userId: string;
     name: string;
     email: string;
+    stepName: string;
     block?: Nullable<SignUpBlock>;
 }
 
@@ -661,6 +670,7 @@ export class StepViewEvent implements Event {
     __typename?: 'StepViewEvent';
     id: string;
     userId: string;
+    stepName: string;
     block?: Nullable<StepBlock>;
 }
 
