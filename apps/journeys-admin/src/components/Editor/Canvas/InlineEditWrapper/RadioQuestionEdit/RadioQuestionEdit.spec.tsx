@@ -121,7 +121,7 @@ describe('RadioQuestionEdit', () => {
                 { ...option, id: 'option8.id' },
                 { ...option, id: 'option9.id' },
                 { ...option, id: 'option10.id' },
-                { ...option, id: 'option11.id' },
+                { ...option, id: 'option11.id' }
               ])}
             />
           </EditorProvider>
