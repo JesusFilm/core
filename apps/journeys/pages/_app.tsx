@@ -10,16 +10,19 @@ import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui'
 import { SnackbarProvider } from 'notistack'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { appWithTranslation } from 'next-i18next'
+import { useTranslation } from 'react-i18next'
 import { apolloClient } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
 
 const clientSideEmotionCache = createEmotionCache()
 
-export default function JourneysApp({
+function JourneysApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
 }: AppProps & { emotionCache?: EmotionCache }): ReactElement {
+  const { t } = useTranslation()
   useEffect(() => {
     if (
       process.env.NEXT_PUBLIC_GTM_ID != null &&
@@ -63,8 +66,10 @@ export default function JourneysApp({
   return (
     <CacheProvider value={emotionCache}>
       <DefaultSeo
-        titleTemplate="%s | Next Steps"
-        defaultTitle="Next Steps | Helping you find the next best step on your spiritual journey"
+        titleTemplate={t('%s | Next Steps')}
+        defaultTitle={t(
+          'Next Steps | Helping you find the next best step on your spiritual journey'
+        )}
       />
       <Head>
         <meta
@@ -80,3 +85,5 @@ export default function JourneysApp({
     </CacheProvider>
   )
 }
+
+export default appWithTranslation(JourneysApp)

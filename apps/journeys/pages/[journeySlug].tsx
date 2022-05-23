@@ -3,6 +3,7 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui'
 import { transformer, JourneyProvider, JOURNEY_FIELDS } from '@core/journeys/ui'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { Conductor } from '../src/components/Conductor'
 import { apolloClient } from '../src/libs/apolloClient'
@@ -11,6 +12,7 @@ import {
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
 import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
+import i18nConfig from '../next-i18next.config'
 
 interface JourneyPageProps {
   journey: Journey
@@ -69,9 +71,9 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   )
 }
 
-export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
-  params
-}) => {
+export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
+  context
+) => {
   const { data } = await apolloClient.query<GetJourney>({
     query: gql`
       ${JOURNEY_FIELDS}
@@ -82,18 +84,30 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
       }
     `,
     variables: {
-      id: params?.journeySlug
+      id: context.params?.journeySlug
     }
   })
 
   if (data.journey === null) {
     return {
+      props: {
+        ...(await serverSideTranslations(
+          context.locale ?? 'en',
+          ['common'],
+          i18nConfig
+        ))
+      },
       notFound: true,
       revalidate: 60
     }
   } else {
     return {
       props: {
+        ...(await serverSideTranslations(
+          context.locale ?? 'en',
+          ['common'],
+          i18nConfig
+        )),
         journey: data.journey
       },
       revalidate: 60
