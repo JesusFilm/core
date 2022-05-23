@@ -60,20 +60,7 @@ describe('getStepHeading', () => {
       parentOrder: null,
       locked: false,
       nextBlockId: null,
-      children: [
-        {
-          __typename: 'CardBlock',
-          id: 'card.id',
-          parentBlockId: 'step.id',
-          parentOrder: null,
-          backgroundColor: null,
-          coverBlockId: null,
-          themeMode: null,
-          themeName: null,
-          fullscreen: false,
-          children: []
-        }
-      ]
+      children: []
     }
     expect(getStepHeading(stepBlock)).toBeUndefined()
   })

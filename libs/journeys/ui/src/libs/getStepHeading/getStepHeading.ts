@@ -12,7 +12,7 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
 }
 
 export function getStepHeading(step: TreeBlock<StepBlock>): string | undefined {
-  const descendants = flatten(step?.children ?? [])
+  const descendants = flatten(step.children)
   const heading = descendants.find(
     (block) => block.__typename === 'TypographyBlock'
   ) as TreeBlock<TypographyBlock> | undefined
