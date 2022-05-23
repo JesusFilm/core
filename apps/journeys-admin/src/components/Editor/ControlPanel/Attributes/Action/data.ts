@@ -132,7 +132,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'typographyBlockId12',
+            id: 'typographyBlockId2',
             __typename: 'TypographyBlock',
             parentBlockId: 'card1.id',
             parentOrder: 2,
@@ -208,7 +208,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'typographyBlockId1',
+            id: 'typographyBlockId2',
             __typename: 'TypographyBlock',
             parentBlockId: 'card2.id',
             parentOrder: 1,
@@ -330,7 +330,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'typographyBlockId1',
+            id: 'typographyBlockId2',
             __typename: 'TypographyBlock',
             parentBlockId: 'card3.id',
             parentOrder: 2,
@@ -421,7 +421,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'typographyBlockId12',
+            id: 'typographyBlockId2',
             __typename: 'TypographyBlock',
             parentBlockId: 'card4.id',
             parentOrder: 2,
