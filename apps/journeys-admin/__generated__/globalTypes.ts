@@ -159,6 +159,7 @@ export interface ButtonBlockUpdateInput {
 export interface ButtonClickEventCreateInput {
   blockId: string;
   id?: string | null;
+  stepName: string;
 }
 
 export interface CardBlockUpdateInput {
@@ -254,6 +255,7 @@ export interface RadioQuestionSubmissionEventCreateInput {
   blockId: string;
   id?: string | null;
   radioOptionBlockId: string;
+  stepName: string;
 }
 
 export interface SignUpBlockCreateInput {
@@ -274,6 +276,7 @@ export interface SignUpSubmissionEventCreateInput {
   email: string;
   id?: string | null;
   name: string;
+  stepName: string;
 }
 
 export interface StepBlockUpdateInput {
@@ -284,6 +287,7 @@ export interface StepBlockUpdateInput {
 export interface StepViewEventCreateInput {
   blockId: string;
   id?: string | null;
+  stepName: string;
 }
 
 export interface TypographyBlockCreateInput {

@@ -127,12 +127,14 @@ export enum TypographyVariant {
 export interface ButtonClickEventCreateInput {
   blockId: string;
   id?: string | null;
+  stepName: string;
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {
   blockId: string;
   id?: string | null;
   radioOptionBlockId: string;
+  stepName: string;
 }
 
 export interface SignUpSubmissionEventCreateInput {
@@ -140,11 +142,13 @@ export interface SignUpSubmissionEventCreateInput {
   email: string;
   id?: string | null;
   name: string;
+  stepName: string;
 }
 
 export interface StepViewEventCreateInput {
   blockId: string;
   id?: string | null;
+  stepName: string;
 }
 
 export interface VideoCollapseEventCreateInput {
