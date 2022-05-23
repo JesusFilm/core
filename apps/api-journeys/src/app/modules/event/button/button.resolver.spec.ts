@@ -8,7 +8,8 @@ describe('ButtonClickEventResolver', () => {
 
   const input: ButtonClickEventCreateInput = {
     id: '1',
-    blockId: 'block.id'
+    blockId: 'block.id',
+    stepName: 'first step'
   }
 
   const eventService = {

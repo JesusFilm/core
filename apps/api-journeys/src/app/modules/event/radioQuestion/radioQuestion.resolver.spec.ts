@@ -8,7 +8,8 @@ describe('RadioQuestionSubmissionEventResolver', () => {
   const input = {
     id: '1',
     blockId: '2',
-    radioOptionBlockId: '4'
+    radioOptionBlockId: '4',
+    stepName: 'first step'
   }
 
   const eventService = {

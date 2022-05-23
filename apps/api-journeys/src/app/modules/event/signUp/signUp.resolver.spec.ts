@@ -9,7 +9,8 @@ describe('SignUpEventResolver', () => {
     id: '1',
     blockId: '2',
     name: 'Robert Smith',
-    email: 'robert.smith@jesusfilm.org'
+    email: 'robert.smith@jesusfilm.org',
+    stepName: 'first step'
   }
 
   const eventService = {

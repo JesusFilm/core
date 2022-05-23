@@ -9,7 +9,8 @@ describe('StepViewEventResolver', () => {
     id: '1',
     blockId: 'block.id',
     previousBlockId: 'previousBlock.id',
-    journeyId: 'journey.id'
+    journeyId: 'journey.id',
+    stepName: 'first step'
   }
 
   const eventService = {

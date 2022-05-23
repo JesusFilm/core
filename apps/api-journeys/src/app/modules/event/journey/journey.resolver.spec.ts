@@ -8,7 +8,8 @@ describe('JourneyViewEventResolver', () => {
 
   const input: JourneyViewEventCreateInput = {
     id: '1',
-    journeyId: 'journey.id'
+    journeyId: 'journey.id',
+    title: 'journey title'
   }
 
   const eventService = {
