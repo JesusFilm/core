@@ -14,6 +14,7 @@ import { appWithTranslation } from 'next-i18next'
 import { useTranslation } from 'react-i18next'
 import { apolloClient } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
+import i18nConfig from '../next-i18next.config'
 
 const clientSideEmotionCache = createEmotionCache()
 
@@ -86,4 +87,4 @@ function JourneysApp({
   )
 }
 
-export default appWithTranslation(JourneysApp)
+export default appWithTranslation(JourneysApp, i18nConfig)

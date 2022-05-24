@@ -8,11 +8,11 @@ module.exports = {
     default: ['JsxLexer']
   },
   locales: ['en'],
-  output: 'apps/journeys/public/locales/$LOCALE/$NAMESPACE.json',
+  output: 'locales/$LOCALE/$NAMESPACE.json',
   input: ['src/**/*.{js,jsx,ts,tsx}', 'pages/**/*.{js,jsx,ts,tsx}'],
   verbose: true,
   namespaceSeparator: false,
   keySeparator: false,
   useKeysAsDefaultValue: true,
-  defaultNamespace: 'common'
+  defaultNamespace: 'apps-journeys'
 }
