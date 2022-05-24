@@ -295,7 +295,8 @@ describe('SignUp', () => {
               id: 'uuid',
               blockId: 'signUp0.id',
               name: 'Anon',
-              email: '123abc@gmail.com'
+              email: '123abc@gmail.com',
+              stepName: 'signUp0'
             }
           }
         }
