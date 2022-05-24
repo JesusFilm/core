@@ -63,7 +63,7 @@ describe('JourneyList', () => {
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
-            <JourneyList journeys={[]} />
+            <JourneyList journeys={[]} disableCreation={false} />
           </ThemeProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -76,5 +76,27 @@ describe('JourneyList', () => {
     expect(
       getByRole('button', { name: 'Create a Journey' })
     ).toBeInTheDocument()
+  })
+
+  it('should prevent users from creating a journey unless invited', () => {
+    const { getByText, getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList journeys={[]} disableCreation={true} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(
+      getByText('You need to be invited to create the first journey')
+    ).toBeInTheDocument()
+    expect(
+      getByText(
+        'Someone with a full account should add you to their journey as an editor, after that you will have full access'
+      )
+    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Contact Support' })).toBeInTheDocument()
   })
 })
