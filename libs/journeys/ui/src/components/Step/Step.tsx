@@ -2,7 +2,7 @@ import { ReactElement, useEffect } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
-import { TreeBlock } from '../..'
+import { TreeBlock, getStepHeading } from '../..'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { useJourney } from '../../libs/context/JourneyContext'
 import { StepFields } from './__generated__/StepFields'
@@ -30,6 +30,7 @@ export function Step({
   )
 
   const { admin } = useJourney()
+  const heading = getStepHeading(children)
 
   useEffect(() => {
     if (!admin) {
@@ -41,11 +42,12 @@ export function Step({
         dataLayer: {
           event: 'step_view',
           eventId: id,
-          blockId
+          blockId,
+          stepName: heading ?? 'Untitled'
         }
       })
     }
-  }, [blockId, stepViewEventCreate, admin])
+  }, [blockId, stepViewEventCreate, admin, heading])
 
   return (
     <>

@@ -139,7 +139,8 @@ describe('Step', () => {
         dataLayer: {
           event: 'step_view',
           eventId: 'uuid',
-          blockId: 'Step1'
+          blockId: 'Step1',
+          stepName: 'Untitled'
         }
       })
     )

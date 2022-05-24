@@ -1,7 +1,4 @@
-import {
-  JourneyFields_blocks_StepBlock as StepBlock,
-  JourneyFields_blocks_TypographyBlock as TypographyBlock
-} from '../context/__generated__/JourneyFields'
+import { JourneyFields_blocks_TypographyBlock as TypographyBlock } from '../context/__generated__/JourneyFields'
 import { TreeBlock } from '..'
 
 function flatten(children: TreeBlock[]): TreeBlock[] {
@@ -11,8 +8,8 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
   )
 }
 
-export function getStepHeading(step: TreeBlock<StepBlock>): string | undefined {
-  const descendants = flatten(step.children)
+export function getStepHeading(children: TreeBlock[]): string | undefined {
+  const descendants = flatten(children)
   const heading = descendants.find(
     (block) => block.__typename === 'TypographyBlock'
   ) as TreeBlock<TypographyBlock> | undefined

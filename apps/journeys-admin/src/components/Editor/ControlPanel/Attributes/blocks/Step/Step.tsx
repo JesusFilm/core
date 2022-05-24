@@ -16,7 +16,8 @@ export function Step({
     dispatch
   } = useEditor()
   const nextBlock = steps?.find(({ id }) => id === nextBlockId)
-  const heading = nextBlock != null ? getStepHeading(nextBlock) : 'None'
+  const heading =
+    nextBlock != null ? getStepHeading(nextBlock.children) : 'None'
 
   return (
     <Attribute
