@@ -48,7 +48,12 @@ export function Button({
 
   const { admin } = useJourney()
   const { activeBlock } = useBlocks()
-  const heading = getHeading({ activeBlock, label })
+
+  const altName = label === '' ? 'Unlabeled button' : label
+  const heading =
+    activeBlock != null
+      ? getStepHeading(activeBlock.children) ?? altName
+      : altName
 
   const startIcon = children.find((block) => block.id === startIconId) as
     | TreeBlock<IconFields>
@@ -126,21 +131,4 @@ export function Button({
       </MuiButton>
     </Box>
   )
-}
-
-interface GetHeadingProps {
-  activeBlock: TreeBlock | null
-  label: string
-}
-
-export function getHeading({ activeBlock, label }: GetHeadingProps): string {
-  let heading = ''
-  if (activeBlock != null) {
-    heading = getStepHeading(activeBlock.children) ?? label
-  }
-  if (heading === '') {
-    heading = 'Unlabeled button'
-  }
-
-  return heading
 }
