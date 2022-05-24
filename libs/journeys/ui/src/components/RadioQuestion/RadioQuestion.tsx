@@ -5,9 +5,16 @@ import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { useMutation, gql } from '@apollo/client'
 import TagManager from 'react-gtm-module'
-import { TreeBlock, BlockRenderer, useJourney } from '../..'
+import {
+  TreeBlock,
+  BlockRenderer,
+  useJourney,
+  useBlocks,
+  getStepHeading
+} from '../..'
 import { WrappersProps } from '../BlockRenderer'
 import { RadioOption } from './RadioOption'
+import { RadioOptionFields as RadioOptionBlock } from './RadioOption/__generated__/RadioOptionFields'
 import { RadioQuestionSubmissionEventCreate } from './__generated__/RadioQuestionSubmissionEventCreate'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 
@@ -45,9 +52,24 @@ export function RadioQuestion({
     )
   const { admin } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const { activeBlock } = useBlocks()
 
   const handleClick = (radioOptionBlockId: string): void => {
     if (!admin) {
+      const option = children.find(
+        (block) => block.id === radioOptionBlockId
+      ) as TreeBlock<RadioOptionBlock>
+
+      const altName =
+        option == null || option?.label === ''
+          ? 'Unlabeled option'
+          : option.label
+
+      const heading =
+        activeBlock != null
+          ? getStepHeading(activeBlock.children) ?? altName
+          : altName
+
       const id = uuid()
       void radioQuestionSubmissionEventCreate({
         variables: {
@@ -63,7 +85,8 @@ export function RadioQuestion({
           event: 'radio_question_submission',
           eventId: id,
           blockId,
-          radioOptionSelectedId: radioOptionBlockId
+          radioOptionSelectedId: radioOptionBlockId,
+          stepName: heading
         }
       })
     }

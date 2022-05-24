@@ -295,8 +295,7 @@ describe('SignUp', () => {
               id: 'uuid',
               blockId: 'signUp0.id',
               name: 'Anon',
-              email: '123abc@gmail.com',
-              stepName: 'signUp0'
+              email: '123abc@gmail.com'
             }
           }
         }
@@ -326,7 +325,8 @@ describe('SignUp', () => {
         dataLayer: {
           event: 'sign_up_submission',
           eventId: 'uuid',
-          blockId: 'signUp0.id'
+          blockId: 'signUp0.id',
+          stepName: 'Unlabeled sign up button'
         }
       })
     })

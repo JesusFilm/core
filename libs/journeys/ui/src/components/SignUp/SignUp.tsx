@@ -65,7 +65,10 @@ export const SignUp = ({
   const { enqueueSnackbar } = useSnackbar()
   const { activeBlock } = useBlocks()
 
-  const altName = submitLabel === '' ? 'Unlabeled sign up button' : submitLabel
+  const altName =
+    submitLabel == null || submitLabel === ''
+      ? 'Unlabeled sign up button'
+      : submitLabel
   const heading =
     activeBlock != null
       ? getStepHeading(activeBlock.children) ?? altName

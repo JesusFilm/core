@@ -210,7 +210,8 @@ describe('RadioQuestion', () => {
           event: 'radio_question_submission',
           eventId: 'uuid',
           blockId: 'RadioQuestion1',
-          radioOptionSelectedId: 'RadioOption1'
+          radioOptionSelectedId: 'RadioOption1',
+          stepName: 'Option 1'
         }
       })
     )
