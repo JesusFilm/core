@@ -10,9 +10,10 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/transformer/__generated__/BlockFields'
 import { handleAction, TreeBlock, JourneyProvider } from '../..'
 import { ButtonFields } from './__generated__/ButtonFields'
-import { BUTTON_CLICK_EVENT_CREATE } from './Button'
+import { BUTTON_CLICK_EVENT_CREATE, getHeading } from './Button'
 import { Button } from '.'
 
 jest.mock('uuid', () => ({
@@ -141,7 +142,8 @@ describe('Button', () => {
         dataLayer: {
           event: 'button_click',
           eventId: 'uuid',
-          blockId: 'button'
+          blockId: 'button',
+          stepName: 'Unlabeled button'
         }
       })
     )
@@ -267,5 +269,130 @@ describe('Button', () => {
         blockId: 'def'
       }
     )
+  })
+
+  describe('getHeading', () => {
+    it('should reutrn text of first typogrpahy block', () => {
+      const activeBlock: TreeBlock<StepBlock> = {
+        __typename: 'StepBlock',
+        id: 'step.id',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        children: [
+          {
+            __typename: 'CardBlock',
+            id: 'card.id',
+            parentBlockId: 'step.id',
+            parentOrder: null,
+            backgroundColor: null,
+            coverBlockId: null,
+            themeMode: null,
+            themeName: null,
+            fullscreen: false,
+            children: [
+              {
+                __typename: 'TypographyBlock',
+                id: 'typography1.id',
+                parentBlockId: 'card.id',
+                parentOrder: 0,
+                align: null,
+                color: null,
+                variant: null,
+                content: 'Heading',
+                children: []
+              },
+              {
+                __typename: 'ButtonBlock',
+                id: 'button',
+                parentBlockId: 'question',
+                parentOrder: 0,
+                label: 'This is a button',
+                buttonVariant: ButtonVariant.contained,
+                buttonColor: ButtonColor.primary,
+                size: ButtonSize.small,
+                startIconId: null,
+                endIconId: null,
+                action: null,
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+      expect(getHeading({ activeBlock, label: 'This is a button' })).toEqual(
+        'Heading'
+      )
+    })
+
+    it('should reutrn label of button if no typography blocks', () => {
+      const activeBlock: TreeBlock<StepBlock> = {
+        __typename: 'StepBlock',
+        id: 'step.id',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        children: [
+          {
+            __typename: 'CardBlock',
+            id: 'card.id',
+            parentBlockId: 'step.id',
+            parentOrder: null,
+            backgroundColor: null,
+            coverBlockId: null,
+            themeMode: null,
+            themeName: null,
+            fullscreen: false,
+            children: [
+              {
+                __typename: 'ButtonBlock',
+                id: 'button',
+                parentBlockId: 'question',
+                parentOrder: 0,
+                label: 'This is a button',
+                buttonVariant: ButtonVariant.contained,
+                buttonColor: ButtonColor.primary,
+                size: ButtonSize.small,
+                startIconId: null,
+                endIconId: null,
+                action: null,
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+      expect(getHeading({ activeBlock, label: 'This is a button' })).toEqual(
+        'This is a button'
+      )
+    })
+
+    it('should reutrn Unlabeled button if no typograpghy blocks and button text is empty', () => {
+      const activeBlock: TreeBlock<StepBlock> = {
+        __typename: 'StepBlock',
+        id: 'step.id',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        children: [
+          {
+            __typename: 'CardBlock',
+            id: 'card.id',
+            parentBlockId: 'step.id',
+            parentOrder: null,
+            backgroundColor: null,
+            coverBlockId: null,
+            themeMode: null,
+            themeName: null,
+            fullscreen: false,
+            children: []
+          }
+        ]
+      }
+      expect(getHeading({ activeBlock, label: '' })).toEqual('Unlabeled button')
+    })
   })
 })
