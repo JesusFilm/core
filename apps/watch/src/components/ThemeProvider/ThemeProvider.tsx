@@ -3,6 +3,7 @@ import {
   ThemeProvider as MuiThemeProvider,
   createTheme
 } from '@mui/material/styles'
+import { deepmerge } from '@mui/utils'
 
 interface ThemeProviderProps {
   children: ReactNode
@@ -97,11 +98,47 @@ export const theme = createTheme({
       letterSpacing: '0.14em',
       textTransform: 'uppercase'
     }
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          boxShadow: 'none'
+        }
+      }
+    }
   }
 })
+
+export const darkTheme = createTheme(
+  deepmerge(theme, {
+    palette: {
+      mode: 'dark',
+      primary: {
+        contrastText: '#FFF'
+      },
+      background: {
+        default: '#000',
+        paper: '#000'
+      },
+      text: {
+        primary: '#FFF',
+        secondary: '#F0EDE3',
+        disabled: '#DCDAD2'
+      }
+    }
+  })
+)
 
 export const ThemeProvider = ({
   children
 }: ThemeProviderProps): ReactElement => {
   return <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
+}
+
+export const DarkThemeProvider = ({
+  children
+}: ThemeProviderProps): ReactElement => {
+  return <MuiThemeProvider theme={darkTheme}>{children}</MuiThemeProvider>
 }

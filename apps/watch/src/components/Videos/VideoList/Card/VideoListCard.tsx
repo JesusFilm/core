@@ -28,7 +28,7 @@ export function VideoListCard({
 }: VideoListCardProps): ReactElement {
   return (
     <>
-      <Card sx={{ width: 338, height: 140, my: 5, mr: 20, mb: '14px' }}>
+      <Card sx={{ width: 338, height: 140, my: 5, mr: 20, mb: '14px', mt: 0 }}>
         {video == null && (
           <>
             <CardMedia
@@ -89,7 +89,7 @@ export function VideoListCard({
       </Card>
       <Link href={`/${video?.slug[0]?.value ?? ''}`} passHref={true}>
         <Typography
-          variant="subtitle2"
+          variant="body1"
           sx={{
             maxWidth: 338,
             whiteSpace: 'nowrap',
@@ -97,6 +97,7 @@ export function VideoListCard({
             textOverflow: 'ellipsis',
             cursor: 'pointer'
           }}
+          mb={3}
         >
           {video?.title[0]?.value}
         </Typography>

@@ -57,6 +57,7 @@ export function VideoListGrid({
               sm={6}
               xs={12}
               data-testid="video-list-grid-placeholder"
+              mr="16px"
             >
               <VideoListCard />
             </Grid>

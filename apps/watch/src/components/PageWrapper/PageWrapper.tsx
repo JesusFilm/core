@@ -85,7 +85,10 @@ export function PageWrapper(): React.ReactElement {
             </IconButton>
             <Button color="inherit">
               <LanguageIcon />
-              &nbsp;{languageContext?.bcp47}
+              &nbsp;
+              {`${languageContext?.bcp47?.charAt(0).toUpperCase() ?? ''}${
+                languageContext?.bcp47?.slice(1) ?? ''
+              }`}
             </Button>
             <IconButton
               color="inherit"

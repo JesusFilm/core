@@ -47,6 +47,7 @@ export function VideoListCarousel({
         autoPlay={false}
         removeArrowOnDeviceType={['tablet', 'mobile']}
         partialVisible
+        itemClass="carousel-item"
         beforeChange={async (nextSlide, state) => {
           setIsMoving(true)
           if (nextSlide > videos.length - 7) {

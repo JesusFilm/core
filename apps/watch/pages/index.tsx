@@ -4,7 +4,6 @@ import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { useQuery, gql } from '@apollo/client'
-import Fab from '@mui/material/Fab'
 import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -14,6 +13,7 @@ import Button from '@mui/material/Button'
 import Language from '@mui/icons-material/Language'
 import Place from '@mui/icons-material/Place'
 import Link from 'next/link'
+import Chip from '@mui/material/Chip'
 
 import { VideoList } from '../src/components/Videos/VideoList/VideoList'
 import { PageWrapper } from '../src/components/PageWrapper'
@@ -56,8 +56,17 @@ function VideoPage(): ReactElement {
       <Box
         sx={{ backgroundImage: 'url(/images/jesus-header.png)', height: 776 }}
       >
-        <Container maxWidth="xl" style={{ paddingTop: 350 }}>
-          <Stack direction="row" justifyContent="space-between">
+        <Container
+          maxWidth="xl"
+          style={{
+            paddingTop: 350,
+            textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)',
+            paddingLeft: 100,
+            paddingRight: 100,
+            margin: 0
+          }}
+        >
+          <Stack direction="row" justifyContent="space-between" width="100%">
             <Box>
               <Typography
                 variant="h2"
@@ -143,14 +152,12 @@ function VideoPage(): ReactElement {
         </Box>
       </Box>
 
-      <Box sx={{ paddingY: '5rem' }}>
+      <Box sx={{ paddingY: '4rem' }}>
         <Container maxWidth="xl">
-          <Typography variant="h3" color="white">
-            Series
-          </Typography>
-          <Typography variant="h5" color="white">
-            Perfect for weekly groups!
-          </Typography>
+          <Stack direction="row" justifyContent="space-between" mb={3}>
+            <Typography variant="h4">Series</Typography>
+            <Button variant="outlined">See All</Button>
+          </Stack>
           <VideoList
             filter={{
               availableVariantLanguageIds: ['529'],
@@ -158,16 +165,19 @@ function VideoPage(): ReactElement {
             }}
             limit={6}
             showLoadMore={false}
-            layout="grid"
+            layout="carousel"
           />
         </Container>
       </Box>
 
-      <Box sx={{ bgcolor: '#cfe8fc', paddingY: '5rem' }}>
+      <Box sx={{ paddingY: '3rem' }}>
         <Container maxWidth="xl">
-          <Typography variant="h2">
-            {jfm1Data?.videoTag?.title[0]?.value}
-          </Typography>
+          <Stack direction="row" justifyContent="space-between" mb={3}>
+            <Typography variant="h4">
+              {jfm1Data?.videoTag?.title[0]?.value}
+            </Typography>
+            <Button variant="outlined">See All</Button>
+          </Stack>
           <VideoList
             filter={{
               availableVariantLanguageIds: ['529'],
@@ -181,9 +191,11 @@ function VideoPage(): ReactElement {
         </Container>
       </Box>
 
-      <Box sx={{ bgcolor: '#f7f7f7', paddingY: '5rem' }}>
+      <Box sx={{ bgcolor: theme.palette.secondary.light, paddingY: '3rem' }}>
         <Container maxWidth="xl">
-          <Typography variant="h2">Collections</Typography>
+          <Typography variant="h4" color="secondary">
+            Collections
+          </Typography>
           <Grid
             container
             spacing={2}
@@ -194,30 +206,16 @@ function VideoPage(): ReactElement {
           >
             {jfm1Data?.videoTags?.map((item) => (
               <Grid item key={item.id}>
-                <Fab variant="extended">{item.title[0]?.value}</Fab>
+                <Link href={`/videos/t/${item.id}`} passHref>
+                  <Chip
+                    label={item.title[0]?.value}
+                    variant="outlined"
+                    color="primary"
+                  />
+                </Link>
               </Grid>
             ))}
           </Grid>
-        </Container>
-      </Box>
-
-      <Box sx={{ bgcolor: '#cfe8fc', paddingY: '5rem' }}>
-        <Container maxWidth="xl">
-          {jfm1Data?.videoTags?.slice(0, 3).map((item) => (
-            <Box key={item.id}>
-              <Typography variant="h2">{item.title[0]?.value}</Typography>
-              <VideoList
-                key={item.id}
-                filter={{
-                  types: [VideoType.playlist, VideoType.standalone],
-                  tagId: item.id
-                }}
-                limit={6}
-                showLoadMore={false}
-                layout="carousel"
-              />
-            </Box>
-          ))}
         </Container>
       </Box>
     </LanguageProvider>
