@@ -28,15 +28,17 @@ export function JourneyList({
     sortOrder === SortOrder.TITLE
       ? sortBy(journeys, 'title')
       : sortBy(journeys, ({ createdAt }) =>
-        new Date(createdAt).getTime()
-      ).reverse()
+          new Date(createdAt).getTime()
+        ).reverse()
 
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
       {journeys != null && journeys.length > 0 && (
         <AddJourneyButton variant="fab" />
       )}
-      {(journeys == null || journeys.length > 0 || disableCreation !== true) && (
+      {(journeys == null ||
+        journeys.length > 0 ||
+        disableCreation !== true) && (
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
           spacing={2}
