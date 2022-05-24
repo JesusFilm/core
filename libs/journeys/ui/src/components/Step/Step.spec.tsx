@@ -5,7 +5,7 @@ import TagManager from 'react-gtm-module'
 import { TreeBlock } from '../..'
 import { JourneyProvider } from '../../libs/context/JourneyContext'
 import { StepFields } from './__generated__/StepFields'
-import { STEP_VIEW_EVENT_CREATE } from './Step'
+import { STEP_VIEW_EVENT_CREATE, getHeading } from './Step'
 import { Step } from '.'
 
 jest.mock('uuid', () => ({
@@ -205,5 +205,110 @@ describe('Step', () => {
       </MockedProvider>
     )
     expect(baseElement).toContainHTML('<body><div /></body>')
+  })
+
+  describe('GetHeading', () => {
+    it('should return step heading if there is a typography block', () => {
+      const children: TreeBlock[] = [
+        {
+          __typename: 'CardBlock',
+          id: 'card.id',
+          parentBlockId: 'step.id',
+          parentOrder: null,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: [
+            {
+              __typename: 'TypographyBlock',
+              id: 'typography1.id',
+              parentBlockId: 'card.id',
+              parentOrder: 0,
+              align: null,
+              color: null,
+              variant: null,
+              content: 'Heading',
+              children: []
+            }
+          ]
+        }
+      ]
+      const treeBlocks: TreeBlock[] = [
+        {
+          __typename: 'StepBlock',
+          id: 'step.id',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children
+        }
+      ]
+      expect(getHeading({ blockId: 'step.id', children, treeBlocks })).toEqual(
+        'Heading'
+      )
+    })
+    it('should return step number  if no typogrpahy block', () => {
+      const children: TreeBlock[] = [
+        {
+          __typename: 'CardBlock',
+          id: 'card.id',
+          parentBlockId: 'step.id',
+          parentOrder: null,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: []
+        }
+      ]
+      const treeBlocks: TreeBlock[] = [
+        {
+          __typename: 'StepBlock',
+          id: 'step.id',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children
+        }
+      ]
+      expect(getHeading({ blockId: 'step.id', children, treeBlocks })).toEqual(
+        'Step 1'
+      )
+    })
+    it('should return Untitled if step is not found', () => {
+      const children: TreeBlock[] = [
+        {
+          __typename: 'CardBlock',
+          id: 'card.id',
+          parentBlockId: 'step.id',
+          parentOrder: null,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: []
+        }
+      ]
+      const treeBlocks: TreeBlock[] = [
+        {
+          __typename: 'StepBlock',
+          id: 'step.id',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children
+        }
+      ]
+      expect(
+        getHeading({ blockId: 'anotherStep.id', children, treeBlocks })
+      ).toEqual('Untitled')
+    })
   })
 })

@@ -2,7 +2,8 @@ import { ReactElement, useEffect } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
-import { TreeBlock, getStepHeading } from '../..'
+import findIndex from 'lodash/findIndex'
+import { TreeBlock, getStepHeading, useBlocks } from '../..'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { useJourney } from '../../libs/context/JourneyContext'
 import { StepFields } from './__generated__/StepFields'
@@ -30,7 +31,9 @@ export function Step({
   )
 
   const { admin } = useJourney()
-  const heading = getStepHeading(children)
+  const { treeBlocks } = useBlocks()
+
+  const heading = getHeading({ blockId, children, treeBlocks })
 
   useEffect(() => {
     if (!admin) {
@@ -43,7 +46,7 @@ export function Step({
           event: 'step_view',
           eventId: id,
           blockId,
-          stepName: heading ?? 'Untitled'
+          stepName: heading
         }
       })
     }
@@ -56,4 +59,28 @@ export function Step({
       ))}
     </>
   )
+}
+
+interface GetHeadingProps {
+  blockId: string
+  children: TreeBlock[]
+  treeBlocks: TreeBlock[]
+}
+
+export function getHeading({
+  blockId,
+  children,
+  treeBlocks
+}: GetHeadingProps): string {
+  const title = getStepHeading(children)
+  if (title != null) {
+    return title
+  } else {
+    const index = findIndex(treeBlocks, { id: blockId })
+    if (index === -1) {
+      return 'Untitled'
+    } else {
+      return `Step ${index + 1}`
+    }
+  }
 }
