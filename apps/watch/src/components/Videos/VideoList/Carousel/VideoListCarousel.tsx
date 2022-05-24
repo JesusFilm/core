@@ -9,21 +9,22 @@ import { VideoListCard } from '../Card/VideoListCard'
 interface VideoListCarouselProps {
   videos: GetVideos_videos[]
   loading?: boolean
-  onLoadMore: () => Promise<void>
+  routePrefix?: string | undefined
+  onLoadMore: () => Promise<void> | undefined
 }
 
 const responsive = {
   superLargeDesktop: {
     // the naming can be any, depends on you.
-    breakpoint: { max: 15000, min: 1200 },
+    breakpoint: { max: 15000, min: 1450 },
     items: 4
   },
   desktop: {
-    breakpoint: { max: 1200, min: 800 },
+    breakpoint: { max: 1450, min: 1040 },
     items: 3
   },
   tablet: {
-    breakpoint: { max: 800, min: 400 },
+    breakpoint: { max: 1040, min: 725 },
     items: 2
   },
   mobile: {
@@ -35,7 +36,8 @@ const responsive = {
 export function VideoListCarousel({
   loading = false,
   onLoadMore,
-  videos
+  videos,
+  routePrefix = undefined
 }: VideoListCarouselProps): ReactElement {
   const [isMoving, setIsMoving] = useState(false)
   return (
@@ -43,10 +45,12 @@ export function VideoListCarousel({
       <Carousel
         responsive={responsive}
         autoPlay={false}
+        removeArrowOnDeviceType={['tablet', 'mobile']}
+        partialVisible
         beforeChange={async (nextSlide, state) => {
           setIsMoving(true)
           if (nextSlide > videos.length - 7) {
-            await onLoadMore()
+            if (onLoadMore !== undefined) await onLoadMore()
             state.totalItems = videos.length
           }
         }}
@@ -58,7 +62,12 @@ export function VideoListCarousel({
       >
         {(videos.length ?? 0) > 0 &&
           videos.map((video, index) => (
-            <VideoListCard video={video} key={index} disabled={isMoving} />
+            <VideoListCard
+              video={video}
+              key={index}
+              disabled={isMoving}
+              routePrefix={routePrefix}
+            />
           ))}
         {loading &&
           [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (

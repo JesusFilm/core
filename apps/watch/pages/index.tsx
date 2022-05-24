@@ -6,6 +6,15 @@ import Typography from '@mui/material/Typography'
 import { useQuery, gql } from '@apollo/client'
 import Fab from '@mui/material/Fab'
 import Stack from '@mui/material/Stack'
+import IconButton from '@mui/material/IconButton'
+import InputAdornment from '@mui/material/InputAdornment'
+import OutlinedInput from '@mui/material/OutlinedInput'
+import Search from '@mui/icons-material/Search'
+import Button from '@mui/material/Button'
+import Language from '@mui/icons-material/Language'
+import Place from '@mui/icons-material/Place'
+import Link from 'next/link'
+
 import { VideoList } from '../src/components/Videos/VideoList/VideoList'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { GetVideoTag } from '../__generated__/GetVideoTag'
@@ -53,12 +62,14 @@ function VideoPage(): ReactElement {
               <Typography
                 variant="h2"
                 color={theme.palette.secondary.contrastText}
+                sx={{ whiteSpace: 'nowrap' }}
               >
                 Until Everyone
               </Typography>
               <Typography
                 variant="h2"
                 color={theme.palette.secondary.contrastText}
+                sx={{ whiteSpace: 'nowrap' }}
               >
                 <u style={{ textDecorationColor: theme.palette.primary.main }}>
                   Sees Jesus
@@ -69,14 +80,70 @@ function VideoPage(): ReactElement {
             <Typography
               variant="h6"
               color={theme.palette.secondary.contrastText}
+              sx={{ opacity: 0.7, whiteSpace: 'nowrap' }}
             >
               The story of the gospel in 78 videos in 1800 languages.
             </Typography>
           </Stack>
         </Container>
+        <Box
+          sx={{ backgroundColor: 'rgba(18, 17, 17, 0.25)' }}
+          width="100%"
+          height="133px"
+          mt="165px"
+        >
+          <Stack pt="34px" mx="100px" width="100%" direction="row">
+            <OutlinedInput
+              sx={{
+                backgroundColor: '#F0F0F0',
+                height: 64,
+                width: 'calc(100vw - 600px)'
+              }}
+              placeholder="Keyword, Country or Language"
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton edge="end">
+                    <Search />
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+            <Stack direction="row">
+              <Button
+                variant="outlined"
+                size="large"
+                sx={{
+                  background: 'transparent',
+                  color: theme.palette.primary.contrastText,
+                  borderColor: theme.palette.primary.contrastText,
+                  height: 62,
+                  marginX: 2
+                }}
+              >
+                <Language />
+                &nbsp;{languageContext?.name[0].value}
+              </Button>
+              <Link href="/countries" passHref>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  sx={{
+                    background: 'transparent',
+                    color: theme.palette.primary.contrastText,
+                    borderColor: theme.palette.primary.contrastText,
+                    height: 62
+                  }}
+                >
+                  <Place />
+                  &nbsp;Language by country
+                </Button>
+              </Link>
+            </Stack>
+          </Stack>
+        </Box>
       </Box>
 
-      <Box sx={{ bgcolor: '#333', paddingY: '5rem' }}>
+      <Box sx={{ paddingY: '5rem' }}>
         <Container maxWidth="xl">
           <Typography variant="h3" color="white">
             Series

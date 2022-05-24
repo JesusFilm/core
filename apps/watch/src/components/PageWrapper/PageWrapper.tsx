@@ -69,7 +69,7 @@ export function PageWrapper(): React.ReactElement {
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar
-        position="fixed"
+        position="absolute"
         sx={{ background: 'transparent', boxShadow: 'none' }}
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
