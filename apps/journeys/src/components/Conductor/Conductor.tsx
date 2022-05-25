@@ -26,6 +26,7 @@ import TagManager from 'react-gtm-module'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { BlockFields_CardBlock as CardBlock } from '../../../__generated__/BlockFields'
 import { JourneyProgress } from '../JourneyProgress'
+import { Links } from './Links'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -133,7 +134,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         sx={{
           justifyContent: 'center',
           height: '100%',
-          flexDirection: { lg: 'column-reverse' }
+          flexDirection: { lg: 'column-reverse' },
+          position: 'relative'
         }}
       >
         <Box
@@ -288,6 +290,18 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               />
             </IconButton>
           </Swiper>
+        </Box>
+        <Box
+          sx={{
+            px: `${edgeSlideWidth + gapBetweenSlides}px`,
+            pb: 2,
+            [theme.breakpoints.only('xl')]: {
+              position: 'absolute',
+              bottom: 0
+            }
+          }}
+        >
+          <Links />
         </Box>
       </Stack>
     </Div100vh>
