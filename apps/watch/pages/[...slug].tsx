@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import Error from 'next/error'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useRef, useState } from 'react'
-import { secondsToMinutes } from '@core/shared/ui'
+import { TabPanel, tabA11yProps, secondsToMinutes } from '@core/shared/ui'
 import Container from '@mui/material/Container'
 import Button from '@mui/material/Button'
 import PlayArrow from '@mui/icons-material/PlayArrow'
@@ -14,6 +14,8 @@ import AccessTime from '@mui/icons-material/AccessTime'
 import Subtitles from '@mui/icons-material/Subtitles'
 import Translate from '@mui/icons-material/Translate'
 import Circle from '@mui/icons-material/Circle'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
 import videojs from 'video.js'
 
 import { routeParser } from '../src/libs/routeParser/routeParser'
@@ -67,6 +69,12 @@ export const GET_VIDEO = gql`
       slug(languageId: $languageId, primary: true) {
         value
       }
+      variantLanguages {
+        id
+        name(languageId: $languageId, primary: true) {
+          value
+        }
+      }
     }
   }
 `
@@ -119,6 +127,11 @@ export default function SeoFriendly(): ReactElement {
   const { routes, tags, audioLanguage, subtitleLanguage } = routeParser(slug)
   const languageContext = useLanguage()
   const [isPlaying, setIsPlaying] = useState(false)
+  const [tabValue, setTabValue] = useState(0)
+
+  const handleTabChange = (_event, newValue): void => {
+    setTabValue(newValue)
+  }
 
   const { data, loading } = useQuery(GET_VIDEO, {
     variables: {
@@ -303,9 +316,14 @@ export default function SeoFriendly(): ReactElement {
                       )}
                     </Stack>
                     <Stack height="71px" direction="row">
-                      <Translate />
-                      <Typography variant="body1" sx={{ paddingLeft: '10px' }}>
-                        {audioLanguageData?.language.name[0]?.value}
+                      <Translate sx={{ paddingTop: '23px' }} />
+                      <Typography
+                        variant="body1"
+                        sx={{ paddingLeft: '10px', lineHeight: '71px' }}
+                      >
+                        {audioLanguageData?.language.name[0]?.value} +{' '}
+                        {data.video.variantLanguages.length - 1} Additional
+                        Languages
                       </Typography>
                     </Stack>
                   </Stack>
@@ -378,26 +396,52 @@ export default function SeoFriendly(): ReactElement {
           </Box>
           <Box mt="20px">
             <Stack justifyContent="center" direction="row">
+              <Box>
+                <Tabs
+                  value={tabValue}
+                  onChange={handleTabChange}
+                  aria-label="background tabs"
+                  variant="fullWidth"
+                  centered
+                >
+                  <Tab
+                    label="Description"
+                    {...tabA11yProps('video-description', 0)}
+                  />
+                  <Tab
+                    label="Transcript"
+                    {...tabA11yProps('video-transcript', 1)}
+                  />
+                  <Tab
+                    label="Strategy"
+                    {...tabA11yProps('video-strategy', 1)}
+                  />
+                </Tabs>
+                <TabPanel name="video-description" value={tabValue} index={0}>
+                  <Typography variant="body1">
+                    {data.video.description[0]?.value}
+                  </Typography>
+                </TabPanel>
+                <TabPanel name="video-transcript" value={tabValue} index={1}>
+                  <Typography variant="body1">
+                    {data.video.description[0]?.value}
+                  </Typography>
+                </TabPanel>
+                <TabPanel name="video-strategy" value={tabValue} index={2}>
+                  <Typography variant="body1">
+                    {data.video.description[0]?.value}
+                  </Typography>
+                </TabPanel>
+              </Box>
               <Stack justifyContent="center" direction="column" width="80%">
                 {data.video.type !== VideoType.playlist && (
                   <Stack justifyContent="center" direction="row">
-                    <Typography variant="subtitle1">
-                      {secondsToMinutes(data.video.variant.duration)} min
-                    </Typography>
-                    <Typography variant="subtitle1" mx={4}>
-                      Audio:
-                      {audioLanguageData?.language.name[0]?.value}
-                    </Typography>
                     <Typography variant="subtitle1">
                       Subtitle:
                       {subtitleLanguageData?.language.name[0]?.value}
                     </Typography>
                   </Stack>
                 )}
-
-                <Typography variant="body1">
-                  {data.video.description[0]?.value}
-                </Typography>
               </Stack>
             </Stack>
           </Box>
