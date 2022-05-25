@@ -9,7 +9,7 @@ RUN curl -sSL https://sdk.cloud.google.com | bash
 ENV PATH $PATH:/root/google-cloud-sdk/bin
 
 ENV ARANGO_NO_AUTH=1
- 
+
 COPY resources/kube/arangodb-bigquery-etl/bqexport.sh .
 RUN chmod 775 /bqexport.sh
 COPY resources/kube/arangodb-bigquery-etl/bqexport.sh /etc/periodic/daily/
