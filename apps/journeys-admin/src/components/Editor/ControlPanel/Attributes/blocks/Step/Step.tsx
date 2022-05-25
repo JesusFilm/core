@@ -27,7 +27,7 @@ export function Step({
       id={`${id}-next-block`}
       icon={locked ? <LockIcon /> : <LockOpenIcon />}
       name="Next Card"
-      value={heading ?? 'Untitled'}
+      value={heading}
       description={locked ? 'Locked With Interaction' : 'Unlocked Card'}
       onClick={() => {
         dispatch({
