@@ -13,6 +13,8 @@ import PlayArrow from '@mui/icons-material/PlayArrow'
 import AccessTime from '@mui/icons-material/AccessTime'
 import Subtitles from '@mui/icons-material/Subtitles'
 import Translate from '@mui/icons-material/Translate'
+import SaveAlt from '@mui/icons-material/SaveAlt'
+import Share from '@mui/icons-material/Share'
 import Circle from '@mui/icons-material/Circle'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
@@ -28,6 +30,7 @@ import {
 import { PageWrapper } from '../src/components/PageWrapper'
 import { darkTheme } from '../src/components/ThemeProvider/ThemeProvider'
 import { VideoListCarousel } from '../src/components/Videos/VideoList/Carousel/VideoListCarousel'
+import { Footer } from '../src/components/Footer/Footer'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID) {
@@ -122,9 +125,8 @@ export default function SeoFriendly(): ReactElement {
   const router = useRouter()
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
-  const locale = router.locale ?? router.defaultLocale
   const { slug } = router.query
-  const { routes, tags, audioLanguage, subtitleLanguage } = routeParser(slug)
+  const { routes, audioLanguage, subtitleLanguage } = routeParser(slug)
   const languageContext = useLanguage()
   const [isPlaying, setIsPlaying] = useState(false)
   const [tabValue, setTabValue] = useState(0)
@@ -338,37 +340,7 @@ export default function SeoFriendly(): ReactElement {
                   height="133px"
                 >
                   <Stack pt="34px" mx="100px" width="100%" direction="row">
-                    <Stack direction="row">
-                      {/* <Button
-                  variant="outlined"
-                  size="large"
-                  sx={{
-                    background: 'transparent',
-                    color: theme.palette.primary.contrastText,
-                    borderColor: theme.palette.primary.contrastText,
-                    height: 62,
-                    marginX: 2
-                  }}
-                >
-                  <Language />
-                  &nbsp;{languageContext?.name[0].value}
-                </Button>
-                <Link href="/countries" passHref>
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    sx={{
-                      background: 'transparent',
-                      color: theme.palette.primary.contrastText,
-                      borderColor: theme.palette.primary.contrastText,
-                      height: 62
-                    }}
-                  >
-                    <Place />
-                    &nbsp;Language by country
-                  </Button>
-                </Link> */}
-                    </Stack>
+                    <Stack direction="row">&nbsp;</Stack>
                   </Stack>
                 </Box>
               </>
@@ -376,6 +348,7 @@ export default function SeoFriendly(): ReactElement {
           </Box>
           <Box
             sx={{
+              paddingTop: '20px',
               paddingX: '100px',
               bgcolor: darkTheme.palette.background.default,
               color: darkTheme.palette.text.primary
@@ -394,24 +367,36 @@ export default function SeoFriendly(): ReactElement {
               />
             )}
           </Box>
-          <Box mt="20px">
-            <Stack justifyContent="center" direction="row">
-              <Box>
+          <Container
+            style={{
+              paddingLeft: 100,
+              paddingRight: 100,
+              margin: 0,
+              marginTop: 20,
+              marginBottom: 80,
+              maxWidth: '100%'
+            }}
+          >
+            <Stack direction="row" spacing="100px">
+              <Box width="100%">
                 <Tabs
                   value={tabValue}
                   onChange={handleTabChange}
                   aria-label="background tabs"
                   variant="fullWidth"
                   centered
+                  sx={{ marginBottom: '40px' }}
                 >
                   <Tab
                     label="Description"
                     {...tabA11yProps('video-description', 0)}
                   />
-                  <Tab
-                    label="Transcript"
-                    {...tabA11yProps('video-transcript', 1)}
-                  />
+                  {data?.video.type !== VideoType.playlist && (
+                    <Tab
+                      label="Transcript"
+                      {...tabA11yProps('video-transcript', 1)}
+                    />
+                  )}
                   <Tab
                     label="Strategy"
                     {...tabA11yProps('video-strategy', 1)}
@@ -422,32 +407,41 @@ export default function SeoFriendly(): ReactElement {
                     {data.video.description[0]?.value}
                   </Typography>
                 </TabPanel>
+
                 <TabPanel name="video-transcript" value={tabValue} index={1}>
-                  <Typography variant="body1">
-                    {data.video.description[0]?.value}
-                  </Typography>
+                  <Typography variant="body1">&nbsp;</Typography>
                 </TabPanel>
                 <TabPanel name="video-strategy" value={tabValue} index={2}>
-                  <Typography variant="body1">
-                    {data.video.description[0]?.value}
-                  </Typography>
+                  <Typography variant="body1">&nbsp;</Typography>
                 </TabPanel>
               </Box>
-              <Stack justifyContent="center" direction="column" width="80%">
-                {data.video.type !== VideoType.playlist && (
-                  <Stack justifyContent="center" direction="row">
-                    <Typography variant="subtitle1">
-                      Subtitle:
-                      {subtitleLanguageData?.language.name[0]?.value}
-                    </Typography>
-                  </Stack>
-                )}
-              </Stack>
+              <Box width="336px">
+                <Stack direction="row" spacing="20px" mb="40px">
+                  <Button variant="outlined">
+                    <SaveAlt />
+                    &nbsp; Download
+                  </Button>
+                  <Button variant="outlined">
+                    <Share />
+                    &nbsp; Share
+                  </Button>
+                </Stack>
+                <Stack justifyContent="center" direction="column" width="336px">
+                  {data.video.type !== VideoType.playlist && (
+                    <Stack justifyContent="center" direction="row">
+                      <Typography variant="subtitle1">
+                        Subtitle:
+                        {subtitleLanguageData?.language.name[0]?.value}
+                      </Typography>
+                    </Stack>
+                  )}
+                </Stack>
+              </Box>
             </Stack>
-          </Box>
+          </Container>
         </>
       )}
-      <div>Tags - {tags.join(' ')}</div>
+      <Footer />
     </LanguageProvider>
   )
 }

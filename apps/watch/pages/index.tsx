@@ -24,6 +24,7 @@ import {
   LanguageProvider,
   useLanguage
 } from '../src/libs/languageContext/LanguageContext'
+import { Footer } from '../src/components/Footer/Footer'
 
 export const GET_VIDEO_TAG = gql`
   query GetVideoTag($id: ID!, $languageId: ID) {
@@ -153,7 +154,15 @@ function VideoPage(): ReactElement {
       </Box>
 
       <Box sx={{ paddingY: '4rem' }}>
-        <Container maxWidth="xl">
+        <Container
+          sx={{
+            maxWidth: '100% !important',
+            width: '100%',
+            margin: 0,
+            paddingLeft: '100px !important',
+            paddingRight: '100px !important'
+          }}
+        >
           <Stack direction="row" justifyContent="space-between" mb={3}>
             <Typography variant="h4">Series</Typography>
             <Button variant="outlined">See All</Button>
@@ -171,7 +180,15 @@ function VideoPage(): ReactElement {
       </Box>
 
       <Box sx={{ paddingY: '3rem' }}>
-        <Container maxWidth="xl">
+        <Container
+          sx={{
+            maxWidth: '100% !important',
+            width: '100%',
+            margin: 0,
+            paddingLeft: '100px !important',
+            paddingRight: '100px !important'
+          }}
+        >
           <Stack direction="row" justifyContent="space-between" mb={3}>
             <Typography variant="h4">
               {jfm1Data?.videoTag?.title[0]?.value}
@@ -192,7 +209,15 @@ function VideoPage(): ReactElement {
       </Box>
 
       <Box sx={{ bgcolor: theme.palette.secondary.light, paddingY: '3rem' }}>
-        <Container maxWidth="xl">
+        <Container
+          sx={{
+            maxWidth: '100% !important',
+            width: '100%',
+            margin: 0,
+            paddingLeft: '100px !important',
+            paddingRight: '100px !important'
+          }}
+        >
           <Typography variant="h4" color="secondary">
             Collections
           </Typography>
@@ -218,6 +243,7 @@ function VideoPage(): ReactElement {
           </Grid>
         </Container>
       </Box>
+      <Footer isHome />
     </LanguageProvider>
   )
 }
