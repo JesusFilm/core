@@ -10,7 +10,14 @@ import { v4 as uuidv4 } from 'uuid'
 import { useSnackbar } from 'notistack'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
-import { TreeBlock, handleAction, useEditor, useJourney } from '../..'
+import {
+  TreeBlock,
+  handleAction,
+  useEditor,
+  useJourney,
+  useBlocks,
+  getStepHeading
+} from '../..'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { SignUpSubmissionEventCreate } from './__generated__/SignUpSubmissionEventCreate'
@@ -59,6 +66,12 @@ export const SignUp = ({
 
   const { admin } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
+  const { activeBlock, treeBlocks } = useBlocks()
+
+  const heading =
+    activeBlock != null
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks)
+      : 'None'
 
   const router = useRouter()
   const [signUpSubmissionEventCreate, { loading }] =
@@ -93,7 +106,8 @@ export const SignUp = ({
           dataLayer: {
             event: 'sign_up_submission',
             eventId: id,
-            blockId
+            blockId,
+            stepName: heading
           }
         })
       } catch (e) {

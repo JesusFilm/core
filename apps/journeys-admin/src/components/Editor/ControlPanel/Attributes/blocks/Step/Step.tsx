@@ -17,14 +17,16 @@ export function Step({
   } = useEditor()
   const nextBlock = steps?.find(({ id }) => id === nextBlockId)
   const heading =
-    nextBlock != null ? getStepHeading(nextBlock.children) : 'None'
+    nextBlockId != null && nextBlock != null && steps != null
+      ? getStepHeading(nextBlockId, nextBlock.children, steps)
+      : 'None'
 
   return (
     <Attribute
       id={`${id}-next-block`}
       icon={locked ? <LockIcon /> : <LockOpenIcon />}
       name="Next Card"
-      value={heading ?? 'Untitled'}
+      value={heading}
       description={locked ? 'Locked With Interaction' : 'Unlocked Card'}
       onClick={() => {
         dispatch({
