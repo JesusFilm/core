@@ -326,7 +326,7 @@ describe('SignUp', () => {
           event: 'sign_up_submission',
           eventId: 'uuid',
           blockId: 'signUp0.id',
-          stepName: 'Unlabeled sign up button'
+          stepName: 'Untitled step'
         }
       })
     })

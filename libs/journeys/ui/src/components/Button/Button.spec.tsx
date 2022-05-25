@@ -142,7 +142,7 @@ describe('Button', () => {
           event: 'button_click',
           eventId: 'uuid',
           blockId: 'button',
-          stepName: 'This is a button'
+          stepName: 'Untitled step'
         }
       })
     )
