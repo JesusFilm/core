@@ -9,19 +9,13 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
   )
 }
 
-interface GetStepHeadingProps {
-  stepId: string | null | undefined
-  stepChildren: TreeBlock[] | undefined
-  steps: TreeBlock[] | undefined
-}
-
-export function getStepHeading({
-  stepId,
-  stepChildren,
-  steps
-}: GetStepHeadingProps): string {
+export function getStepHeading(
+  stepId: string,
+  stepChildren: TreeBlock[],
+  steps: TreeBlock[]
+): string {
   if (stepChildren == null) {
-    return getStepNumber({ stepId, steps })
+    return getStepNumber(stepId, steps)
   } else {
     const descendants = flatten(stepChildren)
     const heading = descendants.find(
@@ -31,21 +25,16 @@ export function getStepHeading({
     if (heading != null) {
       return heading.content
     } else {
-      return getStepNumber({ stepId, steps })
+      return getStepNumber(stepId, steps)
     }
   }
 }
 
-interface GetStepNumberProps {
-  stepId: string | null | undefined
-  steps: TreeBlock[] | undefined
-}
-
-function getStepNumber({ stepId, steps }: GetStepNumberProps): string {
-  if (stepId == null) return 'Untitled step'
+function getStepNumber(stepId: string, steps: TreeBlock[]): string {
+  if (stepId == null) return 'Untitled'
   const index = findIndex(steps, { id: stepId })
   if (index === -1) {
-    return 'Untitled step'
+    return 'Untitled'
   } else {
     return `Step ${index + 1}`
   }
