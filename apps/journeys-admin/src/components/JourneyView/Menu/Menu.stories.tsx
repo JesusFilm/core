@@ -2,9 +2,9 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui'
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { GET_LANGUAGES } from '../../LanguageSelect/LanguageSelect'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { defaultJourney } from '../data'
+import { GET_LANGUAGES } from './LanguageDialog'
 import { Menu, JOURNEY_PUBLISH } from './Menu'
 
 const MenuStory = {

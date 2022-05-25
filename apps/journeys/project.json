@@ -110,6 +110,16 @@
           }
         ]
       }
+    },
+    "extract-translations": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx i18next --config apps/journeys/i18next-parser.config.js"
+          }
+        ]
+      }
     }
   },
   "tags": []

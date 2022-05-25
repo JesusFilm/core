@@ -1,88 +1,116 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { GET_LANGUAGES } from './LanguageSelect'
+import { fireEvent, render } from '@testing-library/react'
+import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
 import { LanguageSelect } from '.'
 
 describe('LanguageSelect', () => {
-  const mocks = [
+  const languages: Language[] = [
     {
-      request: {
-        query: GET_LANGUAGES,
-        variables: {
-          languageId: '529'
+      id: '496',
+      __typename: 'Language',
+      name: [
+        {
+          value: 'Français',
+          primary: true,
+          __typename: 'Translation'
+        },
+        {
+          value: 'French',
+          primary: false,
+          __typename: 'Translation'
         }
-      },
-      result: {
-        data: {
-          languages: [
-            {
-              id: '529',
-              name: [
-                {
-                  value: 'English',
-                  primary: true
-                }
-              ]
-            },
-            {
-              id: '496',
-              name: [
-                {
-                  value: 'Français',
-                  primary: true
-                },
-                {
-                  value: 'French',
-                  primary: false
-                }
-              ]
-            },
-            {
-              id: '1106',
-              name: [
-                {
-                  value: 'Deutsch',
-                  primary: true
-                },
-                {
-                  value: 'German, Standard',
-                  primary: false
-                }
-              ]
-            }
-          ]
+      ]
+    },
+    {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          value: 'English',
+          primary: true,
+          __typename: 'Translation'
         }
-      }
+      ]
+    },
+    {
+      id: '1106',
+      __typename: 'Language',
+      name: [
+        {
+          value: 'Deutsch',
+          primary: true,
+          __typename: 'Translation'
+        },
+        {
+          value: 'German, Standard',
+          primary: false,
+          __typename: 'Translation'
+        }
+      ]
     }
   ]
 
-  it('should select languages based on selectedId', async () => {
+  it('should sort language options alphabetically', async () => {
     const handleChange = jest.fn()
-    const result = jest.fn(() => mocks[0].result)
-    const { getByRole } = render(
-      <MockedProvider mocks={[{ ...mocks[0], result }]}>
-        <LanguageSelect onChange={handleChange} currentLanguageId="529" />
-      </MockedProvider>
+    const { getByRole, queryAllByRole } = render(
+      <LanguageSelect
+        onChange={handleChange}
+        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={languages}
+        loading={false}
+      />
     )
     fireEvent.focus(getByRole('textbox'))
     fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    fireEvent.click(getByRole('option', { name: 'French Français' }))
-    expect(handleChange).toHaveBeenCalledWith('496')
+    expect(queryAllByRole('option')[0]).toHaveTextContent('English')
+    expect(queryAllByRole('option')[1]).toHaveTextContent('French')
+    expect(queryAllByRole('option')[2]).toHaveTextContent('German')
   })
 
-  it('should set default value based on selectedId', async () => {
-    const result = jest.fn(() => mocks[0].result)
+  it('should select languages via option click', async () => {
+    const handleChange = jest.fn()
     const { getByRole } = render(
-      <MockedProvider mocks={[{ ...mocks[0], result }]}>
-        <LanguageSelect
-          onChange={jest.fn()}
-          value="1106"
-          currentLanguageId="529"
-        />
-      </MockedProvider>
+      <LanguageSelect
+        onChange={handleChange}
+        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={languages}
+        loading={false}
+      />
     )
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.focus(getByRole('textbox'))
+    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
+    fireEvent.click(getByRole('option', { name: 'French Français' }))
+    expect(handleChange).toHaveBeenCalledWith({
+      id: '496',
+      localName: 'French',
+      nativeName: 'Français'
+    })
+  })
+
+  it('should set default value', async () => {
+    const { getByRole } = render(
+      <LanguageSelect
+        onChange={jest.fn()}
+        value={{
+          id: '1106',
+          localName: 'German, Standard',
+          nativeName: 'Deutsch'
+        }}
+        languages={languages}
+        loading={false}
+      />
+    )
     expect(getByRole('textbox')).toHaveValue('German, Standard')
+  })
+
+  it('should show loading animation if loading', async () => {
+    const { getByRole } = render(
+      <LanguageSelect
+        onChange={jest.fn()}
+        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={languages}
+        loading={true}
+      />
+    )
+    expect(getByRole('progressbar')).toBeInTheDocument()
   })
 })

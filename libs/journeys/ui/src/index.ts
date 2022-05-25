@@ -50,7 +50,8 @@ export {
   treeBlocksVar,
   useJourney,
   JourneyProvider,
-  JOURNEY_FIELDS
+  JOURNEY_FIELDS,
+  getStepHeading
 } from './libs'
 export type {
   TreeBlock,

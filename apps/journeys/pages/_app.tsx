@@ -9,22 +9,33 @@ import { CacheProvider } from '@emotion/react'
 import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui'
 import { SnackbarProvider } from 'notistack'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { appWithTranslation } from 'next-i18next'
+import { useTranslation } from 'react-i18next'
 import { apolloClient } from '../src/libs/apolloClient'
+import { firebaseClient } from '../src/libs/firebaseClient'
+import i18nConfig from '../next-i18next.config'
 
 const clientSideEmotionCache = createEmotionCache()
 
-export default function JourneysApp({
+function JourneysApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
 }: AppProps & { emotionCache?: EmotionCache }): ReactElement {
+  const { t } = useTranslation('apps-journeys')
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_GTM_ID != null)
+    if (
+      process.env.NEXT_PUBLIC_GTM_ID != null &&
+      process.env.NEXT_PUBLIC_GTM_ID !== ''
+    )
       TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID })
 
     if (
       process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
-      process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null
+      process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
+      process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
+      process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== ''
     )
       datadogRum.init({
         applicationId: process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID,
@@ -43,13 +54,23 @@ export default function JourneysApp({
     if (jssStyles != null) {
       jssStyles.parentElement?.removeChild(jssStyles)
     }
+    const auth = getAuth(firebaseClient)
+    return onAuthStateChanged(auth, (user) => {
+      if (user != null) {
+        TagManager.dataLayer({ dataLayer: { userId: user.uid } })
+      } else {
+        TagManager.dataLayer({ dataLayer: { userId: undefined } })
+      }
+    })
   }, [])
 
   return (
     <CacheProvider value={emotionCache}>
       <DefaultSeo
-        titleTemplate="%s | Next Steps"
-        defaultTitle="Next Steps | Helping you find the next best step on your spiritual journey"
+        titleTemplate={t('%s | Next Steps')}
+        defaultTitle={t(
+          'Next Steps | Helping you find the next best step on your spiritual journey'
+        )}
       />
       <Head>
         <meta
@@ -65,3 +86,5 @@ export default function JourneysApp({
     </CacheProvider>
   )
 }
+
+export default appWithTranslation(JourneysApp, i18nConfig)

@@ -1,7 +1,9 @@
 import { ReactElement, useEffect } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock } from '../..'
+import TagManager from 'react-gtm-module'
+import { NextSeo } from 'next-seo'
+import { TreeBlock, getStepHeading, useBlocks } from '../..'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { useJourney } from '../../libs/context/JourneyContext'
 import { StepFields } from './__generated__/StepFields'
@@ -28,7 +30,10 @@ export function Step({
     STEP_VIEW_EVENT_CREATE
   )
 
-  const { admin } = useJourney()
+  const { admin, journey } = useJourney()
+  const { treeBlocks } = useBlocks()
+
+  const heading = getStepHeading(blockId, children, treeBlocks)
 
   useEffect(() => {
     if (!admin) {
@@ -36,11 +41,20 @@ export function Step({
       void stepViewEventCreate({
         variables: { input: { id, blockId } }
       })
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'step_view',
+          eventId: id,
+          blockId,
+          stepName: heading
+        }
+      })
     }
-  }, [blockId, stepViewEventCreate, admin])
+  }, [blockId, stepViewEventCreate, admin, heading])
 
   return (
     <>
+      {!admin && <NextSeo title={`${journey?.title ?? ''} (${heading})`} />}
       {children.map((block) => (
         <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
       ))}

@@ -16,7 +16,8 @@ describe('VideoDetails', () => {
       request: {
         query: GET_VIDEO,
         variables: {
-          id: '2_Acts7302-0-0'
+          id: '2_Acts7302-0-0',
+          languageId: '529'
         }
       },
       result: {
@@ -42,7 +43,20 @@ describe('VideoDetails', () => {
               id: 'variantA',
               duration: 144,
               hls: 'https://arc.gt/opsgn'
-            }
+            },
+            variantLanguages: [
+              {
+                __typename: 'Language',
+                id: '529',
+                name: [
+                  {
+                    value: 'English',
+                    primary: true,
+                    __typename: 'Translation'
+                  }
+                ]
+              }
+            ]
           }
         }
       }
@@ -106,7 +120,7 @@ describe('VideoDetails', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Other Languages' }))
-    expect(getByText('Language')).toBeInTheDocument()
+    expect(getByText('Available Languages')).toBeInTheDocument()
   })
 
   it('should call onSelect and onClose on select click', async () => {

@@ -9,5 +9,9 @@ export const config: EnvironmentConfig = {
   listenOptions: {
     port: 4000,
     host: '0.0.0.0'
+  },
+  cors: {
+    maxAge: 86400, // 24 hours in seconds
+    origin: '*'
   }
 }

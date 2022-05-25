@@ -1,7 +1,8 @@
 import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock } from '../..'
+import TagManager from 'react-gtm-module'
+import { TreeBlock, activeBlockVar, treeBlocksVar } from '../..'
 import { JourneyProvider } from '../../libs/context/JourneyContext'
 import { StepFields } from './__generated__/StepFields'
 import { STEP_VIEW_EVENT_CREATE } from './Step'
@@ -13,6 +14,17 @@ jest.mock('uuid', () => ({
 }))
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+
+jest.mock('react-gtm-module', () => ({
+  __esModule: true,
+  default: {
+    dataLayer: jest.fn()
+  }
+}))
+
+const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
+  typeof TagManager.dataLayer
+>
 
 const block: TreeBlock<StepFields> = {
   __typename: 'StepBlock',
@@ -88,6 +100,51 @@ describe('Step', () => {
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should stepViewEvent to dataLayer', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    activeBlockVar(block)
+    treeBlocksVar([block])
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: STEP_VIEW_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'Step1'
+                }
+              }
+            },
+            result: {
+              data: {
+                stepViewEventCreate: {
+                  id: 'uuid',
+                  __typename: 'StepViewEvent'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <Step {...block} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'step_view',
+          eventId: 'uuid',
+          blockId: 'Step1',
+          stepName: 'Step 1'
+        }
+      })
+    )
   })
   it('should not create a stepViewEvent if there are wrappers', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')

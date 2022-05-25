@@ -1,9 +1,3 @@
-enum VideoPlayEventStateEnum {
-  PLAYING @deprecated(reason: "No longer using state")
-  PAUSED @deprecated(reason: "No longer using state")
-  FINISHED @deprecated(reason: "No longer using state")
-}
-
 input VideoStartEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -26,16 +20,12 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
-  state: VideoPlayEventStateEnum
-    @deprecated(reason: "State will be split into different events")
   position: Float
 }
 
 type VideoPlayEvent implements Event {
   id: ID!
   userId: ID!
-  state: VideoPlayEventStateEnum
-    @deprecated(reason: "State will be split into different events")
   position: Float
   block: VideoBlock
 }
