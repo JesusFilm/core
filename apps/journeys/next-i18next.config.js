@@ -5,7 +5,6 @@ const path = require('path')
  **/
 const i18nConfig = {
   i18n: {
-    defaultNS: 'apps-journeys',
     defaultLocale: 'en',
     locales: ['en'],
     localePath: path.resolve('./locales')

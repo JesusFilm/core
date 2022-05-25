@@ -23,7 +23,7 @@ function JourneysApp({
   pageProps,
   emotionCache = clientSideEmotionCache
 }: AppProps & { emotionCache?: EmotionCache }): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys')
   useEffect(() => {
     if (
       process.env.NEXT_PUBLIC_GTM_ID != null &&

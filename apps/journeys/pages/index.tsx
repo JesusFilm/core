@@ -57,7 +57,7 @@ export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
       props: {
         ...(await serverSideTranslations(
           context.locale ?? 'en',
-          ['apps-journeys'],
+          ['apps-journeys', 'libs-journeys-ui'],
           i18nConfig
         ))
       },
@@ -69,7 +69,7 @@ export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
       props: {
         ...(await serverSideTranslations(
           context.locale ?? 'en',
-          ['apps-journeys'],
+          ['apps-journeys', 'libs-journeys-ui'],
           i18nConfig
         )),
         journeys: data.journeys

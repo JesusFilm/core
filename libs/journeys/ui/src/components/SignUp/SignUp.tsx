@@ -51,7 +51,7 @@ export const SignUp = ({
   sx,
   ...props
 }: SignUpProps): ReactElement => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('libs-journeys-ui')
 
   const submitIcon = children.find((block) => block.id === submitIconId) as
     | TreeBlock<IconFields>
@@ -69,7 +69,7 @@ export const SignUp = ({
     name: string()
       .min(2, t('Name must be 2 characters or more'))
       .max(50, t('Name must be 50 characters or less'))
-      .required('Required'),
+      .required(t('Required')),
     email: string()
       .email(t('Please enter a valid email address'))
       .required(t('Required'))
