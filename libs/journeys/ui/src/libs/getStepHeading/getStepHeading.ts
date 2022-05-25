@@ -10,9 +10,9 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
 }
 
 interface GetStepHeadingProps {
-  blockId: string
+  blockId: string | null
   children: TreeBlock[] | undefined
-  treeBlocks: TreeBlock[]
+  treeBlocks: TreeBlock[] | undefined
 }
 
 export function getStepHeading({
@@ -37,11 +37,12 @@ export function getStepHeading({
 }
 
 interface GetStepIndexProps {
-  blockId: string
-  treeBlocks: TreeBlock[]
+  blockId: string | null
+  treeBlocks: TreeBlock[] | undefined
 }
 
 function getStepIndex({ blockId, treeBlocks }: GetStepIndexProps): string {
+  if (blockId == null) return 'Untitled step'
   const index = findIndex(treeBlocks, { id: blockId })
   if (index === -1) {
     return 'Untitled step'

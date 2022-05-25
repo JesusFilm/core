@@ -25,7 +25,7 @@ describe('Step', () => {
       children: []
     }
     const { getByText } = render(<Step {...step} />)
-    expect(getByText('None')).toBeInTheDocument()
+    expect(getByText('Untitled step')).toBeInTheDocument()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
   })
 
@@ -107,7 +107,7 @@ describe('Step', () => {
           <Step {...step1} />
         </EditorProvider>
       )
-      expect(getByText('Untitled')).toBeInTheDocument()
+      expect(getByText('Step 2')).toBeInTheDocument()
     })
 
     it('shows first typography text', () => {

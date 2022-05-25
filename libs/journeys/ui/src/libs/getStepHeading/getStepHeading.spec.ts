@@ -90,4 +90,18 @@ describe('getStepHeading', () => {
       getStepHeading({ blockId: 'anotherStep.id', children, treeBlocks })
     ).toEqual('Untitled step')
   })
+
+  it('returns Untitled step if no typogrpahy blocks and id is null', () => {
+    const children: TreeBlock[] = []
+    const treeBlocks: TreeBlock[] = [
+      {
+        ...stepBlock,
+        children
+      }
+    ]
+
+    expect(getStepHeading({ blockId: null, children, treeBlocks })).toEqual(
+      'Untitled step'
+    )
+  })
 })
