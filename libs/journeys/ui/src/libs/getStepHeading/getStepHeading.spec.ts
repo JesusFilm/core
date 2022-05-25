@@ -1,9 +1,19 @@
 import { TreeBlock } from '..'
+import { BlockFields_StepBlock as StepBlock } from '../transformer/__generated__/BlockFields'
 import { getStepHeading } from '.'
 
 describe('getStepHeading', () => {
+  const stepBlock: StepBlock = {
+    __typename: 'StepBlock',
+    id: 'step.id',
+    parentBlockId: null,
+    parentOrder: null,
+    locked: false,
+    nextBlockId: null
+  }
+
   it('returns text of first typography block', () => {
-    const children: TreeBlock[] = [
+    const stepChildren: TreeBlock[] = [
       {
         __typename: 'CardBlock',
         id: 'card.id',
@@ -41,11 +51,39 @@ describe('getStepHeading', () => {
       }
     ]
 
-    expect(getStepHeading(children)).toEqual('Heading')
+    const steps: TreeBlock[] = [
+      {
+        ...stepBlock,
+        children: stepChildren
+      }
+    ]
+
+    expect(getStepHeading('step.id', stepChildren, steps)).toEqual('Heading')
   })
 
-  it('returns undefined if there are no typography blocks', () => {
-    const children: TreeBlock[] = []
-    expect(getStepHeading(children)).toBeUndefined()
+  it('returns step number if there are no typography blocks', () => {
+    const stepChildren: TreeBlock[] = []
+    const steps: TreeBlock[] = [
+      {
+        ...stepBlock,
+        children: stepChildren
+      }
+    ]
+
+    expect(getStepHeading('step.id', stepChildren, steps)).toEqual('Step 1')
+  })
+
+  it('returns Untitled step if no typogrpahy blocks and id not matched', () => {
+    const stepChildren: TreeBlock[] = []
+    const steps: TreeBlock[] = [
+      {
+        ...stepBlock,
+        children: stepChildren
+      }
+    ]
+
+    expect(getStepHeading('anotherStep.id', stepChildren, steps)).toEqual(
+      'Untitled'
+    )
   })
 })

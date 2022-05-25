@@ -2,7 +2,7 @@ import { ReactElement, useEffect } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
-import findIndex from 'lodash/findIndex'
+import { NextSeo } from 'next-seo'
 import { TreeBlock, getStepHeading, useBlocks } from '../..'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { useJourney } from '../../libs/context/JourneyContext'
@@ -30,10 +30,10 @@ export function Step({
     STEP_VIEW_EVENT_CREATE
   )
 
-  const { admin } = useJourney()
+  const { admin, journey } = useJourney()
   const { treeBlocks } = useBlocks()
 
-  const heading = getHeading({ blockId, children, treeBlocks })
+  const heading = getStepHeading(blockId, children, treeBlocks)
 
   useEffect(() => {
     if (!admin) {
@@ -54,33 +54,10 @@ export function Step({
 
   return (
     <>
+      {!admin && <NextSeo title={`${journey?.title ?? ''} (${heading})`} />}
       {children.map((block) => (
         <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
       ))}
     </>
   )
-}
-
-interface GetHeadingProps {
-  blockId: string
-  children: TreeBlock[]
-  treeBlocks: TreeBlock[]
-}
-
-export function getHeading({
-  blockId,
-  children,
-  treeBlocks
-}: GetHeadingProps): string {
-  const title = getStepHeading(children)
-  if (title != null) {
-    return title
-  } else {
-    const index = findIndex(treeBlocks, { id: blockId })
-    if (index === -1) {
-      return 'Untitled'
-    } else {
-      return `Step ${index + 1}`
-    }
-  }
 }

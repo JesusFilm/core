@@ -1,7 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
-import { TreeBlock, JourneyProvider } from '../..'
+import {
+  TreeBlock,
+  JourneyProvider,
+  activeBlockVar,
+  treeBlocksVar
+} from '../..'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/transformer/__generated__/BlockFields'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
 
@@ -172,6 +178,18 @@ describe('RadioQuestion', () => {
   })
 
   it('should add radio submission to dataLayer', async () => {
+    const activeBlock: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'Step1',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: []
+    }
+    activeBlockVar(activeBlock)
+    treeBlocksVar([activeBlock])
+
     const { getAllByRole } = render(
       <MockedProvider
         mocks={[
@@ -210,7 +228,8 @@ describe('RadioQuestion', () => {
           event: 'radio_question_submission',
           eventId: 'uuid',
           blockId: 'RadioQuestion1',
-          radioOptionSelectedId: 'RadioOption1'
+          radioOptionSelectedId: 'RadioOption1',
+          stepName: 'Step 1'
         }
       })
     )
