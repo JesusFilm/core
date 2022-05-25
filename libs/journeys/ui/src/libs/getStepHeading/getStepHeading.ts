@@ -14,19 +14,15 @@ export function getStepHeading(
   children: TreeBlock[],
   steps: TreeBlock[]
 ): string {
-  if (children == null) {
-    return getStepNumber(stepId, steps)
-  } else {
-    const descendants = flatten(children)
-    const heading = descendants.find(
-      (block) => block.__typename === 'TypographyBlock'
-    ) as TreeBlock<TypographyBlock> | undefined
+  const descendants = flatten(children)
+  const heading = descendants.find(
+    (block) => block.__typename === 'TypographyBlock'
+  ) as TreeBlock<TypographyBlock> | undefined
 
-    if (heading != null) {
-      return heading.content
-    } else {
-      return getStepNumber(stepId, steps)
-    }
+  if (heading != null) {
+    return heading.content
+  } else {
+    return getStepNumber(stepId, steps)
   }
 }
 
