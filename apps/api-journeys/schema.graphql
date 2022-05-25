@@ -87,6 +87,9 @@ type Journey @key(fields: "id") {
   status: JourneyStatus!
   seoTitle: String
   seoDescription: String
+
+  """messengerUrl is used specifically within the chat widget"""
+  messengerUrl: String
   userJourneys: [UserJourney!]
 }
 
@@ -843,6 +846,7 @@ input JourneyUpdateInput {
   slug: String
   seoTitle: String
   seoDescription: String
+  messengerUrl: String
 }
 
 type UserJourney @key(fields: "id") {

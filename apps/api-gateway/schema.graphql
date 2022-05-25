@@ -346,6 +346,9 @@ type Journey
   featuredAt: DateTime @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
   language: Language! @join__field(graph: JOURNEYS)
+
+  """messengerUrl is used specifically within the chat widget"""
+  messengerUrl: String @join__field(graph: JOURNEYS)
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
   publishedAt: DateTime @join__field(graph: JOURNEYS)
   seoDescription: String @join__field(graph: JOURNEYS)
@@ -393,6 +396,7 @@ enum JourneyStatus {
 input JourneyUpdateInput {
   description: String
   languageId: String
+  messengerUrl: String
   primaryImageBlockId: ID
   seoDescription: String
   seoTitle: String

@@ -47,6 +47,7 @@ describe('JourneyResolver', () => {
     themeName: ThemeName.base,
     description: null,
     primaryImageBlock: null,
+    messengerUrl: 'http://m.me/amin-user',
     publishedAt,
     createdAt
   }
@@ -72,7 +73,8 @@ describe('JourneyResolver', () => {
     primaryImageBlockId: null,
     slug: 'published-slug',
     seoTitle: 'Social media title',
-    seoDescription: 'Social media description'
+    seoDescription: 'Social media description',
+    messengerUrl: 'http://m.me/amin-user'
   }
 
   const userJourney = {

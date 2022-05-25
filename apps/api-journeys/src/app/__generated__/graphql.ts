@@ -404,6 +404,7 @@ export class JourneyUpdateInput {
     slug?: Nullable<string>;
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
+    messengerUrl?: Nullable<string>;
 }
 
 export interface Action {
@@ -469,6 +470,7 @@ export class Journey {
     status: JourneyStatus;
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
+    messengerUrl?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
