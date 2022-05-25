@@ -58,9 +58,7 @@ describe('getStepHeading', () => {
       }
     ]
 
-    expect(getStepHeading({ stepId: 'step.id', stepChildren, steps })).toEqual(
-      'Heading'
-    )
+    expect(getStepHeading('step.id', stepChildren, steps)).toEqual('Heading')
   })
 
   it('returns step number if there are no typography blocks', () => {
@@ -72,9 +70,7 @@ describe('getStepHeading', () => {
       }
     ]
 
-    expect(getStepHeading({ stepId: 'step.id', stepChildren, steps })).toEqual(
-      'Step 1'
-    )
+    expect(getStepHeading('step.id', stepChildren, steps)).toEqual('Step 1')
   })
 
   it('returns Untitled step if no typogrpahy blocks and id not matched', () => {
@@ -86,21 +82,7 @@ describe('getStepHeading', () => {
       }
     ]
 
-    expect(
-      getStepHeading({ stepId: 'anotherStep.id', stepChildren, steps })
-    ).toEqual('Untitled step')
-  })
-
-  it('returns Untitled step if no typogrpahy blocks and id is null', () => {
-    const stepChildren: TreeBlock[] = []
-    const steps: TreeBlock[] = [
-      {
-        ...stepBlock,
-        children: stepChildren
-      }
-    ]
-
-    expect(getStepHeading({ stepId: null, stepChildren, steps })).toEqual(
+    expect(getStepHeading('anotherStep.id', stepChildren, steps)).toEqual(
       'Untitled step'
     )
   })

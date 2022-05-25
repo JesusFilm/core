@@ -11,13 +11,13 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
 
 export function getStepHeading(
   stepId: string,
-  stepChildren: TreeBlock[],
+  children: TreeBlock[],
   steps: TreeBlock[]
 ): string {
-  if (stepChildren == null) {
+  if (children == null) {
     return getStepNumber(stepId, steps)
   } else {
-    const descendants = flatten(stepChildren)
+    const descendants = flatten(children)
     const heading = descendants.find(
       (block) => block.__typename === 'TypographyBlock'
     ) as TreeBlock<TypographyBlock> | undefined
@@ -31,7 +31,6 @@ export function getStepHeading(
 }
 
 function getStepNumber(stepId: string, steps: TreeBlock[]): string {
-  if (stepId == null) return 'Untitled'
   const index = findIndex(steps, { id: stepId })
   if (index === -1) {
     return 'Untitled'
