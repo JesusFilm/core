@@ -17,9 +17,9 @@ export function Step({
   } = useEditor()
   const nextBlock = steps?.find(({ id }) => id === nextBlockId)
   const heading = getStepHeading({
-    blockId: nextBlockId,
-    children: nextBlock?.children,
-    treeBlocks: steps
+    stepId: nextBlockId,
+    stepChildren: nextBlock?.children,
+    steps
   })
 
   return (

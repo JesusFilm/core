@@ -13,7 +13,7 @@ describe('getStepHeading', () => {
   }
 
   it('returns text of first typography block', () => {
-    const children: TreeBlock[] = [
+    const stepChildren: TreeBlock[] = [
       {
         __typename: 'CardBlock',
         id: 'card.id',
@@ -51,56 +51,56 @@ describe('getStepHeading', () => {
       }
     ]
 
-    const treeBlocks: TreeBlock[] = [
+    const steps: TreeBlock[] = [
       {
         ...stepBlock,
-        children
+        children: stepChildren
       }
     ]
 
-    expect(
-      getStepHeading({ blockId: 'step.id', children, treeBlocks })
-    ).toEqual('Heading')
+    expect(getStepHeading({ stepId: 'step.id', stepChildren, steps })).toEqual(
+      'Heading'
+    )
   })
 
   it('returns step number if there are no typography blocks', () => {
-    const children: TreeBlock[] = []
-    const treeBlocks: TreeBlock[] = [
+    const stepChildren: TreeBlock[] = []
+    const steps: TreeBlock[] = [
       {
         ...stepBlock,
-        children
+        children: stepChildren
       }
     ]
 
-    expect(
-      getStepHeading({ blockId: 'step.id', children, treeBlocks })
-    ).toEqual('Step 1')
+    expect(getStepHeading({ stepId: 'step.id', stepChildren, steps })).toEqual(
+      'Step 1'
+    )
   })
 
   it('returns Untitled step if no typogrpahy blocks and id not matched', () => {
-    const children: TreeBlock[] = []
-    const treeBlocks: TreeBlock[] = [
+    const stepChildren: TreeBlock[] = []
+    const steps: TreeBlock[] = [
       {
         ...stepBlock,
-        children
+        children: stepChildren
       }
     ]
 
     expect(
-      getStepHeading({ blockId: 'anotherStep.id', children, treeBlocks })
+      getStepHeading({ stepId: 'anotherStep.id', stepChildren, steps })
     ).toEqual('Untitled step')
   })
 
   it('returns Untitled step if no typogrpahy blocks and id is null', () => {
-    const children: TreeBlock[] = []
-    const treeBlocks: TreeBlock[] = [
+    const stepChildren: TreeBlock[] = []
+    const steps: TreeBlock[] = [
       {
         ...stepBlock,
-        children
+        children: stepChildren
       }
     ]
 
-    expect(getStepHeading({ blockId: null, children, treeBlocks })).toEqual(
+    expect(getStepHeading({ stepId: null, stepChildren, steps })).toEqual(
       'Untitled step'
     )
   })

@@ -66,9 +66,9 @@ export const SignUp = ({
   const { activeBlock, treeBlocks } = useBlocks()
 
   const heading = getStepHeading({
-    blockId,
-    children: activeBlock?.children,
-    treeBlocks
+    stepId: blockId,
+    stepChildren: activeBlock?.children,
+    steps: treeBlocks
   })
 
   const router = useRouter()

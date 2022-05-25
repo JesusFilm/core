@@ -50,9 +50,9 @@ export function Button({
   const { treeBlocks, activeBlock } = useBlocks()
 
   const heading = getStepHeading({
-    blockId,
-    children: activeBlock?.children,
-    treeBlocks
+    stepId: blockId,
+    stepChildren: activeBlock?.children,
+    steps: treeBlocks
   })
 
   const startIcon = children.find((block) => block.id === startIconId) as

@@ -54,9 +54,9 @@ export function RadioQuestion({
   const { activeBlock, treeBlocks } = useBlocks()
 
   const heading = getStepHeading({
-    blockId,
-    children: activeBlock?.children,
-    treeBlocks
+    stepId: blockId,
+    stepChildren: activeBlock?.children,
+    steps: treeBlocks
   })
 
   const handleClick = (radioOptionBlockId: string): void => {
