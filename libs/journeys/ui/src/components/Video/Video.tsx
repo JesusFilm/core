@@ -43,7 +43,6 @@ export function Video({
       ? blurImage(posterBlock.blurhash, theme.palette.background.paper)
       : undefined
   }, [posterBlock, theme])
-  console.log(video)
 
   useEffect(() => {
     if (videoRef.current != null) {
