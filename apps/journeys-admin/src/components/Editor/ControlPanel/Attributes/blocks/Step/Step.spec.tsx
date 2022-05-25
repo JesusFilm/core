@@ -79,7 +79,7 @@ describe('Step', () => {
       expect(getByText('Locked With Interaction')).toBeInTheDocument()
     })
 
-    it('shows untitled', () => {
+    it('shows next step title', () => {
       const step1: TreeBlock<StepBlock> = {
         id: 'step1.id',
         __typename: 'StepBlock',
@@ -107,7 +107,7 @@ describe('Step', () => {
           <Step {...step1} />
         </EditorProvider>
       )
-      expect(getByText('Untitled')).toBeInTheDocument()
+      expect(getByText('Step 2')).toBeInTheDocument()
     })
 
     it('shows first typography text', () => {

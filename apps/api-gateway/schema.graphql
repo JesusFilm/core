@@ -986,7 +986,7 @@ input VideoPauseEventCreateInput {
 type VideoPlayEvent implements Event {
   block: VideoBlock
   id: ID!
-  position: Int
+  position: Float
   userId: ID!
 }
 
@@ -997,7 +997,7 @@ input VideoPlayEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  position: Int
+  position: Float
 }
 
 type VideoProgressEvent implements Event {

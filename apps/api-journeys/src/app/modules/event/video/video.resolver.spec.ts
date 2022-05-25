@@ -32,7 +32,7 @@ describe('VideoResolver', () => {
       const input = {
         id: '1',
         blockId: '2',
-        position: 30
+        position: 30.1
       }
 
       expect(await resolver.videoStartEventCreate('userid', input)).toEqual({
@@ -64,7 +64,7 @@ describe('VideoResolver', () => {
       const input = {
         id: '1',
         blockId: '2',
-        position: 30
+        position: 30.1
       }
 
       expect(await resolver.videoPlayEventCreate('userid', input)).toEqual({
@@ -96,7 +96,7 @@ describe('VideoResolver', () => {
       const input = {
         id: '1',
         blockId: '2',
-        position: 30
+        position: 30.1
       }
 
       expect(await resolver.videoPauseEventCreate('userid', input)).toEqual({
@@ -130,7 +130,7 @@ describe('VideoResolver', () => {
       const input = {
         id: '1',
         blockId: '2',
-        position: 30
+        position: 30.1
       }
 
       expect(await resolver.videoCompleteEventCreate('userid', input)).toEqual({
@@ -162,7 +162,7 @@ describe('VideoResolver', () => {
       const input = {
         id: '1',
         blockId: '2',
-        position: 30
+        position: 30.1
       }
 
       expect(await resolver.videoExpandEventCreate('userid', input)).toEqual({
@@ -196,7 +196,7 @@ describe('VideoResolver', () => {
       const input = {
         id: '1',
         blockId: '2',
-        position: 30
+        position: 30.1
       }
 
       expect(await resolver.videoCollapseEventCreate('userid', input)).toEqual({
@@ -230,7 +230,7 @@ describe('VideoResolver', () => {
       const input = {
         id: '1',
         blockId: '2',
-        position: 30,
+        position: 30.1,
         progress: 25
       }
 

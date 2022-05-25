@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export DATABASE_URL="http+tcp://arangodb:8529"
-echo $GCLOUD_JSON > /gcloud.json
+cp /etc/gcloud/gcloud /gcloud.json
 export GOOGLE_APPLICATION_CREDENTIALS="/gcloud.json"
 gcloud auth activate-service-account jfp-core@jfp-data-warehouse.iam.gserviceaccount.com --key-file="/gcloud.json" --project=jfp-data-warehouse
 

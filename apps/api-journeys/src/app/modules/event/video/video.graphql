@@ -20,13 +20,13 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
-  position: Int
+  position: Float
 }
 
 type VideoPlayEvent implements Event {
   id: ID!
   userId: ID!
-  position: Int
+  position: Float
   block: VideoBlock
 }
 
