@@ -47,13 +47,13 @@ export function Button({
   )
 
   const { admin } = useJourney()
-  const { activeBlock } = useBlocks()
+  const { treeBlocks, activeBlock } = useBlocks()
 
-  const altName = label === '' ? 'Unlabeled button' : label
-  const heading =
-    activeBlock != null
-      ? getStepHeading(activeBlock.children) ?? altName
-      : altName
+  const heading = getStepHeading({
+    blockId,
+    children: activeBlock?.children,
+    treeBlocks
+  })
 
   const startIcon = children.find((block) => block.id === startIconId) as
     | TreeBlock<IconFields>

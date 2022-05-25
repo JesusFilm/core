@@ -63,16 +63,13 @@ export const SignUp = ({
 
   const { admin } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-  const { activeBlock } = useBlocks()
+  const { activeBlock, treeBlocks } = useBlocks()
 
-  const altName =
-    submitLabel == null || submitLabel === ''
-      ? 'Unlabeled sign up button'
-      : submitLabel
-  const heading =
-    activeBlock != null
-      ? getStepHeading(activeBlock.children) ?? altName
-      : altName
+  const heading = getStepHeading({
+    blockId,
+    children: activeBlock?.children,
+    treeBlocks
+  })
 
   const router = useRouter()
   const [signUpSubmissionEventCreate, { loading }] =

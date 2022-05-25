@@ -14,7 +14,6 @@ import {
 } from '../..'
 import { WrappersProps } from '../BlockRenderer'
 import { RadioOption } from './RadioOption'
-import { RadioOptionFields as RadioOptionBlock } from './RadioOption/__generated__/RadioOptionFields'
 import { RadioQuestionSubmissionEventCreate } from './__generated__/RadioQuestionSubmissionEventCreate'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 
@@ -52,24 +51,16 @@ export function RadioQuestion({
     )
   const { admin } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const { activeBlock } = useBlocks()
+  const { activeBlock, treeBlocks } = useBlocks()
+
+  const heading = getStepHeading({
+    blockId,
+    children: activeBlock?.children,
+    treeBlocks
+  })
 
   const handleClick = (radioOptionBlockId: string): void => {
     if (!admin) {
-      const option = children.find(
-        (block) => block.id === radioOptionBlockId
-      ) as TreeBlock<RadioOptionBlock>
-
-      const altName =
-        option == null || option?.label === ''
-          ? 'Unlabeled option'
-          : option.label
-
-      const heading =
-        activeBlock != null
-          ? getStepHeading(activeBlock.children) ?? altName
-          : altName
-
       const id = uuid()
       void radioQuestionSubmissionEventCreate({
         variables: {
