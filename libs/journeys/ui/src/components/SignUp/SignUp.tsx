@@ -9,6 +9,7 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import { v4 as uuidv4 } from 'uuid'
 import { useSnackbar } from 'notistack'
 import TagManager from 'react-gtm-module'
+import { useTranslation } from 'react-i18next'
 import { TreeBlock, handleAction, useEditor, useJourney } from '../..'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
@@ -50,6 +51,8 @@ export const SignUp = ({
   sx,
   ...props
 }: SignUpProps): ReactElement => {
+  const { t } = useTranslation()
+
   const submitIcon = children.find((block) => block.id === submitIconId) as
     | TreeBlock<IconFields>
     | undefined
@@ -64,12 +67,12 @@ export const SignUp = ({
   const initialValues: SignUpFormValues = { name: '', email: '' }
   const signUpSchema = object().shape({
     name: string()
-      .min(2, 'Name must be 2 characters or more')
-      .max(50, 'Name must be 50 characters or less')
+      .min(2, t('Name must be 2 characters or more'))
+      .max(50, t('Name must be 50 characters or less'))
       .required('Required'),
     email: string()
-      .email('Please enter a valid email address')
-      .required('Required')
+      .email(t('Please enter a valid email address'))
+      .required(t('Required'))
   })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
@@ -136,14 +139,14 @@ export const SignUp = ({
               {...formikProps}
               id="name"
               name="name"
-              label="Name"
+              label={t('Name')}
               disabled={selectedBlock !== undefined}
             />
             <TextField
               {...formikProps}
               id="email"
               name="email"
-              label="Email"
+              label={t('Email')}
               disabled={selectedBlock !== undefined}
             />
             <LoadingButton
@@ -159,7 +162,7 @@ export const SignUp = ({
                 mb: 0
               }}
             >
-              {editableSubmitLabel ?? submitLabel ?? 'Submit'}
+              {editableSubmitLabel ?? submitLabel ?? t('Submit')}
             </LoadingButton>
           </Form>
         )}

@@ -1,18 +1,7 @@
+const i18nextParserConfigBase = require('../../i18next-parser.config.base')
+
 module.exports = {
-  indentation: 2,
-  lexers: {
-    js: ['JsxLexer'],
-    ts: ['JsxLexer'],
-    jsx: ['JsxLexer'],
-    tsx: ['JsxLexer'],
-    default: ['JsxLexer']
-  },
-  locales: ['en'],
-  output: 'locales/$LOCALE/$NAMESPACE.json',
+  ...i18nextParserConfigBase,
   input: ['src/**/*.{js,jsx,ts,tsx}', 'pages/**/*.{js,jsx,ts,tsx}'],
-  verbose: true,
-  namespaceSeparator: false,
-  keySeparator: false,
-  useKeysAsDefaultValue: true,
   defaultNamespace: 'apps-journeys'
 }
