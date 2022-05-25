@@ -54,7 +54,9 @@ describe('VideoEvents', () => {
       }),
       blockId: 'video0.id',
       startAt: 0,
-      endAt: 100
+      endAt: 100,
+      videoTitle: 'video.title',
+      videoId: 'video.id'
     }
   })
   afterEach(() => {
@@ -134,7 +136,9 @@ describe('VideoEvents', () => {
           event: 'video_start',
           eventId: 'uuid',
           blockId: 'video0.id',
-          videoPosition: 0
+          videoPosition: 0,
+          videoTitle: 'video.title',
+          videoId: 'video.id'
         }
       })
     )
@@ -211,7 +215,9 @@ describe('VideoEvents', () => {
           event: 'video_play',
           eventId: 'uuid',
           blockId: 'video0.id',
-          videoPosition: 0.12
+          videoPosition: 0.12,
+          videoTitle: 'video.title',
+          videoId: 'video.id'
         }
       })
     )
@@ -288,7 +294,9 @@ describe('VideoEvents', () => {
           event: 'video_pause',
           eventId: 'uuid',
           blockId: 'video0.id',
-          videoPosition: 0.34
+          videoPosition: 0.34,
+          videoTitle: 'video.title',
+          videoId: 'video.id'
         }
       })
     )
@@ -365,7 +373,9 @@ describe('VideoEvents', () => {
           event: 'video_expand',
           eventId: 'uuid',
           blockId: 'video0.id',
-          videoPosition: 0.56
+          videoPosition: 0.56,
+          videoTitle: 'video.title',
+          videoId: 'video.id'
         }
       })
     )
@@ -478,7 +488,9 @@ describe('VideoEvents', () => {
           event: 'video_collapse',
           eventId: 'uuid',
           blockId: 'video0.id',
-          videoPosition: 0.78
+          videoPosition: 0.78,
+          videoTitle: 'video.title',
+          videoId: 'video.id'
         }
       })
     )
@@ -761,7 +773,9 @@ describe('VideoEvents', () => {
           event: 'video_start',
           eventId: 'uuid',
           blockId: 'video0.id',
-          videoPosition: 0
+          videoPosition: 0,
+          videoTitle: 'video.title',
+          videoId: 'video.id'
         }
       })
     )
@@ -777,7 +791,9 @@ describe('VideoEvents', () => {
           eventId: 'uuid',
           blockId: 'video0.id',
           videoPosition: 25.1,
-          videoProgress: 25
+          videoProgress: 25,
+          videoTitle: 'video.title',
+          videoId: 'video.id'
         }
       })
     )
@@ -793,7 +809,9 @@ describe('VideoEvents', () => {
           eventId: 'uuid',
           blockId: 'video0.id',
           videoPosition: 50.2,
-          videoProgress: 50
+          videoProgress: 50,
+          videoTitle: 'video.title',
+          videoId: 'video.id'
         }
       })
     )
@@ -809,7 +827,9 @@ describe('VideoEvents', () => {
           eventId: 'uuid',
           blockId: 'video0.id',
           videoPosition: 75.3,
-          videoProgress: 75
+          videoProgress: 75,
+          videoTitle: 'video.title',
+          videoId: 'video.id'
         }
       })
     )
@@ -824,7 +844,9 @@ describe('VideoEvents', () => {
           event: 'video_complete',
           eventId: 'uuid',
           blockId: 'video0.id',
-          videoPosition: 100
+          videoPosition: 100,
+          videoTitle: 'video.title',
+          videoId: 'video.id'
         }
       })
     )

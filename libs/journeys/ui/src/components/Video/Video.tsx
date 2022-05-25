@@ -43,6 +43,7 @@ export function Video({
       ? blurImage(posterBlock.blurhash, theme.palette.background.paper)
       : undefined
   }, [posterBlock, theme])
+  console.log(video)
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -165,10 +166,12 @@ export function Video({
         }
       }}
     >
-      {playerRef.current != null && (
+      {playerRef.current != null && video != null && (
         <VideoEvents
           player={playerRef.current}
           blockId={blockId}
+          videoTitle={video.title[0].value}
+          videoId={video.id}
           startAt={startAt}
           endAt={endAt}
         />
