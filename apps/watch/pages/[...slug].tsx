@@ -12,6 +12,7 @@ import Button from '@mui/material/Button'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import AccessTime from '@mui/icons-material/AccessTime'
 import Subtitles from '@mui/icons-material/Subtitles'
+import Translate from '@mui/icons-material/Translate'
 import Circle from '@mui/icons-material/Circle'
 import videojs from 'video.js'
 
@@ -251,54 +252,65 @@ export default function SeoFriendly(): ReactElement {
                 <Box
                   sx={{
                     position: 'absolute',
-                    top: '520px',
-                    paddingLeft: '100px'
+                    top: '520px'
                   }}
                   width="100%"
                   height="133px"
                 >
                   <Stack
                     direction="row"
-                    spacing="20px"
+                    justifyContent="space-between"
+                    px="100px"
                     sx={{ color: darkTheme.palette.text.primary }}
                   >
-                    {data?.video.type === VideoType.playlist && (
-                      <Typography variant="subtitle1">
-                        {data.video.episodes.length} episodes
+                    <Stack direction="row" spacing="20px">
+                      {data?.video.type === VideoType.playlist && (
+                        <Typography variant="subtitle1">
+                          {data.video.episodes.length} episodes
+                        </Typography>
+                      )}
+                      {data?.video.type !== VideoType.playlist && (
+                        <>
+                          <Button
+                            size="large"
+                            variant="contained"
+                            sx={{ height: 71, fontSize: '24px' }}
+                            onClick={playVideo}
+                          >
+                            <PlayArrow />
+                            &nbsp; Play Video
+                          </Button>
+                          <Stack height="71px" direction="row">
+                            <AccessTime sx={{ paddingTop: '23px' }} />
+                            <Typography
+                              variant="body2"
+                              sx={{ lineHeight: '71px', paddingLeft: '10px' }}
+                            >
+                              {secondsToMinutes(data.video.variant.duration)}{' '}
+                              min
+                            </Typography>
+                          </Stack>
+                          <Circle
+                            sx={{ fontSize: '10px', paddingTop: '30px' }}
+                          />
+                          <Stack height="71px" direction="row">
+                            <Subtitles sx={{ paddingTop: '23px' }} />
+                            <Typography
+                              variant="body2"
+                              sx={{ lineHeight: '71px', paddingLeft: '10px' }}
+                            >
+                              Subs
+                            </Typography>
+                          </Stack>
+                        </>
+                      )}
+                    </Stack>
+                    <Stack height="71px" direction="row">
+                      <Translate />
+                      <Typography variant="body1">
+                        {audioLanguageData?.language.name[0]?.value}
                       </Typography>
-                    )}
-                    {data?.video.type !== VideoType.playlist && (
-                      <>
-                        <Button
-                          size="large"
-                          variant="contained"
-                          sx={{ height: 71, fontSize: '24px' }}
-                          onClick={playVideo}
-                        >
-                          <PlayArrow />
-                          &nbsp; Play Video
-                        </Button>
-                        <Stack height="71px" direction="row">
-                          <AccessTime sx={{ paddingTop: '23px' }} />
-                          <Typography
-                            variant="body2"
-                            sx={{ lineHeight: '71px', paddingLeft: '10px' }}
-                          >
-                            {secondsToMinutes(data.video.variant.duration)} min
-                          </Typography>
-                        </Stack>
-                        <Circle sx={{ fontSize: '10px', paddingTop: '30px' }} />
-                        <Stack height="71px" direction="row">
-                          <Subtitles sx={{ paddingTop: '23px' }} />
-                          <Typography
-                            variant="body2"
-                            sx={{ lineHeight: '71px', paddingLeft: '10px' }}
-                          >
-                            Subs
-                          </Typography>
-                        </Stack>
-                      </>
-                    )}
+                    </Stack>
                   </Stack>
                 </Box>
                 <Box
