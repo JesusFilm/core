@@ -2,7 +2,7 @@ import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
-import { TreeBlock } from '../..'
+import { TreeBlock, activeBlockVar, treeBlocksVar } from '../..'
 import { JourneyProvider } from '../../libs/context/JourneyContext'
 import { StepFields } from './__generated__/StepFields'
 import { STEP_VIEW_EVENT_CREATE } from './Step'
@@ -104,7 +104,8 @@ describe('Step', () => {
 
   it('should stepViewEvent to dataLayer', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-
+    activeBlockVar(block)
+    treeBlocksVar([block])
     render(
       <MockedProvider
         mocks={[
@@ -140,7 +141,7 @@ describe('Step', () => {
           event: 'step_view',
           eventId: 'uuid',
           blockId: 'Step1',
-          stepName: 'Untitled step'
+          stepName: 'Step 1'
         }
       })
     )

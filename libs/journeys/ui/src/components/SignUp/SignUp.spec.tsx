@@ -4,7 +4,14 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { TreeBlock, handleAction, JourneyProvider } from '../..'
+import {
+  TreeBlock,
+  handleAction,
+  JourneyProvider,
+  activeBlockVar,
+  treeBlocksVar
+} from '../..'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/transformer/__generated__/BlockFields'
 import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
 
@@ -276,6 +283,18 @@ describe('SignUp', () => {
   })
 
   it('should add submission event to dataLayer', async () => {
+    const activeBlock: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'Step1',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: []
+    }
+    activeBlockVar(activeBlock)
+    treeBlocksVar([activeBlock])
+
     const mocks = [
       {
         request: {
@@ -326,7 +345,7 @@ describe('SignUp', () => {
           event: 'sign_up_submission',
           eventId: 'uuid',
           blockId: 'signUp0.id',
-          stepName: 'Untitled step'
+          stepName: 'Step 1'
         }
       })
     })

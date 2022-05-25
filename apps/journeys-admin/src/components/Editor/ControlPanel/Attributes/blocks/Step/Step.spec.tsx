@@ -79,7 +79,7 @@ describe('Step', () => {
       expect(getByText('Locked With Interaction')).toBeInTheDocument()
     })
 
-    it('shows untitled', () => {
+    it('shows next step title', () => {
       const step1: TreeBlock<StepBlock> = {
         id: 'step1.id',
         __typename: 'StepBlock',

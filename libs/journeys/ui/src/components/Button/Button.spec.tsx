@@ -10,7 +10,14 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
-import { handleAction, TreeBlock, JourneyProvider } from '../..'
+import {
+  handleAction,
+  TreeBlock,
+  JourneyProvider,
+  activeBlockVar,
+  treeBlocksVar
+} from '../..'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/transformer/__generated__/BlockFields'
 import { ButtonFields } from './__generated__/ButtonFields'
 import { BUTTON_CLICK_EVENT_CREATE } from './Button'
 import { Button } from '.'
@@ -106,6 +113,18 @@ describe('Button', () => {
 
   it('should add buttonClickEvent to dataLayer', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
+    const activeBlock: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'Step1',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: []
+    }
+    activeBlockVar(activeBlock)
+    treeBlocksVar([activeBlock])
+
     const { getByRole } = render(
       <MockedProvider
         mocks={[
@@ -142,7 +161,7 @@ describe('Button', () => {
           event: 'button_click',
           eventId: 'uuid',
           blockId: 'button',
-          stepName: 'Untitled step'
+          stepName: 'Step 1'
         }
       })
     )

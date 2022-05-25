@@ -10,7 +10,7 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
 }
 
 interface GetStepHeadingProps {
-  stepId: string | null
+  stepId: string | null | undefined
   stepChildren: TreeBlock[] | undefined
   steps: TreeBlock[] | undefined
 }
@@ -37,7 +37,7 @@ export function getStepHeading({
 }
 
 interface GetStepNumberProps {
-  stepId: string | null
+  stepId: string | null | undefined
   steps: TreeBlock[] | undefined
 }
 
