@@ -53,11 +53,10 @@ export function RadioQuestion({
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const { activeBlock, treeBlocks } = useBlocks()
 
-  const heading = getStepHeading({
-    stepId: activeBlock?.id,
-    stepChildren: activeBlock?.children,
-    steps: treeBlocks
-  })
+  const heading =
+    activeBlock != null
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks)
+      : 'None'
 
   const handleClick = (radioOptionBlockId: string): void => {
     if (!admin) {

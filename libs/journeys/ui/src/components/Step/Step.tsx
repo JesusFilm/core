@@ -32,11 +32,7 @@ export function Step({
   const { admin } = useJourney()
   const { treeBlocks } = useBlocks()
 
-  const heading = getStepHeading({
-    stepId: blockId,
-    stepChildren: children,
-    steps: treeBlocks
-  })
+  const heading = getStepHeading(blockId, children, treeBlocks)
 
   useEffect(() => {
     if (!admin) {

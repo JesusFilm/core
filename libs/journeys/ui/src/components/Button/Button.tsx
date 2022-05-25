@@ -49,11 +49,10 @@ export function Button({
   const { admin } = useJourney()
   const { treeBlocks, activeBlock } = useBlocks()
 
-  const heading = getStepHeading({
-    stepId: activeBlock?.id,
-    stepChildren: activeBlock?.children,
-    steps: treeBlocks
-  })
+  const heading =
+    activeBlock != null
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks)
+      : 'None'
 
   const startIcon = children.find((block) => block.id === startIconId) as
     | TreeBlock<IconFields>

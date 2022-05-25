@@ -65,11 +65,10 @@ export const SignUp = ({
   const { enqueueSnackbar } = useSnackbar()
   const { activeBlock, treeBlocks } = useBlocks()
 
-  const heading = getStepHeading({
-    stepId: activeBlock?.id,
-    stepChildren: activeBlock?.children,
-    steps: treeBlocks
-  })
+  const heading =
+    activeBlock != null
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks)
+      : 'None'
 
   const router = useRouter()
   const [signUpSubmissionEventCreate, { loading }] =

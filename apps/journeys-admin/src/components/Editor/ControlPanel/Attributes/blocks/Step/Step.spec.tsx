@@ -25,7 +25,7 @@ describe('Step', () => {
       children: []
     }
     const { getByText } = render(<Step {...step} />)
-    expect(getByText('Untitled step')).toBeInTheDocument()
+    expect(getByText('Untitled')).toBeInTheDocument()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
   })
 

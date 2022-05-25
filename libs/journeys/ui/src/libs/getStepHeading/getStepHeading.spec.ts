@@ -83,7 +83,7 @@ describe('getStepHeading', () => {
     ]
 
     expect(getStepHeading('anotherStep.id', stepChildren, steps)).toEqual(
-      'Untitled step'
+      'Untitled'
     )
   })
 })
