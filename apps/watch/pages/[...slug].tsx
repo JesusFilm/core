@@ -24,10 +24,7 @@ import {
   useLanguage
 } from '../src/libs/languageContext/LanguageContext'
 import { PageWrapper } from '../src/components/PageWrapper'
-import {
-  darkTheme,
-  DarkThemeProvider
-} from '../src/components/ThemeProvider/ThemeProvider'
+import { darkTheme } from '../src/components/ThemeProvider/ThemeProvider'
 import { VideoListCarousel } from '../src/components/Videos/VideoList/Carousel/VideoListCarousel'
 
 export const GET_VIDEO = gql`
@@ -307,7 +304,7 @@ export default function SeoFriendly(): ReactElement {
                     </Stack>
                     <Stack height="71px" direction="row">
                       <Translate />
-                      <Typography variant="body1">
+                      <Typography variant="body1" sx={{ paddingLeft: '10px' }}>
                         {audioLanguageData?.language.name[0]?.value}
                       </Typography>
                     </Stack>
