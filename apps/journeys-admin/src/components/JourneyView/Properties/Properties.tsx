@@ -1,17 +1,22 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
 import { CopyTextField } from '@core/shared/ui'
 import { useJourney } from '@core/journeys/ui'
+import { useTranslation } from 'react-i18next'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyDetails } from './JourneyDetails'
+import { SlugDialog } from './SlugDialog'
 
 export function Properties(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const [showSlugDialog, setShowSlugDialog] = useState(false)
 
   return (
     <>
@@ -28,7 +33,7 @@ export function Properties(): ReactElement {
       >
         <Toolbar>
           <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
-            Properties
+            {t('Properties')}
           </Typography>
         </Toolbar>
         <Stack sx={{ py: 6 }} spacing={6} divider={<Divider />}>
@@ -37,7 +42,7 @@ export function Properties(): ReactElement {
           </Box>
           <Box sx={{ px: 6 }}>
             <Typography variant="subtitle2" gutterBottom>
-              Access Control
+              {t('Access Control')}
             </Typography>
             <AccessAvatars
               journeySlug={journey?.slug}
@@ -48,7 +53,7 @@ export function Properties(): ReactElement {
           </Box>
           <Box sx={{ px: 6 }}>
             <Typography variant="subtitle2" gutterBottom>
-              Journey URL
+              {t('Journey URL')}
             </Typography>
             <CopyTextField
               value={
@@ -57,6 +62,11 @@ export function Properties(): ReactElement {
                   : undefined
               }
             />
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 2 }}>
+              <Button onClick={() => setShowSlugDialog(true)}>
+                {t('Edit')}
+              </Button>
+            </Box>
           </Box>
         </Stack>
       </Drawer>
@@ -89,10 +99,14 @@ export function Properties(): ReactElement {
                 ? `https://your.nextstep.is/${journey.slug}`
                 : undefined
             }
-            label="Journey URL"
+            label={t('Journey URL')}
           />
         </Box>
       </Stack>
+      <SlugDialog
+        open={showSlugDialog}
+        onClose={() => setShowSlugDialog(false)}
+      />
     </>
   )
 }
