@@ -13,20 +13,27 @@ describe('fact-or-fiction selecting', () => {
     cy.get('button').contains('Sign In').click()
     // end result brings you to /journeys/fact-or-fiction/edit
   })
-  const card3 = '8730d39c-9ba0-4dc7-8289-ad562d799f11'
-  const cardsPanel = 'control-panel-tabpanel-0'
+  // const card3 = '8730d39c-9ba0-4dc7-8289-ad562d799f11'
+  const cardsPanel = '[data-testid=horizontal-select]'
+  const cardsButton = '#control-panel-tab-0'
+  const propertiesButton = '#control-panel-tab-1'
   it('should switch to properties tab when a card is clicked', () => {
     // cards tab should be selected
-    cy.get('button[role="tab"]')
+    cy.get(cardsButton)
       .contains('Cards')
       .should('exist')
       .should('have.attr', 'aria-selected', 'true')
     // on the panel of cards, click on a card 3
-    cy.get(`[id="${cardsPanel}"]`).within(() => {
-      cy.get(`[id="${card3}"]`).click({ force: true }) // error: needs force:true because there is another element covering it
-    })
-    // properties tab should now be selected
-    cy.get('button[role="tab"]')
+    cy.get(cardsPanel)
+      .children()
+      .eq(2)
+      .within(() => {
+        cy.get('.css-qbettr').should('exist').click()
+      })
+    // TODO: doesn't work, need to get element within and click that instead
+
+    // // properties tab should now be selected
+    cy.get(propertiesButton)
       .contains('Properties')
       .should('exist')
       .should('have.attr', 'aria-selected', 'true')
@@ -34,41 +41,40 @@ describe('fact-or-fiction selecting', () => {
 
   it('navigates back to the cards tab', () => {
     // navigate back to cards tab
-    cy.get('button[role="tab"]').contains('Cards').click()
+    cy.get(cardsButton).contains('Cards').click()
     // cards tab should be selected
-    cy.get('button[role="tab"]')
+    cy.get(cardsButton)
       .contains('Cards')
       .should('exist')
       .should('have.attr', 'aria-selected', 'true')
   })
 
-  // inner iframe MuiBox-root iframe-1bh9mr5
+  // // inner iframe MuiBox-root iframe-1bh9mr5
   it('gets iframe for card 3, clicks on the block', () => {
-    const displayedCard = 'step-' + card3
-    cy.get(`[data-testid="${displayedCard}"]`).within(() => {
-      // Access the IFrame inside that card
-      // Note: following 4 lines adapted from this tutorial: https://www.cypress.io/blog/2020/02/12/working-with-iframes-in-cypress/
-      cy.get('iframe')
-        .its('0.contentDocument.body')
-        .should('not.be.empty')
-        .then(cy.wrap)
+    cy.get('.swiper-slide-active').within(() => {
+      cy.get(`[data-testid^="step-"]`)
+        .should('exist')
         .within(() => {
-          cy.get('h6')
-            .contains('What do you think?')
-            // .eq(0)
-            .should('exist')
-            .click()
+          // Access the IFrame inside that card
+          // Note: following 4 lines adapted from this tutorial: https://www.cypress.io/blog/2020/02/12/working-with-iframes-in-cypress/
+          cy.get('iframe')
+            .its('0.contentDocument.body')
+            .should('not.be.empty')
+            .then(cy.wrap)
+            .within(() => {
+              cy.get('h6')
+                .contains('What do you think?')
+                // .eq(0)
+                .should('exist')
+                .click()
+            })
         })
-      // Click on the h6 'What do you think?' block
-      // .find(`h6`)
-      // .should('exist')
-      // .click() // throws error here, because it has found 2 'h6'
     })
   })
 
   it('should switch to block properties when a block on the card is clicked', () => {
     // properties tab should now be selected
-    cy.get('button[role="tab"]')
+    cy.get(propertiesButton)
       .contains('Properties')
       .should('exist')
       .should('have.attr', 'aria-selected', 'true')
