@@ -4,12 +4,13 @@ import Typography from '@mui/material/Typography'
 import MuiLink from '@mui/material/Link'
 import { useTranslation } from 'react-i18next'
 
-export function Links(): ReactElement {
+export function Footer(): ReactElement {
   const { t } = useTranslation('apps-journeys')
+  const year = new Date().getFullYear()
 
   return (
     <Stack direction="row" spacing={3}>
-      <Typography variant="caption">{t('NextSteps © 2022')}</Typography>
+      <Typography variant="caption">{t(`NextSteps © ${year}`)}</Typography>
       <MuiLink
         href="https://www.cru.org/us/en/about/terms-of-use.html"
         variant="caption"

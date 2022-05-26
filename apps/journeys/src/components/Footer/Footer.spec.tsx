@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react'
-import { Links } from './Links'
+import { Footer } from './Footer'
 
-describe('Links', () => {
+describe('Footer', () => {
   it('should render the terms and conditions and privacy policy links', () => {
-    const { getByText } = render(<Links />)
+    const { getByText } = render(<Footer />)
     expect(getByText('Terms')).toBeInTheDocument()
     expect(getByText('Privacy')).toBeInTheDocument()
   })
