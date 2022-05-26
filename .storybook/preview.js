@@ -1,5 +1,6 @@
 const { createElement } = require('react')
 const NextImage = require('next/image')
+const i18n = require('./i18next')
 
 const OriginalNextImage = NextImage.default
 
@@ -48,6 +49,11 @@ module.exports = {
     controls: { disabled: true },
     viewport: {
       viewports: customViewports
+    },
+    i18n,
+    locale: 'en',
+    locales: {
+      en: 'English'
     }
   },
   globalTypes: {
