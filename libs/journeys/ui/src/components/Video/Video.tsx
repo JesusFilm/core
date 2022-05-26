@@ -165,10 +165,12 @@ export function Video({
         }
       }}
     >
-      {playerRef.current != null && (
+      {playerRef.current != null && video != null && (
         <VideoEvents
           player={playerRef.current}
           blockId={blockId}
+          videoTitle={video.title[0].value}
+          videoId={video.id}
           startAt={startAt}
           endAt={endAt}
         />
