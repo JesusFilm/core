@@ -7,20 +7,33 @@ import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
 import { useTheme } from '@mui/material/styles'
-import { useBreakpoints } from '@core/shared/ui'
-import 'swiper/swiper.min.css'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import {
+  useJourney,
   BlockRenderer,
   CardWrapper,
   TreeBlock,
   useBlocks
 } from '@core/journeys/ui'
+import { useBreakpoints } from '@core/shared/ui'
+import 'swiper/swiper.min.css'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import { gql, useMutation } from '@apollo/client'
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
+import { v4 as uuidv4 } from 'uuid'
+import TagManager from 'react-gtm-module'
+import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { BlockFields_CardBlock as CardBlock } from '../../../__generated__/BlockFields'
 import { JourneyProgress } from '../JourneyProgress'
+
+export const JOURNEY_VIEW_EVENT_CREATE = gql`
+  mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
+    journeyViewEventCreate(input: $input) {
+      id
+    }
+  }
+`
 
 export interface ConductorProps {
   blocks: TreeBlock[]
@@ -33,6 +46,30 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [showNavArrows, setShowNavArrow] = useState(true)
   const breakpoints = useBreakpoints()
   const theme = useTheme()
+  const { journey, admin } = useJourney()
+
+  const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
+    JOURNEY_VIEW_EVENT_CREATE
+  )
+
+  useEffect(() => {
+    if (!admin && journey != null) {
+      const id = uuidv4()
+      void journeyViewEventCreate({
+        variables: {
+          input: { id, journeyId: journey.id }
+        }
+      })
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'journey_view',
+          journeyId: journey.id,
+          eventId: id,
+          journeyTitle: journey.title
+        }
+      })
+    }
+  }, [admin, journey, journeyViewEventCreate])
 
   useEffect(() => {
     setTreeBlocks(blocks)

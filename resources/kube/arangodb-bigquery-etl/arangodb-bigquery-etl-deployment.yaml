@@ -22,5 +22,12 @@ spec:
           envFrom:
             - secretRef:
                 name: env-db-main
-            - secretRef:
-                name: env-gcloud
+          volumeMounts:
+            - name: gcloud
+              mountPath: '/etc/gcloud'
+              readOnly: true
+      volumes:
+        - name: gcloud
+          secret:
+            secretName: gcloud-json
+            optional: false

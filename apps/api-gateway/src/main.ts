@@ -33,12 +33,15 @@ export const gateway = new ApolloGateway({
 const server = new ApolloServer({
   gateway,
   plugins: [apolloWinstonLoggingPlugin({ level: process.env.LOGGING_LEVEL })],
+  csrfPrevention: true,
+  cors: config.cors,
   context: async ({ req }) => {
     const token = req.headers.authorization
     if (
       process.env.GOOGLE_APPLICATION_JSON == null ||
       process.env.GOOGLE_APPLICATION_JSON === '' ||
-      token == null
+      token == null ||
+      token === ''
     )
       return {}
     try {

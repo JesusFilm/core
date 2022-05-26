@@ -1,8 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { TreeBlock } from '../..'
+import TagManager from 'react-gtm-module'
+import {
+  TreeBlock,
+  JourneyProvider,
+  activeBlockVar,
+  treeBlocksVar
+} from '../..'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/transformer/__generated__/BlockFields'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
-import { RadioQuestion, RADIO_QUESTION_RESPONSE_CREATE } from '.'
+import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -12,6 +19,17 @@ jest.mock('../../libs/action', () => {
     handleAction: jest.fn()
   }
 })
+
+jest.mock('react-gtm-module', () => ({
+  __esModule: true,
+  default: {
+    dataLayer: jest.fn()
+  }
+}))
+
+const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
+  typeof TagManager.dataLayer
+>
 
 const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
@@ -53,12 +71,21 @@ describe('RadioQuestion', () => {
   })
 
   it('should select an option onClick', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        radioQuestionSubmissionEventCreate: {
+          id: 'uuid',
+          radioOptionBlockId: 'RadioOption1'
+        }
+      }
+    }))
+
     const { getByTestId, getAllByRole } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: RADIO_QUESTION_RESPONSE_CREATE,
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
               variables: {
                 input: {
                   id: 'uuid',
@@ -67,24 +94,19 @@ describe('RadioQuestion', () => {
                 }
               }
             },
-            result: {
-              data: {
-                radioQuestionResponseCreate: {
-                  id: 'uuid',
-                  radioOptionBlockId: 'RadioOption1'
-                }
-              }
-            }
+            result
           }
         ]}
-        addTypename={false}
       >
-        <RadioQuestion {...block} uuid={() => 'uuid'} />
+        <JourneyProvider>
+          <RadioQuestion {...block} uuid={() => 'uuid'} />
+        </JourneyProvider>
       </MockedProvider>
     )
     const buttons = getAllByRole('button')
     fireEvent.click(buttons[0])
-    await waitFor(() => expect(buttons[0]).toBeDisabled())
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(buttons[0]).toBeDisabled()
     expect(buttons[0]).toContainElement(
       getByTestId('RadioOptionCheckCircleIcon')
     )
@@ -96,7 +118,7 @@ describe('RadioQuestion', () => {
         mocks={[
           {
             request: {
-              query: RADIO_QUESTION_RESPONSE_CREATE,
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
               variables: {
                 input: {
                   id: 'uuid',
@@ -107,7 +129,7 @@ describe('RadioQuestion', () => {
             },
             result: {
               data: {
-                radioQuestionResponseCreate: {
+                radioQuestionSubmissionEventCreate: {
                   id: 'uuid',
                   radioOptionBlockId: 'RadioOption1'
                 }
@@ -152,6 +174,64 @@ describe('RadioQuestion', () => {
     )
     expect(getAllByTestId('radioOptionWrapper')[1]).toContainElement(
       getByText('Option 2')
+    )
+  })
+
+  it('should add radio submission to dataLayer', async () => {
+    const activeBlock: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'Step1',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: []
+    }
+    activeBlockVar(activeBlock)
+    treeBlocksVar([activeBlock])
+
+    const { getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption1'
+                }
+              }
+            },
+            result: {
+              data: {
+                radioQuestionSubmissionEventCreate: {
+                  id: 'uuid',
+                  radioOptionBlockId: 'RadioOption1'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <RadioQuestion {...block} uuid={() => 'uuid'} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const buttons = getAllByRole('button')
+    fireEvent.click(buttons[0])
+    await waitFor(() =>
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'radio_question_submission',
+          eventId: 'uuid',
+          blockId: 'RadioQuestion1',
+          radioOptionSelectedId: 'RadioOption1',
+          stepName: 'Step 1'
+        }
+      })
     )
   })
 })

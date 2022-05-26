@@ -681,10 +681,20 @@ type StepViewEvent implements Event {
   block: StepBlock
 }
 
-enum VideoPlayEventStateEnum {
-  PLAYING
-  PAUSED
-  FINISHED
+input VideoStartEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoStartEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
 }
 
 input VideoPlayEventCreateInput {
@@ -693,15 +703,97 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
-  state: VideoPlayEventStateEnum!
   position: Float
 }
 
 type VideoPlayEvent implements Event {
   id: ID!
   userId: ID!
-  state: VideoPlayEventStateEnum!
-  position: Int
+  position: Float
+  block: VideoBlock
+}
+
+input VideoPauseEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoPauseEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
+}
+
+input VideoCompleteEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoCompleteEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
+}
+
+input VideoExpandEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoExpandEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
+}
+
+input VideoCollapseEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoCollapseEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
+}
+
+input VideoProgressEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+
+  """Progress of the video based on the startAt and endAt values of video"""
+  progress: Int!
+}
+
+type VideoProgressEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  progress: Int!
   block: VideoBlock
 }
 
@@ -762,83 +854,6 @@ type UserJourney @key(fields: "id") {
   user: User
 }
 
-input RadioQuestionResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID @deprecated(reason: "use event instead of response")
-  blockId: ID @deprecated(reason: "use event instead of response")
-  radioOptionBlockId: ID @deprecated(reason: "use event instead of response")
-}
-
-type RadioQuestionResponse implements Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-  radioOptionBlockId: ID! @deprecated(reason: "use event instead of response")
-  block: RadioQuestionBlock @deprecated(reason: "use event instead of response")
-}
-
-interface Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-}
-
-input SignUpResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID @deprecated(reason: "use event instead of response")
-  blockId: ID @deprecated(reason: "use event instead of response")
-  name: String @deprecated(reason: "use event instead of response")
-  email: String @deprecated(reason: "use event instead of response")
-}
-
-type SignUpResponse implements Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-  name: String! @deprecated(reason: "use event instead of response")
-  email: String! @deprecated(reason: "use event instead of response")
-  block: SignUpBlock @deprecated(reason: "use event instead of response")
-}
-
-input StepResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID @deprecated(reason: "use event instead of response")
-  blockId: ID @deprecated(reason: "use event instead of response")
-}
-
-type StepResponse implements Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-  block: StepBlock @deprecated(reason: "use event instead of response")
-}
-
-enum VideoResponseStateEnum {
-  PLAYING @deprecated(reason: "use event instead of response")
-  PAUSED @deprecated(reason: "use event instead of response")
-  FINISHED @deprecated(reason: "use event instead of response")
-}
-
-input VideoResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID @deprecated(reason: "use event instead of response")
-  blockId: ID @deprecated(reason: "use event instead of response")
-  state: VideoResponseStateEnum @deprecated(reason: "use event instead of response")
-  position: Float @deprecated(reason: "use event instead of response")
-}
-
-type VideoResponse implements Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-  state: VideoResponseStateEnum! @deprecated(reason: "use event instead of response")
-  position: Int @deprecated(reason: "use event instead of response")
-  block: VideoBlock @deprecated(reason: "use event instead of response")
-}
-
 enum UserJourneyRole {
   inviteRequested
   editor
@@ -880,14 +895,16 @@ extend type Mutation {
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
+  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
+  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent!
+  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
+  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
+  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey
-  radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
-  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
-  stepResponseCreate(input: StepResponseCreateInput!): SignUpResponse!
-  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!

@@ -1,9 +1,18 @@
 import { ReactElement } from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { SnackbarProvider } from 'notistack'
+import TagManager from 'react-gtm-module'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { TreeBlock, handleAction } from '../..'
-import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
+import {
+  TreeBlock,
+  handleAction,
+  JourneyProvider,
+  activeBlockVar,
+  treeBlocksVar
+} from '../..'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/transformer/__generated__/BlockFields'
+import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
 
 jest.mock('../../libs/action', () => {
@@ -14,6 +23,17 @@ jest.mock('../../libs/action', () => {
     handleAction: jest.fn()
   }
 })
+
+jest.mock('react-gtm-module', () => ({
+  __esModule: true,
+  default: {
+    dataLayer: jest.fn()
+  }
+}))
+
+const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
+  typeof TagManager.dataLayer
+>
 
 jest.mock('next/router', () => ({
   useRouter() {
@@ -51,7 +71,11 @@ const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
 
 describe('SignUp', () => {
   it('should validate when fields are empty', async () => {
-    const { getByRole, getAllByText } = render(<SignUpMock />)
+    const { getByRole, getAllByText } = render(
+      <SnackbarProvider>
+        <SignUpMock />
+      </SnackbarProvider>
+    )
 
     const submit = getByRole('button')
 
@@ -65,7 +89,11 @@ describe('SignUp', () => {
   })
 
   it('should validate when name is too short', async () => {
-    const { getByLabelText, getByRole, getByText } = render(<SignUpMock />)
+    const { getByLabelText, getByRole, getByText } = render(
+      <SnackbarProvider>
+        <SignUpMock />
+      </SnackbarProvider>
+    )
 
     const name = getByLabelText('Name')
     const submit = getByRole('button')
@@ -80,7 +108,11 @@ describe('SignUp', () => {
   })
 
   it('should validate when name is too long', async () => {
-    const { getByLabelText, getByRole, getByText } = render(<SignUpMock />)
+    const { getByLabelText, getByRole, getByText } = render(
+      <SnackbarProvider>
+        <SignUpMock />
+      </SnackbarProvider>
+    )
 
     const name = getByLabelText('Name')
     const submit = getByRole('button')
@@ -97,7 +129,11 @@ describe('SignUp', () => {
   })
 
   it('should validate when email is invalid', async () => {
-    const { getByLabelText, getByRole, getByText } = render(<SignUpMock />)
+    const { getByLabelText, getByRole, getByText } = render(
+      <SnackbarProvider>
+        <SignUpMock />
+      </SnackbarProvider>
+    )
 
     const email = getByLabelText('Email')
     const submit = getByRole('button')
@@ -115,7 +151,7 @@ describe('SignUp', () => {
     const mocks = [
       {
         request: {
-          query: SIGN_UP_RESPONSE_CREATE,
+          query: SIGN_UP_SUBMISSION_EVENT_CREATE,
           variables: {
             input: {
               id: 'uuid',
@@ -127,7 +163,7 @@ describe('SignUp', () => {
         },
         result: {
           data: {
-            signUpResponseCreate: {
+            signUpSubmissionEventCreate: {
               id: 'uuid',
               blockId: 'signUp0.id',
               name: 'Anon',
@@ -138,7 +174,13 @@ describe('SignUp', () => {
       }
     ]
 
-    const { getByLabelText, getByRole } = render(<SignUpMock mocks={mocks} />)
+    const { getByLabelText, getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <SignUpMock mocks={mocks} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
 
     const name = getByLabelText('Name')
     const email = getByLabelText('Email')
@@ -163,13 +205,14 @@ describe('SignUp', () => {
     })
   })
 
-  // it('should show error when submit fails', async () => {
-  // })
-
   it('should be in a loading state when waiting for response', async () => {
     const { getByRole, getByLabelText } = render(
       <ApolloLoadingProvider>
-        <SignUp {...block} uuid={() => 'uuid'} />
+        <JourneyProvider>
+          <SnackbarProvider>
+            <SignUp {...block} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
       </ApolloLoadingProvider>
     )
     const name = getByLabelText('Name')
@@ -185,5 +228,162 @@ describe('SignUp', () => {
 
     await waitFor(() => expect(submit).toHaveClass('MuiLoadingButton-loading'))
     expect(submit).toBeDisabled()
+  })
+
+  it('should create submission event on click', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        signUpSubmissionEventCreate: {
+          id: 'uuid',
+          blockId: 'signUp0.id',
+          name: 'Anon',
+          email: '123abc@gmail.com'
+        }
+      }
+    }))
+
+    const mocks = [
+      {
+        request: {
+          query: SIGN_UP_SUBMISSION_EVENT_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              blockId: 'signUp0.id',
+              name: 'Anon',
+              email: '123abc@gmail.com'
+            }
+          }
+        },
+        result
+      }
+    ]
+
+    const { getByLabelText, getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <SignUpMock mocks={mocks} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const name = getByLabelText('Name')
+    const email = getByLabelText('Email')
+    const submit = getByRole('button')
+
+    fireEvent.change(name, { target: { value: 'Anon' } })
+    fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
+    fireEvent.click(submit)
+
+    await waitFor(() => {
+      expect(result).toBeCalled()
+    })
+  })
+
+  it('should add submission event to dataLayer', async () => {
+    const activeBlock: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'Step1',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: []
+    }
+    activeBlockVar(activeBlock)
+    treeBlocksVar([activeBlock])
+
+    const mocks = [
+      {
+        request: {
+          query: SIGN_UP_SUBMISSION_EVENT_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              blockId: 'signUp0.id',
+              name: 'Anon',
+              email: '123abc@gmail.com'
+            }
+          }
+        },
+        result: {
+          data: {
+            signUpSubmissionEventCreate: {
+              id: 'uuid',
+              blockId: 'signUp0.id',
+              name: 'Anon',
+              email: '123abc@gmail.com'
+            }
+          }
+        }
+      }
+    ]
+
+    const { getByLabelText, getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <SignUpMock mocks={mocks} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const name = getByLabelText('Name')
+    const email = getByLabelText('Email')
+    const submit = getByRole('button')
+
+    fireEvent.change(name, { target: { value: 'Anon' } })
+    fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
+    fireEvent.click(submit)
+
+    await waitFor(() => {
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'sign_up_submission',
+          eventId: 'uuid',
+          blockId: 'signUp0.id',
+          stepName: 'Step 1'
+        }
+      })
+    })
+  })
+
+  it('should show error when submit fails', async () => {
+    const mocks = [
+      {
+        request: {
+          query: SIGN_UP_SUBMISSION_EVENT_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              blockId: 'signUp0.id',
+              name: 'Anon',
+              email: '123abc@gmail.com'
+            }
+          }
+        },
+        error: new Error('Error')
+      }
+    ]
+
+    const { getByRole, getByLabelText, getByText } = render(
+      <JourneyProvider>
+        <SnackbarProvider>
+          <SignUpMock mocks={mocks} />
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+    const name = getByLabelText('Name')
+    const email = getByLabelText('Email')
+    const submit = getByRole('button')
+
+    fireEvent.change(name, { target: { value: 'Anon' } })
+    fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
+    fireEvent.click(submit)
+
+    expect(await waitFor(() => getByText('Error'))).toBeInTheDocument()
   })
 })

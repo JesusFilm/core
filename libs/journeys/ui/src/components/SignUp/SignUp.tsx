@@ -2,21 +2,33 @@ import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
 import { useRouter } from 'next/router'
 import { object, string } from 'yup'
-import { useMutation, gql } from '@apollo/client'
+import { useMutation, gql, ApolloError } from '@apollo/client'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import Box from '@mui/material/Box'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { v4 as uuidv4 } from 'uuid'
-import { TreeBlock, handleAction, useEditor } from '../..'
+import { useSnackbar } from 'notistack'
+import TagManager from 'react-gtm-module'
+import { useTranslation } from 'react-i18next'
+import {
+  TreeBlock,
+  handleAction,
+  useEditor,
+  useJourney,
+  useBlocks,
+  getStepHeading
+} from '../..'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
-import { SignUpResponseCreate } from './__generated__/SignUpResponseCreate'
+import { SignUpSubmissionEventCreate } from './__generated__/SignUpSubmissionEventCreate'
 import { SignUpFields } from './__generated__/SignUpFields'
 import { TextField } from './TextField'
 
-export const SIGN_UP_RESPONSE_CREATE = gql`
-  mutation SignUpResponseCreate($input: SignUpResponseCreateInput!) {
-    signUpResponseCreate(input: $input) {
+export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
+  mutation SignUpSubmissionEventCreate(
+    $input: SignUpSubmissionEventCreateInput!
+  ) {
+    signUpSubmissionEventCreate(input: $input) {
       id
       name
       email
@@ -46,47 +58,67 @@ export const SignUp = ({
   sx,
   ...props
 }: SignUpProps): ReactElement => {
+  const { t } = useTranslation('libs-journeys-ui')
+
   const submitIcon = children.find((block) => block.id === submitIconId) as
     | TreeBlock<IconFields>
     | undefined
 
+  const { admin } = useJourney()
+  const { enqueueSnackbar } = useSnackbar()
+  const { activeBlock, treeBlocks } = useBlocks()
+
+  const heading =
+    activeBlock != null
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks)
+      : 'None'
+
   const router = useRouter()
-  const [signUpResponseCreate, { loading }] = useMutation<SignUpResponseCreate>(
-    SIGN_UP_RESPONSE_CREATE
-  )
+  const [signUpSubmissionEventCreate, { loading }] =
+    useMutation<SignUpSubmissionEventCreate>(SIGN_UP_SUBMISSION_EVENT_CREATE)
 
   const initialValues: SignUpFormValues = { name: '', email: '' }
   const signUpSchema = object().shape({
     name: string()
-      .min(2, 'Name must be 2 characters or more')
-      .max(50, 'Name must be 50 characters or less')
-      .required('Required'),
+      .min(2, t('Name must be 2 characters or more'))
+      .max(50, t('Name must be 50 characters or less'))
+      .required(t('Required')),
     email: string()
-      .email('Please enter a valid email address')
-      .required('Required')
+      .email(t('Please enter a valid email address'))
+      .required(t('Required'))
   })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
-    const id = uuid()
-    await signUpResponseCreate({
-      variables: {
-        input: {
-          id,
-          blockId,
-          name: values.name,
-          email: values.email
-        }
-      },
-      optimisticResponse: {
-        signUpResponseCreate: {
-          id,
-          __typename: 'SignUpResponse',
-          name: values.name,
-          email: values.email
+    if (!admin) {
+      const id = uuid()
+      try {
+        await signUpSubmissionEventCreate({
+          variables: {
+            input: {
+              id,
+              blockId,
+              name: values.name,
+              email: values.email
+            }
+          }
+        })
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'sign_up_submission',
+            eventId: id,
+            blockId,
+            stepName: heading
+          }
+        })
+      } catch (e) {
+        if (e instanceof ApolloError) {
+          enqueueSnackbar(e.message, {
+            variant: 'error',
+            preventDuplicate: true
+          })
         }
       }
-      // TODO: Set server error responses when available
-    })
+    }
   }
 
   const {
@@ -102,7 +134,6 @@ export const SignUp = ({
         }
         onSubmit={(values) => {
           if (selectedBlock === undefined) {
-            // TODO: Handle server error responses when available
             void onSubmitHandler(values).then(() => {
               handleAction(router, action)
             })
@@ -122,14 +153,14 @@ export const SignUp = ({
               {...formikProps}
               id="name"
               name="name"
-              label="Name"
+              label={t('Name')}
               disabled={selectedBlock !== undefined}
             />
             <TextField
               {...formikProps}
               id="email"
               name="email"
-              label="Email"
+              label={t('Email')}
               disabled={selectedBlock !== undefined}
             />
             <LoadingButton
@@ -145,7 +176,7 @@ export const SignUp = ({
                 mb: 0
               }}
             >
-              {editableSubmitLabel ?? submitLabel ?? 'Submit'}
+              {editableSubmitLabel ?? submitLabel ?? t('Submit')}
             </LoadingButton>
           </Form>
         )}

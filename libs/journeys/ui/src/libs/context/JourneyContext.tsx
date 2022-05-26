@@ -3,10 +3,10 @@ import { JourneyFields as Journey } from './__generated__/JourneyFields'
 
 interface Context {
   journey?: Journey
-  admin?: boolean
+  admin: boolean
 }
 
-const JourneyContext = createContext<Context>({})
+const JourneyContext = createContext<Context>({ admin: false })
 
 export function useJourney(): Context {
   const context = useContext(JourneyContext)
@@ -16,7 +16,7 @@ export function useJourney(): Context {
 
 interface JourneyProviderProps {
   children: ReactNode
-  value: Context
+  value?: Partial<Context>
 }
 
 export function JourneyProvider({
@@ -24,6 +24,8 @@ export function JourneyProvider({
   children
 }: JourneyProviderProps): ReactElement {
   return (
-    <JourneyContext.Provider value={value}>{children}</JourneyContext.Provider>
+    <JourneyContext.Provider value={{ admin: false, ...value }}>
+      {children}
+    </JourneyContext.Provider>
   )
 }

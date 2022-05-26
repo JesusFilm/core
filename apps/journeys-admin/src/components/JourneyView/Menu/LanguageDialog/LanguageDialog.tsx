@@ -1,11 +1,12 @@
 import { ReactElement } from 'react'
-import { useMutation, gql } from '@apollo/client'
+import { useMutation, useQuery, gql } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
 import { useJourney } from '@core/journeys/ui'
 import { JourneyLanguageUpdate } from '../../../../../__generated__/JourneyLanguageUpdate'
 import { Dialog } from '../../../Dialog'
 import { LanguageSelect } from '../../../LanguageSelect'
+import { GetLanguages } from '../../../../../__generated__/GetLanguages'
 
 export const JOURNEY_LANGUAGE_UPDATE = gql`
   mutation JourneyLanguageUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -17,6 +18,18 @@ export const JOURNEY_LANGUAGE_UPDATE = gql`
           value
           primary
         }
+      }
+    }
+  }
+`
+
+export const GET_LANGUAGES = gql`
+  query GetLanguages($languageId: ID) {
+    languages(limit: 5000) {
+      id
+      name(languageId: $languageId, primary: true) {
+        value
+        primary
       }
     }
   }
@@ -34,6 +47,10 @@ export function LanguageDialog({
   const [journeyUpdate] = useMutation<JourneyLanguageUpdate>(
     JOURNEY_LANGUAGE_UPDATE
   )
+  const { data, loading } = useQuery<GetLanguages>(GET_LANGUAGES, {
+    variables: { languageId: '529' }
+  })
+
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
@@ -44,7 +61,7 @@ export function LanguageDialog({
       await journeyUpdate({
         variables: {
           id: journey.id,
-          input: { languageId: values.languageId }
+          input: { languageId: values.language.id }
         }
       })
       onClose()
@@ -60,7 +77,23 @@ export function LanguageDialog({
       onClose()
       // wait for dialog animation to complete
       setTimeout(
-        () => resetForm({ values: { languageId: journey?.language?.id } }),
+        () =>
+          resetForm({
+            values: {
+              language:
+                journey != null
+                  ? {
+                      id: journey.language.id,
+                      localName: journey.language.name.find(
+                        ({ primary }) => !primary
+                      )?.value,
+                      nativeName: journey.language.name.find(
+                        ({ primary }) => primary
+                      )?.value
+                    }
+                  : undefined
+            }
+          }),
         500
       )
     }
@@ -70,7 +103,20 @@ export function LanguageDialog({
     <>
       {journey != null && (
         <Formik
-          initialValues={{ languageId: journey.language?.id }}
+          initialValues={{
+            language:
+              journey != null
+                ? {
+                    id: journey.language.id,
+                    localName: journey.language.name.find(
+                      ({ primary }) => !primary
+                    )?.value,
+                    nativeName: journey.language.name.find(
+                      ({ primary }) => primary
+                    )?.value
+                  }
+                : undefined
+          }}
           onSubmit={handleSubmit}
         >
           {({ values, handleSubmit, resetForm, setFieldValue }) => (
@@ -85,9 +131,10 @@ export function LanguageDialog({
             >
               <Form>
                 <LanguageSelect
-                  onChange={(value) => setFieldValue('languageId', value)}
-                  value={values.languageId}
-                  currentLanguageId="529"
+                  onChange={(value) => setFieldValue('language', value)}
+                  value={values.language}
+                  languages={data?.languages}
+                  loading={loading}
                 />
               </Form>
             </Dialog>

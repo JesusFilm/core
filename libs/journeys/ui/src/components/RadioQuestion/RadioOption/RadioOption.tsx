@@ -37,8 +37,8 @@ export function RadioOption({
   const router = useRouter()
 
   const handleClick = (): void => {
-    handleAction(router, action)
     onClick?.(id)
+    handleAction(router, action)
   }
 
   return (

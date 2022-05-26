@@ -124,30 +124,75 @@ export enum TypographyVariant {
   subtitle2 = "subtitle2",
 }
 
-export enum VideoPlayEventStateEnum {
-  FINISHED = "FINISHED",
-  PAUSED = "PAUSED",
-  PLAYING = "PLAYING",
+export interface ButtonClickEventCreateInput {
+  blockId: string;
+  id?: string | null;
 }
 
-export interface RadioQuestionResponseCreateInput {
-  blockId?: string | null;
+export interface JourneyViewEventCreateInput {
   id?: string | null;
-  radioOptionBlockId?: string | null;
+  journeyId: string;
 }
 
-export interface SignUpResponseCreateInput {
-  blockId?: string | null;
-  email?: string | null;
+export interface RadioQuestionSubmissionEventCreateInput {
+  blockId: string;
   id?: string | null;
-  name?: string | null;
+  radioOptionBlockId: string;
+}
+
+export interface SignUpSubmissionEventCreateInput {
+  blockId: string;
+  email: string;
+  id?: string | null;
+  name: string;
+}
+
+export interface StepViewEventCreateInput {
+  blockId: string;
+  id?: string | null;
+}
+
+export interface VideoCollapseEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  position?: number | null;
+}
+
+export interface VideoCompleteEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  position?: number | null;
+}
+
+export interface VideoExpandEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  position?: number | null;
+}
+
+export interface VideoPauseEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  position?: number | null;
 }
 
 export interface VideoPlayEventCreateInput {
   blockId: string;
   id?: string | null;
   position?: number | null;
-  state: VideoPlayEventStateEnum;
+}
+
+export interface VideoProgressEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  position?: number | null;
+  progress: number;
+}
+
+export interface VideoStartEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  position?: number | null;
 }
 
 //==============================================================

@@ -1,13 +1,40 @@
 import { useBreakpoints } from '@core/shared/ui'
-import { activeBlockVar, TreeBlock, treeBlocksVar } from '@core/journeys/ui'
+import {
+  activeBlockVar,
+  JourneyProvider,
+  TreeBlock,
+  treeBlocksVar
+} from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { v4 as uuidv4 } from 'uuid'
+import TagManager from 'react-gtm-module'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { JOURNEY_VIEW_EVENT_CREATE } from './Conductor'
 import { Conductor } from '.'
 
 jest.mock('../../../../../libs/shared/ui/src/', () => ({
   __esModule: true,
   useBreakpoints: jest.fn()
 }))
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+
+jest.mock('react-gtm-module', () => ({
+  __esModule: true,
+  default: {
+    dataLayer: jest.fn()
+  }
+}))
+
+const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
+  typeof TagManager.dataLayer
+>
 
 beforeEach(() => {
   const useBreakpointsMock = useBreakpoints as jest.Mock
@@ -21,6 +48,97 @@ beforeEach(() => {
 })
 
 describe('Conductor', () => {
+  it('should create a journeyViewEvent', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+
+    const result = jest.fn(() => ({
+      data: {
+        journeyViewEventCreate: {
+          id: 'uuid',
+          __typename: 'JourneyViewEvent'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_VIEW_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  journeyId: 'journeyId'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey
+          }}
+        >
+          <Conductor blocks={[]} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should add journeyViewEvent to dataLayer', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_VIEW_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  journeyId: 'journeyId'
+                }
+              }
+            },
+            result: {
+              data: {
+                journeyViewEventCreate: {
+                  id: 'uuid',
+                  __typename: 'JourneyViewEvent'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              title: 'journey title'
+            } as unknown as Journey
+          }}
+        >
+          <Conductor blocks={[]} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'journey_view',
+          journeyId: 'journeyId',
+          eventId: 'uuid',
+          journeyTitle: 'journey title'
+        }
+      })
+    )
+  })
   it('should show first block', () => {
     const blocks: TreeBlock[] = [
       {
