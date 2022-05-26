@@ -3,6 +3,7 @@
   "sourceRoot": "libs/journeys/ui/src",
   "projectType": "library",
   "tags": [],
+  "implicitDependencies": ["locales"],
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",

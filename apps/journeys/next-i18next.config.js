@@ -7,7 +7,7 @@ const i18nConfig = {
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
-    localePath: path.resolve('./locales')
+    localePath: path.resolve('./libs/locales')
   }
 }
 
