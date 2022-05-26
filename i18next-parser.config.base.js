@@ -8,7 +8,7 @@ module.exports = {
     default: ['JavascriptLexer']
   },
   locales: ['en'],
-  output: 'locales/$LOCALE/$NAMESPACE.json',
+  output: 'libs/locales/$LOCALE/$NAMESPACE.json',
   verbose: true,
   namespaceSeparator: false,
   keySeparator: false,
