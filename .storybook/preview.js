@@ -50,10 +50,12 @@ module.exports = {
     viewport: {
       viewports: customViewports
     },
-    i18n,
+    i18n: i18n.default,
     locale: 'en',
     locales: {
-      en: 'English'
+      en: 'English',
+      af: 'Afrikaans',
+      mi: 'Maori'
     }
   },
   globalTypes: {
