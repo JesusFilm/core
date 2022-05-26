@@ -4,6 +4,10 @@ import { useQuery, gql } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
+import { GetStaticProps } from 'next'
+import { SSRConfig } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 
 import { PageWrapper } from '../../src/components/PageWrapper'
 import {
@@ -43,8 +47,9 @@ export const GET_COUNTRY = gql`
   }
 `
 
-function CountriesPage(): ReactElement {
+function CountryPage(): ReactElement {
   const languageContext = useLanguage()
+  const { t } = useTranslation('apps-watch')
   const router = useRouter()
   const { slug } = router.query
   const { routes } = routeParser(slug)
@@ -62,10 +67,10 @@ function CountriesPage(): ReactElement {
           <Typography variant="h2">{data.country.name[0]?.value}</Typography>
           <Stack direction="row" justifyContent="space-between">
             <Typography variant="caption">
-              Part of {data.country.continent[0]?.value}
+              {t('Part of')} {data.country.continent[0]?.value}
             </Typography>
             <Typography variant="caption">
-              Population:{' '}
+              {t('Population')}:
               {data.country.population.toLocaleString(
                 router.locale ?? router.defaultLocale
               )}
@@ -85,4 +90,12 @@ function CountriesPage(): ReactElement {
   )
 }
 
-export default CountriesPage
+export const getStaticProps: GetStaticProps<SSRConfig> = async (context) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(context.locale ?? 'en', ['apps-watch'])) // namespaces your components make use of
+    }
+  }
+}
+
+export default CountryPage

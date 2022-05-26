@@ -10,7 +10,7 @@ interface VideoListCarouselProps {
   videos: GetVideos_videos[]
   loading?: boolean
   routePrefix?: string | undefined
-  onLoadMore?: () => Promise<void> | undefined
+  onLoadMore: () => Promise<void> | undefined
 }
 
 const responsive = {

@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Image from 'next/image'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'react-i18next'
 
 import Logo from '../../../public/taskbar-icon.svg'
 import JFLogo from '../../../public/images/jf-logo@2x.png'
@@ -19,6 +20,7 @@ interface FooterProps {
 }
 
 export function Footer({ isHome = false }: FooterProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
   return (
     <Container
       sx={{
@@ -55,22 +57,24 @@ export function Footer({ isHome = false }: FooterProps): ReactElement {
             width="100%"
           >
             <Stack direction="column" spacing="12px">
-              <Typography variant="overline">Site</Typography>
-              <Typography variant="body1">Home</Typography>
-              <Typography variant="body1">About</Typography>
-              <Typography variant="body1">Contact Us</Typography>
+              <Typography variant="overline">{t('Site')}</Typography>
+              <Typography variant="body1">{t('Home')}</Typography>
+              <Typography variant="body1">{t('About')}</Typography>
+              <Typography variant="body1">{t('Contact Us')}</Typography>
             </Stack>
             <Stack direction="column" spacing="12px">
-              <Typography variant="overline">Apps</Typography>
-              <Typography variant="body1">Android</Typography>
-              <Typography variant="body1">iPhone</Typography>
+              <Typography variant="overline">{t('Apps')}</Typography>
+              <Typography variant="body1">{t('Android')}</Typography>
+              <Typography variant="body1">{t('iPhone')}</Typography>
             </Stack>
             <Stack direction="column" spacing="12px">
-              <Typography variant="overline">Sections</Typography>
-              <Typography variant="body1">Strategies and Tools</Typography>
-              <Typography variant="body1">How to Help</Typography>
-              <Typography variant="body1">Need Help?</Typography>
-              <Typography variant="body1">Ways to Donate</Typography>
+              <Typography variant="overline">{t('Sections')}</Typography>
+              <Typography variant="body1">
+                {t('Strategies and Tools')}
+              </Typography>
+              <Typography variant="body1">{t('How to Help')}</Typography>
+              <Typography variant="body1">{t('Need Help?')}</Typography>
+              <Typography variant="body1">{t('Ways to Donate')}</Typography>
             </Stack>
           </Stack>
           <Box width="220px">
@@ -117,14 +121,16 @@ export function Footer({ isHome = false }: FooterProps): ReactElement {
           }}
         >
           <Stack direction="row" spacing="100px">
-            <Typography variant="body2">Copyright © 1995-2022</Typography>
-            <Typography variant="body2">Jesus Film Project®</Typography>
-            <Typography variant="body2">All rights reserved</Typography>
+            <Typography variant="body2">
+              {t('Copyright © 1995-2022')}
+            </Typography>
+            <Typography variant="body2">{t('Jesus Film Project®')}</Typography>
+            <Typography variant="body2">{t('All rights reserved')}</Typography>
           </Stack>
 
           <Stack direction="row" spacing="100px">
-            <Typography variant="subtitle2">Terms of Use</Typography>
-            <Typography variant="subtitle2">Legal Statement</Typography>
+            <Typography variant="subtitle2">{t('Terms of Use')}</Typography>
+            <Typography variant="subtitle2">{t('Legal Statement')}</Typography>
           </Stack>
         </Stack>
       </Stack>

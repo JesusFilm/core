@@ -28,9 +28,9 @@ export function createApolloClient(
   })
 }
 
-const client = new ApolloClient({
+const apolloClient = new ApolloClient({
   uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
   cache
 })
 
-export default client
+export default apolloClient

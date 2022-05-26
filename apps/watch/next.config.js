@@ -2,6 +2,7 @@
 const withNx = require('@nrwl/next/plugins/with-nx')
 const withPlugins = require('next-compose-plugins')
 const withImages = require('next-images')
+const { i18n } = require('./next-i18next.config')
 /**
  * @type {import('@nrwl/next/plugins/with-nx').WithNxOptions}
  **/
@@ -20,30 +21,7 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false
   },
-  i18n: {
-    locales: [
-      'ar',
-      'de',
-      'en',
-      'es',
-      'fa',
-      'fr',
-      'he',
-      'hi',
-      'id',
-      'ja',
-      'ko',
-      'pt',
-      'ru',
-      'tr',
-      'ur',
-      'vi',
-      'zh-Hans',
-      'zh-Hant'
-    ],
-    defaultLocale: 'en',
-    localeDetection: false
-  },
+  i18n,
   trailingSlash: true
 }
 module.exports = withPlugins([[withImages], [withNx]], nextConfig)

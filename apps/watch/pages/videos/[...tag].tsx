@@ -1,6 +1,9 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
+import { GetStaticProps } from 'next'
+import { SSRConfig } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { PageWrapper } from '../../src/components/PageWrapper'
@@ -12,7 +15,7 @@ import { Videos } from '../../src/components/Videos/Videos'
 import { LanguageProvider } from '../../src/libs/languageContext/LanguageContext'
 import { routeParser } from '../../src/libs/routeParser/routeParser'
 
-function VideoPage(): ReactElement {
+function VideoSearchPage(): ReactElement {
   const router = useRouter()
   const locale = router.locale ?? router.defaultLocale
   const { tag } = router.query
@@ -54,4 +57,12 @@ function VideoPage(): ReactElement {
   )
 }
 
-export default VideoPage
+export const getStaticProps: GetStaticProps<SSRConfig> = async (context) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(context.locale ?? 'en', ['apps-watch'])) // namespaces your components make use of
+    }
+  }
+}
+
+export default VideoSearchPage

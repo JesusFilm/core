@@ -10,6 +10,7 @@ import PlayArrow from '@mui/icons-material/PlayArrow'
 import { secondsToTimeFormat } from '@core/shared/ui'
 import Link from 'next/link'
 import Stack from '@mui/material/Stack'
+import { useTranslation } from 'react-i18next'
 
 import { VideoType } from '../../../../../__generated__/globalTypes'
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
@@ -26,6 +27,7 @@ export function VideoListCard({
   disabled = false,
   routePrefix = undefined
 }: VideoListCardProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
   return (
     <>
       <Card sx={{ width: 338, height: 140, my: 5, mr: 20, mb: '14px', mt: 0 }}>
@@ -78,7 +80,7 @@ export function VideoListCard({
                   )}
                   {video.type === VideoType.playlist && (
                     <Typography variant="body1">
-                      {video.episodeIds.length} episodes
+                      {video.episodeIds.length} {t('episodes')}
                     </Typography>
                   )}
                 </Box>

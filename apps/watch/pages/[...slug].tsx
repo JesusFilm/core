@@ -19,6 +19,10 @@ import Circle from '@mui/icons-material/Circle'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import videojs from 'video.js'
+import { GetStaticProps } from 'next'
+import { SSRConfig } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 
 import { routeParser } from '../src/libs/routeParser/routeParser'
 import { VideoType } from '../__generated__/globalTypes'
@@ -121,7 +125,8 @@ export const throw404 = (): ReactElement => {
   return <Error statusCode={404} />
 }
 
-export default function SeoFriendly(): ReactElement {
+export default function VideoPage(): ReactElement {
+  const { t } = useTranslation('apps-watch')
   const router = useRouter()
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
@@ -290,7 +295,7 @@ export default function SeoFriendly(): ReactElement {
                             onClick={playVideo}
                           >
                             <PlayArrow />
-                            &nbsp; Play Video
+                            &nbsp; {t('Play Video')}
                           </Button>
                           <Stack height="71px" direction="row">
                             <AccessTime sx={{ paddingTop: '23px' }} />
@@ -299,7 +304,7 @@ export default function SeoFriendly(): ReactElement {
                               sx={{ lineHeight: '71px', paddingLeft: '10px' }}
                             >
                               {secondsToMinutes(data.video.variant.duration)}{' '}
-                              min
+                              {t('min')}
                             </Typography>
                           </Stack>
                           <Circle
@@ -311,7 +316,7 @@ export default function SeoFriendly(): ReactElement {
                               variant="body2"
                               sx={{ lineHeight: '71px', paddingLeft: '10px' }}
                             >
-                              Subs
+                              {t('Subs')}
                             </Typography>
                           </Stack>
                         </>
@@ -324,8 +329,8 @@ export default function SeoFriendly(): ReactElement {
                         sx={{ paddingLeft: '10px', lineHeight: '71px' }}
                       >
                         {audioLanguageData?.language.name[0]?.value} +{' '}
-                        {data.video.variantLanguages.length - 1} Additional
-                        Languages
+                        {data.video.variantLanguages.length - 1}
+                        {t('Additional Languages')}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -419,11 +424,11 @@ export default function SeoFriendly(): ReactElement {
                 <Stack direction="row" spacing="20px" mb="40px">
                   <Button variant="outlined">
                     <SaveAlt />
-                    &nbsp; Download
+                    &nbsp; {t('Download')}
                   </Button>
                   <Button variant="outlined">
                     <Share />
-                    &nbsp; Share
+                    &nbsp; {t('Share')}
                   </Button>
                 </Stack>
                 <Stack justifyContent="center" direction="column" width="336px">
@@ -444,4 +449,12 @@ export default function SeoFriendly(): ReactElement {
       <Footer />
     </LanguageProvider>
   )
+}
+
+export const getStaticProps: GetStaticProps<SSRConfig> = async (context) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(context.locale ?? 'en', ['apps-watch'])) // namespaces your components make use of
+    }
+  }
 }

@@ -14,6 +14,9 @@ import Language from '@mui/icons-material/Language'
 import Place from '@mui/icons-material/Place'
 import Link from 'next/link'
 import Chip from '@mui/material/Chip'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { GetStaticProps } from 'next'
+import { SSRConfig } from 'next-i18next'
 
 import { VideoList } from '../src/components/Videos/VideoList/VideoList'
 import { PageWrapper } from '../src/components/PageWrapper'
@@ -43,7 +46,7 @@ export const GET_VIDEO_TAG = gql`
   }
 `
 
-function VideoPage(): ReactElement {
+function HomePage(): ReactElement {
   const languageContext = useLanguage()
   const { data: jfm1Data } = useQuery<GetVideoTag>(GET_VIDEO_TAG, {
     variables: {
@@ -248,4 +251,12 @@ function VideoPage(): ReactElement {
   )
 }
 
-export default VideoPage
+export const getStaticProps: GetStaticProps<SSRConfig> = async (context) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(context.locale ?? 'en', ['apps-watch'])) // namespaces your components make use of
+    }
+  }
+}
+
+export default HomePage

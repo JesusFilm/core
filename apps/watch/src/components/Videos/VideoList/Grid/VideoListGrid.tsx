@@ -4,6 +4,7 @@ import AddRounded from '@mui/icons-material/AddRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { deepmerge } from '@mui/utils'
+import { useTranslation } from 'react-i18next'
 
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
 import { VideoListCard } from '../Card/VideoListCard'
@@ -26,6 +27,7 @@ export function VideoListGrid({
   videos,
   routePrefix = undefined
 }: VideoListGridProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
   const gridTheme = createTheme(
     deepmerge(theme, {
       breakpoints: {
@@ -76,11 +78,11 @@ export function VideoListGrid({
               loadingPosition="start"
               size="medium"
             >
-              {loading && 'Loading...'}
+              {loading && t('Loading...')}
               {!loading &&
                 ((videos?.length ?? 0) > 0 && !isEnd
-                  ? 'Load More'
-                  : 'No More Videos')}
+                  ? t('Load More')
+                  : t('No More Videos'))}
             </LoadingButton>
           </Grid>
         )}

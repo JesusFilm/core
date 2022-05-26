@@ -17,12 +17,14 @@ import SearchIcon from '@mui/icons-material/Search'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'react-i18next'
 
 import logo from '../../../public/taskbar-icon.svg'
 import { useLanguage } from '../../libs/languageContext/LanguageContext'
 
 export function PageWrapper(): React.ReactElement {
   const languageContext = useLanguage()
+  const { t } = useTranslation('apps-watch')
   const [state, setState] = React.useState({
     top: false,
     left: false,
@@ -74,7 +76,7 @@ export function PageWrapper(): React.ReactElement {
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Image src={logo} width="60" height="40" alt="Watch Logo" />
-          <Typography variant="h6">Jesus Film Project</Typography>
+          <Typography variant="h6">{t('Jesus Film Project')}</Typography>
           <Stack spacing={0.5} direction="row">
             <IconButton
               color="inherit"

@@ -8,6 +8,9 @@ import { DefaultSeo } from 'next-seo'
 import { CacheProvider } from '@emotion/react'
 import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui'
+import { appWithTranslation } from 'next-i18next'
+
+import i18nConfig from '../next-i18next.config'
 import { firebaseClient } from '../src/libs/firebaseClient'
 import { createApolloClient } from '../src/libs/client'
 import { ThemeProvider } from '../src/components/ThemeProvider'
@@ -17,7 +20,7 @@ import '../public/styles/video-js.css'
 
 const clientSideEmotionCache = createEmotionCache()
 
-export default function WatchApp({
+function WatchApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
@@ -61,3 +64,5 @@ export default function WatchApp({
     </CacheProvider>
   )
 }
+
+export default appWithTranslation(WatchApp, i18nConfig)

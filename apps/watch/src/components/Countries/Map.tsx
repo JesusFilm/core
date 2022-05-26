@@ -9,6 +9,7 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'react-i18next'
 
 import 'leaflet/dist/leaflet.css'
 import { useQuery } from '@apollo/client'
@@ -26,6 +27,7 @@ L.Marker.prototype.options.icon = DefaultIcon
 export default function Map({ coordinates, zoom }): ReactElement {
   const router = useRouter()
   const languageContext = useLanguage()
+  const { t } = useTranslation('apps-watch')
   const { data } = useQuery<GetCountries>(GET_COUNTRIES, {
     variables: {
       languageId: languageContext?.id ?? '529'
@@ -73,7 +75,7 @@ export default function Map({ coordinates, zoom }): ReactElement {
               </Stack>
               <Stack justifyContent="center">
                 <Link href={`/countries/${country.slug[0]?.value}`} passHref>
-                  <Button color="primary">View</Button>
+                  <Button color="primary">{t('View')}</Button>
                 </Link>
               </Stack>
             </Popup>

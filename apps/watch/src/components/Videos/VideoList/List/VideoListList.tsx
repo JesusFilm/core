@@ -10,6 +10,7 @@ import { secondsToTimeFormat } from '@core/shared/ui'
 import AddRounded from '@mui/icons-material/AddRounded'
 import ListItem from '@mui/material/ListItem'
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 
 import { VideoType } from '../../../../../__generated__/globalTypes'
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
@@ -31,6 +32,7 @@ export function VideoListList({
   onLoadMore = undefined,
   routePrefix = undefined
 }: VideoListListProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
   return (
     <List data-testid="video-list-list">
       {(videos.length ?? 0) > 0 &&
@@ -130,11 +132,11 @@ export function VideoListList({
           loadingPosition="start"
           size="medium"
         >
-          {loading && 'Loading...'}
+          {loading && t('Loading...')}
           {!loading &&
             ((videos?.length ?? 0) > 0 && !isEnd
-              ? 'Load More'
-              : 'No More Videos')}
+              ? t('Load More')
+              : t('No More Videos'))}
         </LoadingButton>
       )}
     </List>

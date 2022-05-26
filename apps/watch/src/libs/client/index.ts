@@ -1,5 +1,5 @@
-import client from './client'
+import apolloClient from './client'
 
 export { createApolloClient } from './client'
 
-export default client
+export default apolloClient
