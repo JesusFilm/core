@@ -13,7 +13,7 @@ const UserMenuStory = {
   parameters: {
     chromatic: {
       ...simpleComponentConfig.parameters.chromatic,
-      disableSnapshot: false
+      diffThreshold: 0.95,
     }
   }
 }
