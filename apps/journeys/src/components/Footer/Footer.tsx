@@ -6,11 +6,12 @@ import { useTranslation } from 'react-i18next'
 
 export function Footer(): ReactElement {
   const { t } = useTranslation('apps-journeys')
-  const year = new Date().getFullYear()
 
   return (
     <Stack direction="row" spacing={3}>
-      <Typography variant="caption">{t(`NextSteps © ${year}`)}</Typography>
+      <Typography variant="caption">
+        {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
+      </Typography>
       <MuiLink
         href="https://www.cru.org/us/en/about/terms-of-use.html"
         variant="caption"

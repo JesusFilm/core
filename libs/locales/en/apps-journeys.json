@@ -1,7 +1,7 @@
 {
   "%s | Next Steps": "%s | Next Steps",
   "Next Steps | Helping you find the next best step on your spiritual journey": "Next Steps | Helping you find the next best step on your spiritual journey",
-  "NextSteps © 2022": "NextSteps © 2022",
+  "NextSteps © {{year}}": "NextSteps © {{year}}",
   "Terms": "Terms",
   "Privacy": "Privacy"
 }
