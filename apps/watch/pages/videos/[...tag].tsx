@@ -14,6 +14,7 @@ import {
 import { Videos } from '../../src/components/Videos/Videos'
 import { LanguageProvider } from '../../src/libs/languageContext/LanguageContext'
 import { routeParser } from '../../src/libs/routeParser/routeParser'
+import i18nConfig from '../../next-i18next.config'
 
 function VideoSearchPage(): ReactElement {
   const router = useRouter()
@@ -60,7 +61,11 @@ function VideoSearchPage(): ReactElement {
 export const getStaticProps: GetStaticProps<SSRConfig> = async (context) => {
   return {
     props: {
-      ...(await serverSideTranslations(context.locale ?? 'en', ['apps-watch'])) // namespaces your components make use of
+      ...(await serverSideTranslations(
+        context.locale ?? 'en',
+        ['apps-watch'],
+        i18nConfig
+      ))
     }
   }
 }

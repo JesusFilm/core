@@ -35,6 +35,7 @@ import { PageWrapper } from '../src/components/PageWrapper'
 import { darkTheme } from '../src/components/ThemeProvider/ThemeProvider'
 import { VideoListCarousel } from '../src/components/Videos/VideoList/Carousel/VideoListCarousel'
 import { Footer } from '../src/components/Footer/Footer'
+import i18nConfig from '../next-i18next.config'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID) {
@@ -454,7 +455,11 @@ export default function VideoPage(): ReactElement {
 export const getStaticProps: GetStaticProps<SSRConfig> = async (context) => {
   return {
     props: {
-      ...(await serverSideTranslations(context.locale ?? 'en', ['apps-watch'])) // namespaces your components make use of
+      ...(await serverSideTranslations(
+        context.locale ?? 'en',
+        ['apps-watch'],
+        i18nConfig
+      ))
     }
   }
 }

@@ -28,6 +28,7 @@ import {
   useLanguage
 } from '../src/libs/languageContext/LanguageContext'
 import { Footer } from '../src/components/Footer/Footer'
+import i18nConfig from '../next-i18next.config'
 
 export const GET_VIDEO_TAG = gql`
   query GetVideoTag($id: ID!, $languageId: ID) {
@@ -254,7 +255,11 @@ function HomePage(): ReactElement {
 export const getStaticProps: GetStaticProps<SSRConfig> = async (context) => {
   return {
     props: {
-      ...(await serverSideTranslations(context.locale ?? 'en', ['apps-watch'])) // namespaces your components make use of
+      ...(await serverSideTranslations(
+        context.locale ?? 'en',
+        ['apps-watch'],
+        i18nConfig
+      ))
     }
   }
 }

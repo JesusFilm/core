@@ -17,6 +17,7 @@ import {
 import { Countries } from '../../src/components/Countries/Countries'
 import { GetCountry } from '../../__generated__/GetCountry'
 import { routeParser } from '../../src/libs/routeParser/routeParser'
+import i18nConfig from '../../next-i18next.config'
 
 export const GET_COUNTRY = gql`
   query GetCountry($id: ID!, $languageId: ID) {
@@ -93,7 +94,11 @@ function CountryPage(): ReactElement {
 export const getStaticProps: GetStaticProps<SSRConfig> = async (context) => {
   return {
     props: {
-      ...(await serverSideTranslations(context.locale ?? 'en', ['apps-watch'])) // namespaces your components make use of
+      ...(await serverSideTranslations(
+        context.locale ?? 'en',
+        ['apps-watch'],
+        i18nConfig
+      ))
     }
   }
 }
