@@ -304,8 +304,11 @@ export default function VideoPage(): ReactElement {
                               variant="body2"
                               sx={{ lineHeight: '71px', paddingLeft: '10px' }}
                             >
-                              {secondsToMinutes(data.video.variant.duration)}{' '}
-                              {t('min')}
+                              {t('{{minutes}} min', {
+                                minutes: secondsToMinutes(
+                                  data.video.variant.duration
+                                )
+                              })}
                             </Typography>
                           </Stack>
                           <Circle

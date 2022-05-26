@@ -68,13 +68,16 @@ function CountryPage(): ReactElement {
           <Typography variant="h2">{data.country.name[0]?.value}</Typography>
           <Stack direction="row" justifyContent="space-between">
             <Typography variant="caption">
-              {t('Part of')} {data.country.continent[0]?.value}
+              {t('Part of {{country}}', {
+                country: data.country.continent[0]?.value
+              })}
             </Typography>
             <Typography variant="caption">
-              {t('Population')}:
-              {data.country.population.toLocaleString(
-                router.locale ?? router.defaultLocale
-              )}
+              {t('Population: {{population}}', {
+                population: data.country.population.toLocaleString(
+                  router.locale ?? router.defaultLocale
+                )
+              })}
             </Typography>
           </Stack>
           <Countries

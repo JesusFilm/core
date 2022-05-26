@@ -122,7 +122,9 @@ export function Footer({ isHome = false }: FooterProps): ReactElement {
         >
           <Stack direction="row" spacing="100px">
             <Typography variant="body2">
-              {t('Copyright © 1995-2022')}
+              {t('Copyright © 1995-{{year}}', {
+                year: new Date().getFullYear().toString()
+              })}
             </Typography>
             <Typography variant="body2">{t('Jesus Film Project®')}</Typography>
             <Typography variant="body2">{t('All rights reserved')}</Typography>

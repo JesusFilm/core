@@ -80,7 +80,9 @@ export function VideoListCard({
                   )}
                   {video.type === VideoType.playlist && (
                     <Typography variant="body1">
-                      {video.episodeIds.length} {t('episodes')}
+                      {t('{{episodes}} episodes', {
+                        episode: video.episodeIds.length
+                      })}
                     </Typography>
                   )}
                 </Box>
