@@ -15,11 +15,6 @@ async function main(): Promise<void> {
   if (!(await db.collection('blocks').exists()))
     await db.createCollection('blocks', { keyOptions: { type: 'uuid' } })
 
-  if (!(await db.collection('responses').exists()))
-    await db.createCollection('responses', {
-      keyOptions: { type: 'uuid' }
-    })
-
   if (!(await db.collection('events').exists()))
     await db.createCollection('events', {
       keyOptions: { type: 'uuid' }

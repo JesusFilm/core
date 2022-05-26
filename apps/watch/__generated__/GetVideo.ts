@@ -74,6 +74,17 @@ export interface GetVideo_video_slug {
   value: string;
 }
 
+export interface GetVideo_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+}
+
+export interface GetVideo_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: GetVideo_video_variantLanguages_name[];
+}
+
 export interface GetVideo_video {
   __typename: "Video";
   id: string;
@@ -87,6 +98,7 @@ export interface GetVideo_video {
    * slug is a permanent link to the video. It should only be appended, not edited or deleted
    */
   slug: GetVideo_video_slug[];
+  variantLanguages: GetVideo_video_variantLanguages[];
 }
 
 export interface GetVideo {

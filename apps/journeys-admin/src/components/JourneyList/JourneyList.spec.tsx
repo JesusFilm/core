@@ -24,7 +24,7 @@ describe('JourneyList', () => {
   })
 
   it('should order journeys in alphabetical order', () => {
-    const { getAllByLabelText, getByRole } = render(
+    const { getAllByLabelText, getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
@@ -33,6 +33,7 @@ describe('JourneyList', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
+    expect(getByText('All Journeys')).toBeInTheDocument()
 
     const journeyCards = getAllByLabelText('journey-card')
 
@@ -44,7 +45,7 @@ describe('JourneyList', () => {
   })
 
   it('should render all journeys', () => {
-    const { getAllByLabelText } = render(
+    const { getAllByLabelText, getByText } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
@@ -55,6 +56,7 @@ describe('JourneyList', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
+    expect(getByText('All Journeys')).toBeInTheDocument()
     expect(getAllByLabelText('journey-card').length).toBe(3)
   })
 
@@ -63,12 +65,12 @@ describe('JourneyList', () => {
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
-            <JourneyList journeys={[]} />
+            <JourneyList journeys={[]} disableCreation={false} />
           </ThemeProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
-
+    expect(getByText('All Journeys')).toBeInTheDocument()
     expect(getByText('No journeys to display.')).toBeInTheDocument()
     expect(
       getByText('Create a journey, then find it here.')
@@ -76,5 +78,27 @@ describe('JourneyList', () => {
     expect(
       getByRole('button', { name: 'Create a Journey' })
     ).toBeInTheDocument()
+  })
+
+  it('should prevent users from creating a journey unless invited', () => {
+    const { getByText, getByRole, queryByText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList journeys={[]} disableCreation />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(queryByText('All Journeys')).not.toBeInTheDocument()
+    expect(
+      getByText('You need to be invited to create the first journey')
+    ).toBeInTheDocument()
+    expect(
+      getByText(
+        'Someone with a full account should add you to their journey as an editor, after that you will have full access'
+      )
+    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Contact Support' })).toBeInTheDocument()
   })
 })

@@ -32,17 +32,26 @@ const Template: Story<JourneysListProps> = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney]
+  journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney],
+  disableCreation: true
 }
 
 export const Loading = Template.bind({})
 Loading.args = {
-  journeys: undefined
+  journeys: undefined,
+  disableCreation: true
 }
 
-export const Empty = Template.bind({})
-Empty.args = {
-  journeys: []
+export const Access = Template.bind({})
+Access.args = {
+  journeys: [],
+  disableCreation: true
+}
+
+export const CreateJourney = Template.bind({})
+CreateJourney.args = {
+  journeys: [],
+  disableCreation: false
 }
 
 export default JourneyListStory as Meta
