@@ -101,6 +101,9 @@ export function Properties(): ReactElement {
             }
             label={t('Journey URL')}
           />
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 2 }}>
+            <Button onClick={() => setShowSlugDialog(true)}>{t('Edit')}</Button>
+          </Box>
         </Box>
       </Stack>
       <SlugDialog

@@ -12,7 +12,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('JourneyView/Properties', () => {
   it('should handle edit journey slug', async () => {
-    const { getByRole } = render(
+    const { getAllByRole, getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
@@ -22,7 +22,7 @@ describe('JourneyView/Properties', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Edit' }))
+    fireEvent.click(getAllByRole('button', { name: 'Edit' })[0])
     expect(getByRole('dialog')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     await waitFor(() => expect(getByRole('dialog')).toBeInTheDocument())
