@@ -67,6 +67,8 @@ export const VIDEO_PROGRESS_EVENT_CREATE = gql`
 export interface VideoEventsProps {
   player: videojs.Player
   blockId: string
+  videoTitle: string
+  videoId: string
   startAt: number | null
   endAt: number | null
 }
@@ -74,6 +76,8 @@ export interface VideoEventsProps {
 export function VideoEvents({
   player,
   blockId,
+  videoTitle,
+  videoId,
   startAt,
   endAt
 }: VideoEventsProps): ReactElement {
@@ -127,14 +131,16 @@ export function VideoEvents({
             event: 'video_play',
             eventId: id,
             blockId,
-            videoPosition: currentTime
+            videoPosition: currentTime,
+            videoTitle,
+            videoId
           }
         })
       }
     }
     player.on('play', playListener)
     return () => player.off('play', playListener)
-  }, [player, videoPlayEventCreate, blockId, start])
+  }, [player, videoPlayEventCreate, blockId, start, videoTitle, videoId])
 
   // PAUSE event
   useEffect(() => {
@@ -155,13 +161,15 @@ export function VideoEvents({
           event: 'video_pause',
           eventId: id,
           blockId,
-          videoPosition: currentPosition
+          videoPosition: currentPosition,
+          videoTitle,
+          videoId
         }
       })
     }
     player.on('pause', pauseListener)
     return () => player.off('pause', pauseListener)
-  }, [player, videoPauseEventCreate, blockId])
+  }, [player, videoPauseEventCreate, blockId, videoTitle, videoId])
 
   // EXPAND event
   useEffect(() => {
@@ -183,14 +191,16 @@ export function VideoEvents({
             event: 'video_expand',
             eventId: id,
             blockId,
-            videoPosition: currentPosition
+            videoPosition: currentPosition,
+            videoTitle,
+            videoId
           }
         })
       }
     }
     player.on('fullscreenchange', expandListener)
     return () => player.off('fullscreenchange', expandListener)
-  }, [player, videoExpandEventCreate, blockId])
+  }, [player, videoExpandEventCreate, blockId, videoTitle, videoId])
 
   // COLLAPSE event
   useEffect(() => {
@@ -212,14 +222,16 @@ export function VideoEvents({
             event: 'video_collapse',
             eventId: id,
             blockId,
-            videoPosition: currentPosition
+            videoPosition: currentPosition,
+            videoTitle,
+            videoId
           }
         })
       }
     }
     player.on('fullscreenchange', collapseListener)
     return () => player.off('fullscreenchange', collapseListener)
-  }, [player, videoCollapseEventCreate, blockId])
+  }, [player, videoCollapseEventCreate, blockId, videoTitle, videoId])
 
   // START event
   useEffect(() => {
@@ -241,14 +253,24 @@ export function VideoEvents({
             event: 'video_start',
             eventId: id,
             blockId,
-            videoPosition: currentPosition
+            videoPosition: currentPosition,
+            videoTitle,
+            videoId
           }
         })
       }
     }
     player.on('timeupdate', startListener)
     return () => player.off('timeupdate', startListener)
-  }, [player, blockId, calledStart, videoStartEventCreate, start])
+  }, [
+    player,
+    blockId,
+    calledStart,
+    videoStartEventCreate,
+    start,
+    videoTitle,
+    videoId
+  ])
 
   // PROGRESS 25% event
   useEffect(() => {
@@ -272,14 +294,24 @@ export function VideoEvents({
             eventId: id,
             blockId,
             videoPosition: currentPosition,
-            videoProgress: 25
+            videoProgress: 25,
+            videoTitle,
+            videoId
           }
         })
       }
     }
     player.on('timeupdate', timeupdate25Listener)
     return () => player.off('timeupdate', timeupdate25Listener)
-  }, [blockId, player, position25, called25, videoProgressEventCreate25])
+  }, [
+    blockId,
+    player,
+    position25,
+    called25,
+    videoProgressEventCreate25,
+    videoTitle,
+    videoId
+  ])
 
   // PROGRESS 50% event
   useEffect(() => {
@@ -303,14 +335,24 @@ export function VideoEvents({
             eventId: id,
             blockId,
             videoPosition: currentPosition,
-            videoProgress: 50
+            videoProgress: 50,
+            videoTitle,
+            videoId
           }
         })
       }
     }
     player.on('timeupdate', timeupdate50Listener)
     return () => player.off('timeupdate', timeupdate50Listener)
-  }, [blockId, player, position50, called50, videoProgressEventCreate50])
+  }, [
+    blockId,
+    player,
+    position50,
+    called50,
+    videoProgressEventCreate50,
+    videoTitle,
+    videoId
+  ])
 
   // PROGRESS 75% event
   useEffect(() => {
@@ -335,14 +377,24 @@ export function VideoEvents({
             eventId: id,
             blockId,
             videoPosition: currentPosition,
-            videoProgress: 75
+            videoProgress: 75,
+            videoTitle,
+            videoId
           }
         })
       }
     }
     player.on('timeupdate', timeupdate75Listener)
     return () => player.off('timeupdate', timeupdate75Listener)
-  }, [blockId, player, position75, called75, videoProgressEventCreate75])
+  }, [
+    blockId,
+    player,
+    position75,
+    called75,
+    videoProgressEventCreate75,
+    videoTitle,
+    videoId
+  ])
 
   // COMPLETE event
   useEffect(() => {
@@ -364,14 +416,24 @@ export function VideoEvents({
             event: 'video_complete',
             eventId: id,
             blockId,
-            videoPosition: currentPosition
+            videoPosition: currentPosition,
+            videoTitle,
+            videoId
           }
         })
       }
     }
     player.on('timeupdate', completeListener)
     return () => player.off('timeupdate', completeListener)
-  }, [player, end, calledComplete, videoCompleteEventCreate, blockId])
+  }, [
+    player,
+    end,
+    calledComplete,
+    videoCompleteEventCreate,
+    blockId,
+    videoTitle,
+    videoId
+  ])
 
   return <></>
 }
