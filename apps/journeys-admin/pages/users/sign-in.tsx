@@ -8,6 +8,7 @@ import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { SignIn } from '../../src/components/SignIn'
+import i18nConfig from '../../next-i18next.config'
 
 function SignInPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -24,10 +25,11 @@ export const getServerSideProps = withAuthUserTokenSSR({
 })(async ({ locale }) => {
   return {
     props: {
-      ...(await serverSideTranslations(locale ?? 'en', [
-        'apps-journeys-admin',
-        'libs-journeys-ui'
-      ]))
+      ...(await serverSideTranslations(
+        locale ?? 'en',
+        ['apps-journeys-admin', 'libs-journeys-ui'],
+        i18nConfig
+      ))
     }
   }
 })

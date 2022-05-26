@@ -17,6 +17,7 @@ import { GET_JOURNEY } from '../[journeySlug]'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
 import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
 import { JourneyInvite } from '../../../src/components/JourneyInvite/JourneyInvite'
+import i18nConfig from '../../../next-i18next.config'
 
 function JourneyEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -79,10 +80,11 @@ export const getServerSideProps = withAuthUserTokenSSR({
 })(async ({ locale }) => {
   return {
     props: {
-      ...(await serverSideTranslations(locale ?? 'en', [
-        'apps-journeys-admin',
-        'libs-journeys-ui'
-      ]))
+      ...(await serverSideTranslations(
+        locale ?? 'en',
+        ['apps-journeys-admin', 'libs-journeys-ui'],
+        i18nConfig
+      ))
     }
   }
 })

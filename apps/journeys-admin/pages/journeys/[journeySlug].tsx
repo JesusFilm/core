@@ -16,6 +16,7 @@ import { GetJourney } from '../../__generated__/GetJourney'
 import { JourneyView } from '../../src/components/JourneyView'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { Menu } from '../../src/components/JourneyView/Menu'
+import i18nConfig from '../../next-i18next.config'
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
@@ -82,10 +83,11 @@ export const getServerSideProps = withAuthUserTokenSSR({
 })(async ({ locale }) => {
   return {
     props: {
-      ...(await serverSideTranslations(locale ?? 'en', [
-        'apps-journeys-admin',
-        'libs-journeys-ui'
-      ]))
+      ...(await serverSideTranslations(
+        locale ?? 'en',
+        ['apps-journeys-admin', 'libs-journeys-ui'],
+        i18nConfig
+      ))
     }
   }
 })
