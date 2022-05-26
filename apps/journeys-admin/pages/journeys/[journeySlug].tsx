@@ -9,6 +9,8 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 import { JourneyInvite } from '../../src/components/JourneyInvite/JourneyInvite'
 import { GetJourney } from '../../__generated__/GetJourney'
 import { JourneyView } from '../../src/components/JourneyView'
@@ -25,6 +27,7 @@ export const GET_JOURNEY = gql`
 `
 
 function JourneySlugPage(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const AuthUser = useAuthUser()
   const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
@@ -36,14 +39,14 @@ function JourneySlugPage(): ReactElement {
       {error == null && (
         <>
           <NextSeo
-            title={data?.journey?.title ?? 'Journey'}
+            title={data?.journey?.title ?? t('Journey')}
             description={data?.journey?.description ?? undefined}
           />
           <JourneyProvider
             value={{ journey: data?.journey ?? undefined, admin: true }}
           >
             <PageWrapper
-              title="Journey Details"
+              title={t('Journey Details')}
               showDrawer
               backHref="/"
               menu={<Menu />}
@@ -57,13 +60,13 @@ function JourneySlugPage(): ReactElement {
       {error?.graphQLErrors[0].message ===
         'User has not received an invitation to edit this journey.' && (
         <>
-          <NextSeo title="Access Denied" />
+          <NextSeo title={t('Access Denied')} />
           <JourneyInvite journeySlug={router.query.journeySlug as string} />
         </>
       )}
       {error?.graphQLErrors[0].message === 'User invitation pending.' && (
         <>
-          <NextSeo title="Access Denied" />
+          <NextSeo title={t('Access Denied')} />
           <JourneyInvite
             journeySlug={router.query.journeySlug as string}
             requestReceived
@@ -76,9 +79,14 @@ function JourneySlugPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async () => {
+})(async ({ locale }) => {
   return {
-    props: {}
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', [
+        'apps-journeys-admin',
+        'libs-journeys-ui'
+      ]))
+    }
   }
 })
 

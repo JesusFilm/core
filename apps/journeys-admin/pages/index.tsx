@@ -7,6 +7,8 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 import { GetJourneys } from '../__generated__/GetJourneys'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/PageWrapper'
@@ -46,13 +48,14 @@ const GET_JOURNEYS = gql`
 `
 
 function IndexPage(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
   const AuthUser = useAuthUser()
 
   return (
     <>
-      <NextSeo title="Journeys" />
-      <PageWrapper title="Journeys" authUser={AuthUser}>
+      <NextSeo title={t('Journeys')} />
+      <PageWrapper title={t('Journeys')} authUser={AuthUser}>
         <JourneyList journeys={data?.journeys} disableCreation />
       </PageWrapper>
     </>
@@ -61,9 +64,14 @@ function IndexPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async () => {
+})(async ({ locale }) => {
   return {
-    props: {}
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', [
+        'apps-journeys-admin',
+        'libs-journeys-ui'
+      ]))
+    }
   }
 })
 
