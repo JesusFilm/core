@@ -19,7 +19,7 @@ import Circle from '@mui/icons-material/Circle'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import videojs from 'video.js'
-import { GetStaticProps } from 'next'
+import { GetStaticProps, GetStaticPaths } from 'next'
 import { SSRConfig } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
@@ -464,5 +464,12 @@ export const getStaticProps: GetStaticProps<SSRConfig> = async (context) => {
         i18nConfig
       ))
     }
+  }
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [],
+    fallback: 'blocking'
   }
 }

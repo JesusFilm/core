@@ -20,4 +20,5 @@ export const getStaticProps: GetStaticProps<SSRConfig> = async (context) => {
     }
   }
 }
+
 export default VideoListPage
