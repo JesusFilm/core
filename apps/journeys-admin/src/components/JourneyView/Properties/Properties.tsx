@@ -9,6 +9,7 @@ import Button from '@mui/material/Button'
 import { CopyTextField } from '@core/shared/ui'
 import { useJourney } from '@core/journeys/ui'
 import { useTranslation } from 'react-i18next'
+import EditIcon from '@mui/icons-material/Edit'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyDetails } from './JourneyDetails'
 import { SlugDialog } from './SlugDialog'
@@ -62,8 +63,13 @@ export function Properties(): ReactElement {
                   : undefined
               }
             />
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 2 }}>
-              <Button onClick={() => setShowSlugDialog(true)}>
+            <Box sx={{ pt: 2 }}>
+              <Button
+                onClick={() => setShowSlugDialog(true)}
+                size="small"
+                startIcon={<EditIcon />}
+                disabled={journey == null}
+              >
                 {t('Edit')}
               </Button>
             </Box>
@@ -101,8 +107,15 @@ export function Properties(): ReactElement {
             }
             label={t('Journey URL')}
           />
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 2 }}>
-            <Button onClick={() => setShowSlugDialog(true)}>{t('Edit')}</Button>
+          <Box sx={{ pt: 2 }}>
+            <Button
+              onClick={() => setShowSlugDialog(true)}
+              size="small"
+              startIcon={<EditIcon />}
+              disabled={journey == null}
+            >
+              {t('Edit')}
+            </Button>
           </Box>
         </Box>
       </Stack>
