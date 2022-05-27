@@ -1,8 +1,9 @@
 import { ReactElement } from 'react'
 import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
+import InputAdornment from '@mui/material/InputAdornment'
 import { useSnackbar } from 'notistack'
-import { Formik, Form, FormikValues } from 'formik'
+import { Formik, Form, FormikValues, FormikHelpers } from 'formik'
 import { useJourney } from '@core/journeys/ui'
 import { useTranslation } from 'react-i18next'
 import { JourneySlugUpdate } from '../../../../../__generated__/JourneySlugUpdate'
@@ -28,13 +29,17 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
-  const handleUpdateSlug = async (values: FormikValues): Promise<void> => {
+  const handleUpdateSlug = async (
+    values: FormikValues,
+    { setValues }: FormikHelpers<FormikValues>
+  ): Promise<void> => {
     if (journey == null) return
 
     try {
-      await journeyUpdate({
+      const response = await journeyUpdate({
         variables: { id: journey.id, input: { slug: values.slug } }
       })
+      setValues({ slug: response?.data?.journeyUpdate.slug })
       onClose()
     } catch (error) {
       if (error instanceof ApolloError) {
@@ -75,7 +80,7 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
             <Dialog
               open={open}
               handleClose={handleClose(resetForm)}
-              dialogTitle={{ title: t('Edit Permalink') }}
+              dialogTitle={{ title: t('Edit URL') }}
               dialogAction={{
                 onSubmit: handleSubmit,
                 closeLabel: t('Cancel')
@@ -90,6 +95,13 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
                   value={values.slug}
                   variant="filled"
                   onChange={handleChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        {process.env.NEXT_PUBLIC_JOURNEYS_URL}
+                      </InputAdornment>
+                    )
+                  }}
                 />
               </Form>
             </Dialog>

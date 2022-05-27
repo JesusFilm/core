@@ -70,7 +70,7 @@ export function Properties(): ReactElement {
                 startIcon={<EditIcon />}
                 disabled={journey == null}
               >
-                {t('Edit')}
+                {t('Edit URL')}
               </Button>
             </Box>
           </Box>
@@ -114,7 +114,7 @@ export function Properties(): ReactElement {
               startIcon={<EditIcon />}
               disabled={journey == null}
             >
-              {t('Edit')}
+              {t('Edit URL')}
             </Button>
           </Box>
         </Box>

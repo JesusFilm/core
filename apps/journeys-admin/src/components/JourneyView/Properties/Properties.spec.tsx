@@ -22,7 +22,7 @@ describe('JourneyView/Properties', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.click(getAllByRole('button', { name: 'Edit' })[0])
+    fireEvent.click(getAllByRole('button', { name: 'Edit URL' })[0])
     expect(getByRole('dialog')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument())

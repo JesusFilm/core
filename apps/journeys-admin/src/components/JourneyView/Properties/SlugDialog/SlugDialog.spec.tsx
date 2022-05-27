@@ -28,16 +28,12 @@ describe('JourneyView/Properties/SlugDialog', () => {
   })
 
   it('should update journey slug on submit', async () => {
-    const updatedJourney = {
-      slug: 'new-journey'
-    }
-
     const result = jest.fn(() => ({
       data: {
         journeyUpdate: {
           id: defaultJourney.id,
           __typename: 'Journey',
-          ...updatedJourney
+          slug: 'new-journey'
         }
       }
     }))
@@ -50,7 +46,9 @@ describe('JourneyView/Properties/SlugDialog', () => {
               query: JOURNEY_SLUG_UPDATE,
               variables: {
                 id: defaultJourney.id,
-                input: updatedJourney
+                input: {
+                  slug: 'New Journey'
+                }
               }
             },
             result
@@ -65,12 +63,10 @@ describe('JourneyView/Properties/SlugDialog', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(getByRole('textbox'), { target: { value: 'new-journey' } })
+    fireEvent.change(getByRole('textbox'), { target: { value: 'New Journey' } })
     fireEvent.click(getByRole('button', { name: 'Save' }))
-
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-    })
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByRole('textbox')).toHaveValue('new-journey')
   })
 
   it('shows notistack error alert when slug fails to update', async () => {
