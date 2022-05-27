@@ -1,7 +1,0 @@
-{
-  "root": "libs/locales",
-  "sourceRoot": "libs/locales/src",
-  "projectType": "library",
-  "targets": {},
-  "tags": []
-}
