@@ -13,6 +13,8 @@ describe('getStepHeading', () => {
     nextBlockId: null
   }
 
+  const t = (stringToTranslate: string): string => stringToTranslate
+
   it('returns text of first typography block with biggest variant', () => {
     const children: TreeBlock[] = [
       {
@@ -95,7 +97,7 @@ describe('getStepHeading', () => {
       }
     ]
 
-    expect(getStepHeading('step.id', children, steps)).toEqual('Heading')
+    expect(getStepHeading('step.id', children, steps, t)).toEqual('Heading')
   })
 
   it('returns step number if there are no typography blocks', () => {
@@ -107,7 +109,7 @@ describe('getStepHeading', () => {
       }
     ]
 
-    expect(getStepHeading('step.id', children, steps)).toEqual('Step 1')
+    expect(getStepHeading('step.id', children, steps, t)).toEqual('Step 1')
   })
 
   it('returns Untitled step if no typogrpahy blocks and id not matched', () => {
@@ -119,7 +121,7 @@ describe('getStepHeading', () => {
       }
     ]
 
-    expect(getStepHeading('anotherStep.id', children, steps)).toEqual(
+    expect(getStepHeading('anotherStep.id', children, steps, t)).toEqual(
       'Untitled'
     )
   })

@@ -5,6 +5,7 @@ import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { useMutation, gql } from '@apollo/client'
 import TagManager from 'react-gtm-module'
+import { useTranslation } from 'react-i18next'
 import {
   TreeBlock,
   BlockRenderer,
@@ -52,10 +53,11 @@ export function RadioQuestion({
   const { admin } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const { activeBlock, treeBlocks } = useBlocks()
+  const { t } = useTranslation('libs-journeys-ui')
 
   const heading =
     activeBlock != null
-      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks)
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
   const handleClick = (radioOptionBlockId: string): void => {

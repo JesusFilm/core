@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
+import { useTranslation } from 'react-i18next'
 import {
   handleAction,
   TreeBlock,
@@ -48,10 +49,11 @@ export function Button({
 
   const { admin } = useJourney()
   const { treeBlocks, activeBlock } = useBlocks()
+  const { t } = useTranslation('libs-journeys-ui')
 
   const heading =
     activeBlock != null
-      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks)
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
   const startIcon = children.find((block) => block.id === startIconId) as

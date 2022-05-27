@@ -9,12 +9,16 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
   )
 }
 
-function getStepNumber(stepId: string, steps: TreeBlock[]): string {
+function getStepNumber(
+  stepId: string,
+  steps: TreeBlock[],
+  t: (stringToTranslate: string) => string
+): string {
   const index = findIndex(steps, { id: stepId })
   if (index === -1) {
-    return 'Untitled'
+    return t('Untitled')
   } else {
-    return `Step ${index + 1}`
+    return `${t('Step')} ${index + 1}`
   }
 }
 
@@ -53,7 +57,8 @@ const orderedVariants: TypographyVariant[] = [
 export function getStepHeading(
   stepId: string,
   children: TreeBlock[],
-  steps: TreeBlock[]
+  steps: TreeBlock[],
+  t: (stringToTranslate: string) => string
 ): string {
   const descendants = flatten(children)
 
@@ -65,6 +70,6 @@ export function getStepHeading(
   if (heading != null && heading.__typename === 'TypographyBlock') {
     return heading.content
   } else {
-    return getStepNumber(stepId, steps)
+    return getStepNumber(stepId, steps, t)
   }
 }
