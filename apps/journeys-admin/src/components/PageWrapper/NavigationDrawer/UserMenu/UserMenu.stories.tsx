@@ -13,7 +13,7 @@ const UserMenuStory = {
   parameters: {
     chromatic: {
       ...simpleComponentConfig.parameters.chromatic,
-      diffThreshold: 0.95,
+      diffThreshold: 0.95
     }
   }
 }
