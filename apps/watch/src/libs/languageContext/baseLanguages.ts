@@ -1,4 +1,4 @@
-// these are pulled from languages api. Some main languages are missing
+// these are pulled from languages api. Some main languages are missing. This is a temporary fix until the language api is swapped to bcp47 ids
 export const languages = [
   {
     id: '529',
@@ -37,6 +37,21 @@ export const languages = [
       }
     ],
     bcp47: 'de'
+  },
+  {
+    id: '6788',
+    bcp47: 'fa',
+    iso3: 'pes',
+    name: [
+      {
+        value: 'فارسی',
+        primary: true
+      },
+      {
+        value: 'Farsi, Western',
+        primary: false
+      }
+    ]
   },
   {
     id: '496',
@@ -121,5 +136,80 @@ export const languages = [
       }
     ],
     bcp47: 'ko'
+  },
+  {
+    id: '584',
+    bcp47: 'pt',
+    iso3: 'por',
+    name: [
+      {
+        value: 'Português',
+        primary: true
+      },
+      {
+        value: 'Portuguese, Brazil',
+        primary: false
+      }
+    ]
+  },
+  {
+    id: '3934',
+    bcp47: 'ru',
+    iso3: 'rus',
+    name: [
+      {
+        value: 'Русский',
+        primary: true
+      },
+      {
+        value: 'Russian',
+        primary: false
+      }
+    ]
+  },
+  {
+    id: '1942',
+    bcp47: 'tr',
+    iso3: 'tur',
+    name: [
+      {
+        value: 'Türkçe',
+        primary: true
+      },
+      {
+        value: 'Turkish',
+        primary: false
+      }
+    ]
+  },
+  {
+    id: '407',
+    bcp47: 'ur',
+    iso3: 'urd',
+    name: [
+      {
+        value: 'اُردُو',
+        primary: true
+      },
+      {
+        value: 'Urdu',
+        primary: false
+      }
+    ]
+  },
+  {
+    id: '3887',
+    bcp47: 'vi',
+    iso3: 'vie',
+    name: [
+      {
+        value: 'Tiếng Việt',
+        primary: true
+      },
+      {
+        value: 'Vietnamese',
+        primary: false
+      }
+    ]
   }
 ]
