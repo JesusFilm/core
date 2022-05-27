@@ -27,7 +27,11 @@ const i18nConfig = {
     ],
     defaultLocale: 'en',
     localeDetection: false,
-    localePath: path.resolve('./libs/locales')
+    localePath: path.resolve(
+      process.env.NEXT_PUBLIC_VERCEL_ENV == null || process.env.CI != null
+        ? './libs/locales'
+        : './public/locales'
+    )
   }
 }
 
