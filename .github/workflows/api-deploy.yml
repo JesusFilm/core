@@ -20,7 +20,7 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
-      CROWDIN_API_KEY: ${{ secrets.CROWDIN_API_KEY}}
+      CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN}}
   api-users:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
@@ -36,7 +36,7 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
-      CROWDIN_API_KEY: ${{ secrets.CROWDIN_API_KEY}}
+      CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN}}
   api-languages:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
@@ -52,7 +52,7 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
-      CROWDIN_API_KEY: ${{ secrets.CROWDIN_API_KEY}}
+      CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN}}
   api-videos:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:
@@ -68,7 +68,7 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
-      CROWDIN_API_KEY: ${{ secrets.CROWDIN_API_KEY}}
+      CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN}}
 
   api-gateway:
     needs: [api-journeys, api-users, api-languages, api-videos]

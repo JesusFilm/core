@@ -29,7 +29,7 @@ on:
         required: true
       ARCLIGHT_API_KEY:
         required: true
-      CROWDIN_API_KEY:
+      CROWDIN_PERSONAL_TOKEN:
         required: true
 
 jobs:
@@ -43,7 +43,7 @@ jobs:
       DATABASE_URL: ${{ secrets.ARANGODB_URL }}
       DATABASE_USER: ${{ secrets.ARANGODB_USER }}
       DATABASE_PASS: ${{ secrets.ARANGODB_PASS }}
-      CROWDIN_API_KEY: ${{ secrets.CROWDIN_API_KEY }}
+      CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
