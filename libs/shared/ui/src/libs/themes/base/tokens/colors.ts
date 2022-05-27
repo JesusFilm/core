@@ -83,8 +83,9 @@ export const baseColorsLight = (): Required<
       MuiLink: {
         styleOverrides: {
           root: {
+            color: primary.light,
             '&:hover': {
-              color: palette.errorDark
+              color: primary.dark
             }
           }
         }
@@ -165,8 +166,9 @@ export const baseColorsDark = (): Required<
       MuiLink: {
         styleOverrides: {
           root: {
+            color: primary.light,
             '&:hover': {
-              color: palette.errorLight
+              color: primary.dark
             }
           }
         }

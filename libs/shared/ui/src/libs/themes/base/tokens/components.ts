@@ -111,6 +111,17 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
           }
         }
       }
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          fontSize: '10px',
+          opacity: 0.7,
+          '&:hover': {
+            opacity: 1
+          }
+        }
+      }
     }
   }
 }

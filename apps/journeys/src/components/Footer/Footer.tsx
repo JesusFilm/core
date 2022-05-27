@@ -8,8 +8,16 @@ export function Footer(): ReactElement {
   const { t } = useTranslation('apps-journeys')
 
   return (
-    <Stack direction="row" spacing={3}>
-      <Typography variant="caption">
+    <Stack direction="row" spacing={3} alignItems="center">
+      <Typography
+        sx={{
+          fontSize: '10px',
+          opacity: 0.7,
+          '&:hover': {
+            opacity: 1
+          }
+        }}
+      >
         {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
       </Typography>
       <MuiLink
