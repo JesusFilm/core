@@ -8,16 +8,16 @@
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
-          "cp -r libs/locales apps/journeys-admin/public",
-          "nx _build journeys-admin"
+          "nx _build journeys-admin",
+          "cp -r libs/locales dist/apps/journeys-admin/public"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "cp -r libs/locales apps/journeys-admin/public",
-            "nx _build journeys-admin --prod"
+            "nx _build journeys-admin --prod",
+            "cp -r libs/locales dist/apps/journeys-admin/public"
           ]
         }
       }
