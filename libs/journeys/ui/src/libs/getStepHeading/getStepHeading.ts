@@ -18,37 +18,36 @@ function getStepNumber(stepId: string, steps: TreeBlock[]): string {
   }
 }
 
-function typogReducer(previous: TreeBlock, current: TreeBlock): TreeBlock {
-  if (current.__typename === 'TypographyBlock') {
-    if (previous.__typename === 'TypographyBlock') {
-      const previousIndex = orderedTypogVariants.findIndex(
-        (variant) => variant === previous.variant
-      )
-      const currentIndex = orderedTypogVariants.findIndex(
-        (variant) => variant === current.variant
-      )
-      return currentIndex < previousIndex ? current : previous
-    } else {
-      return current
-    }
-  } else {
-    return previous
-  }
+function findMostImportantTypographyBlock(
+  previous: TreeBlock | null,
+  current: TreeBlock
+): TreeBlock {
+  if (previous == null || previous.__typename !== 'TypographyBlock')
+    return current
+  if (current.__typename !== 'TypographyBlock') return previous
+
+  const previousIndex = orderedVariants.findIndex(
+    (variant) => variant === previous.variant
+  )
+  const currentIndex = orderedVariants.findIndex(
+    (variant) => variant === current.variant
+  )
+  return currentIndex > previousIndex ? current : previous
 }
 
-const orderedTypogVariants: TypographyVariant[] = [
-  TypographyVariant.h1,
-  TypographyVariant.h2,
-  TypographyVariant.h3,
-  TypographyVariant.h4,
-  TypographyVariant.h5,
-  TypographyVariant.h6,
-  TypographyVariant.subtitle1,
-  TypographyVariant.subtitle2,
-  TypographyVariant.body1,
-  TypographyVariant.body2,
+const orderedVariants: TypographyVariant[] = [
+  TypographyVariant.overline,
   TypographyVariant.caption,
-  TypographyVariant.overline
+  TypographyVariant.body2,
+  TypographyVariant.body1,
+  TypographyVariant.subtitle2,
+  TypographyVariant.subtitle1,
+  TypographyVariant.h6,
+  TypographyVariant.h5,
+  TypographyVariant.h4,
+  TypographyVariant.h3,
+  TypographyVariant.h2,
+  TypographyVariant.h1
 ]
 
 export function getStepHeading(
@@ -60,9 +59,7 @@ export function getStepHeading(
 
   const heading =
     descendants.length > 0
-      ? descendants.reduce((previousValue, currentValue) =>
-          typogReducer(previousValue, currentValue)
-        )
+      ? descendants.reduce(findMostImportantTypographyBlock, null)
       : undefined
 
   if (heading != null && heading.__typename === 'TypographyBlock') {
