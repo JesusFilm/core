@@ -18,11 +18,6 @@ export function Footer(): ReactElement {
         underline="none"
         target="_blank"
         rel="noopener"
-        sx={{
-          '&:hover': {
-            color: (theme) => theme.palette.error.main
-          }
-        }}
       >
         {t('Terms')}
       </MuiLink>
@@ -32,11 +27,6 @@ export function Footer(): ReactElement {
         underline="none"
         target="_blank"
         rel="noopener"
-        sx={{
-          '&:hover': {
-            color: (theme) => theme.palette.error.main
-          }
-        }}
       >
         {t('Privacy')}
       </MuiLink>

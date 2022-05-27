@@ -79,6 +79,15 @@ export const baseColorsLight = (): Required<
             }
           }
         }
+      },
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            '&:hover': {
+              color: palette.errorDark
+            }
+          }
+        }
       }
     }
   }
@@ -149,6 +158,15 @@ export const baseColorsDark = (): Required<
             },
             ':disabled': {
               color: palette[700]
+            }
+          }
+        }
+      },
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            '&:hover': {
+              color: palette.errorLight
             }
           }
         }
