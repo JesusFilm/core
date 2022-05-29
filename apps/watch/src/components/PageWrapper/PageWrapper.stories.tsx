@@ -1,4 +1,5 @@
 import { Meta, Story } from '@storybook/react'
+import { ThemeProvider } from '../ThemeProvider'
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {
@@ -9,7 +10,11 @@ const PageWrapperStory = {
   }
 }
 
-const Template: Story = () => <PageWrapper />
+const Template: Story = () => (
+  <ThemeProvider>
+    <PageWrapper />
+  </ThemeProvider>
+)
 
 export const Default = Template.bind({})
 

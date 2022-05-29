@@ -42,3 +42,4 @@ export type {
   SetSelectedStepAction,
   SetSelectedBlockByIdAction
 } from './context'
+export { getStepHeading } from './getStepHeading'

@@ -2,6 +2,7 @@
   "root": "apps/journeys",
   "sourceRoot": "apps/journeys",
   "projectType": "application",
+  "implicitDependencies": ["locales"],
   "targets": {
     "build": {
       "executor": "@nrwl/next:build",
@@ -107,6 +108,16 @@
         "commands": [
           {
             "command": "DOPPLER_TOKEN=$DOPPLER_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project journeys > apps/journeys/.env"
+          }
+        ]
+      }
+    },
+    "extract-translations": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx i18next --config apps/journeys/i18next-parser.config.js"
           }
         ]
       }

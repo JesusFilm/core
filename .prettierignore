@@ -4,3 +4,4 @@
 /coverage
 schema.graphql
 **/__generated__/**
+/libs/locales/**/*.json
