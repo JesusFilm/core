@@ -6,7 +6,7 @@ const ns = ['common', 'apps-journeys', 'libs-journeys-ui']
 const supportedLngs = ['en', 'af', 'mi']
 
 i18n
-  .use(LanguageDetector)
+  .use(LanguageDetector.default)
   .use(initReactI18next)
   .init({
     react: {
