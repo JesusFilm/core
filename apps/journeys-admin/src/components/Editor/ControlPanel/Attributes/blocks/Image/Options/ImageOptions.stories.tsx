@@ -17,7 +17,7 @@ const ImageOptionsStory = {
     layout: 'fullscreen',
     chromatic: {
       ...journeysAdminConfig.parameters.chromatic,
-      diffThreshold: 0.75
+      diffThreshold: 0.9
     }
   }
 }
