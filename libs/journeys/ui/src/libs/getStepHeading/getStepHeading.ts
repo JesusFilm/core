@@ -1,4 +1,5 @@
 import findIndex from 'lodash/findIndex'
+import { TFunction } from 'react-i18next'
 import { TreeBlock } from '..'
 import { TypographyVariant } from '../../../__generated__/globalTypes'
 
@@ -12,13 +13,13 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
 function getStepNumber(
   stepId: string,
   steps: TreeBlock[],
-  t: (stringToTranslate: string) => string
+  t: TFunction
 ): string {
   const index = findIndex(steps, { id: stepId })
   if (index === -1) {
     return t('Untitled')
   } else {
-    return `${t('Step')} ${index + 1}`
+    return t('Step {{val, number}}', { val: index + 1 })
   }
 }
 
@@ -58,7 +59,7 @@ export function getStepHeading(
   stepId: string,
   children: TreeBlock[],
   steps: TreeBlock[],
-  t: (stringToTranslate: string) => string
+  t: TFunction
 ): string {
   const descendants = flatten(children)
 
