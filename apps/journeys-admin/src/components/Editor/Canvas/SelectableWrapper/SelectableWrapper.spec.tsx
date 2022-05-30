@@ -183,10 +183,12 @@ describe('SelectableWrapper', () => {
       zIndex: '1'
     })
     fireEvent.click(getByText('sign up label'))
-    await waitFor(() => expect(getByTestId(`selected-${signUpBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
-      zIndex: '1'
-    }))
+    await waitFor(() =>
+      expect(getByTestId(`selected-${signUpBlock.id}`)).toHaveStyle({
+        outline: '3px solid #C52D3A',
+        zIndex: '1'
+      })
+    )
     fireEvent.click(getByTestId(`radioQuestion-${radioQuestionBlock.id}`))
     expect(getByTestId(`selected-${radioQuestionBlock.id}`)).toHaveStyle({
       outline: '3px solid #C52D3A',
