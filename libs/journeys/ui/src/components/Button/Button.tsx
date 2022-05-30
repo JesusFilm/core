@@ -5,7 +5,13 @@ import Box from '@mui/material/Box'
 import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
-import { handleAction, TreeBlock, useJourney } from '../..'
+import {
+  handleAction,
+  TreeBlock,
+  useJourney,
+  useBlocks,
+  getStepHeading
+} from '../..'
 import { ButtonVariant } from '../../../__generated__/globalTypes'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { Icon } from '../Icon'
@@ -41,6 +47,12 @@ export function Button({
   )
 
   const { admin } = useJourney()
+  const { treeBlocks, activeBlock } = useBlocks()
+
+  const heading =
+    activeBlock != null
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks)
+      : 'None'
 
   const startIcon = children.find((block) => block.id === startIconId) as
     | TreeBlock<IconFields>
@@ -65,7 +77,8 @@ export function Button({
         dataLayer: {
           event: 'button_click',
           eventId: id,
-          blockId
+          blockId,
+          stepName: heading
         }
       })
     }

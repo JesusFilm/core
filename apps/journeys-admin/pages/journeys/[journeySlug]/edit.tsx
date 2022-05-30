@@ -8,6 +8,8 @@ import {
 } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 import { GetJourney } from '../../../__generated__/GetJourney'
 import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
@@ -15,8 +17,10 @@ import { GET_JOURNEY } from '../[journeySlug]'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
 import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
 import { JourneyInvite } from '../../../src/components/JourneyInvite/JourneyInvite'
+import i18nConfig from '../../../next-i18next.config'
 
 function JourneyEditPage(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const AuthUser = useAuthUser()
   const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
@@ -28,7 +32,11 @@ function JourneyEditPage(): ReactElement {
       {error == null && (
         <>
           <NextSeo
-            title={`Edit ${data?.journey?.title ?? 'Journey'}`}
+            title={
+              data?.journey?.title != null
+                ? t('Edit {{title}}', { title: data.journey.title })
+                : t('Edit Journey')
+            }
             description={data?.journey?.description ?? undefined}
           />
           <Editor
@@ -36,7 +44,7 @@ function JourneyEditPage(): ReactElement {
             selectedStepId={router.query.stepId as string | undefined}
           >
             <PageWrapper
-              title={data?.journey?.title ?? 'Edit Journey'}
+              title={data?.journey?.title ?? t('Edit Journey')}
               showDrawer
               backHref={`/journeys/${router.query.journeySlug as string}`}
               menu={<EditToolbar />}
@@ -50,13 +58,13 @@ function JourneyEditPage(): ReactElement {
       {error?.graphQLErrors[0].message ===
         'User has not received an invitation to edit this journey.' && (
         <>
-          <NextSeo title="Access Denied" />
+          <NextSeo title={t('Access Denied')} />
           <JourneyInvite journeySlug={router.query.journeySlug as string} />
         </>
       )}
       {error?.graphQLErrors[0].message === 'User invitation pending.' && (
         <>
-          <NextSeo title="Access Denied" />
+          <NextSeo title={t('Access Denied')} />
           <JourneyInvite
             journeySlug={router.query.journeySlug as string}
             requestReceived
@@ -69,9 +77,15 @@ function JourneyEditPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async () => {
+})(async ({ locale }) => {
   return {
-    props: {}
+    props: {
+      ...(await serverSideTranslations(
+        locale ?? 'en',
+        ['apps-journeys-admin', 'libs-journeys-ui'],
+        i18nConfig
+      ))
+    }
   }
 })
 

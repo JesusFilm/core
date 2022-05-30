@@ -1,32 +1,24 @@
 import { decode } from 'blurhash'
 
-const greatestCommonDivisor = (a: number, b: number): number =>
-  b === 0 ? a : greatestCommonDivisor(b, a % b)
-
 export const blurImage = (
-  imageWidth: number,
-  imageHeight: number,
   blurhash: string,
   hexBackground: string
 ): string | undefined => {
   if (blurhash === '') return undefined
 
-  const divisor = greatestCommonDivisor(imageWidth, imageHeight)
-  const width = imageWidth / divisor
-  const height = imageHeight / divisor
-  const pixels = decode(blurhash, width, height, 1)
+  const pixels = decode(blurhash, 32, 32, 1)
 
   const canvas = document.createElement('canvas')
-  canvas.setAttribute('width', `${width}px`)
-  canvas.setAttribute('height', `${height}px`)
+  canvas.setAttribute('width', '32px')
+  canvas.setAttribute('height', '32px')
   const context = canvas.getContext('2d')
 
   if (context != null) {
-    const imageData = context.createImageData(width, height)
+    const imageData = context.createImageData(32, 32)
     imageData.data.set(pixels)
     context.putImageData(imageData, 0, 0)
     context.fillStyle = `${hexBackground}88`
-    context.fillRect(0, 0, width, height)
+    context.fillRect(0, 0, 32, 32)
     const blurUrl = canvas.toDataURL('image/webp')
 
     return blurUrl

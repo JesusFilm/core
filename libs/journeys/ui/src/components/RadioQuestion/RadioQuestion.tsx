@@ -5,7 +5,13 @@ import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { useMutation, gql } from '@apollo/client'
 import TagManager from 'react-gtm-module'
-import { TreeBlock, BlockRenderer, useJourney } from '../..'
+import {
+  TreeBlock,
+  BlockRenderer,
+  useJourney,
+  useBlocks,
+  getStepHeading
+} from '../..'
 import { WrappersProps } from '../BlockRenderer'
 import { RadioOption } from './RadioOption'
 import { RadioQuestionSubmissionEventCreate } from './__generated__/RadioQuestionSubmissionEventCreate'
@@ -45,6 +51,12 @@ export function RadioQuestion({
     )
   const { admin } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const { activeBlock, treeBlocks } = useBlocks()
+
+  const heading =
+    activeBlock != null
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks)
+      : 'None'
 
   const handleClick = (radioOptionBlockId: string): void => {
     if (!admin) {
@@ -63,7 +75,8 @@ export function RadioQuestion({
           event: 'radio_question_submission',
           eventId: id,
           blockId,
-          radioOptionSelectedId: radioOptionBlockId
+          radioOptionSelectedId: radioOptionBlockId,
+          stepName: heading
         }
       })
     }

@@ -40,12 +40,7 @@ export function Video({
 
   const blurBackground = useMemo(() => {
     return posterBlock != null
-      ? blurImage(
-          posterBlock.width,
-          posterBlock.height,
-          posterBlock.blurhash,
-          theme.palette.background.paper
-        )
+      ? blurImage(posterBlock.blurhash, theme.palette.background.paper)
       : undefined
   }, [posterBlock, theme])
 
@@ -170,10 +165,12 @@ export function Video({
         }
       }}
     >
-      {playerRef.current != null && (
+      {playerRef.current != null && video != null && (
         <VideoEvents
           player={playerRef.current}
           blockId={blockId}
+          videoTitle={video.title[0].value}
+          videoId={video.id}
           startAt={startAt}
           endAt={endAt}
         />

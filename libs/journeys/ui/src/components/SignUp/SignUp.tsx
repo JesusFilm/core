@@ -9,7 +9,15 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import { v4 as uuidv4 } from 'uuid'
 import { useSnackbar } from 'notistack'
 import TagManager from 'react-gtm-module'
-import { TreeBlock, handleAction, useEditor, useJourney } from '../..'
+import { useTranslation } from 'react-i18next'
+import {
+  TreeBlock,
+  handleAction,
+  useEditor,
+  useJourney,
+  useBlocks,
+  getStepHeading
+} from '../..'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { SignUpSubmissionEventCreate } from './__generated__/SignUpSubmissionEventCreate'
@@ -50,12 +58,20 @@ export const SignUp = ({
   sx,
   ...props
 }: SignUpProps): ReactElement => {
+  const { t } = useTranslation('libs-journeys-ui')
+
   const submitIcon = children.find((block) => block.id === submitIconId) as
     | TreeBlock<IconFields>
     | undefined
 
   const { admin } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
+  const { activeBlock, treeBlocks } = useBlocks()
+
+  const heading =
+    activeBlock != null
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks)
+      : 'None'
 
   const router = useRouter()
   const [signUpSubmissionEventCreate, { loading }] =
@@ -64,12 +80,12 @@ export const SignUp = ({
   const initialValues: SignUpFormValues = { name: '', email: '' }
   const signUpSchema = object().shape({
     name: string()
-      .min(2, 'Name must be 2 characters or more')
-      .max(50, 'Name must be 50 characters or less')
-      .required('Required'),
+      .min(2, t('Name must be 2 characters or more'))
+      .max(50, t('Name must be 50 characters or less'))
+      .required(t('Required')),
     email: string()
-      .email('Please enter a valid email address')
-      .required('Required')
+      .email(t('Please enter a valid email address'))
+      .required(t('Required'))
   })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
@@ -90,7 +106,8 @@ export const SignUp = ({
           dataLayer: {
             event: 'sign_up_submission',
             eventId: id,
-            blockId
+            blockId,
+            stepName: heading
           }
         })
       } catch (e) {
@@ -136,14 +153,14 @@ export const SignUp = ({
               {...formikProps}
               id="name"
               name="name"
-              label="Name"
+              label={t('Name')}
               disabled={selectedBlock !== undefined}
             />
             <TextField
               {...formikProps}
               id="email"
               name="email"
-              label="Email"
+              label={t('Email')}
               disabled={selectedBlock !== undefined}
             />
             <LoadingButton
@@ -159,7 +176,7 @@ export const SignUp = ({
                 mb: 0
               }}
             >
-              {editableSubmitLabel ?? submitLabel ?? 'Submit'}
+              {editableSubmitLabel ?? submitLabel ?? t('Submit')}
             </LoadingButton>
           </Form>
         )}

@@ -118,7 +118,10 @@ describe('Conductor', () => {
       >
         <JourneyProvider
           value={{
-            journey: { id: 'journeyId' } as unknown as Journey
+            journey: {
+              id: 'journeyId',
+              title: 'journey title'
+            } as unknown as Journey
           }}
         >
           <Conductor blocks={[]} />
@@ -130,7 +133,8 @@ describe('Conductor', () => {
         dataLayer: {
           event: 'journey_view',
           journeyId: 'journeyId',
-          eventId: 'uuid'
+          eventId: 'uuid',
+          journeyTitle: 'journey title'
         }
       })
     )

@@ -35,7 +35,7 @@ jobs:
       - name: lint and typecheck
         uses: mansagroup/nrwl-nx-action@v2
         with:
-          targets: lint,type-check
+          targets: lint,type-check,extract-translations
       - name: Prettier
         run: npx prettier --check .
       - name: lint commit messages
