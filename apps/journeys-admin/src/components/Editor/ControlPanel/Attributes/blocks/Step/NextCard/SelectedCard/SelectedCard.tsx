@@ -55,13 +55,13 @@ export function SelectedCard(): ReactElement {
   // TODO: Set as block itself for now, still need to manually set next block
   async function handleRemoveCustomNextStep(): Promise<void> {
     if (journey == null) return
-
+    if (currentBlock == null) return
     await stepBlockDefaultNextBlockUpdate({
       variables: {
-        id: currentBlock?.id,
+        id: currentBlock.id,
         journeyId: journey.id,
         input: {
-          nextBlockId: currentBlock?.id
+          nextBlockId: currentBlock.id
         }
       },
       optimisticResponse: {
