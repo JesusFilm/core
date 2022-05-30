@@ -40,14 +40,14 @@ function JourneySlugPage(): ReactElement {
       {error == null && (
         <>
           <NextSeo
-            title={data?.journey?.title ?? t('Journey')}
+            title={data?.journey?.title ?? t('journeyDetailsPage.seoTitle')}
             description={data?.journey?.description ?? undefined}
           />
           <JourneyProvider
             value={{ journey: data?.journey ?? undefined, admin: true }}
           >
             <PageWrapper
-              title={t('Journey Details')}
+              title={t('journeyDetailsPage.title')}
               showDrawer
               backHref="/"
               menu={<Menu />}
@@ -61,13 +61,13 @@ function JourneySlugPage(): ReactElement {
       {error?.graphQLErrors[0].message ===
         'User has not received an invitation to edit this journey.' && (
         <>
-          <NextSeo title={t('Access Denied')} />
+          <NextSeo title={t('access.denied')} />
           <JourneyInvite journeySlug={router.query.journeySlug as string} />
         </>
       )}
       {error?.graphQLErrors[0].message === 'User invitation pending.' && (
         <>
-          <NextSeo title={t('Access Denied')} />
+          <NextSeo title={t('access.denied')} />
           <JourneyInvite
             journeySlug={router.query.journeySlug as string}
             requestReceived

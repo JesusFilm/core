@@ -49,14 +49,14 @@ const GET_JOURNEYS = gql`
 `
 
 function IndexPage(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('apps-journeys-admin', { keyPrefix: 'app' })
   const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
   const AuthUser = useAuthUser()
 
   return (
     <>
-      <NextSeo title={t('Journeys')} />
-      <PageWrapper title={t('Journeys')} authUser={AuthUser}>
+      <NextSeo title={t('title')} />
+      <PageWrapper title={t('title')} authUser={AuthUser}>
         <JourneyList journeys={data?.journeys} disableCreation />
       </PageWrapper>
     </>

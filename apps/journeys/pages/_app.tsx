@@ -23,7 +23,7 @@ function JourneysApp({
   pageProps,
   emotionCache = clientSideEmotionCache
 }: AppProps & { emotionCache?: EmotionCache }): ReactElement {
-  const { t } = useTranslation('apps-journeys')
+  const { t } = useTranslation('apps-journeys', { keyPrefix: 'app' })
   useEffect(() => {
     if (
       process.env.NEXT_PUBLIC_GTM_ID != null &&
@@ -67,10 +67,8 @@ function JourneysApp({
   return (
     <CacheProvider value={emotionCache}>
       <DefaultSeo
-        titleTemplate={t('%s | Next Steps')}
-        defaultTitle={t(
-          'Next Steps | Helping you find the next best step on your spiritual journey'
-        )}
+        titleTemplate={t('seoTemplate')}
+        defaultTitle={t('seoDefaultTitle')}
       />
       <Head>
         <meta

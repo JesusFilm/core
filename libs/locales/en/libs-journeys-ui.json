@@ -1,9 +1,11 @@
 {
-  "Name must be 2 characters or more": "Name must be 2 characters or more",
-  "Name must be 50 characters or less": "Name must be 50 characters or less",
-  "Required": "Required",
-  "Please enter a valid email address": "Please enter a valid email address",
-  "Name": "Name",
-  "Email": "Email",
-  "Submit": "Submit"
+  "signUp":{
+    "minCharacters": "Name must be 2 characters or more",
+    "maxCharacters": "Name must be 50 characters or less",
+    "required": "Required",
+    "invalidEmail": "Please enter a valid email address",
+    "name": "Name",
+    "email": "Email",
+    "submit": "Submit"
+  }
 }

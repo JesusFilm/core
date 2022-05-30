@@ -34,8 +34,8 @@ function JourneyEditPage(): ReactElement {
           <NextSeo
             title={
               data?.journey?.title != null
-                ? t('Edit {{title}}', { title: data.journey.title })
-                : t('Edit Journey')
+                ? t('journeyEditPage.title', { title: data.journey.title })
+                : t('journeyEditPage.defaultTitle')
             }
             description={data?.journey?.description ?? undefined}
           />
@@ -44,7 +44,7 @@ function JourneyEditPage(): ReactElement {
             selectedStepId={router.query.stepId as string | undefined}
           >
             <PageWrapper
-              title={data?.journey?.title ?? t('Edit Journey')}
+              title={data?.journey?.title ?? t('journeyEditPage.defaultTitle')}
               showDrawer
               backHref={`/journeys/${router.query.journeySlug as string}`}
               menu={<EditToolbar />}
@@ -58,13 +58,13 @@ function JourneyEditPage(): ReactElement {
       {error?.graphQLErrors[0].message ===
         'User has not received an invitation to edit this journey.' && (
         <>
-          <NextSeo title={t('Access Denied')} />
+          <NextSeo title={t('access.denied')} />
           <JourneyInvite journeySlug={router.query.journeySlug as string} />
         </>
       )}
       {error?.graphQLErrors[0].message === 'User invitation pending.' && (
         <>
-          <NextSeo title={t('Access Denied')} />
+          <NextSeo title={t('access.denied')} />
           <JourneyInvite
             journeySlug={router.query.journeySlug as string}
             requestReceived

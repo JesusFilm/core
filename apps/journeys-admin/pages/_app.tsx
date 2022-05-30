@@ -25,7 +25,7 @@ function JourneysAdminApp({
   pageProps,
   emotionCache = clientSideEmotionCache
 }: AppProps & { emotionCache?: EmotionCache }): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('apps-journeys-admin', { keyPrefix: 'app' })
   const token =
     (pageProps.AuthUserSerialized != null
       ? (JSON.parse(pageProps.AuthUserSerialized)._token as string | null)
@@ -62,8 +62,8 @@ function JourneysAdminApp({
   return (
     <CacheProvider value={emotionCache}>
       <DefaultSeo
-        titleTemplate={t('%s | Next Steps')}
-        defaultTitle={t('Admin | Next Steps')}
+        titleTemplate={t('seoTemplate')}
+        defaultTitle={t('seoDefaultTitle')}
       />
       <Head>
         <meta

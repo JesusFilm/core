@@ -1,11 +1,21 @@
 {
-  "%s | Next Steps": "%s | Next Steps",
-  "Admin | Next Steps": "Admin | Next Steps",
-  "Journeys": "Journeys",
-  "Journey": "Journey",
-  "Journey Details": "Journey Details",
-  "Access Denied": "Access Denied",
-  "Edit {{title}}": "Edit {{title}}",
-  "Edit Journey": "Edit Journey",
-  "Sign In": "Sign In"
+  "app": {
+    "title": "Journeys", 
+    "seoTemplate":"%s | Next Steps", 
+    "seoDefaultTitle": "Admin | Next Steps"
+  },
+  "journeyDetailsPage": {
+    "title": "Journey Details",
+    "seoTitle": "Journey"
+  },
+  "journeyEditPage": {
+    "title": "Edit {{title}}",
+    "defaultTitle": "Edit Journey"
+  },
+  "signInPage": {
+    "title": "Sign In"
+  },
+  "access": {
+    "denied": "Access Denied"
+  }
 }

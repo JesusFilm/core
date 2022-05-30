@@ -14,7 +14,7 @@ function SignInPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      <NextSeo title={t('Sign In')} />
+      <NextSeo title={t('signInPage.title')} />
       <SignIn />
     </>
   )

@@ -58,7 +58,7 @@ export const SignUp = ({
   sx,
   ...props
 }: SignUpProps): ReactElement => {
-  const { t } = useTranslation('libs-journeys-ui')
+  const { t } = useTranslation('libs-journeys-ui', { keyPrefix: 'signUp' })
 
   const submitIcon = children.find((block) => block.id === submitIconId) as
     | TreeBlock<IconFields>
@@ -80,12 +80,10 @@ export const SignUp = ({
   const initialValues: SignUpFormValues = { name: '', email: '' }
   const signUpSchema = object().shape({
     name: string()
-      .min(2, t('Name must be 2 characters or more'))
-      .max(50, t('Name must be 50 characters or less'))
-      .required(t('Required')),
-    email: string()
-      .email(t('Please enter a valid email address'))
-      .required(t('Required'))
+      .min(2, t('minCharacters'))
+      .max(50, t('maxCharacters'))
+      .required(t('required')),
+    email: string().email(t('invalidEmail')).required(t('required'))
   })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
@@ -153,14 +151,14 @@ export const SignUp = ({
               {...formikProps}
               id="name"
               name="name"
-              label={t('Name')}
+              label={t('name')}
               disabled={selectedBlock !== undefined}
             />
             <TextField
               {...formikProps}
               id="email"
               name="email"
-              label={t('Email')}
+              label={t('email')}
               disabled={selectedBlock !== undefined}
             />
             <LoadingButton
@@ -176,7 +174,7 @@ export const SignUp = ({
                 mb: 0
               }}
             >
-              {editableSubmitLabel ?? submitLabel ?? t('Submit')}
+              {editableSubmitLabel ?? submitLabel ?? t('submit')}
             </LoadingButton>
           </Form>
         )}
