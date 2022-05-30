@@ -19,7 +19,7 @@ function getStepNumber(
   if (index === -1) {
     return t('Untitled')
   } else {
-    return t('Step {{val, number}}', { val: index + 1 })
+    return t('Step {{number}}', { number: index + 1 })
   }
 }
 

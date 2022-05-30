@@ -13,7 +13,7 @@ describe('getStepHeading', () => {
     nextBlockId: null
   }
 
-  const t = (stringToTranslate: string): string => stringToTranslate
+  const t = (str: string): string => str
 
   it('returns text of first typography block with biggest variant', () => {
     const children: TreeBlock[] = [
@@ -109,7 +109,14 @@ describe('getStepHeading', () => {
       }
     ]
 
-    expect(getStepHeading('step.id', children, steps, t)).toEqual('Step 1')
+    expect(
+      getStepHeading(
+        'step.id',
+        children,
+        steps,
+        jest.fn((str) => 'Step 1')
+      )
+    ).toEqual('Step 1')
   })
 
   it('returns Untitled step if no typogrpahy blocks and id not matched', () => {
@@ -124,5 +131,18 @@ describe('getStepHeading', () => {
     expect(getStepHeading('anotherStep.id', children, steps, t)).toEqual(
       'Untitled'
     )
+  })
+
+  it('calls translate function', () => {
+    const t = jest.fn((str: string) => str)
+    const children: TreeBlock[] = []
+    const steps: TreeBlock[] = [
+      {
+        ...stepBlock,
+        children
+      }
+    ]
+    getStepHeading('step.id', children, steps, t)
+    expect(t).toHaveBeenCalledWith('Step {{number}}', { number: 1 })
   })
 })

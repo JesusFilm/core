@@ -57,6 +57,15 @@ jest.mock('next/router', () => ({
   }
 }))
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 const block: TreeBlock<ButtonFields> = {
   __typename: 'ButtonBlock',
   id: 'button',
@@ -161,7 +170,7 @@ describe('Button', () => {
           event: 'button_click',
           eventId: 'uuid',
           blockId: 'button',
-          stepName: 'Step 1'
+          stepName: 'Step {{number}}'
         }
       })
     )

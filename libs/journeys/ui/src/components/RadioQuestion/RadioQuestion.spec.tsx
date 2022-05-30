@@ -31,6 +31,15 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
   id: 'RadioQuestion1',
@@ -229,7 +238,7 @@ describe('RadioQuestion', () => {
           eventId: 'uuid',
           blockId: 'RadioQuestion1',
           radioOptionSelectedId: 'RadioOption1',
-          stepName: 'Step 1'
+          stepName: 'Step {{number}}'
         }
       })
     )

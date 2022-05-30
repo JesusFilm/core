@@ -43,6 +43,15 @@ jest.mock('next/router', () => ({
   }
 }))
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 const block: TreeBlock<SignUpFields> = {
   __typename: 'SignUpBlock',
   id: 'signUp0.id',
@@ -345,7 +354,7 @@ describe('SignUp', () => {
           event: 'sign_up_submission',
           eventId: 'uuid',
           blockId: 'signUp0.id',
-          stepName: 'Step 1'
+          stepName: 'Step {{number}}'
         }
       })
     })
