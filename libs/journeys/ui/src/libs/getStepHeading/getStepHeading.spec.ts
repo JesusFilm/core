@@ -30,7 +30,7 @@ describe('getStepHeading', () => {
         children: [
           {
             __typename: 'ButtonBlock',
-            id: 'button.id',
+            id: 'button0.id',
             parentBlockId: 'card.id',
             parentOrder: 0,
             label: 'Button',
@@ -54,10 +54,24 @@ describe('getStepHeading', () => {
             children: []
           },
           {
+            __typename: 'ButtonBlock',
+            id: 'button1.id',
+            parentBlockId: 'card.id',
+            parentOrder: 2,
+            label: 'Button',
+            buttonVariant: null,
+            buttonColor: null,
+            size: null,
+            startIconId: null,
+            endIconId: null,
+            action: null,
+            children: []
+          },
+          {
             __typename: 'TypographyBlock',
             id: 'typography1.id',
             parentBlockId: 'card.id',
-            parentOrder: 2,
+            parentOrder: 3,
             align: null,
             color: null,
             variant: TypographyVariant.h1,
@@ -68,7 +82,7 @@ describe('getStepHeading', () => {
             __typename: 'TypographyBlock',
             id: 'typograph2.id',
             parentBlockId: 'card.id',
-            parentOrder: 3,
+            parentOrder: 4,
             align: null,
             color: null,
             variant: TypographyVariant.h1,
@@ -79,7 +93,7 @@ describe('getStepHeading', () => {
             __typename: 'TypographyBlock',
             id: 'typograph3.id',
             parentBlockId: 'card.id',
-            parentOrder: 4,
+            parentOrder: 5,
             align: null,
             color: null,
             variant: TypographyVariant.body2,
