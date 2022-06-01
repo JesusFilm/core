@@ -13,7 +13,6 @@ describe('fact-or-fiction selecting', () => {
     cy.get('button').contains('Sign In').click()
     // end result brings you to /journeys/fact-or-fiction/edit
   })
-  // const card3 = '8730d39c-9ba0-4dc7-8289-ad562d799f11'
   const cardsPanel = '[data-testid=horizontal-select]'
   const cardsButton = '#control-panel-tab-0'
   const propertiesButton = '#control-panel-tab-1'
