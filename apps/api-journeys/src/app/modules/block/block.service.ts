@@ -33,7 +33,7 @@ export class BlockService extends BaseService {
     journeyId: string,
     parentBlockId?: string | null
   ): Promise<Block[]> {
-    // Only StepBlocks should not have parentBlockId)
+    // Only StepBlocks should not have parentBlockId
     const res =
       parentBlockId != null
         ? await this.db.query(aql`
@@ -52,7 +52,6 @@ export class BlockService extends BaseService {
           SORT block.parentOrder ASC
           RETURN block
     `)
-
     return await res.all()
   }
 
