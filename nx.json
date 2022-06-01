@@ -53,6 +53,5 @@
         "linter": "eslint"
       }
     }
-  },
-  "defaultProject": "api-journeys"
+  }
 }

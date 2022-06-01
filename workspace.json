@@ -12,6 +12,13 @@
     "journeys-admin-e2e": "apps/journeys-admin-e2e",
     "journeys-e2e": "apps/journeys-e2e",
     "journeys-ui": "libs/journeys/ui",
+    "locales": {
+      "root": "libs/locales",
+      "sourceRoot": "libs/locales/src",
+      "projectType": "library",
+      "targets": {},
+      "tags": []
+    },
     "nest-database": "libs/nest/database",
     "nest-decorators": "libs/nest/decorators",
     "nest/gqlAuthGuard": "libs/nest/gqlAuthGuard",
