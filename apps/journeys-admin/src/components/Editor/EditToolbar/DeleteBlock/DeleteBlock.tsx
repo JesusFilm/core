@@ -2,7 +2,7 @@ import { ReactElement, useState } from 'react'
 import IconButton from '@mui/material/IconButton'
 import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
 import { gql, useMutation } from '@apollo/client'
-import { useEditor, useJourney } from '@core/journeys/ui'
+import { useEditor, useJourney, TreeBlock } from '@core/journeys/ui'
 import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
@@ -11,6 +11,9 @@ import Typography from '@mui/material/Typography'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { Dialog } from '../../../Dialog'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourney'
+import { STEP_BLOCK_NEXTBLOCKID_UPDATE } from '../../../CardPreview/CardPreview'
+import { StepBlockNextBlockIdUpdate } from '../../../../../__generated__/StepBlockNextBlockIdUpdate'
 import getSelected from './utils/getSelected'
 
 export const BLOCK_DELETE = gql`
@@ -32,6 +35,10 @@ export function DeleteBlock({
   closeMenu
 }: DeleteBlockProps): ReactElement {
   const [blockDelete] = useMutation<BlockDelete>(BLOCK_DELETE)
+  const [stepBlockNextBlockIdUpdate] = useMutation<StepBlockNextBlockIdUpdate>(
+    STEP_BLOCK_NEXTBLOCKID_UPDATE
+  )
+
   const { enqueueSnackbar } = useSnackbar()
 
   const { journey } = useJourney()
@@ -46,6 +53,33 @@ export function DeleteBlock({
   const handleCloseDialog = (): void => {
     setOpenDialog(false)
     closeMenu?.()
+  }
+
+  async function updateNextBlockId(
+    steps: Array<TreeBlock<StepBlock>>,
+    deleteStepId: string,
+    nextBlockId: string | null
+  ): Promise<void> {
+    if (nextBlockId == null) return
+    const prevStep = steps.find((step) => step?.nextBlockId === deleteStepId)
+    if (prevStep != null && journey != null) {
+      await stepBlockNextBlockIdUpdate({
+        variables: {
+          id: prevStep.id,
+          journeyId: journey.id,
+          input: {
+            nextBlockId
+          }
+        },
+        optimisticResponse: {
+          stepBlockUpdate: {
+            __typename: 'StepBlock',
+            id: prevStep.id,
+            nextBlockId
+          }
+        }
+      })
+    }
   }
 
   const handleDeleteBlock = async (): Promise<void> => {
@@ -76,6 +110,19 @@ export function DeleteBlock({
         selectedStep: stepBeforeDelete
       })
       selected != null && dispatch(selected)
+    }
+
+    if (
+      data?.blockDelete != null &&
+      data.blockDelete.length > 1 &&
+      data.blockDelete[0].__typename === 'StepBlock' &&
+      stepBeforeDelete != null
+    ) {
+      await updateNextBlockId(
+        stepsBeforeDelete,
+        stepBeforeDelete.id,
+        stepBeforeDelete.nextBlockId
+      )
     }
 
     handleCloseDialog()

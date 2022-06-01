@@ -13,6 +13,7 @@ import {
   TypographyAlign,
   TypographyColor
 } from '../../../../../__generated__/globalTypes'
+import { STEP_BLOCK_NEXTBLOCKID_UPDATE } from '../../../CardPreview/CardPreview'
 import { DeleteBlock, BLOCK_DELETE } from './DeleteBlock'
 
 const selectedBlock: TreeBlock<TypographyBlock> = {
@@ -39,16 +40,16 @@ const block2: TreeBlock<TypographyBlock> = {
 
 const selectedStep: TreeBlock<StepBlock> = {
   __typename: 'StepBlock',
-  id: 'stepId',
-  parentBlockId: 'journeyId',
-  parentOrder: 0,
+  id: 'step2.id',
+  parentBlockId: null,
+  parentOrder: 1,
   locked: true,
-  nextBlockId: null,
+  nextBlockId: 'step3.id',
   children: [
     {
       id: 'card1.id',
       __typename: 'CardBlock',
-      parentBlockId: 'stepId',
+      parentBlockId: 'step2.id',
       parentOrder: 0,
       coverBlockId: null,
       backgroundColor: null,
@@ -59,6 +60,28 @@ const selectedStep: TreeBlock<StepBlock> = {
     }
   ]
 }
+
+const step1: TreeBlock<StepBlock> = {
+  __typename: 'StepBlock',
+  id: 'step1.id',
+  parentBlockId: null,
+  parentOrder: 0,
+  locked: true,
+  nextBlockId: 'step2.id',
+  children: []
+}
+
+const step3: TreeBlock<StepBlock> = {
+  __typename: 'StepBlock',
+  id: 'step3.id',
+  parentBlockId: null,
+  parentOrder: 2,
+  locked: true,
+  nextBlockId: null,
+  children: []
+}
+
+const steps: Array<TreeBlock<StepBlock>> = [step1, selectedStep, step3]
 
 describe('DeleteBlock', () => {
   it('should delete a block on button click', async () => {
@@ -207,14 +230,14 @@ describe('DeleteBlock', () => {
     cache.restore({
       'Journey:journeyId': {
         blocks: [
-          { __ref: `StepBlock:stepId` },
+          { __ref: `StepBlock:step2.id` },
           { __ref: `CardBlock:card1.id` },
           { __ref: `TypographyBlock:typography0.id` }
         ],
         id: 'journeyId',
         __typename: 'Journey'
       },
-      'StepBlock:stepId': {
+      'StepBlock:step2.id': {
         ...selectedStep
       },
       'CardBlock:card1.id': {
@@ -282,14 +305,14 @@ describe('DeleteBlock', () => {
     cache.restore({
       'Journey:journeyId': {
         blocks: [
-          { __ref: `StepBlock:stepId` },
+          { __ref: `StepBlock:step2.id` },
           { __ref: `CardBlock:card1.id` },
           { __ref: `TypographyBlock:typography0.id` }
         ],
         id: 'journeyId',
         __typename: 'Journey'
       },
-      'StepBlock:stepId': {
+      'StepBlock:step2.id': {
         ...selectedStep
       },
       'CardBlock:card1.id': {
@@ -358,5 +381,79 @@ describe('DeleteBlock', () => {
       </SnackbarProvider>
     )
     expect(getByRole('button')).toBeDisabled()
+  })
+
+  it('should set nextBlockId for previous block', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        stepBlockUpdate: {
+          __typename: 'StepBlock',
+          id: 'step1.id',
+          nextBlockId: 'step3.id'
+        }
+      }
+    }))
+
+    const selectedBlock = selectedStep
+
+    const { getByRole, getByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: BLOCK_DELETE,
+                variables: {
+                  id: 'step2.id',
+                  parentBlockId: null,
+                  journeyId: 'journeyId'
+                }
+              },
+              result: {
+                data: {
+                  blockDelete: [step1, step3]
+                }
+              }
+            },
+            {
+              request: {
+                query: STEP_BLOCK_NEXTBLOCKID_UPDATE,
+                variables: {
+                  id: 'step1.id',
+                  journeyId: 'journeyId',
+                  input: {
+                    nextBlockId: 'step3.id'
+                  }
+                }
+              },
+              result
+            }
+          ]}
+        >
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider
+              initialState={{ steps, selectedBlock, selectedStep }}
+            >
+              <DeleteBlock variant="button" />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(getByRole('button')).toContainElement(
+      getByTestId('DeleteOutlineRoundedIcon')
+    )
+    fireEvent.click(getByRole('button'))
+
+    expect(getByRole('dialog', { name: 'Delete Card?' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Delete' }))
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })
