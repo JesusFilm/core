@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
-import InputAdornment from '@mui/material/InputAdornment'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues, FormikHelpers } from 'formik'
 import { useJourney } from '@core/journeys/ui'
@@ -95,13 +94,12 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
                   value={values.slug}
                   variant="filled"
                   onChange={handleChange}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        {process.env.NEXT_PUBLIC_JOURNEYS_URL}
-                      </InputAdornment>
-                    )
-                  }}
+                  helperText={
+                    <>
+                      {process.env.NEXT_PUBLIC_JOURNEYS_URL}/
+                      <strong>{values.slug}</strong>
+                    </>
+                  }
                 />
               </Form>
             </Dialog>
