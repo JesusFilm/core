@@ -99,7 +99,7 @@ export function Canvas(): ReactElement {
         slideToClickedSlide={steps != null}
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={(swiper) => {
-          if (steps == null && journey == null) return
+          if (steps == null || journey == null) return
 
           dispatch({
             type: 'SetSelectedStepAction',
