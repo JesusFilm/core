@@ -11,22 +11,13 @@ import { SocialShareAppearance } from './Drawer/SocialShareAppearance'
 
 interface EditorProps {
   journey?: Journey
-  selectedStepId?: string
   children: ReactNode
 }
 
-export function Editor({
-  journey,
-  selectedStepId,
-  children
-}: EditorProps): ReactElement {
+export function Editor({ journey, children }: EditorProps): ReactElement {
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
-      : undefined
-  const selectedStep =
-    selectedStepId != null && steps != null
-      ? steps.find(({ id }) => id === selectedStepId)
       : undefined
 
   return (
@@ -34,7 +25,7 @@ export function Editor({
       <EditorProvider
         initialState={{
           steps,
-          selectedStep,
+          selectedStep: undefined,
           drawerTitle: 'Social Share Appearance',
           drawerChildren: <SocialShareAppearance />
         }}
