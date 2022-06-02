@@ -2,6 +2,7 @@ import findIndex from 'lodash/findIndex'
 import { TOptions } from 'i18next'
 import { TreeBlock } from '..'
 import { TypographyVariant } from '../../../__generated__/globalTypes'
+import { BlockFields_TypographyBlock as TypographyBlock } from '../transformer/__generated__/BlockFields'
 
 function flatten(children: TreeBlock[]): TreeBlock[] {
   return children.reduce<TreeBlock[]>(
@@ -24,12 +25,11 @@ function getStepNumber(
 }
 
 function findMostImportantTypographyBlock(
-  previous: TreeBlock | null,
+  previous: TreeBlock<TypographyBlock> | null,
   current: TreeBlock
-): TreeBlock {
-  if (previous == null || previous.__typename !== 'TypographyBlock')
-    return current
+): TreeBlock<TypographyBlock> | null {
   if (current.__typename !== 'TypographyBlock') return previous
+  if (previous === null) return current
 
   const previousIndex = orderedVariants.findIndex(
     (variant) => variant === previous.variant
