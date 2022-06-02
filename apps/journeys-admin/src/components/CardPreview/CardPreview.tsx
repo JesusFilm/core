@@ -17,6 +17,7 @@ import Stack from '@mui/material/Stack'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
 import last from 'lodash/last'
+import { useRouter } from 'next/router'
 import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
 import { StepBlockNextBlockIdUpdate } from '../../../__generated__/StepBlockNextBlockIdUpdate'
@@ -99,12 +100,21 @@ export function CardPreview({
     VIDEO_BLOCK_SET_DEFAULT_ACTION
   )
   const { journey } = useJourney()
+  const router = useRouter()
 
   const handleChange = (selectedId: string): void => {
-    if (steps == null) return
+    if (steps == null || journey == null) return
 
     const selectedStep = steps.find(({ id }) => id === selectedId)
     selectedStep != null && onSelect?.(selectedStep)
+
+    void router.push(
+      `/journeys/${journey.slug}/edit?stepId=${selectedId}`,
+      undefined,
+      {
+        shallow: true
+      }
+    )
   }
 
   const handleClick = async (): Promise<void> => {

@@ -14,6 +14,7 @@ import {
 import { ThemeProvider } from '@core/shared/ui'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { useRouter } from 'next/router'
 import { FramePortal } from '../../FramePortal'
 import { DRAWER_WIDTH } from '../Drawer'
 import 'swiper/swiper.min.css'
@@ -35,12 +36,13 @@ export function Canvas(): ReactElement {
     dispatch
   } = useEditor()
   const { journey } = useJourney()
+  const router = useRouter()
 
   useEffect(() => {
     if (swiper != null && selectedStep != null && steps != null) {
       swiper.slideTo(steps.findIndex(({ id }) => id === selectedStep.id))
     }
-  }, [steps, swiper, selectedStep])
+  }, [steps, swiper, selectedStep, journey, router])
 
   useEffect(() => {
     const setSpaceBetweenOnResize = (): void => {
@@ -97,12 +99,22 @@ export function Canvas(): ReactElement {
         slideToClickedSlide={steps != null}
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={(swiper) => {
-          if (steps == null) return
+          if (steps == null && journey == null) return
 
           dispatch({
             type: 'SetSelectedStepAction',
             step: steps[swiper.activeIndex]
           })
+
+          void router.push(
+            `/journeys/${journey.slug}/edit?stepId=${
+              steps[swiper.activeIndex].id
+            }`,
+            undefined,
+            {
+              shallow: true
+            }
+          )
         }}
       >
         {steps != null ? (
