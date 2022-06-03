@@ -1,5 +1,6 @@
 import { TreeBlock } from '..'
 import { BlockFields_StepBlock as StepBlock } from '../transformer/__generated__/BlockFields'
+import { TypographyVariant } from '../../../__generated__/globalTypes'
 import { getStepHeading } from '.'
 
 describe('getStepHeading', () => {
@@ -12,8 +13,10 @@ describe('getStepHeading', () => {
     nextBlockId: null
   }
 
-  it('returns text of first typography block', () => {
-    const stepChildren: TreeBlock[] = [
+  const t = (str: string): string => str
+
+  it('returns text of first typography block with biggest variant', () => {
+    const children: TreeBlock[] = [
       {
         __typename: 'CardBlock',
         id: 'card.id',
@@ -26,13 +29,52 @@ describe('getStepHeading', () => {
         fullscreen: false,
         children: [
           {
+            __typename: 'ButtonBlock',
+            id: 'button0.id',
+            parentBlockId: 'card.id',
+            parentOrder: 0,
+            label: 'Button',
+            buttonVariant: null,
+            buttonColor: null,
+            size: null,
+            startIconId: null,
+            endIconId: null,
+            action: null,
+            children: []
+          },
+          {
+            __typename: 'TypographyBlock',
+            id: 'typography0.id',
+            parentBlockId: 'card.id',
+            parentOrder: 1,
+            align: null,
+            color: null,
+            variant: TypographyVariant.h2,
+            content: 'Sub heading',
+            children: []
+          },
+          {
+            __typename: 'ButtonBlock',
+            id: 'button1.id',
+            parentBlockId: 'card.id',
+            parentOrder: 2,
+            label: 'Button',
+            buttonVariant: null,
+            buttonColor: null,
+            size: null,
+            startIconId: null,
+            endIconId: null,
+            action: null,
+            children: []
+          },
+          {
             __typename: 'TypographyBlock',
             id: 'typography1.id',
             parentBlockId: 'card.id',
-            parentOrder: 0,
+            parentOrder: 3,
             align: null,
             color: null,
-            variant: null,
+            variant: TypographyVariant.h1,
             content: 'Heading',
             children: []
           },
@@ -40,11 +82,22 @@ describe('getStepHeading', () => {
             __typename: 'TypographyBlock',
             id: 'typograph2.id',
             parentBlockId: 'card.id',
-            parentOrder: 1,
+            parentOrder: 4,
             align: null,
             color: null,
-            variant: null,
-            content: 'Description',
+            variant: TypographyVariant.h1,
+            content: 'Another heading',
+            children: []
+          },
+          {
+            __typename: 'TypographyBlock',
+            id: 'typograph3.id',
+            parentBlockId: 'card.id',
+            parentOrder: 5,
+            align: null,
+            color: null,
+            variant: TypographyVariant.body2,
+            content: 'Paragraph',
             children: []
           }
         ]
@@ -54,36 +107,56 @@ describe('getStepHeading', () => {
     const steps: TreeBlock[] = [
       {
         ...stepBlock,
-        children: stepChildren
+        children
       }
     ]
 
-    expect(getStepHeading('step.id', stepChildren, steps)).toEqual('Heading')
+    expect(getStepHeading('step.id', children, steps, t)).toEqual('Heading')
   })
 
   it('returns step number if there are no typography blocks', () => {
-    const stepChildren: TreeBlock[] = []
+    const children: TreeBlock[] = []
     const steps: TreeBlock[] = [
       {
         ...stepBlock,
-        children: stepChildren
+        children
       }
     ]
 
-    expect(getStepHeading('step.id', stepChildren, steps)).toEqual('Step 1')
+    expect(
+      getStepHeading(
+        'step.id',
+        children,
+        steps,
+        jest.fn((str) => 'Step 1')
+      )
+    ).toEqual('Step 1')
   })
 
   it('returns Untitled step if no typogrpahy blocks and id not matched', () => {
-    const stepChildren: TreeBlock[] = []
+    const children: TreeBlock[] = []
     const steps: TreeBlock[] = [
       {
         ...stepBlock,
-        children: stepChildren
+        children
       }
     ]
 
-    expect(getStepHeading('anotherStep.id', stepChildren, steps)).toEqual(
+    expect(getStepHeading('anotherStep.id', children, steps, t)).toEqual(
       'Untitled'
     )
+  })
+
+  it('calls translate function', () => {
+    const t = jest.fn((str: string) => str)
+    const children: TreeBlock[] = []
+    const steps: TreeBlock[] = [
+      {
+        ...stepBlock,
+        children
+      }
+    ]
+    getStepHeading('step.id', children, steps, t)
+    expect(t).toHaveBeenCalledWith('Step {{number}}', { number: 1 })
   })
 })

@@ -70,7 +70,7 @@ export const SignUp = ({
 
   const heading =
     activeBlock != null
-      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks)
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
   const router = useRouter()
