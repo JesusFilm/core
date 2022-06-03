@@ -258,13 +258,6 @@ describe('BlockService', () => {
       )
     })
 
-    it('should remove blocks and return empty array', async () => {
-      expect(
-        await service.removeBlockAndChildren(block._key, journey.id)
-      ).toEqual([])
-      expect(service.reorderSiblings).not.toHaveBeenCalled()
-    })
-
     it('should update parent order', async () => {
       ;(
         service.collection as DeepMockProxy<DocumentCollection>

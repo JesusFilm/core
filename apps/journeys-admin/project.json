@@ -36,7 +36,7 @@
     "serve": {
       "executor": "@nrwl/next:server",
       "options": {
-        "buildTarget": "journeys-admin:build",
+        "buildTarget": "journeys-admin:_build",
         "dev": true,
         "hostname": "0.0.0.0",
         "port": 4200

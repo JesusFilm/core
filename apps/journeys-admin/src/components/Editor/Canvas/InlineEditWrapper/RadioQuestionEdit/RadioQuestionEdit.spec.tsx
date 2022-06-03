@@ -73,16 +73,16 @@ describe('RadioQuestionEdit', () => {
             <RadioQuestionEdit
               {...props([
                 option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option
+                { ...option, id: 'option1.id' },
+                { ...option, id: 'option2.id' },
+                { ...option, id: 'option3.id' },
+                { ...option, id: 'option4.id' },
+                { ...option, id: 'option5.id' },
+                { ...option, id: 'option6.id' },
+                { ...option, id: 'option7.id' },
+                { ...option, id: 'option8.id' },
+                { ...option, id: 'option9.id' },
+                { ...option, id: 'option10.id' }
               ])}
             />
           </EditorProvider>
@@ -111,17 +111,17 @@ describe('RadioQuestionEdit', () => {
             <RadioQuestionEdit
               {...props([
                 option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option
+                { ...option, id: 'option1.id' },
+                { ...option, id: 'option2.id' },
+                { ...option, id: 'option3.id' },
+                { ...option, id: 'option4.id' },
+                { ...option, id: 'option5.id' },
+                { ...option, id: 'option6.id' },
+                { ...option, id: 'option7.id' },
+                { ...option, id: 'option8.id' },
+                { ...option, id: 'option9.id' },
+                { ...option, id: 'option10.id' },
+                { ...option, id: 'option11.id' }
               ])}
             />
           </EditorProvider>

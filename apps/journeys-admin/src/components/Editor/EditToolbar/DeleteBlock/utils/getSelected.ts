@@ -26,7 +26,7 @@ export default function getSelected({
   | SetSelectedStepAction
   | null {
   // BUG: siblings not returning correct data for blocks nested in a gridBlock - resolve this when we decide how grid will be used
-  if (siblings.length > 0) {
+  if (siblings.length > 0 && siblings[0].__typename !== 'StepBlock') {
     const blockToSelect =
       siblings.find((sibling) => sibling.parentOrder === parentOrder - 1) ??
       siblings[parentOrder]
