@@ -140,7 +140,7 @@ export const SignUp = ({
           }
         }}
       >
-        {({ ...formikProps }) => (
+        {({ values, handleChange, handleBlur }) => (
           <Form
             data-testid={`signUp-${blockId}`}
             style={{
@@ -150,14 +150,18 @@ export const SignUp = ({
           >
             <TextField
               data-testid="name"
-              {...formikProps}
               id="name"
               name="name"
               label={t('Name')}
+              value={values.name}
+              onChange={handleChange}
+              onBlur={handleBlur}
               disabled={selectedBlock !== undefined}
             />
             <TextField
-              {...formikProps}
+              value={values.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
               id="email"
               name="email"
               label={t('Email')}
