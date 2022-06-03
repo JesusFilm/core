@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
@@ -10,6 +10,17 @@ import {
 import { ThemeProvider } from '../ThemeProvider'
 import { JourneyEdit } from './JourneyEdit'
 import { Editor } from '.'
+
+jest.mock('next/router', () => ({
+  useRouter() {
+    return {
+      push: () => null,
+      query: {
+        stepId: 'step1.id'
+      }
+    }
+  }
+}))
 
 describe('Editor', () => {
   const journey: Journey = {
@@ -73,18 +84,20 @@ describe('Editor', () => {
     expect(getByText('Social Image')).toBeInTheDocument()
   })
 
-  it('should select step based on ID', () => {
+  it('should select step based on ID', async () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <Editor journey={journey} selectedStepId="step1.id">
+          <Editor journey={journey}>
             <JourneyEdit />
           </Editor>
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getByTestId('preview-step1.id').parentElement).toHaveStyle(
-      'outline: 2px solid #C52D3A'
+    await waitFor(() =>
+      expect(getByTestId('preview-step1.id').parentElement).toHaveStyle(
+        'outline: 2px solid #C52D3A'
+      )
     )
   })
 })

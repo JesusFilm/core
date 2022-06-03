@@ -42,7 +42,7 @@ export function Canvas(): ReactElement {
     if (swiper != null && selectedStep != null && steps != null) {
       swiper.slideTo(steps.findIndex(({ id }) => id === selectedStep.id))
     }
-  }, [steps, swiper, selectedStep, journey, router])
+  }, [steps, swiper, selectedStep])
 
   useEffect(() => {
     const setSpaceBetweenOnResize = (): void => {
