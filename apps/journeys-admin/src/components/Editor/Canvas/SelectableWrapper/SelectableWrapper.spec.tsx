@@ -1,5 +1,5 @@
 import { NextRouter, useRouter } from 'next/router'
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   EditorProvider,
@@ -183,10 +183,12 @@ describe('SelectableWrapper', () => {
       zIndex: '1'
     })
     fireEvent.click(getByText('sign up label'))
-    expect(getByTestId(`selected-${signUpBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
-      zIndex: '1'
-    })
+    await waitFor(() =>
+      expect(getByTestId(`selected-${signUpBlock.id}`)).toHaveStyle({
+        outline: '3px solid #C52D3A',
+        zIndex: '1'
+      })
+    )
     fireEvent.click(getByTestId(`radioQuestion-${radioQuestionBlock.id}`))
     expect(getByTestId(`selected-${radioQuestionBlock.id}`)).toHaveStyle({
       outline: '3px solid #C52D3A',

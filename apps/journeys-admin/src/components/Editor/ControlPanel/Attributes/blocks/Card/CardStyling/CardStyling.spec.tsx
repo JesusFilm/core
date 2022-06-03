@@ -168,6 +168,7 @@ describe('CardStyling', () => {
         cardBlockUpdate: {
           id: 'card1.id',
           themeMode: ThemeMode.dark,
+          themeName: ThemeName.base,
           __typename: 'CardBlock'
         }
       }

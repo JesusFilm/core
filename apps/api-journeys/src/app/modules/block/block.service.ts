@@ -47,6 +47,7 @@ export class BlockService extends BaseService {
         : await this.db.query(aql`
         FOR block in ${this.collection}
           FILTER block.journeyId == ${journeyId}
+            AND block.__typename == 'StepBlock'
             AND block.parentOrder != null
           SORT block.parentOrder ASC
           RETURN block
@@ -113,12 +114,9 @@ export class BlockService extends BaseService {
   ): Promise<Block[]> {
     const res: Block = await this.remove(blockId)
     await this.removeAllBlocksForParentId([blockId], [res])
-    const result =
-      parentBlockId == null
-        ? []
-        : await this.reorderSiblings(
-            await this.getSiblingsInternal(journeyId, parentBlockId)
-          )
+    const result = await this.reorderSiblings(
+      await this.getSiblingsInternal(journeyId, parentBlockId)
+    )
 
     return result as unknown as Block[]
   }
