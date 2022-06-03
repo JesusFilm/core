@@ -185,7 +185,12 @@ export function EditorProvider({
   useEffect(() => {
     if (initialState?.steps != null)
       dispatch({ type: 'SetStepsAction', steps: initialState.steps })
-  }, [initialState?.steps])
+    if (initialState?.selectedStep != null)
+      dispatch({
+        type: 'SetSelectedStepAction',
+        step: initialState.selectedStep
+      })
+  }, [initialState?.steps, initialState?.selectedStep])
 
   return (
     <EditorContext.Provider value={{ state, dispatch }}>
