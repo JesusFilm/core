@@ -33,7 +33,7 @@ export function Cards(): ReactElement {
   const currentBlock = selectedBlock as TreeBlock<StepFields>
 
   const nextStep: TreeBlock<StepFields> | undefined = steps?.find(
-    ({ id }) => currentBlock != null && currentBlock.nextBlockId === id
+    ({ id }) => currentBlock?.nextBlockId === id
   )
 
   async function handleSelectStep(step: TreeBlock<StepFields>): Promise<void> {
