@@ -1,35 +1,11 @@
-import { ReactElement, useEffect } from 'react'
-import { useEditor, useJourney } from '@core/journeys/ui'
+import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
-import { useRouter } from 'next/router'
 import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'
 import { Drawer, DRAWER_WIDTH } from '../Drawer'
 
 // This component is tested in Editor
 export function JourneyEdit(): ReactElement {
-  const {
-    state: { steps },
-    dispatch
-  } = useEditor()
-  const router = useRouter()
-  const { journey } = useJourney()
-  const stepId = router.query.stepId as string | undefined
-
-  const selectedStep =
-    stepId != null && steps != null
-      ? steps.find(({ id }) => id === stepId)
-      : undefined
-
-  useEffect(() => {
-    if (journey != null && selectedStep != null) {
-      dispatch({
-        type: 'SetSelectedStepAction',
-        step: selectedStep
-      })
-    }
-  }, [journey, selectedStep, dispatch])
-
   return (
     <>
       <Box

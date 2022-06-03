@@ -39,7 +39,10 @@ function JourneyEditPage(): ReactElement {
             }
             description={data?.journey?.description ?? undefined}
           />
-          <Editor journey={data?.journey ?? undefined}>
+          <Editor
+            journey={data?.journey ?? undefined}
+            selectedStepId={router.query.stepId as string | undefined}
+          >
             <PageWrapper
               title={data?.journey?.title ?? t('Edit Journey')}
               showDrawer

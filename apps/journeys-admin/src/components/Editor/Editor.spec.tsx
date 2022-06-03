@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui'
 import { MockedProvider } from '@apollo/client/testing'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
@@ -14,10 +14,7 @@ import { Editor } from '.'
 jest.mock('next/router', () => ({
   useRouter() {
     return {
-      push: () => '/journeys/my-journey/edit?stepId=step1.id',
-      query: {
-        stepId: 'step1.id'
-      }
+      push: () => null
     }
   }
 }))
@@ -84,20 +81,18 @@ describe('Editor', () => {
     expect(getByText('Social Image')).toBeInTheDocument()
   })
 
-  it('should select step based on ID', async () => {
+  it('should select step based on ID', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <Editor journey={journey}>
+          <Editor journey={journey} selectedStepId="step1.id">
             <JourneyEdit />
           </Editor>
         </ThemeProvider>
       </MockedProvider>
     )
-    await waitFor(() =>
-      expect(getByTestId('preview-step1.id').parentElement).toHaveStyle(
-        'outline: 2px solid #C52D3A'
-      )
+    expect(getByTestId('preview-step1.id').parentElement).toHaveStyle(
+      'outline: 2px solid #C52D3A'
     )
   })
 })
