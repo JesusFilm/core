@@ -9,35 +9,27 @@ export function Footer(): ReactElement {
 
   return (
     <Stack direction="row" spacing={3} alignItems="center">
-      <Typography
-        sx={{
-          fontSize: '10px',
-          opacity: 0.7,
-          '&:hover': {
-            opacity: 1
-          }
-        }}
-      >
+      <Typography variant="caption">
         {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
+        <MuiLink
+          href="https://www.cru.org/us/en/about/terms-of-use.html"
+          variant="caption"
+          underline="none"
+          target="_blank"
+          rel="noopener"
+        >
+          {t('Terms')}
+        </MuiLink>
+        <MuiLink
+          href="https://www.cru.org/us/en/about/privacy.html"
+          variant="caption"
+          underline="none"
+          target="_blank"
+          rel="noopener"
+        >
+          {t('Privacy')}
+        </MuiLink>
       </Typography>
-      <MuiLink
-        href="https://www.cru.org/us/en/about/terms-of-use.html"
-        variant="caption"
-        underline="none"
-        target="_blank"
-        rel="noopener"
-      >
-        {t('Terms')}
-      </MuiLink>
-      <MuiLink
-        href="https://www.cru.org/us/en/about/privacy.html"
-        variant="caption"
-        underline="none"
-        target="_blank"
-        rel="noopener"
-      >
-        {t('Privacy')}
-      </MuiLink>
     </Stack>
   )
 }
