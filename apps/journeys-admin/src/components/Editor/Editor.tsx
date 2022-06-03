@@ -25,7 +25,6 @@ export function Editor({ journey, children }: EditorProps): ReactElement {
       <EditorProvider
         initialState={{
           steps,
-          selectedStep: undefined,
           drawerTitle: 'Social Share Appearance',
           drawerChildren: <SocialShareAppearance />
         }}

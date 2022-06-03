@@ -14,7 +14,7 @@ import { Editor } from '.'
 jest.mock('next/router', () => ({
   useRouter() {
     return {
-      push: () => null,
+      push: () => '/journeys/my-journey/edit?stepId=step1.id',
       query: {
         stepId: 'step1.id'
       }

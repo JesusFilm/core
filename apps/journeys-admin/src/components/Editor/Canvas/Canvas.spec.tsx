@@ -10,25 +10,25 @@ import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { Canvas } from '.'
 
 describe('Canvas', () => {
+  const step0: TreeBlock<StepBlock> = {
+    id: 'step0.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    locked: false,
+    nextBlockId: null,
+    children: []
+  }
+  const step1: TreeBlock<StepBlock> = {
+    id: 'step1.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 1,
+    locked: false,
+    nextBlockId: null,
+    children: []
+  }
   it('should show border around selected', () => {
-    const step0: TreeBlock<StepBlock> = {
-      id: 'step0.id',
-      __typename: 'StepBlock',
-      parentBlockId: null,
-      parentOrder: 0,
-      locked: false,
-      nextBlockId: null,
-      children: []
-    }
-    const step1: TreeBlock<StepBlock> = {
-      id: 'step1.id',
-      __typename: 'StepBlock',
-      parentBlockId: null,
-      parentOrder: 1,
-      locked: false,
-      nextBlockId: null,
-      children: []
-    }
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
