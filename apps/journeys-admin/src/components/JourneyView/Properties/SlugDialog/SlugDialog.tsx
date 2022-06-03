@@ -96,8 +96,9 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
                   onChange={handleChange}
                   helperText={
                     <>
-                      {process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'}/
-                      <strong>{values.slug}</strong>
+                      {process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                        'https://your.nextstep.is'}
+                      /<strong>{values.slug}</strong>
                     </>
                   }
                 />
