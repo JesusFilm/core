@@ -24,7 +24,6 @@ export function Editor({
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
       : undefined
-
   const selectedStep =
     selectedStepId != null && steps != null
       ? steps.find(({ id }) => id === selectedStepId)
