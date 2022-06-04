@@ -10,6 +10,8 @@ spec:
     type: None
   tls:
     caSecretName: None
+  # auth:
+  #   jwtSecretName: None
   agents:
     resources:
       storageClassName: ebs-sc
