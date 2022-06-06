@@ -3,6 +3,7 @@ import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
 import { NextSeo } from 'next-seo'
+import { useTranslation } from 'react-i18next'
 import { TreeBlock, getStepHeading, useBlocks } from '../..'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { useJourney } from '../../libs/context/JourneyContext'
@@ -32,8 +33,9 @@ export function Step({
 
   const { admin, journey } = useJourney()
   const { treeBlocks } = useBlocks()
+  const { t } = useTranslation('libs-journeys-ui')
 
-  const heading = getStepHeading(blockId, children, treeBlocks)
+  const heading = getStepHeading(blockId, children, treeBlocks, t)
 
   useEffect(() => {
     if (!admin) {

@@ -8,7 +8,14 @@ import MuiTextField, {
 export interface TextFieldProps
   extends Pick<
     MuiTextFieldProps,
-    'id' | 'name' | 'label' | 'focused' | 'disabled'
+    | 'id'
+    | 'name'
+    | 'label'
+    | 'focused'
+    | 'disabled'
+    | 'value'
+    | 'onBlur'
+    | 'onChange'
   > {}
 
 export function TextField({

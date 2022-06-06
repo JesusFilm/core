@@ -140,7 +140,7 @@ describe('updatedSelected', () => {
   it('should select the step after the deleted step if deleted step is the first step', () => {
     const input = {
       parentOrder: 1,
-      siblings: [],
+      siblings: [step1, step2],
       type: 'StepBlock',
       steps,
       selectedStep: selectedStep

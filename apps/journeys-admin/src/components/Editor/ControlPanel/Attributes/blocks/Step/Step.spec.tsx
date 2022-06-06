@@ -13,6 +13,15 @@ import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 import { Step } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('Step', () => {
   it('shows default messages', () => {
     const step: TreeBlock<StepBlock> = {
@@ -107,7 +116,7 @@ describe('Step', () => {
           <Step {...step1} />
         </EditorProvider>
       )
-      expect(getByText('Step 2')).toBeInTheDocument()
+      expect(getByText('Step {{number}}')).toBeInTheDocument()
     })
 
     it('shows first typography text', () => {
