@@ -11,14 +11,6 @@ import { ThemeProvider } from '../ThemeProvider'
 import { JourneyEdit } from './JourneyEdit'
 import { Editor } from '.'
 
-jest.mock('next/router', () => ({
-  useRouter() {
-    return {
-      push: () => null
-    }
-  }
-}))
-
 describe('Editor', () => {
   const journey: Journey = {
     __typename: 'Journey',
