@@ -23,12 +23,19 @@ export class StepBlockResolver {
   async stepBlockCreate(
     @Args('input') input: StepBlockCreateInput & { __typename }
   ): Promise<StepBlock> {
+    const parentOrder = input.parentOrder ?? 0
     input.__typename = 'StepBlock'
     const siblings = await this.blockService.getSiblings(input.journeyId)
-    return await this.blockService.save({
+    const result: StepBlock = await this.blockService.save({
       ...input,
       parentOrder: siblings.length
     })
+    await this.blockService.reorderBlock(
+      result.id,
+      result.journeyId,
+      parentOrder
+    )
+    return { ...result, parentOrder: parentOrder }
   }
 
   @Mutation()

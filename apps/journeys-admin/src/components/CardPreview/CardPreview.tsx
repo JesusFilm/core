@@ -41,8 +41,15 @@ export interface CardPreviewProps {
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
   ${STEP_FIELDS}
   ${CARD_FIELDS}
-  mutation StepAndCardBlockCreate($journeyId: ID!, $stepId: ID!, $cardId: ID) {
-    stepBlockCreate(input: { id: $stepId, journeyId: $journeyId }) {
+  mutation StepAndCardBlockCreate(
+    $journeyId: ID!
+    $stepId: ID!
+    $cardId: ID
+    $parentOrder: Int
+  ) {
+    stepBlockCreate(
+      input: { id: $stepId, journeyId: $journeyId, parentOrder: $parentOrder }
+    ) {
       ...StepFields
     }
     cardBlockCreate(
@@ -116,7 +123,8 @@ export function CardPreview({
       variables: {
         journeyId: journey.id,
         stepId,
-        cardId
+        cardId,
+        parentOrder: selected?.parentOrder
       },
       update(cache, { data }) {
         if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
@@ -224,37 +232,36 @@ export function CardPreview({
     }
   }
 
+  const AddCardSlide = (): ReactElement => (
+    <Card
+      id="CardPreviewAddButton"
+      variant="outlined"
+      sx={{
+        display: 'flex',
+        width: 87,
+        height: 132,
+        m: 1
+      }}
+    >
+      <CardActionArea
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+        onClick={handleClick}
+      >
+        <AddIcon color="primary" />
+      </CardActionArea>
+    </Card>
+  )
   return (
     <>
       {steps != null ? (
         <HorizontalSelect
           onChange={handleChange}
           id={selected?.id}
-          footer={
-            showAddButton === true && (
-              <Card
-                id="CardPreviewAddButton"
-                variant="outlined"
-                sx={{
-                  display: 'flex',
-                  width: 87,
-                  height: 132,
-                  m: 1
-                }}
-              >
-                <CardActionArea
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                  }}
-                  onClick={handleClick}
-                >
-                  <AddIcon color="primary" />
-                </CardActionArea>
-              </Card>
-            )
-          }
+          footer={showAddButton === true && <AddCardSlide />}
         >
           {steps.map((step) => (
             <Box
