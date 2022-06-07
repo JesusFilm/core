@@ -190,7 +190,16 @@ export function EditorProvider({
         type: 'SetSelectedStepAction',
         step: initialState.selectedStep
       })
-  }, [initialState?.steps, initialState?.selectedStep])
+    if (initialState?.selectedBlock != null)
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        block: initialState.selectedBlock
+      })
+  }, [
+    initialState?.steps,
+    initialState?.selectedStep,
+    initialState?.selectedBlock
+  ])
 
   return (
     <EditorContext.Provider value={{ state, dispatch }}>
