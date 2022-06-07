@@ -123,7 +123,10 @@ export enum IdType {
 
 export enum JourneyStatus {
     draft = "draft",
-    published = "published"
+    published = "published",
+    archived = "archived",
+    deleted = "deleted",
+    removed = "removed"
 }
 
 export enum UserJourneyRole {
@@ -459,10 +462,12 @@ export class Journey {
     id: string;
     title: string;
     language: Language;
+    lastActiveStatus?: Nullable<JourneyStatus>;
     themeMode: ThemeMode;
     themeName: ThemeName;
     description?: Nullable<string>;
     slug: string;
+    deletedAt?: Nullable<DateTime>;
     publishedAt?: Nullable<DateTime>;
     featuredAt?: Nullable<DateTime>;
     createdAt: DateTime;
@@ -815,6 +820,14 @@ export abstract class IMutation {
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
     abstract journeyPublish(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
+
+    abstract journeyArchive(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
+
+    abstract journeyDelete(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
+
+    abstract journeyRemove(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
+
+    abstract journeyRestore(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
 
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 

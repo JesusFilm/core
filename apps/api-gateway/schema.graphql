@@ -342,10 +342,12 @@ type Journey
 {
   blocks: [Block!] @join__field(graph: JOURNEYS)
   createdAt: DateTime! @join__field(graph: JOURNEYS)
+  deletedAt: DateTime @join__field(graph: JOURNEYS)
   description: String @join__field(graph: JOURNEYS)
   featuredAt: DateTime @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
   language: Language! @join__field(graph: JOURNEYS)
+  lastActiveStatus: JourneyStatus @join__field(graph: JOURNEYS)
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
   publishedAt: DateTime @join__field(graph: JOURNEYS)
   seoDescription: String @join__field(graph: JOURNEYS)
@@ -386,8 +388,11 @@ input JourneysFilter {
 }
 
 enum JourneyStatus {
+  archived
+  deleted
   draft
   published
+  removed
 }
 
 input JourneyUpdateInput {
@@ -464,8 +469,12 @@ type Mutation {
   iconBlockUpdate(id: ID!, input: IconBlockUpdateInput!, journeyId: ID!): IconBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
   imageBlockUpdate(id: ID!, input: ImageBlockUpdateInput!, journeyId: ID!): ImageBlock! @join__field(graph: JOURNEYS)
+  journeyArchive(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
+  journeyDelete(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
+  journeyRemove(id: ID!): Journey @join__field(graph: JOURNEYS)
+  journeyRestore(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)

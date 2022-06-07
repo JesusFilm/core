@@ -160,6 +160,72 @@ export class JourneyResolver {
     })
   }
 
+  @Mutation()
+  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
+  async journeyArchive(@Args('id') id: string): Promise<Journey> {
+    const result: Journey = await this.journeyService.get(id)
+    const lastActiveStatus =
+      result.status === JourneyStatus.published ||
+      result.status === JourneyStatus.draft
+        ? result.status
+        : result.lastActiveStatus
+
+    return await this.journeyService.update(id, {
+      status: JourneyStatus.archived,
+      lastActiveStatus: lastActiveStatus
+    })
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
+  async journeyDelete(@Args('id') id: string): Promise<Journey> {
+    const result: Journey = await this.journeyService.get(id)
+    const lastActiveStatus =
+      result.status === JourneyStatus.published ||
+      result.status === JourneyStatus.draft
+        ? result.status
+        : result.lastActiveStatus
+
+    return await this.journeyService.update(id, {
+      status: JourneyStatus.deleted,
+      lastActiveStatus: lastActiveStatus,
+      deletedAt: new Date().toISOString()
+    })
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
+  async journeyRemove(@Args('id') id: string): Promise<Journey> {
+    const result: Journey = await this.journeyService.get(id)
+    const lastActiveStatus =
+      result.status === JourneyStatus.published ||
+      result.status === JourneyStatus.draft
+        ? result.status
+        : result.lastActiveStatus
+
+    return await this.journeyService.update(id, {
+      status: JourneyStatus.removed,
+      lastActiveStatus: lastActiveStatus
+    })
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
+  async journeyRestore(@Args('id') id: string): Promise<Journey> {
+    const result: Journey = await this.journeyService.get(id)
+    const lastActiveStatus = result.lastActiveStatus ?? JourneyStatus.draft
+
+    if (
+      result.status === JourneyStatus.draft ||
+      result.status === JourneyStatus.published
+    ) {
+      throw new UserInputError('Journey is already active')
+    }
+    return await this.journeyService.update(id, {
+      status: lastActiveStatus
+    })
+  }
+
   @ResolveField()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
     return await this.blockService.forJourney(journey)

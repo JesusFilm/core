@@ -6,10 +6,12 @@ type Journey @key(fields: "id") {
   id: ID!
   title: String!
   language: Language!
+  lastActiveStatus: JourneyStatus
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
   slug: String!
+  deletedAt: DateTime
   publishedAt: DateTime
   featuredAt: DateTime
   createdAt: DateTime!
@@ -26,6 +28,9 @@ enum IdType {
 enum JourneyStatus {
   draft
   published
+  archived
+  deleted
+  removed
 }
 
 input JourneysFilter {
@@ -80,6 +85,10 @@ extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey
+  journeyArchive(id: ID!): Journey
+  journeyDelete(id: ID!): Journey
+  journeyRemove(id: ID!): Journey
+  journeyRestore(id: ID!): Journey
 }
 
 extend type NavigateToJourneyAction {

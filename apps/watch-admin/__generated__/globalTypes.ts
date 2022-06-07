@@ -84,8 +84,11 @@ export enum IconSize {
 }
 
 export enum JourneyStatus {
+  archived = "archived",
+  deleted = "deleted",
   draft = "draft",
   published = "published",
+  removed = "removed",
 }
 
 export enum ThemeMode {
