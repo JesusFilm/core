@@ -24,7 +24,7 @@ describe('JourneyList', () => {
   })
 
   it('should order journeys in alphabetical order', () => {
-    const { getAllByLabelText, getByRole, getByText } = render(
+    const { getAllByLabelText, getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
@@ -33,7 +33,6 @@ describe('JourneyList', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByText('All Journeys')).toBeInTheDocument()
 
     const journeyCards = getAllByLabelText('journey-card')
 
@@ -45,7 +44,7 @@ describe('JourneyList', () => {
   })
 
   it('should render all journeys', () => {
-    const { getAllByLabelText, getByText } = render(
+    const { getAllByLabelText } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
@@ -56,7 +55,6 @@ describe('JourneyList', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByText('All Journeys')).toBeInTheDocument()
     expect(getAllByLabelText('journey-card').length).toBe(3)
   })
 
@@ -70,7 +68,6 @@ describe('JourneyList', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByText('All Journeys')).toBeInTheDocument()
     expect(getByText('No journeys to display.')).toBeInTheDocument()
     expect(
       getByText('Create a journey, then find it here.')
