@@ -35,10 +35,11 @@ enum JourneyStatus {
 
 input JourneysFilter {
   featured: Boolean
+  statuses: [JourneyStatus]
 }
 
 extend type Query {
-  adminJourneys: [Journey!]!
+  adminJourneys(where: JourneysFilter): [Journey!]!
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
