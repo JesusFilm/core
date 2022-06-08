@@ -1,6 +1,6 @@
-const { initReactI18next } = require('react-i18next')
-const i18n = require('i18next')
-const LanguageDetector = require('i18next-browser-languagedetector')
+import { initReactI18next } from 'react-i18next'
+import i18n from 'i18next'
+import LanguageDetector from 'i18next-browser-languagedetector'
 
 const ns = ['common', 'apps-journeys', 'libs-journeys-ui']
 const supportedLngs = ['en', 'af', 'mi']
@@ -37,4 +37,4 @@ supportedLngs.forEach((lang) => {
   })
 })
 
-module.exports = i18n
+export default i18n
