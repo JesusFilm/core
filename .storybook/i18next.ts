@@ -6,13 +6,10 @@ const ns = ['common', 'apps-journeys', 'libs-journeys-ui']
 const supportedLngs = ['en', 'af', 'mi']
 
 i18n
-  .use(
-    LanguageDetector.type == null ? LanguageDetector.default : LanguageDetector
-  )
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     react: {
-      wait: true,
       useSuspense: false
     },
     nsSeparator: false,
