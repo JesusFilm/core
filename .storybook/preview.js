@@ -50,7 +50,7 @@ module.exports = {
     viewport: {
       viewports: customViewports
     },
-    i18n: i18n.default,
+    i18n: i18n.default ?? i18n,
     locale: 'en',
     locales: {
       en: 'English',
