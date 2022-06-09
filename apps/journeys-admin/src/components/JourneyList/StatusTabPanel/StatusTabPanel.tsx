@@ -64,7 +64,6 @@ export function StatusTabPanel({
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
-    // BUG: changing chip is unexpectedly this onChange
     if (newValue != null) {
       // handle change can't be tested until more tabs are added
       setActiveTab(newValue)
