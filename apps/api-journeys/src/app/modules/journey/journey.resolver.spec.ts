@@ -491,7 +491,6 @@ describe('JourneyResolver', () => {
         {
           ...archivedJourney,
           status: JourneyStatus.deleted,
-          lastActiveStatus: journey.status,
           deletedAt: '2021-12-07T03:22:41.135Z'
         }
       ])

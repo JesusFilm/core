@@ -340,6 +340,7 @@ type Journey
   @join__owner(graph: JOURNEYS)
   @join__type(graph: JOURNEYS, key: "id")
 {
+  archivedAt: DateTime @join__field(graph: JOURNEYS)
   blocks: [Block!] @join__field(graph: JOURNEYS)
   createdAt: DateTime! @join__field(graph: JOURNEYS)
   deletedAt: DateTime @join__field(graph: JOURNEYS)
@@ -347,7 +348,6 @@ type Journey
   featuredAt: DateTime @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
   language: Language! @join__field(graph: JOURNEYS)
-  lastActiveStatus: JourneyStatus @join__field(graph: JOURNEYS)
   primaryImageBlock: ImageBlock @join__field(graph: JOURNEYS)
   publishedAt: DateTime @join__field(graph: JOURNEYS)
   seoDescription: String @join__field(graph: JOURNEYS)
@@ -357,6 +357,7 @@ type Journey
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
+  trashedAt: DateTime @join__field(graph: JOURNEYS)
   userJourneys: [UserJourney!] @join__field(graph: JOURNEYS)
 }
 
@@ -392,7 +393,7 @@ enum JourneyStatus {
   deleted
   draft
   published
-  removed
+  trashed
 }
 
 input JourneyUpdateInput {
@@ -470,11 +471,13 @@ type Mutation {
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
   imageBlockUpdate(id: ID!, input: ImageBlockUpdateInput!, journeyId: ID!): ImageBlock! @join__field(graph: JOURNEYS)
   journeyArchive(id: ID!): Journey @join__field(graph: JOURNEYS)
+  journeyArchiveAllActive: [Journey] @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyDelete(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
-  journeyRemove(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyRestore(id: ID!): Journey @join__field(graph: JOURNEYS)
+  journeyTrash(id: ID!): Journey @join__field(graph: JOURNEYS)
+  journeyTrashAllArchived: [Journey] @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
@@ -543,7 +546,7 @@ input NavigateToJourneyActionInput {
 
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
-  adminJourneys: [Journey!]! @join__field(graph: JOURNEYS)
+  adminJourneys(status: [JourneyStatus!]): [Journey!]! @join__field(graph: JOURNEYS)
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)

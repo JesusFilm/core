@@ -88,7 +88,7 @@ export enum JourneyStatus {
   deleted = "deleted",
   draft = "draft",
   published = "published",
-  removed = "removed",
+  trashed = "trashed",
 }
 
 export enum ThemeMode {

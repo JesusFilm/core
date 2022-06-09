@@ -77,13 +77,14 @@ type Journey @key(fields: "id") {
   id: ID!
   title: String!
   language: Language!
-  lastActiveStatus: JourneyStatus
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
   slug: String!
+  archivedAt: DateTime
   deletedAt: DateTime
   publishedAt: DateTime
+  trashedAt: DateTime
   featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
@@ -805,11 +806,11 @@ enum IdType {
 }
 
 enum JourneyStatus {
-  draft
-  published
   archived
   deleted
-  removed
+  draft
+  published
+  trashed
 }
 
 input JourneysFilter {
@@ -911,9 +912,11 @@ extend type Mutation {
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey
   journeyArchive(id: ID!): Journey
+  journeyArchiveAllActive: [Journey]
   journeyDelete(id: ID!): Journey
-  journeyRemove(id: ID!): Journey
+  journeyTrash(id: ID!): Journey
   journeyRestore(id: ID!): Journey
+  journeyTrashAllArchived: [Journey]
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
@@ -930,7 +933,7 @@ extend type Language @key(fields: "id") {
 }
 
 extend type Query {
-  adminJourneys: [Journey!]!
+  adminJourneys(status: [JourneyStatus!]): [Journey!]!
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
