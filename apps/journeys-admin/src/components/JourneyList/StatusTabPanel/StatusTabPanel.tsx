@@ -64,15 +64,18 @@ export function StatusTabPanel({
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
-    // handle change can't be tested until more tabs are added
-    setActiveTab(newValue)
-    const tabParam =
-      journeyStatusTabs.find((status) => status.tabIndex === newValue)
-        ?.queryParam ?? journeyStatusTabs[0].queryParam
-    void router.push({
-      href: '/',
-      query: { tab: tabParam }
-    })
+    // BUG: changing chip is unexpectedly this onChange
+    if (newValue != null) {
+      // handle change can't be tested until more tabs are added
+      setActiveTab(newValue)
+      const tabParam =
+        journeyStatusTabs.find((status) => status.tabIndex === newValue)
+          ?.queryParam ?? journeyStatusTabs[0].queryParam
+      void router.push({
+        href: '/',
+        query: { tab: tabParam }
+      })
+    }
   }
 
   return (

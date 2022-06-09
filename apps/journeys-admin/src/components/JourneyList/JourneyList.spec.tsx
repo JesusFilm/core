@@ -35,8 +35,6 @@ describe('JourneyList', () => {
     expect(journeyCards[1].textContent).toContain('November 19, 2020')
   })
 
-  // move the test below - hopefuly that will fix the error
-
   it('should order journeys in alphabetical order', () => {
     const { getAllByLabelText, getByRole } = render(
       <SnackbarProvider>
