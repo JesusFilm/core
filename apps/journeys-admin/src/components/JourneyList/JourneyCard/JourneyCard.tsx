@@ -41,7 +41,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
     >
       <>
         <Link
-          href={journey != null ? `/journeys/${journey.slug}` : ''}
+          href={journey != null ? `/journeys/${journey.slug}` : '#'}
           passHref
         >
           <CardActionArea>
