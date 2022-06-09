@@ -5,13 +5,11 @@ import { GetJourneys_journeys as Journey } from '../../../../../__generated__/Ge
 import { JourneyCard } from '../../JourneyCard'
 import { AddJourneyButton } from '../../AddJourneyButton'
 
-interface ActiveJourneysTabProps {
+interface JourneysTabProps {
   journeys: Journey[]
 }
 
-export function ActiveJourneysTab({
-  journeys
-}: ActiveJourneysTabProps): ReactElement {
+export function JourneysTab({ journeys }: JourneysTabProps): ReactElement {
   return (
     <>
       {journeys.map((journey) => (

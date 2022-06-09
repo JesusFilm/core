@@ -10,7 +10,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { useRouter } from 'next/router'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { JourneySort, SortOrder } from '../JourneySort'
-import { ActiveJourneysTab } from './ActiveJourneysTab'
+import { JourneysTab } from './JourneysTab'
 import { TabLoadingSkeleton } from './TabLoadingSkeleton'
 
 interface StatusTabPanelProps {
@@ -86,6 +86,7 @@ export function StatusTabPanel({
               <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
             </Box>
           )}
+
           <Card
             variant="outlined"
             sx={{
@@ -108,6 +109,7 @@ export function StatusTabPanel({
                 label={journeyStatusTabs[0].displayValue}
                 {...tabA11yProps('status-panel', journeyStatusTabs[0].tabIndex)}
               />
+
               {smUp && (
                 <Box
                   sx={{
@@ -128,7 +130,7 @@ export function StatusTabPanel({
             value={activeTab}
             index={journeyStatusTabs[0].tabIndex}
           >
-            <ActiveJourneysTab journeys={sortedJourneys} />
+            <JourneysTab journeys={sortedJourneys} />
           </TabPanel>
         </>
       ) : (
