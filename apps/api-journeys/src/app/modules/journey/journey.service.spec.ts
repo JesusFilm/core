@@ -134,7 +134,10 @@ describe('JourneyService', () => {
     })
 
     it('should return all for user', async () => {
-      expect(await service.getAllByOwnerEditor('1')).toEqual([journeyWithId])
+      expect(
+        await service.getAllByOwnerEditor('1', [JourneyStatus.published])
+      ).toEqual([journeyWithId])
+      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith()
     })
   })
 

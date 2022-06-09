@@ -11,8 +11,8 @@ type Journey @key(fields: "id") {
   themeName: ThemeName!
   description: String
   slug: String!
-  deletedAt: DateTime
   publishedAt: DateTime
+  trashedAt: DateTime
   featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
@@ -30,16 +30,15 @@ enum JourneyStatus {
   published
   archived
   deleted
-  removed
+  trashed
 }
 
 input JourneysFilter {
   featured: Boolean
-  statuses: [JourneyStatus]
 }
 
 extend type Query {
-  adminJourneys(where: JourneysFilter): [Journey!]!
+  adminJourneys(status: [JourneyStatus!]): [Journey!]!
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
@@ -88,7 +87,7 @@ extend type Mutation {
   journeyPublish(id: ID!): Journey
   journeyArchive(id: ID!): Journey
   journeyDelete(id: ID!): Journey
-  journeyRemove(id: ID!): Journey
+  journeyTrash(id: ID!): Journey
   journeyRestore(id: ID!): Journey
 }
 

@@ -126,7 +126,7 @@ export enum JourneyStatus {
     published = "published",
     archived = "archived",
     deleted = "deleted",
-    removed = "removed"
+    trashed = "trashed"
 }
 
 export enum UserJourneyRole {
@@ -467,8 +467,8 @@ export class Journey {
     themeName: ThemeName;
     description?: Nullable<string>;
     slug: string;
-    deletedAt?: Nullable<DateTime>;
     publishedAt?: Nullable<DateTime>;
+    trashedAt?: Nullable<DateTime>;
     featuredAt?: Nullable<DateTime>;
     createdAt: DateTime;
     status: JourneyStatus;
@@ -825,7 +825,7 @@ export abstract class IMutation {
 
     abstract journeyDelete(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
 
-    abstract journeyRemove(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
+    abstract journeyTrash(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
 
     abstract journeyRestore(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
 
@@ -848,7 +848,7 @@ export class Language {
 }
 
 export abstract class IQuery {
-    abstract adminJourneys(): Journey[] | Promise<Journey[]>;
+    abstract adminJourneys(status?: Nullable<JourneyStatus[]>): Journey[] | Promise<Journey[]>;
 
     abstract adminJourney(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 

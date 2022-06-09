@@ -43,8 +43,11 @@ export class JourneyResolver {
   ) {}
 
   @Query()
-  async adminJourneys(@CurrentUserId() userId: string): Promise<Journey[]> {
-    return await this.journeyService.getAllByOwnerEditor(userId)
+  async adminJourneys(
+    @CurrentUserId() userId: string,
+    @Args('status') status = [JourneyStatus.draft, JourneyStatus.published]
+  ): Promise<Journey[]> {
+    return await this.journeyService.getAllByOwnerEditor(userId, status)
   }
 
   @Query()
@@ -188,14 +191,13 @@ export class JourneyResolver {
 
     return await this.journeyService.update(id, {
       status: JourneyStatus.deleted,
-      lastActiveStatus: lastActiveStatus,
-      deletedAt: new Date().toISOString()
+      lastActiveStatus: lastActiveStatus
     })
   }
 
   @Mutation()
   @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyRemove(@Args('id') id: string): Promise<Journey> {
+  async journeyTrash(@Args('id') id: string): Promise<Journey> {
     const result: Journey = await this.journeyService.get(id)
     const lastActiveStatus =
       result.status === JourneyStatus.published ||
@@ -204,8 +206,9 @@ export class JourneyResolver {
         : result.lastActiveStatus
 
     return await this.journeyService.update(id, {
-      status: JourneyStatus.removed,
-      lastActiveStatus: lastActiveStatus
+      status: JourneyStatus.trashed,
+      lastActiveStatus: lastActiveStatus,
+      trashedAt: new Date().toISOString()
     })
   }
 

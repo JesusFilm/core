@@ -62,13 +62,13 @@ describe('JourneyResolver', () => {
     status: JourneyStatus.archived,
     lastActiveStatus: JourneyStatus.published
   }
-  const deletedJourney = {
+  const trashedJourney = {
     ...journey,
     id: 'deletedJourney',
     status: JourneyStatus.deleted,
     lastActiveStatus: JourneyStatus.published
   }
-  const deletedDraftJourney = {
+  const trashedDraftJourney = {
     ...journey,
     id: 'deletedDraftJourney',
     status: JourneyStatus.deleted,
@@ -124,10 +124,10 @@ describe('JourneyResolver', () => {
             return draftJourney
           case archivedJourney.id:
             return archivedJourney
-          case deletedJourney.id:
-            return deletedJourney
-          case deletedDraftJourney.id:
-            return deletedDraftJourney
+          case trashedJourney.id:
+            return trashedJourney
+          case trashedDraftJourney.id:
+            return trashedDraftJourney
           default:
             return null
         }
@@ -179,7 +179,10 @@ describe('JourneyResolver', () => {
   describe('adminJourneys', () => {
     it('should get published journeys', async () => {
       expect(await resolver.adminJourneys('userId')).toEqual([journey, journey])
-      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith('userId')
+      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith('userId', [
+        JourneyStatus.draft,
+        JourneyStatus.published
+      ])
     })
   })
 
@@ -425,70 +428,70 @@ describe('JourneyResolver', () => {
       })
     })
     it('archives a deleted Journey', async () => {
-      await resolver.journeyArchive(deletedJourney.id)
-      expect(service.update).toHaveBeenCalledWith(deletedJourney.id, {
+      await resolver.journeyArchive(trashedJourney.id)
+      expect(service.update).toHaveBeenCalledWith(trashedJourney.id, {
         status: JourneyStatus.archived,
-        lastActiveStatus: deletedJourney.lastActiveStatus
+        lastActiveStatus: trashedJourney.lastActiveStatus
       })
     })
   })
 
-  describe('journeyDelete', () => {
+  describe('journeyTrash', () => {
     it('deletes a published Journey', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeyDelete(journey.id)
+      await resolver.journeyTrash(journey.id)
       expect(service.update).toHaveBeenCalledWith(journey.id, {
-        status: JourneyStatus.deleted,
+        status: JourneyStatus.trashed,
         lastActiveStatus: journey.status,
-        deletedAt: '2021-12-07T03:22:41.135Z'
+        trashedAt: '2021-12-07T03:22:41.135Z'
       })
     })
 
     it('deletes a draft Journey', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeyDelete(draftJourney.id)
+      await resolver.journeyTrash(draftJourney.id)
       expect(service.update).toHaveBeenCalledWith(draftJourney.id, {
-        status: JourneyStatus.deleted,
+        status: JourneyStatus.trashed,
         lastActiveStatus: draftJourney.status,
-        deletedAt: '2021-12-07T03:22:41.135Z'
+        trashedAt: '2021-12-07T03:22:41.135Z'
       })
     })
 
     it('deletes an archived Journey', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeyDelete(archivedJourney.id)
+      await resolver.journeyTrash(archivedJourney.id)
       expect(service.update).toHaveBeenCalledWith(archivedJourney.id, {
-        status: JourneyStatus.deleted,
+        status: JourneyStatus.trashed,
         lastActiveStatus: archivedJourney.lastActiveStatus,
-        deletedAt: '2021-12-07T03:22:41.135Z'
+        trashedAt: '2021-12-07T03:22:41.135Z'
       })
     })
   })
 
-  describe('journeyRemove', () => {
-    it('removes a published Journey', async () => {
-      await resolver.journeyRemove(journey.id)
+  describe('journeyDelete', () => {
+    it('deletes a published Journey', async () => {
+      await resolver.journeyDelete(journey.id)
       expect(service.update).toHaveBeenCalledWith(journey.id, {
-        status: JourneyStatus.removed,
+        status: JourneyStatus.deleted,
         lastActiveStatus: journey.status
       })
     })
 
-    it('removes a draft Journey', async () => {
-      await resolver.journeyRemove(draftJourney.id)
+    it('deletes a draft Journey', async () => {
+      await resolver.journeyDelete(draftJourney.id)
       expect(service.update).toHaveBeenCalledWith(draftJourney.id, {
-        status: JourneyStatus.removed,
+        status: JourneyStatus.deleted,
         lastActiveStatus: draftJourney.status
       })
     })
 
-    it('removes an archived Journey', async () => {
-      await resolver.journeyRemove(archivedJourney.id)
+    it('deletes an archived Journey', async () => {
+      await resolver.journeyDelete(archivedJourney.id)
       expect(service.update).toHaveBeenCalledWith(archivedJourney.id, {
-        status: JourneyStatus.removed,
+        status: JourneyStatus.deleted,
         lastActiveStatus: archivedJourney.lastActiveStatus
       })
     })
@@ -496,9 +499,9 @@ describe('JourneyResolver', () => {
 
   describe('journeyRestore', () => {
     it('resores a deleted Journey', async () => {
-      await resolver.journeyRestore(deletedJourney.id)
-      expect(service.update).toHaveBeenCalledWith(deletedJourney.id, {
-        status: deletedJourney.lastActiveStatus
+      await resolver.journeyRestore(trashedJourney.id)
+      expect(service.update).toHaveBeenCalledWith(trashedJourney.id, {
+        status: trashedJourney.lastActiveStatus
       })
     })
 
