@@ -54,7 +54,6 @@ export function TabLoadingSkeleton(): ReactElement {
       <JourneyCard />
       <JourneyCard />
       <JourneyCard />
-      <JourneyCard />
     </>
   )
 }
