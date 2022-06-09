@@ -430,13 +430,11 @@ describe('JourneyResolver', () => {
       expect(service.updateAll).toHaveBeenCalledWith([
         {
           ...journey,
-          status: JourneyStatus.archived,
-          lastActiveStatus: journey.status
+          status: JourneyStatus.archived
         },
         {
           ...draftJourney,
-          status: JourneyStatus.archived,
-          lastActiveStatus: draftJourney.status
+          status: JourneyStatus.archived
         }
       ])
     })

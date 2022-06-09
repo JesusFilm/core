@@ -106,8 +106,7 @@ export class JourneyResolver {
       )
       .map((j) => ({
         ...j,
-        status: JourneyStatus.archived,
-        lastActiveStatus: j.status
+        status: JourneyStatus.archived
       }))
 
     return await this.journeyService.updateAll(results)
