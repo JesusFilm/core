@@ -1,1 +1,0 @@
-export { JourneysTab } from './JourneysTab'

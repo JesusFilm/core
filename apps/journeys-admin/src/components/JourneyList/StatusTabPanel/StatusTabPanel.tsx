@@ -10,14 +10,14 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { useRouter } from 'next/router'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { JourneySort, SortOrder } from '../JourneySort'
-import { JourneysTab } from './JourneysTab'
+import { StatusTab } from './StatusTab'
 import { TabLoadingSkeleton } from './TabLoadingSkeleton'
 
 interface StatusTabPanelProps {
   journeys?: Journey[]
 }
 
-interface StatusTab {
+interface StatusOptions {
   queryParam: string
   displayValue: string
   tabIndex: number
@@ -26,7 +26,7 @@ interface StatusTab {
 export function StatusTabPanel({
   journeys
 }: StatusTabPanelProps): ReactElement {
-  const journeyStatusTabs: StatusTab[] = [
+  const journeyStatusTabs: StatusOptions[] = [
     {
       queryParam: 'active',
       displayValue: 'Active',
@@ -130,7 +130,7 @@ export function StatusTabPanel({
             value={activeTab}
             index={journeyStatusTabs[0].tabIndex}
           >
-            <JourneysTab journeys={sortedJourneys} />
+            <StatusTab journeys={sortedJourneys} />
           </TabPanel>
         </>
       ) : (

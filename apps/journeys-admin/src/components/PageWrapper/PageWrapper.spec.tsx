@@ -65,7 +65,7 @@ describe('PageWrapper', () => {
     })
   })
 
-  describe('xsDown', () => {
+  describe('smDown', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => false)
     )
@@ -81,6 +81,16 @@ describe('PageWrapper', () => {
       expect(button).toContainElement(getByTestId('MenuIcon'))
       fireEvent.click(button)
       expect(getByText('Discover')).toBeInTheDocument()
+    })
+
+    it('should not show the drawer on mobile view', () => {
+      const { queryByTestId, getByText } = render(
+        <MockedProvider>
+          <PageWrapper title="Journey Edit" />
+        </MockedProvider>
+      )
+      expect(getByText('Journey Edit')).toBeInTheDocument()
+      expect(queryByTestId('MenuIcon')).not.toBeInTheDocument()
     })
   })
 })

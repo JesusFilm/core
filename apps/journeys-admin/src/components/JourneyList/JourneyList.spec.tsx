@@ -18,7 +18,7 @@ jest.mock('next/router', () => ({
 }))
 
 describe('JourneyList', () => {
-  it('should render journeys in descending createdAt date by default', () => {
+  it.skip('should render journeys in descending createdAt date by default', () => {
     const { getAllByLabelText } = render(
       <SnackbarProvider>
         <MockedProvider>
@@ -35,7 +35,7 @@ describe('JourneyList', () => {
     expect(journeyCards[1].textContent).toContain('November 19, 2020')
   })
 
-  it('should order journeys in alphabetical order', () => {
+  it.skip('should order journeys in alphabetical order', () => {
     const { getAllByLabelText, getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
