@@ -8,7 +8,7 @@ import NewReleasesRounded from '@mui/icons-material/NewReleasesRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { AddJourneyButton } from './AddJourneyButton'
-import { StatusTabPanel } from './StatusTabPanel/StatusTabPanel'
+import { StatusTabPanel } from './StatusTabPanel'
 
 export interface JourneysListProps {
   journeys?: Journey[]

@@ -5,6 +5,18 @@ import { ThemeProvider } from '../ThemeProvider'
 import { defaultJourney, publishedJourney, oldJourney } from './journeyListData'
 import { JourneyList } from '.'
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: () => {
+    return {
+      query: {
+        tab: 'active'
+      },
+      push: jest.fn()
+    }
+  }
+}))
+
 describe('JourneyList', () => {
   it('should render journeys in descending createdAt date by default', () => {
     const { getAllByLabelText } = render(
@@ -43,8 +55,8 @@ describe('JourneyList', () => {
     expect(journeyCards[1].textContent).toContain('An Old Journey Heading')
   })
 
-  it('should render all journeys', () => {
-    const { getAllByLabelText } = render(
+  it('should render tab panel', () => {
+    const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
@@ -55,26 +67,7 @@ describe('JourneyList', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getAllByLabelText('journey-card').length).toBe(3)
-  })
-
-  it('should render text when there are no journeys', () => {
-    const { getByText, getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <ThemeProvider>
-            <JourneyList journeys={[]} disableCreation={false} />
-          </ThemeProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    expect(getByText('No journeys to display.')).toBeInTheDocument()
-    expect(
-      getByText('Create a journey, then find it here.')
-    ).toBeInTheDocument()
-    expect(
-      getByRole('button', { name: 'Create a Journey' })
-    ).toBeInTheDocument()
+    expect(getByRole('tablist')).toBeInTheDocument()
   })
 
   it('should prevent users from creating a journey unless invited', () => {

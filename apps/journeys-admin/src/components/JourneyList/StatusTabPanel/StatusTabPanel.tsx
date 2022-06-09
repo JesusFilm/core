@@ -23,7 +23,7 @@ interface StatusTab {
   tabIndex: number
 }
 
-const journeyStatusTabs: StatusTab[] = [
+export const journeyStatusTabs: StatusTab[] = [
   {
     queryParam: 'active',
     displayValue: 'Active',
@@ -69,9 +69,10 @@ export function StatusTabPanel({
     const tabParam =
       journeyStatusTabs.find((status) => status.tabIndex === newValue)
         ?.queryParam ?? journeyStatusTabs[0].queryParam
-
-    router.query.tab = tabParam
-    void router.push(router)
+    void router.push({
+      href: '/',
+      query: { tab: tabParam }
+    })
   }
 
   return (
@@ -108,7 +109,7 @@ export function StatusTabPanel({
               {/* Here */}
               <Tab
                 label={journeyStatusTabs[1].displayValue}
-                {...tabA11yProps('status-panel', 1)}
+                {...tabA11yProps('status-panel', journeyStatusTabs[1].tabIndex)}
               />
               {smUp && (
                 <Box
