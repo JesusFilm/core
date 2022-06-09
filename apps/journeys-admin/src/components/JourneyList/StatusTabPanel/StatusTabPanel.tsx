@@ -23,27 +23,27 @@ interface StatusTab {
   tabIndex: number
 }
 
-export const journeyStatusTabs: StatusTab[] = [
-  {
-    queryParam: 'active',
-    displayValue: 'Active',
-    tabIndex: 0
-  },
-  {
-    queryParam: 'archived',
-    displayValue: 'Archived',
-    tabIndex: 1
-  },
-  {
-    queryParam: 'deleted',
-    displayValue: 'Deleted',
-    tabIndex: 2
-  }
-]
-
 export function StatusTabPanel({
   journeys
 }: StatusTabPanelProps): ReactElement {
+  const journeyStatusTabs: StatusTab[] = [
+    {
+      queryParam: 'active',
+      displayValue: 'Active',
+      tabIndex: 0
+    },
+    {
+      queryParam: 'archived',
+      displayValue: 'Archived',
+      tabIndex: 1
+    },
+    {
+      queryParam: 'deleted',
+      displayValue: 'Deleted',
+      tabIndex: 2
+    }
+  ]
+
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const router = useRouter()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))

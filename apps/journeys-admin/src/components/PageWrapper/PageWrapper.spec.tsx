@@ -73,10 +73,10 @@ describe('PageWrapper', () => {
     it('should show the drawer on mobile view', () => {
       const { getAllByRole, getByTestId, getByText } = render(
         <MockedProvider>
-          <PageWrapper title="Journeys" />
+          <PageWrapper title="Active Journeys" />
         </MockedProvider>
       )
-      expect(getByText('Journeys')).toBeInTheDocument()
+      expect(getByText('Active Journeys')).toBeInTheDocument()
       const button = getAllByRole('button')[0]
       expect(button).toContainElement(getByTestId('MenuIcon'))
       fireEvent.click(button)

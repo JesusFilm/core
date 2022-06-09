@@ -33,6 +33,11 @@ export function PageWrapper({
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const showAppBarMobile =
+    title === 'Active Journeys' ||
+    title === 'Archived Journeys' ||
+    title === 'Deleted Journeys' ||
+    title === 'Journey Details'
 
   return (
     <>
@@ -50,7 +55,7 @@ export function PageWrapper({
           }
         }}
       >
-        {!smUp && (title === 'Journeys' || title === 'Journey Details') ? (
+        {!smUp && showAppBarMobile ? (
           <Toolbar
             sx={{
               backgroundColor: 'secondary.dark',
