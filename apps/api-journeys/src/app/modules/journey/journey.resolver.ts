@@ -166,48 +166,26 @@ export class JourneyResolver {
   @Mutation()
   @UseGuards(RoleGuard('id', UserJourneyRole.owner))
   async journeyArchive(@Args('id') id: string): Promise<Journey> {
-    const result: Journey = await this.journeyService.get(id)
-    const lastActiveStatus =
-      result.status === JourneyStatus.published ||
-      result.status === JourneyStatus.draft
-        ? result.status
-        : result.lastActiveStatus
-
     return await this.journeyService.update(id, {
       status: JourneyStatus.archived,
-      lastActiveStatus: lastActiveStatus
+      archivedAt: new Date().toISOString()
     })
   }
 
   @Mutation()
   @UseGuards(RoleGuard('id', UserJourneyRole.owner))
   async journeyDelete(@Args('id') id: string): Promise<Journey> {
-    const result: Journey = await this.journeyService.get(id)
-    const lastActiveStatus =
-      result.status === JourneyStatus.published ||
-      result.status === JourneyStatus.draft
-        ? result.status
-        : result.lastActiveStatus
-
     return await this.journeyService.update(id, {
       status: JourneyStatus.deleted,
-      lastActiveStatus: lastActiveStatus
+      deletedAt: new Date().toISOString()
     })
   }
 
   @Mutation()
   @UseGuards(RoleGuard('id', UserJourneyRole.owner))
   async journeyTrash(@Args('id') id: string): Promise<Journey> {
-    const result: Journey = await this.journeyService.get(id)
-    const lastActiveStatus =
-      result.status === JourneyStatus.published ||
-      result.status === JourneyStatus.draft
-        ? result.status
-        : result.lastActiveStatus
-
     return await this.journeyService.update(id, {
       status: JourneyStatus.trashed,
-      lastActiveStatus: lastActiveStatus,
       trashedAt: new Date().toISOString()
     })
   }
@@ -216,7 +194,8 @@ export class JourneyResolver {
   @UseGuards(RoleGuard('id', UserJourneyRole.owner))
   async journeyRestore(@Args('id') id: string): Promise<Journey> {
     const result: Journey = await this.journeyService.get(id)
-    const lastActiveStatus = result.lastActiveStatus ?? JourneyStatus.draft
+    const lastActiveStatus =
+      result.publishedAt == null ? JourneyStatus.draft : JourneyStatus.published
 
     if (
       result.status === JourneyStatus.draft ||
@@ -245,11 +224,6 @@ export class JourneyResolver {
   @ResolveField()
   async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
     return await this.userJourneyService.forJourney(journey)
-  }
-
-  @ResolveField()
-  status(@Parent() { publishedAt }: Journey): JourneyStatus {
-    return publishedAt == null ? JourneyStatus.draft : JourneyStatus.published
   }
 
   @ResolveField('language')

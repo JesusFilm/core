@@ -6,11 +6,12 @@ type Journey @key(fields: "id") {
   id: ID!
   title: String!
   language: Language!
-  lastActiveStatus: JourneyStatus
   themeMode: ThemeMode!
   themeName: ThemeName!
   description: String
   slug: String!
+  archivedAt: DateTime
+  deletedAt: DateTime
   publishedAt: DateTime
   trashedAt: DateTime
   featuredAt: DateTime
@@ -26,10 +27,10 @@ enum IdType {
 }
 
 enum JourneyStatus {
-  draft
-  published
   archived
   deleted
+  draft
+  published
   trashed
 }
 
