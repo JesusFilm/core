@@ -108,11 +108,6 @@ export function StatusTabPanel({
                 label={journeyStatusTabs[0].displayValue}
                 {...tabA11yProps('status-panel', journeyStatusTabs[0].tabIndex)}
               />
-              {/* Here */}
-              <Tab
-                label={journeyStatusTabs[1].displayValue}
-                {...tabA11yProps('status-panel', journeyStatusTabs[1].tabIndex)}
-              />
               {smUp && (
                 <Box
                   sx={{
@@ -132,14 +127,6 @@ export function StatusTabPanel({
             name="status-panel"
             value={activeTab}
             index={journeyStatusTabs[0].tabIndex}
-          >
-            <ActiveJourneysTab journeys={sortedJourneys} />
-          </TabPanel>
-          {/* Here */}
-          <TabPanel
-            name="status-panel"
-            value={activeTab}
-            index={journeyStatusTabs[1].tabIndex}
           >
             <ActiveJourneysTab journeys={sortedJourneys} />
           </TabPanel>
