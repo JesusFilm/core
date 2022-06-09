@@ -42,7 +42,7 @@ export function PageWrapper({
   return (
     <>
       <AppBar
-        position="fixed"
+        position="sticky"
         color="default"
         sx={{
           ml: { sm: '72px' },
@@ -110,12 +110,6 @@ export function PageWrapper({
           {customMenu != null && customMenu}
         </Toolbar>
       </AppBar>
-      <Toolbar
-        sx={{
-          ml: { sm: '72px' },
-          mr: { sm: showDrawer === true ? '328px' : 0 }
-        }}
-      />
       <NavigationDrawer
         open={open}
         onClose={setOpen}
