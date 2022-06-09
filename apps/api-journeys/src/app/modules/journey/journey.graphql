@@ -87,9 +87,11 @@ extend type Mutation {
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey
   journeyArchive(id: ID!): Journey
+  journeyArchiveAllActive: [Journey]
   journeyDelete(id: ID!): Journey
   journeyTrash(id: ID!): Journey
   journeyRestore(id: ID!): Journey
+  journeyTrashAllArchived: [Journey]
 }
 
 extend type NavigateToJourneyAction {

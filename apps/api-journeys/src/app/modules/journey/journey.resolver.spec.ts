@@ -132,9 +132,11 @@ describe('JourneyResolver', () => {
       }),
       getBySlug: jest.fn((slug) => (slug === journey.slug ? journey : null)),
       getAllPublishedJourneys: jest.fn(() => [journey, journey]),
+      getAllByOwner: jest.fn(() => [journey, draftJourney, archivedJourney]),
       getAllByOwnerEditor: jest.fn(() => [journey, journey]),
       save: jest.fn((input) => input),
-      update: jest.fn(() => journey)
+      update: jest.fn(() => journey),
+      updateAll: jest.fn(() => [journey, draftJourney])
     })
   }
 
@@ -422,6 +424,24 @@ describe('JourneyResolver', () => {
     })
   })
 
+  describe('journeyArchiveAllActive', () => {
+    it('archives all active Journeys', async () => {
+      await resolver.journeyArchiveAllActive('userId')
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          ...journey,
+          status: JourneyStatus.archived,
+          lastActiveStatus: journey.status
+        },
+        {
+          ...draftJourney,
+          status: JourneyStatus.archived,
+          lastActiveStatus: draftJourney.status
+        }
+      ])
+    })
+  })
+
   describe('journeyTrash', () => {
     it('trashes a Journey', async () => {
       const date = '2021-12-07T03:22:41.135Z'
@@ -459,6 +479,22 @@ describe('JourneyResolver', () => {
       expect(service.update).toHaveBeenCalledWith(trashedDraftJourney.id, {
         status: JourneyStatus.draft
       })
+    })
+  })
+
+  describe('journeyTrashAllArchived', () => {
+    it('trashes all archived Journeys', async () => {
+      const date = '2021-12-07T03:22:41.135Z'
+      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      await resolver.journeyTrashAllArchived('userId')
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          ...archivedJourney,
+          status: JourneyStatus.deleted,
+          lastActiveStatus: journey.status,
+          deletedAt: '2021-12-07T03:22:41.135Z'
+        }
+      ])
     })
   })
 

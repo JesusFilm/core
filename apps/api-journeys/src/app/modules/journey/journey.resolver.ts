@@ -94,6 +94,26 @@ export class JourneyResolver {
   }
 
   @Mutation()
+  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
+  async journeyArchiveAllActive(
+    @CurrentUserId() userId: string
+  ): Promise<Journey[]> {
+    const results: Journey[] = (await this.journeyService.getAllByOwner(userId))
+      .filter(
+        (j) =>
+          j.status === JourneyStatus.draft ||
+          j.status === JourneyStatus.published
+      )
+      .map((j) => ({
+        ...j,
+        status: JourneyStatus.archived,
+        lastActiveStatus: j.status
+      }))
+
+    return await this.journeyService.updateAll(results)
+  }
+
+  @Mutation()
   @UseGuards(GqlAuthGuard)
   async journeyCreate(
     @Args('input') input: JourneyCreateInput & { id?: string },
@@ -188,6 +208,20 @@ export class JourneyResolver {
       status: JourneyStatus.trashed,
       trashedAt: new Date().toISOString()
     })
+  }
+
+  async journeyTrashAllArchived(
+    @CurrentUserId() userId: string
+  ): Promise<Journey[]> {
+    const results: Journey[] = (await this.journeyService.getAllByOwner(userId))
+      .filter((j) => j.status === JourneyStatus.archived)
+      .map((j) => ({
+        ...j,
+        status: JourneyStatus.deleted,
+        deletedAt: new Date().toISOString()
+      }))
+
+    return await this.journeyService.updateAll(results)
   }
 
   @Mutation()
