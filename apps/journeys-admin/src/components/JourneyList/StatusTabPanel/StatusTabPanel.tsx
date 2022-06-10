@@ -49,7 +49,7 @@ export function StatusTabPanel({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const tabIndex =
-    journeyStatusTabs.find((status) => status.queryParam === router.query.tab)
+    journeyStatusTabs.find((status) => status.queryParam === router.query?.tab)
       ?.tabIndex ?? 0
   const [activeTab, setActiveTab] = useState(tabIndex)
 

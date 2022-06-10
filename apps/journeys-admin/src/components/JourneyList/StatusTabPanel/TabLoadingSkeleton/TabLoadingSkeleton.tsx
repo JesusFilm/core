@@ -28,12 +28,9 @@ export function TabLoadingSkeleton(): ReactElement {
           borderBottomLeftRadius: 0,
           borderBottomRightRadius: 0
         }}
+        data-testid="skeleton-journey-list"
       >
-        <Tabs
-          value={0}
-          aria-label="journey status tabs"
-          data-testid="journey-list"
-        >
+        <Tabs value={0} aria-label="journey status skeleton tabs">
           <Tab label="Active" disabled />
           <Tab label="Archived" disabled />
           <Tab label="Deleted" disabled />
