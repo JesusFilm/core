@@ -13,7 +13,7 @@ import { JourneySort, SortOrder } from '../JourneySort'
 import { StatusTab } from './StatusTab'
 import { TabLoadingSkeleton } from './TabLoadingSkeleton'
 
-interface StatusTabPanelProps {
+export interface StatusTabPanelProps {
   journeys?: Journey[]
   router?: NextRouter
 }

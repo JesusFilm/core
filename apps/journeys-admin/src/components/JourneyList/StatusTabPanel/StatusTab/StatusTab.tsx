@@ -23,7 +23,10 @@ export function StatusTab({ journeys }: StatusTabProps): ReactElement {
             flexDirection: 'column',
             pt: 20,
             pb: 16,
-            borderRadius: { xs: 0, sm: 3 }
+            borderBottomLeftRadius: { xs: 0, sm: 12 },
+            borderBottomRightRadius: { xs: 0, sm: 12 },
+            borderTopLeftRadius: 0,
+            borderTopRightRadius: 0
           }}
         >
           <Typography variant="subtitle1" align="center" gutterBottom>
