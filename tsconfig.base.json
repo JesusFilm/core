@@ -21,7 +21,7 @@
       "@core/nest/database": ["libs/nest/database/src/index.ts"],
       "@core/nest/decorators": ["libs/nest/decorators/src/index.ts"],
       "@core/nest/gqlAuthGuard": ["libs/nest/gqlAuthGuard/src/index.ts"],
-      "@core/nest/powerbi": ["libs/nest/powerbi/src/index.ts"],
+      "@core/nest/powerBi": ["libs/nest/powerBi/src/index.ts"],
       "@core/shared/storybook": ["libs/shared/storybook/src/index.ts"],
       "@core/shared/ui": ["libs/shared/ui/src/index.ts"],
       "@core/shared/util-graphql": ["libs/shared/util-graphql/src/index.ts"]

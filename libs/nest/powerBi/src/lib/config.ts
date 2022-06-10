@@ -1,9 +1,9 @@
 export interface PowerBiConfig {
-  apiUrl: string
-  authorityUri: string
+  apiUrl?: string
+  authorityUri?: string
   clientId: string
   clientSecret: string
-  scope: string
+  scope?: string
   tenantId: string
   workspaceId: string
 }

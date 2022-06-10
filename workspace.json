@@ -21,30 +21,8 @@
     },
     "nest-database": "libs/nest/database",
     "nest-decorators": "libs/nest/decorators",
-    "nest-powerbi": {
-      "root": "libs/nest/powerbi",
-      "sourceRoot": "libs/nest/powerbi/src",
-      "projectType": "library",
-      "targets": {
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "outputs": ["{options.outputFile}"],
-          "options": {
-            "lintFilePatterns": ["libs/nest/powerbi/**/*.ts"]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/nest/powerbi"],
-          "options": {
-            "jestConfig": "libs/nest/powerbi/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      },
-      "tags": []
-    },
     "nest/gqlAuthGuard": "libs/nest/gqlAuthGuard",
+    "nest/powerBi": "libs/nest/powerBi",
     "shared-storybook": "libs/shared/storybook",
     "shared-ui": "libs/shared/ui",
     "shared-util-graphql": "libs/shared/util-graphql",

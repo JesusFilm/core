@@ -1,5 +1,5 @@
 module.exports = {
-  displayName: 'nest-powerbi',
+  displayName: 'nest/powerBi',
   preset: '../../../jest.preset.js',
   globals: {
     'ts-jest': {
@@ -11,5 +11,5 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../../coverage/libs/nest/powerbi'
+  coverageDirectory: '../../../coverage/libs/nest/powerBi'
 }

@@ -2,14 +2,12 @@ import { getAccessToken } from '../authentication'
 import { PowerBiConfig, defaultPowerBiConfig } from '../config'
 import fetch, { FetchError } from 'node-fetch'
 
-type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>
-
 /**
  * Generate embed token and embed urls for reports
  * @return Details like Embed URL, Access token and Expiry
  */
 export async function getEmbedInfo(
-  config: Optional<PowerBiConfig, 'apiUrl' | 'authorityUri' | 'scope'>,
+  config: PowerBiConfig,
   reportId: string,
   userId: string
 ): Promise<{
