@@ -23,9 +23,9 @@ export class StepBlockResolver {
   async stepBlockCreate(
     @Args('input') input: StepBlockCreateInput & { __typename }
   ): Promise<StepBlock> {
-    const parentOrder = input.parentOrder ?? 0
     input.__typename = 'StepBlock'
     const siblings = await this.blockService.getSiblings(input.journeyId)
+    const parentOrder = input.parentOrder ?? siblings.length
     const result: StepBlock = await this.blockService.save({
       ...input,
       parentOrder: siblings.length
