@@ -36,22 +36,10 @@ Default.args = {
   disableCreation: true
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  journeys: undefined,
-  disableCreation: true
-}
-
 export const Access = Template.bind({})
 Access.args = {
   journeys: [],
   disableCreation: true
-}
-
-export const CreateJourney = Template.bind({})
-CreateJourney.args = {
-  journeys: [],
-  disableCreation: false
 }
 
 export default JourneyListStory as Meta

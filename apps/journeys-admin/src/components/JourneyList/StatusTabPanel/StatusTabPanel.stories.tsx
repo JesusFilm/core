@@ -33,10 +33,4 @@ Default.args = {
   disableCreation: true
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  journeys: undefined,
-  disableCreation: true
-}
-
 export default StatusTabPanelStory as Meta
