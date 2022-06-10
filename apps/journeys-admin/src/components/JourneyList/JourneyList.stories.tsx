@@ -24,7 +24,7 @@ const JourneyListStory = {
 
 const Template: Story<JourneysListProps> = ({ ...args }) => (
   <MockedProvider>
-    <PageWrapper title="Journeys">
+    <PageWrapper title="Active Journeys">
       <JourneyList {...args} />
     </PageWrapper>
   </MockedProvider>
