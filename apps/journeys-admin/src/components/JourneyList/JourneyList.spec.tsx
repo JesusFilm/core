@@ -1,4 +1,4 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { ThemeProvider } from '../ThemeProvider'
@@ -18,43 +18,6 @@ jest.mock('next/router', () => ({
 }))
 
 describe('JourneyList', () => {
-  it.skip('should render journeys in descending createdAt date by default', () => {
-    const { getAllByLabelText } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <ThemeProvider>
-            <JourneyList journeys={[defaultJourney, oldJourney]} />
-          </ThemeProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const journeyCards = getAllByLabelText('journey-card')
-
-    expect(journeyCards[0].textContent).toContain('January 1')
-    expect(journeyCards[1].textContent).toContain('November 19, 2020')
-  })
-
-  it.skip('should order journeys in alphabetical order', () => {
-    const { getAllByLabelText, getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <ThemeProvider>
-            <JourneyList journeys={[defaultJourney, oldJourney]} />
-          </ThemeProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const journeyCards = getAllByLabelText('journey-card')
-
-    fireEvent.click(getByRole('button', { name: 'Sort By' }))
-    fireEvent.click(getByRole('radio', { name: 'Name' }))
-
-    expect(journeyCards[0].textContent).toContain('Default Journey Heading')
-    expect(journeyCards[1].textContent).toContain('An Old Journey Heading')
-  })
-
   it('should render tab panel', () => {
     const { getByRole } = render(
       <SnackbarProvider>
