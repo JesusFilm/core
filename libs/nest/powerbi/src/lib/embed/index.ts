@@ -1,0 +1,1 @@
+export { getEmbedInfo } from './embed'
