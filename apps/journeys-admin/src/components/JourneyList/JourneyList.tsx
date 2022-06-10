@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack'
 import Container from '@mui/material/Container'
 import NewReleasesRounded from '@mui/icons-material/NewReleasesRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
+import { NextRouter } from 'next/router'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { AddJourneyButton } from './AddJourneyButton'
 import { StatusTabPanel } from './StatusTabPanel'
@@ -13,11 +14,13 @@ import { StatusTabPanel } from './StatusTabPanel'
 export interface JourneysListProps {
   journeys?: Journey[]
   disableCreation?: boolean
+  router?: NextRouter
 }
 
 export function JourneyList({
   journeys,
-  disableCreation
+  disableCreation,
+  router
 }: JourneysListProps): ReactElement {
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
@@ -26,7 +29,9 @@ export function JourneyList({
       )}
       {(journeys == null ||
         journeys.length > 0 ||
-        disableCreation !== true) && <StatusTabPanel journeys={journeys} />}
+        disableCreation !== true) && (
+        <StatusTabPanel journeys={journeys} router={router} />
+      )}
       {journeys != null && journeys.length === 0 && disableCreation && (
         <Container maxWidth="sm" sx={{ mt: 20 }}>
           <Stack direction="column" spacing={8} alignItems="center">

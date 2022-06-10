@@ -10,16 +10,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: () => {
-    return {
-      query: 'active',
-      push: jest.fn()
-    }
-  }
-}))
-
 describe('StatusTabPanel', () => {
   describe('journeys list', () => {
     beforeEach(() =>

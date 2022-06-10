@@ -7,7 +7,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { useRouter } from 'next/router'
+import { NextRouter } from 'next/router'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { JourneySort, SortOrder } from '../JourneySort'
 import { StatusTab } from './StatusTab'
@@ -15,6 +15,7 @@ import { TabLoadingSkeleton } from './TabLoadingSkeleton'
 
 interface StatusTabPanelProps {
   journeys?: Journey[]
+  router?: NextRouter
 }
 
 interface StatusOptions {
@@ -24,7 +25,8 @@ interface StatusOptions {
 }
 
 export function StatusTabPanel({
-  journeys
+  journeys,
+  router
 }: StatusTabPanelProps): ReactElement {
   const journeyStatusTabs: StatusOptions[] = [
     {
@@ -45,12 +47,14 @@ export function StatusTabPanel({
   ]
 
   const [sortOrder, setSortOrder] = useState<SortOrder>()
-  const router = useRouter()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const tabIndex =
-    journeyStatusTabs.find((status) => status.queryParam === router.query?.tab)
-      ?.tabIndex ?? 0
+    router != null
+      ? journeyStatusTabs.find(
+          (status) => status.queryParam === router.query?.tab
+        )?.tabIndex ?? 0
+      : 0
   const [activeTab, setActiveTab] = useState(tabIndex)
 
   const sortedJourneys =
@@ -64,7 +68,7 @@ export function StatusTabPanel({
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
-    if (newValue != null) {
+    if (newValue != null && router != null) {
       // handle change can't be tested until more tabs are added
       setActiveTab(newValue)
       const tabParam =
