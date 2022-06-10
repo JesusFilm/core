@@ -118,11 +118,7 @@ export function PageWrapper({
       />
       <Box
         sx={{
-          ml: { sm: '72px' },
-          pt:
-            !smUp && (title === 'Journeys' || title === 'Journey Details')
-              ? '48px'
-              : 0
+          ml: { sm: '72px' }
         }}
       >
         {children}

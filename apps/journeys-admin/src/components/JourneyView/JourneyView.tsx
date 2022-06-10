@@ -19,7 +19,7 @@ export function JourneyView(): ReactElement {
 
   return (
     <Box sx={{ mr: { sm: '328px' }, mb: '80px' }}>
-      <Box sx={{ backgroundColor: 'background.paper' }}>
+      <Box sx={{ p: { xs: 6, sm: 8 }, backgroundColor: 'background.paper' }}>
         <Typography variant="h4">
           {journey != null ? (
             journey.title
