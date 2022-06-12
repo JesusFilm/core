@@ -10,6 +10,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
+import { AnalyticsFullReport } from '../../src/components/AnalyticsFullReport'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -19,7 +20,7 @@ function IndexPage(): ReactElement {
     <>
       <NextSeo title={t('Anayltics')} />
       <PageWrapper title={t('Anayltics')} authUser={AuthUser}>
-        <div>Anayltics are coming</div>
+        <AnalyticsFullReport />
       </PageWrapper>
     </>
   )
