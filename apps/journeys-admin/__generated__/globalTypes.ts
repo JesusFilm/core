@@ -88,6 +88,13 @@ export enum JourneyStatus {
   published = "published",
 }
 
+export enum JourneysReportType {
+  multipleFull = "multipleFull",
+  multipleSummary = "multipleSummary",
+  singleFull = "singleFull",
+  singleSummary = "singleSummary",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",

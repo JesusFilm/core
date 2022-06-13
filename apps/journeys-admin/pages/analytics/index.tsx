@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 import dynamic from 'next/dynamic'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
+import { JourneysReportType } from '../../__generated__/globalTypes'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -30,7 +31,7 @@ function IndexPage(): ReactElement {
     <>
       <NextSeo title={t('Anayltics')} />
       <PageWrapper title={t('Anayltics')} authUser={AuthUser}>
-        <AnalyticsFullReport />
+        <AnalyticsFullReport reportType={JourneysReportType.multipleFull} />
       </PageWrapper>
     </>
   )
