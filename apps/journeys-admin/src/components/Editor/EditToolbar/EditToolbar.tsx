@@ -3,6 +3,7 @@ import IconButton from '@mui/material/IconButton'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { useJourney } from '@core/journeys/ui'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { DuplicateBlock } from '../../DuplicateBlock'
 import { DeleteBlock } from './DeleteBlock'
 import { Menu } from './Menu'
 
@@ -20,6 +21,7 @@ export function EditToolbar(): ReactElement {
         <VisibilityIcon />
       </IconButton>
       <DeleteBlock variant="button" />
+      <DuplicateBlock variant="button" />
       <Menu />
     </>
   )

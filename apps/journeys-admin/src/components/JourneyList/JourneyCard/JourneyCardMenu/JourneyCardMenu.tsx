@@ -12,17 +12,20 @@ import PeopleIcon from '@mui/icons-material/People'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
+import { DuplicateBlock } from '../../../DuplicateBlock'
 
 export interface JourneyCardMenuProps {
   status: JourneyStatus
   slug: string
   forceMenu?: boolean
+  journeyId?: string
 }
 
 export function JourneyCardMenu({
   status,
   slug,
-  forceMenu // this is only used for storybook snapshots
+  forceMenu, // this is only used for storybook snapshots
+  journeyId
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = forceMenu === true ? true : Boolean(anchorEl)
@@ -100,6 +103,12 @@ export function JourneyCardMenu({
             </Typography>
           </ListItemText>
         </MenuItem>
+
+        <DuplicateBlock
+          variant="list-item"
+          journeyId={journeyId}
+          sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+        />
       </Menu>
 
       <AccessDialog
