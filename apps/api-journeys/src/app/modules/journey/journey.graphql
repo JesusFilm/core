@@ -32,7 +32,38 @@ input JourneysFilter {
   featured: Boolean
 }
 
+enum JourneysReportType {
+  multipleFull
+  multipleSummary
+  singleFull
+  singleSummary
+}
+
+type PowerBiEmbed {
+  """
+  The report ID
+  """
+  id: String!
+  """
+  The name of the report
+  """
+  name: String!
+  """
+  The embed URL of the report
+  """
+  url: String!
+  """
+  The embed token
+  """
+  token: String!
+  """
+  The date and time (UTC) of token expiration
+  """
+  expiration: String!
+}
+
 extend type Query {
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourneys: [Journey!]!
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!

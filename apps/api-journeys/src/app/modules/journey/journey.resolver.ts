@@ -10,7 +10,12 @@ import { CurrentUserId } from '@core/nest/decorators'
 import slugify from 'slugify'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
-import { ForbiddenError, UserInputError } from 'apollo-server-errors'
+import { getPowerBiEmbed, PowerBiEmbed } from '@core/nest/powerBi'
+import {
+  ApolloError,
+  ForbiddenError,
+  UserInputError
+} from 'apollo-server-errors'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BlockService } from '../block/block.service'
@@ -26,7 +31,8 @@ import {
   ThemeName,
   UserJourney,
   UserJourneyRole,
-  JourneysFilter
+  JourneysFilter,
+  JourneysReportType
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
@@ -41,6 +47,51 @@ export class JourneyResolver {
     private readonly blockService: BlockService,
     private readonly userJourneyService: UserJourneyService
   ) {}
+
+  @Query()
+  async adminJourneysReport(
+    @CurrentUserId() userId: string,
+    @Args('reportType') reportType: JourneysReportType
+  ): Promise<PowerBiEmbed> {
+    let reportId: string | undefined
+    switch (reportType) {
+      case JourneysReportType.multipleFull:
+        reportId = process.env.POWER_BI_JOURNEYS_MULTIPLE_FULL_REPORT_ID
+        break
+      case JourneysReportType.multipleSummary:
+        reportId = process.env.POWER_BI_JOURNEYS_MULTIPLE_SUMMARY_REPORT_ID
+        break
+      case JourneysReportType.singleFull:
+        reportId = process.env.POWER_BI_JOURNEYS_SINGLE_FULL_REPORT_ID
+        break
+      case JourneysReportType.singleSummary:
+        reportId = process.env.POWER_BI_JOURNEYS_SINGLE_SUMMARY_REPORT_ID
+        break
+    }
+
+    if (
+      process.env.POWER_BI_CLIENT_ID == null ||
+      process.env.POWER_BI_CLIENT_SECRET == null ||
+      process.env.POWER_BI_TENANT_ID == null ||
+      process.env.POWER_BI_WORKSPACE_ID == null ||
+      reportId == null
+    ) {
+      throw new ApolloError('server environment variables missing')
+    }
+
+    const config = {
+      clientId: process.env.POWER_BI_CLIENT_ID,
+      clientSecret: process.env.POWER_BI_CLIENT_SECRET,
+      tenantId: process.env.POWER_BI_TENANT_ID,
+      workspaceId: process.env.POWER_BI_WORKSPACE_ID
+    }
+
+    try {
+      return await getPowerBiEmbed(config, reportId, userId)
+    } catch (err) {
+      throw new ApolloError(err.message)
+    }
+  }
 
   @Query()
   async adminJourneys(@CurrentUserId() userId: string): Promise<Journey[]> {
