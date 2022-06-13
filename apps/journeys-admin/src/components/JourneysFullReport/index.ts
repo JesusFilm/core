@@ -1,0 +1,1 @@
+export { JourneysFullReport } from './JourneysFullReport'
