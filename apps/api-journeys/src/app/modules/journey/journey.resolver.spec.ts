@@ -181,10 +181,10 @@ describe('JourneyResolver', () => {
 
       it('should get power bi embed for multiple full', async () => {
         mockGetPowerBiEmbed.mockResolvedValue({
-          id: 'reportId',
-          name: 'reportName',
-          url: 'embedUrl',
-          token: 'embedToken',
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
           expiration: '2hrs'
         })
         await expect(
@@ -193,10 +193,10 @@ describe('JourneyResolver', () => {
             JourneysReportType.multipleFull
           )
         ).resolves.toEqual({
-          id: 'reportId',
-          name: 'reportName',
-          url: 'embedUrl',
-          token: 'embedToken',
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
           expiration: '2hrs'
         })
         expect(mockGetPowerBiEmbed).toHaveBeenCalledWith(
@@ -213,10 +213,10 @@ describe('JourneyResolver', () => {
 
       it('should get power bi embed for multiple summary', async () => {
         mockGetPowerBiEmbed.mockResolvedValue({
-          id: 'reportId',
-          name: 'reportName',
-          url: 'embedUrl',
-          token: 'embedToken',
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
           expiration: '2hrs'
         })
         await expect(
@@ -225,10 +225,10 @@ describe('JourneyResolver', () => {
             JourneysReportType.multipleSummary
           )
         ).resolves.toEqual({
-          id: 'reportId',
-          name: 'reportName',
-          url: 'embedUrl',
-          token: 'embedToken',
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
           expiration: '2hrs'
         })
         expect(mockGetPowerBiEmbed).toHaveBeenCalledWith(
@@ -245,19 +245,19 @@ describe('JourneyResolver', () => {
 
       it('should get power bi embed for single full', async () => {
         mockGetPowerBiEmbed.mockResolvedValue({
-          id: 'reportId',
-          name: 'reportName',
-          url: 'embedUrl',
-          token: 'embedToken',
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
           expiration: '2hrs'
         })
         await expect(
           resolver.adminJourneysReport('userId', JourneysReportType.singleFull)
         ).resolves.toEqual({
-          id: 'reportId',
-          name: 'reportName',
-          url: 'embedUrl',
-          token: 'embedToken',
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
           expiration: '2hrs'
         })
         expect(mockGetPowerBiEmbed).toHaveBeenCalledWith(
@@ -274,10 +274,10 @@ describe('JourneyResolver', () => {
 
       it('should get power bi embed for single summary', async () => {
         mockGetPowerBiEmbed.mockResolvedValue({
-          id: 'reportId',
-          name: 'reportName',
-          url: 'embedUrl',
-          token: 'embedToken',
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
           expiration: '2hrs'
         })
         await expect(
@@ -286,10 +286,10 @@ describe('JourneyResolver', () => {
             JourneysReportType.singleSummary
           )
         ).resolves.toEqual({
-          id: 'reportId',
-          name: 'reportName',
-          url: 'embedUrl',
-          token: 'embedToken',
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
           expiration: '2hrs'
         })
         expect(mockGetPowerBiEmbed).toHaveBeenCalledWith(
