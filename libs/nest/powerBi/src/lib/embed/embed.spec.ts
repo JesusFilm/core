@@ -62,10 +62,8 @@ describe('embed', () => {
         id: 'reportId',
         name: 'reportName',
         url: 'embedUrl',
-        token: {
-          token: 'token',
-          expiration: '2hr'
-        }
+        token: 'token',
+        expiration: '2hr'
       })
       expect(tokenRequest).toHaveBeenCalledWith(
         'https://login.microsoftonline.com/common/v2.0',

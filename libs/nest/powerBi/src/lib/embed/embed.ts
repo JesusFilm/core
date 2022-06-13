@@ -3,13 +3,26 @@ import { PowerBiConfig, defaultPowerBiConfig } from '../config'
 import fetch, { FetchError } from 'node-fetch'
 
 export interface PowerBiEmbed {
+  /**
+   * The report ID
+   */
   id: string
+  /**
+   * The name of the report
+   */
   name: string
+  /**
+   * The embed URL of the report
+   */
   url: string
-  token: {
-    token: string
-    expiration: string
-  }
+  /**
+   * The embed token
+   */
+  token: string
+  /**
+   * The date and time (UTC) of token expiration
+   */
+  expiration: string
 }
 
 /**
@@ -83,14 +96,14 @@ async function getEmbedParamsForSingleReport(
     id: id as string,
     name: name as string,
     url: embedUrl as string,
-    token: await getEmbedTokenForSingleReportSingleWorkspace(
+    ...(await getEmbedTokenForSingleReportSingleWorkspace(
       apiUrl,
       reportId,
       userId,
       [{ id: datasetId }],
       workspaceId,
       headers
-    )
+    ))
   }
 }
 
