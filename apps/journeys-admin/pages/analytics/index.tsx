@@ -9,6 +9,7 @@ import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import dynamic from 'next/dynamic'
+import { AnalyticsFullReportProps } from '../../src/components/AnalyticsFullReport/AnalyticsFullReport'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { JourneysReportType } from '../../__generated__/globalTypes'
@@ -18,7 +19,7 @@ function IndexPage(): ReactElement {
   const AuthUser = useAuthUser()
 
   // powerbi needs dynamic import, see issue: https://github.com/microsoft/powerbi-client-react/issues/65
-  const AnalyticsFullReport = dynamic(
+  const AnalyticsFullReport = dynamic<AnalyticsFullReportProps>(
     async () =>
       await import(
         /* webpackChunkName: "DynamicAnalyticsFullReport" */

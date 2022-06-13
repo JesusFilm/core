@@ -8,13 +8,14 @@ import { JourneysReportType } from '../../../__generated__/globalTypes'
 const GET_ADMIN_JOURNEYS_REPORT = gql`
   query GetAdminJourneysReport($reportType: JourneysReportType!) {
     adminJourneysReport(reportType: $reportType) {
-      embedUrl: url
-      accessToken: token
+      reportId
+      embedUrl
+      accessToken
     }
   }
 `
 
-interface AnalyticsFullReportProps {
+export interface AnalyticsFullReportProps {
   reportType: JourneysReportType
 }
 
@@ -32,7 +33,8 @@ export function AnalyticsFullReport({
     type: 'report',
     tokenType: models.TokenType.Embed,
     settings: undefined,
-    emedUrl: data?.adminJourneysReport?.embedUrl,
+    reportId: data?.adminJourneysReport?.reportId,
+    embedUrl: data?.adminJourneysReport?.embedUrl,
     accessToken: data?.adminJourneysReport?.accessToken
   }
 
