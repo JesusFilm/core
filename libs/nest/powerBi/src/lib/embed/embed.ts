@@ -2,15 +2,7 @@ import { getAccessToken } from '../authentication'
 import { PowerBiConfig, defaultPowerBiConfig } from '../config'
 import fetch, { FetchError } from 'node-fetch'
 
-/**
- * Generate embed token and embed urls for reports
- * @return Details like Embed URL, Access token and Expiry
- */
-export async function getEmbedInfo(
-  config: PowerBiConfig,
-  reportId: string,
-  userId: string
-): Promise<{
+export interface PowerBiEmbed {
   id: string
   name: string
   url: string
@@ -18,7 +10,17 @@ export async function getEmbedInfo(
     token: string
     expiration: string
   }
-}> {
+}
+
+/**
+ * Generate embed token and embed urls for reports
+ * @return Details like Embed URL, Access token and Expiry
+ */
+export async function getPowerBiEmbed(
+  config: PowerBiConfig,
+  reportId: string,
+  userId: string
+): Promise<PowerBiEmbed> {
   const {
     apiUrl,
     workspaceId,
@@ -32,18 +34,19 @@ export async function getEmbedInfo(
     ...config
   }
   try {
+    const headers = await getRequestHeaders(
+      authorityUri,
+      clientId,
+      clientSecret,
+      scope,
+      tenantId
+    )
     return await getEmbedParamsForSingleReport(
       apiUrl,
       workspaceId,
       reportId,
       userId,
-      await getRequestHeader(
-        authorityUri,
-        clientId,
-        clientSecret,
-        scope,
-        tenantId
-      )
+      headers
     )
   } catch (err) {
     if (err.hasOwnProperty('errorDescription') && err.hasOwnProperty('error')) {
@@ -64,16 +67,8 @@ async function getEmbedParamsForSingleReport(
   workspaceId: string,
   reportId: string,
   userId: string,
-  headers
-): Promise<{
-  id: string
-  name: string
-  url: string
-  token: {
-    token: string
-    expiration: string
-  }
-}> {
+  headers: RequestHeaders
+): Promise<PowerBiEmbed> {
   const result = await fetch(
     `${apiUrl}v1.0/myorg/groups/${workspaceId}/reports/${reportId}`,
     {
@@ -108,7 +103,7 @@ async function getEmbedTokenForSingleReportSingleWorkspace(
   userId: string,
   datasets: { id: string }[],
   workspaceId: string,
-  headers
+  headers: RequestHeaders
 ): Promise<{ token: string; expiration: string }> {
   const result = await fetch(`${apiUrl}v1.0/myorg/GenerateToken`, {
     method: 'POST',
@@ -130,19 +125,22 @@ async function getEmbedTokenForSingleReportSingleWorkspace(
   return result.json()
 }
 
+interface RequestHeaders {
+  'Content-Type': 'application/json'
+  Authorization: string
+  [key: string]: string
+}
+
 /**
- * Get Request header
+ * Get Request headers
  */
-async function getRequestHeader(
+async function getRequestHeaders(
   authorityUri: string,
   clientId: string,
   clientSecret: string,
   scope: string,
   tenantId: string
-): Promise<{
-  'Content-Type': 'application/json'
-  Authorization: string
-}> {
+): Promise<RequestHeaders> {
   const tokenResponse = await getAccessToken(
     authorityUri,
     clientId,

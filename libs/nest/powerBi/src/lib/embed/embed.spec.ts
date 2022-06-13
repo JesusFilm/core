@@ -1,4 +1,4 @@
-import { getEmbedInfo } from '.'
+import { getPowerBiEmbed } from '.'
 import fetch, { Response, FetchError } from 'node-fetch'
 import { getAccessToken } from '../authentication'
 import { TokenResponse } from 'adal-node'
@@ -24,7 +24,7 @@ describe('embed', () => {
     mockGetAccessToken.mockClear()
   })
 
-  describe('getEmbedInfo', () => {
+  describe('getPowerBiEmbed', () => {
     it('should return embedInfo', async () => {
       const tokenRequest = mockGetAccessToken.mockResolvedValueOnce({
         accessToken: 'accessToken'
@@ -48,7 +48,7 @@ describe('embed', () => {
           })
       } as unknown as Response)
       await expect(
-        getEmbedInfo(
+        getPowerBiEmbed(
           {
             clientId: 'clientId',
             clientSecret: 'clientSecret',
@@ -114,7 +114,7 @@ describe('embed', () => {
         errorDescription: 'errorDescription'
       })
       await expect(
-        getEmbedInfo(
+        getPowerBiEmbed(
           {
             clientId: 'clientId',
             clientSecret: 'clientSecret',
@@ -139,7 +139,7 @@ describe('embed', () => {
         new Error('error')
       )
       await expect(
-        getEmbedInfo(
+        getPowerBiEmbed(
           {
             clientId: 'clientId',
             clientSecret: 'clientSecret',
@@ -170,7 +170,7 @@ describe('embed', () => {
         )
       )
       await expect(
-        getEmbedInfo(
+        getPowerBiEmbed(
           {
             clientId: 'clientId',
             clientSecret: 'clientSecret',
@@ -221,7 +221,7 @@ describe('embed', () => {
         )
       )
       await expect(
-        getEmbedInfo(
+        getPowerBiEmbed(
           {
             clientId: 'clientId',
             clientSecret: 'clientSecret',
