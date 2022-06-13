@@ -43,19 +43,19 @@ type PowerBiEmbed {
   """
   The report ID
   """
-  id: String!
+  reportId: String!
   """
   The name of the report
   """
-  name: String!
+  reportName: String!
   """
   The embed URL of the report
   """
-  url: String!
+  embedUrl: String!
   """
   The embed token
   """
-  token: String!
+  accessToken: String!
   """
   The date and time (UTC) of token expiration
   """

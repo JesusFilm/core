@@ -730,10 +730,10 @@ export class VideoProgressEvent implements Event {
 
 export class PowerBiEmbed {
     __typename?: 'PowerBiEmbed';
-    id: string;
-    name: string;
-    url: string;
-    token: string;
+    reportId: string;
+    reportName: string;
+    embedUrl: string;
+    accessToken: string;
     expiration: string;
 }
 

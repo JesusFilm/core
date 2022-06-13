@@ -6,19 +6,19 @@ export interface PowerBiEmbed {
   /**
    * The report ID
    */
-  id: string
+  reportId: string
   /**
    * The name of the report
    */
-  name: string
+  reportName: string
   /**
    * The embed URL of the report
    */
-  url: string
+  embedUrl: string
   /**
    * The embed token
    */
-  token: string
+  accessToken: string
   /**
    * The date and time (UTC) of token expiration
    */
@@ -93,14 +93,14 @@ async function getEmbedParamsForSingleReport(
   const { id, name, embedUrl, datasetId } = await result.json()
 
   return {
-    id: id as string,
-    name: name as string,
-    url: embedUrl as string,
+    reportId: id as string,
+    reportName: name as string,
+    embedUrl: embedUrl as string,
     ...(await getEmbedTokenForSingleReportSingleWorkspace(
       apiUrl,
       reportId,
       userId,
-      [{ id: datasetId }],
+      [datasetId],
       workspaceId,
       headers
     ))
@@ -114,28 +114,32 @@ async function getEmbedTokenForSingleReportSingleWorkspace(
   apiUrl: string,
   reportId: string,
   userId: string,
-  datasets: { id: string }[],
+  datasetIds: string[],
   workspaceId: string,
   headers: RequestHeaders
-): Promise<{ token: string; expiration: string }> {
+): Promise<{ accessToken: string; expiration: string }> {
   const result = await fetch(`${apiUrl}v1.0/myorg/GenerateToken`, {
     method: 'POST',
     headers,
     body: JSON.stringify({
       reports: [{ id: reportId }],
-      datasets,
+      datasets: datasetIds.map((datasetId) => ({
+        id: datasetId
+      })),
       targetWorkspaces: [{ id: workspaceId }],
       identities: [
         {
           username: userId,
           roles: ['Equipment Team'],
-          datasets
+          datasets: datasetIds
         }
       ]
     })
   })
 
-  return result.json()
+  const { token, expiration } = await result.json()
+
+  return { accessToken: token, expiration }
 }
 
 interface RequestHeaders {

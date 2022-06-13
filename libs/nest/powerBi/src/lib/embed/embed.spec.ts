@@ -59,10 +59,10 @@ describe('embed', () => {
           'userId'
         )
       ).resolves.toEqual({
-        id: 'reportId',
-        name: 'reportName',
-        url: 'embedUrl',
-        token: 'token',
+        reportId: 'reportId',
+        reportName: 'reportName',
+        embedUrl: 'embedUrl',
+        accessToken: 'token',
         expiration: '2hr'
       })
       expect(tokenRequest).toHaveBeenCalledWith(
@@ -93,7 +93,7 @@ describe('embed', () => {
               {
                 username: 'userId',
                 roles: ['Equipment Team'],
-                datasets: [{ id: 'datasetId' }]
+                datasets: ['datasetId']
               }
             ]
           }),
@@ -258,7 +258,7 @@ describe('embed', () => {
               {
                 username: 'userId',
                 roles: ['Equipment Team'],
-                datasets: [{ id: 'datasetId' }]
+                datasets: ['datasetId']
               }
             ]
           }),
