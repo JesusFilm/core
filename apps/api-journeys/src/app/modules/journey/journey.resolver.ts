@@ -98,16 +98,15 @@ export class JourneyResolver {
   async journeyArchiveAllActive(
     @CurrentUserId() userId: string
   ): Promise<Journey[]> {
-    const results: Journey[] = (await this.journeyService.getAllByOwner(userId))
-      .filter(
-        (j) =>
-          j.status === JourneyStatus.draft ||
-          j.status === JourneyStatus.published
-      )
-      .map((j) => ({
-        ...j,
-        status: JourneyStatus.archived
-      }))
+    const results: Journey[] = (
+      await this.journeyService.getAllByOwner(userId, [
+        JourneyStatus.draft,
+        JourneyStatus.published
+      ])
+    ).map((journey) => ({
+      ...journey,
+      status: JourneyStatus.archived
+    }))
 
     return await this.journeyService.updateAll(results)
   }
@@ -212,13 +211,13 @@ export class JourneyResolver {
   async journeyTrashAllArchived(
     @CurrentUserId() userId: string
   ): Promise<Journey[]> {
-    const results: Journey[] = (await this.journeyService.getAllByOwner(userId))
-      .filter((j) => j.status === JourneyStatus.archived)
-      .map((j) => ({
-        ...j,
-        status: JourneyStatus.deleted,
-        deletedAt: new Date().toISOString()
-      }))
+    const results: Journey[] = (
+      await this.journeyService.getAllByOwner(userId, [JourneyStatus.archived])
+    ).map((journey) => ({
+      ...journey,
+      status: JourneyStatus.deleted,
+      deletedAt: new Date().toISOString()
+    }))
 
     return await this.journeyService.updateAll(results)
   }
@@ -227,8 +226,6 @@ export class JourneyResolver {
   @UseGuards(RoleGuard('id', UserJourneyRole.owner))
   async journeyRestore(@Args('id') id: string): Promise<Journey> {
     const result: Journey = await this.journeyService.get(id)
-    const lastActiveStatus =
-      result.publishedAt == null ? JourneyStatus.draft : JourneyStatus.published
 
     if (
       result.status === JourneyStatus.draft ||
@@ -236,6 +233,10 @@ export class JourneyResolver {
     ) {
       throw new UserInputError('Journey is already active')
     }
+
+    const lastActiveStatus =
+      result.publishedAt == null ? JourneyStatus.draft : JourneyStatus.published
+
     return await this.journeyService.update(id, {
       status: lastActiveStatus
     })

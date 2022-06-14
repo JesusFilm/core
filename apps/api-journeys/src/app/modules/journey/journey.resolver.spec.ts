@@ -132,7 +132,14 @@ describe('JourneyResolver', () => {
       }),
       getBySlug: jest.fn((slug) => (slug === journey.slug ? journey : null)),
       getAllPublishedJourneys: jest.fn(() => [journey, journey]),
-      getAllByOwner: jest.fn(() => [journey, draftJourney, archivedJourney]),
+      getAllByOwner: jest.fn((userId, status) => {
+        switch (status[0]) {
+          case 'archived':
+            return [archivedJourney]
+          default:
+            return [journey, draftJourney]
+        }
+      }),
       getAllByOwnerEditor: jest.fn(() => [journey, journey]),
       save: jest.fn((input) => input),
       update: jest.fn(() => journey),
