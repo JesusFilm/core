@@ -261,7 +261,8 @@ export function CardPreview({
         <HorizontalSelect
           onChange={handleChange}
           id={selected?.id}
-          footer={showAddButton === true && <AddCardSlide />}
+          insert={showAddButton === true && <AddCardSlide />}
+          insertPosition={steps.findIndex(({ id }) => id === selected?.id)}
         >
           {steps.map((step) => (
             <Box
