@@ -44,16 +44,25 @@ export function SelectedCard(): ReactElement {
     state: { steps, selectedBlock }
   } = useEditor()
   const { journey } = useJourney()
-  const { id, nextBlockId, locked } = selectedBlock as TreeBlock<StepFields>
+  const { id, nextBlockId, locked, parentOrder } =
+    selectedBlock as TreeBlock<StepFields>
   const [nextStep, setNextStep] = useState(
     steps?.find((step) => nextBlockId === step.id)
   )
-
   const lastStep = last(steps)
 
   useEffect(() => {
-    setNextStep(steps?.find((step) => nextBlockId === step.id))
-  }, [steps, nextBlockId])
+    if (
+      nextBlockId == null &&
+      steps != null &&
+      parentOrder != null &&
+      lastStep !== selectedBlock
+    ) {
+      setNextStep(steps[parentOrder + 1])
+    } else {
+      setNextStep(steps?.find((step) => nextBlockId === step.id))
+    }
+  }, [steps, nextBlockId, selectedBlock, lastStep, parentOrder])
 
   // TODO: Set as block itself for now, still need to manually set next block
   async function handleRemoveCustomNextStep(): Promise<void> {
@@ -136,17 +145,17 @@ export function SelectedCard(): ReactElement {
           )}
           {nextBlockId == null && lastStep !== selectedBlock && (
             <Typography variant="caption" sx={{ color: 'secondary.light' }}>
-              Default next step in the Journey
+              Default next step in journey
             </Typography>
           )}
           {lastStep === selectedBlock && (
             <Typography variant="caption" sx={{ color: 'secondary.light' }}>
-              Last step in the Journey
+              No next step in journey
             </Typography>
           )}
         </Stack>
       </Stack>
-      {nextStep != null && nextStep.id !== id && (
+      {nextBlockId != null && nextStep?.id !== id && (
         <IconButton
           onClick={handleRemoveCustomNextStep}
           data-testid="removeCustomNextStep"
