@@ -165,6 +165,7 @@ async function getRequestHeaders(
     scope,
     tenantId
   )
+
   return {
     'Content-Type': 'application/json',
     Authorization: 'Bearer '.concat(tokenResponse.accessToken)
