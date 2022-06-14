@@ -86,31 +86,31 @@ extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   """
-   Sets journey status to published
+  Sets journey status to published
   """
   journeyPublish(id: ID!): Journey
   """
-   Sets journey status to archived
+  Sets journey status to archived
   """
   journeyArchive(id: ID!): Journey
   """
-   Sets all active journeys to archived for current owner
+  Sets all active journeys to archived for current owner
   """
   journeyArchiveAllActive: [Journey]
   """
-   Sets journey status to deleted
+  Sets journey status to deleted
   """
   journeyDelete(id: ID!): Journey
   """
-   Sets journey status to trashed
+  Sets journey status to trashed
   """
   journeyTrash(id: ID!): Journey
   """
-   Sets journey status to last active status
+  Sets journey status to last active status
   """
   journeyRestore(id: ID!): Journey
   """
-   Sets all archived journeys to trashed for current owner
+  Sets all archived journeys to trashed for current owner
   """
   journeyTrashAllArchived: [Journey]
 }
