@@ -19,7 +19,6 @@ import { useMutation, gql } from '@apollo/client'
 import last from 'lodash/last'
 import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
-import { StepBlockNextBlockIdUpdate } from '../../../__generated__/StepBlockNextBlockIdUpdate'
 import { VideoBlockSetDefaultAction } from '../../../__generated__/VideoBlockSetDefaultAction'
 import {
   BlockFields_CardBlock as CardBlock,
@@ -92,9 +91,6 @@ export function CardPreview({
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
     STEP_AND_CARD_BLOCK_CREATE
   )
-  const [stepBlockNextBlockIdUpdate] = useMutation<StepBlockNextBlockIdUpdate>(
-    STEP_BLOCK_NEXTBLOCKID_UPDATE
-  )
   const [videoBlockSetDefaultAction] = useMutation<VideoBlockSetDefaultAction>(
     VIDEO_BLOCK_SET_DEFAULT_ACTION
   )
@@ -157,28 +153,6 @@ export function CardPreview({
     }
 
     const prevStep = last(steps)
-    // this check is required as nextBlockId is not updated when the corrseponding block is deleted
-    const validNextBlockId =
-      steps.find(({ id }) => id === prevStep?.nextBlockId) != null
-    if (!validNextBlockId && prevStep != null) {
-      await stepBlockNextBlockIdUpdate({
-        variables: {
-          id: prevStep.id,
-          journeyId: journey.id,
-          input: {
-            nextBlockId: stepId
-          }
-        },
-        optimisticResponse: {
-          stepBlockUpdate: {
-            __typename: 'StepBlock',
-            id: prevStep.id,
-            nextBlockId: stepId
-          }
-        }
-      })
-    }
-
     // this sets video block default action to navigate to the newly created step
     const prevCard = prevStep?.children.find(
       (block) => block.__typename === 'CardBlock'

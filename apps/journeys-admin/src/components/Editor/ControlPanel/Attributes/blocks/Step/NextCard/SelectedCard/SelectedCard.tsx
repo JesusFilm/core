@@ -13,6 +13,7 @@ import {
   BlockRenderer,
   useJourney
 } from '@core/journeys/ui'
+import last from 'lodash/last'
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
 import {
@@ -47,6 +48,8 @@ export function SelectedCard(): ReactElement {
   const [nextStep, setNextStep] = useState(
     steps?.find((step) => nextBlockId === step.id)
   )
+
+  const lastStep = last(steps)
 
   useEffect(() => {
     setNextStep(steps?.find((step) => nextBlockId === step.id))
@@ -130,6 +133,16 @@ export function SelectedCard(): ReactElement {
                 Locked With Interaction
               </Typography>
             </Stack>
+          )}
+          {nextBlockId == null && lastStep !== selectedBlock && (
+            <Typography variant="caption" sx={{ color: 'secondary.light' }}>
+              Default next step in the Journey
+            </Typography>
+          )}
+          {lastStep === selectedBlock && (
+            <Typography variant="caption" sx={{ color: 'secondary.light' }}>
+              Last step in the Journey
+            </Typography>
           )}
         </Stack>
       </Stack>
