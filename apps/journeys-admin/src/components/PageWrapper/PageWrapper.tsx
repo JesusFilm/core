@@ -33,11 +33,16 @@ export function PageWrapper({
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const showAppBarMobile =
+    title === 'Active Journeys' ||
+    title === 'Archived Journeys' ||
+    title === 'Deleted Journeys' ||
+    title === 'Journey Details'
 
   return (
     <>
       <AppBar
-        position="fixed"
+        position="sticky"
         color="default"
         sx={{
           ml: { sm: '72px' },
@@ -50,7 +55,7 @@ export function PageWrapper({
           }
         }}
       >
-        {!smUp && (title === 'Journeys' || title === 'Journey Details') ? (
+        {!smUp && showAppBarMobile ? (
           <Toolbar
             sx={{
               backgroundColor: 'secondary.dark',
@@ -105,12 +110,6 @@ export function PageWrapper({
           {customMenu != null && customMenu}
         </Toolbar>
       </AppBar>
-      <Toolbar
-        sx={{
-          ml: { sm: '72px' },
-          mr: { sm: showDrawer === true ? '328px' : 0 }
-        }}
-      />
       <NavigationDrawer
         open={open}
         onClose={setOpen}
@@ -119,11 +118,7 @@ export function PageWrapper({
       />
       <Box
         sx={{
-          ml: { sm: '72px' },
-          pt:
-            !smUp && (title === 'Journeys' || title === 'Journey Details')
-              ? '48px'
-              : 0
+          ml: { sm: '72px' }
         }}
       >
         {children}
