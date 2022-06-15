@@ -14,9 +14,13 @@ export function ActiveStatusTab({
 }: ActiveStatusTabProps): ReactElement {
   return (
     <>
-      {journeys.map((journey) => (
-        <JourneyCard key={journey.id} journey={journey} />
-      ))}
+      {/* Cant test the filter until the more statuses are added */}
+      {journeys.map(
+        (journey) =>
+          (journey.status === 'published' || journey.status === 'draft') && (
+            <JourneyCard key={journey.id} journey={journey} />
+          )
+      )}
       {journeys.length === 0 && (
         <Card
           variant="outlined"

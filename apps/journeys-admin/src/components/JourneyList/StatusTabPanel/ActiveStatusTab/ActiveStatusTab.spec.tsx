@@ -6,14 +6,14 @@ import {
   oldJourney
 } from '../../journeyListData'
 import { ThemeProvider } from '../../../ThemeProvider'
-import { StatusTab } from './StatusTab'
+import { ActiveStatusTab } from './ActiveStatusTab'
 
-describe('StatusTab', () => {
+describe('ActiveStatusTab', () => {
   it('should render journey cards', () => {
     const { getByText } = render(
       <MockedProvider>
         <ThemeProvider>
-          <StatusTab
+          <ActiveStatusTab
             journeys={[defaultJourney, publishedJourney, oldJourney]}
           />
         </ThemeProvider>
@@ -28,7 +28,7 @@ describe('StatusTab', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
         <ThemeProvider>
-          <StatusTab journeys={[]} />
+          <ActiveStatusTab journeys={[]} />
         </ThemeProvider>
       </MockedProvider>
     )
