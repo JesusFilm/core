@@ -5,11 +5,13 @@ import { GetJourneys_journeys as Journey } from '../../../../../__generated__/Ge
 import { JourneyCard } from '../../JourneyCard'
 import { AddJourneyButton } from '../../AddJourneyButton'
 
-export interface StatusTabProps {
+export interface ActiveStatusTabProps {
   journeys: Journey[]
 }
 
-export function StatusTab({ journeys }: StatusTabProps): ReactElement {
+export function ActiveStatusTab({
+  journeys
+}: ActiveStatusTabProps): ReactElement {
   return (
     <>
       {journeys.map((journey) => (

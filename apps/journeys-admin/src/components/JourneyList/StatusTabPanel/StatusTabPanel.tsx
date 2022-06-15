@@ -10,7 +10,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { NextRouter } from 'next/router'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { JourneySort, SortOrder } from '../JourneySort'
-import { StatusTab } from './StatusTab'
+import { ActiveStatusTab } from './ActiveStatusTab'
 import { TabLoadingSkeleton } from './TabLoadingSkeleton'
 
 export interface StatusTabPanelProps {
@@ -134,7 +134,7 @@ export function StatusTabPanel({
             value={activeTab}
             index={journeyStatusTabs[0].tabIndex}
           >
-            <StatusTab journeys={sortedJourneys} />
+            <ActiveStatusTab journeys={sortedJourneys} />
           </TabPanel>
         </>
       ) : (
