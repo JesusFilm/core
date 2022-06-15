@@ -1,5 +1,5 @@
 import { ReactElement, SyntheticEvent, useState } from 'react'
-import { sortBy } from 'lodash'
+// import { sortBy } from 'lodash'
 import Card from '@mui/material/Card'
 import { TabPanel, tabA11yProps } from '@core/shared/ui'
 import { Theme } from '@mui/material/styles'
@@ -56,13 +56,6 @@ export function StatusTabPanel({
         )?.tabIndex ?? 0
       : 0
   const [activeTab, setActiveTab] = useState(tabIndex)
-
-  const sortedJourneys =
-    sortOrder === SortOrder.TITLE
-      ? sortBy(journeys, 'title')
-      : sortBy(journeys, ({ createdAt }) =>
-          new Date(createdAt).getTime()
-        ).reverse()
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -134,7 +127,7 @@ export function StatusTabPanel({
             value={activeTab}
             index={journeyStatusTabs[0].tabIndex}
           >
-            <ActiveStatusTab journeys={sortedJourneys} />
+            <ActiveStatusTab sortOrder={sortOrder} />
           </TabPanel>
         </>
       ) : (
