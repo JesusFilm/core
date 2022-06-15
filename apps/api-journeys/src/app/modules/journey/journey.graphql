@@ -94,13 +94,17 @@ extend type Mutation {
   """
   journeyArchive(id: ID!): Journey
   """
-  Sets all active journeys to archived for current owner
+  Sets all journeys of status to archived for current owner
   """
-  journeyArchiveAllActive: [Journey]
+  journeyArchiveAll(status: [JourneyStatus!]!): [Journey]
   """
   Sets journey status to deleted
   """
   journeyDelete(id: ID!): Journey
+  """
+  Sets all journeys of status to deleted for current owner
+  """
+  journeyDeleteAll(status: [JourneyStatus!]!): [Journey]
   """
   Sets journey status to trashed
   """
@@ -110,9 +114,13 @@ extend type Mutation {
   """
   journeyRestore(id: ID!): Journey
   """
-  Sets all archived journeys to trashed for current owner
+  Sets all journeys of status to last active status for current owner
   """
-  journeyTrashAllArchived: [Journey]
+  journeyRestoreAll(status: [JourneyStatus!]!): [Journey]
+  """
+  Sets all journeys of status to trashed for current owner
+  """
+  journeyTrashAll(status: [JourneyStatus!]!): [Journey]
 }
 
 extend type NavigateToJourneyAction {

@@ -45,7 +45,7 @@ export class JourneyResolver {
   @Query()
   async adminJourneys(
     @CurrentUserId() userId: string,
-    @Args('status') status = [JourneyStatus.draft, JourneyStatus.published]
+    @Args('status') status: JourneyStatus[]
   ): Promise<Journey[]> {
     return await this.journeyService.getAllByOwnerEditor(userId, status)
   }
@@ -95,14 +95,12 @@ export class JourneyResolver {
 
   @Mutation()
   @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyArchiveAllActive(
-    @CurrentUserId() userId: string
+  async journeyArchiveAll(
+    @CurrentUserId() userId: string,
+    @Args('status') status: JourneyStatus[]
   ): Promise<Journey[]> {
     const results: Journey[] = (
-      await this.journeyService.getAllByOwner(userId, [
-        JourneyStatus.draft,
-        JourneyStatus.published
-      ])
+      await this.journeyService.getAllByOwner(userId, status)
     ).map((journey) => ({
       ...journey,
       status: JourneyStatus.archived
@@ -201,6 +199,22 @@ export class JourneyResolver {
 
   @Mutation()
   @UseGuards(RoleGuard('id', UserJourneyRole.owner))
+  async journeyDeleteAll(
+    @CurrentUserId() userId: string,
+    @Args('status') status: JourneyStatus[]
+  ): Promise<Journey[]> {
+    const results: Journey[] = (
+      await this.journeyService.getAllByOwner(userId, status)
+    ).map((journey) => ({
+      ...journey,
+      status: JourneyStatus.deleted
+    }))
+
+    return await this.journeyService.updateAll(results)
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
   async journeyTrash(@Args('id') id: string): Promise<Journey> {
     return await this.journeyService.update(id, {
       status: JourneyStatus.trashed,
@@ -208,11 +222,12 @@ export class JourneyResolver {
     })
   }
 
-  async journeyTrashAllArchived(
-    @CurrentUserId() userId: string
+  async journeyTrashAll(
+    @CurrentUserId() userId: string,
+    @Args('status') status: JourneyStatus[]
   ): Promise<Journey[]> {
     const results: Journey[] = (
-      await this.journeyService.getAllByOwner(userId, [JourneyStatus.archived])
+      await this.journeyService.getAllByOwner(userId, status)
     ).map((journey) => ({
       ...journey,
       status: JourneyStatus.deleted,
@@ -240,6 +255,25 @@ export class JourneyResolver {
     return await this.journeyService.update(id, {
       status: lastActiveStatus
     })
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
+  async journeyRestoreAll(
+    @CurrentUserId() userId: string,
+    @Args('status') status: JourneyStatus[]
+  ): Promise<Journey[]> {
+    const results: Journey[] = (
+      await this.journeyService.getAllByOwner(userId, status)
+    ).map((journey) => ({
+      ...journey,
+      status:
+        journey.publishedAt == null
+          ? JourneyStatus.draft
+          : JourneyStatus.published
+    }))
+
+    return await this.journeyService.updateAll(results)
   }
 
   @ResolveField()

@@ -824,15 +824,19 @@ export abstract class IMutation {
 
     abstract journeyArchive(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
 
-    abstract journeyArchiveAllActive(): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
+    abstract journeyArchiveAll(status: JourneyStatus[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
 
     abstract journeyDelete(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
+
+    abstract journeyDeleteAll(status: JourneyStatus[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
 
     abstract journeyTrash(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
 
     abstract journeyRestore(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
 
-    abstract journeyTrashAllArchived(): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
+    abstract journeyRestoreAll(status: JourneyStatus[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
+
+    abstract journeyTrashAll(status: JourneyStatus[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
 
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 
