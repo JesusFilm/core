@@ -134,7 +134,31 @@ describe('JourneyService', () => {
     })
 
     it('should return all for user', async () => {
-      expect(await service.getAllByOwnerEditor('1')).toEqual([journeyWithId])
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(
+          aql`
+    FOR userJourney in userJourneys
+      FOR journey in undefined
+          FILTER userJourney.journeyId == journey._key && userJourney.userId == @value0
+           && (userJourney.role == @value1 || userJourney.role == @value2)
+           && journey.status IN @value3
+          RETURN journey
+    `.query
+        )
+        expect(bindVars).toEqual({
+          value0: '1',
+          value1: 'owner',
+          value2: 'editor',
+          value3: ['published']
+        })
+        return await mockDbQueryResult(db, [journey])
+      })
+      await service.getAllPublishedJourneys({ featured: true })
+      expect(db.query).toHaveBeenCalled()
+      expect(
+        await service.getAllByOwnerEditor('1', [JourneyStatus.published])
+      ).toEqual([journeyWithId])
     })
   })
 
