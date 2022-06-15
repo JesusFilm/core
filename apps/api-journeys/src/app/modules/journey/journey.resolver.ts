@@ -249,11 +249,11 @@ export class JourneyResolver {
       throw new UserInputError('Journey is already active')
     }
 
-    const lastActiveStatus =
-      result.publishedAt == null ? JourneyStatus.draft : JourneyStatus.published
-
     return await this.journeyService.update(id, {
-      status: lastActiveStatus
+      status:
+        result.publishedAt == null
+          ? JourneyStatus.draft
+          : JourneyStatus.published
     })
   }
 
