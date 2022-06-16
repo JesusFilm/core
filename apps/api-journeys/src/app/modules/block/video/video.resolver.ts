@@ -63,10 +63,19 @@ export class VideoBlockResolver {
       input.journeyId,
       input.parentBlockId
     )
+
     return await this.blockService.save({
       ...input,
       __typename: 'VideoBlock',
-      parentOrder: siblings.length
+      parentOrder: siblings.length,
+      action: {
+        parentBlockId: input.id,
+        gtmEventName: 'NavigateAction',
+        blockId: null,
+        journeyId: null,
+        url: null,
+        target: null
+      }
     })
   }
 

@@ -57,6 +57,15 @@ describe('VideoBlockResolver', () => {
     videoVariantLanguageId: 'videoVariantLanguageId'
   }
 
+  const navigateAction = {
+    parentBlockId: 'abc',
+    gtmEventName: 'NavigateAction',
+    blockId: null,
+    journeyId: null,
+    url: null,
+    target: null
+  }
+
   const parentBlock: CardBlock = {
     id: 'parentBlockId',
     journeyId: createdBlock.journeyId,
@@ -130,7 +139,10 @@ describe('VideoBlockResolver', () => {
         blockCreate.journeyId,
         blockCreate.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith(createdBlock)
+      expect(service.save).toHaveBeenCalledWith({
+        ...createdBlock,
+        action: navigateAction
+      })
     })
 
     it('creates a cover VideoBlock', async () => {
