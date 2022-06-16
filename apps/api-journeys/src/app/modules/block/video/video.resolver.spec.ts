@@ -139,7 +139,8 @@ describe('VideoBlockResolver', () => {
         blockCreate.journeyId,
         blockCreate.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith({
+      expect(service.save).toHaveBeenCalledWith(createdBlock)
+      expect(service.update).toHaveBeenCalledWith(createdBlock.id, {
         ...createdBlock,
         action: navigateAction
       })
