@@ -1,5 +1,5 @@
 import { ReactElement, useEffect } from 'react'
-import { PowerBIEmbed } from 'powerbi-client-react'
+import { EmbedProps, PowerBIEmbed } from 'powerbi-client-react'
 import { models } from 'powerbi-client'
 import { gql, useQuery } from '@apollo/client'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
@@ -33,13 +33,26 @@ export function PowerBiReport({
     }
   )
 
-  const embedConfig = {
-    reportId: data?.adminJourneysReport?.reportId,
-    embedUrl: data?.adminJourneysReport?.embedUrl,
-    accessToken: data?.adminJourneysReport?.accessToken,
-    type: 'report',
-    tokenType: models.TokenType.Embed,
-    settings: undefined
+  const embedProps: EmbedProps = {
+    embedConfig: {
+      embedUrl: data?.adminJourneysReport?.embedUrl,
+      accessToken: data?.adminJourneysReport?.accessToken,
+      type: 'report',
+      tokenType: models.TokenType.Embed,
+      settings: {
+        filterPaneEnabled: false,
+        background: models.BackgroundType.Transparent,
+        panes: {
+          pageNavigation: {
+            visible: false
+          }
+        }
+      }
+    },
+    eventHandlers: new Map([
+      ['rendered', onLoad],
+      ['error', onError]
+    ])
   }
 
   useEffect(() => {
@@ -48,17 +61,9 @@ export function PowerBiReport({
     }
   }, [error, onError])
 
-  const eventHandlersMap = new Map([
-    ['rendered', onLoad],
-    ['error', onError]
-  ])
-
   return (
     <>
-      <PowerBIEmbed
-        embedConfig={embedConfig}
-        eventHandlers={eventHandlersMap}
-      />
+      <PowerBIEmbed {...embedProps} />
     </>
   )
 }

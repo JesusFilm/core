@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
+import Box from '@mui/material/Box'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { PowerBiReportProps } from '../PowerBiReport/PowerBiReport'
 
@@ -30,11 +31,18 @@ export function JourneysFullReport(): ReactElement {
       {!loaded && !error && <div>Loading...</div>}
       {error && <div>Error</div>}
       <div style={{ visibility: loaded && !error ? undefined : 'hidden' }}>
-        <PowerBiReport
-          reportType={JourneysReportType.multipleFull}
-          onLoad={onLoad}
-          onError={onError}
-        />
+        <Box
+          sx={{
+            height: '94vh',
+            '> div': { height: '100%' }
+          }}
+        >
+          <PowerBiReport
+            reportType={JourneysReportType.multipleFull}
+            onLoad={onLoad}
+            onError={onError}
+          />
+        </Box>
       </div>
     </>
   )
