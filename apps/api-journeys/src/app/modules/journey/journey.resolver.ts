@@ -43,11 +43,8 @@ export class JourneyResolver {
   ) {}
 
   @Query()
-  async adminJourneys(
-    @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[]
-  ): Promise<Journey[]> {
-    return await this.journeyService.getAllByOwnerEditor(userId, status)
+  async adminJourneys(@CurrentUserId() userId: string): Promise<Journey[]> {
+    return await this.journeyService.getAllByOwnerEditor(userId)
   }
 
   @Query()
@@ -91,22 +88,6 @@ export class JourneyResolver {
         : await this.journeyService.get(id)
     if (result?.publishedAt == null) return null
     return result
-  }
-
-  @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyArchiveAll(
-    @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[]
-  ): Promise<Journey[]> {
-    const results: Journey[] = (
-      await this.journeyService.getAllByOwner(userId, status)
-    ).map((journey) => ({
-      ...journey,
-      status: JourneyStatus.archived
-    }))
-
-    return await this.journeyService.updateAll(results)
   }
 
   @Mutation()
@@ -179,103 +160,6 @@ export class JourneyResolver {
     })
   }
 
-  @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyArchive(@Args('id') id: string): Promise<Journey> {
-    return await this.journeyService.update(id, {
-      status: JourneyStatus.archived,
-      archivedAt: new Date().toISOString()
-    })
-  }
-
-  @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyDelete(@Args('id') id: string): Promise<Journey> {
-    return await this.journeyService.update(id, {
-      status: JourneyStatus.deleted,
-      deletedAt: new Date().toISOString()
-    })
-  }
-
-  @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyDeleteAll(
-    @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[]
-  ): Promise<Journey[]> {
-    const results: Journey[] = (
-      await this.journeyService.getAllByOwner(userId, status)
-    ).map((journey) => ({
-      ...journey,
-      status: JourneyStatus.deleted
-    }))
-
-    return await this.journeyService.updateAll(results)
-  }
-
-  @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyTrash(@Args('id') id: string): Promise<Journey> {
-    return await this.journeyService.update(id, {
-      status: JourneyStatus.trashed,
-      trashedAt: new Date().toISOString()
-    })
-  }
-
-  async journeyTrashAll(
-    @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[]
-  ): Promise<Journey[]> {
-    const results: Journey[] = (
-      await this.journeyService.getAllByOwner(userId, status)
-    ).map((journey) => ({
-      ...journey,
-      status: JourneyStatus.deleted,
-      deletedAt: new Date().toISOString()
-    }))
-
-    return await this.journeyService.updateAll(results)
-  }
-
-  @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyRestore(@Args('id') id: string): Promise<Journey> {
-    const result: Journey = await this.journeyService.get(id)
-
-    if (
-      result.status === JourneyStatus.draft ||
-      result.status === JourneyStatus.published
-    ) {
-      throw new UserInputError('Journey is already active')
-    }
-
-    return await this.journeyService.update(id, {
-      status:
-        result.publishedAt == null
-          ? JourneyStatus.draft
-          : JourneyStatus.published
-    })
-  }
-
-  @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyRestoreAll(
-    @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[]
-  ): Promise<Journey[]> {
-    const results: Journey[] = (
-      await this.journeyService.getAllByOwner(userId, status)
-    ).map((journey) => ({
-      ...journey,
-      status:
-        journey.publishedAt == null
-          ? JourneyStatus.draft
-          : JourneyStatus.published
-    }))
-
-    return await this.journeyService.updateAll(results)
-  }
-
   @ResolveField()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
     return await this.blockService.forJourney(journey)
@@ -292,6 +176,11 @@ export class JourneyResolver {
   @ResolveField()
   async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
     return await this.userJourneyService.forJourney(journey)
+  }
+
+  @ResolveField()
+  status(@Parent() { publishedAt }: Journey): JourneyStatus {
+    return publishedAt == null ? JourneyStatus.draft : JourneyStatus.published
   }
 
   @ResolveField('language')
