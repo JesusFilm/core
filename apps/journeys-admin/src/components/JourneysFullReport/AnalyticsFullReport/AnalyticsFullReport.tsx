@@ -1,38 +1,63 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { PowerBIEmbed } from 'powerbi-client-react'
 import { models } from 'powerbi-client'
+import { gql, useQuery } from '@apollo/client'
+import { JourneysReportType } from '../../../../__generated__/globalTypes'
+import { GetAdminJourneysReport } from '../../../../__generated__/GetAdminJourneysReport'
+
+const GET_ADMIN_JOURNEYS_REPORT = gql`
+  query GetAdminJourneysReport($reportType: JourneysReportType!) {
+    adminJourneysReport(reportType: $reportType) {
+      reportId
+      embedUrl
+      accessToken
+    }
+  }
+`
 
 export interface AnalyticsFullReportProps {
-  reportConfig: ReportConfig
-}
-
-interface ReportConfig {
-  reportId: string
-  embedUrl: string
-  accessToken: string
+  reportType: JourneysReportType
+  onLoad: () => void
+  onError: () => void
 }
 
 export function AnalyticsFullReport({
-  reportConfig
+  reportType,
+  onLoad,
+  onError
 }: AnalyticsFullReportProps): ReactElement {
+  const { data, error } = useQuery<GetAdminJourneysReport>(
+    GET_ADMIN_JOURNEYS_REPORT,
+    {
+      variables: { reportType }
+    }
+  )
+
   const embedConfig = {
-    ...reportConfig,
+    reportId: data?.adminJourneysReport?.reportId,
+    embedUrl: data?.adminJourneysReport?.embedUrl,
+    accessToken: data?.adminJourneysReport?.accessToken,
     type: 'report',
     tokenType: models.TokenType.Embed,
     settings: undefined
   }
 
-  // const eventHandlersMap = new Map([
-  //   ['loaded', onLoaded],
-  //   ['error', onError]
-  // ])
+  useEffect(() => {
+    if (error != null) {
+      onError()
+    }
+  }, [error, onError])
+
+  const eventHandlersMap = new Map([
+    ['rendered', onLoad],
+    ['error', onError]
+  ])
 
   return (
     <>
-      <div>Report</div>
       <PowerBIEmbed
         embedConfig={embedConfig}
-        // eventHandlers={eventHandlersMap}
+        eventHandlers={eventHandlersMap}
       />
     </>
   )
