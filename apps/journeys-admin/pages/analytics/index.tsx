@@ -18,8 +18,8 @@ function IndexPage(): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('Anayltics')} />
-      <PageWrapper title={t('Anayltics')} authUser={AuthUser}>
+      <NextSeo title={t('Analytics')} />
+      <PageWrapper title={t('Analytics')} authUser={AuthUser}>
         <JourneysFullReport />
       </PageWrapper>
     </>
