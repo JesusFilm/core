@@ -133,10 +133,14 @@ describe('JourneyResolver', () => {
       }),
       getBySlug: jest.fn((slug) => (slug === journey.slug ? journey : null)),
       getAllPublishedJourneys: jest.fn(() => [journey, journey]),
-      getAllByOwner: jest.fn((userId, status) => {
-        switch (status[0]) {
-          case 'archived':
+      getAllByIds: jest.fn((userId, ids) => {
+        switch (ids[0]) {
+          case archivedJourney.id:
             return [archivedJourney]
+          case trashedJourney.id:
+            return [trashedJourney]
+          case trashedDraftJourney.id:
+            return [trashedDraftJourney]
           default:
             return [journey, draftJourney]
         }
@@ -425,125 +429,83 @@ describe('JourneyResolver', () => {
     })
   })
 
-  describe('journeyArchive', () => {
-    it('archives a Journey', async () => {
+  describe('journeysArchive', () => {
+    it('archives an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeyArchive(journey.id)
-      expect(service.update).toHaveBeenCalledWith(journey.id, {
-        status: JourneyStatus.archived,
-        archivedAt: date
-      })
-    })
-  })
-
-  describe('journeyArchiveAll', () => {
-    it('archives all active Journeys', async () => {
-      await resolver.journeyArchiveAll('userId', [
-        JourneyStatus.draft,
-        JourneyStatus.published
-      ])
+      await resolver.journeysArchive('1', [journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
-          ...journey,
-          status: JourneyStatus.archived
+          id: journey.id,
+          status: JourneyStatus.archived,
+          archivedAt: date
         },
         {
-          ...draftJourney,
-          status: JourneyStatus.archived
+          id: draftJourney.id,
+          status: JourneyStatus.archived,
+          archivedAt: date
         }
       ])
     })
   })
 
-  describe('journeyTrash', () => {
-    it('trashes a Journey', async () => {
+  describe('journeysTrash', () => {
+    it('trashes an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeyTrash(journey.id)
-      expect(service.update).toHaveBeenCalledWith(journey.id, {
-        status: JourneyStatus.trashed,
-        trashedAt: date
-      })
-    })
-  })
-
-  describe('journeyDelete', () => {
-    it('deletes a  Journey', async () => {
-      const date = '2021-12-07T03:22:41.135Z'
-      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeyDelete(journey.id)
-      expect(service.update).toHaveBeenCalledWith(journey.id, {
-        status: JourneyStatus.deleted,
-        deletedAt: date
-      })
-    })
-  })
-
-  describe('journeyDeleteAll', () => {
-    it('archives all active Journeys', async () => {
-      await resolver.journeyDeleteAll('userId', [
-        JourneyStatus.draft,
-        JourneyStatus.published
-      ])
+      await resolver.journeysTrash('1', [journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
-          ...journey,
-          status: JourneyStatus.deleted
+          id: journey.id,
+          status: JourneyStatus.trashed,
+          trashedAt: date
         },
         {
-          ...draftJourney,
-          status: JourneyStatus.deleted
+          id: draftJourney.id,
+          status: JourneyStatus.trashed,
+          trashedAt: date
         }
       ])
     })
   })
 
-  describe('journeyRestore', () => {
+  describe('journeysDelete', () => {
+    it('deletes an array of Journeys', async () => {
+      const date = '2021-12-07T03:22:41.135Z'
+      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      await resolver.journeysDelete('1', [journey.id, draftJourney.id])
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          id: journey.id,
+          status: JourneyStatus.deleted,
+          deletedAt: date
+        },
+        {
+          id: draftJourney.id,
+          status: JourneyStatus.deleted,
+          deletedAt: date
+        }
+      ])
+    })
+  })
+
+  describe('journeysRestore', () => {
     it('resores a published Journey', async () => {
-      await resolver.journeyRestore(trashedJourney.id)
-      expect(service.update).toHaveBeenCalledWith(trashedJourney.id, {
-        status: JourneyStatus.published
-      })
+      await resolver.journeysRestore('1', [trashedJourney.id])
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          id: trashedJourney.id,
+          status: JourneyStatus.published
+        }
+      ])
     })
 
     it('restores an draft Journey', async () => {
-      await resolver.journeyRestore(trashedDraftJourney.id)
-      expect(service.update).toHaveBeenCalledWith(trashedDraftJourney.id, {
-        status: JourneyStatus.draft
-      })
-    })
-  })
-
-  describe('journeyRestoreAll', () => {
-    it('restores all Journeys to last active status', async () => {
-      await resolver.journeyRestoreAll('userId', [
-        JourneyStatus.draft,
-        JourneyStatus.published
-      ])
+      await resolver.journeysRestore('1', [trashedDraftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
-          ...journey,
-          status: JourneyStatus.published
-        },
-        {
-          ...draftJourney,
+          id: trashedDraftJourney.id,
           status: JourneyStatus.draft
-        }
-      ])
-    })
-  })
-
-  describe('journeyTrashAllArchived', () => {
-    it('trashes all archived Journeys', async () => {
-      const date = '2021-12-07T03:22:41.135Z'
-      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeyTrashAll('userId', [JourneyStatus.archived])
-      expect(service.updateAll).toHaveBeenCalledWith([
-        {
-          ...archivedJourney,
-          status: JourneyStatus.deleted,
-          deletedAt: '2021-12-07T03:22:41.135Z'
         }
       ])
     })

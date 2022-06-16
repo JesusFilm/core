@@ -44,11 +44,23 @@ export const RoleGuard = (
       if (journeyId == null)
         throw new AuthenticationError('No journeyId provided')
 
-      const actor = await ca(this.userJourneyService, journeyId, userId)
+      let result = false
+      if (Array.isArray(journeyId)) {
+        for (let i = 0; i < journeyId.length; i++) {
+          const actor = await ca(this.userJourneyService, journeyId[i], userId)
 
-      const result = Array.isArray(roles)
-        ? includes(roles, actor?.role)
-        : roles === actor?.role
+          result = Array.isArray(roles)
+            ? includes(roles, actor?.role)
+            : roles === actor?.role
+          if (!result) break
+        }
+      } else {
+        const actor = await ca(this.userJourneyService, journeyId, userId)
+
+        result = Array.isArray(roles)
+          ? includes(roles, actor?.role)
+          : roles === actor?.role
+      }
       if (!result)
         throw new AuthenticationError(
           'User does not have the role to perform this action'

@@ -94,22 +94,6 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyArchiveAll(
-    @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[]
-  ): Promise<Journey[]> {
-    const results: Journey[] = (
-      await this.journeyService.getAllByOwner(userId, status)
-    ).map((journey) => ({
-      ...journey,
-      status: JourneyStatus.archived
-    }))
-
-    return await this.journeyService.updateAll(results)
-  }
-
-  @Mutation()
   @UseGuards(GqlAuthGuard)
   async journeyCreate(
     @Args('input') input: JourneyCreateInput & { id?: string },
@@ -180,100 +164,80 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyArchive(@Args('id') id: string): Promise<Journey> {
-    return await this.journeyService.update(id, {
-      status: JourneyStatus.archived,
-      archivedAt: new Date().toISOString()
-    })
-  }
-
-  @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyDelete(@Args('id') id: string): Promise<Journey> {
-    return await this.journeyService.update(id, {
-      status: JourneyStatus.deleted,
-      deletedAt: new Date().toISOString()
-    })
-  }
-
-  @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyDeleteAll(
+  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  async journeysArchive(
     @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[]
+    @Args('ids') ids: string[]
   ): Promise<Journey[]> {
-    const results: Journey[] = (
-      await this.journeyService.getAllByOwner(userId, status)
-    ).map((journey) => ({
-      ...journey,
-      status: JourneyStatus.deleted
-    }))
+    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+      (journey) => ({
+        id: journey.id,
+        status: JourneyStatus.archived,
+        archivedAt: new Date().toISOString()
+      })
+    )
 
-    return await this.journeyService.updateAll(results)
+    return (await this.journeyService.updateAll(
+      results
+    )) as unknown as Journey[]
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyTrash(@Args('id') id: string): Promise<Journey> {
-    return await this.journeyService.update(id, {
-      status: JourneyStatus.trashed,
-      trashedAt: new Date().toISOString()
-    })
-  }
-
-  async journeyTrashAll(
+  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  async journeysDelete(
     @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[]
+    @Args('ids') ids: string[]
   ): Promise<Journey[]> {
-    const results: Journey[] = (
-      await this.journeyService.getAllByOwner(userId, status)
-    ).map((journey) => ({
-      ...journey,
-      status: JourneyStatus.deleted,
-      deletedAt: new Date().toISOString()
-    }))
-
-    return await this.journeyService.updateAll(results)
+    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+      (journey) => ({
+        id: journey.id,
+        status: JourneyStatus.deleted,
+        deletedAt: new Date().toISOString()
+      })
+    )
+    return (await this.journeyService.updateAll(
+      results
+    )) as unknown as Journey[]
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyRestore(@Args('id') id: string): Promise<Journey> {
-    const result: Journey = await this.journeyService.get(id)
-
-    if (
-      result.status === JourneyStatus.draft ||
-      result.status === JourneyStatus.published
-    ) {
-      throw new UserInputError('Journey is already active')
-    }
-
-    return await this.journeyService.update(id, {
-      status:
-        result.publishedAt == null
-          ? JourneyStatus.draft
-          : JourneyStatus.published
-    })
-  }
-
-  @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
-  async journeyRestoreAll(
+  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  async journeysTrash(
     @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[]
+    @Args('ids') ids: string[]
   ): Promise<Journey[]> {
-    const results: Journey[] = (
-      await this.journeyService.getAllByOwner(userId, status)
-    ).map((journey) => ({
-      ...journey,
-      status:
-        journey.publishedAt == null
-          ? JourneyStatus.draft
-          : JourneyStatus.published
-    }))
+    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+      (journey) => ({
+        id: journey.id,
+        status: JourneyStatus.trashed,
+        trashedAt: new Date().toISOString()
+      })
+    )
 
-    return await this.journeyService.updateAll(results)
+    return (await this.journeyService.updateAll(
+      results
+    )) as unknown as Journey[]
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  async journeysRestore(
+    @CurrentUserId() userId: string,
+    @Args('ids') ids: string[]
+  ): Promise<Journey[]> {
+    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+      (journey) => ({
+        id: journey.id,
+        status:
+          journey.publishedAt == null
+            ? JourneyStatus.draft
+            : JourneyStatus.published
+      })
+    )
+
+    return (await this.journeyService.updateAll(
+      results
+    )) as unknown as Journey[]
   }
 
   @ResolveField()
