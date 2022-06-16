@@ -914,29 +914,17 @@ extend type Mutation {
   """Sets journey status to published"""
   journeyPublish(id: ID!): Journey
 
-  """Sets journey status to archived"""
-  journeyArchive(id: ID!): Journey
+  """Sets journeys statuses to archived"""
+  journeysArchive(ids: [ID!]!): [Journey]
 
-  """Sets all journeys of status to archived for current owner"""
-  journeyArchiveAll(status: [JourneyStatus!]!): [Journey]
+  """Sets journeys statuses to deleted"""
+  journeysDelete(ids: [ID!]!): [Journey]
 
-  """Sets journey status to deleted"""
-  journeyDelete(id: ID!): Journey
+  """Sets journeys statuses to trashed"""
+  journeysTrash(ids: [ID!]!): [Journey]
 
-  """Sets all journeys of status to deleted for current owner"""
-  journeyDeleteAll(status: [JourneyStatus!]!): [Journey]
-
-  """Sets journey status to trashed"""
-  journeyTrash(id: ID!): Journey
-
-  """Sets journey status to last active status"""
-  journeyRestore(id: ID!): Journey
-
-  """Sets all journeys of status to last active status for current owner"""
-  journeyRestoreAll(status: [JourneyStatus!]!): [Journey]
-
-  """Sets all journeys of status to trashed for current owner"""
-  journeyTrashAll(status: [JourneyStatus!]!): [Journey]
+  """Sets journeys statuses to last active status"""
+  journeysRestore(ids: [ID!]!): [Journey]
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!

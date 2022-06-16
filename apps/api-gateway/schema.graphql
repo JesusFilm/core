@@ -470,36 +470,24 @@ type Mutation {
   iconBlockUpdate(id: ID!, input: IconBlockUpdateInput!, journeyId: ID!): IconBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
   imageBlockUpdate(id: ID!, input: ImageBlockUpdateInput!, journeyId: ID!): ImageBlock! @join__field(graph: JOURNEYS)
-
-  """Sets journey status to archived"""
-  journeyArchive(id: ID!): Journey @join__field(graph: JOURNEYS)
-
-  """Sets all journeys of status to archived for current owner"""
-  journeyArchiveAll(status: [JourneyStatus!]!): [Journey] @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
-
-  """Sets journey status to deleted"""
-  journeyDelete(id: ID!): Journey @join__field(graph: JOURNEYS)
-
-  """Sets all journeys of status to deleted for current owner"""
-  journeyDeleteAll(status: [JourneyStatus!]!): [Journey] @join__field(graph: JOURNEYS)
 
   """Sets journey status to published"""
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
-
-  """Sets journey status to last active status"""
-  journeyRestore(id: ID!): Journey @join__field(graph: JOURNEYS)
-
-  """Sets all journeys of status to last active status for current owner"""
-  journeyRestoreAll(status: [JourneyStatus!]!): [Journey] @join__field(graph: JOURNEYS)
-
-  """Sets journey status to trashed"""
-  journeyTrash(id: ID!): Journey @join__field(graph: JOURNEYS)
-
-  """Sets all journeys of status to trashed for current owner"""
-  journeyTrashAll(status: [JourneyStatus!]!): [Journey] @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
+
+  """Sets journeys statuses to archived"""
+  journeysArchive(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
+
+  """Sets journeys statuses to deleted"""
+  journeysDelete(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
+
+  """Sets journeys statuses to last active status"""
+  journeysRestore(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
+
+  """Sets journeys statuses to trashed"""
+  journeysTrash(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioOptionBlockUpdate(id: ID!, input: RadioOptionBlockUpdateInput!, journeyId: ID!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)

@@ -47,11 +47,11 @@ export class JourneyService extends BaseService {
     const result = await this.db.query(aql`
       FOR journey in ${this.collection}
         FILTER journey.slug == ${_key}
-          AND journey.status == IN ${[
+          AND journey.status IN ${[
             JourneyStatus.published,
             JourneyStatus.draft,
             JourneyStatus.archived
-          ]})
+          ]}
         LIMIT 1
         RETURN journey
     `)
