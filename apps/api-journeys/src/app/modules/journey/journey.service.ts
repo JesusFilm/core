@@ -47,6 +47,7 @@ export class JourneyService extends BaseService {
     const result = await this.db.query(aql`
       FOR journey in ${this.collection}
         FILTER journey.slug == ${_key}
+          AND (journey.status == ${JourneyStatus.published} || journey.status == ${JourneyStatus.draft}) || journey.status == ${JourneyStatus.archived})
         LIMIT 1
         RETURN journey
     `)
@@ -54,12 +55,34 @@ export class JourneyService extends BaseService {
   }
 
   @KeyAsId()
-  async getAllByOwnerEditor(userId: string): Promise<Journey[]> {
+  async getAllByOwner(
+    userId: string,
+    status: JourneyStatus[]
+  ): Promise<Journey[]> {
+    const result = await this.db.query(aql`
+    FOR userJourney in userJourneys
+      FOR journey in ${this.collection}
+          FILTER userJourney.journeyId == journey._key && userJourney.userId == ${userId}
+           && userJourney.role == ${UserJourneyRole.owner}
+           && journey.status IN ${status}
+          RETURN journey
+    `)
+    return await result.all()
+  }
+
+  @KeyAsId()
+  async getAllByOwnerEditor(
+    userId: string,
+    status?: JourneyStatus[]
+  ): Promise<Journey[]> {
+    const filter =
+      status != null ? aql`&& journey.status IN ${status}` : aql`&& true`
     const result = await this.db.query(aql`
     FOR userJourney in userJourneys
       FOR journey in ${this.collection}
           FILTER userJourney.journeyId == journey._key && userJourney.userId == ${userId}
            && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})
+           ${filter}
           RETURN journey
     `)
     return await result.all()

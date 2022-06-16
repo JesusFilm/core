@@ -85,4 +85,19 @@ describe('NavigationDrawer', () => {
     fireEvent.click(button)
     expect(onClose).toHaveBeenCalled()
   })
+
+  it('should select the journeys drawer', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <NavigationDrawer
+          open={true}
+          onClose={onClose}
+          title="Active Journeys"
+        />
+      </MockedProvider>
+    )
+    expect(getByTestId('ExploreRoundedIcon').parentElement).toHaveStyle(
+      'color: #FFFFFF'
+    )
+  })
 })
