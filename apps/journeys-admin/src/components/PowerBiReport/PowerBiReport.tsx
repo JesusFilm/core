@@ -2,8 +2,8 @@ import { ReactElement, useEffect } from 'react'
 import { PowerBIEmbed } from 'powerbi-client-react'
 import { models } from 'powerbi-client'
 import { gql, useQuery } from '@apollo/client'
-import { JourneysReportType } from '../../../../__generated__/globalTypes'
-import { GetAdminJourneysReport } from '../../../../__generated__/GetAdminJourneysReport'
+import { JourneysReportType } from '../../../__generated__/globalTypes'
+import { GetAdminJourneysReport } from '../../../__generated__/GetAdminJourneysReport'
 
 const GET_ADMIN_JOURNEYS_REPORT = gql`
   query GetAdminJourneysReport($reportType: JourneysReportType!) {
@@ -15,17 +15,17 @@ const GET_ADMIN_JOURNEYS_REPORT = gql`
   }
 `
 
-export interface AnalyticsFullReportProps {
+export interface PowerBiReportProps {
   reportType: JourneysReportType
   onLoad: () => void
   onError: () => void
 }
 
-export function AnalyticsFullReport({
+export function PowerBiReport({
   reportType,
   onLoad,
   onError
-}: AnalyticsFullReportProps): ReactElement {
+}: PowerBiReportProps): ReactElement {
   const { data, error } = useQuery<GetAdminJourneysReport>(
     GET_ADMIN_JOURNEYS_REPORT,
     {

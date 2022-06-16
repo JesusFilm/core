@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
-import { AnalyticsFullReportProps } from './AnalyticsFullReport/AnalyticsFullReport'
+import { PowerBiReportProps } from '../PowerBiReport/PowerBiReport'
 
 export function JourneysFullReport(): ReactElement {
   const [loaded, setLoaded] = useState(false)
@@ -16,12 +16,12 @@ export function JourneysFullReport(): ReactElement {
   }
 
   // powerbi needs dynamic import, see issue: https://github.com/microsoft/powerbi-client-react/issues/65
-  const AnalyticsFullReport = dynamic<AnalyticsFullReportProps>(
+  const PowerBiReport = dynamic<PowerBiReportProps>(
     async () =>
       await import(
-        /* webpackChunkName: "DynamicAnalyticsFullReport" */
-        './AnalyticsFullReport'
-      ).then((res) => res.AnalyticsFullReport),
+        /* webpackChunkName: "DynamicPowerBiReport" */
+        '../PowerBiReport'
+      ).then((res) => res.PowerBiReport),
     { ssr: false }
   )
 
@@ -30,7 +30,7 @@ export function JourneysFullReport(): ReactElement {
       {!loaded && !error && <div>Loading...</div>}
       {error && <div>Error</div>}
       <div style={{ visibility: loaded && !error ? undefined : 'hidden' }}>
-        <AnalyticsFullReport
+        <PowerBiReport
           reportType={JourneysReportType.multipleFull}
           onLoad={onLoad}
           onError={onError}
