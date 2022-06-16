@@ -79,6 +79,13 @@ export const baseColorsLight = (): Required<
             }
           }
         }
+      },
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            color: primary.main
+          }
+        }
       }
     }
   }
@@ -150,6 +157,13 @@ export const baseColorsDark = (): Required<
             ':disabled': {
               color: palette[700]
             }
+          }
+        }
+      },
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            color: primary.main
           }
         }
       }

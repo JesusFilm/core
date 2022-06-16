@@ -5,6 +5,7 @@
 
 if [[ `git status --porcelain` ]]; then
   # Changes
+  git status --porcelain
   echo "🛑 - run codegen and linting locally and commit changes"
   exit 1
 else
