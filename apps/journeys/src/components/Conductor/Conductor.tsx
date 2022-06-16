@@ -26,6 +26,7 @@ import TagManager from 'react-gtm-module'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { BlockFields_CardBlock as CardBlock } from '../../../__generated__/BlockFields'
 import { JourneyProgress } from '../JourneyProgress'
+import { Footer } from '../Footer'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
@@ -128,168 +129,179 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
 
   return (
-    <Div100vh>
-      <Stack
-        sx={{
-          justifyContent: 'center',
-          height: '100%',
-          flexDirection: { lg: 'column-reverse' }
-        }}
-      >
-        <Box
+    <>
+      <Div100vh>
+        <Stack
           sx={{
-            px: `${edgeSlideWidth + gapBetweenSlides}px`,
-            py: 6,
-            pt: { lg: 0 }
+            justifyContent: 'center',
+            height: '100%',
+            flexDirection: { lg: 'column-reverse' }
           }}
         >
-          <Fade in={!videoBlockExists}>
-            <Box data-testid="journey-progress">
-              <JourneyProgress />
-            </Box>
-          </Fade>
-        </Box>
-        <Box
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            [theme.breakpoints.only('sm')]: {
-              maxHeight: '460px'
-            },
-            [theme.breakpoints.up('lg')]: {
-              maxHeight: '480px'
-            }
-          }}
-        >
-          <Swiper
-            slidesPerView={'auto'}
-            centeredSlides={true}
-            centeredSlidesBounds={true}
-            onSwiper={(swiper) => setSwiper(swiper)}
-            resizeObserver
-            onBeforeResize={() => setGapBetween(getResponsiveGap())}
-            onSlideChangeTransitionStart={() => setShowNavArrow(false)}
-            onSlideChangeTransitionEnd={() => setShowNavArrow(true)}
-            allowTouchMove={false}
-            style={{
-              width: '100%',
-              paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
-              paddingRight: `${edgeSlideWidth + gapBetweenSlides / 2}px`
+          <Box
+            sx={{
+              px: `${edgeSlideWidth + gapBetweenSlides}px`,
+              py: 6,
+              pt: { lg: 0 }
             }}
           >
-            {treeBlocks.map((block) => (
-              <SwiperSlide
-                key={block.id}
-                style={{
-                  marginRight: '0px'
-                }}
-              >
-                <Box
-                  sx={{
-                    px: `${gapBetweenSlides / 2}px`,
-                    height: `calc(100% - ${theme.spacing(6)})`,
-                    [theme.breakpoints.up('lg')]: {
-                      maxWidth: '854px'
-                    }
+            <Fade in={!videoBlockExists}>
+              <Box data-testid="journey-progress">
+                <JourneyProgress />
+              </Box>
+            </Fade>
+          </Box>
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: 'flex',
+              [theme.breakpoints.only('sm')]: {
+                maxHeight: '460px'
+              },
+              [theme.breakpoints.up('lg')]: {
+                maxHeight: '480px'
+              }
+            }}
+          >
+            <Swiper
+              slidesPerView={'auto'}
+              centeredSlides={true}
+              centeredSlidesBounds={true}
+              onSwiper={(swiper) => setSwiper(swiper)}
+              resizeObserver
+              onBeforeResize={() => setGapBetween(getResponsiveGap())}
+              onSlideChangeTransitionStart={() => setShowNavArrow(false)}
+              onSlideChangeTransitionEnd={() => setShowNavArrow(true)}
+              allowTouchMove={false}
+              style={{
+                width: '100%',
+                paddingLeft: `${edgeSlideWidth + gapBetweenSlides / 2}px`,
+                paddingRight: `${edgeSlideWidth + gapBetweenSlides / 2}px`
+              }}
+            >
+              {treeBlocks.map((block) => (
+                <SwiperSlide
+                  key={block.id}
+                  style={{
+                    marginRight: '0px'
                   }}
                 >
-                  <CardWrapper
-                    id={block.id}
-                    backgroundColor={theme.palette.primary.light}
-                    themeMode={null}
-                    themeName={null}
+                  <Box
+                    sx={{
+                      px: `${gapBetweenSlides / 2}px`,
+                      height: `calc(100% - ${theme.spacing(6)})`,
+                      [theme.breakpoints.up('lg')]: {
+                        maxWidth: '854px'
+                      }
+                    }}
                   >
-                    <Fade
-                      in={activeBlock?.id === block.id}
-                      mountOnEnter
-                      unmountOnExit
+                    <CardWrapper
+                      id={block.id}
+                      backgroundColor={theme.palette.primary.light}
+                      themeMode={null}
+                      themeName={null}
                     >
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          width: '100%',
-                          height: '100%'
-                        }}
+                      <Fade
+                        in={activeBlock?.id === block.id}
+                        mountOnEnter
+                        unmountOnExit
                       >
-                        <BlockRenderer block={block} />
-                      </Box>
-                    </Fade>
-                  </CardWrapper>
-                </Box>
-              </SwiperSlide>
-            ))}
-            <IconButton
-              data-testid="conductorPrevButton"
-              onClick={handleNext}
-              disabled={true}
-              disableRipple
-              sx={{
-                display: showNavArrows ? 'flex' : 'none',
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                zIndex: 2,
-                left: 0,
-                width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
-                pl: ` ${gapBetweenSlides - 100}px`,
-                color: (theme) => theme.palette.text.primary
-              }}
-            >
-              <ChevronLeftIcon
-                fontSize={'large'}
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            width: '100%',
+                            height: '100%'
+                          }}
+                        >
+                          <BlockRenderer block={block} />
+                        </Box>
+                      </Fade>
+                    </CardWrapper>
+                  </Box>
+                </SwiperSlide>
+              ))}
+              <IconButton
+                data-testid="conductorPrevButton"
+                onClick={handleNext}
+                disabled={true}
+                disableRipple
                 sx={{
-                  display: 'none',
-                  [theme.breakpoints.only('xl')]: {
-                    display: 'block'
-                  }
+                  display: showNavArrows ? 'flex' : 'none',
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  zIndex: 2,
+                  left: 0,
+                  width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
+                  pl: ` ${gapBetweenSlides - 100}px`,
+                  color: (theme) => theme.palette.text.primary
+                }}
+              >
+                <ChevronLeftIcon
+                  fontSize={'large'}
+                  sx={{
+                    display: 'none',
+                    [theme.breakpoints.only('xl')]: {
+                      display: 'block'
+                    }
+                  }}
+                />
+              </IconButton>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  zIndex: 2,
+                  right: 0,
+                  background: (theme) => theme.palette.background.default,
+                  transition: 'opacity 0.5s ease-out',
+                  opacity: activeBlock?.nextBlockId != null ? 0 : 1,
+                  width: (theme) => theme.spacing(4)
                 }}
               />
-            </IconButton>
-            <Box
-              sx={{
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                zIndex: 2,
-                right: 0,
-                background: (theme) => theme.palette.background.default,
-                transition: 'opacity 0.5s ease-out',
-                opacity: activeBlock?.nextBlockId != null ? 0 : 1,
-                width: (theme) => theme.spacing(4)
-              }}
-            />
-            <IconButton
-              data-testid="conductorNextButton"
-              onClick={handleNext}
-              disabled={
-                activeBlock?.locked === true || activeBlock?.nextBlockId == null
-              }
-              disableRipple
-              sx={{
-                display: showNavArrows ? 'flex' : 'none',
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                zIndex: 2,
-                right: 0,
-                width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
-                pr: ` ${gapBetweenSlides - 100}px`,
-                color: (theme) => theme.palette.text.primary
-              }}
-            >
-              <ChevronRightIcon
-                fontSize={'large'}
+              <IconButton
+                data-testid="conductorNextButton"
+                onClick={handleNext}
+                disabled={
+                  activeBlock?.locked === true ||
+                  activeBlock?.nextBlockId == null
+                }
+                disableRipple
                 sx={{
-                  display: 'none',
-                  [theme.breakpoints.only('xl')]: {
-                    display: 'block'
-                  }
+                  display: showNavArrows ? 'flex' : 'none',
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  zIndex: 2,
+                  right: 0,
+                  width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
+                  pr: ` ${gapBetweenSlides - 100}px`,
+                  color: (theme) => theme.palette.text.primary
                 }}
-              />
-            </IconButton>
-          </Swiper>
-        </Box>
-      </Stack>
-    </Div100vh>
+              >
+                <ChevronRightIcon
+                  fontSize={'large'}
+                  sx={{
+                    display: 'none',
+                    [theme.breakpoints.only('xl')]: {
+                      display: 'block'
+                    }
+                  }}
+                />
+              </IconButton>
+            </Swiper>
+          </Box>
+        </Stack>
+      </Div100vh>
+      <Box
+        sx={{
+          px: `${edgeSlideWidth + gapBetweenSlides}px`,
+          pb: 2
+        }}
+      >
+        <Footer />
+      </Box>
+    </>
   )
 }
