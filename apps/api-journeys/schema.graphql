@@ -81,10 +81,7 @@ type Journey @key(fields: "id") {
   themeName: ThemeName!
   description: String
   slug: String!
-  archivedAt: DateTime
-  deletedAt: DateTime
   publishedAt: DateTime
-  trashedAt: DateTime
   featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
@@ -806,11 +803,8 @@ enum IdType {
 }
 
 enum JourneyStatus {
-  archived
-  deleted
   draft
   published
-  trashed
 }
 
 input JourneysFilter {
@@ -910,33 +904,7 @@ extend type Mutation {
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
-
-  """Sets journey status to published"""
   journeyPublish(id: ID!): Journey
-
-  """Sets journey status to archived"""
-  journeyArchive(id: ID!): Journey
-
-  """Sets all journeys of status to archived for current owner"""
-  journeyArchiveAll(status: [JourneyStatus!]!): [Journey]
-
-  """Sets journey status to deleted"""
-  journeyDelete(id: ID!): Journey
-
-  """Sets all journeys of status to deleted for current owner"""
-  journeyDeleteAll(status: [JourneyStatus!]!): [Journey]
-
-  """Sets journey status to trashed"""
-  journeyTrash(id: ID!): Journey
-
-  """Sets journey status to last active status"""
-  journeyRestore(id: ID!): Journey
-
-  """Sets all journeys of status to last active status for current owner"""
-  journeyRestoreAll(status: [JourneyStatus!]!): [Journey]
-
-  """Sets all journeys of status to trashed for current owner"""
-  journeyTrashAll(status: [JourneyStatus!]!): [Journey]
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
@@ -953,7 +921,7 @@ extend type Language @key(fields: "id") {
 }
 
 extend type Query {
-  adminJourneys(status: [JourneyStatus!]): [Journey!]!
+  adminJourneys: [Journey!]!
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey

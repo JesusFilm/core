@@ -122,11 +122,8 @@ export enum IdType {
 }
 
 export enum JourneyStatus {
-    archived = "archived",
-    deleted = "deleted",
     draft = "draft",
-    published = "published",
-    trashed = "trashed"
+    published = "published"
 }
 
 export enum UserJourneyRole {
@@ -466,10 +463,7 @@ export class Journey {
     themeName: ThemeName;
     description?: Nullable<string>;
     slug: string;
-    archivedAt?: Nullable<DateTime>;
-    deletedAt?: Nullable<DateTime>;
     publishedAt?: Nullable<DateTime>;
-    trashedAt?: Nullable<DateTime>;
     featuredAt?: Nullable<DateTime>;
     createdAt: DateTime;
     status: JourneyStatus;
@@ -822,22 +816,6 @@ export abstract class IMutation {
 
     abstract journeyPublish(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
 
-    abstract journeyArchive(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
-
-    abstract journeyArchiveAll(status: JourneyStatus[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
-
-    abstract journeyDelete(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
-
-    abstract journeyDeleteAll(status: JourneyStatus[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
-
-    abstract journeyTrash(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
-
-    abstract journeyRestore(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
-
-    abstract journeyRestoreAll(status: JourneyStatus[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
-
-    abstract journeyTrashAll(status: JourneyStatus[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
-
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 
     abstract userJourneyPromote(id: string): UserJourney | Promise<UserJourney>;
@@ -857,7 +835,7 @@ export class Language {
 }
 
 export abstract class IQuery {
-    abstract adminJourneys(status?: Nullable<JourneyStatus[]>): Journey[] | Promise<Journey[]>;
+    abstract adminJourneys(): Journey[] | Promise<Journey[]>;
 
     abstract adminJourney(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 
