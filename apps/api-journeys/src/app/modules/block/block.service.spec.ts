@@ -4,6 +4,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
   mockCollectionRemoveResult,
   mockCollectionSaveResult,
+  mockCollectionSaveAllResult,
   mockCollectionUpdateAllResult,
   mockDbQueryResult
 } from '@core/nest/database'
@@ -131,6 +132,23 @@ describe('BlockService', () => {
 
     it('should return a saved block', async () => {
       expect(await service.save(block)).toEqual(blockWithId)
+    })
+  })
+
+  describe('saveAll', () => {
+    beforeEach(() => {
+      ;(
+        service.collection as DeepMockProxy<DocumentCollection>
+      ).saveAll.mockReturnValue(
+        mockCollectionSaveAllResult(service.collection, [block, block])
+      )
+    })
+
+    it('should return saved blocks', async () => {
+      expect(await service.saveAll([block, block])).toEqual([
+        blockWithId,
+        blockWithId
+      ])
     })
   })
 
