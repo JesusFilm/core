@@ -9,6 +9,7 @@ import {
 import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
+import { useRouter } from 'next/router'
 import { GetJourneys } from '../__generated__/GetJourneys'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/PageWrapper'
@@ -52,12 +53,25 @@ function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
   const AuthUser = useAuthUser()
+  const router = useRouter()
+
+  const activeTab = router.query.tab ?? 'active'
+  const pageTitle =
+    activeTab === 'active'
+      ? t('Active Journeys')
+      : activeTab === 'archived'
+      ? t('Archived Journeys')
+      : t('Deleted Journeys')
 
   return (
     <>
       <NextSeo title={t('Journeys')} />
-      <PageWrapper title={t('Journeys')} authUser={AuthUser}>
-        <JourneyList journeys={data?.journeys} disableCreation />
+      <PageWrapper title={pageTitle} authUser={AuthUser}>
+        <JourneyList
+          journeys={data?.journeys}
+          disableCreation
+          router={router}
+        />
       </PageWrapper>
     </>
   )

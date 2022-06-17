@@ -29,10 +29,20 @@ export function nextActiveBlock(args?: NextActiveBlockArgs): void {
       (block) => block.__typename === 'StepBlock' && block.id === args.id
     ) as TreeBlock<StepFields> | undefined
   } else if (activeBlock != null) {
-    block = blocks.find(
-      (block) =>
-        block.__typename === 'StepBlock' && block.id === activeBlock.nextBlockId
-    ) as TreeBlock<StepFields> | undefined
+    if (activeBlock.nextBlockId != null) {
+      block = blocks.find(
+        (block) =>
+          block.__typename === 'StepBlock' &&
+          block.id === activeBlock.nextBlockId
+      ) as TreeBlock<StepFields> | undefined
+    } else if (
+      activeBlock.parentOrder != null &&
+      activeBlock.nextBlockId == null
+    ) {
+      block = blocks[activeBlock.parentOrder + 1] as
+        | TreeBlock<StepFields>
+        | undefined
+    }
   }
   if (block != null) {
     if (activeBlock != null) {

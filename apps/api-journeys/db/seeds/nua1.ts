@@ -125,7 +125,6 @@ export async function nua1(): Promise<void> {
     locked: false,
     parentOrder: 1
   })
-  await db.collection('blocks').update(step1._key, { nextBlockId: step2._key })
 
   const button1 = await db.collection('blocks').save({
     journeyId: journey._key,
@@ -182,6 +181,16 @@ export async function nua1(): Promise<void> {
     fullsize: true,
     parentOrder: 0
   })
+  await db.collection('blocks').update(video._id, {
+    action: {
+      parentBlockId: video._id,
+      gtmEventName: 'NavigateAction',
+      blockId: null,
+      journeyId: null,
+      url: null,
+      target: null
+    }
+  })
 
   // third step
   const step3 = await db.collection('blocks').save({
@@ -190,7 +199,6 @@ export async function nua1(): Promise<void> {
     locked: false,
     parentOrder: 2
   })
-  await db.collection('blocks').update(step2._key, { nextBlockId: step3._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -262,7 +270,6 @@ export async function nua1(): Promise<void> {
     locked: false,
     parentOrder: 3
   })
-  await db.collection('blocks').update(step3._key, { nextBlockId: step4._key })
 
   await db.collection('blocks').saveAll([
     {
@@ -311,6 +318,16 @@ export async function nua1(): Promise<void> {
     fullsize: true,
     parentOrder: 0
   })
+  await db.collection('blocks').update(video1._id, {
+    action: {
+      parentBlockId: video1._id,
+      gtmEventName: 'NavigateAction',
+      blockId: null,
+      journeyId: null,
+      url: null,
+      target: null
+    }
+  })
 
   // fifth step
   const step5 = await db.collection('blocks').save({
@@ -319,7 +336,6 @@ export async function nua1(): Promise<void> {
     locked: false,
     parentOrder: 4
   })
-  await db.collection('blocks').update(step4._key, { nextBlockId: step5._key })
 
   await db.collection('blocks').save({
     journeyId: journey._key,
@@ -398,7 +414,6 @@ export async function nua1(): Promise<void> {
     locked: false,
     parentOrder: 5
   })
-  await db.collection('blocks').update(step5._key, { nextBlockId: step6._key })
 
   const button2 = await db.collection('blocks').save({
     journeyId: journey._key,
