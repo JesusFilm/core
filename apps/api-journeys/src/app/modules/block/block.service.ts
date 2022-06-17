@@ -100,7 +100,9 @@ export class BlockService extends BaseService {
         journeyId,
         block.parentBlockId ?? null
       )
-      const duplicateBlockAndChildren = await this.saveAll(blockAndChildrenData)
+      const duplicateBlockAndChildren: Block[] = await this.saveAll(
+        blockAndChildrenData
+      )
       const duplicatedBlock = {
         ...duplicateBlockAndChildren[0],
         _key: duplicateBlockAndChildren[0].id
@@ -116,7 +118,7 @@ export class BlockService extends BaseService {
           ? Math.min(Math.max(parentOrder, 0), siblings.length + 1)
           : siblings.length + 1
       siblings.splice(insertIndex, 0, duplicatedBlock)
-      const reorderedBlocks = await this.reorderSiblings(siblings)
+      const reorderedBlocks: Block[] = await this.reorderSiblings(siblings)
 
       return reorderedBlocks.concat(duplicatedChildren)
     }
@@ -139,7 +141,6 @@ export class BlockService extends BaseService {
     const duplicateBlockId = duplicateId ?? uuidv4()
 
     const children = await this.getBlocksForParentId(block.id, journeyId)
-    // console.log('children', block.id, children)
     const childIds = new Map()
     children.forEach((block) => {
       childIds.set(block.id, uuidv4())
