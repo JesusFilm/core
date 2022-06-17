@@ -1,10 +1,13 @@
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
+import { useSnackbar } from 'notistack'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { PowerBiReportProps } from '../PowerBiReport/PowerBiReport'
+import { ReportSkeleton } from '../PowerBiReport/ReportSkeleton'
 
 export function JourneysFullReport(): ReactElement {
+  const { enqueueSnackbar } = useSnackbar()
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
 
@@ -14,6 +17,10 @@ export function JourneysFullReport(): ReactElement {
 
   function onError(): void {
     setError(true)
+    enqueueSnackbar('Error loading Analytics', {
+      variant: 'error',
+      preventDuplicate: true
+    })
   }
 
   // powerbi needs dynamic import, see issue: https://github.com/microsoft/powerbi-client-react/issues/65
@@ -28,8 +35,12 @@ export function JourneysFullReport(): ReactElement {
 
   return (
     <>
-      {!loaded && !error && <div>Loading...</div>}
-      {error && <div>Error</div>}
+      {!loaded && !error && (
+        <ReportSkeleton message={'The analytics are loading...'} />
+      )}
+      {error && (
+        <ReportSkeleton message={'There was an error loading the report'} />
+      )}
       <div style={{ visibility: loaded && !error ? undefined : 'hidden' }}>
         <Box
           sx={{
