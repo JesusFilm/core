@@ -66,6 +66,14 @@ export abstract class BaseService {
     return result.new
   }
 
+  @IdAsKey()
+  async saveAll<T>(arr: T[]): Promise<T[]> {
+    const result = await this.collection.saveAll(arr, {
+      returnNew: true
+    })
+    return result.map((item) => item.new)
+  }
+
   @KeyAsId()
   async remove<T>(_key: string): Promise<T> {
     const result = await this.collection.remove(_key, { returnOld: true })
