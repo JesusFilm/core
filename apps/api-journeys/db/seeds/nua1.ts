@@ -420,8 +420,7 @@ export async function nua1(): Promise<void> {
     __typename: 'IconBlock',
     parentBlockId: button2._key,
     name: 'ContactSupportRounded',
-    size: 'md',
-    parentOrder: 4
+    size: 'md'
   })
   const icon2b = await db.collection('blocks').save({
     journeyId: journey._key,
