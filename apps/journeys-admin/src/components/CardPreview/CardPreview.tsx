@@ -81,7 +81,8 @@ export function CardPreview({
         journeyId: journey.id,
         stepId,
         cardId,
-        parentOrder: selected?.parentOrder
+        parentOrder:
+          selected?.parentOrder != null ? selected.parentOrder + 1 : null
       },
       update(cache, { data }) {
         if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
@@ -89,8 +90,43 @@ export function CardPreview({
             id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = []) {
+                // update existing parentOrder in cache
+                if (selected?.parentOrder != null) {
+                  existingBlockRefs.forEach((blockRef) => {
+                    if ((blockRef.__ref as string).startsWith('StepBlock:')) {
+                      const stepBlock = cache.readFragment<StepBlock>({
+                        id: blockRef.__ref,
+                        fragment: gql`
+                          fragment StepBlock on StepBlock {
+                            parentOrder
+                          }
+                        `
+                      })
+                      console.log(stepBlock)
+                      if (
+                        stepBlock?.parentOrder != null &&
+                        selected?.parentOrder != null &&
+                        stepBlock.parentOrder > selected.parentOrder
+                      ) {
+                        cache.writeFragment({
+                          id: blockRef.__ref,
+                          fragment: gql`
+                            fragment StepBlock on StepBlock {
+                              parentOrder
+                            }
+                          `,
+                          data: {
+                            parentOrder: stepBlock.parentOrder + 1
+                          }
+                        })
+                      }
+                    }
+                  })
+                }
                 const newStepBlockRef = cache.writeFragment({
-                  data: data.stepBlockCreate,
+                  data: {
+                    ...data.stepBlockCreate
+                  },
                   fragment: gql`
                     fragment NewBlock on Block {
                       id
