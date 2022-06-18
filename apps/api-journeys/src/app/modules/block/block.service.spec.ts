@@ -4,6 +4,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
   mockCollectionRemoveResult,
   mockCollectionSaveResult,
+  mockCollectionSaveAllResult,
   mockCollectionUpdateAllResult,
   mockDbQueryResult
 } from '@core/nest/database'
@@ -134,6 +135,23 @@ describe('BlockService', () => {
     })
   })
 
+  describe('saveAll', () => {
+    beforeEach(() => {
+      ;(
+        service.collection as DeepMockProxy<DocumentCollection>
+      ).saveAll.mockReturnValue(
+        mockCollectionSaveAllResult(service.collection, [block, block])
+      )
+    })
+
+    it('should return saved blocks', async () => {
+      expect(await service.saveAll([block, block])).toEqual([
+        blockWithId,
+        blockWithId
+      ])
+    })
+  })
+
   describe('update', () => {
     beforeEach(() => {
       ;(
@@ -156,16 +174,16 @@ describe('BlockService', () => {
       ])
       expect(
         await service.reorderSiblings([
-          { _key: block._key, parentOrder: 2 },
-          { _key: block._key, parentOrder: 3 }
+          { ...block, id: block._key, parentOrder: 2 },
+          { ...block, id: block._key, parentOrder: 3 }
         ])
       ).toEqual([
         { ...block, parentOrder: 0 },
         { ...block, parentOrder: 1 }
       ])
       expect(service.updateAll).toHaveBeenCalledWith([
-        { _key: block._key, parentOrder: 0 },
-        { _key: block._key, parentOrder: 1 }
+        { ...block, id: block._key, parentOrder: 0 },
+        { ...block, id: block._key, parentOrder: 1 }
       ])
     })
   })
@@ -267,7 +285,10 @@ describe('BlockService', () => {
           { _key: block._key, new: block }
         ])
       )
-      const siblings = [blockWithId, blockWithId] as Block[]
+      const siblings = [
+        { ...block, id: block._key },
+        { ...block, id: block._key }
+      ]
 
       service.getSiblingsInternal = jest.fn(
         async () => await Promise.resolve(siblings)
