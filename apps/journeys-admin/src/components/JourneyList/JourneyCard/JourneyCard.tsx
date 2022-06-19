@@ -31,10 +31,6 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
         borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
-        '&:first-of-type': {
-          borderTopLeftRadius: { xs: 0, sm: 12 },
-          borderTopRightRadius: { xs: 0, sm: 12 }
-        },
         '&:last-child': {
           borderBottomLeftRadius: { xs: 0, sm: 12 },
           borderBottomRightRadius: { xs: 0, sm: 12 },

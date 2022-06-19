@@ -1,11 +1,50 @@
 import { formatISO, startOfYear } from 'date-fns'
 
-import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import {
+  GetJourneys_journeys as Journey,
+  GetJourneys_journeys_userJourneys as User
+} from '../../../__generated__/GetJourneys'
 import {
   ThemeName,
   ThemeMode,
   JourneyStatus
 } from '../../../__generated__/globalTypes'
+
+const userJourneys: User[] = [
+  {
+    __typename: 'UserJourney',
+    id: 'user-journey-id',
+    user: {
+      __typename: 'User',
+      id: 'user-id1',
+      firstName: 'Amin',
+      lastName: 'One',
+      imageUrl: 'https://bit.ly/3Gth4Yf'
+    }
+  },
+  {
+    __typename: 'UserJourney',
+    id: 'user-journey-id2',
+    user: {
+      __typename: 'User',
+      id: 'user-id2',
+      firstName: 'Horace',
+      lastName: 'Two',
+      imageUrl: 'https://bit.ly/3rgHd6a'
+    }
+  },
+  {
+    __typename: 'UserJourney',
+    id: 'user-journey-id3',
+    user: {
+      __typename: 'User',
+      id: 'user-id3',
+      firstName: 'Coral',
+      lastName: 'Three',
+      imageUrl: 'https://bit.ly/3nlwUwJ'
+    }
+  }
+]
 
 export const defaultJourney: Journey = {
   __typename: 'Journey',
@@ -31,41 +70,7 @@ export const defaultJourney: Journey = {
   status: JourneyStatus.draft,
   seoTitle: null,
   seoDescription: null,
-  userJourneys: [
-    {
-      __typename: 'UserJourney',
-      id: 'user-journey-id',
-      user: {
-        __typename: 'User',
-        id: 'user-id1',
-        firstName: 'Amin',
-        lastName: 'One',
-        imageUrl: 'https://bit.ly/3Gth4Yf'
-      }
-    },
-    {
-      __typename: 'UserJourney',
-      id: 'user-journey-id2',
-      user: {
-        __typename: 'User',
-        id: 'user-id2',
-        firstName: 'Horace',
-        lastName: 'Two',
-        imageUrl: 'https://bit.ly/3rgHd6a'
-      }
-    },
-    {
-      __typename: 'UserJourney',
-      id: 'user-journey-id3',
-      user: {
-        __typename: 'User',
-        id: 'user-id3',
-        firstName: 'Coral',
-        lastName: 'Three',
-        imageUrl: 'https://bit.ly/3nlwUwJ'
-      }
-    }
-  ]
+  userJourneys: userJourneys
 }
 
 export const oldJourney: Journey = {
@@ -109,5 +114,54 @@ export const descriptiveJourney: Journey = {
         primary: false
       }
     ]
-  }
+  },
+  userJourneys: [
+    ...userJourneys,
+    {
+      __typename: 'UserJourney',
+      id: 'user-journey-id4',
+      user: {
+        __typename: 'User',
+        id: 'user-id4',
+        firstName: 'Box',
+        lastName: 'Four',
+        imageUrl: 'https://shorturl.at/itLUY'
+      }
+    },
+    {
+      __typename: 'UserJourney',
+      id: 'user-journey-id5',
+      user: {
+        __typename: 'User',
+        id: 'user-id5',
+        firstName: 'John',
+        lastName: 'Five',
+        imageUrl: 'https://shorturl.at/mEMU8'
+      }
+    },
+    {
+      __typename: 'UserJourney',
+      id: 'user-journey-id6',
+      user: {
+        __typename: 'User',
+        id: 'user-id6',
+        firstName: 'Jane',
+        lastName: 'Six',
+        imageUrl: 'https://shorturl.at/fhjmK'
+      }
+    },
+    {
+      __typename: 'UserJourney',
+      id: 'user-journey-id7',
+      user: {
+        __typename: 'User',
+        id: 'user-id7',
+        firstName: 'Jannet',
+        lastName: 'Seven',
+        imageUrl: 'https://shorturl.at/qsH49'
+      }
+    }
+  ]
 }
+
+// https://source.unsplash.com/100x100
