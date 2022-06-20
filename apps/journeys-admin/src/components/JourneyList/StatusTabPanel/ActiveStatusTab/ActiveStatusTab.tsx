@@ -43,14 +43,21 @@ const GET_ACTIVE_JOURNEYS = gql`
 `
 
 interface ActiveStatusTabProps {
+  onLoad: () => void
   sortOrder?: SortOrder
 }
 
 export function ActiveStatusTab({
+  onLoad,
   sortOrder
 }: ActiveStatusTabProps): ReactElement {
-  const { data } = useQuery<GetActiveJourneys>(GET_ACTIVE_JOURNEYS)
+  const { data, loading, error } =
+    useQuery<GetActiveJourneys>(GET_ACTIVE_JOURNEYS)
   const journeys = data?.journeys
+
+  if (!loading && error == null) {
+    onLoad()
+  }
 
   // orders of the first characters ascii value
   const sortedJourneys =

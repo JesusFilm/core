@@ -8,35 +8,35 @@ import {
   descriptiveJourney,
   publishedJourney
 } from '../../journeyListData'
-import { StatusTabProps } from './StatusTab'
-import { StatusTab } from '.'
+import { ActiveStatusTabProps } from './ActiveStatusTab'
+import { ActiveStatusTab } from '.'
 
-const StatusTabStory = {
+const ActiveStatusTabStory = {
   ...journeysAdminConfig,
-  component: StatusTab,
-  title: 'Journeys-Admin/JourneyList/StatusTabPanel/StatusTab',
+  component: ActiveStatusTab,
+  title: 'Journeys-Admin/JourneyList/ActiveStatusTabPanel/ActiveStatusTab',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-const Template: Story<StatusTabProps> = ({ ...args }) => (
+const Template: Story<ActiveStatusTabProps> = ({ ...args }) => (
   <MockedProvider>
-    <StatusTab {...args} />
+    <ActiveStatusTab {...args} />
   </MockedProvider>
 )
 
 export const Default = Template.bind({})
-Default.args = {
-  journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney],
-  disableCreation: true
-}
+// Default.args = {
+//   journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney],
+//   disableCreation: true
+// }
 
 export const NoJourneys = Template.bind({})
-NoJourneys.args = {
-  journeys: [],
-  disableCreation: true
-}
+// NoJourneys.args = {
+//   journeys: [],
+//   disableCreation: true
+// }
 
-export default StatusTabStory as Meta
+export default ActiveStatusTabStory as Meta
