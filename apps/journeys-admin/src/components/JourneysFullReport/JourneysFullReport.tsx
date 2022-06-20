@@ -44,7 +44,7 @@ export function JourneysFullReport(): ReactElement {
       <div style={{ visibility: loaded && !error ? undefined : 'hidden' }}>
         <Box
           sx={{
-            height: '93vh',
+            height: loaded && !error ? '93vh' : '0',
             '> div': { height: '100%' }
           }}
         >

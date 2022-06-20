@@ -54,7 +54,12 @@ export function PowerBiReport({
   }
 
   return (
-    <Box data-testid={`powerBi-${reportType}-report`}>
+    <Box
+      data-testid={`powerBi-${reportType}-report`}
+      sx={{
+        '> div': { height: '100%' }
+      }}
+    >
       <PowerBIEmbed {...embedProps} />
     </Box>
   )
