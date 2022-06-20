@@ -102,7 +102,6 @@ export function CardPreview({
                           }
                         `
                       })
-                      console.log(stepBlock)
                       if (
                         stepBlock?.parentOrder != null &&
                         selected?.parentOrder != null &&
