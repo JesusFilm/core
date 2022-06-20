@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import fetch from 'node-fetch'
 import noop from 'lodash/noop'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
@@ -12,32 +13,46 @@ const PowerBiReportStory = {
   title: 'Journeys-Admin/PowerBiReport'
 }
 
-const Template: Story = ({ ...args }: PowerBiReportProps) => (
+const Template: Story = (
+  { ...args }: PowerBiReportProps,
+  { loaded: { embedUrl, accessToken } }
+) => (
   <MockedProvider
-  // mocks={[
-  //   {
-  //     request: {
-  //       query: GET_ADMIN_JOURNEYS_REPORT,
-  //       variables: { reportType: JourneysReportType.multipleFull }
-  //     },
-  //     result: {
-  //       data: {
-  //         adminJourneysReport: {
-  //           embedUrl:
-  //             'https://app.powerbi.com/reportEmbed?reportId=f6bfd…leHQiOnRydWUsInNraXBab25lUGF0Y2giOnRydWV9fQ%3d%3d',
-  //           accessToken:
-  //             'H4sIAAAAAAAEACWWxc7GjK2E7-XfplKYKnURZubswoxvuDr3fj…lbWJlZEZlYXR1cmVzIjp7Im1vZGVybkVtYmVkIjpmYWxzZX19'
-  //         }
-  //       }
-  //     }
-  //   }
-  // ]}
+    mocks={[
+      {
+        request: {
+          query: GET_ADMIN_JOURNEYS_REPORT,
+          variables: { reportType: JourneysReportType.multipleFull }
+        },
+        result: {
+          data: {
+            adminJourneysReport: {
+              embedUrl,
+              accessToken
+            }
+          }
+        }
+      }
+    ]}
   >
     <PowerBiReport {...args} />
   </MockedProvider>
 )
 
 export const Default = Template.bind({})
+Default.loaders = [
+  async () => {
+    const response = await (
+      await fetch(
+        'https://playgroundbe-bck-1.azurewebsites.net/Reports/SampleReport'
+      )
+    ).json()
+    return {
+      embedUrl: response.EmbedUrl,
+      accessToken: response.EmbedToken.Token
+    }
+  }
+]
 Default.args = {
   reportType: JourneysReportType.multipleFull,
   onLoad: noop,

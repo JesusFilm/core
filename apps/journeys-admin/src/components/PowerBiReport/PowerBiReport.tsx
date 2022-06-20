@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { EmbedProps, PowerBIEmbed } from 'powerbi-client-react'
 import { models } from 'powerbi-client'
 import { gql, useQuery } from '@apollo/client'
@@ -26,12 +26,10 @@ export function PowerBiReport({
   onLoad,
   onError
 }: PowerBiReportProps): ReactElement {
-  const { data, error } = useQuery<GetAdminJourneysReport>(
-    GET_ADMIN_JOURNEYS_REPORT,
-    {
-      variables: { reportType }
-    }
-  )
+  const { data } = useQuery<GetAdminJourneysReport>(GET_ADMIN_JOURNEYS_REPORT, {
+    variables: { reportType },
+    onError
+  })
 
   const embedProps: EmbedProps = {
     embedConfig: {
@@ -54,12 +52,6 @@ export function PowerBiReport({
       ['error', onError]
     ])
   }
-
-  useEffect(() => {
-    if (error != null) {
-      onError()
-    }
-  }, [error, onError])
 
   return (
     <Box data-testid={`powerBi-${reportType}-report`}>
