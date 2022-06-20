@@ -34,8 +34,15 @@ export interface CardPreviewProps {
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
   ${STEP_FIELDS}
   ${CARD_FIELDS}
-  mutation StepAndCardBlockCreate($journeyId: ID!, $stepId: ID!, $cardId: ID) {
-    stepBlockCreate(input: { id: $stepId, journeyId: $journeyId }) {
+  mutation StepAndCardBlockCreate(
+    $journeyId: ID!
+    $stepId: ID!
+    $cardId: ID
+    $parentOrder: Int
+  ) {
+    stepBlockCreate(
+      input: { id: $stepId, journeyId: $journeyId, parentOrder: $parentOrder }
+    ) {
       ...StepFields
     }
     cardBlockCreate(
@@ -73,7 +80,9 @@ export function CardPreview({
       variables: {
         journeyId: journey.id,
         stepId,
-        cardId
+        cardId,
+        parentOrder:
+          selected?.parentOrder != null ? selected.parentOrder + 1 : null
       },
       update(cache, { data }) {
         if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
@@ -81,8 +90,43 @@ export function CardPreview({
             id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = []) {
+                // update existing parentOrder in cache
+                if (selected?.parentOrder != null) {
+                  existingBlockRefs.forEach((blockRef) => {
+                    if ((blockRef.__ref as string).startsWith('StepBlock:')) {
+                      const stepBlock = cache.readFragment<StepBlock>({
+                        id: blockRef.__ref,
+                        fragment: gql`
+                          fragment StepBlock on StepBlock {
+                            parentOrder
+                          }
+                        `
+                      })
+                      console.log(stepBlock)
+                      if (
+                        stepBlock?.parentOrder != null &&
+                        selected?.parentOrder != null &&
+                        stepBlock.parentOrder > selected.parentOrder
+                      ) {
+                        cache.writeFragment({
+                          id: blockRef.__ref,
+                          fragment: gql`
+                            fragment StepBlock on StepBlock {
+                              parentOrder
+                            }
+                          `,
+                          data: {
+                            parentOrder: stepBlock.parentOrder + 1
+                          }
+                        })
+                      }
+                    }
+                  })
+                }
                 const newStepBlockRef = cache.writeFragment({
-                  data: data.stepBlockCreate,
+                  data: {
+                    ...data.stepBlockCreate
+                  },
                   fragment: gql`
                     fragment NewBlock on Block {
                       id
@@ -114,37 +158,37 @@ export function CardPreview({
     }
   }
 
+  const AddCardSlide = (): ReactElement => (
+    <Card
+      id="CardPreviewAddButton"
+      variant="outlined"
+      sx={{
+        display: 'flex',
+        width: 87,
+        height: 132,
+        m: 1
+      }}
+    >
+      <CardActionArea
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+        onClick={handleClick}
+      >
+        <AddIcon color="primary" />
+      </CardActionArea>
+    </Card>
+  )
   return (
     <>
       {steps != null ? (
         <HorizontalSelect
           onChange={handleChange}
           id={selected?.id}
-          footer={
-            showAddButton === true && (
-              <Card
-                id="CardPreviewAddButton"
-                variant="outlined"
-                sx={{
-                  display: 'flex',
-                  width: 87,
-                  height: 132,
-                  m: 1
-                }}
-              >
-                <CardActionArea
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                  }}
-                  onClick={handleClick}
-                >
-                  <AddIcon color="primary" />
-                </CardActionArea>
-              </Card>
-            )
-          }
+          insert={showAddButton === true && <AddCardSlide />}
+          insertPosition={steps.findIndex(({ id }) => id === selected?.id)}
         >
           {steps.map((step) => (
             <Box
