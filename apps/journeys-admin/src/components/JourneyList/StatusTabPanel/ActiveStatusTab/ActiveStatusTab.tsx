@@ -8,7 +8,7 @@ import { JourneyCard } from '../../JourneyCard'
 import { AddJourneyButton } from '../../AddJourneyButton'
 import { SortOrder } from '../../JourneySort'
 
-const GET_ACTIVE_JOURNEYS = gql`
+export const GET_ACTIVE_JOURNEYS = gql`
   query GetActiveJourneys {
     journeys: adminJourneys {
       id

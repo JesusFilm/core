@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
-
 import { MockedProvider } from '@apollo/client/testing'
+import noop from 'lodash/noop'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import {
   defaultJourney,
@@ -8,7 +8,7 @@ import {
   descriptiveJourney,
   publishedJourney
 } from '../../journeyListData'
-import { ActiveStatusTabProps } from './ActiveStatusTab'
+import { GET_ACTIVE_JOURNEYS } from './ActiveStatusTab'
 import { ActiveStatusTab } from '.'
 
 const ActiveStatusTabStory = {
@@ -21,22 +21,61 @@ const ActiveStatusTabStory = {
   }
 }
 
-const Template: Story<ActiveStatusTabProps> = ({ ...args }) => (
-  <MockedProvider>
-    <ActiveStatusTab {...args} />
+const Template: Story = ({ ...args }) => (
+  <MockedProvider mocks={args.mocks}>
+    <ActiveStatusTab {...args.props} />
   </MockedProvider>
 )
 
 export const Default = Template.bind({})
-// Default.args = {
-//   journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney],
-//   disableCreation: true
-// }
+Default.args = {
+  props: {
+    onLoad: noop
+  },
+  mocks: [
+    {
+      request: {
+        query: GET_ACTIVE_JOURNEYS
+      },
+      result: {
+        data: {
+          journeys: [
+            defaultJourney,
+            oldJourney,
+            descriptiveJourney,
+            publishedJourney
+          ]
+        }
+      }
+    }
+  ]
+}
 
 export const NoJourneys = Template.bind({})
-// NoJourneys.args = {
-//   journeys: [],
-//   disableCreation: true
-// }
+NoJourneys.args = {
+  props: {
+    onLoad: noop
+  },
+  mocks: [
+    {
+      request: {
+        query: GET_ACTIVE_JOURNEYS
+      },
+      result: {
+        data: {
+          journeys: []
+        }
+      }
+    }
+  ]
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  props: {
+    onLoad: noop
+  },
+  mocks: []
+}
 
 export default ActiveStatusTabStory as Meta

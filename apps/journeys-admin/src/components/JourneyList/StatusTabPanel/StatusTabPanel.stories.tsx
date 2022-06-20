@@ -8,7 +8,7 @@ import {
   descriptiveJourney,
   publishedJourney
 } from '../journeyListData'
-import { StatusTabPanelProps } from './StatusTabPanel'
+import { GET_ACTIVE_JOURNEYS } from './ActiveStatusTab/ActiveStatusTab'
 import { StatusTabPanel } from '.'
 
 const StatusTabPanelStory = {
@@ -21,16 +21,36 @@ const StatusTabPanelStory = {
   }
 }
 
-const Template: Story<StatusTabPanelProps> = ({ ...args }) => (
-  <MockedProvider>
-    <StatusTabPanel {...args} />
+const Template: Story = ({ ...args }) => (
+  <MockedProvider mocks={args.mocks}>
+    <StatusTabPanel />
   </MockedProvider>
 )
 
 export const Default = Template.bind({})
 Default.args = {
-  journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney],
-  disableCreation: true
+  mocks: [
+    {
+      request: {
+        query: GET_ACTIVE_JOURNEYS
+      },
+      result: {
+        data: {
+          journeys: [
+            defaultJourney,
+            oldJourney,
+            descriptiveJourney,
+            publishedJourney
+          ]
+        }
+      }
+    }
+  ]
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  mocks: []
 }
 
 export default StatusTabPanelStory as Meta
