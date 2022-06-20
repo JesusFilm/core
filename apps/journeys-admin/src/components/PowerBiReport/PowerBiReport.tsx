@@ -2,13 +2,13 @@ import { ReactElement, useEffect } from 'react'
 import { EmbedProps, PowerBIEmbed } from 'powerbi-client-react'
 import { models } from 'powerbi-client'
 import { gql, useQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { GetAdminJourneysReport } from '../../../__generated__/GetAdminJourneysReport'
 
-const GET_ADMIN_JOURNEYS_REPORT = gql`
+export const GET_ADMIN_JOURNEYS_REPORT = gql`
   query GetAdminJourneysReport($reportType: JourneysReportType!) {
     adminJourneysReport(reportType: $reportType) {
-      reportId
       embedUrl
       accessToken
     }
@@ -62,8 +62,8 @@ export function PowerBiReport({
   }, [error, onError])
 
   return (
-    <>
+    <Box data-testid={`powerBi-${reportType}-report`}>
       <PowerBIEmbed {...embedProps} />
-    </>
+    </Box>
   )
 }

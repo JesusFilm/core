@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
 import './test/createMatchMedia'
+import crypto from 'crypto'
 import { configure } from '@testing-library/react'
 
 configure({ asyncUtilTimeout: 2500 })
@@ -15,3 +16,9 @@ jest.mock('next/image', () => ({
 jest.setTimeout(10000)
 
 Element.prototype.scrollIntoView = jest.fn()
+
+Object.defineProperty(window.self, 'crypto', {
+  value: {
+    getRandomValues: (arr) => crypto.randomBytes(arr.length)
+  }
+})
