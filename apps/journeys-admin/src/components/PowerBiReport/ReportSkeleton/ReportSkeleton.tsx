@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-interface ReportSkeletonProps {
+export interface ReportSkeletonProps {
   message: string
 }
 
