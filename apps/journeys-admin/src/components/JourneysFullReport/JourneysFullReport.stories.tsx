@@ -12,8 +12,7 @@ const JourneysFullReportStory = {
   title: 'Journeys-Admin/JourneysFullReport'
 }
 
-const Template: Story = ({ loaded }) => {
-  console.log(loaded)
+const Template: Story = (_args, { loaded }) => {
   return (
     <MockedProvider
       mocks={[
