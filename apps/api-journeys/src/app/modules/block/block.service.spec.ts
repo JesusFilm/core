@@ -316,6 +316,7 @@ describe('BlockService', () => {
       )
       service.getSiblingsInternal = jest.fn().mockReturnValue([
         { ...block, id: block._key },
+        { ...duplicatedBlock, id: duplicatedBlock._key },
         { ...block2, id: block2._key }
       ])
       service.getDuplicateBlockAndChildren = jest.fn().mockReturnValue([
@@ -370,12 +371,12 @@ describe('BlockService', () => {
       ])
     })
 
-    it('should add duplicate block at start if parentOrder is negative', async () => {
+    it('should add duplicate block from end if parentOrder is negative', async () => {
       await service.duplicateBlock(block._key, journey.id, -1)
 
       expect(service.reorderSiblings).toHaveBeenCalledWith([
-        { ...duplicatedBlock, id: duplicatedBlock._key },
         { ...block, id: block._key },
+        { ...duplicatedBlock, id: duplicatedBlock._key },
         { ...block2, id: block2._key }
       ])
     })
