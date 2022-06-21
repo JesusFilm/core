@@ -16,14 +16,26 @@
     "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
-      "@core/apollo/logging": ["libs/apollo/logging/src/index.ts"],
+      "@core/apollo/logging": [
+        "libs/apollo/logging/src/lib/apolloWinstonLoggingPlugin/index.ts"
+      ],
       "@core/journeys/ui": ["libs/journeys/ui/src/index.ts"],
       "@core/nest/database": ["libs/nest/database/src/index.ts"],
-      "@core/nest/decorators": ["libs/nest/decorators/src/index.ts"],
-      "@core/nest/gqlAuthGuard": ["libs/nest/gqlAuthGuard/src/index.ts"],
-      "@core/shared/storybook": ["libs/shared/storybook/src/index.ts"],
+      "@core/nest/decorators": [
+        "libs/nest/decorators/src/lib/CurrentUserId/index.ts",
+        "libs/nest/decorators/src/lib/IdAsKey/index.ts",
+        "libs/nest/decorators/src/lib/KeyAsId/index.ts",
+        "libs/nest/decorators/src/lib/Omit/index.ts",
+        "libs/nest/decorators/src/lib/TranslationField/index.ts"
+      ],
+      "@core/nest/gqlAuthGuard": [
+        "libs/nest/gqlAuthGuard/src/lib/GqlAuthGuard/index.ts"
+      ],
+      "@core/shared/storybook": [],
       "@core/shared/ui": ["libs/shared/ui/src/index.ts"],
-      "@core/shared/util-graphql": ["libs/shared/util-graphql/src/index.ts"]
+      "@core/shared/util-graphql": [
+        "libs/shared/util-graphql/src/lib/schemaBuilder/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]
