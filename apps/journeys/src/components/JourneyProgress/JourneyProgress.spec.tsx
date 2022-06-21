@@ -9,23 +9,6 @@ describe('JourneyProgress', () => {
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0')
   })
 
-  it('returns 100 when nextBlockId not set on activeBlock', () => {
-    const activeBlock: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'Step1',
-      parentBlockId: null,
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
-    activeBlockVar(activeBlock)
-    const blocks: TreeBlock[] = [activeBlock]
-    treeBlocksVar(blocks)
-    const { getByRole } = render(<JourneyProgress />)
-    expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100')
-  })
-
   it('returns 0 when activeBlock not part of treeBlocks', () => {
     const activeBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
