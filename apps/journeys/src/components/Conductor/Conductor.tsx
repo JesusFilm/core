@@ -23,6 +23,7 @@ import { gql, useMutation } from '@apollo/client'
 import Div100vh from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
+import last from 'lodash/last'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { BlockFields_CardBlock as CardBlock } from '../../../__generated__/BlockFields'
 import { JourneyProgress } from '../JourneyProgress'
@@ -48,6 +49,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const breakpoints = useBreakpoints()
   const theme = useTheme()
   const { journey, admin } = useJourney()
+  const lastStep = last(treeBlocks)
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -264,8 +266,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 data-testid="conductorNextButton"
                 onClick={handleNext}
                 disabled={
-                  activeBlock?.locked === true ||
-                  activeBlock?.nextBlockId == null
+                  activeBlock?.locked === true || lastStep === activeBlock
                 }
                 disableRipple
                 sx={{
