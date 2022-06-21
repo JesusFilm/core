@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
-import { KeyAsId, idAsKey } from '@core/nest/decorators'
+import { KeyAsId } from '@core/nest/decorators/KeyAsId'
+import { idAsKey } from '@core/nest/decorators/IdAsKey'
 
 import { Block, Journey } from '../../__generated__/graphql'
 

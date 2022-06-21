@@ -3,7 +3,8 @@ import { DocumentCollection } from 'arangojs/collection'
 import { aql, Database } from 'arangojs'
 import { DeepMockProxy } from 'jest-mock-extended'
 import { DocumentData, Patch } from 'arangojs/documents'
-import { KeyAsId, IdAsKey } from '@core/nest/decorators'
+import { KeyAsId } from '@core/nest/decorators/KeyAsId'
+import { IdAsKey } from '@core/nest/decorators/IdAsKey'
 
 @Injectable()
 export abstract class BaseService {

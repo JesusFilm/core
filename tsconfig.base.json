@@ -16,18 +16,10 @@
     "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
-      "@core/apollo/logging": [
-        "libs/apollo/logging/src/lib/apolloWinstonLoggingPlugin/index.ts"
-      ],
+      "@core/apollo/logging/*": ["libs/apollo/logging/src/lib/*"],
       "@core/journeys/ui": ["libs/journeys/ui/src/index.ts"],
       "@core/nest/database": ["libs/nest/database/src/index.ts"],
-      "@core/nest/decorators": [
-        "libs/nest/decorators/src/lib/CurrentUserId/index.ts",
-        "libs/nest/decorators/src/lib/IdAsKey/index.ts",
-        "libs/nest/decorators/src/lib/KeyAsId/index.ts",
-        "libs/nest/decorators/src/lib/Omit/index.ts",
-        "libs/nest/decorators/src/lib/TranslationField/index.ts"
-      ],
+      "@core/nest/decorators/*": ["libs/nest/decorators/src/lib/*"],
       "@core/nest/gqlAuthGuard": [
         "libs/nest/gqlAuthGuard/src/lib/GqlAuthGuard/index.ts"
       ],

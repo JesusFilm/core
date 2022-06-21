@@ -1,5 +1,5 @@
 import { Resolver, Query, ResolveReference } from '@nestjs/graphql'
-import { CurrentUserId } from '@core/nest/decorators'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
 import { User } from '../../__generated__/graphql'

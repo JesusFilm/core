@@ -1,5 +1,5 @@
 import { BaseService } from '@core/nest/database'
-import { KeyAsId } from '@core/nest/decorators'
+import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'

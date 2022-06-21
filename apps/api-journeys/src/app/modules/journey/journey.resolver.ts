@@ -6,7 +6,7 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql'
-import { CurrentUserId } from '@core/nest/decorators'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import slugify from 'slugify'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'

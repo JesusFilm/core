@@ -9,7 +9,7 @@ import {
   mockDbQueryResult
 } from '@core/nest/database'
 import { DocumentCollection } from 'arangojs/collection'
-import { keyAsId } from '@core/nest/decorators'
+import { keyAsId } from '@core/nest/decorators/KeyAsId'
 
 import {
   Journey,
