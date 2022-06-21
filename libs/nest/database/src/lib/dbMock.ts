@@ -33,6 +33,19 @@ export const mockCollectionSaveResult = async <T>(
     new: result
   })
 
+export const mockCollectionSaveAllResult = async <T>(
+  collection: DocumentCollection,
+  results: Array<T & { _key: string }>
+): Promise<Array<DocumentMetadata & { new?: Document }>> =>
+  await Promise.resolve(
+    results.map((result) => ({
+      _key: result._key,
+      _id: `${collection.name}/${result._key}`,
+      _rev: '1',
+      new: result
+    }))
+  )
+
 export const mockCollectionRemoveResult = async <T>(
   collection: DocumentCollection,
   result: T & { _key: string }

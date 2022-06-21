@@ -30,11 +30,16 @@ export function Cards(): ReactElement {
   } = useEditor()
   const { journey } = useJourney()
   const theme = useTheme()
-  const { id, nextBlockId } = selectedBlock as TreeBlock<StepFields>
+  const { id, nextBlockId, parentOrder } =
+    selectedBlock as TreeBlock<StepFields>
 
-  const nextStep: TreeBlock<StepFields> | undefined = steps?.find(
-    ({ id }) => nextBlockId === id
-  )
+  let nextStep: TreeBlock<StepFields> | undefined
+
+  if (nextBlockId == null && steps != null && parentOrder != null) {
+    nextStep = steps[parentOrder + 1]
+  } else {
+    nextStep = steps?.find(({ id }) => nextBlockId === id)
+  }
 
   async function handleSelectStep(step: TreeBlock<StepFields>): Promise<void> {
     if (journey == null) return
