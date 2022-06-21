@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import Card from '@mui/material/Card'
 import { gql, useQuery } from '@apollo/client'
 import Typography from '@mui/material/Typography'
@@ -55,9 +55,11 @@ export function ActiveStatusTab({
     useQuery<GetActiveJourneys>(GET_ACTIVE_JOURNEYS)
   const journeys = data?.journeys
 
-  if (!loading && error == null) {
-    onLoad()
-  }
+  useEffect(() => {
+    if (!loading && error == null) {
+      onLoad()
+    }
+  }, [onLoad, loading, error])
 
   // orders of the first characters ascii value
   const sortedJourneys =

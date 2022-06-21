@@ -48,7 +48,6 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
   function activeTabOnLoad(): void {
     setActiveTabLoaded(true)
   }
-
   useEffect(() => {
     if (activeTabLoaded) {
       setTabsLoaded(true)

@@ -61,17 +61,36 @@ describe('StatusTabPanel', () => {
     expect(getByRole('tab', { name: 'Active' })).toBeDisabled()
   })
 
-  it('should not change tab if clicking a already selected tab', () => {
+  it('should not change tab if clicking a already selected tab', async () => {
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ACTIVE_JOURNEYS
+            },
+            result: {
+              data: {
+                journeys: [defaultJourney]
+              }
+            }
+          }
+        ]}
+      >
         <ThemeProvider>
           <StatusTabPanel />
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getByRole('tab')).toHaveAttribute('aria-selected', 'true')
+    expect(getByRole('tab', { name: 'Active' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
     fireEvent.click(getByRole('tab', { name: 'Active' }))
-    expect(getByRole('tab')).toHaveAttribute('aria-selected', 'true')
+    expect(getByRole('tab', { name: 'Active' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 
   it('should show active tab on default', () => {
@@ -82,13 +101,29 @@ describe('StatusTabPanel', () => {
     } as unknown as NextRouter
 
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ACTIVE_JOURNEYS
+            },
+            result: {
+              data: {
+                journeys: [defaultJourney]
+              }
+            }
+          }
+        ]}
+      >
         <ThemeProvider>
           <StatusTabPanel router={router} />
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getByRole('tab')).toHaveAttribute('aria-selected', 'true')
+    expect(getByRole('tab', { name: 'Active' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 
   it('should set active tab based on url query params', () => {
@@ -99,12 +134,28 @@ describe('StatusTabPanel', () => {
     } as unknown as NextRouter
 
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ACTIVE_JOURNEYS
+            },
+            result: {
+              data: {
+                journeys: [defaultJourney]
+              }
+            }
+          }
+        ]}
+      >
         <ThemeProvider>
           <StatusTabPanel router={router} />
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getByRole('tab')).toHaveAttribute('aria-selected', 'true')
+    expect(getByRole('tab', { name: 'Active' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 })
