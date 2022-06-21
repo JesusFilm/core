@@ -109,14 +109,17 @@ export class BlockService extends BaseService {
       }
       const duplicatedChildren = duplicateBlockAndChildren.slice(1)
 
+      // Newly duplicated block returns with original block and siblings.
       const siblings = await this.getSiblingsInternal(
         journeyId,
         block.parentBlockId
       )
+      const defaultDuplicateBlockIndex = siblings.findIndex(
+        (block) => block.id === duplicatedBlock.id
+      )
       const insertIndex =
-        parentOrder != null
-          ? Math.min(Math.max(parentOrder, 0), siblings.length + 1)
-          : siblings.length + 1
+        parentOrder != null ? parentOrder : siblings.length + 1
+      siblings.splice(defaultDuplicateBlockIndex, 1)
       siblings.splice(insertIndex, 0, duplicatedBlock)
       const reorderedBlocks: Block[] = await this.reorderSiblings(siblings)
 
