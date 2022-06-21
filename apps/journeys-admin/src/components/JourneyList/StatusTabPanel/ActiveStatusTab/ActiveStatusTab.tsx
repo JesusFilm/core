@@ -7,10 +7,11 @@ import { GetActiveJourneys } from '../../../../../__generated__/GetActiveJourney
 import { JourneyCard } from '../../JourneyCard'
 import { AddJourneyButton } from '../../AddJourneyButton'
 import { SortOrder } from '../../JourneySort'
+// import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 export const GET_ACTIVE_JOURNEYS = gql`
   query GetActiveJourneys {
-    journeys: adminJourneys {
+    journeys: adminJourneys(status: [draft, published]) {
       id
       title
       createdAt
