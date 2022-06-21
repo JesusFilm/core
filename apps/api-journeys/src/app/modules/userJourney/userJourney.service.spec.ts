@@ -5,7 +5,7 @@ import {
   mockCollectionRemoveResult,
   mockCollectionSaveResult,
   mockDbQueryResult
-} from '@core/nest/database'
+} from '@core/nest/database/mock'
 import { DocumentCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 

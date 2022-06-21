@@ -18,16 +18,13 @@
     "paths": {
       "@core/apollo/logging/*": ["libs/apollo/logging/src/lib/*"],
       "@core/journeys/ui": ["libs/journeys/ui/src/index.ts"],
-      "@core/nest/database": ["libs/nest/database/src/index.ts"],
+      "@core/nest/database/*": ["libs/nest/database/src/lib/*"],
       "@core/nest/decorators/*": ["libs/nest/decorators/src/lib/*"],
       "@core/nest/gqlAuthGuard": [
         "libs/nest/gqlAuthGuard/src/lib/GqlAuthGuard/index.ts"
       ],
       "@core/shared/storybook": [],
-      "@core/shared/ui": ["libs/shared/ui/src/index.ts"],
-      "@core/shared/util-graphql": [
-        "libs/shared/util-graphql/src/lib/schemaBuilder/index.ts"
-      ]
+      "@core/shared/ui": ["libs/shared/ui/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

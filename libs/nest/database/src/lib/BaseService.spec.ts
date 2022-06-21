@@ -8,7 +8,7 @@ import { AqlQuery } from 'arangojs/aql'
 import { ArrayCursor } from 'arangojs/cursor'
 
 import { mockCollectionUpdateAllResult } from './dbMock'
-import { BaseService } from './base.service'
+import { BaseService } from './BaseService'
 
 @Injectable()
 export class MockService extends BaseService {
