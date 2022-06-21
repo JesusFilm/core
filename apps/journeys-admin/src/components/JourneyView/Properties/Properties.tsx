@@ -46,7 +46,7 @@ export function Properties(): ReactElement {
               {t('Access Control')}
             </Typography>
             <AccessAvatars
-              journeySlug={journey?.slug}
+              journeyId={journey?.id}
               userJourneys={journey?.userJourneys ?? undefined}
               size="medium"
               xsMax={5}
@@ -89,7 +89,7 @@ export function Properties(): ReactElement {
       >
         <Divider>
           <AccessAvatars
-            journeySlug={journey?.slug}
+            journeyId={journey?.id}
             userJourneys={journey?.userJourneys ?? undefined}
             size="medium"
           />

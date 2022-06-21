@@ -25,7 +25,7 @@ export const Default: Story = () => {
           request: {
             query: GET_JOURNEY_WITH_USER_JOURNEYS,
             variables: {
-              id: 'journeySlug'
+              id: 'journeyId'
             }
           },
           result: {
@@ -88,7 +88,7 @@ export const Default: Story = () => {
       ]}
     >
       <AccessDialog
-        journeySlug="journeySlug"
+        journeyId="journeyId"
         open={open}
         onClose={() => setOpen(false)}
       />
@@ -101,7 +101,7 @@ export const Loading: Story = () => {
   return (
     <ApolloLoadingProvider>
       <AccessDialog
-        journeySlug="journeySlug"
+        journeyId="journeyId"
         open={open}
         onClose={() => setOpen(false)}
       />

@@ -21,18 +21,18 @@ import i18nConfig from '../../next-i18next.config'
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
   query GetJourney($id: ID!) {
-    journey: adminJourney(id: $id, idType: slug) {
+    journey: adminJourney(id: $id, idType: databaseId) {
       ...JourneyFields
     }
   }
 `
 
-function JourneySlugPage(): ReactElement {
+function JourneyIdPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const AuthUser = useAuthUser()
   const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
-    variables: { id: router.query.journeySlug }
+    variables: { id: router.query.journeyId }
   })
 
   return (
@@ -62,14 +62,14 @@ function JourneySlugPage(): ReactElement {
         'User has not received an invitation to edit this journey.' && (
         <>
           <NextSeo title={t('Access Denied')} />
-          <JourneyInvite journeySlug={router.query.journeySlug as string} />
+          <JourneyInvite journeyId={router.query.journeyId as string} />
         </>
       )}
       {error?.graphQLErrors[0].message === 'User invitation pending.' && (
         <>
           <NextSeo title={t('Access Denied')} />
           <JourneyInvite
-            journeySlug={router.query.journeySlug as string}
+            journeyId={router.query.journeyId as string}
             requestReceived
           />
         </>
@@ -94,4 +94,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(JourneySlugPage)
+})(JourneyIdPage)

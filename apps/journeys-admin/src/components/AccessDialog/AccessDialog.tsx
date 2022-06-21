@@ -27,7 +27,7 @@ import { PromoteUser } from './PromoteUser'
 
 export const GET_JOURNEY_WITH_USER_JOURNEYS = gql`
   query GetJourneyWithUserJourneys($id: ID!) {
-    journey: adminJourney(id: $id, idType: slug) {
+    journey: adminJourney(id: $id, idType: databaseId) {
       id
       userJourneys {
         id
@@ -54,19 +54,19 @@ export const GET_CURRENT_USER = gql`
 `
 
 interface AccessDialogProps {
-  journeySlug: string
+  journeyId: string
   open?: boolean
   onClose: () => void
 }
 
 export function AccessDialog({
-  journeySlug,
+  journeyId,
   open,
   onClose
 }: AccessDialogProps): ReactElement {
   const [loadJourney, { loading, data }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
-      variables: { id: journeySlug }
+      variables: { id: journeyId }
     })
 
   const { data: currentUserData } = useQuery<GetCurrentUser>(GET_CURRENT_USER)
@@ -103,7 +103,7 @@ export function AccessDialog({
                     window.location.host.endsWith('.chromatic.com')
                       ? 'https://admin.nextstep.is'
                       : window.location.origin
-                  }/journeys/${journeySlug}`
+                  }/journeys/${journeyId}`
                 : undefined
             }
             messageText="Editor invite link copied"

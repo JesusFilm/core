@@ -34,7 +34,7 @@ interface UserJourney {
 }
 
 export interface AccessAvatarsProps {
-  journeySlug?: string
+  journeyId?: string
   userJourneys?: UserJourney[]
   size?: 'small' | 'medium' | 'large'
   xsMax?: number
@@ -42,7 +42,7 @@ export interface AccessAvatarsProps {
 }
 
 export function AccessAvatars({
-  journeySlug,
+  journeyId,
   userJourneys,
   size = 'small',
   xsMax = 3,
@@ -73,7 +73,7 @@ export function AccessAvatars({
 
   return (
     <>
-      {journeySlug != null ? (
+      {journeyId != null ? (
         <>
           <Box
             onClick={() => setOpen(true)}
@@ -121,7 +121,7 @@ export function AccessAvatars({
             </AvatarGroup>
           </Box>
           <AccessDialog
-            journeySlug={journeySlug}
+            journeyId={journeyId}
             open={open}
             onClose={() => setOpen(false)}
           />
