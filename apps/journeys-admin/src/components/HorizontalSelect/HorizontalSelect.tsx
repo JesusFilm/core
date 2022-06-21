@@ -98,15 +98,16 @@ export function HorizontalSelect({
         }
         return result
       })}
-      {Children.toArray(children).length === 0 && isValidElement(insert) && (
-        <Box
-          sx={{
-            border: '3px solid transparent'
-          }}
-        >
-          {insert}
-        </Box>
-      )}
+      {(Children.toArray(children).length === 0 || insertPosition === -1) &&
+        isValidElement(insert) && (
+          <Box
+            sx={{
+              border: '3px solid transparent'
+            }}
+          >
+            {insert}
+          </Box>
+        )}
       {footer != null && (
         <Box
           sx={{
