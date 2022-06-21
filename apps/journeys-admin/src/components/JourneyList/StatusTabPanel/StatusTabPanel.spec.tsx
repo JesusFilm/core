@@ -1,6 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { NextRouter } from 'next/router'
 import {
   defaultJourney,
   oldJourney,
@@ -70,6 +71,40 @@ describe('StatusTabPanel', () => {
     )
     expect(getByRole('tab')).toHaveAttribute('aria-selected', 'true')
     fireEvent.click(getByRole('tab', { name: 'Active' }))
+    expect(getByRole('tab')).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('should show active tab on default', () => {
+    const router = {
+      query: {
+        tab: undefined
+      }
+    } as unknown as NextRouter
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <StatusTabPanel router={router} />
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('tab')).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('should set active tab based on url query params', () => {
+    const router = {
+      query: {
+        tab: 'active'
+      }
+    } as unknown as NextRouter
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <StatusTabPanel router={router} />
+        </ThemeProvider>
+      </MockedProvider>
+    )
     expect(getByRole('tab')).toHaveAttribute('aria-selected', 'true')
   })
 })
