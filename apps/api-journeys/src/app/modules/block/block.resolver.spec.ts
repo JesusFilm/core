@@ -48,6 +48,7 @@ describe('BlockResolver', () => {
     provide: BlockService,
     useFactory: () => ({
       get: jest.fn(() => image1),
+      duplicateBlock: jest.fn(() => [image1, image1, image2, image3]),
       removeBlockAndChildren: jest.fn(() => [image1, image2, image3]),
       reorderBlock: jest.fn(() => [
         { id: 'image2', parentOrder: 0 },
@@ -83,6 +84,16 @@ describe('BlockResolver', () => {
         'card1'
       )
       expect(data).toEqual([image1, image2, image3])
+    })
+  })
+
+  describe('blockDuplicate', () => {
+    it('duplicates the block and its children', async () => {
+      const data = await resolver.blockDuplicate('image1', '2', 1)
+
+      expect(service.duplicateBlock).toBeCalledTimes(1)
+      expect(service.duplicateBlock).toHaveBeenCalledWith('image1', '2', 1)
+      expect(data).toEqual([image1, image1, image2, image3])
     })
   })
 
