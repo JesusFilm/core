@@ -1,8 +1,10 @@
 import { ReactElement, useEffect } from 'react'
+import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import { gql, useQuery } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { sortBy } from 'lodash'
+import { useTranslation } from 'react-i18next'
 import { GetArchivedJourneys } from '../../../../../__generated__/GetArchivedJourneys'
 import { JourneyCard } from '../../JourneyCard'
 import { SortOrder } from '../../JourneySort'
@@ -50,6 +52,7 @@ export function ArchivedStatusTab({
   onLoad,
   sortOrder
 }: ArchivedStatusTabProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { data, loading, error } = useQuery<GetArchivedJourneys>(
     GET_ARCHIVED_JOURNEYS
   )
@@ -76,24 +79,41 @@ export function ArchivedStatusTab({
           {sortedJourneys.map((journey) => (
             <JourneyCard key={journey.id} journey={journey} />
           ))}
-          {journeys.length === 0 && (
-            <Card
-              variant="outlined"
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                pt: 20,
-                pb: 16,
-                borderBottomLeftRadius: { xs: 0, sm: 12 },
-                borderBottomRightRadius: { xs: 0, sm: 12 },
-                borderTopLeftRadius: 0,
-                borderTopRightRadius: 0
-              }}
-            >
-              <Typography variant="subtitle1" align="center" gutterBottom>
-                No archived journeys.
+          {journeys.length > 0 ? (
+            <Box width="100%" sx={{ textAlign: 'center' }}>
+              <Typography variant="caption">
+                {t(
+                  'Archived journeys are hidden from your active journey list for better organization.'
+                )}
               </Typography>
-            </Card>
+            </Box>
+          ) : (
+            <>
+              <Card
+                variant="outlined"
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  pt: 20,
+                  pb: 16,
+                  borderBottomLeftRadius: { xs: 0, sm: 12 },
+                  borderBottomRightRadius: { xs: 0, sm: 12 },
+                  borderTopLeftRadius: 0,
+                  borderTopRightRadius: 0
+                }}
+              >
+                <Typography variant="subtitle1" align="center" gutterBottom>
+                  {t('No archived journeys.')}
+                </Typography>
+              </Card>
+              <Box width="100%" sx={{ textAlign: 'center' }}>
+                <Typography variant="caption">
+                  {t(
+                    'You can archive a Journey to hide it from your active Journey list for better organization.'
+                  )}
+                </Typography>
+              </Box>
+            </>
           )}
         </>
       ) : (

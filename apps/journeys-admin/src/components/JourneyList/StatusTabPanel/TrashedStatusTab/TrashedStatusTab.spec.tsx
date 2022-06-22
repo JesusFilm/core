@@ -7,6 +7,11 @@ import { SortOrder } from '../../JourneySort'
 import { TrashedStatusTab, GET_TRASHED_JOURNEYS } from './TrashedStatusTab'
 
 describe('ActiveStatusTab', () => {
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-12-11'))
+  })
+
   it('should render journeys in descending createdAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider
@@ -17,7 +22,10 @@ describe('ActiveStatusTab', () => {
             },
             result: {
               data: {
-                journeys: [defaultJourney, oldJourney]
+                journeys: [
+                  { ...defaultJourney, trashedAt: '2021-12-07T03:22:41.135Z' },
+                  { ...oldJourney, trashedAt: '2021-12-07T03:22:41.135Z' }
+                ]
               }
             }
           }
@@ -49,7 +57,10 @@ describe('ActiveStatusTab', () => {
             },
             result: {
               data: {
-                journeys: [defaultJourney, oldJourney]
+                journeys: [
+                  { ...defaultJourney, trashedAt: '2021-12-07T03:22:41.135Z' },
+                  { ...oldJourney, trashedAt: '2021-12-07T03:22:41.135Z' }
+                ]
               }
             }
           }
@@ -69,6 +80,39 @@ describe('ActiveStatusTab', () => {
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
       'Default Journey Heading'
     )
+  })
+
+  it('should exclude journeys older than 40 days', async () => {
+    const { getAllByLabelText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_TRASHED_JOURNEYS
+            },
+            result: {
+              data: {
+                journeys: [
+                  { ...defaultJourney, trashedAt: '2021-12-07T03:22:41.135Z' },
+                  { ...oldJourney, trashedAt: '2021-10-31T03:22:41.135Z' }
+                ]
+              }
+            }
+          }
+        ]}
+      >
+        <ThemeProvider>
+          <TrashedStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
+        'Default Journey Heading'
+      )
+    )
+    expect(getAllByLabelText('journey-card')[1]).toBeUndefined()
   })
 
   it('should render loading skeleton', async () => {
