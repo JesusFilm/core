@@ -18,8 +18,6 @@ export interface HorizontalSelectProps {
   sx?: SxProps<Theme>
   footer?: ReactNode
   isDragging?: boolean
-  insert?: ReactNode
-  insertPosition?: number
 }
 
 export function HorizontalSelect({
@@ -28,9 +26,7 @@ export function HorizontalSelect({
   onChange,
   sx,
   footer,
-  isDragging,
-  insert,
-  insertPosition
+  isDragging
 }: HorizontalSelectProps): ReactElement {
   const selectedRef = useRef<HTMLElement>(null)
 
@@ -53,10 +49,9 @@ export function HorizontalSelect({
         ...sx
       }}
     >
-      {Children.toArray(children).map((child, index) => {
-        const result: ReactElement[] = []
-        if (isValidElement(child)) {
-          result.push(
+      {Children.toArray(children).map(
+        (child) =>
+          isValidElement(child) && (
             <Box
               key={child.props.id}
               ref={id === child.props.id ? selectedRef : undefined}
@@ -85,34 +80,7 @@ export function HorizontalSelect({
               {child}
             </Box>
           )
-        }
-        if (
-          insertPosition === index &&
-          isDragging !== true &&
-          isValidElement(insert)
-        ) {
-          result.push(
-            <Box
-              sx={{
-                border: '3px solid transparent'
-              }}
-            >
-              {insert}
-            </Box>
-          )
-        }
-        return result
-      })}
-      {(Children.toArray(children).length === 0 || insertPosition === -1) &&
-        isValidElement(insert) && (
-          <Box
-            sx={{
-              border: '3px solid transparent'
-            }}
-          >
-            {insert}
-          </Box>
-        )}
+      )}
       {footer != null && (
         <Box
           sx={{

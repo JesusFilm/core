@@ -68,8 +68,7 @@ export function CardList({
       onChange={handleChange}
       id={selected?.id}
       isDragging={isDragging}
-      insert={showAddButton === true && <AddCardSlide />}
-      insertPosition={steps.findIndex(({ id }) => id === selected?.id)}
+      footer={showAddButton === true && <AddCardSlide />}
     >
       {droppableProvided != null &&
         steps.map((step, index) => (

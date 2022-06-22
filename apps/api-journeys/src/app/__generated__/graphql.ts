@@ -255,7 +255,6 @@ export class SignUpBlockUpdateInput {
 export class StepBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    parentOrder?: Nullable<number>;
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
 }
