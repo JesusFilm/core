@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor, fireEvent } from '@testing-library/react'
-import { EditorProvider, JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { InMemoryCache } from '@apollo/client'
 import { steps } from '../data'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'

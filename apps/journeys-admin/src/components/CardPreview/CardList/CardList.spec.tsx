@@ -1,5 +1,5 @@
 import { render, fireEvent } from '@testing-library/react'
-import { TreeBlock } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { DragDropContext } from 'react-beautiful-dnd'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'

@@ -1,4 +1,4 @@
-import { TreeBlock } from '..'
+import type { TreeBlock } from '../block'
 
 export function searchBlocks(
   tree: TreeBlock[],

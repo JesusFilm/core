@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
-import { JourneyProvider, JOURNEY_FIELDS } from '@core/journeys/ui'
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useRouter } from 'next/router'
 import {
   AuthAction,

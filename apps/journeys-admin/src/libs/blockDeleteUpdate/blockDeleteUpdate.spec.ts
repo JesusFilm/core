@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { TreeBlock } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   GetJourney_journey as Journey,

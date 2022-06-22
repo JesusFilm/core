@@ -1,12 +1,10 @@
 import Box from '@mui/material/Box'
 import { ReactElement, useState } from 'react'
-import {
-  CARD_FIELDS,
-  STEP_FIELDS,
-  TreeBlock,
-  transformer,
-  useJourney
-} from '@core/journeys/ui'
+import { transformer } from '@core/journeys/ui/transformer'
+import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
+import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { v4 as uuidv4 } from 'uuid'
