@@ -6,7 +6,7 @@ import {
   ThemeName
 } from '../../components/ThemeProvider/ThemeProvider'
 import { globalTypes } from '../../../../../../.storybook/preview'
-import { themes } from '../themes'
+import { themes } from '../../libs/themes'
 
 const themeMode = globalTypes.theme.toolbar.items
 

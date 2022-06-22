@@ -1,6 +1,6 @@
 import { Story, StoryContext } from '@storybook/react'
 import { parameters as rootParameters } from '../../../../../../.storybook/preview'
-import { ThemeDecorator } from '../ThemeDecorator'
+import { ThemeDecorator } from '../../components/ThemeDecorator'
 
 // Must set parameters at component level for shared-storybook stories to work
 export const sharedUiConfig = {
