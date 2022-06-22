@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
+import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey_blocks_TypographyBlock as TypographyBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
@@ -51,11 +52,13 @@ const step: TreeBlock<StepBlock> = {
 describe('DuplicateBlock', () => {
   it('should duplicate a block on button click', () => {
     const { getByRole, getByTestId } = render(
-      <SnackbarProvider>
-        <EditorProvider initialState={{ selectedBlock: block }}>
-          <DuplicateBlock variant="button" />
-        </EditorProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock: block }}>
+            <DuplicateBlock variant="button" />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(getByRole('button')).toContainElement(
       getByTestId('ContentCopyRoundedIcon')
@@ -64,11 +67,13 @@ describe('DuplicateBlock', () => {
 
   it('should duplicate a block on menu click', () => {
     const { getByRole } = render(
-      <SnackbarProvider>
-        <EditorProvider initialState={{ selectedBlock: block }}>
-          <DuplicateBlock variant="list-item" />
-        </EditorProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock: block }}>
+            <DuplicateBlock variant="list-item" />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(
       getByRole('menuitem', { name: 'Duplicate Block' })
@@ -77,11 +82,13 @@ describe('DuplicateBlock', () => {
 
   it('should duplicate a card on button click', () => {
     const { getByRole, getByTestId } = render(
-      <SnackbarProvider>
-        <EditorProvider initialState={{ selectedBlock: step }}>
-          <DuplicateBlock variant="button" />
-        </EditorProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock: step }}>
+            <DuplicateBlock variant="button" />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(getByRole('button')).toContainElement(
       getByTestId('ContentCopyRoundedIcon')
@@ -90,25 +97,16 @@ describe('DuplicateBlock', () => {
 
   it('should duplicate a card on menu click', () => {
     const { getByRole } = render(
-      <SnackbarProvider>
-        <EditorProvider initialState={{ selectedBlock: step }}>
-          <DuplicateBlock variant="list-item" />
-        </EditorProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock: step }}>
+            <DuplicateBlock variant="list-item" />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(
       getByRole('menuitem', { name: 'Duplicate Card' })
     ).toBeInTheDocument()
-  })
-
-  it('should duplicate a journey on menu click', () => {
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <EditorProvider>
-          <DuplicateBlock variant="list-item" journeyId="journeyId" />
-        </EditorProvider>
-      </SnackbarProvider>
-    )
-    expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
   })
 })

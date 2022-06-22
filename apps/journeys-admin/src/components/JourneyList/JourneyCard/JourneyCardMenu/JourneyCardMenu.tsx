@@ -104,11 +104,7 @@ export function JourneyCardMenu({
           </ListItemText>
         </MenuItem>
 
-        <DuplicateBlock
-          variant="list-item"
-          journeyId={journeyId}
-          sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-        />
+        <DuplicateBlock variant="list-item" />
       </Menu>
 
       <AccessDialog

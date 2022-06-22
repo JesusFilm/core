@@ -148,11 +148,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
             </Grid>
           </Grid>
           {journey != null ? (
-            <JourneyCardMenu
-              status={journey.status}
-              slug={journey.slug}
-              journeyId={journey.id}
-            />
+            <JourneyCardMenu status={journey.status} slug={journey.slug} />
           ) : (
             <IconButton disabled>
               <MoreVertIcon />
