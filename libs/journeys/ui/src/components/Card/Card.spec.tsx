@@ -1,6 +1,7 @@
 import { render, waitFor } from '@testing-library/react'
 import { themes } from '@core/shared/ui/themes'
-import { TreeBlock, blurImage } from '../..'
+import type { TreeBlock } from '../../libs/block'
+import { blurImage } from '../../libs/blurImage'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'

@@ -6,13 +6,11 @@ import { useMutation, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
-import {
-  handleAction,
-  TreeBlock,
-  useJourney,
-  useBlocks,
-  getStepHeading
-} from '../..'
+import { handleAction } from '../../libs/action'
+import type { TreeBlock } from '../../libs/block'
+import { useJourney } from '../../libs/JourneyProvider'
+import { useBlocks } from '../../libs/block'
+import { getStepHeading } from '../../libs/getStepHeading'
 import { ButtonVariant } from '../../../__generated__/globalTypes'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { Icon } from '../Icon'

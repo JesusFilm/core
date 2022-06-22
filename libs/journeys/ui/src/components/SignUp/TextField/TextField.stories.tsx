@@ -1,7 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { Form, Formik } from 'formik'
 import { object, string } from 'yup'
-import { journeyUiConfig, simpleComponentConfig, StoryCard } from '../../..'
+import { journeyUiConfig } from '../../../libs/journeyUiConfig'
+import { simpleComponentConfig } from '../../../libs/simpleComponentConfig'
+import { StoryCard } from '../../StoryCard'
 import { TextField, TextFieldProps } from './TextField'
 
 const Demo = {

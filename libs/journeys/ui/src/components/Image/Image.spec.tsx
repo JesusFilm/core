@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react'
-import { TreeBlock, blurImage } from '../..'
+import type { TreeBlock } from '../../libs/block'
+import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from './__generated__/ImageFields'
 import { Image } from '.'
 

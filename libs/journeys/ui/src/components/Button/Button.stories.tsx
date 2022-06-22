@@ -1,7 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import Typography from '@mui/material/Typography'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeyUiConfig, StoryCard, TreeBlock } from '../..'
+import { StoryCard } from '../StoryCard'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import type { TreeBlock } from '../../libs/block'
 import {
   ButtonVariant,
   ButtonColor,

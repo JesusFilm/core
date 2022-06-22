@@ -4,14 +4,11 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import {
-  TreeBlock,
-  handleAction,
-  JourneyProvider,
-  activeBlockVar,
-  treeBlocksVar
-} from '../..'
-import { BlockFields_StepBlock as StepBlock } from '../../libs/transformer/__generated__/BlockFields'
+import type { TreeBlock } from '../../libs/block'
+import { activeBlockVar, treeBlocksVar } from '../../libs/block'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { handleAction } from '../../libs/action'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
 

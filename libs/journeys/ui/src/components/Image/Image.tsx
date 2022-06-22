@@ -4,7 +4,8 @@ import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import ImageRoundedIcon from '@mui/icons-material/ImageRounded'
-import { TreeBlock, blurImage } from '../..'
+import type { TreeBlock } from '../../libs/block'
+import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from './__generated__/ImageFields'
 
 export function Image({
