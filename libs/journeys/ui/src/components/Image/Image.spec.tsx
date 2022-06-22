@@ -4,7 +4,7 @@ import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from './__generated__/ImageFields'
 import { Image } from '.'
 
-jest.mock('../..', () => ({
+jest.mock('../../libs/blurImage', () => ({
   __esModule: true,
   blurImage: jest.fn()
 }))

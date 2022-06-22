@@ -7,7 +7,7 @@ import { omit } from 'lodash'
 import { AqlQuery } from 'arangojs/aql'
 import { ArrayCursor } from 'arangojs/cursor'
 
-import { mockCollectionUpdateAllResult } from './dbMock'
+import { mockCollectionUpdateAllResult } from './mock'
 import { BaseService } from './BaseService'
 
 @Injectable()

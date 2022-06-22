@@ -7,7 +7,7 @@ import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 import { Card } from '.'
 
-jest.mock('../..', () => ({
+jest.mock('../../libs/blurImage', () => ({
   __esModule: true,
   blurImage: jest.fn()
 }))

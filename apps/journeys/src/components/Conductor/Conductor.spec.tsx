@@ -10,7 +10,7 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 import { JOURNEY_VIEW_EVENT_CREATE } from './Conductor'
 import { Conductor } from '.'
 
-jest.mock('../../../../../libs/shared/ui/src/', () => ({
+jest.mock('@core/shared/ui/useBreakpoints', () => ({
   __esModule: true,
   useBreakpoints: jest.fn()
 }))
