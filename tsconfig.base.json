@@ -20,9 +20,7 @@
       "@core/journeys/ui": ["libs/journeys/ui/src/index.ts"],
       "@core/nest/database/*": ["libs/nest/database/src/lib/*"],
       "@core/nest/decorators/*": ["libs/nest/decorators/src/lib/*"],
-      "@core/nest/gqlAuthGuard": [
-        "libs/nest/gqlAuthGuard/src/lib/GqlAuthGuard/index.ts"
-      ],
+      "@core/nest/gqlAuthGuard/*": ["libs/nest/gqlAuthGuard/src/lib/*"],
       "@core/shared/storybook": [],
       "@core/shared/ui/*": [
         "libs/shared/ui/src/components/*",

@@ -1,7 +1,7 @@
 import { Resolver, Query, ResolveReference } from '@nestjs/graphql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { UseGuards } from '@nestjs/common'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { User } from '../../__generated__/graphql'
 import { firebaseClient } from '../../lib/firebaseClient'
 import { UserService } from './user.service'
