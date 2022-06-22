@@ -12,7 +12,6 @@ import PeopleIcon from '@mui/icons-material/People'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
-import { DuplicateBlock } from '../../../DuplicateBlock'
 
 export interface JourneyCardMenuProps {
   status: JourneyStatus
@@ -103,8 +102,6 @@ export function JourneyCardMenu({
             </Typography>
           </ListItemText>
         </MenuItem>
-
-        <DuplicateBlock variant="list-item" />
       </Menu>
 
       <AccessDialog
