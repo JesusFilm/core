@@ -1,5 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 import { GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../__generated__/GetJourney'

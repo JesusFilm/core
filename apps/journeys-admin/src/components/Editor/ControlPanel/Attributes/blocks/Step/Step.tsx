@@ -1,4 +1,6 @@
-import { TreeBlock, useEditor, getStepHeading } from '@core/journeys/ui'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { ReactElement } from 'react'
 import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'

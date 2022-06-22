@@ -1,10 +1,7 @@
 import { Story, Meta } from '@storybook/react'
-import {
-  TreeBlock,
-  EditorProvider,
-  ActiveFab,
-  JourneyProvider
-} from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider, ActiveFab } from '@core/journeys/ui/EditorProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,

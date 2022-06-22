@@ -1,9 +1,10 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { TreeBlock, journeyUiConfig } from '../..'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import type { TreeBlock } from '../../libs/block'
+import { VIDEO_START_EVENT_CREATE } from '../VideoEvents/VideoEvents'
 import { VideoFields } from './__generated__/VideoFields'
-import { VIDEO_START_EVENT_CREATE } from './VideoEvents/VideoEvents'
 import { Video } from '.'
 
 const Demo = {

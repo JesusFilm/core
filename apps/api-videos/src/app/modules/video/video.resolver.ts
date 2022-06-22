@@ -1,4 +1,4 @@
-import { TranslationField } from '@core/nest/decorators'
+import { TranslationField } from '@core/nest/decorators/TranslationField'
 import {
   Resolver,
   Query,

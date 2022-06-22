@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
-import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { gql, useMutation } from '@apollo/client'
 import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
 import { ButtonBlockUpdateVariant } from '../../../../../../../../__generated__/ButtonBlockUpdateVariant'

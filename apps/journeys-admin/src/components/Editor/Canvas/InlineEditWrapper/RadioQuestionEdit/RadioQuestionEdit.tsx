@@ -3,13 +3,11 @@ import { gql, useMutation } from '@apollo/client'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import Box from '@mui/material/Box'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
-import {
-  RadioQuestion,
-  StyledRadioOption,
-  TreeBlock,
-  WrappersProps,
-  useJourney
-} from '@core/journeys/ui'
+import { StyledRadioOption } from '@core/journeys/ui/RadioOption'
+import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
+import { WrappersProps } from '@core/journeys/ui/BlockRenderer'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RadioOptionBlockCreate } from '../../../../../../__generated__/RadioOptionBlockCreate'
 import { RadioQuestionFields } from '../../../../../../__generated__/RadioQuestionFields'
 import { adminTheme } from '../../../../ThemeProvider/admin/theme'
