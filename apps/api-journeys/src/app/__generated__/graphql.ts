@@ -122,8 +122,11 @@ export enum IdType {
 }
 
 export enum JourneyStatus {
+    archived = "archived",
+    deleted = "deleted",
     draft = "draft",
-    published = "published"
+    published = "published",
+    trashed = "trashed"
 }
 
 export enum UserJourneyRole {
@@ -464,7 +467,10 @@ export class Journey {
     themeName: ThemeName;
     description?: Nullable<string>;
     slug: string;
+    archivedAt?: Nullable<DateTime>;
+    deletedAt?: Nullable<DateTime>;
     publishedAt?: Nullable<DateTime>;
+    trashedAt?: Nullable<DateTime>;
     featuredAt?: Nullable<DateTime>;
     createdAt: DateTime;
     status: JourneyStatus;
@@ -817,6 +823,14 @@ export abstract class IMutation {
 
     abstract journeyPublish(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
 
+    abstract journeysArchive(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
+
+    abstract journeysDelete(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
+
+    abstract journeysTrash(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
+
+    abstract journeysRestore(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
+
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 
     abstract userJourneyPromote(id: string): UserJourney | Promise<UserJourney>;
@@ -836,7 +850,7 @@ export class Language {
 }
 
 export abstract class IQuery {
-    abstract adminJourneys(): Journey[] | Promise<Journey[]>;
+    abstract adminJourneys(status?: Nullable<JourneyStatus[]>): Journey[] | Promise<Journey[]>;
 
     abstract adminJourney(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 

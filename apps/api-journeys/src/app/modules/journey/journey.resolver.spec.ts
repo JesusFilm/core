@@ -51,6 +51,29 @@ describe('JourneyResolver', () => {
     createdAt
   }
 
+  const draftJourney = {
+    ...journey,
+    id: 'draftJourney',
+    publishedAt: null,
+    status: JourneyStatus.draft
+  }
+  const archivedJourney = {
+    ...journey,
+    id: 'archivedJourney',
+    status: JourneyStatus.archived
+  }
+  const trashedJourney = {
+    ...journey,
+    id: 'deletedJourney',
+    status: JourneyStatus.trashed
+  }
+  const trashedDraftJourney = {
+    ...journey,
+    id: 'deletedDraftJourney',
+    status: JourneyStatus.trashed,
+    publishedAt: null
+  }
+
   const block = {
     id: 'blockId',
     journeyId: 'journeyId',
@@ -92,12 +115,40 @@ describe('JourneyResolver', () => {
   const journeyService = {
     provide: JourneyService,
     useFactory: () => ({
-      get: jest.fn((id) => (id === journey.id ? journey : null)),
+      get: jest.fn((id) => {
+        switch (id) {
+          case journey.id:
+            return journey
+          case draftJourney.id:
+            return draftJourney
+          case archivedJourney.id:
+            return archivedJourney
+          case trashedJourney.id:
+            return trashedJourney
+          case trashedDraftJourney.id:
+            return trashedDraftJourney
+          default:
+            return null
+        }
+      }),
       getBySlug: jest.fn((slug) => (slug === journey.slug ? journey : null)),
       getAllPublishedJourneys: jest.fn(() => [journey, journey]),
+      getAllByIds: jest.fn((userId, ids) => {
+        switch (ids[0]) {
+          case archivedJourney.id:
+            return [archivedJourney]
+          case trashedJourney.id:
+            return [trashedJourney]
+          case trashedDraftJourney.id:
+            return [trashedDraftJourney]
+          default:
+            return [journey, draftJourney]
+        }
+      }),
       getAllByOwnerEditor: jest.fn(() => [journey, journey]),
       save: jest.fn((input) => input),
-      update: jest.fn(() => journey)
+      update: jest.fn(() => journey),
+      updateAll: jest.fn(() => [journey, draftJourney])
     })
   }
 
@@ -139,8 +190,16 @@ describe('JourneyResolver', () => {
 
   describe('adminJourneys', () => {
     it('should get published journeys', async () => {
-      expect(await resolver.adminJourneys('userId')).toEqual([journey, journey])
-      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith('userId')
+      expect(
+        await resolver.adminJourneys('userId', [
+          JourneyStatus.draft,
+          JourneyStatus.published
+        ])
+      ).toEqual([journey, journey])
+      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith('userId', [
+        JourneyStatus.draft,
+        JourneyStatus.published
+      ])
     })
   })
 
@@ -370,6 +429,88 @@ describe('JourneyResolver', () => {
     })
   })
 
+  describe('journeysArchive', () => {
+    it('archives an array of Journeys', async () => {
+      const date = '2021-12-07T03:22:41.135Z'
+      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      await resolver.journeysArchive('1', [journey.id, draftJourney.id])
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          id: journey.id,
+          status: JourneyStatus.archived,
+          archivedAt: date
+        },
+        {
+          id: draftJourney.id,
+          status: JourneyStatus.archived,
+          archivedAt: date
+        }
+      ])
+    })
+  })
+
+  describe('journeysTrash', () => {
+    it('trashes an array of Journeys', async () => {
+      const date = '2021-12-07T03:22:41.135Z'
+      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      await resolver.journeysTrash('1', [journey.id, draftJourney.id])
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          id: journey.id,
+          status: JourneyStatus.trashed,
+          trashedAt: date
+        },
+        {
+          id: draftJourney.id,
+          status: JourneyStatus.trashed,
+          trashedAt: date
+        }
+      ])
+    })
+  })
+
+  describe('journeysDelete', () => {
+    it('deletes an array of Journeys', async () => {
+      const date = '2021-12-07T03:22:41.135Z'
+      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      await resolver.journeysDelete('1', [journey.id, draftJourney.id])
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          id: journey.id,
+          status: JourneyStatus.deleted,
+          deletedAt: date
+        },
+        {
+          id: draftJourney.id,
+          status: JourneyStatus.deleted,
+          deletedAt: date
+        }
+      ])
+    })
+  })
+
+  describe('journeysRestore', () => {
+    it('resores a published Journey', async () => {
+      await resolver.journeysRestore('1', [trashedJourney.id])
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          id: trashedJourney.id,
+          status: JourneyStatus.published
+        }
+      ])
+    })
+
+    it('restores an draft Journey', async () => {
+      await resolver.journeysRestore('1', [trashedDraftJourney.id])
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          id: trashedDraftJourney.id,
+          status: JourneyStatus.draft
+        }
+      ])
+    })
+  })
+
   describe('userJourneys', () => {
     it('should get userJourneys', async () => {
       expect(await resolver.userJourneys(journey)).toEqual([
@@ -377,18 +518,6 @@ describe('JourneyResolver', () => {
         userJourney
       ])
       expect(ujService.forJourney).toHaveBeenCalledWith(journey)
-    })
-  })
-
-  describe('status', () => {
-    it('should return draft', async () => {
-      expect(resolver.status({ ...journey, publishedAt: null })).toEqual(
-        JourneyStatus.draft
-      )
-    })
-
-    it('should return published', async () => {
-      expect(resolver.status(journey)).toEqual(JourneyStatus.published)
     })
   })
 
