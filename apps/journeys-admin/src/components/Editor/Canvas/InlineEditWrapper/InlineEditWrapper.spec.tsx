@@ -1,6 +1,6 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider , ActiveFab } from '@core/journeys/ui/EditorProvider'
+import { EditorProvider, ActiveFab } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'

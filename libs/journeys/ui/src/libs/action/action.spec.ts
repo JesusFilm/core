@@ -2,8 +2,8 @@ import { NextRouter } from 'next/dist/client/router'
 import { nextActiveBlock } from '../block'
 import { handleAction } from '.'
 
-jest.mock('../useBlocks/blocks', () => {
-  const originalModule = jest.requireActual('../useBlocks/blocks')
+jest.mock('../block', () => {
+  const originalModule = jest.requireActual('../block')
   return {
     __esModule: true,
     ...originalModule,

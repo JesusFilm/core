@@ -4,8 +4,8 @@ import { handleAction } from '../../libs/action'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 import { RadioOption } from '.'
 
-jest.mock('../../../libs/action', () => {
-  const originalModule = jest.requireActual('../../../libs/action')
+jest.mock('../../libs/action', () => {
+  const originalModule = jest.requireActual('../../libs/action')
   return {
     __esModule: true,
     ...originalModule,
