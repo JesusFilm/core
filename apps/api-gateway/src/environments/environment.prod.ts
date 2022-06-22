@@ -26,7 +26,8 @@ export const config: EnvironmentConfig = {
       // watch
       'https://watch-one.vercel.app',
       // localhost
-      'http://localhost'
+      'http://localhost:4100',
+      'http://localhost:4200'
     ]
   }
 }
