@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { useEditor } from '@core/journeys/ui'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'

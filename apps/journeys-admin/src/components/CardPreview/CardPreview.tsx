@@ -1,13 +1,11 @@
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
-import {
-  BlockRenderer,
-  CARD_FIELDS,
-  STEP_FIELDS,
-  TreeBlock,
-  transformer,
-  useJourney
-} from '@core/journeys/ui'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { transformer } from '@core/journeys/ui/transformer'
+import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
+import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import AddIcon from '@mui/icons-material/Add'
 import Card from '@mui/material/Card'

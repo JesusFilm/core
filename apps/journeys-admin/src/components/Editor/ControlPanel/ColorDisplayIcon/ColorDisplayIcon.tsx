@@ -2,7 +2,9 @@ import { ReactElement } from 'react'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { TreeBlock, useEditor, useJourney } from '@core/journeys/ui'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../__generated__/GetJourney'
 import {
   TypographyColor,

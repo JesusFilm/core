@@ -2,7 +2,12 @@ import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { ReactElement, SyntheticEvent } from 'react'
-import { TreeBlock, useEditor, ActiveTab, ActiveFab } from '@core/journeys/ui'
+import {
+  useEditor,
+  ActiveTab,
+  ActiveFab
+} from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { CardPreview } from '../../CardPreview'

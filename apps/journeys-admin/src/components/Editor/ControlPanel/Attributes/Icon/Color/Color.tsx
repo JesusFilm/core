@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { TreeBlock, useJourney } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { IconColor } from '../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../ToggleButtonGroup'
