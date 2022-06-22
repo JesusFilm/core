@@ -35,7 +35,12 @@ export function CardView({ slug, blocks }: CardViewProps): ReactElement {
 
   return (
     <>
-      <CardPreview onSelect={handleSelect} steps={blocks} showAddButton />
+      <CardPreview
+        onSelect={handleSelect}
+        steps={blocks}
+        showAddButton
+        isDraggable={false}
+      />
       <Box sx={{ pt: 2, display: 'flex', justifyContent: 'center' }}>
         <Typography variant="body1">
           {blocks != null ? (
