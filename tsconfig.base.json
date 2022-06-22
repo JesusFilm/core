@@ -24,7 +24,10 @@
         "libs/nest/gqlAuthGuard/src/lib/GqlAuthGuard/index.ts"
       ],
       "@core/shared/storybook": [],
-      "@core/shared/ui": ["libs/shared/ui/src/index.ts"]
+      "@core/shared/ui/*": [
+        "libs/shared/ui/src/components/*",
+        "libs/shared/ui/src/libs/*"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

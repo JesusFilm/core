@@ -1,5 +1,6 @@
 import { ReactElement, ReactNode, useMemo } from 'react'
-import { ThemeProvider, themes } from '@core/shared/ui'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { themes } from '@core/shared/ui/themes'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import { SxProps } from '@mui/system/styleFunctionSx'

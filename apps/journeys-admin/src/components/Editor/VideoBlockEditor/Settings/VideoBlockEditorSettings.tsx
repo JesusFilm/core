@@ -12,7 +12,10 @@ import { useFormik } from 'formik'
 import TimeField from 'react-simple-timefield'
 import PlayCircle from '@mui/icons-material/PlayCircle'
 import StopCircle from '@mui/icons-material/StopCircle'
-import { secondsToTimeFormat, timeFormatToSeconds } from '@core/shared/ui'
+import {
+  secondsToTimeFormat,
+  timeFormatToSeconds
+} from '@core/shared/ui/timeFormat'
 
 import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,

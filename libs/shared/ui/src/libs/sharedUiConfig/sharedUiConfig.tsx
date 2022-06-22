@@ -1,7 +1,6 @@
 import { Story, StoryContext } from '@storybook/react'
-
 import { parameters as rootParameters } from '../../../../../../.storybook/preview'
-import { ThemeDecorator } from './decorators'
+import { ThemeDecorator } from '../ThemeDecorator'
 
 // Must set parameters at component level for shared-storybook stories to work
 export const sharedUiConfig = {
@@ -17,17 +16,5 @@ export const sharedUiConfig = {
   ],
   parameters: {
     ...rootParameters
-  }
-}
-
-// Simple components are not responsive, simplify VR testing
-export const simpleComponentConfig = {
-  ...sharedUiConfig,
-  parameters: {
-    ...sharedUiConfig.parameters,
-    chromatic: {
-      ...sharedUiConfig.parameters?.chromatic,
-      viewports: [600]
-    }
   }
 }

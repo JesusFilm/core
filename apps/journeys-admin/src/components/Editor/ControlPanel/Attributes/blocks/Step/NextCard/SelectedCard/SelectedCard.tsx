@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded'
 import LockRoundedIcon from '@mui/icons-material/LockRounded'
-import { ThemeProvider } from '@core/shared/ui'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import {
   useEditor,
   TreeBlock,

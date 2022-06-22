@@ -1,0 +1,1 @@
+export { simpleComponentConfig } from './simpleComponentConfig'

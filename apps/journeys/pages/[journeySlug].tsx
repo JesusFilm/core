@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
-import { ThemeProvider } from '@core/shared/ui'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { transformer, JourneyProvider, JOURNEY_FIELDS } from '@core/journeys/ui'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'

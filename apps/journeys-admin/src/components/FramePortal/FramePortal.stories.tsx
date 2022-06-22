@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { BlockRenderer, TreeBlock } from '@core/journeys/ui'
-import { ThemeProvider } from '@core/shared/ui'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { BlockFields as Block } from '../../../__generated__/BlockFields'

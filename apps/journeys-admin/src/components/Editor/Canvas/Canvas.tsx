@@ -11,7 +11,7 @@ import {
   ActiveFab,
   useJourney
 } from '@core/journeys/ui'
-import { ThemeProvider } from '@core/shared/ui'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { FramePortal } from '../../FramePortal'

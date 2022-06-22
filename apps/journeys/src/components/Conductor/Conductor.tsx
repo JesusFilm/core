@@ -14,7 +14,7 @@ import {
   TreeBlock,
   useBlocks
 } from '@core/journeys/ui'
-import { useBreakpoints } from '@core/shared/ui'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 import 'swiper/swiper.min.css'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'

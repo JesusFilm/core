@@ -8,7 +8,7 @@ import {
   transformer,
   useJourney
 } from '@core/journeys/ui'
-import { ThemeProvider } from '@core/shared/ui'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import AddIcon from '@mui/icons-material/Add'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'

@@ -6,7 +6,7 @@ import VerticalSplit from '@mui/icons-material/VerticalSplit'
 import Videocam from '@mui/icons-material/Videocam'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
-import { themes } from '@core/shared/ui'
+import { themes } from '@core/shared/ui/themes'
 import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
 import { Attribute } from '../..'
 import {

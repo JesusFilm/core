@@ -6,7 +6,11 @@ import Typography from '@mui/material/Typography'
 import Error from 'next/error'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useRef, useState } from 'react'
-import { TabPanel, tabA11yProps, secondsToMinutes } from '@core/shared/ui'
+import {
+  TabPanel,
+  tabA11yProps,
+  secondsToMinutes
+} from '@core/shared/ui/timeFormat'
 import Container from '@mui/material/Container'
 import Button from '@mui/material/Button'
 import PlayArrow from '@mui/icons-material/PlayArrow'

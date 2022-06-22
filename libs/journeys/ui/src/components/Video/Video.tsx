@@ -1,6 +1,6 @@
 import videojs from 'video.js'
 import { ReactElement, useEffect, useRef, useState, useMemo } from 'react'
-import { NextImage } from '@core/shared/ui'
+import { NextImage } from '@core/shared/ui/NextImage'
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'

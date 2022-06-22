@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import { EditorProvider, TreeBlock } from '@core/journeys/ui'
-import { themes } from '@core/shared/ui'
+import { themes } from '@core/shared/ui/themes'
 import {
   TypographyColor,
   TypographyAlign,

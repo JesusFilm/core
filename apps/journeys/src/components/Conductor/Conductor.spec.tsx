@@ -1,4 +1,4 @@
-import { useBreakpoints } from '@core/shared/ui'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 import {
   activeBlockVar,
   JourneyProvider,
