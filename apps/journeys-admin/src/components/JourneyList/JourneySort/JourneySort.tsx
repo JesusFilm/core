@@ -110,6 +110,12 @@ export function JourneySort({
         label={sortOrder != null ? sortOrderLabel[sortOrder] : 'Sort By'}
         onClick={handleClick}
         ref={chipRef}
+        sx={{
+          backgroundColor: 'white',
+          border: '1px solid',
+          borderColor: 'divider',
+          color: 'secondar.light'
+        }}
       />
       {breakpoints.md ? (
         <Popover

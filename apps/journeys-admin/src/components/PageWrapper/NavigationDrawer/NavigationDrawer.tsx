@@ -96,6 +96,11 @@ export function NavigationDrawer({
 }: NavigationDrawerProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
+  const journeysSelected =
+    title === 'Active Journeys' ||
+    title === 'Archived Journeys' ||
+    title === 'Deleted Journeys' ||
+    title === 'Journey Details'
 
   const profileOpen = Boolean(profileAnchorEl)
   const handleProfileClick = (event): void => {
@@ -138,8 +143,7 @@ export function NavigationDrawer({
           <ListItemButton>
             <ListItemIcon
               sx={{
-                color:
-                  title === 'Journeys' ? 'background.paper' : 'secondary.light'
+                color: journeysSelected ? 'background.paper' : 'secondary.light'
               }}
             >
               <ExploreRoundedIcon />
@@ -147,8 +151,7 @@ export function NavigationDrawer({
             <ListItemText
               primary="Discover"
               sx={{
-                color:
-                  title === 'Journeys' ? 'background.paper' : 'secondary.light'
+                color: journeysSelected ? 'background.paper' : 'secondary.light'
               }}
             />
           </ListItemButton>

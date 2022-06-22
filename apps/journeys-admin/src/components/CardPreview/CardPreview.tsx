@@ -1,48 +1,42 @@
 import Box from '@mui/material/Box'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import {
-  BlockRenderer,
   CARD_FIELDS,
   STEP_FIELDS,
   TreeBlock,
   transformer,
   useJourney
 } from '@core/journeys/ui'
-import { ThemeProvider } from '@core/shared/ui'
-import AddIcon from '@mui/icons-material/Add'
-import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
-import last from 'lodash/last'
-import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
+import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
-import { StepBlockNextBlockIdUpdate } from '../../../__generated__/StepBlockNextBlockIdUpdate'
-import { VideoBlockSetDefaultAction } from '../../../__generated__/VideoBlockSetDefaultAction'
-import {
-  BlockFields_CardBlock as CardBlock,
-  BlockFields_VideoBlock as VideoBlock
-} from '../../../__generated__/BlockFields'
-import { FramePortal } from '../FramePortal'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
-import { HorizontalSelect } from '../HorizontalSelect'
-import { VideoWrapper } from '../Editor/Canvas/VideoWrapper'
-import { CardWrapper } from '../Editor/Canvas/CardWrapper'
+import { CardList } from './CardList'
 
 export interface CardPreviewProps {
   onSelect?: (step: TreeBlock<StepBlock>) => void
   selected?: TreeBlock<StepBlock>
   steps?: Array<TreeBlock<StepBlock>>
   showAddButton?: boolean
+  isDraggable?: boolean
 }
 
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
   ${STEP_FIELDS}
   ${CARD_FIELDS}
-  mutation StepAndCardBlockCreate($journeyId: ID!, $stepId: ID!, $cardId: ID) {
-    stepBlockCreate(input: { id: $stepId, journeyId: $journeyId }) {
+  mutation StepAndCardBlockCreate(
+    $journeyId: ID!
+    $stepId: ID!
+    $cardId: ID
+    $parentOrder: Int
+  ) {
+    stepBlockCreate(
+      input: { id: $stepId, journeyId: $journeyId, parentOrder: $parentOrder }
+    ) {
       ...StepFields
     }
     cardBlockCreate(
@@ -53,32 +47,15 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
   }
 `
 
-export const STEP_BLOCK_NEXTBLOCKID_UPDATE = gql`
-  mutation StepBlockNextBlockIdUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: StepBlockUpdateInput!
-  ) {
-    stepBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-      id
-      nextBlockId
-    }
-  }
-`
-
-export const VIDEO_BLOCK_SET_DEFAULT_ACTION = gql`
-  mutation VideoBlockSetDefaultAction(
-    $id: ID!
-    $journeyId: ID!
-    $input: NavigateToBlockActionInput!
-  ) {
-    blockUpdateNavigateToBlockAction(
+export const STEPS_ORDER_UPDATE = gql`
+  mutation StepsOrderUpdate($id: ID!, $journeyId: ID!, $parentOrder: Int!) {
+    blockOrderUpdate(
       id: $id
       journeyId: $journeyId
-      input: $input
+      parentOrder: $parentOrder
     ) {
-      gtmEventName
-      blockId
+      id
+      parentOrder
     }
   }
 `
@@ -87,17 +64,14 @@ export function CardPreview({
   steps,
   selected,
   onSelect,
-  showAddButton
+  showAddButton,
+  isDraggable
 }: CardPreviewProps): ReactElement {
+  const [isDragging, setIsDragging] = useState(false)
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
     STEP_AND_CARD_BLOCK_CREATE
   )
-  const [stepBlockNextBlockIdUpdate] = useMutation<StepBlockNextBlockIdUpdate>(
-    STEP_BLOCK_NEXTBLOCKID_UPDATE
-  )
-  const [videoBlockSetDefaultAction] = useMutation<VideoBlockSetDefaultAction>(
-    VIDEO_BLOCK_SET_DEFAULT_ACTION
-  )
+  const [stepsOrderUpdate] = useMutation<StepsOrderUpdate>(STEPS_ORDER_UPDATE)
   const { journey } = useJourney()
 
   const handleChange = (selectedId: string): void => {
@@ -116,7 +90,9 @@ export function CardPreview({
       variables: {
         journeyId: journey.id,
         stepId,
-        cardId
+        cardId,
+        parentOrder:
+          selected?.parentOrder != null ? selected.parentOrder + 1 : null
       },
       update(cache, { data }) {
         if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
@@ -124,8 +100,42 @@ export function CardPreview({
             id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = []) {
+                // update existing parentOrder in cache
+                if (selected?.parentOrder != null) {
+                  existingBlockRefs.forEach((blockRef) => {
+                    if ((blockRef.__ref as string).startsWith('StepBlock:')) {
+                      const stepBlock = cache.readFragment<StepBlock>({
+                        id: blockRef.__ref,
+                        fragment: gql`
+                          fragment StepBlock on StepBlock {
+                            parentOrder
+                          }
+                        `
+                      })
+                      if (
+                        stepBlock?.parentOrder != null &&
+                        selected?.parentOrder != null &&
+                        stepBlock.parentOrder > selected.parentOrder
+                      ) {
+                        cache.writeFragment({
+                          id: blockRef.__ref,
+                          fragment: gql`
+                            fragment StepBlock on StepBlock {
+                              parentOrder
+                            }
+                          `,
+                          data: {
+                            parentOrder: stepBlock.parentOrder + 1
+                          }
+                        })
+                      }
+                    }
+                  })
+                }
                 const newStepBlockRef = cache.writeFragment({
-                  data: data.stepBlockCreate,
+                  data: {
+                    ...data.stepBlockCreate
+                  },
                   fragment: gql`
                     fragment NewBlock on Block {
                       id
@@ -155,70 +165,44 @@ export function CardPreview({
         ])[0] as TreeBlock<StepBlock>
       )
     }
+  }
 
-    const prevStep = last(steps)
-    // this check is required as nextBlockId is not updated when the corrseponding block is deleted
-    const validNextBlockId =
-      steps.find(({ id }) => id === prevStep?.nextBlockId) != null
-    if (!validNextBlockId && prevStep != null) {
-      await stepBlockNextBlockIdUpdate({
-        variables: {
-          id: prevStep.id,
-          journeyId: journey.id,
-          input: {
-            nextBlockId: stepId
-          }
-        },
-        optimisticResponse: {
-          stepBlockUpdate: {
-            __typename: 'StepBlock',
-            id: prevStep.id,
-            nextBlockId: stepId
-          }
-        }
-      })
-    }
+  const onBeforeCapture = (): void => {
+    setIsDragging(true)
+  }
 
-    // this sets video block default action to navigate to the newly created step
-    const prevCard = prevStep?.children.find(
-      (block) => block.__typename === 'CardBlock'
-    ) as unknown as TreeBlock<CardBlock>
-    const videoBlock = prevCard?.children.find(
-      (block) => block.__typename === 'VideoBlock'
-    ) as unknown as TreeBlock<VideoBlock>
-    const validVideoNextBlockId =
-      steps.find(
-        ({ id }) =>
-          videoBlock?.action?.__typename === 'NavigateToBlockAction' &&
-          videoBlock?.action?.blockId === id
-      ) != null
+  const onDragEnd = async ({ destination, source }): Promise<void> => {
+    setIsDragging(false)
+    if (steps == null) return
+    if (journey == null) return
+    if (destination == null) return
+
+    const cardDragging = steps[source.index]
+    const destIndex: number = destination.index
 
     if (
-      !validVideoNextBlockId &&
-      prevCard != null &&
-      videoBlock != null &&
-      prevCard.coverBlockId !== videoBlock.id
-    ) {
-      await videoBlockSetDefaultAction({
+      destination.droppableId === source.droppableId &&
+      destIndex === source.index
+    )
+      return
+
+    if (cardDragging.parentOrder != null) {
+      const parentOrder = cardDragging.parentOrder + destIndex - source.index
+
+      await stepsOrderUpdate({
         variables: {
-          id: videoBlock.id,
+          id: cardDragging.id,
           journeyId: journey.id,
-          input: {
-            blockId: stepId
-          }
+          parentOrder
         },
-        update(cache, { data }) {
-          if (data?.blockUpdateNavigateToBlockAction != null) {
-            cache.modify({
-              id: cache.identify({
-                __typename: 'VideoBlock',
-                id: videoBlock.id
-              }),
-              fields: {
-                action: () => data?.blockUpdateNavigateToBlockAction
-              }
-            })
-          }
+        optimisticResponse: {
+          blockOrderUpdate: [
+            {
+              __typename: 'StepBlock',
+              id: cardDragging.id,
+              parentOrder
+            }
+          ]
         }
       })
     }
@@ -227,71 +211,36 @@ export function CardPreview({
   return (
     <>
       {steps != null ? (
-        <HorizontalSelect
-          onChange={handleChange}
-          id={selected?.id}
-          footer={
-            showAddButton === true && (
-              <Card
-                id="CardPreviewAddButton"
-                variant="outlined"
-                sx={{
-                  display: 'flex',
-                  width: 87,
-                  height: 132,
-                  m: 1
-                }}
-              >
-                <CardActionArea
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                  }}
-                  onClick={handleClick}
-                >
-                  <AddIcon color="primary" />
-                </CardActionArea>
-              </Card>
-            )
-          }
-        >
-          {steps.map((step) => (
-            <Box
-              id={step.id}
-              key={step.id}
-              data-testid={`preview-${step.id}`}
-              sx={{
-                width: 95,
-                height: 140
-              }}
-            >
-              <Box
-                sx={{
-                  transform: 'scale(0.25)',
-                  transformOrigin: 'top left'
-                }}
-              >
-                <FramePortal width={380} height={560}>
-                  <ThemeProvider
-                    themeName={journey?.themeName ?? ThemeName.base}
-                    themeMode={journey?.themeMode ?? ThemeMode.light}
-                  >
-                    <Box sx={{ p: 4, height: '100%' }}>
-                      <BlockRenderer
-                        block={step}
-                        wrappers={{
-                          VideoWrapper,
-                          CardWrapper
-                        }}
-                      />
-                    </Box>
-                  </ThemeProvider>
-                </FramePortal>
-              </Box>
-            </Box>
-          ))}
-        </HorizontalSelect>
+        isDraggable === true ? (
+          <DragDropContext
+            onBeforeCapture={onBeforeCapture}
+            onDragEnd={onDragEnd}
+          >
+            <Droppable droppableId="steps" direction="horizontal">
+              {(provided) => (
+                <Box ref={provided.innerRef} {...provided.droppableProps}>
+                  <CardList
+                    steps={steps}
+                    selected={selected}
+                    showAddButton={showAddButton}
+                    droppableProvided={provided}
+                    handleClick={handleClick}
+                    handleChange={handleChange}
+                    isDragging={isDragging}
+                  />
+                </Box>
+              )}
+            </Droppable>
+          </DragDropContext>
+        ) : (
+          <CardList
+            steps={steps}
+            selected={selected}
+            handleClick={handleClick}
+            handleChange={handleChange}
+            showAddButton={showAddButton}
+          />
+        )
       ) : (
         <Stack
           direction="row"

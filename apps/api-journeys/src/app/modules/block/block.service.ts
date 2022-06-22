@@ -32,7 +32,7 @@ export class BlockService extends BaseService {
   async getSiblingsInternal(
     journeyId: string,
     parentBlockId?: string | null
-  ): Promise<Block[]> {
+  ): Promise<Array<Block & { _key: string }>> {
     // Only StepBlocks should not have parentBlockId
     const res =
       parentBlockId != null
@@ -56,7 +56,7 @@ export class BlockService extends BaseService {
   }
 
   async reorderSiblings(
-    siblings: Block[] | Array<{ _key: string; parentOrder: number }>
+    siblings: Array<Block & { _key: string }>
   ): Promise<Block[]> {
     const updatedSiblings = siblings.map((block, index) => ({
       ...block,
@@ -71,7 +71,7 @@ export class BlockService extends BaseService {
     journeyId: string,
     parentOrder: number
   ): Promise<Block[]> {
-    const block = idAsKey(await this.get(id)) as Block
+    const block = idAsKey(await this.get(id)) as Block & { _key: string }
 
     if (block.journeyId === journeyId && block.parentOrder != null) {
       const siblings = await this.getSiblingsInternal(
