@@ -1,14 +1,11 @@
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import TouchAppRounded from '@mui/icons-material/TouchAppRounded'
-import {
-  ActiveTab,
-  BUTTON_FIELDS,
-  ICON_FIELDS,
-  TreeBlock,
-  useEditor,
-  useJourney
-} from '@core/journeys/ui'
+import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
+import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { gql, useMutation } from '@apollo/client'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'

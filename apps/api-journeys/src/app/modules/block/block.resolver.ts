@@ -43,6 +43,18 @@ export class BlockResolver {
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
+  async blockDuplicate(
+    @Args('id') id: string,
+    @Args('journeyId') journeyId: string,
+    @Args('parentOrder') parentOrder?: number
+  ): Promise<Block[]> {
+    return await this.blockService.duplicateBlock(id, journeyId, parentOrder)
+  }
+
+  @Mutation()
+  @UseGuards(
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  )
   async blockDelete(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string,

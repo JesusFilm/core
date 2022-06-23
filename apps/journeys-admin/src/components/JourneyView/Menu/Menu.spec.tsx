@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney, publishedJourney } from '../data'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { Menu, JOURNEY_PUBLISH } from '.'

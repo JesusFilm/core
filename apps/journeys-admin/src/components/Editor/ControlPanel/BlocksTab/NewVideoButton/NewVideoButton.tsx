@@ -1,12 +1,9 @@
 import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import {
-  ActiveTab,
-  useEditor,
-  TreeBlock,
-  VIDEO_FIELDS,
-  useJourney
-} from '@core/journeys/ui'
+import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
+import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'

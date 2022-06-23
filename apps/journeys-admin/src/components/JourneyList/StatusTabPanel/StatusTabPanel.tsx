@@ -1,6 +1,6 @@
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 import Card from '@mui/material/Card'
-import { TabPanel, tabA11yProps } from '@core/shared/ui'
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'

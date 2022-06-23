@@ -10,14 +10,12 @@ import { v4 as uuidv4 } from 'uuid'
 import { useSnackbar } from 'notistack'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
-import {
-  TreeBlock,
-  handleAction,
-  useEditor,
-  useJourney,
-  useBlocks,
-  getStepHeading
-} from '../..'
+import type { TreeBlock } from '../../libs/block'
+import { useBlocks } from '../../libs/block'
+import { useEditor } from '../../libs/EditorProvider'
+import { useJourney } from '../../libs/JourneyProvider'
+import { handleAction } from '../../libs/action'
+import { getStepHeading } from '../../libs/getStepHeading'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { SignUpSubmissionEventCreate } from './__generated__/SignUpSubmissionEventCreate'

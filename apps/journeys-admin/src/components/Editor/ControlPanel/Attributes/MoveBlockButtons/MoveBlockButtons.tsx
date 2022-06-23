@@ -7,7 +7,9 @@ import Typography from '@mui/material/Typography'
 import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import { gql, useMutation } from '@apollo/client'
-import { TreeBlock, searchBlocks, useJourney } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import { BlockOrderUpdate } from '../../../../../../__generated__/BlockOrderUpdate'
 
 const StyledMoveButton = styled(Button)(({ theme }) => ({

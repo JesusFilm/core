@@ -3,7 +3,7 @@ import Document, { Html, Head, Main, NextScript } from 'next/document'
 import createEmotionServer from '@emotion/server/create-instance'
 import type { EmotionCache } from '@emotion/cache'
 import type { Enhancer, AppType } from 'next/dist/shared/lib/utils'
-import { createEmotionCache } from '@core/shared/ui'
+import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]

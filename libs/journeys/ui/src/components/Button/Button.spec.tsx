@@ -10,14 +10,10 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
-import {
-  handleAction,
-  TreeBlock,
-  JourneyProvider,
-  activeBlockVar,
-  treeBlocksVar
-} from '../..'
-import { BlockFields_StepBlock as StepBlock } from '../../libs/transformer/__generated__/BlockFields'
+import { handleAction } from '../../libs/action'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { TreeBlock, activeBlockVar, treeBlocksVar } from '../../libs/block'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { ButtonFields } from './__generated__/ButtonFields'
 import { BUTTON_CLICK_EVENT_CREATE } from './Button'
 import { Button } from '.'

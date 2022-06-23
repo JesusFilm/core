@@ -1,10 +1,10 @@
 import { ReactElement } from 'react'
 import { render } from '@testing-library/react'
-import type { TreeBlock } from '@core/journeys/ui'
-import { Card } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { Card } from '@core/journeys/ui/Card'
 import { CardWrapper } from '.'
 
-jest.mock('@core/journeys/ui', () => ({
+jest.mock('@core/journeys/ui/Card', () => ({
   __esModule: true,
   Card: jest.fn(() => <></>)
 }))

@@ -1,4 +1,6 @@
-import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'

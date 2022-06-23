@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { simpleComponentConfig } from '../../../../libs/storybook'
 import { defaultJourney, publishedJourney } from '../../data'
 import { JourneyDetails } from './JourneyDetails'

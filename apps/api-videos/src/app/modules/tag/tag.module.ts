@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { DatabaseModule } from '@core/nest/database'
+import { DatabaseModule } from '@core/nest/database/DatabaseModule'
 import { VideoTagResolver } from './tag.resolver'
 import { VideoTagService } from './tag.service'
 

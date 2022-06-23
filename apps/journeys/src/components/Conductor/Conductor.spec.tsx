@@ -1,10 +1,7 @@
-import { useBreakpoints } from '@core/shared/ui'
-import {
-  activeBlockVar,
-  JourneyProvider,
-  TreeBlock,
-  treeBlocksVar
-} from '@core/journeys/ui'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { activeBlockVar, treeBlocksVar } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
@@ -13,7 +10,7 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 import { JOURNEY_VIEW_EVENT_CREATE } from './Conductor'
 import { Conductor } from '.'
 
-jest.mock('../../../../../libs/shared/ui/src/', () => ({
+jest.mock('@core/shared/ui/useBreakpoints', () => ({
   __esModule: true,
   useBreakpoints: jest.fn()
 }))
