@@ -6,6 +6,7 @@ import { SignUp } from '@core/journeys/ui/SignUp'
 import { SignUpBlockUpdateContent } from '../../../../../../__generated__/SignUpBlockUpdateContent'
 import { SignUpFields } from '../../../../../../__generated__/SignUpFields'
 import { InlineEditInput } from '../InlineEditInput'
+import { useOnClickOutside } from '../useOnClickOutside/useOnClickOutside'
 
 export const SIGN_UP_BLOCK_UPDATE_CONTENT = gql`
   mutation SignUpBlockUpdateContent(
@@ -52,10 +53,12 @@ export function SignUpEdit({
       }
     })
   }
+  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
 
   const input = (
     <InlineEditInput
       name={`edit-${id}`}
+      ref={inputRef}
       fullWidth
       multiline
       autoFocus
