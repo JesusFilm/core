@@ -1,11 +1,8 @@
 import { ReactElement } from 'react'
 import { useMutation } from '@apollo/client'
-import {
-  useEditor,
-  ActiveFab,
-  WrapperProps,
-  useJourney
-} from '@core/journeys/ui'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useEditor, ActiveFab } from '@core/journeys/ui/EditorProvider'
+import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { TypographyFields } from '../../../../../__generated__/TypographyFields'
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
 import { RadioQuestionFields } from '../../../../../__generated__/RadioQuestionFields'

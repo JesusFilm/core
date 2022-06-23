@@ -1,6 +1,7 @@
 import { Meta } from '@storybook/react'
 import { ReactElement } from 'react'
-import { activeBlockVar, TreeBlock, treeBlocksVar } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { activeBlockVar, treeBlocksVar } from '@core/journeys/ui/block'
 import { journeysConfig, simpleComponentConfig } from '../../libs/storybook'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { JourneyProgress } from '.'

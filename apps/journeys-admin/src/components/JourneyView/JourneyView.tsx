@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
-import { transformer, TreeBlock, useJourney } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { transformer } from '@core/journeys/ui/transformer'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import EditIcon from '@mui/icons-material/Edit'

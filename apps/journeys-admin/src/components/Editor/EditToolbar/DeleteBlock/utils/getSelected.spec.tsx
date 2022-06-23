@@ -1,8 +1,8 @@
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
-  TreeBlock,
   SetSelectedStepAction,
   SetSelectedBlockByIdAction
-} from '@core/journeys/ui'
+} from '@core/journeys/ui/EditorProvider'
 import {
   TypographyVariant,
   TypographyAlign,

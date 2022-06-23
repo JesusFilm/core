@@ -1,14 +1,11 @@
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { gql, useMutation } from '@apollo/client'
-import {
-  ActiveTab,
-  useEditor,
-  ICON_FIELDS,
-  SIGN_UP_FIELDS,
-  TreeBlock,
-  useJourney
-} from '@core/journeys/ui'
+import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
+import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
+import { SIGN_UP_FIELDS } from '@core/journeys/ui/SignUp/signUpFields'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import DraftsRounded from '@mui/icons-material/DraftsRounded'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { SignUpBlockCreate } from '../../../../../../__generated__/SignUpBlockCreate'

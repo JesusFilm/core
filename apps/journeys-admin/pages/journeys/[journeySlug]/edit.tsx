@@ -10,6 +10,7 @@ import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
+import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { GetJourney } from '../../../__generated__/GetJourney'
 import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
@@ -77,9 +78,16 @@ function JourneyEditPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ locale }) => {
+})(async ({ AuthUser, locale }) => {
+  const launchDarklyClient = await getLaunchDarklyClient()
+  const flags = await launchDarklyClient.allFlagsState({
+    key: AuthUser.id as string,
+    firstName: AuthUser.displayName ?? undefined,
+    email: AuthUser.email ?? undefined
+  })
   return {
     props: {
+      flags,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-journeys-admin', 'libs-journeys-ui'],

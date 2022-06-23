@@ -1,11 +1,11 @@
 import { ReactElement, MouseEvent } from 'react'
 import {
+  useEditor,
   ActiveTab,
-  ActiveFab,
-  TreeBlock,
-  WrapperProps,
-  useEditor
-} from '@core/journeys/ui'
+  ActiveFab
+} from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import Box from '@mui/material/Box'
 
 export function SelectableWrapper({

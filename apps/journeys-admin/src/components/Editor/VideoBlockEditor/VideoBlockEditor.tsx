@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { TreeBlock } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'

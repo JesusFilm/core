@@ -14,8 +14,8 @@ import BeenhereRounded from '@mui/icons-material/BeenhereRounded'
 import SendRounded from '@mui/icons-material/SendRounded'
 import SubscriptionsRounded from '@mui/icons-material/SubscriptionsRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
-import { BlockFields_IconBlock as IconBlock } from '../../libs/transformer/__generated__/BlockFields'
-import { TreeBlock } from '../..'
+import { BlockFields_IconBlock as IconBlock } from '../../libs/block/__generated__/BlockFields'
+import type { TreeBlock } from '../../libs/block'
 
 export function Icon({
   iconName,

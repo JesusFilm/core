@@ -1,10 +1,8 @@
 import { ReactElement, ReactNode } from 'react'
-import {
-  transformer,
-  TreeBlock,
-  EditorProvider,
-  JourneyProvider
-} from '@core/journeys/ui'
+import { transformer } from '@core/journeys/ui/transformer'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { SocialShareAppearance } from './Drawer/SocialShareAppearance'

@@ -1,34 +1,26 @@
 import Box from '@mui/material/Box'
-import { ReactElement } from 'react'
-import {
-  BlockRenderer,
-  CARD_FIELDS,
-  STEP_FIELDS,
-  TreeBlock,
-  transformer,
-  useJourney
-} from '@core/journeys/ui'
-import { ThemeProvider } from '@core/shared/ui'
-import AddIcon from '@mui/icons-material/Add'
-import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
+import { ReactElement, useState } from 'react'
+import { transformer } from '@core/journeys/ui/transformer'
+import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
+import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { v4 as uuidv4 } from 'uuid'
 import { useMutation, gql } from '@apollo/client'
-import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
+import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import { StepsOrderUpdate } from '../../../__generated__/StepsOrderUpdate'
 import { StepAndCardBlockCreate } from '../../../__generated__/StepAndCardBlockCreate'
-import { FramePortal } from '../FramePortal'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
-import { HorizontalSelect } from '../HorizontalSelect'
-import { VideoWrapper } from '../Editor/Canvas/VideoWrapper'
-import { CardWrapper } from '../Editor/Canvas/CardWrapper'
+import { CardList } from './CardList'
 
 export interface CardPreviewProps {
   onSelect?: (step: TreeBlock<StepBlock>) => void
   selected?: TreeBlock<StepBlock>
   steps?: Array<TreeBlock<StepBlock>>
   showAddButton?: boolean
+  isDraggable?: boolean
 }
 
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
@@ -46,15 +38,31 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
   }
 `
 
+export const STEPS_ORDER_UPDATE = gql`
+  mutation StepsOrderUpdate($id: ID!, $journeyId: ID!, $parentOrder: Int!) {
+    blockOrderUpdate(
+      id: $id
+      journeyId: $journeyId
+      parentOrder: $parentOrder
+    ) {
+      id
+      parentOrder
+    }
+  }
+`
+
 export function CardPreview({
   steps,
   selected,
   onSelect,
-  showAddButton
+  showAddButton,
+  isDraggable
 }: CardPreviewProps): ReactElement {
+  const [isDragging, setIsDragging] = useState(false)
   const [stepAndCardBlockCreate] = useMutation<StepAndCardBlockCreate>(
     STEP_AND_CARD_BLOCK_CREATE
   )
+  const [stepsOrderUpdate] = useMutation<StepsOrderUpdate>(STEPS_ORDER_UPDATE)
   const { journey } = useJourney()
 
   const handleChange = (selectedId: string): void => {
@@ -114,74 +122,80 @@ export function CardPreview({
     }
   }
 
+  const onBeforeCapture = (): void => {
+    setIsDragging(true)
+  }
+
+  const onDragEnd = async ({ destination, source }): Promise<void> => {
+    setIsDragging(false)
+    if (steps == null) return
+    if (journey == null) return
+    if (destination == null) return
+
+    const cardDragging = steps[source.index]
+    const destIndex: number = destination.index
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destIndex === source.index
+    )
+      return
+
+    if (cardDragging.parentOrder != null) {
+      const parentOrder = cardDragging.parentOrder + destIndex - source.index
+
+      await stepsOrderUpdate({
+        variables: {
+          id: cardDragging.id,
+          journeyId: journey.id,
+          parentOrder
+        },
+        optimisticResponse: {
+          blockOrderUpdate: [
+            {
+              __typename: 'StepBlock',
+              id: cardDragging.id,
+              parentOrder
+            }
+          ]
+        }
+      })
+    }
+  }
+
   return (
     <>
       {steps != null ? (
-        <HorizontalSelect
-          onChange={handleChange}
-          id={selected?.id}
-          footer={
-            showAddButton === true && (
-              <Card
-                id="CardPreviewAddButton"
-                variant="outlined"
-                sx={{
-                  display: 'flex',
-                  width: 87,
-                  height: 132,
-                  m: 1
-                }}
-              >
-                <CardActionArea
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                  }}
-                  onClick={handleClick}
-                >
-                  <AddIcon color="primary" />
-                </CardActionArea>
-              </Card>
-            )
-          }
-        >
-          {steps.map((step) => (
-            <Box
-              id={step.id}
-              key={step.id}
-              data-testid={`preview-${step.id}`}
-              sx={{
-                width: 95,
-                height: 140
-              }}
-            >
-              <Box
-                sx={{
-                  transform: 'scale(0.25)',
-                  transformOrigin: 'top left'
-                }}
-              >
-                <FramePortal width={380} height={560}>
-                  <ThemeProvider
-                    themeName={journey?.themeName ?? ThemeName.base}
-                    themeMode={journey?.themeMode ?? ThemeMode.light}
-                  >
-                    <Box sx={{ p: 4, height: '100%' }}>
-                      <BlockRenderer
-                        block={step}
-                        wrappers={{
-                          VideoWrapper,
-                          CardWrapper
-                        }}
-                      />
-                    </Box>
-                  </ThemeProvider>
-                </FramePortal>
-              </Box>
-            </Box>
-          ))}
-        </HorizontalSelect>
+        isDraggable === true ? (
+          <DragDropContext
+            onBeforeCapture={onBeforeCapture}
+            onDragEnd={onDragEnd}
+          >
+            <Droppable droppableId="steps" direction="horizontal">
+              {(provided) => (
+                <Box ref={provided.innerRef} {...provided.droppableProps}>
+                  <CardList
+                    steps={steps}
+                    selected={selected}
+                    showAddButton={showAddButton}
+                    droppableProvided={provided}
+                    handleClick={handleClick}
+                    handleChange={handleChange}
+                    isDragging={isDragging}
+                  />
+                </Box>
+              )}
+            </Droppable>
+          </DragDropContext>
+        ) : (
+          <CardList
+            steps={steps}
+            selected={selected}
+            handleClick={handleClick}
+            handleChange={handleChange}
+            showAddButton={showAddButton}
+          />
+        )
       ) : (
         <Stack
           direction="row"

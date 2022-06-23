@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+import { omit } from 'lodash'
 
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
@@ -23,22 +24,11 @@ describe('StepBlockResolver', () => {
     nextBlockId: '4'
   }
 
-  const blockUpdate = {
-    __typename: '',
-    journeyId: '2',
-    parentBlockId: '3',
-    parentOrder: 0,
-    locked: true,
-    nextBlockId: '4'
-  }
+  const blockUpdate = omit(block, 'id')
 
   const blockCreateResponse = {
-    journeyId: '2',
-    __typename: 'StepBlock',
-    parentBlockId: '3',
-    parentOrder: 2,
-    locked: true,
-    nextBlockId: '4'
+    ...block,
+    parentOrder: 2
   }
 
   const blockService = {
@@ -47,7 +37,7 @@ describe('StepBlockResolver', () => {
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
-      save: jest.fn((input) => input),
+      save: jest.fn(() => blockCreateResponse),
       update: jest.fn((input) => input)
     })
   }
@@ -79,11 +69,16 @@ describe('StepBlockResolver', () => {
 
   describe('stepBlockCreate', () => {
     it('creates a StepBlock', async () => {
-      await resolver
-        .stepBlockCreate(blockUpdate)
-        .catch((err) => console.log(err))
-      expect(service.getSiblings).toHaveBeenCalledWith(blockUpdate.journeyId)
-      expect(service.save).toHaveBeenCalledWith(blockCreateResponse)
+      expect(
+        await resolver
+          .stepBlockCreate(omit(block, ['id', 'parentOrder']))
+          .catch((err) => console.log(err))
+      ).toEqual(blockCreateResponse)
+      expect(service.getSiblings).toHaveBeenCalledWith(block.journeyId)
+      expect(service.save).toHaveBeenCalledWith({
+        ...blockUpdate,
+        parentOrder: 2
+      })
     })
   })
 

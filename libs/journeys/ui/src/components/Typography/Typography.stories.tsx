@@ -8,12 +8,10 @@ import {
   TypographyColor,
   TypographyAlign
 } from '../../../__generated__/globalTypes'
-import {
-  journeyUiConfig,
-  simpleComponentConfig,
-  StoryCard,
-  TreeBlock
-} from '../..'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import type { TreeBlock } from '../../libs/block'
+import { StoryCard } from '../StoryCard'
 import { Typography } from './Typography'
 import { TypographyFields } from './__generated__/TypographyFields'
 

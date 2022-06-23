@@ -1,6 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeyUiConfig, StoryCard, TreeBlock } from '../..'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import type { TreeBlock } from '../../libs/block'
+import { StoryCard } from '../StoryCard'
 import {
   TypographyVariant,
   ButtonVariant,

@@ -1,4 +1,4 @@
-import { TreeBlock } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
 import {
   ButtonVariant,
