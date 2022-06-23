@@ -102,25 +102,6 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
               />
             </Grid>
             {journey != null ? (
-              // journey.status === JourneyStatus.draft ? (
-              //   <>
-              //     <Grid item>
-              //       <EditIcon color="warning" sx={{ fontSize: 13 }} />
-              //     </Grid>
-              //     <Grid item sx={{ pr: 2 }}>
-              //       <Typography variant="caption">Draft</Typography>
-              //     </Grid>
-              //   </>
-              // ) : (
-              //   <>
-              //     <Grid item>
-              //       <CheckCircleIcon color="success" sx={{ fontSize: 13 }} />
-              //     </Grid>
-              //     <Grid item sx={{ pr: 2 }}>
-              //       <Typography variant="caption">Published</Typography>
-              //     </Grid>
-              //   </>
-              // )
               <StatusChip status={journey.status} />
             ) : (
               <>
