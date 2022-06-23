@@ -812,6 +812,30 @@ input JourneysFilter {
   featured: Boolean
 }
 
+enum JourneysReportType {
+  multipleFull
+  multipleSummary
+  singleFull
+  singleSummary
+}
+
+type PowerBiEmbed {
+  """The report ID"""
+  reportId: String!
+
+  """The name of the report"""
+  reportName: String!
+
+  """The embed URL of the report"""
+  embedUrl: String!
+
+  """The embed token"""
+  accessToken: String!
+
+  """The date and time (UTC) of token expiration"""
+  expiration: String!
+}
+
 input JourneyCreateInput {
   """
   ID should be unique Response UUID
@@ -922,6 +946,7 @@ extend type Language @key(fields: "id") {
 }
 
 extend type Query {
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourneys: [Journey!]!
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
