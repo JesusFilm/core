@@ -1,4 +1,3 @@
-// div, heading, iframe, paragraph
 import { ReactElement } from 'react'
 import { render, fireEvent } from '@testing-library/react'
 import { useOnClickOutside } from '.'

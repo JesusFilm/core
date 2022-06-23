@@ -84,7 +84,7 @@ describe('ButtonEdit', () => {
     fireEvent.blur(input)
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
-  it('saves the button label on blur', async () => {
+  it('saves the button label on outside click', async () => {
     const result = jest.fn(() => ({
       data: {
         buttonBlockUpdate: [
