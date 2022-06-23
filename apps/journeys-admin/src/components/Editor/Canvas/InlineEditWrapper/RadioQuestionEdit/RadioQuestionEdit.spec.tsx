@@ -1,6 +1,8 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import {
@@ -73,16 +75,16 @@ describe('RadioQuestionEdit', () => {
             <RadioQuestionEdit
               {...props([
                 option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option
+                { ...option, id: 'option1.id' },
+                { ...option, id: 'option2.id' },
+                { ...option, id: 'option3.id' },
+                { ...option, id: 'option4.id' },
+                { ...option, id: 'option5.id' },
+                { ...option, id: 'option6.id' },
+                { ...option, id: 'option7.id' },
+                { ...option, id: 'option8.id' },
+                { ...option, id: 'option9.id' },
+                { ...option, id: 'option10.id' }
               ])}
             />
           </EditorProvider>
@@ -111,17 +113,17 @@ describe('RadioQuestionEdit', () => {
             <RadioQuestionEdit
               {...props([
                 option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option,
-                option
+                { ...option, id: 'option1.id' },
+                { ...option, id: 'option2.id' },
+                { ...option, id: 'option3.id' },
+                { ...option, id: 'option4.id' },
+                { ...option, id: 'option5.id' },
+                { ...option, id: 'option6.id' },
+                { ...option, id: 'option7.id' },
+                { ...option, id: 'option8.id' },
+                { ...option, id: 'option9.id' },
+                { ...option, id: 'option10.id' },
+                { ...option, id: 'option11.id' }
               ])}
             />
           </EditorProvider>

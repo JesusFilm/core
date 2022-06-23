@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { mockDbQueryResult } from '@core/nest/database'
+import { mockDbQueryResult } from '@core/nest/database/mock'
 import { Database, aql } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'

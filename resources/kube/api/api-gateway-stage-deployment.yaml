@@ -14,6 +14,8 @@ spec:
       labels:
         app: api-gateway-stage
     spec:
+      nodeSelector:
+        type: api
       containers:
         - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-gateway:stage
           imagePullPolicy: IfNotPresent

@@ -10,8 +10,13 @@ spec:
     type: None
   tls:
     caSecretName: None
+  agents:
+    resources:
+      storageClassName: ebs-sc
   single:
     resources:
       requests:
         storage: 20Gi
       storageClassName: ebs-sc
+    nodeSelector:
+      type: database

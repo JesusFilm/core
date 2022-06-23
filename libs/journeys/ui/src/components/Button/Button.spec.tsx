@@ -10,14 +10,10 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
-import {
-  handleAction,
-  TreeBlock,
-  JourneyProvider,
-  activeBlockVar,
-  treeBlocksVar
-} from '../..'
-import { BlockFields_StepBlock as StepBlock } from '../../libs/transformer/__generated__/BlockFields'
+import { handleAction } from '../../libs/action'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { TreeBlock, activeBlockVar, treeBlocksVar } from '../../libs/block'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { ButtonFields } from './__generated__/ButtonFields'
 import { BUTTON_CLICK_EVENT_CREATE } from './Button'
 import { Button } from '.'
@@ -53,6 +49,15 @@ jest.mock('next/router', () => ({
   useRouter() {
     return {
       push: () => null
+    }
+  }
+}))
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
     }
   }
 }))
@@ -161,7 +166,7 @@ describe('Button', () => {
           event: 'button_click',
           eventId: 'uuid',
           blockId: 'button',
-          stepName: 'Step 1'
+          stepName: 'Step {{number}}'
         }
       })
     )

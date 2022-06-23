@@ -16,7 +16,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Popover from '@mui/material/Popover'
 import RadioGroup from '@mui/material/RadioGroup'
 import Radio from '@mui/material/Radio'
-import { useBreakpoints } from '@core/shared/ui'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 export enum SortOrder {
   CREATED_AT = 'createdAt',
@@ -110,6 +110,12 @@ export function JourneySort({
         label={sortOrder != null ? sortOrderLabel[sortOrder] : 'Sort By'}
         onClick={handleClick}
         ref={chipRef}
+        sx={{
+          backgroundColor: 'white',
+          border: '1px solid',
+          borderColor: 'divider',
+          color: 'secondar.light'
+        }}
       />
       {breakpoints.md ? (
         <Popover

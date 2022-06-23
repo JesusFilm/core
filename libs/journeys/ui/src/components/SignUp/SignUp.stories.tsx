@@ -2,13 +2,11 @@ import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { ReactElement } from 'react'
 import { SnackbarProvider } from 'notistack'
-import {
-  JourneyProvider,
-  journeyUiConfig,
-  simpleComponentConfig,
-  StoryCard,
-  TreeBlock
-} from '../..'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import type { TreeBlock } from '../../libs/block'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { StoryCard } from '../StoryCard'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { IconName } from '../../../__generated__/globalTypes'
 import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'

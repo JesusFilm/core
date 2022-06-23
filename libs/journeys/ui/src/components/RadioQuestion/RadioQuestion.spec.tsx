@@ -1,13 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
-import {
-  TreeBlock,
-  JourneyProvider,
-  activeBlockVar,
-  treeBlocksVar
-} from '../..'
-import { BlockFields_StepBlock as StepBlock } from '../../libs/transformer/__generated__/BlockFields'
+import type { TreeBlock } from '../../libs/block'
+import { activeBlockVar, treeBlocksVar } from '../../libs/block'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
 
@@ -30,6 +27,15 @@ jest.mock('react-gtm-module', () => ({
 const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
@@ -229,7 +235,7 @@ describe('RadioQuestion', () => {
           eventId: 'uuid',
           blockId: 'RadioQuestion1',
           radioOptionSelectedId: 'RadioOption1',
-          stepName: 'Step 1'
+          stepName: 'Step {{number}}'
         }
       })
     )

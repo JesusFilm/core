@@ -5,15 +5,13 @@ import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { useMutation, gql } from '@apollo/client'
 import TagManager from 'react-gtm-module'
-import {
-  TreeBlock,
-  BlockRenderer,
-  useJourney,
-  useBlocks,
-  getStepHeading
-} from '../..'
-import { WrappersProps } from '../BlockRenderer'
-import { RadioOption } from './RadioOption'
+import { useTranslation } from 'react-i18next'
+import type { TreeBlock } from '../../libs/block'
+import { useBlocks } from '../../libs/block'
+import { getStepHeading } from '../../libs/getStepHeading'
+import { useJourney } from '../../libs/JourneyProvider'
+import { BlockRenderer, WrappersProps } from '../BlockRenderer'
+import { RadioOption } from '../RadioOption'
 import { RadioQuestionSubmissionEventCreate } from './__generated__/RadioQuestionSubmissionEventCreate'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 
@@ -52,10 +50,11 @@ export function RadioQuestion({
   const { admin } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const { activeBlock, treeBlocks } = useBlocks()
+  const { t } = useTranslation('libs-journeys-ui')
 
   const heading =
     activeBlock != null
-      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks)
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
   const handleClick = (radioOptionBlockId: string): void => {

@@ -4,14 +4,11 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import {
-  TreeBlock,
-  handleAction,
-  JourneyProvider,
-  activeBlockVar,
-  treeBlocksVar
-} from '../..'
-import { BlockFields_StepBlock as StepBlock } from '../../libs/transformer/__generated__/BlockFields'
+import type { TreeBlock } from '../../libs/block'
+import { activeBlockVar, treeBlocksVar } from '../../libs/block'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { handleAction } from '../../libs/action'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
 
@@ -39,6 +36,15 @@ jest.mock('next/router', () => ({
   useRouter() {
     return {
       push: () => null
+    }
+  }
+}))
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
     }
   }
 }))
@@ -345,7 +351,7 @@ describe('SignUp', () => {
           event: 'sign_up_submission',
           eventId: 'uuid',
           blockId: 'signUp0.id',
-          stepName: 'Step 1'
+          stepName: 'Step {{number}}'
         }
       })
     })

@@ -44,7 +44,7 @@ const Template: Story<PageWrapperProps> = ({ ...args }) => (
 )
 
 export const Default = Template.bind({})
-Default.args = { title: 'Journeys' }
+Default.args = { title: 'Active Journeys' }
 
 export const Complete = Template.bind({})
 Complete.args = {

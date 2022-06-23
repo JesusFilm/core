@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
@@ -10,7 +10,14 @@ import { steps } from './data'
 const CardViewStory = {
   ...journeysAdminConfig,
   component: CardView,
-  title: 'Journeys-Admin/JourneyView/CardView'
+  title: 'Journeys-Admin/JourneyView/CardView',
+  parameters: {
+    ...journeysAdminConfig.parameters,
+    chromatic: {
+      ...journeysAdminConfig.parameters.chromatic,
+      diffThreshold: 0.75
+    }
+  }
 }
 
 const Template: Story<Omit<CardViewProps, 'slug'>> = ({ ...args }) => (

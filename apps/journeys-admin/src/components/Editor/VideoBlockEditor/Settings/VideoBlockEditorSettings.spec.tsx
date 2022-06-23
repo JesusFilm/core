@@ -1,5 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { TreeBlock } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { ThemeProvider } from '../../../ThemeProvider'
 import { VideoBlockEditorSettings } from '.'
@@ -75,7 +75,7 @@ describe('VideoBlockEditorSettings', () => {
     expect(getByRole('textbox', { name: 'Ends At' })).not.toBeDisabled()
   })
 
-  it('should update autoplay', () => {
+  it('should update autoplay', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(
       <ThemeProvider>
@@ -89,14 +89,16 @@ describe('VideoBlockEditorSettings', () => {
       </ThemeProvider>
     )
     fireEvent.click(getByRole('checkbox', { name: 'Autoplay' }))
-    expect(onChange).toHaveBeenCalledWith({
-      autoplay: false,
-      muted: true,
-      endAt: 0,
-      startAt: 0
-    })
+    await waitFor(() =>
+      expect(onChange).toHaveBeenCalledWith({
+        autoplay: false,
+        muted: true,
+        endAt: 0,
+        startAt: 0
+      })
+    )
   })
-  it('should update muted', () => {
+  it('should update muted', async () => {
     const onChange = jest.fn()
     const { getByRole } = render(
       <ThemeProvider>
@@ -110,11 +112,13 @@ describe('VideoBlockEditorSettings', () => {
       </ThemeProvider>
     )
     fireEvent.click(getByRole('checkbox', { name: 'Muted' }))
-    expect(onChange).toHaveBeenCalledWith({
-      autoplay: true,
-      muted: false,
-      endAt: 0,
-      startAt: 0
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({
+        autoplay: true,
+        muted: false,
+        endAt: 0,
+        startAt: 0
+      })
     })
   })
   it('should update startAt', async () => {

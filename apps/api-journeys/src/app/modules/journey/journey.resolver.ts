@@ -6,10 +6,10 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql'
-import { CurrentUserId } from '@core/nest/decorators'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import slugify from 'slugify'
 import { UseGuards } from '@nestjs/common'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { v4 as uuidv4 } from 'uuid'
 

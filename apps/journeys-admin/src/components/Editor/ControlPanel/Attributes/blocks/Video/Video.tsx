@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
-import { TreeBlock, useEditor } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import VideoLibrary from '@mui/icons-material/VideoLibrary'
 import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../__generated__/GetJourney'

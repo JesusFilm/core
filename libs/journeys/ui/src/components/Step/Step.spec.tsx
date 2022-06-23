@@ -2,8 +2,9 @@ import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
-import { TreeBlock, activeBlockVar, treeBlocksVar } from '../..'
-import { JourneyProvider } from '../../libs/context/JourneyContext'
+import type { TreeBlock } from '../../libs/block'
+import { activeBlockVar, treeBlocksVar } from '../../libs/block'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import { StepFields } from './__generated__/StepFields'
 import { STEP_VIEW_EVENT_CREATE } from './Step'
 import { Step } from '.'
@@ -25,6 +26,15 @@ jest.mock('react-gtm-module', () => ({
 const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 const block: TreeBlock<StepFields> = {
   __typename: 'StepBlock',
@@ -141,7 +151,7 @@ describe('Step', () => {
           event: 'step_view',
           eventId: 'uuid',
           blockId: 'Step1',
-          stepName: 'Step 1'
+          stepName: 'Step {{number}}'
         }
       })
     )

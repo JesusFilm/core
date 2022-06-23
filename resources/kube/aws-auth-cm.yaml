@@ -5,7 +5,12 @@ metadata:
   namespace: kube-system
 data:
   mapRoles: |
-    - rolearn: arn:aws:iam::894231352815:role/JesusFilm-core-stack-NodeInstanceRole-1827ZS2X676VT
+    - rolearn: arn:aws:iam::894231352815:role/EksAWSControl
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+    - rolearn: arn:aws:iam::894231352815:role/JesusFilmCoreEKSWorkerNodeRole
       username: system:node:{{EC2PrivateDNSName}}
       groups:
         - system:bootstrappers
