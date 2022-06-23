@@ -94,8 +94,14 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
             pb: 4
           }}
         >
-          <Grid container spacing={2} display="flex" alignItems="center">
-            <Grid item>
+          <Grid
+            container
+            spacing={2}
+            display="flex"
+            alignItems="center"
+            sx={{ mt: 0 }}
+          >
+            <Grid item sx={{ py: 2 }}>
               <AccessAvatars
                 journeySlug={journey?.slug}
                 userJourneys={journey?.userJourneys ?? undefined}
@@ -105,20 +111,20 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
               <StatusChip status={journey.status} />
             ) : (
               <>
-                <Grid item>
+                <Grid item sx={{ py: 2 }}>
                   <EditIcon sx={{ fontSize: 13 }} />
                 </Grid>
-                <Grid item sx={{ pr: 2 }}>
+                <Grid item sx={{ pr: 2, py: 2 }}>
                   <Typography variant="caption">
                     <Skeleton variant="text" width={30} />
                   </Typography>
                 </Grid>
               </>
             )}
-            <Grid item>
+            <Grid item sx={{ py: 2 }}>
               <TranslateIcon sx={{ fontSize: 13 }} />
             </Grid>
-            <Grid item>
+            <Grid item sx={{ py: 2 }}>
               <Typography variant="caption">
                 {journey != null ? (
                   journey.language.name.find(({ primary }) => primary)?.value

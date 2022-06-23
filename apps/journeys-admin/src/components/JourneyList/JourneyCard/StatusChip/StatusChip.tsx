@@ -43,8 +43,10 @@ export function StatusChip({ status }: StatusChipProps): ReactElement {
     <>
       {currentStatus != null ? (
         <>
-          <Grid item>{currentStatus.icon}</Grid>
-          <Grid item>
+          <Grid item sx={{ py: 2 }}>
+            {currentStatus.icon}
+          </Grid>
+          <Grid item sx={{ py: 2 }}>
             <Typography
               color={
                 currentStatus.journeyStatus === JourneyStatus.trashed
