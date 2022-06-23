@@ -45,7 +45,16 @@ export function StatusChip({ status }: StatusChipProps): ReactElement {
         <>
           <Grid item>{currentStatus.icon}</Grid>
           <Grid item>
-            <Typography variant="caption">{currentStatus.text}</Typography>
+            <Typography
+              color={
+                currentStatus.journeyStatus === JourneyStatus.trashed
+                  ? 'error'
+                  : undefined
+              }
+              variant="caption"
+            >
+              {currentStatus.text}
+            </Typography>
           </Grid>
         </>
       ) : (
