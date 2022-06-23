@@ -681,7 +681,6 @@ input StepBlockCreateInput {
   journeyId: ID!
   locked: Boolean
   nextBlockId: ID
-  parentOrder: Int
 }
 
 input StepBlockUpdateInput {

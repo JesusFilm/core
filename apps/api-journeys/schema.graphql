@@ -422,7 +422,6 @@ type StepBlock implements Block {
 input StepBlockCreateInput {
   id: ID
   journeyId: ID!
-  parentOrder: Int
   nextBlockId: ID
   locked: Boolean
 }

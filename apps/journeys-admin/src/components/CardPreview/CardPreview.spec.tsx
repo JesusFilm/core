@@ -27,8 +27,7 @@ describe('CardPreview', () => {
         variables: {
           journeyId: 'journeyId',
           stepId: 'stepId',
-          cardId: 'cardId',
-          parentOrder: null
+          cardId: 'cardId'
         }
       },
       result: {
