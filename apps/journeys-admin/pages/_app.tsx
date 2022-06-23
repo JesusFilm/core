@@ -9,6 +9,7 @@ import { datadogRum } from '@datadog/browser-rum'
 import { CacheProvider } from '@emotion/react'
 import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { appWithTranslation } from 'next-i18next'
 import { useTranslation } from 'react-i18next'
 import { useApollo } from '../src/libs/apolloClient'
@@ -60,30 +61,32 @@ function JourneysAdminApp({
   }, [])
 
   return (
-    <CacheProvider value={emotionCache}>
-      <DefaultSeo
-        titleTemplate={t('%s | Next Steps')}
-        defaultTitle={t('Admin | Next Steps')}
-      />
-      <Head>
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width"
+    <FlagsProvider flags={pageProps.flags}>
+      <CacheProvider value={emotionCache}>
+        <DefaultSeo
+          titleTemplate={t('%s | Next Steps')}
+          defaultTitle={t('Admin | Next Steps')}
         />
-      </Head>
-      <ThemeProvider>
-        <ApolloProvider client={apolloClient}>
-          <SnackbarProvider
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-          >
-            <Component {...pageProps} />
-          </SnackbarProvider>
-        </ApolloProvider>
-      </ThemeProvider>
-    </CacheProvider>
+        <Head>
+          <meta
+            name="viewport"
+            content="minimum-scale=1, initial-scale=1, width=device-width"
+          />
+        </Head>
+        <ThemeProvider>
+          <ApolloProvider client={apolloClient}>
+            <SnackbarProvider
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+            >
+              <Component {...pageProps} />
+            </SnackbarProvider>
+          </ApolloProvider>
+        </ThemeProvider>
+      </CacheProvider>
+    </FlagsProvider>
   )
 }
 
