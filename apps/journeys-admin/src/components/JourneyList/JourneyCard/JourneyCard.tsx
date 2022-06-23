@@ -9,14 +9,13 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import Skeleton from '@mui/material/Skeleton'
 import Link from 'next/link'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyCardMenu } from './JourneyCardMenu'
+import { StatusChip } from './StatusChip'
 
 interface JourneyCardProps {
   journey?: Journey
@@ -103,25 +102,26 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
               />
             </Grid>
             {journey != null ? (
-              journey.status === JourneyStatus.draft ? (
-                <>
-                  <Grid item>
-                    <EditIcon color="warning" sx={{ fontSize: 13 }} />
-                  </Grid>
-                  <Grid item sx={{ pr: 2 }}>
-                    <Typography variant="caption">Draft</Typography>
-                  </Grid>
-                </>
-              ) : (
-                <>
-                  <Grid item>
-                    <CheckCircleIcon color="success" sx={{ fontSize: 13 }} />
-                  </Grid>
-                  <Grid item sx={{ pr: 2 }}>
-                    <Typography variant="caption">Published</Typography>
-                  </Grid>
-                </>
-              )
+              // journey.status === JourneyStatus.draft ? (
+              //   <>
+              //     <Grid item>
+              //       <EditIcon color="warning" sx={{ fontSize: 13 }} />
+              //     </Grid>
+              //     <Grid item sx={{ pr: 2 }}>
+              //       <Typography variant="caption">Draft</Typography>
+              //     </Grid>
+              //   </>
+              // ) : (
+              //   <>
+              //     <Grid item>
+              //       <CheckCircleIcon color="success" sx={{ fontSize: 13 }} />
+              //     </Grid>
+              //     <Grid item sx={{ pr: 2 }}>
+              //       <Typography variant="caption">Published</Typography>
+              //     </Grid>
+              //   </>
+              // )
+              <StatusChip status={journey.status} />
             ) : (
               <>
                 <Grid item>
