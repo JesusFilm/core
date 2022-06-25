@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
@@ -56,6 +56,7 @@ function IndexPage(): ReactElement {
   const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
   const AuthUser = useAuthUser()
   const router = useRouter()
+  const [listEvent, setListEvent] = useState('')
 
   const activeTab = router.query.tab ?? 'active'
   const pageTitle =
@@ -65,18 +66,23 @@ function IndexPage(): ReactElement {
       ? t('Archived Journeys')
       : t('Trashed Journeys')
 
+  const handleClick = (event: string): void => {
+    setListEvent(event)
+  }
+
   return (
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper
         title={pageTitle}
         authUser={AuthUser}
-        menu={<JourneyListMenu router={router} />}
+        menu={<JourneyListMenu router={router} onClick={handleClick} />}
       >
         <JourneyList
           journeys={data?.journeys}
           disableCreation
           router={router}
+          event={listEvent}
         />
       </PageWrapper>
     </>

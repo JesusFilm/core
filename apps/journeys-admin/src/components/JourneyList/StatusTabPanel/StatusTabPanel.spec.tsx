@@ -45,8 +45,8 @@ describe('StatusTabPanel', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    await waitFor(
-      () => expect(getAllByLabelText('journey-card')).toHaveLength(10) // 10 because of placeholders
+    await waitFor(() =>
+      expect(getAllByLabelText('journey-card')).toHaveLength(4)
     )
   })
 

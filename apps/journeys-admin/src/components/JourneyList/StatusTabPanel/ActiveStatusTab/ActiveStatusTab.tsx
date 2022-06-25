@@ -1,13 +1,16 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Card from '@mui/material/Card'
-import { gql, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { sortBy } from 'lodash'
+import { useTranslation } from 'react-i18next'
+import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { GetActiveJourneys } from '../../../../../__generated__/GetActiveJourneys'
 import { JourneyCard } from '../../JourneyCard'
 import { AddJourneyButton } from '../../AddJourneyButton'
 import { SortOrder } from '../../JourneySort'
-// import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { Dialog } from '../../../Dialog'
 
 export const GET_ACTIVE_JOURNEYS = gql`
   query GetActiveJourneys {
@@ -43,24 +46,62 @@ export const GET_ACTIVE_JOURNEYS = gql`
   }
 `
 
+export const ARCHIVE_ACTIVE_JOURNEYS = gql`
+  mutation ArchiveActiveJourneys($ids: [ID!]!) {
+    journeysArchive(ids: $ids) {
+      id
+      status
+    }
+  }
+`
+
 interface ActiveStatusTabProps {
   onLoad: () => void
   sortOrder?: SortOrder
+  event: string
 }
 
 export function ActiveStatusTab({
   onLoad,
-  sortOrder
+  sortOrder,
+  event
 }: ActiveStatusTabProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { data, loading, error } =
     useQuery<GetActiveJourneys>(GET_ACTIVE_JOURNEYS)
+
   const journeys = data?.journeys
+
+  const [archiveActive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
+    variables: {
+      ids: journeys?.map((journey) => journey.id)
+    }
+  })
+
+  const [openArchiveAll, setOpenArchiveAll] = useState(false)
+
+  const archiveAll = async (): Promise<void> => {
+    await archiveActive()
+    handleClose()
+  }
+
+  const handleClose = (): void => {
+    setOpenArchiveAll(false)
+  }
 
   useEffect(() => {
     if (!loading && error == null) {
       onLoad()
     }
   }, [onLoad, loading, error])
+
+  useEffect(() => {
+    switch (event) {
+      case 'archiveAllActive':
+        setOpenArchiveAll(true)
+    }
+  }, [event])
 
   // orders of the first characters ascii value
   const sortedJourneys =
@@ -109,6 +150,27 @@ export function ActiveStatusTab({
           <JourneyCard />
         </>
       )}
+      <Dialog
+        open={openArchiveAll ?? false}
+        handleClose={handleClose}
+        dialogTitle={{
+          title: t('Archive Journeys'),
+          closeButton: true
+        }}
+        dialogAction={{
+          onSubmit: archiveAll,
+          submitLabel: t('Archive'),
+          closeLabel: t('Cancel')
+        }}
+        divider={true}
+        fullscreen={!smUp}
+      >
+        <Typography>
+          {t(
+            'Are you sure you would like to archive all active journeys immediately?'
+          )}
+        </Typography>
+      </Dialog>
     </>
   )
 }

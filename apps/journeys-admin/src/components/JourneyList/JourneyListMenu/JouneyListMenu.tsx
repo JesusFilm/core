@@ -15,10 +15,12 @@ import IconButton from '@mui/material/IconButton'
 
 interface JourneyListMenuProps {
   router: NextRouter
+  onClick: (event: string) => void
 }
 
 export default function JourneyListMenu({
-  router
+  router,
+  onClick
 }: JourneyListMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -28,8 +30,14 @@ export default function JourneyListMenu({
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
   }
+  const handleEvent = (event: string): void => {
+    onClick(event)
+    handleCloseMenu()
+  }
+
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
+    // onClick('')
   }
   return (
     <>
@@ -54,7 +62,7 @@ export default function JourneyListMenu({
             }}
           >
             {activeTab === 'active' && (
-              <MenuItem onClick={handleCloseMenu}>
+              <MenuItem onClick={() => handleEvent('archiveAllActive')}>
                 <ListItemIcon>
                   <Archive />
                 </ListItemIcon>
@@ -62,7 +70,7 @@ export default function JourneyListMenu({
               </MenuItem>
             )}
             {activeTab === 'archived' && (
-              <MenuItem onClick={handleCloseMenu}>
+              <MenuItem onClick={() => handleEvent('restoreAllArchived')}>
                 <ListItemIcon>
                   <Unarchive />
                 </ListItemIcon>

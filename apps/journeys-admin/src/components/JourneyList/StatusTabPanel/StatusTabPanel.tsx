@@ -14,6 +14,7 @@ import { TrashedStatusTab } from './TrashedStatusTab'
 
 export interface StatusTabPanelProps {
   router?: NextRouter
+  event: string
 }
 
 interface StatusOptions {
@@ -22,7 +23,10 @@ interface StatusOptions {
   tabIndex: number
 }
 
-export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
+export function StatusTabPanel({
+  router,
+  event
+}: StatusTabPanelProps): ReactElement {
   const journeyStatusTabs: StatusOptions[] = [
     {
       queryParam: 'active',
@@ -157,27 +161,47 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
           </Tabs>
         </Card>
 
-        <TabPanel
-          name="active-status-panel"
-          value={activeTab}
-          index={journeyStatusTabs[0].tabIndex}
-        >
-          <ActiveStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
-        </TabPanel>
-        <TabPanel
-          name="archived-status-panel"
-          value={activeTab}
-          index={journeyStatusTabs[1].tabIndex}
-        >
-          <ArchivedStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
-        </TabPanel>
-        <TabPanel
-          name="trashed-status-panel"
-          value={activeTab}
-          index={journeyStatusTabs[2].tabIndex}
-        >
-          <TrashedStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
-        </TabPanel>
+        {/* test for active tab to enforce refresh and journey id list */}
+
+        {activeTab === 0 && (
+          <TabPanel
+            name="active-status-panel"
+            value={activeTab}
+            index={journeyStatusTabs[0].tabIndex}
+          >
+            <ActiveStatusTab
+              onLoad={activeTabOnLoad}
+              sortOrder={sortOrder}
+              event={event}
+            />
+          </TabPanel>
+        )}
+        {activeTab === 1 && (
+          <TabPanel
+            name="archived-status-panel"
+            value={activeTab}
+            index={journeyStatusTabs[1].tabIndex}
+          >
+            <ArchivedStatusTab
+              onLoad={activeTabOnLoad}
+              sortOrder={sortOrder}
+              event={event}
+            />
+          </TabPanel>
+        )}
+        {activeTab === 2 && (
+          <TabPanel
+            name="trashed-status-panel"
+            value={activeTab}
+            index={journeyStatusTabs[2].tabIndex}
+          >
+            <TrashedStatusTab
+              onLoad={activeTabOnLoad}
+              sortOrder={sortOrder}
+              // event={event}
+            />
+          </TabPanel>
+        )}
       </>
     </>
   )

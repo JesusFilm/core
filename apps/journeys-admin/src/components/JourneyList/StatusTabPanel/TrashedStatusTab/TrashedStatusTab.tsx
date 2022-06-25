@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import { gql, useQuery } from '@apollo/client'
@@ -45,7 +45,7 @@ export const GET_TRASHED_JOURNEYS = gql`
 `
 
 interface TrashedStatusTabProps {
-  onLoad: () => void
+  onLoad: (journeys: string[] | undefined) => void
   sortOrder?: SortOrder
 }
 
@@ -58,11 +58,15 @@ export function TrashedStatusTab({
     useQuery<GetTrashedJourneys>(GET_TRASHED_JOURNEYS)
   const journeys = data?.journeys
 
+  const once = useRef(false)
   useEffect(() => {
-    if (!loading && error == null) {
-      onLoad()
+    if (!once.current) {
+      if (!loading && error == null) {
+        onLoad(journeys?.map((journey) => journey.id))
+        once.current = true
+      }
     }
-  }, [onLoad, loading, error])
+  }, [onLoad, loading, error, journeys, once])
 
   // orders of the first characters ascii value
   const sortedJourneys =

@@ -15,12 +15,14 @@ export interface JourneysListProps {
   journeys?: Journey[]
   disableCreation?: boolean
   router?: NextRouter
+  event: string
 }
 
 export function JourneyList({
   journeys,
   disableCreation,
-  router
+  router,
+  event
 }: JourneysListProps): ReactElement {
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
@@ -29,7 +31,9 @@ export function JourneyList({
       )}
       {(journeys == null ||
         journeys.length > 0 ||
-        disableCreation !== true) && <StatusTabPanel router={router} />}
+        disableCreation !== true) && (
+        <StatusTabPanel router={router} event={event} />
+      )}
       {journeys != null && journeys.length === 0 && disableCreation && (
         <Container maxWidth="sm" sx={{ mt: 20 }}>
           <Stack direction="column" spacing={8} alignItems="center">
