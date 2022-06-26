@@ -14,6 +14,8 @@ describe('JourneyCardMenu', () => {
             <JourneyCardMenu
               status={JourneyStatus.published}
               slug={'published-journey'}
+              published={true}
+              journeyId={'journey-id'}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -40,6 +42,8 @@ describe('JourneyCardMenu', () => {
             <JourneyCardMenu
               status={JourneyStatus.published}
               slug={'published-journey'}
+              published={true}
+              journeyId={'journey-id'}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -59,6 +63,8 @@ describe('JourneyCardMenu', () => {
             <JourneyCardMenu
               status={JourneyStatus.published}
               slug={'published-journey'}
+              published={true}
+              journeyId={'journey-id'}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -83,6 +89,8 @@ describe('JourneyCardMenu', () => {
             <JourneyCardMenu
               status={JourneyStatus.draft}
               slug={'draft-journey'}
+              published={false}
+              journeyId={'journey-id'}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -102,6 +110,8 @@ describe('JourneyCardMenu', () => {
             <JourneyCardMenu
               status={JourneyStatus.draft}
               slug={'draft-journey'}
+              published={false}
+              journeyId={'journey-id'}
             />
           </ThemeProvider>
         </SnackbarProvider>

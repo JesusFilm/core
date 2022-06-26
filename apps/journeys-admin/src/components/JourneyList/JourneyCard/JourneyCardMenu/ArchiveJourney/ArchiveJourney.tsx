@@ -9,12 +9,16 @@ import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 
 interface ArchiveJourneyProps {
   status: JourneyStatus
+  id: string
 }
 
 // Mutations
 // Snackbar
 
-export function ArchiveJourney({ status }: ArchiveJourneyProps): ReactElement {
+export function ArchiveJourney({
+  status,
+  id
+}: ArchiveJourneyProps): ReactElement {
   return (
     <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
       {status !== JourneyStatus.archived ? (

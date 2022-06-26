@@ -26,12 +26,16 @@ export const Draft = Template.bind({})
 Draft.args = {
   status: JourneyStatus.draft,
   slug: 'draft-journey',
-  forceMenu: true
+  forceMenu: true,
+  published: false,
+  journeyId: 'journey-id'
 }
 export const Published = Template.bind({})
 Published.args = {
   status: JourneyStatus.published,
   slug: 'published-journey',
+  published: true,
+  journeyId: 'journey-id',
   forceMenu: true
 }
 

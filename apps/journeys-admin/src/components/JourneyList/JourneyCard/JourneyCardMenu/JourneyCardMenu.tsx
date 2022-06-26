@@ -18,12 +18,16 @@ import { ArchiveJourney } from './ArchiveJourney'
 export interface JourneyCardMenuProps {
   status: JourneyStatus
   slug: string
+  journeyId: string
+  published: boolean
   forceMenu?: boolean
 }
 
 export function JourneyCardMenu({
   status,
   slug,
+  journeyId,
+  published,
   forceMenu // this is only used for storybook snapshots
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -87,8 +91,7 @@ export function JourneyCardMenu({
 
         <MenuItem
           sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-          // convert this check to publised at != null
-          disabled={status === JourneyStatus.draft}
+          disabled={!published}
           component="a"
           href={`/api/preview?slug=${slug}`}
           target="_blank"
@@ -106,7 +109,7 @@ export function JourneyCardMenu({
 
         <Divider />
 
-        <ArchiveJourney status={status} />
+        <ArchiveJourney status={status} id={journeyId} />
       </Menu>
 
       <AccessDialog
