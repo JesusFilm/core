@@ -5,6 +5,7 @@ import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
 import Link from 'next/link'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import EditIcon from '@mui/icons-material/Edit'
@@ -12,6 +13,7 @@ import PeopleIcon from '@mui/icons-material/People'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
+import { ArchiveJourney } from './ArchiveJourney'
 
 export interface JourneyCardMenuProps {
   status: JourneyStatus
@@ -85,6 +87,7 @@ export function JourneyCardMenu({
 
         <MenuItem
           sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+          // convert this check to publised at != null
           disabled={status === JourneyStatus.draft}
           component="a"
           href={`/api/preview?slug=${slug}`}
@@ -100,6 +103,10 @@ export function JourneyCardMenu({
             </Typography>
           </ListItemText>
         </MenuItem>
+
+        <Divider />
+
+        <ArchiveJourney status={status} />
       </Menu>
 
       <AccessDialog
