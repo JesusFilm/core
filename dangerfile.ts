@@ -1,7 +1,6 @@
 import { danger, warn, markdown } from 'danger'
 import lint from '@commitlint/lint'
 import load from '@commitlint/load'
-import validateBranchName from 'validate-branch-name'
 
 export default async () => {
   // ignore dependabot
