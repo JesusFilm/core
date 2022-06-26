@@ -52,6 +52,7 @@
     "@nestjs/graphql": "^10.0.4",
     "@nestjs/platform-express": "^8.3.1",
     "@nrwl/next": "13.2.2",
+    "adal-node": "^0.2.3",
     "apollo-datasource": "^3.3.1",
     "apollo-server": "^3.7.0",
     "arangojs": "^7.6.1",
