@@ -4,7 +4,7 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
-import { TreeBlock } from '../..'
+import type { TreeBlock } from '../../libs/block'
 import { TypographyFields } from './__generated__/TypographyFields'
 import { Typography } from './Typography'
 

@@ -7,14 +7,12 @@ import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
 import { useTheme } from '@mui/material/styles'
-import {
-  useJourney,
-  BlockRenderer,
-  CardWrapper,
-  TreeBlock,
-  useBlocks
-} from '@core/journeys/ui'
-import { useBreakpoints } from '@core/shared/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useBlocks } from '@core/journeys/ui/block'
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { CardWrapper } from '@core/journeys/ui/Card'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 import 'swiper/swiper.min.css'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
@@ -23,6 +21,7 @@ import { gql, useMutation } from '@apollo/client'
 import Div100vh from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
+import last from 'lodash/last'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { BlockFields_CardBlock as CardBlock } from '../../../__generated__/BlockFields'
 import { JourneyProgress } from '../JourneyProgress'
@@ -48,6 +47,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const breakpoints = useBreakpoints()
   const theme = useTheme()
   const { journey, admin } = useJourney()
+  const lastStep = last(treeBlocks)
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -264,8 +264,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 data-testid="conductorNextButton"
                 onClick={handleNext}
                 disabled={
-                  activeBlock?.locked === true ||
-                  activeBlock?.nextBlockId == null
+                  activeBlock?.locked === true || lastStep === activeBlock
                 }
                 disableRipple
                 sx={{

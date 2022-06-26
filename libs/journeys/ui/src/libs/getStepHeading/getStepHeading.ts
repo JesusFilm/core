@@ -1,8 +1,8 @@
 import findIndex from 'lodash/findIndex'
 import { TOptions } from 'i18next'
-import { TreeBlock } from '..'
+import type { TreeBlock } from '../block'
 import { TypographyVariant } from '../../../__generated__/globalTypes'
-import { BlockFields_TypographyBlock as TypographyBlock } from '../transformer/__generated__/BlockFields'
+import { BlockFields_TypographyBlock as TypographyBlock } from '../block/__generated__/BlockFields'
 
 function flatten(children: TreeBlock[]): TreeBlock[] {
   return children.reduce<TreeBlock[]>(

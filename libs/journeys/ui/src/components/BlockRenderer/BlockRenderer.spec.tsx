@@ -2,8 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { TreeBlock } from '../..'
-import { RadioOptionFields } from '../RadioQuestion/RadioOption/__generated__/RadioOptionFields'
+import type { TreeBlock } from '../../libs/block'
+import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../RadioQuestion/__generated__/RadioQuestionFields'
 import { BlockRenderer } from '.'
 

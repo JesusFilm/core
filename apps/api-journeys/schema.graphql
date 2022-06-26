@@ -405,8 +405,8 @@ type StepBlock implements Block {
   """
   nextBlockId contains the preferred block to navigate to when a
   NavigateAction occurs or if the user manually tries to advance to the next
-  step. If no nextBlockId is set it can be assumed that this step represents
-  the end of the current journey.
+  step. If no nextBlockId is set it will automatically navigate to the next
+  step in the journey based on parentOrder.
   """
   nextBlockId: ID
 
@@ -873,7 +873,15 @@ extend type Mutation {
   """
   blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
   """
-  blockDuplicate(id: ID!, journeyId: ID!, parentOrder: Int): [Block!]!
+  blockDuplicate(
+    id: ID!
+    journeyId: ID!
+
+    """
+    parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
+    """
+    parentOrder: Int
+  ): [Block!]!
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock

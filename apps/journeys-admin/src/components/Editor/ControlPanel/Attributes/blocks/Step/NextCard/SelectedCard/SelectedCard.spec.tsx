@@ -1,5 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -25,16 +27,25 @@ describe('Selected Card', () => {
   const nextBlock: TreeBlock<StepBlock> = {
     ...selectedBlock,
     id: 'step1.id',
-    nextBlockId: 'step2.id'
+    nextBlockId: 'step2.id',
+    parentOrder: 1
+  }
+
+  const noNextBlockId: TreeBlock<StepBlock> = {
+    ...selectedBlock,
+    id: 'step2.id',
+    nextBlockId: null,
+    parentOrder: 2
   }
 
   const lastBlock: TreeBlock<StepBlock> = {
     ...selectedBlock,
-    id: 'step2.id',
-    nextBlockId: 'step0.id'
+    id: 'step3.id',
+    nextBlockId: null,
+    parentOrder: 3
   }
 
-  const steps = [selectedBlock, nextBlock, lastBlock]
+  const steps = [selectedBlock, nextBlock, noNextBlockId, lastBlock]
 
   it('updates nextBlockId to the step itself on remove button click', async () => {
     const result = jest.fn(() => ({
@@ -83,5 +94,41 @@ describe('Selected Card', () => {
 
     fireEvent.click(getByTestId('removeCustomNextStep'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('selects the card after through parentOrder if no nextBlockId', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <JourneyProvider>
+          <EditorProvider
+            initialState={{
+              steps,
+              selectedBlock: noNextBlockId
+            }}
+          >
+            <SelectedCard />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByText('Default next step in journey')).toBeInTheDocument()
+  })
+
+  it('does not select a next step if last', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <JourneyProvider>
+          <EditorProvider
+            initialState={{
+              steps,
+              selectedBlock: lastBlock
+            }}
+          >
+            <SelectedCard />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByText('No next step in journey')).toBeInTheDocument()
   })
 })

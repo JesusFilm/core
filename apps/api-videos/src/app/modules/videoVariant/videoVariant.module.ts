@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { DatabaseModule } from '@core/nest/database'
+import { DatabaseModule } from '@core/nest/database/DatabaseModule'
 import { VideoVariantResolver } from './videoVariant.resolver'
 
 @Module({

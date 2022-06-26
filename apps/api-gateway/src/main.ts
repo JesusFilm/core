@@ -1,7 +1,7 @@
 import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway'
 import { ApolloServer } from 'apollo-server'
 import { initializeApp, credential, auth } from 'firebase-admin'
-import { apolloWinstonLoggingPlugin } from '@core/apollo/logging'
+import { apolloWinstonLoggingPlugin } from '@core/apollo/logging/apolloWinstonLoggingPlugin'
 import { config } from './environments/environment'
 
 if (

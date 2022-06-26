@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
 import { aql } from 'arangojs'
-import { BaseService } from '@core/nest/database'
+import { BaseService } from '@core/nest/database/BaseService'
 import { DocumentCollection } from 'arangojs/collection'
-import { KeyAsId, idAsKey, keyAsId } from '@core/nest/decorators'
+import { KeyAsId, keyAsId } from '@core/nest/decorators/KeyAsId'
+import { idAsKey } from '@core/nest/decorators/IdAsKey'
 
 import { Block, Journey } from '../../__generated__/graphql'
 
@@ -109,14 +110,17 @@ export class BlockService extends BaseService {
       }
       const duplicatedChildren = duplicateBlockAndChildren.slice(1)
 
+      // Newly duplicated block returns with original block and siblings.
       const siblings = await this.getSiblingsInternal(
         journeyId,
         block.parentBlockId
       )
+      const defaultDuplicateBlockIndex = siblings.findIndex(
+        (block) => block.id === duplicatedBlock.id
+      )
       const insertIndex =
-        parentOrder != null
-          ? Math.min(Math.max(parentOrder, 0), siblings.length + 1)
-          : siblings.length + 1
+        parentOrder != null ? parentOrder : siblings.length + 1
+      siblings.splice(defaultDuplicateBlockIndex, 1)
       siblings.splice(insertIndex, 0, duplicatedBlock)
       const reorderedBlocks: Block[] = await this.reorderSiblings(siblings)
 

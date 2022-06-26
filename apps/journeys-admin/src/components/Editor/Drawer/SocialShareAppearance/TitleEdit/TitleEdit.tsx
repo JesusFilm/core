@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField'
 import { Formik, Form } from 'formik'
 import { object, string } from 'yup'
 import noop from 'lodash/noop'
-import { useJourney } from '@core/journeys/ui'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneySeoTitleUpdate } from '../../../../../../__generated__/JourneySeoTitleUpdate'
 
 export const JOURNEY_SEO_TITLE_UPDATE = gql`
