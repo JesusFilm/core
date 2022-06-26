@@ -28,6 +28,7 @@ export default async () => {
   }
 
   // check branch has well-formed name
+  // should match the regex in /.husky/pre-commit
   if (
     danger.github.pr.head.ref.match(
       /^[0-9]{2}-[0-9]{2}-[A-Z]{2}-(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)-[a-z0-9\-]+[a-z0-9]/g
@@ -115,6 +116,7 @@ export default async () => {
 
   // check PR has requested reviewers or completed reviews
   if (
+    currentPR.data.requested_reviewers != null &&
     currentPR.data.requested_reviewers.length === 0 &&
     reviews.data.length === 0
   ) {
