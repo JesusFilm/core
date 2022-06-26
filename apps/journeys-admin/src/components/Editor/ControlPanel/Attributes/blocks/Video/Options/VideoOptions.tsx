@@ -1,10 +1,8 @@
 import { ReactElement } from 'react'
-import {
-  useEditor,
-  VIDEO_FIELDS,
-  useJourney,
-  TreeBlock
-} from '@core/journeys/ui'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { VideoBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'

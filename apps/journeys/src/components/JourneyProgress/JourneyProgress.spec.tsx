@@ -1,4 +1,5 @@
-import { activeBlockVar, TreeBlock, treeBlocksVar } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { activeBlockVar, treeBlocksVar } from '@core/journeys/ui/block'
 import { render } from '@testing-library/react'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import { JourneyProgress } from '.'

@@ -8,7 +8,9 @@ import {
   IconSize,
   IconColor
 } from '../../../__generated__/globalTypes'
-import { journeyUiConfig, simpleComponentConfig, TreeBlock } from '../..'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import type { TreeBlock } from '../../libs/block'
 import { IconFields } from './__generated__/IconFields'
 import { Icon } from '.'
 

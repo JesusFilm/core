@@ -1,12 +1,10 @@
 import Box from '@mui/material/Box'
 import { ReactElement, useState } from 'react'
-import {
-  CARD_FIELDS,
-  STEP_FIELDS,
-  TreeBlock,
-  transformer,
-  useJourney
-} from '@core/journeys/ui'
+import { transformer } from '@core/journeys/ui/transformer'
+import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
+import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { v4 as uuidv4 } from 'uuid'
@@ -28,15 +26,8 @@ export interface CardPreviewProps {
 export const STEP_AND_CARD_BLOCK_CREATE = gql`
   ${STEP_FIELDS}
   ${CARD_FIELDS}
-  mutation StepAndCardBlockCreate(
-    $journeyId: ID!
-    $stepId: ID!
-    $cardId: ID
-    $parentOrder: Int
-  ) {
-    stepBlockCreate(
-      input: { id: $stepId, journeyId: $journeyId, parentOrder: $parentOrder }
-    ) {
+  mutation StepAndCardBlockCreate($journeyId: ID!, $stepId: ID!, $cardId: ID) {
+    stepBlockCreate(input: { id: $stepId, journeyId: $journeyId }) {
       ...StepFields
     }
     cardBlockCreate(
@@ -90,9 +81,7 @@ export function CardPreview({
       variables: {
         journeyId: journey.id,
         stepId,
-        cardId,
-        parentOrder:
-          selected?.parentOrder != null ? selected.parentOrder + 1 : null
+        cardId
       },
       update(cache, { data }) {
         if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
@@ -100,42 +89,8 @@ export function CardPreview({
             id: cache.identify({ __typename: 'Journey', id: journey.id }),
             fields: {
               blocks(existingBlockRefs = []) {
-                // update existing parentOrder in cache
-                if (selected?.parentOrder != null) {
-                  existingBlockRefs.forEach((blockRef) => {
-                    if ((blockRef.__ref as string).startsWith('StepBlock:')) {
-                      const stepBlock = cache.readFragment<StepBlock>({
-                        id: blockRef.__ref,
-                        fragment: gql`
-                          fragment StepBlock on StepBlock {
-                            parentOrder
-                          }
-                        `
-                      })
-                      if (
-                        stepBlock?.parentOrder != null &&
-                        selected?.parentOrder != null &&
-                        stepBlock.parentOrder > selected.parentOrder
-                      ) {
-                        cache.writeFragment({
-                          id: blockRef.__ref,
-                          fragment: gql`
-                            fragment StepBlock on StepBlock {
-                              parentOrder
-                            }
-                          `,
-                          data: {
-                            parentOrder: stepBlock.parentOrder + 1
-                          }
-                        })
-                      }
-                    }
-                  })
-                }
                 const newStepBlockRef = cache.writeFragment({
-                  data: {
-                    ...data.stepBlockCreate
-                  },
+                  data: data.stepBlockCreate,
                   fragment: gql`
                     fragment NewBlock on Block {
                       id

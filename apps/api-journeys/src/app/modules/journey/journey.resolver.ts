@@ -6,16 +6,19 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql'
-import { CurrentUserId } from '@core/nest/decorators'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import slugify from 'slugify'
 import { UseGuards } from '@nestjs/common'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
-import { getPowerBiEmbed, PowerBiEmbed } from '@core/nest/powerBi'
+import {
+  getPowerBiEmbed,
+  PowerBiEmbed
+} from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   ApolloError,
   ForbiddenError,
   UserInputError
 } from 'apollo-server-errors'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BlockService } from '../block/block.service'

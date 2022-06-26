@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
-import { Card } from '@core/journeys/ui'
-import type { WrapperProps } from '@core/journeys/ui'
+import { Card } from '@core/journeys/ui/Card'
+import type { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 
 export function CardWrapper({ block, children }: WrapperProps): ReactElement {
   if (block.__typename === 'CardBlock') {

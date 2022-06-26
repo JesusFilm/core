@@ -10,7 +10,9 @@ import {
   Breakpoint
 } from '@mui/material/styles'
 
-import { simpleComponentConfig, themes, useBreakpoints } from '../../../index'
+import { simpleComponentConfig } from '../../simpleComponentConfig'
+import { useBreakpoints } from '../../useBreakpoints'
+import { themes } from '..'
 
 const ThemeDemo = {
   ...simpleComponentConfig,

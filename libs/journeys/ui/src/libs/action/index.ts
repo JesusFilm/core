@@ -1,1 +1,1 @@
-export { handleAction } from './handleAction'
+export { handleAction } from './action'

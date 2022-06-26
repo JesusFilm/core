@@ -1,6 +1,7 @@
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { TreeBlock, EditorProvider } from '../..'
+import type { TreeBlock } from '../../libs/block'
+import { EditorProvider } from '../../libs/EditorProvider'
 import { VideoFields } from './__generated__/VideoFields'
 import { Video } from '.'
 

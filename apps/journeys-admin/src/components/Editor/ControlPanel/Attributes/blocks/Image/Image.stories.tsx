@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { TreeBlock } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import Stack from '@mui/material/Stack'
 
 import { simpleComponentConfig } from '../../../../../../libs/storybook'

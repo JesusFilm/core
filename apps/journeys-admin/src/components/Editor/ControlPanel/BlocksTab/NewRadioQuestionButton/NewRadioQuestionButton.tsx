@@ -1,14 +1,11 @@
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import {
-  ActiveTab,
-  TreeBlock,
-  useEditor,
-  RADIO_OPTION_FIELDS,
-  RADIO_QUESTION_FIELDS,
-  useJourney
-} from '@core/journeys/ui'
+import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { RADIO_OPTION_FIELDS } from '@core/journeys/ui/RadioOption/radioOptionFields'
+import { RADIO_QUESTION_FIELDS } from '@core/journeys/ui/RadioQuestion/radioQuestionFields'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { v4 as uuidv4 } from 'uuid'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'

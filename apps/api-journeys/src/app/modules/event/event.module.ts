@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { DatabaseModule } from '@core/nest/database'
+import { DatabaseModule } from '@core/nest/database/DatabaseModule'
 import { EventService } from './event.service'
 import { EventResolver } from './event.resolver'
 import { ButtonClickEventResolver } from './button/button.resolver'

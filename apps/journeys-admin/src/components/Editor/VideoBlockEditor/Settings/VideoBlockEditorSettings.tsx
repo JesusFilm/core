@@ -6,13 +6,16 @@ import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import { TreeBlock } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { noop } from 'lodash'
 import { useFormik } from 'formik'
 import TimeField from 'react-simple-timefield'
 import PlayCircle from '@mui/icons-material/PlayCircle'
 import StopCircle from '@mui/icons-material/StopCircle'
-import { secondsToTimeFormat, timeFormatToSeconds } from '@core/shared/ui'
+import {
+  secondsToTimeFormat,
+  timeFormatToSeconds
+} from '@core/shared/ui/timeFormat'
 
 import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,

@@ -262,7 +262,6 @@ export class SignUpBlockUpdateInput {
 export class StepBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    parentOrder?: Nullable<number>;
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
 }
@@ -760,6 +759,8 @@ export abstract class IMutation {
     abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): LinkAction | Promise<LinkAction>;
 
     abstract blockDelete(id: string, journeyId: string, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
+
+    abstract blockDuplicate(id: string, journeyId: string, parentOrder?: Nullable<number>): Block[] | Promise<Block[]>;
 
     abstract blockOrderUpdate(id: string, journeyId: string, parentOrder: number): Block[] | Promise<Block[]>;
 
