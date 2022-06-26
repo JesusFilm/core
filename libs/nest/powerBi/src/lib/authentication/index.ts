@@ -1,1 +1,0 @@
-export { getAccessToken } from './authentication'
