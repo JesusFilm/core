@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # check branch has well-formed name
 # should match the regex in /dangerfile.ts
 
