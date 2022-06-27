@@ -6,6 +6,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded'
 import UnarchiveRoundedIcon from '@mui/icons-material/UnarchiveRounded'
 import Typography from '@mui/material/Typography'
+import { useSnackbar } from 'notistack'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { JourneyArchive } from '../../../../../../__generated__/JourneyArchive'
 import { JourneyUnarchive } from '../../../../../../__generated__/JourneyUnarchive'
@@ -31,8 +32,6 @@ interface ArchiveJourneyProps {
   id: string
 }
 
-// Snackbar
-
 export function ArchiveJourney({
   status,
   id
@@ -40,36 +39,52 @@ export function ArchiveJourney({
   const [archiveJourney] = useMutation<JourneyArchive>(JOURNEY_ARCHIVE)
   const [unarchiveJourney] = useMutation<JourneyUnarchive>(JOURNEY_UNARCHIVE)
 
-  // need to catch role check error
+  const { enqueueSnackbar } = useSnackbar()
 
   async function handleClick(): Promise<void> {
-    if (status !== JourneyStatus.archived) {
-      await archiveJourney({
-        variables: {
-          ids: [id]
-        },
-        optimisticResponse: {
-          journeysArchive: [
-            {
-              id,
-              __typename: 'Journey'
-            }
-          ]
-        }
-      })
-    } else {
-      await unarchiveJourney({
-        variables: {
-          ids: [id]
-        },
-        optimisticResponse: {
-          journeysRestore: [
-            {
-              id,
-              __typename: 'Journey'
-            }
-          ]
-        }
+    try {
+      if (status !== JourneyStatus.archived) {
+        await archiveJourney({
+          variables: {
+            ids: [id]
+          },
+          optimisticResponse: {
+            journeysArchive: [
+              {
+                id,
+                __typename: 'Journey'
+              }
+            ]
+          }
+        })
+
+        enqueueSnackbar('Journey Archived', {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      } else {
+        await unarchiveJourney({
+          variables: {
+            ids: [id]
+          },
+          optimisticResponse: {
+            journeysRestore: [
+              {
+                id,
+                __typename: 'Journey'
+              }
+            ]
+          }
+        })
+        enqueueSnackbar('Journey Unarchived', {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      }
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
       })
     }
   }
