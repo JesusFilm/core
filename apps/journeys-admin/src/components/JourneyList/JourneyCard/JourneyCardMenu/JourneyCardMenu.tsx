@@ -15,6 +15,7 @@ import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
 import { ArchiveJourney } from './ArchiveJourney'
 import { TrashJourney } from './TrashJourney'
+import { DeleteJourney } from './DeleteJourney'
 
 export interface JourneyCardMenuProps {
   status: JourneyStatus
@@ -63,61 +64,71 @@ export function JourneyCardMenu({
           'aria-labelledby': 'journey-actions'
         }}
       >
-        <Link href={`/journeys/${slug}`} passHref>
-          <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
-            <ListItemIcon>
-              <EditIcon color="secondary" />
-            </ListItemIcon>
-            <ListItemText>
-              <Typography variant="body1" sx={{ pl: 2 }}>
-                Edit
-              </Typography>
-            </ListItemText>
-          </MenuItem>
-        </Link>
+        {status === JourneyStatus.trashed ? (
+          <DeleteJourney
+            id={journeyId}
+            published={published}
+            handleClose={handleCloseMenu}
+          />
+        ) : (
+          <>
+            <Link href={`/journeys/${slug}`} passHref>
+              <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
+                <ListItemIcon>
+                  <EditIcon color="secondary" />
+                </ListItemIcon>
+                <ListItemText>
+                  <Typography variant="body1" sx={{ pl: 2 }}>
+                    Edit
+                  </Typography>
+                </ListItemText>
+              </MenuItem>
+            </Link>
 
-        <MenuItem
-          sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-          onClick={() => setOpenDialog(true)}
-        >
-          <ListItemIcon>
-            <PeopleIcon color="secondary" />
-          </ListItemIcon>
-          <ListItemText>
-            <Typography variant="body1" sx={{ pl: 2 }}>
-              Access
-            </Typography>
-          </ListItemText>
-        </MenuItem>
+            <MenuItem
+              sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+              onClick={() => setOpenDialog(true)}
+            >
+              <ListItemIcon>
+                <PeopleIcon color="secondary" />
+              </ListItemIcon>
+              <ListItemText>
+                <Typography variant="body1" sx={{ pl: 2 }}>
+                  Access
+                </Typography>
+              </ListItemText>
+            </MenuItem>
 
-        <MenuItem
-          sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-          disabled={!published}
-          component="a"
-          href={`/api/preview?slug=${slug}`}
-          target="_blank"
-          rel="noopener"
-        >
-          <ListItemIcon>
-            <VisibilityIcon color="secondary" />
-          </ListItemIcon>
-          <ListItemText>
-            <Typography variant="body1" sx={{ pl: 2 }}>
-              Preview
-            </Typography>
-          </ListItemText>
-        </MenuItem>
+            <MenuItem
+              sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+              disabled={!published}
+              component="a"
+              href={`/api/preview?slug=${slug}`}
+              target="_blank"
+              rel="noopener"
+            >
+              <ListItemIcon>
+                <VisibilityIcon color="secondary" />
+              </ListItemIcon>
+              <ListItemText>
+                <Typography variant="body1" sx={{ pl: 2 }}>
+                  Preview
+                </Typography>
+              </ListItemText>
+            </MenuItem>
 
-        <Divider />
+            <Divider />
 
-        <ArchiveJourney
-          status={status}
-          id={journeyId}
-          published={published}
-          handleClose={handleCloseMenu}
-        />
+            <ArchiveJourney
+              status={status}
+              id={journeyId}
+              published={published}
+              handleClose={handleCloseMenu}
+            />
 
-        <TrashJourney id={journeyId} handleClose={handleCloseMenu} />
+            <TrashJourney id={journeyId} handleClose={handleCloseMenu} />
+          </>
+        )}
       </Menu>
 
       <AccessDialog
