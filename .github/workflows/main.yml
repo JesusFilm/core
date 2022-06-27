@@ -41,6 +41,7 @@ jobs:
       - name: lint commit messages
         run: npx commitlint --from 5364963 # earliest good commit to main
       - name: lint branch name
+        if: ${{ github.event_name == 'pull_request' }}
         run: npx validate-branch-name -t $GITHUB_HEAD_REF
       - name: Check for file changes due to codegen
         run: ./tools/scripts/check-git-status.sh
