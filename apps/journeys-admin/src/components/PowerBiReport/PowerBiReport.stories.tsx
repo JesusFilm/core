@@ -17,11 +17,16 @@ const Template: Story = (
   { ...args },
   { loaded: { embedUrl, accessToken } }
 ) => {
+  const reportType =
+    args.type === 'fullReport'
+      ? JourneysReportType.multipleFull
+      : JourneysReportType.multipleSummary
+
   const reportMocks = [
     {
       request: {
         query: GET_ADMIN_JOURNEYS_REPORT,
-        variables: { reportType: JourneysReportType.multipleFull }
+        variables: { reportType }
       },
       result: {
         data: {
@@ -51,13 +56,13 @@ const Template: Story = (
   if (args.type === 'loading') {
     return (
       <ApolloLoadingProvider>
-        <PowerBiReport reportType={JourneysReportType.multipleFull} />
+        <PowerBiReport reportType={reportType} />
       </ApolloLoadingProvider>
     )
   } else {
     return (
       <MockedProvider mocks={mocks}>
-        <PowerBiReport reportType={JourneysReportType.multipleFull} />
+        <PowerBiReport reportType={reportType} />
       </MockedProvider>
     )
   }
@@ -77,12 +82,21 @@ const loaders = [
   }
 ]
 
-export const Default = Template.bind({})
-Default.loaders = loaders
-Default.args = {
-  type: 'report'
+export const FullReport = Template.bind({})
+FullReport.loaders = loaders
+FullReport.args = {
+  type: 'fullReport'
 }
-Default.parameters = {
+FullReport.parameters = {
+  chromatic: { delay: 10000 }
+}
+
+export const SummaryReport = Template.bind({})
+SummaryReport.loaders = loaders
+SummaryReport.args = {
+  type: 'summaryReport'
+}
+SummaryReport.parameters = {
   chromatic: { delay: 10000 }
 }
 
