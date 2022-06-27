@@ -1,10 +1,10 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import fetch from 'node-fetch'
-import noop from 'lodash/noop'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { PowerBiReportProps, GET_ADMIN_JOURNEYS_REPORT } from './PowerBiReport'
+import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
+import { GET_ADMIN_JOURNEYS_REPORT } from './Remote/Remote'
 import { PowerBiReport } from '.'
 
 const PowerBiReportStory = {
@@ -14,33 +14,56 @@ const PowerBiReportStory = {
 }
 
 const Template: Story = (
-  { ...args }: PowerBiReportProps,
+  { ...args },
   { loaded: { embedUrl, accessToken } }
-) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: GET_ADMIN_JOURNEYS_REPORT,
-          variables: { reportType: JourneysReportType.multipleFull }
-        },
-        result: {
-          data: {
-            adminJourneysReport: {
-              embedUrl,
-              accessToken
-            }
+) => {
+  const reportMocks = [
+    {
+      request: {
+        query: GET_ADMIN_JOURNEYS_REPORT,
+        variables: { reportType: JourneysReportType.multipleFull }
+      },
+      result: {
+        data: {
+          adminJourneysReport: {
+            embedUrl,
+            accessToken
           }
         }
       }
-    ]}
-  >
-    <PowerBiReport {...args} />
-  </MockedProvider>
-)
+    }
+  ]
+  const errorMocks = [
+    {
+      request: {
+        query: GET_ADMIN_JOURNEYS_REPORT,
+        variables: { reportType: JourneysReportType.multipleFull }
+      },
+      error: {
+        name: 'ERROR_FETCHING',
+        message: 'There was an error retriving the report'
+      }
+    }
+  ]
 
-export const Default = Template.bind({})
-Default.loaders = [
+  const mocks = args.type === 'error' ? errorMocks : reportMocks
+
+  if (args.type === 'loading') {
+    return (
+      <ApolloLoadingProvider>
+        <PowerBiReport reportType={JourneysReportType.multipleFull} />
+      </ApolloLoadingProvider>
+    )
+  } else {
+    return (
+      <MockedProvider mocks={mocks}>
+        <PowerBiReport reportType={JourneysReportType.multipleFull} />
+      </MockedProvider>
+    )
+  }
+}
+
+const loaders = [
   async () => {
     const response = await (
       await fetch(
@@ -53,10 +76,26 @@ Default.loaders = [
     }
   }
 ]
+
+export const Default = Template.bind({})
+Default.loaders = loaders
 Default.args = {
-  reportType: JourneysReportType.multipleFull,
-  onLoad: noop,
-  onError: noop
+  type: 'report'
+}
+Default.parameters = {
+  chromatic: { delay: 10000 }
+}
+
+export const Loading = Template.bind({})
+Loading.loaders = loaders
+Loading.args = {
+  type: 'loading'
+}
+
+export const Error = Template.bind({})
+Error.loaders = loaders
+Error.args = {
+  type: 'error'
 }
 
 export default PowerBiReportStory as Meta

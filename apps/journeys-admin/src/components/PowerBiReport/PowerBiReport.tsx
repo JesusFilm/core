@@ -1,66 +1,61 @@
-import { ReactElement } from 'react'
-import { EmbedProps, PowerBIEmbed } from 'powerbi-client-react'
-import { models } from 'powerbi-client'
-import { gql, useQuery } from '@apollo/client'
+import { ReactElement, useState } from 'react'
+import dynamic from 'next/dynamic'
+import { useSnackbar } from 'notistack'
 import Box from '@mui/material/Box'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
-import { GetAdminJourneysReport } from '../../../__generated__/GetAdminJourneysReport'
+import { RemoteProps } from './Remote/Remote'
+import { ReportSkeleton } from './ReportSkeleton'
 
-export const GET_ADMIN_JOURNEYS_REPORT = gql`
-  query GetAdminJourneysReport($reportType: JourneysReportType!) {
-    adminJourneysReport(reportType: $reportType) {
-      embedUrl
-      accessToken
-    }
-  }
-`
-
-export interface PowerBiReportProps {
+interface PowerBiReportProps {
   reportType: JourneysReportType
-  onLoad: () => void
-  onError: () => void
 }
-
 export function PowerBiReport({
-  reportType,
-  onLoad,
-  onError
+  reportType
 }: PowerBiReportProps): ReactElement {
-  const { data } = useQuery<GetAdminJourneysReport>(GET_ADMIN_JOURNEYS_REPORT, {
-    variables: { reportType },
-    onError
-  })
+  const { enqueueSnackbar } = useSnackbar()
+  const [loaded, setLoaded] = useState(false)
+  const [error, setError] = useState(false)
 
-  const embedProps: EmbedProps = {
-    embedConfig: {
-      embedUrl: data?.adminJourneysReport?.embedUrl,
-      accessToken: data?.adminJourneysReport?.accessToken,
-      type: 'report',
-      tokenType: models.TokenType.Embed,
-      settings: {
-        filterPaneEnabled: false,
-        background: models.BackgroundType.Transparent,
-        panes: {
-          pageNavigation: {
-            visible: false
-          }
-        }
-      }
-    },
-    eventHandlers: new Map([
-      ['rendered', onLoad],
-      ['error', onError]
-    ])
+  function onLoad(): void {
+    setLoaded(true)
   }
+
+  function onError(): void {
+    setError(true)
+    enqueueSnackbar('Error loading Analytics', {
+      variant: 'error',
+      preventDuplicate: true
+    })
+  }
+
+  // powerbi needs dynamic import, see issue: https://github.com/microsoft/powerbi-client-react/issues/65
+  const Remote = dynamic<RemoteProps>(
+    async () =>
+      await import(
+        /* webpackChunkName: "DynamicRemote" */
+        './Remote'
+      ).then((res) => res.Remote),
+    { ssr: false }
+  )
 
   return (
-    <Box
-      data-testid={`powerBi-${reportType}-report`}
-      sx={{
-        '> div': { height: '100%' }
-      }}
-    >
-      <PowerBIEmbed {...embedProps} />
-    </Box>
+    <>
+      {!loaded && !error && (
+        <ReportSkeleton message={'The analytics are loading...'} />
+      )}
+      {error && (
+        <ReportSkeleton message={'There was an error loading the report'} />
+      )}
+      <div style={{ visibility: loaded && !error ? undefined : 'hidden' }}>
+        <Box
+          sx={{
+            height: loaded && !error ? '93vh' : '0',
+            '> div': { height: '100%' }
+          }}
+        >
+          <Remote reportType={reportType} onLoad={onLoad} onError={onError} />
+        </Box>
+      </div>
+    </>
   )
 }

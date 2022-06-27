@@ -8,11 +8,12 @@ import {
 import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
-import { PageWrapper } from '../../src/components/PageWrapper'
-import i18nConfig from '../../next-i18next.config'
-import { JourneysFullReport } from '../../src/components/JourneysFullReport'
+import { PageWrapper } from '../src/components/PageWrapper'
+import i18nConfig from '../next-i18next.config'
+import { PowerBiReport } from '../src/components/PowerBiReport'
+import { JourneysReportType } from '../__generated__/globalTypes'
 
-function IndexPage(): ReactElement {
+function AnalyticsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
 
@@ -20,7 +21,7 @@ function IndexPage(): ReactElement {
     <>
       <NextSeo title={t('Analytics')} />
       <PageWrapper title={t('Analytics')} authUser={AuthUser}>
-        <JourneysFullReport />
+        <PowerBiReport reportType={JourneysReportType.multipleFull} />
       </PageWrapper>
     </>
   )
@@ -42,4 +43,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(IndexPage)
+})(AnalyticsPage)
