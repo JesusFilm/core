@@ -17,6 +17,7 @@ jest.setTimeout(10000)
 
 Element.prototype.scrollIntoView = jest.fn()
 
+// getRandomValues is required for powerBi unit tests, see isssue: https://community.powerbi.com/t5/Developer/TypeError-cryptoObj-getRandomValues-is-not-a-function-unrelated/m-p/1963294
 Object.defineProperty(window.self, 'crypto', {
   value: {
     getRandomValues: (arr) => crypto.randomBytes(arr.length)
