@@ -4,20 +4,25 @@ import IconButton from '@mui/material/IconButton'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import MenuItem from '@mui/material/MenuItem'
-import { ActiveTab, useEditor, useJourney } from '@core/journeys/ui'
+import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { transformer } from '@core/journeys/ui/transformer'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useSnackbar } from 'notistack'
 import { gql, useMutation } from '@apollo/client'
+import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
+import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
 }
 
 export const BLOCK_DUPLICATE = gql`
+  ${BLOCK_FIELDS}
   mutation BlockDuplicate($id: ID!, $journeyId: ID!, $parentOrder: Int!) {
     blockDuplicate(id: $id, journeyId: $journeyId, parentOrder: $parentOrder) {
-      id
-      parentOrder
+      ...BlockFields
     }
   }
 `
@@ -38,6 +43,7 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
     if (selectedBlock != null && journey != null) {
       const { id, parentOrder } = selectedBlock
       if (parentOrder == null) return
+
       const { data } = await blockDuplicate({
         variables: {
           id,
@@ -65,7 +71,27 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
           }
         }
       })
-      if (data?.blockDuplicate != null && parentOrder != null) {
+      console.log(data?.blockDuplicate)
+      if (data?.blockDuplicate != null) {
+        if (blockLabel === 'Block') {
+          dispatch({
+            type: 'SetSelectedBlockAction',
+            block: data.blockDuplicate[parentOrder + 1] as TreeBlock
+          })
+        }
+
+        if (blockLabel === 'Card') {
+          const stepBlocks = data?.blockDuplicate.filter(
+            (step) => step.__typename === 'StepBlock'
+          )
+          const duplicatedStep = transformer([
+            stepBlocks[parentOrder + 1]
+          ])[0] as TreeBlock<StepBlock> | undefined
+          dispatch({
+            type: 'SetSelectedStepAction',
+            step: duplicatedStep
+          })
+        }
         dispatch({
           type: 'SetActiveTabAction',
           activeTab: ActiveTab.Properties
@@ -78,6 +104,7 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
       preventDuplicate: true
     })
   }
+
   return (
     <>
       {variant === 'button' ? (
