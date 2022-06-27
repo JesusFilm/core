@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import { TreeBlock } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import MuiDrawer from '@mui/material/Drawer'
 import { MockedProvider } from '@apollo/client/testing'
 

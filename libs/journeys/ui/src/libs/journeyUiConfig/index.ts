@@ -1,0 +1,1 @@
+export { journeyUiConfig } from './journeyUiConfig'

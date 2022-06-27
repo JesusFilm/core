@@ -4,14 +4,14 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import Fade from '@mui/material/Fade'
 import { ReactElement, useEffect, useState } from 'react'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
-  BlockRenderer,
   useEditor,
   ActiveTab,
-  ActiveFab,
-  useJourney
-} from '@core/journeys/ui'
-import { ThemeProvider } from '@core/shared/ui'
+  ActiveFab
+} from '@core/journeys/ui/EditorProvider'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { FramePortal } from '../../FramePortal'

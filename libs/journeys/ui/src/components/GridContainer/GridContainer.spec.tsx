@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import { TreeBlock } from '../..'
+import type { TreeBlock } from '../../libs/block'
 import {
   GridDirection,
   GridJustifyContent,

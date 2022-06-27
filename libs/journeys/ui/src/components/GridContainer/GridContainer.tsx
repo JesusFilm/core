@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { kebabCase } from 'lodash'
 import Box from '@mui/material/Box'
 import MaterialGrid, { GridDirection } from '@mui/material/Grid'
-import { TreeBlock } from '../..'
+import type { TreeBlock } from '../../libs/block'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { GridContainerFields } from './__generated__/GridContainerFields'
 

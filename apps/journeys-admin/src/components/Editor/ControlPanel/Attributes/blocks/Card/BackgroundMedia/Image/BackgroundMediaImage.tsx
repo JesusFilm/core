@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import { TreeBlock, useJourney } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useSnackbar } from 'notistack'
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,

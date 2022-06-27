@@ -2,8 +2,8 @@ import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
 import Skeleton from '@mui/material/Skeleton'
 import Box from '@mui/material/Box'
-import { TreeBlock } from '@core/journeys/ui'
-import { useBreakpoints } from '@core/shared/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 import { useRouter } from 'next/router'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { CardPreview } from '../../CardPreview'
@@ -35,7 +35,12 @@ export function CardView({ slug, blocks }: CardViewProps): ReactElement {
 
   return (
     <>
-      <CardPreview onSelect={handleSelect} steps={blocks} showAddButton />
+      <CardPreview
+        onSelect={handleSelect}
+        steps={blocks}
+        showAddButton
+        isDraggable={false}
+      />
       <Box sx={{ pt: 2, display: 'flex', justifyContent: 'center' }}>
         <Typography variant="body1">
           {blocks != null ? (

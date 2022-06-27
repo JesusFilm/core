@@ -1,4 +1,6 @@
-import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
 import { CardPreview } from '../../../../../CardPreview'

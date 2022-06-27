@@ -1,6 +1,8 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { IconName } from '../../../../../../__generated__/globalTypes'
 import { IconFields } from '../../../../../../__generated__/IconFields'
 import {

@@ -3,7 +3,7 @@ import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
-import { useJourney } from '@core/journeys/ui'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
 import { Dialog } from '../../../Dialog'
 
