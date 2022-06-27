@@ -109,7 +109,12 @@ export function JourneyCardMenu({
 
         <Divider />
 
-        <ArchiveJourney status={status} id={journeyId} />
+        <ArchiveJourney
+          status={status}
+          id={journeyId}
+          published={published}
+          handleClose={handleCloseMenu}
+        />
       </Menu>
 
       <AccessDialog

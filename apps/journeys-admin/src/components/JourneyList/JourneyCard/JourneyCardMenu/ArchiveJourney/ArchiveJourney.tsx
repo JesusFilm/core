@@ -32,12 +32,19 @@ export const JOURNEY_UNARCHIVE = gql`
 interface ArchiveJourneyProps {
   status: JourneyStatus
   id: string
+  published: boolean
+  handleClose: () => void
 }
 
 export function ArchiveJourney({
   status,
-  id
+  id,
+  published,
+  handleClose
 }: ArchiveJourneyProps): ReactElement {
+  const previousStatus = published
+    ? JourneyStatus.published
+    : JourneyStatus.draft
   const [archiveJourney] = useMutation<JourneyArchive>(JOURNEY_ARCHIVE, {
     variables: {
       ids: [id]
@@ -60,7 +67,7 @@ export function ArchiveJourney({
       journeysRestore: [
         {
           id,
-          status: JourneyStatus.draft,
+          status: previousStatus,
           __typename: 'Journey'
         }
       ]
@@ -84,6 +91,7 @@ export function ArchiveJourney({
           preventDuplicate: true
         })
       }
+      handleClose()
     } catch (error) {
       enqueueSnackbar(error.message, {
         variant: 'error',
