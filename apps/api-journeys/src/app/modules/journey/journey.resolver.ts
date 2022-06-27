@@ -171,7 +171,7 @@ export class JourneyResolver {
   ): Promise<Journey[]> {
     const results = (await this.journeyService.getAllByIds(userId, ids)).map(
       (journey) => ({
-        id: journey.id,
+        _key: journey.id,
         status: JourneyStatus.archived,
         archivedAt: new Date().toISOString()
       })
@@ -190,7 +190,7 @@ export class JourneyResolver {
   ): Promise<Journey[]> {
     const results = (await this.journeyService.getAllByIds(userId, ids)).map(
       (journey) => ({
-        id: journey.id,
+        _key: journey.id,
         status: JourneyStatus.deleted,
         deletedAt: new Date().toISOString()
       })
@@ -208,7 +208,7 @@ export class JourneyResolver {
   ): Promise<Journey[]> {
     const results = (await this.journeyService.getAllByIds(userId, ids)).map(
       (journey) => ({
-        id: journey.id,
+        _key: journey.id,
         status: JourneyStatus.trashed,
         trashedAt: new Date().toISOString()
       })
@@ -227,7 +227,7 @@ export class JourneyResolver {
   ): Promise<Journey[]> {
     const results = (await this.journeyService.getAllByIds(userId, ids)).map(
       (journey) => ({
-        id: journey.id,
+        _key: journey.id,
         status:
           journey.publishedAt == null
             ? JourneyStatus.draft
