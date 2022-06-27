@@ -56,16 +56,14 @@ export function PowerBiReport({
           </Typography>
         </Box>
       )}
-      <div style={{ visibility: loaded && !error ? undefined : 'hidden' }}>
-        <Box
-          sx={{
-            height: loaded && !error ? '93vh' : '0',
-            '> div': { height: '100%' }
-          }}
-        >
-          <Remote reportType={reportType} onLoad={onLoad} onError={onError} />
-        </Box>
-      </div>
+      <Box
+        sx={{
+          visibility: loaded && !error ? undefined : 'hidden',
+          '> div': { height: '100%' }
+        }}
+      >
+        <Remote reportType={reportType} onLoad={onLoad} onError={onError} />
+      </Box>
     </>
   )
 }

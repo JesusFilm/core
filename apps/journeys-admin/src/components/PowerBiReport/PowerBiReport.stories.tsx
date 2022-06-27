@@ -83,7 +83,7 @@ Default.args = {
   type: 'report'
 }
 Default.parameters = {
-  chromatic: { delay: 10000 }
+  chromatic: { delay: 20000 }
 }
 
 export const Loading = Template.bind({})
