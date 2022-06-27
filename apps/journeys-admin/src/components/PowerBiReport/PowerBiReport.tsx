@@ -69,32 +69,3 @@ export function PowerBiReport({
     </>
   )
 }
-
-// {!loaded && !error && (
-//   <Box
-//     sx={{
-//       height: 190,
-//       display: 'flex',
-//       justifyContent: 'center',
-//       alignItems: 'center'
-//     }}
-//   >
-//     <Typography variant="overline" color="secondary.light">
-//       The analytics are loading...
-//     </Typography>
-//   </Box>
-// )}
-// {error && (
-//   <Box
-//     sx={{
-//       height: 190,
-//       display: 'flex',
-//       justifyContent: 'center',
-//       alignItems: 'center'
-//     }}
-//   >
-//     <Typography variant="overline" color="secondary.light">
-//       There was an error loading the report
-//     </Typography>
-//   </Box>
-// )}
