@@ -6,22 +6,22 @@
 import { JourneyStatus } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: JourneyDelete
+// GraphQL mutation operation: JourneyTrash
 // ====================================================
 
-export interface JourneyDelete_journeysDelete {
+export interface JourneyTrash_journeysTrash {
   __typename: "Journey";
   id: string;
   status: JourneyStatus;
 }
 
-export interface JourneyDelete {
+export interface JourneyTrash {
   /**
-   * Sets journeys statuses to deleted
+   * Sets journeys statuses to trashed
    */
-  journeysDelete: (JourneyDelete_journeysDelete | null)[] | null;
+  journeysTrash: (JourneyTrash_journeysTrash | null)[] | null;
 }
 
-export interface JourneyDeleteVariables {
+export interface JourneyTrashVariables {
   ids: string[];
 }

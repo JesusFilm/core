@@ -4,72 +4,43 @@ import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import Typography from '@mui/material/Typography'
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
-import { useSnackbar } from 'notistack'
-import { JourneyDelete } from '../../../../../../__generated__/JourneyDelete'
-import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-
-export const JOURNEY_DELETE = gql`
-  mutation JourneyDelete($ids: [ID!]!) {
-    journeysDelete(ids: $ids) {
-      id
-      status
-    }
-  }
-`
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded'
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 
 interface DeleteJourneyProps {
   id: string
+  published: boolean
   handleClose: () => void
 }
 
 export function DeleteJourney({
   id,
+  published,
   handleClose
 }: DeleteJourneyProps): ReactElement {
-  const [deleteJourney] = useMutation<JourneyDelete>(JOURNEY_DELETE, {
-    variables: {
-      ids: [id]
-    },
-    optimisticResponse: {
-      journeysDelete: [
-        {
-          id,
-          status: JourneyStatus.deleted,
-          __typename: 'Journey'
-        }
-      ]
-    }
-  })
-
-  const { enqueueSnackbar } = useSnackbar()
-
-  async function handleClick(): Promise<void> {
-    try {
-      await deleteJourney()
-      enqueueSnackbar('Moved To Trash', {
-        variant: 'success',
-        preventDuplicate: true
-      })
-      handleClose()
-    } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
-    }
-  }
-
   return (
-    <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }} onClick={handleClick}>
-      <ListItemIcon>
-        <DeleteOutlineRoundedIcon color="secondary" />
-      </ListItemIcon>
-      <ListItemText>
-        <Typography variant="body1" sx={{ pl: 2 }}>
-          Delete
-        </Typography>
-      </ListItemText>
-    </MenuItem>
+    <>
+      <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
+        <ListItemIcon>
+          <CheckCircleRoundedIcon color="secondary" />
+        </ListItemIcon>
+        <ListItemText>
+          <Typography variant="body1" sx={{ pl: 2 }}>
+            Restore
+          </Typography>
+        </ListItemText>
+      </MenuItem>
+
+      <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
+        <ListItemIcon>
+          <DeleteForeverRoundedIcon color="secondary" />
+        </ListItemIcon>
+        <ListItemText>
+          <Typography variant="body1" sx={{ pl: 2 }}>
+            Delete Forever
+          </Typography>
+        </ListItemText>
+      </MenuItem>
+    </>
   )
 }

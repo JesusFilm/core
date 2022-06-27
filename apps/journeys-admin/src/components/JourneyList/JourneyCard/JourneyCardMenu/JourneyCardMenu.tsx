@@ -14,7 +14,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
 import { ArchiveJourney } from './ArchiveJourney'
-import { DeleteJourney } from './DeleteJourney'
+import { TrashJourney } from './TrashJourney'
 
 export interface JourneyCardMenuProps {
   status: JourneyStatus
@@ -117,7 +117,7 @@ export function JourneyCardMenu({
           handleClose={handleCloseMenu}
         />
 
-        <DeleteJourney id={journeyId} handleClose={handleCloseMenu} />
+        <TrashJourney id={journeyId} handleClose={handleCloseMenu} />
       </Menu>
 
       <AccessDialog

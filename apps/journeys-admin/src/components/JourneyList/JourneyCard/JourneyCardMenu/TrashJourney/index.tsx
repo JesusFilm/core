@@ -1,0 +1,1 @@
+export { TrashJourney } from './TrashJourney'
