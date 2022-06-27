@@ -32,14 +32,24 @@ export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
   const launchDarklyClient = await getLaunchDarklyClient()
-  const flags = await launchDarklyClient.allFlagsState({
-    key: AuthUser.id as string,
-    firstName: AuthUser.displayName ?? undefined,
-    email: AuthUser.email ?? undefined
-  })
+  const flags = (
+    await launchDarklyClient.allFlagsState({
+      key: AuthUser.id as string,
+      firstName: AuthUser.displayName ?? undefined,
+      email: AuthUser.email ?? undefined
+    })
+  ).toJSON() as { [key: string]: boolean | undefined }
+  if (flags.analytics !== true) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/'
+      }
+    }
+  }
   return {
     props: {
-      flags: flags.toJSON(),
+      flags,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-journeys-admin', 'libs-journeys-ui'],
