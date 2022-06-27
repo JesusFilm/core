@@ -14,7 +14,7 @@ jest.mock('powerbi-client-react', () => ({
   PowerBIEmbed: jest.fn(() => <></>)
 }))
 
-describe('PowerBiReport', () => {
+describe('Remote', () => {
   it('should render the report', () => {
     const onLoad = jest.fn()
     const onError = jest.fn()

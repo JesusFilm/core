@@ -2,9 +2,9 @@ import { ReactElement, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useSnackbar } from 'notistack'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { RemoteProps } from './Remote/Remote'
-import { ReportSkeleton } from './ReportSkeleton'
 
 interface PowerBiReportProps {
   reportType: JourneysReportType
@@ -40,11 +40,21 @@ export function PowerBiReport({
 
   return (
     <>
-      {!loaded && !error && (
-        <ReportSkeleton message={'The analytics are loading...'} />
-      )}
-      {error && (
-        <ReportSkeleton message={'There was an error loading the report'} />
+      {!loaded && (
+        <Box
+          sx={{
+            height: 190,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <Typography variant="overline" color="secondary.light">
+            {error
+              ? 'There was an error loading the report'
+              : 'The analytics are loading...'}
+          </Typography>
+        </Box>
       )}
       <div style={{ visibility: loaded && !error ? undefined : 'hidden' }}>
         <Box
@@ -59,3 +69,32 @@ export function PowerBiReport({
     </>
   )
 }
+
+// {!loaded && !error && (
+//   <Box
+//     sx={{
+//       height: 190,
+//       display: 'flex',
+//       justifyContent: 'center',
+//       alignItems: 'center'
+//     }}
+//   >
+//     <Typography variant="overline" color="secondary.light">
+//       The analytics are loading...
+//     </Typography>
+//   </Box>
+// )}
+// {error && (
+//   <Box
+//     sx={{
+//       height: 190,
+//       display: 'flex',
+//       justifyContent: 'center',
+//       alignItems: 'center'
+//     }}
+//   >
+//     <Typography variant="overline" color="secondary.light">
+//       There was an error loading the report
+//     </Typography>
+//   </Box>
+// )}
