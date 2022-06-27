@@ -16,12 +16,6 @@ export function PowerBiReport({
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
 
-  // const containerHeight =
-  //   reportType === JourneysReportType.multipleFull ||
-  //   reportType === JourneysReportType.singleFull
-  //     ? '93vh'
-  //     : '30vh'
-
   function onLoad(): void {
     setLoaded(true)
   }
