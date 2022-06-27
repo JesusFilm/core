@@ -133,7 +133,7 @@ async function getEmbedTokenForSingleReportSingleWorkspace(
       identities: [
         {
           username: userId,
-          roles: ['Test'],
+          roles: ['Editor'],
           datasets: datasetIds
         }
       ]

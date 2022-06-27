@@ -93,7 +93,7 @@ describe('getPowerBiEmbed', () => {
             identities: [
               {
                 username: 'userId',
-                roles: ['Test'],
+                roles: ['Editor'],
                 datasets: ['datasetId']
               }
             ]
@@ -260,7 +260,7 @@ describe('getPowerBiEmbed', () => {
             identities: [
               {
                 username: 'userId',
-                roles: ['Test'],
+                roles: ['Editor'],
                 datasets: ['datasetId']
               }
             ]
