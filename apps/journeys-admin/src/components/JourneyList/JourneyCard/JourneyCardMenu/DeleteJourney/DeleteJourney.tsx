@@ -47,6 +47,10 @@ export function DeleteJourney({
   async function handleClick(): Promise<void> {
     try {
       await deleteJourney()
+      enqueueSnackbar('Moved To Trash', {
+        variant: 'success',
+        preventDuplicate: true
+      })
       handleClose()
     } catch (error) {
       enqueueSnackbar(error.message, {
