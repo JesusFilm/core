@@ -4,7 +4,7 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
-import { TreeBlock } from '../..'
+import type { TreeBlock } from '../../libs/block'
 import { IconFields } from './__generated__/IconFields'
 import { Icon } from '.'
 

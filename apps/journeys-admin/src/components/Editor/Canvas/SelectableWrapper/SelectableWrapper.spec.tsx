@@ -1,16 +1,13 @@
 import { NextRouter, useRouter } from 'next/router'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  EditorProvider,
-  TreeBlock,
-  ActiveFab,
-  Button,
-  Image,
-  RadioQuestion,
-  SignUp,
-  Typography
-} from '@core/journeys/ui'
+import { EditorProvider, ActiveFab } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { Button } from '@core/journeys/ui/Button'
+import { Image } from '@core/journeys/ui/Image'
+import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
+import { SignUp } from '@core/journeys/ui/SignUp'
+import { Typography } from '@core/journeys/ui/Typography'
 import { SnackbarProvider } from 'notistack'
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
 import { SignUpFields } from '../../../../../__generated__/SignUpFields'

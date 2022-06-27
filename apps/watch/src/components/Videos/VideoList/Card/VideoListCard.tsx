@@ -7,7 +7,7 @@ import LinearProgress from '@mui/material/LinearProgress'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import PlayArrow from '@mui/icons-material/PlayArrow'
-import { secondsToTimeFormat } from '@core/shared/ui'
+import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import Link from 'next/link'
 import Stack from '@mui/material/Stack'
 

@@ -1,4 +1,5 @@
-import { TreeBlock, useEditor } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ReactElement } from 'react'
 import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'

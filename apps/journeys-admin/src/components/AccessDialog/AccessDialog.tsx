@@ -13,7 +13,7 @@ import { compact } from 'lodash'
 import Skeleton from '@mui/material/Skeleton'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
-import { CopyTextField } from '@core/shared/ui'
+import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '../Dialog'
 import {
   GetJourneyWithUserJourneys,

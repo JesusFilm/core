@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { EditorProvider } from '@core/journeys/ui'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { ThemeProvider } from '../../ThemeProvider'
 import { Drawer } from '.'
 

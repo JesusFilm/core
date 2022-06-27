@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import MuiTypography from '@mui/material/Typography'
-import { TreeBlock } from '../..'
+import type { TreeBlock } from '../../libs/block'
 import { TypographyFields } from './__generated__/TypographyFields'
 
 export interface TypographyProps extends TreeBlock<TypographyFields> {

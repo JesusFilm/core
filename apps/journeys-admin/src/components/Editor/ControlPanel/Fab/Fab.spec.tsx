@@ -1,4 +1,4 @@
-import { ActiveFab, EditorProvider } from '@core/journeys/ui'
+import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { render, fireEvent } from '@testing-library/react'
 import { Fab } from '.'
 

@@ -6,7 +6,7 @@ import {
   ResolveReference,
   Parent
 } from '@nestjs/graphql'
-import { TranslationField } from '@core/nest/decorators'
+import { TranslationField } from '@core/nest/decorators/TranslationField'
 import { Language, LanguageIdType } from '../../__generated__/graphql'
 import { LanguageService } from './language.service'
 
