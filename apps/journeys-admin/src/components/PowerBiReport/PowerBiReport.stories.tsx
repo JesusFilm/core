@@ -88,7 +88,7 @@ FullReport.args = {
   type: 'fullReport'
 }
 FullReport.parameters = {
-  chromatic: { delay: 10000 }
+  chromatic: { delay: 20000 }
 }
 
 export const SummaryReport = Template.bind({})
@@ -97,7 +97,7 @@ SummaryReport.args = {
   type: 'summaryReport'
 }
 SummaryReport.parameters = {
-  chromatic: { delay: 10000 }
+  chromatic: { delay: 20000 }
 }
 
 export const Loading = Template.bind({})
