@@ -58,5 +58,8 @@ Default.args = {
   onLoad: noop,
   onError: noop
 }
+Default.parameters = {
+  chromatic: { delay: 30000 }
+}
 
 export default RemoteStory as Meta
