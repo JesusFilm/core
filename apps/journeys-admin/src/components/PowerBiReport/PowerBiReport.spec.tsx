@@ -19,7 +19,7 @@ describe('PowerBiReport', () => {
               data: {
                 adminJourneysReport: {
                   embedUrl:
-                    'https://app.powerbi.com/reportEmbed?reportId=reportid&groupId=groupId&config=config',
+                    'https://app.powerbi.com/reportEmbed?reportId=reportId&groupId=groupId&config=config',
                   accessToken: 'token'
                 }
               }
