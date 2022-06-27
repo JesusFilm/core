@@ -15,6 +15,7 @@ export const JOURNEY_ARCHIVE = gql`
   mutation JourneyArchive($ids: [ID!]!) {
     journeysArchive(ids: $ids) {
       id
+      status
     }
   }
 `
@@ -23,6 +24,7 @@ export const JOURNEY_UNARCHIVE = gql`
   mutation JourneyUnarchive($ids: [ID!]!) {
     journeysRestore(ids: $ids) {
       id
+      status
     }
   }
 `
@@ -36,46 +38,47 @@ export function ArchiveJourney({
   status,
   id
 }: ArchiveJourneyProps): ReactElement {
-  const [archiveJourney] = useMutation<JourneyArchive>(JOURNEY_ARCHIVE)
-  const [unarchiveJourney] = useMutation<JourneyUnarchive>(JOURNEY_UNARCHIVE)
+  const [archiveJourney] = useMutation<JourneyArchive>(JOURNEY_ARCHIVE, {
+    variables: {
+      ids: [id]
+    },
+    optimisticResponse: {
+      journeysArchive: [
+        {
+          id,
+          status: JourneyStatus.archived,
+          __typename: 'Journey'
+        }
+      ]
+    }
+  })
+  const [unarchiveJourney] = useMutation<JourneyUnarchive>(JOURNEY_UNARCHIVE, {
+    variables: {
+      ids: [id]
+    },
+    optimisticResponse: {
+      journeysRestore: [
+        {
+          id,
+          status: JourneyStatus.draft,
+          __typename: 'Journey'
+        }
+      ]
+    }
+  })
 
   const { enqueueSnackbar } = useSnackbar()
 
   async function handleClick(): Promise<void> {
     try {
       if (status !== JourneyStatus.archived) {
-        await archiveJourney({
-          variables: {
-            ids: [id]
-          },
-          optimisticResponse: {
-            journeysArchive: [
-              {
-                id,
-                __typename: 'Journey'
-              }
-            ]
-          }
-        })
-
+        await archiveJourney()
         enqueueSnackbar('Journey Archived', {
           variant: 'success',
           preventDuplicate: true
         })
       } else {
-        await unarchiveJourney({
-          variables: {
-            ids: [id]
-          },
-          optimisticResponse: {
-            journeysRestore: [
-              {
-                id,
-                __typename: 'Journey'
-              }
-            ]
-          }
-        })
+        await unarchiveJourney()
         enqueueSnackbar('Journey Unarchived', {
           variant: 'success',
           preventDuplicate: true
