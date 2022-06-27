@@ -16,11 +16,11 @@ export function PowerBiReport({
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
 
-  const containerHeight =
-    reportType === JourneysReportType.multipleFull ||
-    reportType === JourneysReportType.singleFull
-      ? '93vh'
-      : '30vh'
+  // const containerHeight =
+  //   reportType === JourneysReportType.multipleFull ||
+  //   reportType === JourneysReportType.singleFull
+  //     ? '93vh'
+  //     : '30vh'
 
   function onLoad(): void {
     setLoaded(true)
@@ -62,16 +62,14 @@ export function PowerBiReport({
           </Typography>
         </Box>
       )}
-      <div style={{ visibility: loaded && !error ? undefined : 'hidden' }}>
-        <Box
-          sx={{
-            height: loaded && !error ? containerHeight : '0',
-            '> div': { height: '100%' }
-          }}
-        >
-          <Remote reportType={reportType} onLoad={onLoad} onError={onError} />
-        </Box>
-      </div>
+      <Box
+        sx={{
+          visibility: loaded && !error ? undefined : 'hidden',
+          '> div': { height: '100%' }
+        }}
+      >
+        <Remote reportType={reportType} onLoad={onLoad} onError={onError} />
+      </Box>
     </>
   )
 }
