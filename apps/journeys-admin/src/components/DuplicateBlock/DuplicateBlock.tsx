@@ -75,9 +75,10 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
       })
       if (data?.blockDuplicate != null) {
         if (blockLabel === 'Block') {
+          const block = transformer([data.blockDuplicate[parentOrder + 1] as BlockFields])[0]
           dispatch({
             type: 'SetSelectedBlockAction',
-            block: data.blockDuplicate[parentOrder + 1] as TreeBlock
+            block
           })
         }
 
