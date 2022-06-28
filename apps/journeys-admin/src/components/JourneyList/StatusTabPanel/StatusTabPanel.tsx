@@ -76,6 +76,21 @@ export function StatusTabPanel({
     if (newValue != null && router != null) {
       // handle change can't be tested until more tabs are added
       setActiveTab(newValue)
+      // ensure tab data is refreshed on change
+      switch (newValue) {
+        case 0:
+          event = 'refetchActive'
+          break
+        case 1:
+          event = 'refetchArchived'
+          break
+        case 2:
+          event = 'refetchTrashed'
+          break
+      }
+      setTimeout(() => {
+        event = ''
+      }, 1000)
       const tabParam =
         journeyStatusTabs.find((status) => status.tabIndex === newValue)
           ?.queryParam ?? journeyStatusTabs[0].queryParam

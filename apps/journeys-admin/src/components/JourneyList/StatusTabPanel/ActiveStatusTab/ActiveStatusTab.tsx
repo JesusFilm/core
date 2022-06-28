@@ -6,12 +6,12 @@ import { sortBy } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useSnackbar } from 'notistack'
 import { GetActiveJourneys } from '../../../../../__generated__/GetActiveJourneys'
 import { JourneyCard } from '../../JourneyCard'
 import { AddJourneyButton } from '../../AddJourneyButton'
 import { SortOrder } from '../../JourneySort'
 import { Dialog } from '../../../Dialog'
-import { useSnackbar } from 'notistack'
 
 export const GET_ACTIVE_JOURNEYS = gql`
   query GetActiveJourneys {
@@ -68,13 +68,13 @@ export const TRASH_ACTIVE_JOURNEYS = gql`
 interface ActiveStatusTabProps {
   onLoad: () => void
   sortOrder?: SortOrder
-  event: string
+  event?: string | undefined
 }
 
 export function ActiveStatusTab({
   onLoad,
   sortOrder,
-  event
+  event = ''
 }: ActiveStatusTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -144,8 +144,11 @@ export function ActiveStatusTab({
       case 'trashAllActive':
         setOpenTrashAll(true)
         break
+      case 'refetchActive':
+        void refetch()
+        break
     }
-  }, [event])
+  }, [event, refetch])
 
   // orders of the first characters ascii value
   const sortedJourneys =

@@ -7,11 +7,11 @@ import { sortBy } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useSnackbar } from 'notistack'
 import { GetArchivedJourneys } from '../../../../../__generated__/GetArchivedJourneys'
 import { JourneyCard } from '../../JourneyCard'
 import { SortOrder } from '../../JourneySort'
 import { Dialog } from '../../../Dialog'
-import { useSnackbar } from 'notistack'
 
 export const GET_ARCHIVED_JOURNEYS = gql`
   query GetArchivedJourneys {
@@ -68,13 +68,13 @@ export const TRASH_ARCHIVED_JOURNEYS = gql`
 interface ArchivedStatusTabProps {
   onLoad: () => void
   sortOrder?: SortOrder
-  event: string
+  event?: string | undefined
 }
 
 export function ArchivedStatusTab({
   onLoad,
   sortOrder,
-  event
+  event = ''
 }: ArchivedStatusTabProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
@@ -144,8 +144,11 @@ export function ArchivedStatusTab({
       case 'trashAllArchived':
         setOpenTrashAll(true)
         break
+      case 'refetchArchived':
+        void refetch()
+        break
     }
-  }, [event])
+  }, [event, refetch])
 
   // orders of the first characters ascii value
   const sortedJourneys =

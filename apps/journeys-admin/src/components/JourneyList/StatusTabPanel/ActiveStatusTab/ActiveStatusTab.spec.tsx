@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
+import { SnackbarProvider } from 'notistack'
 import { defaultJourney, oldJourney } from '../../journeyListData'
 import { ThemeProvider } from '../../../ThemeProvider'
 import { SortOrder } from '../../JourneySort'
@@ -24,7 +25,9 @@ describe('ActiveStatusTab', () => {
         ]}
       >
         <ThemeProvider>
-          <ActiveStatusTab onLoad={noop} />
+          <SnackbarProvider>
+            <ActiveStatusTab onLoad={noop} />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -56,7 +59,9 @@ describe('ActiveStatusTab', () => {
         ]}
       >
         <ThemeProvider>
-          <ActiveStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
+          <SnackbarProvider>
+            <ActiveStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -88,7 +93,9 @@ describe('ActiveStatusTab', () => {
         ]}
       >
         <ThemeProvider>
-          <ActiveStatusTab onLoad={noop} />
+          <SnackbarProvider>
+            <ActiveStatusTab onLoad={noop} />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -105,7 +112,9 @@ describe('ActiveStatusTab', () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[]}>
         <ThemeProvider>
-          <ActiveStatusTab onLoad={noop} />
+          <SnackbarProvider>
+            <ActiveStatusTab onLoad={noop} />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -132,7 +141,9 @@ describe('ActiveStatusTab', () => {
         ]}
       >
         <ThemeProvider>
-          <ActiveStatusTab onLoad={onLoad} />
+          <SnackbarProvider>
+            <ActiveStatusTab onLoad={onLoad} />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )

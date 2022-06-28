@@ -7,11 +7,11 @@ import { sortBy } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useSnackbar } from 'notistack'
 import { GetTrashedJourneys } from '../../../../../__generated__/GetTrashedJourneys'
 import { JourneyCard } from '../../JourneyCard'
 import { SortOrder } from '../../JourneySort'
 import { Dialog } from '../../../Dialog'
-import { useSnackbar } from 'notistack'
 
 export const GET_TRASHED_JOURNEYS = gql`
   query GetTrashedJourneys {
@@ -69,13 +69,13 @@ export const DELETE_TRASHED_JOURNEYS = gql`
 interface TrashedStatusTabProps {
   onLoad: (journeys: string[] | undefined) => void
   sortOrder?: SortOrder
-  event: string
+  event?: string | undefined
 }
 
 export function TrashedStatusTab({
   onLoad,
   sortOrder,
-  event
+  event = ''
 }: TrashedStatusTabProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
@@ -148,8 +148,11 @@ export function TrashedStatusTab({
       case 'deleteAllTrashed':
         setOpenDeleteAll(true)
         break
+      case 'refetchTrashed':
+        void refetch()
+        break
     }
-  }, [event])
+  }, [event, refetch])
 
   // orders of the first characters ascii value
   const sortedJourneys =
