@@ -536,7 +536,7 @@ describe('JourneyResolver', () => {
       await resolver.journeyDuplicate('journeyId', 'userId')
       expect(ujService.save).toHaveBeenCalledWith({
         userId: 'userId',
-        journeyId: 'journeyId',
+        journeyId: 'duplicateJourneyId',
         role: UserJourneyRole.owner
       })
     })
