@@ -244,7 +244,6 @@ export class JourneyResolver {
   ): Promise<Journey[]> {
     const results = (await this.journeyService.getAllByIds(userId, ids)).map(
       (journey) => ({
-        id: journey.id,
         _key: journey.id,
         status: JourneyStatus.deleted,
         deletedAt: new Date().toISOString()
