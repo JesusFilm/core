@@ -23,12 +23,7 @@ function AnalyticsPage(): ReactElement {
     <>
       <NextSeo title={t('Analytics')} />
       <PageWrapper title={t('Analytics')} authUser={AuthUser}>
-        <Box
-          sx={{
-            height: '93vh',
-            '> div': { height: '100%' }
-          }}
-        >
+        <Box sx={{ height: 'calc(100vh - 48px)' }}>
           <PowerBiReport reportType={JourneysReportType.multipleFull} />
         </Box>
       </PageWrapper>
