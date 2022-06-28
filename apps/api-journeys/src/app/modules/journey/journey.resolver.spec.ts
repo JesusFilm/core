@@ -605,12 +605,12 @@ describe('JourneyResolver', () => {
       await resolver.journeysArchive('1', [journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
-          id: journey.id,
+          _key: journey.id,
           status: JourneyStatus.archived,
           archivedAt: date
         },
         {
-          id: draftJourney.id,
+          _key: draftJourney.id,
           status: JourneyStatus.archived,
           archivedAt: date
         }
@@ -625,12 +625,12 @@ describe('JourneyResolver', () => {
       await resolver.journeysTrash('1', [journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
-          id: journey.id,
+          _key: journey.id,
           status: JourneyStatus.trashed,
           trashedAt: date
         },
         {
-          id: draftJourney.id,
+          _key: draftJourney.id,
           status: JourneyStatus.trashed,
           trashedAt: date
         }
@@ -645,12 +645,12 @@ describe('JourneyResolver', () => {
       await resolver.journeysDelete('1', [journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
-          id: journey.id,
+          _key: journey.id,
           status: JourneyStatus.deleted,
           deletedAt: date
         },
         {
-          id: draftJourney.id,
+          _key: draftJourney.id,
           status: JourneyStatus.deleted,
           deletedAt: date
         }
@@ -663,7 +663,7 @@ describe('JourneyResolver', () => {
       await resolver.journeysRestore('1', [trashedJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
-          id: trashedJourney.id,
+          _key: trashedJourney.id,
           status: JourneyStatus.published
         }
       ])
@@ -673,7 +673,7 @@ describe('JourneyResolver', () => {
       await resolver.journeysRestore('1', [trashedDraftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
-          id: trashedDraftJourney.id,
+          _key: trashedDraftJourney.id,
           status: JourneyStatus.draft
         }
       ])
