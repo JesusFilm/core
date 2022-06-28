@@ -6,6 +6,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { ButtonBlockUpdateContent } from '../../../../../../__generated__/ButtonBlockUpdateContent'
 import { ButtonFields } from '../../../../../../__generated__/ButtonFields'
 import { InlineEditInput } from '../InlineEditInput'
+import { useOnClickOutside } from '../useOnClickOutside'
 
 export const BUTTON_BLOCK_UPDATE_CONTENT = gql`
   mutation ButtonBlockUpdateContent(
@@ -53,10 +54,12 @@ export function ButtonEdit({
       }
     })
   }
+  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
 
   const input = (
     <InlineEditInput
       name={`edit-${id}`}
+      ref={inputRef}
       fullWidth
       multiline
       autoFocus

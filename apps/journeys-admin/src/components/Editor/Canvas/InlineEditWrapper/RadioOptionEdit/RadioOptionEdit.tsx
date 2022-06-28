@@ -6,6 +6,7 @@ import { RadioOption } from '@core/journeys/ui/RadioOption'
 import { RadioOptionBlockUpdateContent } from '../../../../../../__generated__/RadioOptionBlockUpdateContent'
 import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 import { InlineEditInput } from '../InlineEditInput'
+import { useOnClickOutside } from '../useOnClickOutside'
 
 export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
   mutation RadioOptionBlockUpdateContent(
@@ -51,10 +52,12 @@ export function RadioOptionEdit({
       }
     })
   }
+  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
 
   const input = (
     <InlineEditInput
       name={`edit-${id}`}
+      ref={inputRef}
       fullWidth
       multiline
       autoFocus

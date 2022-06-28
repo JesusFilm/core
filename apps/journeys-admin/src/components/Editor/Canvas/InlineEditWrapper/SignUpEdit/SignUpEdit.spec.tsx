@@ -84,4 +84,60 @@ describe('SignUpEdit', () => {
     fireEvent.blur(input)
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
+
+  it('saves the signUp label on outside click', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        signUpBlockUpdate: [
+          {
+            __typename: 'SignUpBlock',
+            id: 'signUp.id',
+            submitLabel: 'updated label'
+          }
+        ]
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: SIGN_UP_BLOCK_UPDATE_CONTENT,
+              variables: {
+                id: 'signUp.id',
+                journeyId: 'journeyId',
+                input: {
+                  submitLabel: 'updated label'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider>
+              <h1>Other Content</h1>
+              <iframe>
+                <SignUpEdit {...props} />
+              </iframe>
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const input = getByRole('textbox', { name: '' })
+    fireEvent.click(input)
+    fireEvent.change(input, { target: { value: '    updated label    ' } })
+    fireEvent.click(getByRole('heading', { level: 1 }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
 })

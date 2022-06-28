@@ -6,6 +6,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TypographyBlockUpdateContent } from '../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../__generated__/TypographyFields'
 import { InlineEditInput } from '../InlineEditInput'
+import { useOnClickOutside } from '../useOnClickOutside'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
   mutation TypographyBlockUpdateContent(
@@ -63,10 +64,12 @@ export function TypographyEdit({
       })
     }
   }
+  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
 
   const input = (
     <InlineEditInput
       name={`edit-${id}`}
+      ref={inputRef}
       multiline
       fullWidth
       autoFocus
