@@ -1,0 +1,16 @@
+apiVersion: 'database.arangodb.com/v1alpha'
+kind: 'ArangoDeployment'
+metadata:
+  name: 'arangodb-stage'
+spec:
+  environment: Production
+  mode: Single
+  image: arangodb/arangodb:3.9.0
+  externalAccess:
+    type: None
+  tls:
+    caSecretName: None
+  single:
+    resources:
+      requests:
+        storage: 20Gi

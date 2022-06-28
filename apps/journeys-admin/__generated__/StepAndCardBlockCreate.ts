@@ -70,5 +70,4 @@ export interface StepAndCardBlockCreateVariables {
   journeyId: string;
   stepId: string;
   cardId?: string | null;
-  parentOrder?: number | null;
 }

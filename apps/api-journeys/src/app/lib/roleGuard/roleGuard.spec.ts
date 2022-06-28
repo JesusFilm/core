@@ -18,7 +18,7 @@ describe('RoleGuard', () => {
   })
 
   const gqlMockFactory = (
-    args: { id: string },
+    args: { id: string | string[] },
     context: { headers: { 'user-id'?: string }; req: Request }
   ): DeepMocked<ExecutionContext> =>
     createMock<ExecutionContext>({
@@ -30,7 +30,7 @@ describe('RoleGuard', () => {
     })
 
   const gqlContextMockFactory = (
-    args: { id: string },
+    args: { id: string | string[] },
     contextMock: { headers: { 'user-id'?: string }; req: Request }
   ): DeepMocked<ExecutionContext> => gqlMockFactory(args, contextMock)
 
@@ -46,6 +46,18 @@ describe('RoleGuard', () => {
     it('should return true', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
+        {
+          headers: { 'user-id': '1' },
+          req: createMock<Request>()
+        }
+      )
+      const RoleGuardClass = RoleGuard('id', UserJourneyRole.owner, checkActor)
+      const roleGuard = new RoleGuardClass(gqlContext)
+      expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
+    })
+    it('should return true on array of ids', async () => {
+      const gqlContext = gqlContextMockFactory(
+        { id: ['2', '3'] },
         {
           headers: { 'user-id': '1' },
           req: createMock<Request>()
@@ -77,6 +89,23 @@ describe('RoleGuard', () => {
     it('should return true', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
+        {
+          headers: { 'user-id': '1' },
+          req: createMock<Request>()
+        }
+      )
+      const RoleGuardClass = RoleGuard(
+        'id',
+        [UserJourneyRole.owner, UserJourneyRole.editor],
+        checkActor
+      )
+      const roleGuard = new RoleGuardClass(gqlContext)
+      expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
+    })
+
+    it('should return true on array of ids', async () => {
+      const gqlContext = gqlContextMockFactory(
+        { id: ['2', '3'] },
         {
           headers: { 'user-id': '1' },
           req: createMock<Request>()

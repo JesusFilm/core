@@ -10,7 +10,10 @@ type Journey @key(fields: "id") {
   themeName: ThemeName!
   description: String
   slug: String!
+  archivedAt: DateTime
+  deletedAt: DateTime
   publishedAt: DateTime
+  trashedAt: DateTime
   featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
@@ -24,16 +27,50 @@ enum IdType {
 }
 
 enum JourneyStatus {
+  archived
+  deleted
   draft
   published
+  trashed
 }
 
 input JourneysFilter {
   featured: Boolean
 }
 
+enum JourneysReportType {
+  multipleFull
+  multipleSummary
+  singleFull
+  singleSummary
+}
+
+type PowerBiEmbed {
+  """
+  The report ID
+  """
+  reportId: String!
+  """
+  The name of the report
+  """
+  reportName: String!
+  """
+  The embed URL of the report
+  """
+  embedUrl: String!
+  """
+  The embed token
+  """
+  accessToken: String!
+  """
+  The date and time (UTC) of token expiration
+  """
+  expiration: String!
+}
+
 extend type Query {
-  adminJourneys: [Journey!]!
+  adminJourneys(status: [JourneyStatus!]): [Journey!]!
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
@@ -79,7 +116,26 @@ extend type UserJourney {
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
+  """
+  Sets journey status to published
+  """
   journeyPublish(id: ID!): Journey
+  """
+  Sets journeys statuses to archived
+  """
+  journeysArchive(ids: [ID!]!): [Journey]
+  """
+  Sets journeys statuses to deleted
+  """
+  journeysDelete(ids: [ID!]!): [Journey]
+  """
+  Sets journeys statuses to trashed
+  """
+  journeysTrash(ids: [ID!]!): [Journey]
+  """
+  Sets journeys statuses to last active status
+  """
+  journeysRestore(ids: [ID!]!): [Journey]
 }
 
 extend type NavigateToJourneyAction {

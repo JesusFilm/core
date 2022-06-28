@@ -9,8 +9,16 @@ import {
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import slugify from 'slugify'
 import { UseGuards } from '@nestjs/common'
+import {
+  getPowerBiEmbed,
+  PowerBiEmbed
+} from '@core/nest/powerBi/getPowerBiEmbed'
+import {
+  ApolloError,
+  ForbiddenError,
+  UserInputError
+} from 'apollo-server-errors'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BlockService } from '../block/block.service'
@@ -26,7 +34,8 @@ import {
   ThemeName,
   UserJourney,
   UserJourneyRole,
-  JourneysFilter
+  JourneysFilter,
+  JourneysReportType
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
@@ -43,8 +52,56 @@ export class JourneyResolver {
   ) {}
 
   @Query()
-  async adminJourneys(@CurrentUserId() userId: string): Promise<Journey[]> {
-    return await this.journeyService.getAllByOwnerEditor(userId)
+  async adminJourneysReport(
+    @CurrentUserId() userId: string,
+    @Args('reportType') reportType: JourneysReportType
+  ): Promise<PowerBiEmbed> {
+    let reportId: string | undefined
+    switch (reportType) {
+      case JourneysReportType.multipleFull:
+        reportId = process.env.POWER_BI_JOURNEYS_MULTIPLE_FULL_REPORT_ID
+        break
+      case JourneysReportType.multipleSummary:
+        reportId = process.env.POWER_BI_JOURNEYS_MULTIPLE_SUMMARY_REPORT_ID
+        break
+      case JourneysReportType.singleFull:
+        reportId = process.env.POWER_BI_JOURNEYS_SINGLE_FULL_REPORT_ID
+        break
+      case JourneysReportType.singleSummary:
+        reportId = process.env.POWER_BI_JOURNEYS_SINGLE_SUMMARY_REPORT_ID
+        break
+    }
+
+    if (
+      process.env.POWER_BI_CLIENT_ID == null ||
+      process.env.POWER_BI_CLIENT_SECRET == null ||
+      process.env.POWER_BI_TENANT_ID == null ||
+      process.env.POWER_BI_WORKSPACE_ID == null ||
+      reportId == null
+    ) {
+      throw new ApolloError('server environment variables missing')
+    }
+
+    const config = {
+      clientId: process.env.POWER_BI_CLIENT_ID,
+      clientSecret: process.env.POWER_BI_CLIENT_SECRET,
+      tenantId: process.env.POWER_BI_TENANT_ID,
+      workspaceId: process.env.POWER_BI_WORKSPACE_ID
+    }
+
+    try {
+      return await getPowerBiEmbed(config, reportId, userId)
+    } catch (err) {
+      throw new ApolloError(err.message)
+    }
+  }
+
+  @Query()
+  async adminJourneys(
+    @CurrentUserId() userId: string,
+    @Args('status') status: JourneyStatus[]
+  ): Promise<Journey[]> {
+    return await this.journeyService.getAllByOwnerEditor(userId, status)
   }
 
   @Query()
@@ -160,6 +217,83 @@ export class JourneyResolver {
     })
   }
 
+  @Mutation()
+  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  async journeysArchive(
+    @CurrentUserId() userId: string,
+    @Args('ids') ids: string[]
+  ): Promise<Journey[]> {
+    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+      (journey) => ({
+        _key: journey.id,
+        status: JourneyStatus.archived,
+        archivedAt: new Date().toISOString()
+      })
+    )
+
+    return (await this.journeyService.updateAll(
+      results
+    )) as unknown as Journey[]
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  async journeysDelete(
+    @CurrentUserId() userId: string,
+    @Args('ids') ids: string[]
+  ): Promise<Journey[]> {
+    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+      (journey) => ({
+        _key: journey.id,
+        status: JourneyStatus.deleted,
+        deletedAt: new Date().toISOString()
+      })
+    )
+    return (await this.journeyService.updateAll(
+      results
+    )) as unknown as Journey[]
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  async journeysTrash(
+    @CurrentUserId() userId: string,
+    @Args('ids') ids: string[]
+  ): Promise<Journey[]> {
+    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+      (journey) => ({
+        _key: journey.id,
+        status: JourneyStatus.trashed,
+        trashedAt: new Date().toISOString()
+      })
+    )
+
+    return (await this.journeyService.updateAll(
+      results
+    )) as unknown as Journey[]
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  async journeysRestore(
+    @CurrentUserId() userId: string,
+    @Args('ids') ids: string[]
+  ): Promise<Journey[]> {
+    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+      (journey) => ({
+        _key: journey.id,
+        status:
+          journey.publishedAt == null
+            ? JourneyStatus.draft
+            : JourneyStatus.published
+      })
+    )
+
+    return (await this.journeyService.updateAll(
+      results
+    )) as unknown as Journey[]
+  }
+
   @ResolveField()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
     return await this.blockService.forJourney(journey)
@@ -176,11 +310,6 @@ export class JourneyResolver {
   @ResolveField()
   async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
     return await this.userJourneyService.forJourney(journey)
-  }
-
-  @ResolveField()
-  status(@Parent() { publishedAt }: Journey): JourneyStatus {
-    return publishedAt == null ? JourneyStatus.draft : JourneyStatus.published
   }
 
   @ResolveField('language')
