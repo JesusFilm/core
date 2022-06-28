@@ -10,19 +10,18 @@ import { transformer } from '@core/journeys/ui/transformer'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useSnackbar } from 'notistack'
 import { gql, useMutation } from '@apollo/client'
-import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
-import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
+import { BlockFields, BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
 }
 
 export const BLOCK_DUPLICATE = gql`
-  ${BLOCK_FIELDS}
   mutation BlockDuplicate($id: ID!, $journeyId: ID!, $parentOrder: Int!) {
     blockDuplicate(id: $id, journeyId: $journeyId, parentOrder: $parentOrder) {
-      ...BlockFields
+      id
+      parentOrder
     }
   }
 `
@@ -71,7 +70,6 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
           }
         }
       })
-      console.log(data?.blockDuplicate)
       if (data?.blockDuplicate != null) {
         if (blockLabel === 'Block') {
           dispatch({
@@ -81,12 +79,17 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
         }
 
         if (blockLabel === 'Card') {
-          const stepBlocks = data?.blockDuplicate.filter(
-            (step) => step.__typename === 'StepBlock'
+          const stepBlocks = transformer(data?.blockDuplicate as BlockFields[]) as Array<
+            TreeBlock<StepBlock>
+          >
+          const steps = stepBlocks.filter(
+            (block) => block.__typename === 'StepBlock'
           )
-          const duplicatedStep = transformer([
-            stepBlocks[parentOrder + 1]
-          ])[0] as TreeBlock<StepBlock> | undefined
+          const duplicatedStep = steps[parentOrder + 1]
+          dispatch({
+            type: 'SetStepsAction',
+            steps
+          })
           dispatch({
             type: 'SetSelectedStepAction',
             step: duplicatedStep
