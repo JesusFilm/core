@@ -109,6 +109,7 @@ extend type UserJourney {
 
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
+  journeyDuplicate(id: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   journeyPublish(id: ID!): Journey
 }

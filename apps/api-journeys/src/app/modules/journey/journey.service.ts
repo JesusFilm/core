@@ -54,6 +54,16 @@ export class JourneyService extends BaseService {
   }
 
   @KeyAsId()
+  async getAllByTitle(_key: string): Promise<Journey[]> {
+    const result = await this.db.query(aql`
+      FOR journey in ${this.collection}
+        FILTER CONTAINS(journey.title, ${_key})
+        RETURN journey
+    `)
+    return await result.all()
+  }
+
+  @KeyAsId()
   async getAllByOwnerEditor(userId: string): Promise<Journey[]> {
     const result = await this.db.query(aql`
     FOR userJourney in userJourneys

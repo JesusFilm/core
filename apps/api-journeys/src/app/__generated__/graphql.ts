@@ -830,6 +830,8 @@ export abstract class IMutation {
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 
+    abstract journeyDuplicate(id: string): Journey | Promise<Journey>;
+
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
     abstract journeyPublish(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
