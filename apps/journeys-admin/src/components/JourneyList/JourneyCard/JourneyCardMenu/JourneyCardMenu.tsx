@@ -17,14 +17,12 @@ export interface JourneyCardMenuProps {
   status: JourneyStatus
   slug: string
   forceMenu?: boolean
-  journeyId?: string
 }
 
 export function JourneyCardMenu({
   status,
   slug,
   forceMenu, // this is only used for storybook snapshots
-  journeyId
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = forceMenu === true ? true : Boolean(anchorEl)
