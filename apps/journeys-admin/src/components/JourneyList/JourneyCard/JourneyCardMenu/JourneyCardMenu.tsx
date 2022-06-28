@@ -72,116 +72,21 @@ export function JourneyCardMenu({
         }}
       >
         {status === JourneyStatus.trashed ? (
-          <>
-            <MenuItem
-              sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-              onClick={() => {
-                setOpenRestoreDialog(true)
-                handleCloseMenu()
-              }}
-            >
-              <ListItemIcon>
-                <CheckCircleRoundedIcon color="secondary" />
-              </ListItemIcon>
-              <ListItemText>
-                <Typography variant="body1" sx={{ pl: 2 }}>
-                  Restore
-                </Typography>
-              </ListItemText>
-            </MenuItem>
-
-            <MenuItem
-              sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-              onClick={() => {
-                setOpenDeleteDialog(true)
-                handleCloseMenu()
-              }}
-            >
-              <ListItemIcon>
-                <DeleteForeverRoundedIcon color="secondary" />
-              </ListItemIcon>
-              <ListItemText>
-                <Typography variant="body1" sx={{ pl: 2 }}>
-                  Delete Forever
-                </Typography>
-              </ListItemText>
-            </MenuItem>
-          </>
+          <TrashMenu
+            setOpenRestoreDialog={() => setOpenRestoreDialog(true)}
+            setOpenDeleteDialog={() => setOpenDeleteDialog(true)}
+            handleCloseMenu={handleCloseMenu}
+          />
         ) : (
-          <>
-            <Link href={`/journeys/${slug}`} passHref>
-              <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
-                <ListItemIcon>
-                  <EditIcon color="secondary" />
-                </ListItemIcon>
-                <ListItemText>
-                  <Typography variant="body1" sx={{ pl: 2 }}>
-                    Edit
-                  </Typography>
-                </ListItemText>
-              </MenuItem>
-            </Link>
-
-            <MenuItem
-              sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-              onClick={() => {
-                setOpenAccessDialog(true)
-                handleCloseMenu()
-              }}
-            >
-              <ListItemIcon>
-                <PeopleIcon color="secondary" />
-              </ListItemIcon>
-              <ListItemText>
-                <Typography variant="body1" sx={{ pl: 2 }}>
-                  Access
-                </Typography>
-              </ListItemText>
-            </MenuItem>
-
-            <MenuItem
-              sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-              disabled={!published}
-              component="a"
-              href={`/api/preview?slug=${slug}`}
-              target="_blank"
-              rel="noopener"
-            >
-              <ListItemIcon>
-                <VisibilityIcon color="secondary" />
-              </ListItemIcon>
-              <ListItemText>
-                <Typography variant="body1" sx={{ pl: 2 }}>
-                  Preview
-                </Typography>
-              </ListItemText>
-            </MenuItem>
-
-            <Divider />
-
-            <ArchiveJourney
-              status={status}
-              id={journeyId}
-              published={published}
-              handleClose={handleCloseMenu}
-            />
-            <MenuItem
-              sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-              onClick={() => {
-                setOpenTrashDialog(true)
-                handleCloseMenu()
-              }}
-            >
-              <ListItemIcon>
-                <DeleteOutlineRoundedIcon color="secondary" />
-              </ListItemIcon>
-              <ListItemText>
-                <Typography variant="body1" sx={{ pl: 2 }}>
-                  Delete
-                </Typography>
-              </ListItemText>
-            </MenuItem>
-          </>
+          <DefaultMenu
+            status={status}
+            slug={slug}
+            journeyId={journeyId}
+            published={published}
+            setOpenAccessDialog={() => setOpenAccessDialog(true)}
+            handleCloseMenu={handleCloseMenu}
+            setOpenTrashDialog={() => setOpenTrashDialog(true)}
+          />
         )}
       </Menu>
 
@@ -206,6 +111,153 @@ export function JourneyCardMenu({
         open={openDeleteDialog}
         handleClose={() => setOpenDeleteDialog(false)}
       />
+    </>
+  )
+}
+
+interface TrashMenuProps {
+  setOpenRestoreDialog: () => void
+  setOpenDeleteDialog: () => void
+  handleCloseMenu: () => void
+}
+
+function TrashMenu({
+  setOpenRestoreDialog,
+  setOpenDeleteDialog,
+  handleCloseMenu
+}: TrashMenuProps): ReactElement {
+  return (
+    <>
+      <MenuItem
+        sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+        onClick={() => {
+          setOpenRestoreDialog()
+          handleCloseMenu()
+        }}
+      >
+        <ListItemIcon>
+          <CheckCircleRoundedIcon color="secondary" />
+        </ListItemIcon>
+        <ListItemText>
+          <Typography variant="body1" sx={{ pl: 2 }}>
+            Restore
+          </Typography>
+        </ListItemText>
+      </MenuItem>
+
+      <MenuItem
+        sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+        onClick={() => {
+          setOpenDeleteDialog()
+          handleCloseMenu()
+        }}
+      >
+        <ListItemIcon>
+          <DeleteForeverRoundedIcon color="secondary" />
+        </ListItemIcon>
+        <ListItemText>
+          <Typography variant="body1" sx={{ pl: 2 }}>
+            Delete Forever
+          </Typography>
+        </ListItemText>
+      </MenuItem>
+    </>
+  )
+}
+
+interface DefaultMenuProps {
+  slug: string
+  status: JourneyStatus
+  journeyId: string
+  published: boolean
+  setOpenAccessDialog: () => void
+  handleCloseMenu: () => void
+  setOpenTrashDialog: () => void
+}
+
+function DefaultMenu({
+  slug,
+  status,
+  journeyId,
+  published,
+  setOpenAccessDialog,
+  handleCloseMenu,
+  setOpenTrashDialog
+}: DefaultMenuProps): ReactElement {
+  return (
+    <>
+      <Link href={`/journeys/${slug}`} passHref>
+        <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
+          <ListItemIcon>
+            <EditIcon color="secondary" />
+          </ListItemIcon>
+          <ListItemText>
+            <Typography variant="body1" sx={{ pl: 2 }}>
+              Edit
+            </Typography>
+          </ListItemText>
+        </MenuItem>
+      </Link>
+
+      <MenuItem
+        sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+        onClick={() => {
+          setOpenAccessDialog()
+          handleCloseMenu()
+        }}
+      >
+        <ListItemIcon>
+          <PeopleIcon color="secondary" />
+        </ListItemIcon>
+        <ListItemText>
+          <Typography variant="body1" sx={{ pl: 2 }}>
+            Access
+          </Typography>
+        </ListItemText>
+      </MenuItem>
+
+      <MenuItem
+        sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+        disabled={!published}
+        component="a"
+        href={`/api/preview?slug=${slug}`}
+        target="_blank"
+        rel="noopener"
+      >
+        <ListItemIcon>
+          <VisibilityIcon color="secondary" />
+        </ListItemIcon>
+        <ListItemText>
+          <Typography variant="body1" sx={{ pl: 2 }}>
+            Preview
+          </Typography>
+        </ListItemText>
+      </MenuItem>
+
+      <Divider />
+
+      <ArchiveJourney
+        status={status}
+        id={journeyId}
+        published={published}
+        handleClose={handleCloseMenu}
+      />
+      <MenuItem
+        sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+        onClick={() => {
+          setOpenTrashDialog()
+          handleCloseMenu()
+        }}
+      >
+        <ListItemIcon>
+          <DeleteOutlineRoundedIcon color="secondary" />
+        </ListItemIcon>
+        <ListItemText>
+          <Typography variant="body1" sx={{ pl: 2 }}>
+            Delete
+          </Typography>
+        </ListItemText>
+      </MenuItem>
     </>
   )
 }
