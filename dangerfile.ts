@@ -27,18 +27,6 @@ export default async () => {
     )
   }
 
-  // check branch has well-formed name
-  if (
-    danger.github.pr.head.ref.match(
-      /^[0-9]{2}-[0-9]{2}-[A-Z]{2}-(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)-[a-z0-9\-]+[a-z0-9]/g
-    ) === null
-  ) {
-    fail('Your branch does not match the naming convention.')
-    markdown(
-      `> (branch name - ${danger.github.pr.head.ref}): see the Branch naming conventions here https://github.com/JesusFilm/core/wiki/Repository-Best-Practice#naming-your-branch`
-    )
-  }
-
   // check PR has well-formed title
   const commitlintConfig = await load({
     extends: ['@commitlint/config-conventional']
@@ -115,6 +103,7 @@ export default async () => {
 
   // check PR has requested reviewers or completed reviews
   if (
+    currentPR.data.requested_reviewers != null &&
     currentPR.data.requested_reviewers.length === 0 &&
     reviews.data.length === 0
   ) {
