@@ -1,13 +1,10 @@
 import { ReactElement } from 'react'
 import { useMutation, gql } from '@apollo/client'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
 import Typography from '@mui/material/Typography'
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import { useSnackbar } from 'notistack'
 import { JourneyTrash } from '../../../../../../__generated__/JourneyTrash'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { Dialog } from '../../../../Dialog'
 
 export const JOURNEY_TRASH = gql`
   mutation JourneyTrash($ids: [ID!]!) {
@@ -18,15 +15,17 @@ export const JOURNEY_TRASH = gql`
   }
 `
 
-interface TrashJourneyProps {
+interface TrashJourneyDialogProps {
   id: string
+  open: boolean
   handleClose: () => void
 }
 
-export function TrashJourney({
+export function TrashJourneyDialog({
   id,
+  open,
   handleClose
-}: TrashJourneyProps): ReactElement {
+}: TrashJourneyDialogProps): ReactElement {
   const [trashJourney] = useMutation<JourneyTrash>(JOURNEY_TRASH, {
     variables: {
       ids: [id]
@@ -44,7 +43,7 @@ export function TrashJourney({
 
   const { enqueueSnackbar } = useSnackbar()
 
-  async function handleClick(): Promise<void> {
+  async function handleTrash(): Promise<void> {
     try {
       await trashJourney()
       enqueueSnackbar('Moved To Trash', {
@@ -61,15 +60,20 @@ export function TrashJourney({
   }
 
   return (
-    <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }} onClick={handleClick}>
-      <ListItemIcon>
-        <DeleteOutlineRoundedIcon color="secondary" />
-      </ListItemIcon>
-      <ListItemText>
-        <Typography variant="body1" sx={{ pl: 2 }}>
-          Delete
-        </Typography>
-      </ListItemText>
-    </MenuItem>
+    <Dialog
+      open={open}
+      handleClose={handleClose}
+      dialogTitle={{ title: 'Delete Journey?', closeButton: true }}
+      dialogAction={{
+        onSubmit: handleTrash,
+        submitLabel: 'Restore',
+        closeLabel: 'Cancel'
+      }}
+    >
+      <Typography>
+        Journey will be moved to trash. You can find this journey under the
+        Trash tab until you delete it forever.
+      </Typography>
+    </Dialog>
   )
 }

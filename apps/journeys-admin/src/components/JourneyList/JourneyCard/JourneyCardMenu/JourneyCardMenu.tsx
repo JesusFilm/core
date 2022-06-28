@@ -13,10 +13,11 @@ import PeopleIcon from '@mui/icons-material/People'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded'
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
 import { ArchiveJourney } from './ArchiveJourney'
-import { TrashJourney } from './TrashJourney'
+import { TrashJourneyDialog } from './TrashJourneyDialog'
 import { RestoreJourneyDialog } from './RestoreJourneyDialog'
 import { DeleteJourneyDialog } from './DeleteJourneyDialog'
 
@@ -39,6 +40,7 @@ export function JourneyCardMenu({
   const open = forceMenu === true ? true : Boolean(anchorEl)
 
   const [openAccessDialog, setOpenAccessDialog] = useState(false)
+  const [openTrashDialog, setOpenTrashDialog] = useState(false)
   const [openRestoreDialog, setOpenRestoreDialog] = useState(false)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
 
@@ -162,8 +164,22 @@ export function JourneyCardMenu({
               published={published}
               handleClose={handleCloseMenu}
             />
-
-            <TrashJourney id={journeyId} handleClose={handleCloseMenu} />
+            <MenuItem
+              sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+              onClick={() => {
+                setOpenTrashDialog(true)
+                handleCloseMenu()
+              }}
+            >
+              <ListItemIcon>
+                <DeleteOutlineRoundedIcon color="secondary" />
+              </ListItemIcon>
+              <ListItemText>
+                <Typography variant="body1" sx={{ pl: 2 }}>
+                  Delete
+                </Typography>
+              </ListItemText>
+            </MenuItem>
           </>
         )}
       </Menu>
@@ -172,6 +188,11 @@ export function JourneyCardMenu({
         journeySlug={slug}
         open={openAccessDialog}
         onClose={() => setOpenAccessDialog(false)}
+      />
+      <TrashJourneyDialog
+        id={journeyId}
+        open={openTrashDialog}
+        handleClose={() => setOpenTrashDialog(false)}
       />
       <RestoreJourneyDialog
         id={journeyId}
