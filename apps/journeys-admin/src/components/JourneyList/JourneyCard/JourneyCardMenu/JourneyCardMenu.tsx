@@ -11,12 +11,14 @@ import MoreVertIcon from '@mui/icons-material/MoreVert'
 import EditIcon from '@mui/icons-material/Edit'
 import PeopleIcon from '@mui/icons-material/People'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
 import { ArchiveJourney } from './ArchiveJourney'
 import { TrashJourney } from './TrashJourney'
-import { DeleteJourney } from './DeleteJourney'
-import { RestoreJourney } from './RestoreJourney'
+import { RestoreJourneyDialog } from './RestoreJourneyDialog'
+import { DeleteJourneyDialog } from './DeleteJourneyDialog'
 
 export interface JourneyCardMenuProps {
   status: JourneyStatus
@@ -36,7 +38,9 @@ export function JourneyCardMenu({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = forceMenu === true ? true : Boolean(anchorEl)
 
-  const [openDialog, setOpenDialog] = useState(false)
+  const [openAccessDialog, setOpenAccessDialog] = useState(false)
+  const [openRestoreDialog, setOpenRestoreDialog] = useState(false)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -67,12 +71,38 @@ export function JourneyCardMenu({
       >
         {status === JourneyStatus.trashed ? (
           <>
-            <RestoreJourney
-              id={journeyId}
-              published={published}
-              handleClose={handleCloseMenu}
-            />
-            <DeleteJourney id={journeyId} handleClose={handleCloseMenu} />
+            <MenuItem
+              sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+              onClick={() => {
+                setOpenRestoreDialog(true)
+                handleCloseMenu()
+              }}
+            >
+              <ListItemIcon>
+                <CheckCircleRoundedIcon color="secondary" />
+              </ListItemIcon>
+              <ListItemText>
+                <Typography variant="body1" sx={{ pl: 2 }}>
+                  Restore
+                </Typography>
+              </ListItemText>
+            </MenuItem>
+            <MenuItem
+              sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
+              onClick={() => {
+                setOpenDeleteDialog(true)
+                handleCloseMenu()
+              }}
+            >
+              <ListItemIcon>
+                <DeleteForeverRoundedIcon color="secondary" />
+              </ListItemIcon>
+              <ListItemText>
+                <Typography variant="body1" sx={{ pl: 2 }}>
+                  Delete Forever
+                </Typography>
+              </ListItemText>
+            </MenuItem>
           </>
         ) : (
           <>
@@ -91,7 +121,10 @@ export function JourneyCardMenu({
 
             <MenuItem
               sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-              onClick={() => setOpenDialog(true)}
+              onClick={() => {
+                setOpenAccessDialog(true)
+                handleCloseMenu()
+              }}
             >
               <ListItemIcon>
                 <PeopleIcon color="secondary" />
@@ -137,8 +170,19 @@ export function JourneyCardMenu({
 
       <AccessDialog
         journeySlug={slug}
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
+        open={openAccessDialog}
+        onClose={() => setOpenAccessDialog(false)}
+      />
+      <RestoreJourneyDialog
+        id={journeyId}
+        published={published}
+        open={openRestoreDialog}
+        handleClose={() => setOpenRestoreDialog(false)}
+      />
+      <DeleteJourneyDialog
+        id={journeyId}
+        open={openDeleteDialog}
+        handleClose={() => setOpenDeleteDialog(false)}
       />
     </>
   )
