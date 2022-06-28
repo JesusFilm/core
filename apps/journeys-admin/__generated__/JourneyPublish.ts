@@ -16,6 +16,9 @@ export interface JourneyPublish_journeyPublish {
 }
 
 export interface JourneyPublish {
+  /**
+   * Sets journey status to published
+   */
   journeyPublish: JourneyPublish_journeyPublish | null;
 }
 

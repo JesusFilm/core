@@ -5,7 +5,7 @@ cp /etc/gcloud/gcloud /gcloud.json
 export GOOGLE_APPLICATION_CREDENTIALS="/gcloud.json"
 gcloud auth activate-service-account jfp-core@jfp-data-warehouse.iam.gserviceaccount.com --key-file="/gcloud.json" --project=jfp-data-warehouse
 
-collections=("blocks" "journeys" "languages" "responses" "userJourneys" "users" "videoTags" "countries" "events")
+collections=("blocks" "journeys" "languages" "responses" "userJourneys" "users" "videoTags" "countries")
 for collection in "${collections[@]}"
 do
   echo "Exporting $collection from ArangoDB"
@@ -20,4 +20,16 @@ arangoexport --type jsonl --compress-output true --overwrite true --server.authe
 echo "Importing videos to BigQuery"
 bq --project_id jfp-data-warehouse load --replace --source_format NEWLINE_DELIMITED_JSON --autodetect nextsteps.videos export/query.jsonl.gz
 
+# events requires special AQL due to changing fieldsets
+echo "Exporting events from ArangoDB"
+arangoexport --type json --collection events --overwrite true --server.authentication true --server.database $DATABASE_DB --server.username $DATABASE_USER --server.password $DATABASE_PASS --server.endpoint $DATABASE_URL
+echo "Converting events to CSV"
+jq -r '(map(keys) | add | unique) as $cols | map(. as $row | $cols | map($row[.])) as $rows | $cols, $rows[] | @csv' /export/events.json > /export/events.csv
+SCHEMA=`awk 'BEGIN{FS=",";OFS=","}{ if(NR==1) {for(i=1;i<NF;++i) {gsub(/"/,"", $i); printf($i ":String,")}}}' /export/events.csv`
+SCHEMA2=${SCHEMA::-1}
+echo "Importing events to BigQuery"
+bq load --project_id jfp-data-warehouse --replace --ignore_unknown_values --skip_leading_rows=1 --source_format CSV nextsteps.events /export/events.csv $SCHEMA2
+
 rm /export/*.gz
+rm /export/*.json
+rm /export/*.csv

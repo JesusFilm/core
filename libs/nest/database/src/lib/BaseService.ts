@@ -52,12 +52,15 @@ export abstract class BaseService {
   }
 
   @IdAsKey()
-  async updateAll<T>(
-    arr: Array<Patch<DocumentData<T>> & ({ _key: string } | { _id: string })>
-  ): Promise<T[]> {
-    const result = await this.collection.updateAll(arr, {
-      returnNew: true
-    })
+  async updateAll<T>(arr: T[]): Promise<T[]> {
+    const result = await this.collection.updateAll(
+      arr as unknown as Array<
+        Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
+      >,
+      {
+        returnNew: true
+      }
+    )
     return result.map((item) => item.new)
   }
 
