@@ -388,6 +388,13 @@ input JourneysFilter {
   featured: Boolean
 }
 
+enum JourneysReportType {
+  multipleFull
+  multipleSummary
+  singleFull
+  singleSummary
+}
+
 enum JourneyStatus {
   archived
   deleted
@@ -565,9 +572,27 @@ input NavigateToJourneyActionInput {
   journeyId: String!
 }
 
+type PowerBiEmbed {
+  """The embed token"""
+  accessToken: String!
+
+  """The embed URL of the report"""
+  embedUrl: String!
+
+  """The date and time (UTC) of token expiration"""
+  expiration: String!
+
+  """The report ID"""
+  reportId: String!
+
+  """The name of the report"""
+  reportName: String!
+}
+
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   adminJourneys(status: [JourneyStatus!]): [Journey!]! @join__field(graph: JOURNEYS)
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
