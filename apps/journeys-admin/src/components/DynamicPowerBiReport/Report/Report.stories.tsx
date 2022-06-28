@@ -10,7 +10,7 @@ import { Report } from '.'
 const ReportStory = {
   ...journeysAdminConfig,
   component: Report,
-  title: 'Journeys-Admin/PowerBiReport/Report'
+  title: 'Journeys-Admin/PowerBiReport'
 }
 
 const Template: Story = (
@@ -82,9 +82,9 @@ Default.loaders = loaders
 Default.args = {
   type: 'report'
 }
-// Default.parameters = {
-//   chromatic: { delay: 30000 }
-// }
+Default.parameters = {
+  chromatic: { disableSnapshot: true }
+}
 
 export const Loading = Template.bind({})
 Loading.loaders = loaders
