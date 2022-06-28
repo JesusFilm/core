@@ -17,14 +17,19 @@ export const GET_ADMIN_JOURNEYS_REPORT = gql`
     }
   }
 `
-export interface RemoteProps {
+export interface ReportProps {
   reportType: JourneysReportType
 }
 
-export function Remote({ reportType }: RemoteProps): ReactElement {
+export function Report({ reportType }: ReportProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
+
+  const { data } = useQuery<GetAdminJourneysReport>(GET_ADMIN_JOURNEYS_REPORT, {
+    variables: { reportType },
+    onError
+  })
 
   function onLoad(): void {
     setLoaded(true)
@@ -37,10 +42,6 @@ export function Remote({ reportType }: RemoteProps): ReactElement {
       preventDuplicate: true
     })
   }
-  const { data } = useQuery<GetAdminJourneysReport>(GET_ADMIN_JOURNEYS_REPORT, {
-    variables: { reportType },
-    onError
-  })
 
   const embedProps: EmbedProps = {
     embedConfig: {
@@ -66,6 +67,7 @@ export function Remote({ reportType }: RemoteProps): ReactElement {
   return (
     <>
       <Box
+        data-testid={`powerBi-${reportType}-report`}
         sx={{
           height: '100%',
           position: 'relative',

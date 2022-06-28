@@ -12,7 +12,7 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import Box from '@mui/material/Box'
 import { PageWrapper } from '../src/components/PageWrapper'
 import i18nConfig from '../next-i18next.config'
-import { PowerBiReport } from '../src/components/PowerBiReport'
+import { DynamicPowerBiReport } from '../src/components/DynamicPowerBiReport'
 import { JourneysReportType } from '../__generated__/globalTypes'
 
 function AnalyticsPage(): ReactElement {
@@ -24,7 +24,7 @@ function AnalyticsPage(): ReactElement {
       <NextSeo title={t('Analytics')} />
       <PageWrapper title={t('Analytics')} authUser={AuthUser}>
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
-          <PowerBiReport reportType={JourneysReportType.multipleFull} />
+          <DynamicPowerBiReport reportType={JourneysReportType.multipleFull} />
         </Box>
       </PageWrapper>
     </>

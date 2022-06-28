@@ -2,9 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import { useEffect } from 'react'
 import { PowerBIEmbed } from 'powerbi-client-react'
+import { SnackbarProvider } from 'notistack'
 import { JourneysReportType } from '../../../../__generated__/globalTypes'
-import { GET_ADMIN_JOURNEYS_REPORT } from './Remote'
-import { Remote } from '.'
+import { GET_ADMIN_JOURNEYS_REPORT } from './Report'
+import { Report } from '.'
 
 const MockPowerBiEmbed = PowerBIEmbed as unknown as jest.MockedClass<
   typeof PowerBIEmbed
@@ -14,27 +15,19 @@ jest.mock('powerbi-client-react', () => ({
   PowerBIEmbed: jest.fn(() => <></>)
 }))
 
-describe('Remote', () => {
+describe('Report', () => {
   it('should render the report', () => {
-    const onLoad = jest.fn()
-    const onError = jest.fn()
-
     const { getByTestId } = render(
       <MockedProvider>
-        <Remote
-          reportType={JourneysReportType.multipleFull}
-          onLoad={onLoad}
-          onError={onError}
-        />
+        <SnackbarProvider>
+          <Report reportType={JourneysReportType.multipleFull} />
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByTestId('powerBi-multipleFull-report')).toBeInTheDocument()
   })
 
   it('gets the report token', async () => {
-    const onLoad = jest.fn()
-    const onError = jest.fn()
-
     const result = jest.fn(() => ({
       data: {
         adminJourneysReport: {
@@ -56,21 +49,16 @@ describe('Remote', () => {
           }
         ]}
       >
-        <Remote
-          reportType={JourneysReportType.multipleFull}
-          onLoad={onLoad}
-          onError={onError}
-        />
+        <SnackbarProvider>
+          <Report reportType={JourneysReportType.multipleFull} />
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('calls onError if there is error retrieving token', async () => {
-    const onLoad = jest.fn()
-    const onError = jest.fn()
-
-    render(
+  it('should shows error message if error retrieving token', async () => {
+    const { getByText } = render(
       <MockedProvider
         mocks={[
           {
@@ -82,28 +70,27 @@ describe('Remote', () => {
           }
         ]}
       >
-        <Remote
-          reportType={JourneysReportType.multipleFull}
-          onLoad={onLoad}
-          onError={onError}
-        />
+        <SnackbarProvider>
+          <Report reportType={JourneysReportType.multipleFull} />
+        </SnackbarProvider>
       </MockedProvider>
     )
-    await waitFor(() => expect(onError).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        getByText('There was an error loading the report')
+      ).toBeInTheDocument()
+    )
   })
 
-  it('calls onLoad when powerBi report is rendered', async () => {
-    const onLoad = jest.fn()
-    const onError = jest.fn()
-
+  it('should render powerBiReport', async () => {
     MockPowerBiEmbed.mockImplementation(({ eventHandlers }) => {
       useEffect(() => {
         eventHandlers?.get('rendered')?.()
       }, [eventHandlers])
-      return (<></>) as unknown as PowerBIEmbed
+      return (<>TestReport</>) as unknown as PowerBIEmbed
     })
 
-    render(
+    const { getByText } = render(
       <MockedProvider
         mocks={[
           {
@@ -122,19 +109,14 @@ describe('Remote', () => {
           }
         ]}
       >
-        <Remote
-          reportType={JourneysReportType.multipleFull}
-          onLoad={onLoad}
-          onError={onError}
-        />
+        <SnackbarProvider>
+          <Report reportType={JourneysReportType.multipleFull} />
+        </SnackbarProvider>
       </MockedProvider>
     )
-    await waitFor(() => expect(onLoad).toHaveBeenCalled())
+    await waitFor(() => expect(getByText('TestReport')).toBeInTheDocument())
   })
-  it('calls onError when powerBi report has an error', async () => {
-    const onLoad = jest.fn()
-    const onError = jest.fn()
-
+  it('show error message if powerBiReport fails to load', async () => {
     MockPowerBiEmbed.mockImplementation(({ eventHandlers }) => {
       useEffect(() => {
         eventHandlers?.get('error')?.()
@@ -142,7 +124,7 @@ describe('Remote', () => {
       return (<></>) as unknown as PowerBIEmbed
     })
 
-    render(
+    const { getByText } = render(
       <MockedProvider
         mocks={[
           {
@@ -161,13 +143,15 @@ describe('Remote', () => {
           }
         ]}
       >
-        <Remote
-          reportType={JourneysReportType.multipleFull}
-          onLoad={onLoad}
-          onError={onError}
-        />
+        <SnackbarProvider>
+          <Report reportType={JourneysReportType.multipleFull} />
+        </SnackbarProvider>
       </MockedProvider>
     )
-    await waitFor(() => expect(onError).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        getByText('There was an error loading the report')
+      ).toBeInTheDocument()
+    )
   })
 })

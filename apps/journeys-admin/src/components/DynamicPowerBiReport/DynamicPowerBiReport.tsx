@@ -1,24 +1,24 @@
 import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
-import { RemoteProps } from './Remote/Remote'
+import { ReportProps } from './Report/Report'
 
-interface PowerBiReportProps {
+interface DynamicPowerBiReportProps {
   reportType: JourneysReportType
 }
-export function PowerBiReport({
+export function DynamicPowerBiReport({
   reportType
-}: PowerBiReportProps): ReactElement {
+}: DynamicPowerBiReportProps): ReactElement {
   // PowerBI needs dynamic import
   // See issue: https://github.com/microsoft/powerbi-client-react/issues/65
-  const Remote = dynamic<RemoteProps>(
+  const Report = dynamic<ReportProps>(
     async () =>
       await import(
-        /* webpackChunkName: "DynamicRemote" */
-        './Remote'
-      ).then(({ Remote }) => Remote),
+        /* webpackChunkName: "DynamicReport" */
+        './Report'
+      ).then(({ Report }) => Report),
     { ssr: false }
   )
 
-  return <Remote reportType={reportType} />
+  return <Report reportType={reportType} />
 }

@@ -4,12 +4,12 @@ import fetch from 'node-fetch'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { GET_ADMIN_JOURNEYS_REPORT } from './Remote/Remote'
-import { PowerBiReport } from '.'
+import { GET_ADMIN_JOURNEYS_REPORT } from './Report/Report'
+import { DynamicPowerBiReport } from '.'
 
 const PowerBiReportStory = {
   ...journeysAdminConfig,
-  component: PowerBiReport,
+  component: DynamicPowerBiReport,
   title: 'Journeys-Admin/PowerBiReport'
 }
 
@@ -51,13 +51,13 @@ const Template: Story = (
   if (args.type === 'loading') {
     return (
       <ApolloLoadingProvider>
-        <PowerBiReport reportType={JourneysReportType.multipleFull} />
+        <DynamicPowerBiReport reportType={JourneysReportType.multipleFull} />
       </ApolloLoadingProvider>
     )
   } else {
     return (
       <MockedProvider mocks={mocks}>
-        <PowerBiReport reportType={JourneysReportType.multipleFull} />
+        <DynamicPowerBiReport reportType={JourneysReportType.multipleFull} />
       </MockedProvider>
     )
   }
