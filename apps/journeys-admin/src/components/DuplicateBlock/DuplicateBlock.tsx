@@ -11,7 +11,10 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useSnackbar } from 'notistack'
 import { gql, useMutation } from '@apollo/client'
 import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
-import { BlockFields, BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
+import {
+  BlockFields,
+  BlockFields_StepBlock as StepBlock
+} from '../../../__generated__/BlockFields'
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
@@ -79,9 +82,9 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
         }
 
         if (blockLabel === 'Card') {
-          const stepBlocks = transformer(data?.blockDuplicate as BlockFields[]) as Array<
-            TreeBlock<StepBlock>
-          >
+          const stepBlocks = transformer(
+            data?.blockDuplicate as BlockFields[]
+          ) as Array<TreeBlock<StepBlock>>
           const steps = stepBlocks.filter(
             (block) => block.__typename === 'StepBlock'
           )
