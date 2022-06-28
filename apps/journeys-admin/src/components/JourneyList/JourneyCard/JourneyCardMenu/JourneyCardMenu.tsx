@@ -22,7 +22,7 @@ export interface JourneyCardMenuProps {
 export function JourneyCardMenu({
   status,
   slug,
-  forceMenu, // this is only used for storybook snapshots
+  forceMenu // this is only used for storybook snapshots
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = forceMenu === true ? true : Boolean(anchorEl)
