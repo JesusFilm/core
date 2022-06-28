@@ -150,7 +150,7 @@ export class BlockService extends BaseService {
     parentBlockId: string | null,
     // Use to custom set children blockIds
     duplicateIds: Map<string, string>,
-    // Below 2 only used when duplicate journeys
+    // Below 2 only used when duplicating journeys
     duplicateJourneyId?: string,
     duplicateStepIds?: Map<string, string>
   ): Promise<Array<Block & { _key: string }>> {

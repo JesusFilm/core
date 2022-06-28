@@ -439,8 +439,8 @@ describe('BlockService', () => {
         .mockReturnValueOnce([iconBlock])
         .mockReturnValue([])
 
-      // StepBlock uses specific id, child id's, parentBlockIds & unique block ids (coverBlockId, posterBlockId & iconIds) randomised
-      // Same actions & null nextBlockId
+      // StepBlock uses specific id. Child block id's, parentBlockIds & unique block ids (coverBlockId, posterBlockId & iconIds) are randomised
+      // Actions remain the same & nextBlockId is made null
       expect(
         await service.getDuplicateBlockAndChildren(
           stepBlock.id,
