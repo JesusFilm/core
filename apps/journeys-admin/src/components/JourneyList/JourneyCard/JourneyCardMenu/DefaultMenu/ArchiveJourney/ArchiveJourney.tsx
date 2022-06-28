@@ -1,12 +1,9 @@
 import { ReactElement } from 'react'
 import { useMutation, gql } from '@apollo/client'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
+import { useSnackbar } from 'notistack'
 import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded'
 import UnarchiveRoundedIcon from '@mui/icons-material/UnarchiveRounded'
-import Typography from '@mui/material/Typography'
-import { useSnackbar } from 'notistack'
+import { MenuItem } from '../../MenuItem'
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { JourneyArchive } from '../../../../../../../__generated__/JourneyArchive'
 import { JourneyUnarchive } from '../../../../../../../__generated__/JourneyUnarchive'
@@ -101,30 +98,20 @@ export function ArchiveJourney({
   }
 
   return (
-    <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }} onClick={handleClick}>
+    <>
       {status !== JourneyStatus.archived ? (
-        <>
-          <ListItemIcon>
-            <ArchiveRoundedIcon color="secondary" />
-          </ListItemIcon>
-          <ListItemText>
-            <Typography variant="body1" sx={{ pl: 2 }}>
-              Archive
-            </Typography>
-          </ListItemText>
-        </>
+        <MenuItem
+          icon={<ArchiveRoundedIcon color="secondary" />}
+          text="Archive"
+          handleClick={handleClick}
+        />
       ) : (
-        <>
-          <ListItemIcon>
-            <UnarchiveRoundedIcon color="secondary" />
-          </ListItemIcon>
-          <ListItemText>
-            <Typography variant="body1" sx={{ pl: 2 }}>
-              Unarchive
-            </Typography>
-          </ListItemText>
-        </>
+        <MenuItem
+          icon={<UnarchiveRoundedIcon color="secondary" />}
+          text="Unarchive"
+          handleClick={handleClick}
+        />
       )}
-    </MenuItem>
+    </>
   )
 }

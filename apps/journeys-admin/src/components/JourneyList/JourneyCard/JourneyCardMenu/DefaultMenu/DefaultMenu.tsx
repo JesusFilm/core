@@ -5,10 +5,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import Divider from '@mui/material/Divider'
 import Link from 'next/link'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import Typography from '@mui/material/Typography'
+import { MenuItem } from '../MenuItem'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { ArchiveJourney } from './ArchiveJourney'
 
@@ -34,52 +31,33 @@ export function DefaultMenu({
   return (
     <>
       <Link href={`/journeys/${slug}`} passHref>
-        <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
-          <ListItemIcon>
-            <EditIcon color="secondary" />
-          </ListItemIcon>
-          <ListItemText>
-            <Typography variant="body1" sx={{ pl: 2 }}>
-              Edit
-            </Typography>
-          </ListItemText>
-        </MenuItem>
+        <MenuItem
+          icon={<EditIcon color="secondary" />}
+          text="Edit"
+          options={{ component: 'a' }}
+        />
       </Link>
 
       <MenuItem
-        sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-        onClick={() => {
+        icon={<PeopleIcon color="secondary" />}
+        text="Access"
+        handleClick={() => {
           setOpenAccessDialog()
           handleCloseMenu()
         }}
-      >
-        <ListItemIcon>
-          <PeopleIcon color="secondary" />
-        </ListItemIcon>
-        <ListItemText>
-          <Typography variant="body1" sx={{ pl: 2 }}>
-            Access
-          </Typography>
-        </ListItemText>
-      </MenuItem>
+      />
 
       <MenuItem
-        sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-        disabled={!published}
-        component="a"
-        href={`/api/preview?slug=${slug}`}
-        target="_blank"
-        rel="noopener"
-      >
-        <ListItemIcon>
-          <VisibilityIcon color="secondary" />
-        </ListItemIcon>
-        <ListItemText>
-          <Typography variant="body1" sx={{ pl: 2 }}>
-            Preview
-          </Typography>
-        </ListItemText>
-      </MenuItem>
+        icon={<VisibilityIcon color="secondary" />}
+        text="Preview"
+        options={{
+          disabled: !published,
+          component: 'a',
+          href: `/api/preview?slug=${slug}`,
+          target: '_blank',
+          rel: 'noopener'
+        }}
+      />
 
       <Divider />
 
@@ -89,22 +67,15 @@ export function DefaultMenu({
         published={published}
         handleClose={handleCloseMenu}
       />
+
       <MenuItem
-        sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-        onClick={() => {
+        icon={<DeleteOutlineRoundedIcon color="secondary" />}
+        text="Delete"
+        handleClick={() => {
           setOpenTrashDialog()
           handleCloseMenu()
         }}
-      >
-        <ListItemIcon>
-          <DeleteOutlineRoundedIcon color="secondary" />
-        </ListItemIcon>
-        <ListItemText>
-          <Typography variant="body1" sx={{ pl: 2 }}>
-            Delete
-          </Typography>
-        </ListItemText>
-      </MenuItem>
+      />
     </>
   )
 }
