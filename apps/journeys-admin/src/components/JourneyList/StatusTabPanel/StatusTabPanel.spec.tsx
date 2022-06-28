@@ -1,6 +1,7 @@
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { SnackbarProvider } from 'notistack'
 import { defaultJourney, oldJourney } from '../journeyListData'
 import { ThemeProvider } from '../../ThemeProvider'
 import { StatusTabPanel } from './StatusTabPanel'
@@ -19,9 +20,11 @@ describe('StatusTabPanel', () => {
     it('should render journeys in descending createdAt date by default', () => {
       const { getAllByLabelText } = render(
         <MockedProvider>
-          <ThemeProvider>
-            <StatusTabPanel journeys={[defaultJourney, oldJourney]} />
-          </ThemeProvider>
+          <SnackbarProvider>
+            <ThemeProvider>
+              <StatusTabPanel journeys={[defaultJourney, oldJourney]} />
+            </ThemeProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
 
@@ -34,9 +37,11 @@ describe('StatusTabPanel', () => {
     it('should order journeys in alphabetical order', () => {
       const { getAllByLabelText, getByRole } = render(
         <MockedProvider>
-          <ThemeProvider>
-            <StatusTabPanel journeys={[defaultJourney, oldJourney]} />
-          </ThemeProvider>
+          <SnackbarProvider>
+            <ThemeProvider>
+              <StatusTabPanel journeys={[defaultJourney, oldJourney]} />
+            </ThemeProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
 
@@ -65,9 +70,11 @@ describe('StatusTabPanel', () => {
     it('should not change tab if clicking a already selected tab', () => {
       const { getByRole } = render(
         <MockedProvider>
-          <ThemeProvider>
-            <StatusTabPanel journeys={[defaultJourney, oldJourney]} />
-          </ThemeProvider>
+          <SnackbarProvider>
+            <ThemeProvider>
+              <StatusTabPanel journeys={[defaultJourney, oldJourney]} />
+            </ThemeProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
       expect(getByRole('tab')).toHaveAttribute('aria-selected', 'true')

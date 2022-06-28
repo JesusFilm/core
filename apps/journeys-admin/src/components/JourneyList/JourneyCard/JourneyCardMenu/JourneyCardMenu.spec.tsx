@@ -34,52 +34,52 @@ describe('JourneyCardMenu', () => {
       'journey-actions'
     )
   })
-  it('should handle edit journey', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <JourneyCardMenu
-              status={JourneyStatus.published}
-              slug={'published-journey'}
-              published={true}
-              journeyId={'journey-id'}
-            />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Edit' })).toHaveAttribute(
-      'href',
-      '/journeys/published-journey'
-    )
-  })
-  it('should handle preview', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <JourneyCardMenu
-              status={JourneyStatus.published}
-              slug={'published-journey'}
-              published={true}
-              journeyId={'journey-id'}
-            />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
-      'href',
-      '/api/preview?slug=published-journey'
-    )
-    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
-      'target',
-      '_blank'
-    )
-  })
+  // it('should handle edit journey', () => {
+  //   const { getByRole } = render(
+  //     <MockedProvider>
+  //       <SnackbarProvider>
+  //         <ThemeProvider>
+  //           <JourneyCardMenu
+  //             status={JourneyStatus.published}
+  //             slug={'published-journey'}
+  //             published={true}
+  //             journeyId={'journey-id'}
+  //           />
+  //         </ThemeProvider>
+  //       </SnackbarProvider>
+  //     </MockedProvider>
+  //   )
+  //   fireEvent.click(getByRole('button'))
+  //   expect(getByRole('menuitem', { name: 'Edit' })).toHaveAttribute(
+  //     'href',
+  //     '/journeys/published-journey'
+  //   )
+  // })
+  // it('should handle preview', () => {
+  //   const { getByRole } = render(
+  //     <MockedProvider>
+  //       <SnackbarProvider>
+  //         <ThemeProvider>
+  //           <JourneyCardMenu
+  //             status={JourneyStatus.published}
+  //             slug={'published-journey'}
+  //             published={true}
+  //             journeyId={'journey-id'}
+  //           />
+  //         </ThemeProvider>
+  //       </SnackbarProvider>
+  //     </MockedProvider>
+  //   )
+  //   fireEvent.click(getByRole('button'))
+  //   expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+  //     'href',
+  //     '/api/preview?slug=published-journey'
+  //   )
+  //   expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
+  //     'target',
+  //     '_blank'
+  //   )
+  // })
 
   it('should have a disabled preview button is journey is draft', () => {
     const { getByRole } = render(
