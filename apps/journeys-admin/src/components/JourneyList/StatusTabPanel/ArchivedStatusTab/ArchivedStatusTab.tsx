@@ -213,12 +213,12 @@ export function ArchivedStatusTab({
         open={openRestoreAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: t('Archive Journeys'),
+          title: t('Unarchive Journeys'),
           closeButton: true
         }}
         dialogAction={{
           onSubmit: restoreAll,
-          submitLabel: t('Archive'),
+          submitLabel: t('Unarchive'),
           closeLabel: t('Cancel')
         }}
         divider={true}
@@ -226,7 +226,7 @@ export function ArchivedStatusTab({
       >
         <Typography>
           {t(
-            'Are you sure you would like to unarchive all active journeys immediately?'
+            'Are you sure you would like to unarchive all archived journeys immediately?'
           )}
         </Typography>
       </Dialog>

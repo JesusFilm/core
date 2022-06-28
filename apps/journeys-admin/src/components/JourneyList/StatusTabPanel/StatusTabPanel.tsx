@@ -14,7 +14,7 @@ import { TrashedStatusTab } from './TrashedStatusTab'
 
 export interface StatusTabPanelProps {
   router?: NextRouter
-  event: string
+  event?: string | undefined
 }
 
 interface StatusOptions {
@@ -25,7 +25,7 @@ interface StatusOptions {
 
 export function StatusTabPanel({
   router,
-  event
+  event = ''
 }: StatusTabPanelProps): ReactElement {
   const journeyStatusTabs: StatusOptions[] = [
     {

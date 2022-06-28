@@ -2,6 +2,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { NextRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
 import {
   defaultJourney,
   oldJourney,
@@ -41,7 +42,9 @@ describe('StatusTabPanel', () => {
         ]}
       >
         <ThemeProvider>
-          <StatusTabPanel />
+          <SnackbarProvider>
+            <StatusTabPanel />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -54,7 +57,9 @@ describe('StatusTabPanel', () => {
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
-          <StatusTabPanel />
+          <SnackbarProvider>
+            <StatusTabPanel />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -78,7 +83,9 @@ describe('StatusTabPanel', () => {
         ]}
       >
         <ThemeProvider>
-          <StatusTabPanel />
+          <SnackbarProvider>
+            <StatusTabPanel />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -116,7 +123,9 @@ describe('StatusTabPanel', () => {
         ]}
       >
         <ThemeProvider>
-          <StatusTabPanel router={router} />
+          <SnackbarProvider>
+            <StatusTabPanel router={router} />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -134,24 +143,26 @@ describe('StatusTabPanel', () => {
     } as unknown as NextRouter
 
     const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_ACTIVE_JOURNEYS
-            },
-            result: {
-              data: {
-                journeys: [defaultJourney]
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_ACTIVE_JOURNEYS
+              },
+              result: {
+                data: {
+                  journeys: [defaultJourney]
+                }
               }
             }
-          }
-        ]}
-      >
-        <ThemeProvider>
-          <StatusTabPanel router={router} />
-        </ThemeProvider>
-      </MockedProvider>
+          ]}
+        >
+          <ThemeProvider>
+            <StatusTabPanel router={router} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
     expect(getByRole('tab', { name: 'Active' })).toHaveAttribute(
       'aria-selected',

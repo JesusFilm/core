@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
+import { SnackbarProvider } from 'notistack'
 import { defaultJourney, oldJourney } from '../../journeyListData'
 import { ThemeProvider } from '../../../ThemeProvider'
 import { SortOrder } from '../../JourneySort'
@@ -32,7 +33,9 @@ describe('ActiveStatusTab', () => {
         ]}
       >
         <ThemeProvider>
-          <TrashedStatusTab onLoad={noop} />
+          <SnackbarProvider>
+            <TrashedStatusTab onLoad={noop} />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -67,7 +70,9 @@ describe('ActiveStatusTab', () => {
         ]}
       >
         <ThemeProvider>
-          <TrashedStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
+          <SnackbarProvider>
+            <TrashedStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -102,7 +107,9 @@ describe('ActiveStatusTab', () => {
         ]}
       >
         <ThemeProvider>
-          <TrashedStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
+          <SnackbarProvider>
+            <TrashedStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -119,7 +126,9 @@ describe('ActiveStatusTab', () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[]}>
         <ThemeProvider>
-          <TrashedStatusTab onLoad={noop} />
+          <SnackbarProvider>
+            <TrashedStatusTab onLoad={noop} />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
@@ -146,7 +155,9 @@ describe('ActiveStatusTab', () => {
         ]}
       >
         <ThemeProvider>
-          <TrashedStatusTab onLoad={onLoad} />
+          <SnackbarProvider>
+            <TrashedStatusTab onLoad={onLoad} />
+          </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )

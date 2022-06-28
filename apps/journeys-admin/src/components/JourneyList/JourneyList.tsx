@@ -15,14 +15,14 @@ export interface JourneysListProps {
   journeys?: Journey[]
   disableCreation?: boolean
   router?: NextRouter
-  event: string
+  event?: string | undefined
 }
 
 export function JourneyList({
   journeys,
   disableCreation,
   router,
-  event
+  event = ''
 }: JourneysListProps): ReactElement {
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
