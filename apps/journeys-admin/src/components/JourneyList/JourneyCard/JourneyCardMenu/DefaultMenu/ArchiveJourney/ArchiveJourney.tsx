@@ -7,9 +7,9 @@ import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded'
 import UnarchiveRoundedIcon from '@mui/icons-material/UnarchiveRounded'
 import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
-import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { JourneyArchive } from '../../../../../../__generated__/JourneyArchive'
-import { JourneyUnarchive } from '../../../../../../__generated__/JourneyUnarchive'
+import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
+import { JourneyArchive } from '../../../../../../../__generated__/JourneyArchive'
+import { JourneyUnarchive } from '../../../../../../../__generated__/JourneyUnarchive'
 
 export const JOURNEY_ARCHIVE = gql`
   mutation JourneyArchive($ids: [ID!]!) {

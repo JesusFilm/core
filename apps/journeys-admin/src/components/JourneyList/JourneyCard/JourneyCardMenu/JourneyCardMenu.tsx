@@ -1,25 +1,14 @@
 import { ReactElement, useState } from 'react'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import Typography from '@mui/material/Typography'
-import Divider from '@mui/material/Divider'
-import Link from 'next/link'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import EditIcon from '@mui/icons-material/Edit'
-import PeopleIcon from '@mui/icons-material/People'
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
-import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded'
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
-import { ArchiveJourney } from './ArchiveJourney'
 import { TrashJourneyDialog } from './TrashJourneyDialog'
 import { RestoreJourneyDialog } from './RestoreJourneyDialog'
 import { DeleteJourneyDialog } from './DeleteJourneyDialog'
+import { DefaultMenu } from './DefaultMenu'
+import { TrashMenu } from './TrashMenu'
 
 export interface JourneyCardMenuProps {
   status: JourneyStatus
@@ -111,153 +100,6 @@ export function JourneyCardMenu({
         open={openDeleteDialog}
         handleClose={() => setOpenDeleteDialog(false)}
       />
-    </>
-  )
-}
-
-interface TrashMenuProps {
-  setOpenRestoreDialog: () => void
-  setOpenDeleteDialog: () => void
-  handleCloseMenu: () => void
-}
-
-function TrashMenu({
-  setOpenRestoreDialog,
-  setOpenDeleteDialog,
-  handleCloseMenu
-}: TrashMenuProps): ReactElement {
-  return (
-    <>
-      <MenuItem
-        sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-        onClick={() => {
-          setOpenRestoreDialog()
-          handleCloseMenu()
-        }}
-      >
-        <ListItemIcon>
-          <CheckCircleRoundedIcon color="secondary" />
-        </ListItemIcon>
-        <ListItemText>
-          <Typography variant="body1" sx={{ pl: 2 }}>
-            Restore
-          </Typography>
-        </ListItemText>
-      </MenuItem>
-
-      <MenuItem
-        sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-        onClick={() => {
-          setOpenDeleteDialog()
-          handleCloseMenu()
-        }}
-      >
-        <ListItemIcon>
-          <DeleteForeverRoundedIcon color="secondary" />
-        </ListItemIcon>
-        <ListItemText>
-          <Typography variant="body1" sx={{ pl: 2 }}>
-            Delete Forever
-          </Typography>
-        </ListItemText>
-      </MenuItem>
-    </>
-  )
-}
-
-interface DefaultMenuProps {
-  slug: string
-  status: JourneyStatus
-  journeyId: string
-  published: boolean
-  setOpenAccessDialog: () => void
-  handleCloseMenu: () => void
-  setOpenTrashDialog: () => void
-}
-
-function DefaultMenu({
-  slug,
-  status,
-  journeyId,
-  published,
-  setOpenAccessDialog,
-  handleCloseMenu,
-  setOpenTrashDialog
-}: DefaultMenuProps): ReactElement {
-  return (
-    <>
-      <Link href={`/journeys/${slug}`} passHref>
-        <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
-          <ListItemIcon>
-            <EditIcon color="secondary" />
-          </ListItemIcon>
-          <ListItemText>
-            <Typography variant="body1" sx={{ pl: 2 }}>
-              Edit
-            </Typography>
-          </ListItemText>
-        </MenuItem>
-      </Link>
-
-      <MenuItem
-        sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-        onClick={() => {
-          setOpenAccessDialog()
-          handleCloseMenu()
-        }}
-      >
-        <ListItemIcon>
-          <PeopleIcon color="secondary" />
-        </ListItemIcon>
-        <ListItemText>
-          <Typography variant="body1" sx={{ pl: 2 }}>
-            Access
-          </Typography>
-        </ListItemText>
-      </MenuItem>
-
-      <MenuItem
-        sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-        disabled={!published}
-        component="a"
-        href={`/api/preview?slug=${slug}`}
-        target="_blank"
-        rel="noopener"
-      >
-        <ListItemIcon>
-          <VisibilityIcon color="secondary" />
-        </ListItemIcon>
-        <ListItemText>
-          <Typography variant="body1" sx={{ pl: 2 }}>
-            Preview
-          </Typography>
-        </ListItemText>
-      </MenuItem>
-
-      <Divider />
-
-      <ArchiveJourney
-        status={status}
-        id={journeyId}
-        published={published}
-        handleClose={handleCloseMenu}
-      />
-      <MenuItem
-        sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-        onClick={() => {
-          setOpenTrashDialog()
-          handleCloseMenu()
-        }}
-      >
-        <ListItemIcon>
-          <DeleteOutlineRoundedIcon color="secondary" />
-        </ListItemIcon>
-        <ListItemText>
-          <Typography variant="body1" sx={{ pl: 2 }}>
-            Delete
-          </Typography>
-        </ListItemText>
-      </MenuItem>
     </>
   )
 }
