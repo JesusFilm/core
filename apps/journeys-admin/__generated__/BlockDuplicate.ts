@@ -10,7 +10,6 @@
 export interface BlockDuplicate_blockDuplicate {
   __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
   id: string;
-  parentOrder: number | null;
 }
 
 export interface BlockDuplicate {

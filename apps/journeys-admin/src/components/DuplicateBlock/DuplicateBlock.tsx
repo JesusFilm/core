@@ -24,7 +24,6 @@ export const BLOCK_DUPLICATE = gql`
   mutation BlockDuplicate($id: ID!, $journeyId: ID!, $parentOrder: Int!) {
     blockDuplicate(id: $id, journeyId: $journeyId, parentOrder: $parentOrder) {
       id
-      parentOrder
     }
   }
 `
@@ -74,15 +73,7 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
         }
       })
       if (data?.blockDuplicate != null) {
-        if (blockLabel === 'Block') {
-          const block = transformer([data.blockDuplicate[parentOrder + 1] as BlockFields])[0]
-          dispatch({
-            type: 'SetSelectedBlockAction',
-            block
-          })
-        }
-
-        if (blockLabel === 'Card') {
+        if (selectedBlock.__typename === 'StepBlock') {
           const stepBlocks = transformer(
             data?.blockDuplicate as BlockFields[]
           ) as Array<TreeBlock<StepBlock>>
@@ -98,6 +89,13 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
             type: 'SetSelectedStepAction',
             step: duplicatedStep
           })
+        } else {
+          const block = transformer(data.blockDuplicate as BlockFields[])
+          const duplicatedBlock = block[parentOrder + 1]
+          dispatch({
+            type: 'SetSelectedBlockAction',
+            block: duplicatedBlock
+          })
         }
         dispatch({
           type: 'SetActiveTabAction',
@@ -105,7 +103,6 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
         })
       }
     }
-
     enqueueSnackbar(`${blockLabel} Duplicated`, {
       variant: 'success',
       preventDuplicate: true
