@@ -75,6 +75,7 @@ export function Report({ reportType }: ReportProps): ReactElement {
             height: '100%',
             '> iframe': {
               border: 0,
+              // negative margin added to remove unknown margin from the iframe that causes scroll bar to appear
               marginBottom: '-6px'
             }
           }
