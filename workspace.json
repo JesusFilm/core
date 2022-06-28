@@ -22,6 +22,7 @@
     "nest-database": "libs/nest/database",
     "nest-decorators": "libs/nest/decorators",
     "nest/gqlAuthGuard": "libs/nest/gqlAuthGuard",
+    "nest/powerBi": "libs/nest/powerBi",
     "shared-storybook": "libs/shared/storybook",
     "shared-ui": "libs/shared/ui",
     "watch": "apps/watch",

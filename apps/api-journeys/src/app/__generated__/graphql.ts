@@ -129,6 +129,13 @@ export enum JourneyStatus {
     trashed = "trashed"
 }
 
+export enum JourneysReportType {
+    multipleFull = "multipleFull",
+    multipleSummary = "multipleSummary",
+    singleFull = "singleFull",
+    singleSummary = "singleSummary"
+}
+
 export enum UserJourneyRole {
     inviteRequested = "inviteRequested",
     editor = "editor",
@@ -727,6 +734,15 @@ export class VideoProgressEvent implements Event {
     block?: Nullable<VideoBlock>;
 }
 
+export class PowerBiEmbed {
+    __typename?: 'PowerBiEmbed';
+    reportId: string;
+    reportName: string;
+    embedUrl: string;
+    accessToken: string;
+    expiration: string;
+}
+
 export class UserJourney {
     __typename?: 'UserJourney';
     journey?: Nullable<Journey>;
@@ -852,6 +868,8 @@ export class Language {
 
 export abstract class IQuery {
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>): Journey[] | Promise<Journey[]>;
+
+    abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
 
     abstract adminJourney(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 

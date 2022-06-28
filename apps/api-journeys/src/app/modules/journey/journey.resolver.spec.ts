@@ -1,12 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
+import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   IdType,
   Journey,
   JourneyStatus,
   ThemeMode,
   ThemeName,
-  UserJourneyRole
+  UserJourneyRole,
+  JourneysReportType
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
@@ -20,6 +22,15 @@ jest.mock('uuid', () => ({
 }))
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+
+jest.mock('@core/nest/powerBi/getPowerBiEmbed', () => ({
+  __esModule: true,
+  getPowerBiEmbed: jest.fn()
+}))
+
+const mockGetPowerBiEmbed = getPowerBiEmbed as jest.MockedFunction<
+  typeof getPowerBiEmbed
+>
 
 describe('JourneyResolver', () => {
   beforeAll(() => {
@@ -186,6 +197,164 @@ describe('JourneyResolver', () => {
     resolver = module.get<JourneyResolver>(JourneyResolver)
     service = module.get<JourneyService>(JourneyService)
     ujService = module.get<UserJourneyService>(UserJourneyService)
+  })
+
+  describe('adminJourneysEmbed', () => {
+    it('should throw an error', async () => {
+      await expect(
+        resolver.adminJourneysReport('userId', JourneysReportType.multipleFull)
+      ).rejects.toThrow('server environment variables missing')
+    })
+
+    describe('with environment configuration', () => {
+      const OLD_ENV = process.env
+
+      beforeEach(() => {
+        jest.resetModules() // Most important - it clears the cache
+        process.env = { ...OLD_ENV } // Make a copy
+        process.env.POWER_BI_CLIENT_ID = 'POWER_BI_CLIENT_ID'
+        process.env.POWER_BI_CLIENT_SECRET = 'POWER_BI_CLIENT_SECRET'
+        process.env.POWER_BI_TENANT_ID = 'POWER_BI_TENANT_ID'
+        process.env.POWER_BI_WORKSPACE_ID = 'POWER_BI_WORKSPACE_ID'
+        process.env.POWER_BI_JOURNEYS_MULTIPLE_FULL_REPORT_ID =
+          'POWER_BI_JOURNEYS_MULTIPLE_FULL_REPORT_ID'
+        process.env.POWER_BI_JOURNEYS_MULTIPLE_SUMMARY_REPORT_ID =
+          'POWER_BI_JOURNEYS_MULTIPLE_SUMMARY_REPORT_ID'
+        process.env.POWER_BI_JOURNEYS_SINGLE_FULL_REPORT_ID =
+          'POWER_BI_JOURNEYS_SINGLE_FULL_REPORT_ID'
+        process.env.POWER_BI_JOURNEYS_SINGLE_SUMMARY_REPORT_ID =
+          'POWER_BI_JOURNEYS_SINGLE_SUMMARY_REPORT_ID'
+      })
+
+      afterAll(() => {
+        process.env = OLD_ENV // Restore old environment
+      })
+
+      it('should get power bi embed for multiple full', async () => {
+        mockGetPowerBiEmbed.mockResolvedValue({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        await expect(
+          resolver.adminJourneysReport(
+            'userId',
+            JourneysReportType.multipleFull
+          )
+        ).resolves.toEqual({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        expect(mockGetPowerBiEmbed).toHaveBeenCalledWith(
+          {
+            clientId: 'POWER_BI_CLIENT_ID',
+            clientSecret: 'POWER_BI_CLIENT_SECRET',
+            tenantId: 'POWER_BI_TENANT_ID',
+            workspaceId: 'POWER_BI_WORKSPACE_ID'
+          },
+          'POWER_BI_JOURNEYS_MULTIPLE_FULL_REPORT_ID',
+          'userId'
+        )
+      })
+
+      it('should get power bi embed for multiple summary', async () => {
+        mockGetPowerBiEmbed.mockResolvedValue({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        await expect(
+          resolver.adminJourneysReport(
+            'userId',
+            JourneysReportType.multipleSummary
+          )
+        ).resolves.toEqual({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        expect(mockGetPowerBiEmbed).toHaveBeenCalledWith(
+          {
+            clientId: 'POWER_BI_CLIENT_ID',
+            clientSecret: 'POWER_BI_CLIENT_SECRET',
+            tenantId: 'POWER_BI_TENANT_ID',
+            workspaceId: 'POWER_BI_WORKSPACE_ID'
+          },
+          'POWER_BI_JOURNEYS_MULTIPLE_SUMMARY_REPORT_ID',
+          'userId'
+        )
+      })
+
+      it('should get power bi embed for single full', async () => {
+        mockGetPowerBiEmbed.mockResolvedValue({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        await expect(
+          resolver.adminJourneysReport('userId', JourneysReportType.singleFull)
+        ).resolves.toEqual({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        expect(mockGetPowerBiEmbed).toHaveBeenCalledWith(
+          {
+            clientId: 'POWER_BI_CLIENT_ID',
+            clientSecret: 'POWER_BI_CLIENT_SECRET',
+            tenantId: 'POWER_BI_TENANT_ID',
+            workspaceId: 'POWER_BI_WORKSPACE_ID'
+          },
+          'POWER_BI_JOURNEYS_SINGLE_FULL_REPORT_ID',
+          'userId'
+        )
+      })
+
+      it('should get power bi embed for single summary', async () => {
+        mockGetPowerBiEmbed.mockResolvedValue({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        await expect(
+          resolver.adminJourneysReport(
+            'userId',
+            JourneysReportType.singleSummary
+          )
+        ).resolves.toEqual({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        expect(mockGetPowerBiEmbed).toHaveBeenCalledWith(
+          {
+            clientId: 'POWER_BI_CLIENT_ID',
+            clientSecret: 'POWER_BI_CLIENT_SECRET',
+            tenantId: 'POWER_BI_TENANT_ID',
+            workspaceId: 'POWER_BI_WORKSPACE_ID'
+          },
+          'POWER_BI_JOURNEYS_SINGLE_SUMMARY_REPORT_ID',
+          'userId'
+        )
+      })
+    })
   })
 
   describe('adminJourneys', () => {
