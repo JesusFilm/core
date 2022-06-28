@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider } from '@core/journeys/ui'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import Typography from '@mui/material/Typography'
 import { noop } from 'lodash'
 import Box from '@mui/material/Box'

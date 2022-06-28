@@ -1,5 +1,6 @@
 import { danger, warn, markdown } from 'danger'
 import lint from '@commitlint/lint'
+import load from '@commitlint/load'
 
 export default async () => {
   // ignore dependabot
@@ -26,20 +27,14 @@ export default async () => {
     )
   }
 
-  // check branch has well-formed name
-  if (
-    danger.github.pr.head.ref.match(
-      /^[0-9]{2}-[0-9]{2}-[A-Z]{2}-(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)-[a-z0-9\-]+[a-z0-9]/g
-    ) === null
-  ) {
-    fail('Your branch does not match the naming convention.')
-    markdown(
-      `> (branch name - ${danger.github.pr.head.ref}): see the Branch naming conventions here https://github.com/JesusFilm/core/wiki/Repository-Best-Practice#naming-your-branch`
-    )
-  }
-
   // check PR has well-formed title
-  const commitlintReport = await lint(danger.github.pr.title)
+  const commitlintConfig = await load({
+    extends: ['@commitlint/config-conventional']
+  })
+  const commitlintReport = await lint(
+    danger.github.pr.title,
+    commitlintConfig.rules
+  )
   if (!commitlintReport.valid) {
     fail('Please ensure your PR title matches commitlint convention.')
     let errors = ''
@@ -108,6 +103,7 @@ export default async () => {
 
   // check PR has requested reviewers or completed reviews
   if (
+    currentPR.data.requested_reviewers != null &&
     currentPR.data.requested_reviewers.length === 0 &&
     reviews.data.length === 0
   ) {

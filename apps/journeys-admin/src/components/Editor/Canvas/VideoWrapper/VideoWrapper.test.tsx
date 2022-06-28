@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react'
-import type { TreeBlock } from '@core/journeys/ui'
-import { Video } from '@core/journeys/ui'
+import { Video } from '@core/journeys/ui/Video'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { VideoWrapper } from '.'
 
-jest.mock('@core/journeys/ui', () => ({
+jest.mock('@core/journeys/ui/Video', () => ({
   __esModule: true,
   Video: jest.fn(() => <></>)
 }))

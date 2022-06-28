@@ -1,8 +1,8 @@
-import { BaseService } from '@core/nest/database'
+import { BaseService } from '@core/nest/database/BaseService'
 import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
-import { KeyAsId } from '@core/nest/decorators'
+import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 
 import { User } from '../../__generated__/graphql'
 

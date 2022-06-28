@@ -6,15 +6,12 @@ import ButtonGroup from '@mui/material/ButtonGroup'
 import { useMutation, gql } from '@apollo/client'
 import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
-import {
-  TreeBlock,
-  BlockRenderer,
-  useJourney,
-  useBlocks,
-  getStepHeading
-} from '../..'
-import { WrappersProps } from '../BlockRenderer'
-import { RadioOption } from './RadioOption'
+import type { TreeBlock } from '../../libs/block'
+import { useBlocks } from '../../libs/block'
+import { getStepHeading } from '../../libs/getStepHeading'
+import { useJourney } from '../../libs/JourneyProvider'
+import { BlockRenderer, WrappersProps } from '../BlockRenderer'
+import { RadioOption } from '../RadioOption'
 import { RadioQuestionSubmissionEventCreate } from './__generated__/RadioQuestionSubmissionEventCreate'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 

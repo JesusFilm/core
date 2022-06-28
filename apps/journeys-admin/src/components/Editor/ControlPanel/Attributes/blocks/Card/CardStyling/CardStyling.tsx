@@ -6,7 +6,9 @@ import Typography from '@mui/material/Typography'
 import ColorLens from '@mui/icons-material/ColorLens'
 import Image from 'next/image'
 import { gql, useMutation } from '@apollo/client'
-import { useEditor, TreeBlock, useJourney } from '@core/journeys/ui'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { HorizontalSelect } from '../../../../../../HorizontalSelect'
 import {
   ThemeName,

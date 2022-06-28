@@ -37,7 +37,6 @@ describe('StepBlockResolver', () => {
       get: jest.fn(() => block),
       getAll: jest.fn(() => [block, block]),
       getSiblings: jest.fn(() => [block, block]),
-      reorderBlock: jest.fn(() => []),
       save: jest.fn(() => blockCreateResponse),
       update: jest.fn((input) => input)
     })
@@ -80,21 +79,6 @@ describe('StepBlockResolver', () => {
         ...blockUpdate,
         parentOrder: 2
       })
-      expect(service.reorderBlock).toBeCalledWith(block.id, block.journeyId, 2)
-    })
-
-    it('creates a StepBlock in specific position', async () => {
-      expect(
-        await resolver
-          .stepBlockCreate({ ...omit(block, 'id'), parentOrder: 1 })
-          .catch((err) => console.log(err))
-      ).toEqual({ ...blockCreateResponse, parentOrder: 1 })
-      expect(service.getSiblings).toHaveBeenCalledWith(block.journeyId)
-      expect(service.save).toHaveBeenCalledWith({
-        ...blockUpdate,
-        parentOrder: 2
-      })
-      expect(service.reorderBlock).toBeCalledWith(block.id, block.journeyId, 1)
     })
   })
 

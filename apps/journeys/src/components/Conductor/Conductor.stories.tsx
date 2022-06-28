@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
-import { TreeBlock } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { journeysConfig } from '../../libs/storybook'
 import {
   ButtonColor,

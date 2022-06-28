@@ -1,5 +1,5 @@
 import { Story } from '@storybook/react'
-import { sharedUiConfig } from '@core/shared/ui'
+import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
 import { SnackbarProvider } from 'notistack'
 import { ThemeProvider } from '../../components/ThemeProvider'
 

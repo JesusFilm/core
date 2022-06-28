@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { BaseService } from '@core/nest/database'
+import { BaseService } from '@core/nest/database/BaseService'
 import { DocumentCollection } from 'arangojs/collection'
 
 @Injectable()

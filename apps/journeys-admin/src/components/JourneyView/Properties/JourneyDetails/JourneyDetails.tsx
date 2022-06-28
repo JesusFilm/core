@@ -7,7 +7,7 @@ import CheckCircleRounded from '@mui/icons-material/CheckCircleRounded'
 import EditRounded from '@mui/icons-material/EditRounded'
 import EventRounded from '@mui/icons-material/EventRounded'
 import TranslateRounded from '@mui/icons-material/TranslateRounded'
-import { useJourney } from '@core/journeys/ui'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 export function JourneyDetails(): ReactElement {

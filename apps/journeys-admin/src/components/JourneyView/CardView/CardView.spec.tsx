@@ -1,7 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { NextRouter, useRouter } from 'next/router'
-import { JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { CardView } from './CardView'

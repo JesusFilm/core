@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider } from '@core/journeys/ui'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import Typography from '@mui/material/Typography'
 import { render, fireEvent } from '@testing-library/react'
 import { ToggleOption } from '.'

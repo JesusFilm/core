@@ -17,8 +17,7 @@ export interface HorizontalSelectProps {
   children: ReactNode
   sx?: SxProps<Theme>
   footer?: ReactNode
-  insert?: ReactNode
-  insertPosition?: number
+  isDragging?: boolean
 }
 
 export function HorizontalSelect({
@@ -27,8 +26,7 @@ export function HorizontalSelect({
   onChange,
   sx,
   footer,
-  insert,
-  insertPosition
+  isDragging
 }: HorizontalSelectProps): ReactElement {
   const selectedRef = useRef<HTMLElement>(null)
 
@@ -51,10 +49,9 @@ export function HorizontalSelect({
         ...sx
       }}
     >
-      {Children.toArray(children).map((child, index) => {
-        const result: ReactElement[] = []
-        if (isValidElement(child)) {
-          result.push(
+      {Children.toArray(children).map(
+        (child) =>
+          isValidElement(child) && (
             <Box
               key={child.props.id}
               ref={id === child.props.id ? selectedRef : undefined}
@@ -63,7 +60,7 @@ export function HorizontalSelect({
                 transition: '0.2s border-color ease-out',
                 position: 'relative',
                 outline: (theme) =>
-                  id === child.props.id
+                  id === child.props.id && isDragging !== true
                     ? `2px solid ${theme.palette.primary.main} `
                     : '2px solid transparent',
                 border: '3px solid transparent',
@@ -73,7 +70,6 @@ export function HorizontalSelect({
             >
               <Box
                 sx={{
-                  position: 'absolute',
                   top: 0,
                   right: 0,
                   bottom: 0,
@@ -84,30 +80,7 @@ export function HorizontalSelect({
               {child}
             </Box>
           )
-        }
-        if (insertPosition === index && isValidElement(insert)) {
-          result.push(
-            <Box
-              sx={{
-                border: '3px solid transparent'
-              }}
-            >
-              {insert}
-            </Box>
-          )
-        }
-        return result
-      })}
-      {(Children.toArray(children).length === 0 || insertPosition === -1) &&
-        isValidElement(insert) && (
-          <Box
-            sx={{
-              border: '3px solid transparent'
-            }}
-          >
-            {insert}
-          </Box>
-        )}
+      )}
       {footer != null && (
         <Box
           sx={{

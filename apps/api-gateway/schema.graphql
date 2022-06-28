@@ -388,6 +388,13 @@ input JourneysFilter {
   featured: Boolean
 }
 
+enum JourneysReportType {
+  multipleFull
+  multipleSummary
+  singleFull
+  singleSummary
+}
+
 enum JourneyStatus {
   archived
   deleted
@@ -456,6 +463,19 @@ type Mutation {
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]! @join__field(graph: JOURNEYS)
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
+
+  """
+  blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
+  """
+  blockDuplicate(
+    id: ID!
+    journeyId: ID!
+
+    """
+    parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
+    """
+    parentOrder: Int
+  ): [Block!]! @join__field(graph: JOURNEYS)
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID!): LinkAction! @join__field(graph: JOURNEYS)
   blockUpdateNavigateAction(id: ID!, input: NavigateActionInput!, journeyId: ID!): NavigateAction! @join__field(graph: JOURNEYS)
@@ -552,9 +572,27 @@ input NavigateToJourneyActionInput {
   journeyId: String!
 }
 
+type PowerBiEmbed {
+  """The embed token"""
+  accessToken: String!
+
+  """The embed URL of the report"""
+  embedUrl: String!
+
+  """The date and time (UTC) of token expiration"""
+  expiration: String!
+
+  """The report ID"""
+  reportId: String!
+
+  """The name of the report"""
+  reportName: String!
+}
+
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   adminJourneys(status: [JourneyStatus!]): [Journey!]! @join__field(graph: JOURNEYS)
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
@@ -675,8 +713,8 @@ type StepBlock implements Block {
   """
   nextBlockId contains the preferred block to navigate to when a
   NavigateAction occurs or if the user manually tries to advance to the next
-  step. If no nextBlockId is set it can be assumed that this step represents
-  the end of the current journey.
+  step. If no nextBlockId is set it will automatically navigate to the next
+  step in the journey based on parentOrder.
   """
   nextBlockId: ID
   parentBlockId: ID
@@ -688,7 +726,6 @@ input StepBlockCreateInput {
   journeyId: ID!
   locked: Boolean
   nextBlockId: ID
-  parentOrder: Int
 }
 
 input StepBlockUpdateInput {

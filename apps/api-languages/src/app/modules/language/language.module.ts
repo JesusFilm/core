@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { DatabaseModule } from '@core/nest/database'
+import { DatabaseModule } from '@core/nest/database/DatabaseModule'
 import { LanguageResolver } from './language.resolver'
 import { LanguageService } from './language.service'
 
