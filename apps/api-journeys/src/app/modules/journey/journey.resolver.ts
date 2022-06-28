@@ -97,8 +97,11 @@ export class JourneyResolver {
   }
 
   @Query()
-  async adminJourneys(@CurrentUserId() userId: string): Promise<Journey[]> {
-    return await this.journeyService.getAllByOwnerEditor(userId)
+  async adminJourneys(
+    @CurrentUserId() userId: string,
+    @Args('status') status: JourneyStatus[]
+  ): Promise<Journey[]> {
+    return await this.journeyService.getAllByOwnerEditor(userId, status)
   }
 
   @Query()
@@ -290,6 +293,83 @@ export class JourneyResolver {
     })
   }
 
+  @Mutation()
+  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  async journeysArchive(
+    @CurrentUserId() userId: string,
+    @Args('ids') ids: string[]
+  ): Promise<Journey[]> {
+    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+      (journey) => ({
+        _key: journey.id,
+        status: JourneyStatus.archived,
+        archivedAt: new Date().toISOString()
+      })
+    )
+
+    return (await this.journeyService.updateAll(
+      results
+    )) as unknown as Journey[]
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  async journeysDelete(
+    @CurrentUserId() userId: string,
+    @Args('ids') ids: string[]
+  ): Promise<Journey[]> {
+    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+      (journey) => ({
+        _key: journey.id,
+        status: JourneyStatus.deleted,
+        deletedAt: new Date().toISOString()
+      })
+    )
+    return (await this.journeyService.updateAll(
+      results
+    )) as unknown as Journey[]
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  async journeysTrash(
+    @CurrentUserId() userId: string,
+    @Args('ids') ids: string[]
+  ): Promise<Journey[]> {
+    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+      (journey) => ({
+        _key: journey.id,
+        status: JourneyStatus.trashed,
+        trashedAt: new Date().toISOString()
+      })
+    )
+
+    return (await this.journeyService.updateAll(
+      results
+    )) as unknown as Journey[]
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  async journeysRestore(
+    @CurrentUserId() userId: string,
+    @Args('ids') ids: string[]
+  ): Promise<Journey[]> {
+    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+      (journey) => ({
+        _key: journey.id,
+        status:
+          journey.publishedAt == null
+            ? JourneyStatus.draft
+            : JourneyStatus.published
+      })
+    )
+
+    return (await this.journeyService.updateAll(
+      results
+    )) as unknown as Journey[]
+  }
+
   @ResolveField()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
     return await this.blockService.forJourney(journey)
@@ -306,11 +386,6 @@ export class JourneyResolver {
   @ResolveField()
   async userJourneys(@Parent() journey: Journey): Promise<UserJourney[]> {
     return await this.userJourneyService.forJourney(journey)
-  }
-
-  @ResolveField()
-  status(@Parent() { publishedAt }: Journey): JourneyStatus {
-    return publishedAt == null ? JourneyStatus.draft : JourneyStatus.published
   }
 
   @ResolveField('language')
