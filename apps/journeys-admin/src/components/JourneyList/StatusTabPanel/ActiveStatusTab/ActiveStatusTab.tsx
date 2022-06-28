@@ -11,6 +11,7 @@ import { JourneyCard } from '../../JourneyCard'
 import { AddJourneyButton } from '../../AddJourneyButton'
 import { SortOrder } from '../../JourneySort'
 import { Dialog } from '../../../Dialog'
+import { useSnackbar } from 'notistack'
 
 export const GET_ACTIVE_JOURNEYS = gql`
   query GetActiveJourneys {
@@ -77,6 +78,7 @@ export function ActiveStatusTab({
 }: ActiveStatusTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const { enqueueSnackbar } = useSnackbar()
   const { data, loading, error, refetch } =
     useQuery<GetActiveJourneys>(GET_ACTIVE_JOURNEYS)
 
@@ -87,7 +89,12 @@ export function ActiveStatusTab({
       ids: journeys?.map((journey) => journey.id)
     },
     update(cache, { data }) {
-      if (data?.journeysArchive != null) void refetch()
+      if (data?.journeysArchive != null) {
+        enqueueSnackbar(t('Journeys archived.'), {
+          variant: 'success'
+        })
+        void refetch()
+      }
     }
   })
 
@@ -96,7 +103,12 @@ export function ActiveStatusTab({
       ids: journeys?.map((journey) => journey.id)
     },
     update(cache, { data }) {
-      if (data?.journeysTrash != null) void refetch()
+      if (data?.journeysTrash != null) {
+        enqueueSnackbar(t('Journeys trashed.'), {
+          variant: 'success'
+        })
+        void refetch()
+      }
     }
   })
 

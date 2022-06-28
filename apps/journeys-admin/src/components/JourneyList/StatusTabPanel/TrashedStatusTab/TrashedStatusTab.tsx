@@ -11,6 +11,7 @@ import { GetTrashedJourneys } from '../../../../../__generated__/GetTrashedJourn
 import { JourneyCard } from '../../JourneyCard'
 import { SortOrder } from '../../JourneySort'
 import { Dialog } from '../../../Dialog'
+import { useSnackbar } from 'notistack'
 
 export const GET_TRASHED_JOURNEYS = gql`
   query GetTrashedJourneys {
@@ -78,6 +79,7 @@ export function TrashedStatusTab({
 }: TrashedStatusTabProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
   const { data, loading, error, refetch } =
     useQuery<GetTrashedJourneys>(GET_TRASHED_JOURNEYS)
   const journeys = data?.journeys
@@ -87,7 +89,12 @@ export function TrashedStatusTab({
       ids: journeys?.map((journey) => journey.id)
     },
     update(cache, { data }) {
-      if (data?.journeysRestore != null) void refetch()
+      if (data?.journeysRestore != null) {
+        enqueueSnackbar(t('Journeys restored.'), {
+          variant: 'success'
+        })
+        void refetch()
+      }
     }
   })
 
@@ -96,7 +103,12 @@ export function TrashedStatusTab({
       ids: journeys?.map((journey) => journey.id)
     },
     update(cache, { data }) {
-      if (data?.journeysDelete != null) void refetch()
+      if (data?.journeysDelete != null) {
+        enqueueSnackbar(t('Journeys deleted.'), {
+          variant: 'success'
+        })
+        void refetch()
+      }
     }
   })
 

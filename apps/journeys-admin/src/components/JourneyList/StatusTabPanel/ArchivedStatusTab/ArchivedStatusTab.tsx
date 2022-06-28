@@ -11,6 +11,7 @@ import { GetArchivedJourneys } from '../../../../../__generated__/GetArchivedJou
 import { JourneyCard } from '../../JourneyCard'
 import { SortOrder } from '../../JourneySort'
 import { Dialog } from '../../../Dialog'
+import { useSnackbar } from 'notistack'
 
 export const GET_ARCHIVED_JOURNEYS = gql`
   query GetArchivedJourneys {
@@ -77,6 +78,7 @@ export function ArchivedStatusTab({
 }: ArchivedStatusTabProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
   const { data, loading, error, refetch } = useQuery<GetArchivedJourneys>(
     GET_ARCHIVED_JOURNEYS
   )
@@ -87,7 +89,12 @@ export function ArchivedStatusTab({
       ids: journeys?.map((journey) => journey.id)
     },
     update(cache, { data }) {
-      if (data?.journeysRestore != null) void refetch()
+      if (data?.journeysRestore != null) {
+        enqueueSnackbar(t('Journeys restored.'), {
+          variant: 'success'
+        })
+        void refetch()
+      }
     }
   })
 
@@ -96,7 +103,12 @@ export function ArchivedStatusTab({
       ids: journeys?.map((journey) => journey.id)
     },
     update(cache, { data }) {
-      if (data?.journeyTrash != null) void refetch()
+      if (data?.journeyTrash != null) {
+        enqueueSnackbar(t('Journeys trashed.'), {
+          variant: 'success'
+        })
+        void refetch()
+      }
     }
   })
 
