@@ -62,44 +62,52 @@ export default function JourneyListMenu({
             }}
           >
             {activeTab === 'active' && (
-              <MenuItem onClick={() => handleEvent('archiveAllActive')}>
-                <ListItemIcon>
-                  <Archive />
-                </ListItemIcon>
-                <ListItemText>{t('Archive All')}</ListItemText>
-              </MenuItem>
+              <>
+                <MenuItem onClick={() => handleEvent('archiveAllActive')}>
+                  <ListItemIcon>
+                    <Archive />
+                  </ListItemIcon>
+                  <ListItemText>{t('Archive All')}</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={() => handleEvent('trashAllActive')}>
+                  <ListItemIcon>
+                    <DeleteOutline />
+                  </ListItemIcon>
+                  <ListItemText>{t('Trash All')}</ListItemText>
+                </MenuItem>
+              </>
             )}
             {activeTab === 'archived' && (
-              <MenuItem onClick={() => handleEvent('restoreAllArchived')}>
-                <ListItemIcon>
-                  <Unarchive />
-                </ListItemIcon>
-                <ListItemText>{t('Unarchive All')}</ListItemText>
-              </MenuItem>
+              <>
+                <MenuItem onClick={() => handleEvent('restoreAllArchived')}>
+                  <ListItemIcon>
+                    <Unarchive />
+                  </ListItemIcon>
+                  <ListItemText>{t('Unarchive All')}</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={() => handleEvent('trashAllArchived')}>
+                  <ListItemIcon>
+                    <DeleteOutline />
+                  </ListItemIcon>
+                  <ListItemText>{t('Trash All')}</ListItemText>
+                </MenuItem>
+              </>
             )}
             {activeTab === 'trashed' && (
               <>
-                <MenuItem onClick={handleCloseMenu}>
+                <MenuItem onClick={() => handleEvent('restoreAllTrashed')}>
                   <ListItemIcon>
                     <CheckCircle />
                   </ListItemIcon>
                   <ListItemText>{t('Restore All')}</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={handleCloseMenu}>
+                <MenuItem onClick={() => handleEvent('deleteAllTrashed')}>
                   <ListItemIcon>
                     <DeleteForever />
                   </ListItemIcon>
                   <ListItemText>{t('Delete All Forever')}</ListItemText>
                 </MenuItem>
               </>
-            )}
-            {['active', 'archived'].includes(activeTab) && (
-              <MenuItem onClick={handleCloseMenu}>
-                <ListItemIcon>
-                  <DeleteOutline />
-                </ListItemIcon>
-                <ListItemText>{t('Trash All')}</ListItemText>
-              </MenuItem>
             )}
           </MuiMenu>
         </>

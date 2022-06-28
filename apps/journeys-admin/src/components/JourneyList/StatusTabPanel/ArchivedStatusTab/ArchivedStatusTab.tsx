@@ -55,6 +55,15 @@ const RESTORE_ARCHIVED_JOURNEYS = gql`
   }
 `
 
+export const TRASH_ARCHIVED_JOURNEYS = gql`
+  mutation TrashActiveJourneys($ids: [ID!]!) {
+    journeysTrash(ids: $ids) {
+      id
+      status
+    }
+  }
+`
+
 interface ArchivedStatusTabProps {
   onLoad: () => void
   sortOrder?: SortOrder
@@ -68,7 +77,7 @@ export function ArchivedStatusTab({
 }: ArchivedStatusTabProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
-  const { data, loading, error } = useQuery<GetArchivedJourneys>(
+  const { data, loading, error, refetch } = useQuery<GetArchivedJourneys>(
     GET_ARCHIVED_JOURNEYS
   )
   const journeys = data?.journeys
@@ -76,18 +85,37 @@ export function ArchivedStatusTab({
   const [restoreArchived] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     variables: {
       ids: journeys?.map((journey) => journey.id)
+    },
+    update(cache, { data }) {
+      if (data?.journeysRestore != null) void refetch()
+    }
+  })
+
+  const [trashArchived] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
+    variables: {
+      ids: journeys?.map((journey) => journey.id)
+    },
+    update(cache, { data }) {
+      if (data?.journeyTrash != null) void refetch()
     }
   })
 
   const [openRestoreAll, setOpenRestoreAll] = useState(false)
+  const [openTrashAll, setOpenTrashAll] = useState(false)
 
   const restoreAll = async (): Promise<void> => {
     await restoreArchived()
     handleClose()
   }
 
+  const trashAll = async (): Promise<void> => {
+    await trashArchived()
+    handleClose()
+  }
+
   const handleClose = (): void => {
     setOpenRestoreAll(false)
+    setOpenTrashAll(false)
   }
 
   useEffect(() => {
@@ -100,6 +128,10 @@ export function ArchivedStatusTab({
     switch (event) {
       case 'restoreAllArchived':
         setOpenRestoreAll(true)
+        break
+      case 'trashAllArchived':
+        setOpenTrashAll(true)
+        break
     }
   }, [event])
 
@@ -179,7 +211,28 @@ export function ArchivedStatusTab({
       >
         <Typography>
           {t(
-            'Are you sure you would like to archive all active journeys immediately?'
+            'Are you sure you would like to unarchive all active journeys immediately?'
+          )}
+        </Typography>
+      </Dialog>
+      <Dialog
+        open={openTrashAll ?? false}
+        handleClose={handleClose}
+        dialogTitle={{
+          title: t('Trash Journeys'),
+          closeButton: true
+        }}
+        dialogAction={{
+          onSubmit: trashAll,
+          submitLabel: t('Trash'),
+          closeLabel: t('Cancel')
+        }}
+        divider={true}
+        fullscreen={!smUp}
+      >
+        <Typography>
+          {t(
+            'Are you sure you would like to trash all archived journeys immediately?'
           )}
         </Typography>
       </Dialog>

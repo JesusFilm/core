@@ -68,6 +68,10 @@ function IndexPage(): ReactElement {
 
   const handleClick = (event: string): void => {
     setListEvent(event)
+    // remove event after component lifecycle
+    setTimeout(() => {
+      setListEvent('')
+    }, 1000)
   }
 
   return (

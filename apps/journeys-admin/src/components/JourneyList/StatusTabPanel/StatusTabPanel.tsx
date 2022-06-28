@@ -198,7 +198,7 @@ export function StatusTabPanel({
             <TrashedStatusTab
               onLoad={activeTabOnLoad}
               sortOrder={sortOrder}
-              // event={event}
+              event={event}
             />
           </TabPanel>
         )}

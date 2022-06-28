@@ -55,6 +55,15 @@ export const ARCHIVE_ACTIVE_JOURNEYS = gql`
   }
 `
 
+export const TRASH_ACTIVE_JOURNEYS = gql`
+  mutation TrashActiveJourneys($ids: [ID!]!) {
+    journeysTrash(ids: $ids) {
+      id
+      status
+    }
+  }
+`
+
 interface ActiveStatusTabProps {
   onLoad: () => void
   sortOrder?: SortOrder
@@ -68,7 +77,7 @@ export function ActiveStatusTab({
 }: ActiveStatusTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const { data, loading, error } =
+  const { data, loading, error, refetch } =
     useQuery<GetActiveJourneys>(GET_ACTIVE_JOURNEYS)
 
   const journeys = data?.journeys
@@ -76,18 +85,37 @@ export function ActiveStatusTab({
   const [archiveActive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     variables: {
       ids: journeys?.map((journey) => journey.id)
+    },
+    update(cache, { data }) {
+      if (data?.journeysArchive != null) void refetch()
+    }
+  })
+
+  const [trashActive] = useMutation(TRASH_ACTIVE_JOURNEYS, {
+    variables: {
+      ids: journeys?.map((journey) => journey.id)
+    },
+    update(cache, { data }) {
+      if (data?.journeysTrash != null) void refetch()
     }
   })
 
   const [openArchiveAll, setOpenArchiveAll] = useState(false)
+  const [openTrashAll, setOpenTrashAll] = useState(false)
 
   const archiveAll = async (): Promise<void> => {
     await archiveActive()
     handleClose()
   }
 
+  const trashAll = async (): Promise<void> => {
+    await trashActive()
+    handleClose()
+  }
+
   const handleClose = (): void => {
     setOpenArchiveAll(false)
+    setOpenTrashAll(false)
   }
 
   useEffect(() => {
@@ -100,6 +128,10 @@ export function ActiveStatusTab({
     switch (event) {
       case 'archiveAllActive':
         setOpenArchiveAll(true)
+        break
+      case 'trashAllActive':
+        setOpenTrashAll(true)
+        break
     }
   }, [event])
 
@@ -168,6 +200,27 @@ export function ActiveStatusTab({
         <Typography>
           {t(
             'Are you sure you would like to archive all active journeys immediately?'
+          )}
+        </Typography>
+      </Dialog>
+      <Dialog
+        open={openTrashAll ?? false}
+        handleClose={handleClose}
+        dialogTitle={{
+          title: t('Trash Journeys'),
+          closeButton: true
+        }}
+        dialogAction={{
+          onSubmit: trashAll,
+          submitLabel: t('Trash'),
+          closeLabel: t('Cancel')
+        }}
+        divider={true}
+        fullscreen={!smUp}
+      >
+        <Typography>
+          {t(
+            'Are you sure you would like to trash all active journeys immediately?'
           )}
         </Typography>
       </Dialog>
