@@ -8,6 +8,9 @@ import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import Typography from '@mui/material/Typography'
+import { SxProps } from '@mui/system/styleFunctionSx'
+import { Theme } from '@mui/material/styles'
 import { useSnackbar } from 'notistack'
 import { gql, useMutation } from '@apollo/client'
 import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
@@ -18,6 +21,8 @@ import {
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
+  sx?: SxProps<Theme>
+  journeyId?: string
 }
 
 export const BLOCK_DUPLICATE = gql`
@@ -28,7 +33,11 @@ export const BLOCK_DUPLICATE = gql`
   }
 `
 
-export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
+export function DuplicateBlock({
+  variant,
+  sx,
+  journeyId
+}: DuplicateBlockProps): ReactElement {
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
 
   const {
@@ -39,6 +48,7 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
   const { journey } = useJourney()
   const blockLabel =
     selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
+  const label = journeyId != null ? 'Journey' : blockLabel
 
   const handleDuplicateBlock = async (): Promise<void> => {
     if (selectedBlock != null && journey != null) {
@@ -103,7 +113,20 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
         })
       }
     }
-    enqueueSnackbar(`${blockLabel} Duplicated`, {
+  }
+
+  const handleDuplicateJourney = async (): Promise<void> => {
+    alert('Duplicate journey')
+  }
+
+  const handleDuplicate = async (): Promise<void> => {
+    if (journeyId != null) {
+      await handleDuplicateJourney()
+    } else {
+      await handleDuplicateBlock()
+    }
+
+    enqueueSnackbar(`${label} Duplicated`, {
       variant: 'success',
       preventDuplicate: true
     })
@@ -113,18 +136,28 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
     <>
       {variant === 'button' ? (
         <IconButton
-          id={`duplicate-${blockLabel}-actions`}
-          aria-label={`Duplicate ${blockLabel} Actions`}
-          onClick={handleDuplicateBlock}
+          id={`duplicate-${label}-actions`}
+          aria-label={`Duplicate ${label} Actions`}
+          onClick={handleDuplicate}
         >
           <ContentCopyRounded />
         </IconButton>
       ) : (
-        <MenuItem onClick={handleDuplicateBlock}>
+        <MenuItem onClick={handleDuplicateBlock} sx={{ ...sx }}>
           <ListItemIcon>
-            <ContentCopyRounded color="inherit" />
+            <ContentCopyRounded
+              color={journeyId != null ? 'secondary' : 'inherit'}
+            />
           </ListItemIcon>
-          <ListItemText>Duplicate {blockLabel}</ListItemText>
+          <ListItemText>
+            {journeyId != null ? (
+              <Typography variant="body1" sx={{ pl: 2 }}>
+                Duplicate
+              </Typography>
+            ) : (
+              `Duplicate ${blockLabel}`
+            )}
+          </ListItemText>
         </MenuItem>
       )}
     </>
