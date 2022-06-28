@@ -16,6 +16,7 @@ import { AccessDialog } from '../../../AccessDialog'
 import { ArchiveJourney } from './ArchiveJourney'
 import { TrashJourney } from './TrashJourney'
 import { DeleteJourney } from './DeleteJourney'
+import { RestoreJourney } from './RestoreJourney'
 
 export interface JourneyCardMenuProps {
   status: JourneyStatus
@@ -65,11 +66,14 @@ export function JourneyCardMenu({
         }}
       >
         {status === JourneyStatus.trashed ? (
-          <DeleteJourney
-            id={journeyId}
-            published={published}
-            handleClose={handleCloseMenu}
-          />
+          <>
+            <RestoreJourney
+              id={journeyId}
+              published={published}
+              handleClose={handleCloseMenu}
+            />
+            <DeleteJourney id={journeyId} handleClose={handleCloseMenu} />
+          </>
         ) : (
           <>
             <Link href={`/journeys/${slug}`} passHref>
