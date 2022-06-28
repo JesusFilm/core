@@ -24,7 +24,9 @@ export const config: EnvironmentConfig = {
       'https://journeys-phi.vercel.app',
       'https://your.nextstep.is',
       // watch
-      'https://watch-one.vercel.app'
+      'https://watch-one.vercel.app',
+      // localhost
+      /http:\/\/localhost:*/
     ]
   }
 }
