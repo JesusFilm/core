@@ -1,4 +1,4 @@
-import { TreeBlock } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import {
   ButtonColor,
@@ -230,7 +230,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'typographyBlockId12',
+            id: 'typographyBlockId2',
             __typename: 'TypographyBlock',
             parentBlockId: 'card1.id',
             parentOrder: 1,
@@ -316,7 +316,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'typographyBlockId1',
+            id: 'typographyBlockId2',
             __typename: 'TypographyBlock',
             parentBlockId: 'card2.id',
             parentOrder: 1,
@@ -420,7 +420,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'typographyBlockId1',
+            id: 'typographyBlockId2',
             __typename: 'TypographyBlock',
             parentBlockId: 'card3.id',
             parentOrder: 1,
@@ -511,7 +511,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'typographyBlockId12',
+            id: 'typographyBlockId2',
             __typename: 'TypographyBlock',
             parentBlockId: 'card4.id',
             parentOrder: 1,
@@ -523,7 +523,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             children: []
           },
           {
-            id: 'typographyBlockId13',
+            id: 'typographyBlockId3',
             __typename: 'TypographyBlock',
             parentBlockId: 'card4.id',
             parentOrder: 2,

@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -56,7 +56,7 @@ describe('JourneyView', () => {
     )
     expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
       'href',
-      '/journeys/my-journey/edit'
+      '/journeys/journeyId/edit'
     )
   })
 })

@@ -1,34 +1,18 @@
 import videojs from 'video.js'
-import {
-  ReactElement,
-  useEffect,
-  useRef,
-  useCallback,
-  useState,
-  useMemo
-} from 'react'
-import { useMutation, gql } from '@apollo/client'
-import { NextImage } from '@core/shared/ui'
+import { ReactElement, useEffect, useRef, useState, useMemo } from 'react'
+import { NextImage } from '@core/shared/ui/NextImage'
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
-import { TreeBlock, useEditor, blurImage } from '../..'
-import { VideoPlayEventStateEnum } from '../../../__generated__/globalTypes'
+import type { TreeBlock } from '../../libs/block'
+import { useEditor } from '../../libs/EditorProvider'
+import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from '../Image/__generated__/ImageFields'
-import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
-import { VideoTrigger } from './VideoTrigger'
+import { VideoTrigger } from '../VideoTrigger'
 import 'video.js/dist/video-js.css'
+import { VideoEvents } from '../VideoEvents'
 import { VideoFields } from './__generated__/VideoFields'
-
-export const VIDEO_PLAY_EVENT_CREATE = gql`
-  mutation VideoPlayEventCreate($input: VideoPlayEventCreateInput!) {
-    videoPlayEventCreate(input: $input) {
-      state
-      position
-    }
-  }
-`
 
 const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'
@@ -44,9 +28,6 @@ export function Video({
   children,
   action
 }: TreeBlock<VideoFields>): ReactElement {
-  const [videoPlayEventCreate] = useMutation<VideoPlayEventCreate>(
-    VIDEO_PLAY_EVENT_CREATE
-  )
   const [loading, setLoading] = useState(true)
   const theme = useTheme()
   const {
@@ -61,31 +42,9 @@ export function Video({
 
   const blurBackground = useMemo(() => {
     return posterBlock != null
-      ? blurImage(
-          posterBlock.width,
-          posterBlock.height,
-          posterBlock.blurhash,
-          theme.palette.background.paper
-        )
+      ? blurImage(posterBlock.blurhash, theme.palette.background.paper)
       : undefined
   }, [posterBlock, theme])
-
-  const handleVideoPlayEvent = useCallback(
-    (videoState: VideoPlayEventStateEnum, videoPosition?: number): void => {
-      const position = videoPosition != null ? Math.floor(videoPosition) : 0
-
-      void videoPlayEventCreate({
-        variables: {
-          input: {
-            blockId,
-            state: videoState,
-            position
-          }
-        }
-      })
-    },
-    [blockId, videoPlayEventCreate]
-  )
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -126,33 +85,30 @@ export function Video({
         })
         playerRef.current.on('playing', () => {
           if (autoplay !== true) setLoading(false)
-          handleVideoPlayEvent(
-            VideoPlayEventStateEnum.PLAYING,
-            playerRef.current?.currentTime()
-          )
-        })
-        playerRef.current.on('pause', () => {
-          handleVideoPlayEvent(
-            VideoPlayEventStateEnum.PAUSED,
-            playerRef.current?.currentTime()
-          )
         })
         playerRef.current.on('ended', () => {
           if (playerRef?.current?.isFullscreen() === true)
             playerRef.current?.exitFullscreen()
-          handleVideoPlayEvent(
-            VideoPlayEventStateEnum.FINISHED,
-            playerRef.current?.currentTime()
-          )
+        })
+        playerRef.current.on('timeupdate', () => {
+          if (playerRef.current != null) {
+            if (
+              action == null &&
+              endAt != null &&
+              playerRef.current.currentTime() >= endAt
+            ) {
+              playerRef.current.pause()
+            }
+          }
         })
       }
     }
   }, [
-    handleVideoPlayEvent,
     startAt,
     endAt,
     muted,
     autoplay,
+    action,
     blockId,
     posterBlock,
     selectedBlock,
@@ -211,6 +167,16 @@ export function Video({
         }
       }}
     >
+      {playerRef.current != null && video != null && (
+        <VideoEvents
+          player={playerRef.current}
+          blockId={blockId}
+          videoTitle={video.title[0].value}
+          videoId={video.id}
+          startAt={startAt}
+          endAt={endAt}
+        />
+      )}
       {video?.variant?.hls != null ? (
         <>
           <video

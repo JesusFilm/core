@@ -1,7 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { NextRouter, useRouter } from 'next/router'
-import { JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { CardView } from './CardView'
@@ -25,7 +25,7 @@ describe('JourneyView/CardView', () => {
     const { getByText } = render(
       <MockedProvider>
         <JourneyProvider value={{ journey, admin: true }}>
-          <CardView slug="my-journey" blocks={steps} />
+          <CardView id="journeyId" blocks={steps} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -35,7 +35,7 @@ describe('JourneyView/CardView', () => {
     const { getByText } = render(
       <MockedProvider>
         <JourneyProvider value={{ journey, admin: true }}>
-          <CardView slug="my-journey" blocks={oneStep} />
+          <CardView id="journeyId" blocks={oneStep} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -46,7 +46,7 @@ describe('JourneyView/CardView', () => {
     const { getByText } = render(
       <MockedProvider>
         <JourneyProvider value={{ journey, admin: true }}>
-          <CardView slug="my-journey" blocks={[]} />
+          <CardView id="journeyId" blocks={[]} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -59,14 +59,14 @@ describe('JourneyView/CardView', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <JourneyProvider value={{ journey, admin: true }}>
-          <CardView slug="my-journey" blocks={steps} />
+          <CardView id="journeyId" blocks={steps} />
         </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('preview-step0.id'))
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
-        '/journeys/my-journey/edit?stepId=step0.id',
+        '/journeys/journeyId/edit?stepId=step0.id',
         undefined,
         { shallow: true }
       )

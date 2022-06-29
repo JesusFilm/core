@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common'
+import { v4 as uuidv4 } from 'uuid'
 import { aql } from 'arangojs'
-import { BaseService } from '@core/nest/database'
+import { BaseService } from '@core/nest/database/BaseService'
 import { DocumentCollection } from 'arangojs/collection'
-import { KeyAsId, idAsKey } from '@core/nest/decorators'
-
-import { Block, Journey } from '../../__generated__/graphql'
+import { KeyAsId, keyAsId } from '@core/nest/decorators/KeyAsId'
+import { idAsKey } from '@core/nest/decorators/IdAsKey'
+import {
+  Block,
+  Journey,
+  NavigateToBlockAction
+} from '../../__generated__/graphql'
 
 @Injectable()
 export class BlockService extends BaseService {
@@ -22,6 +27,18 @@ export class BlockService extends BaseService {
   }
 
   @KeyAsId()
+  async getBlocksByType(journey: Journey, typename: string): Promise<Block[]> {
+    const res = await this.db.query(aql`
+      FOR block in ${this.collection}
+        FILTER block.journeyId == ${journey.id}
+          AND block.__typename == ${typename}
+        SORT block.parentOrder ASC
+        RETURN block
+    `)
+    return await res.all()
+  }
+
+  @KeyAsId()
   async getSiblings(
     journeyId: string,
     parentBlockId?: string | null
@@ -32,7 +49,7 @@ export class BlockService extends BaseService {
   async getSiblingsInternal(
     journeyId: string,
     parentBlockId?: string | null
-  ): Promise<Block[]> {
+  ): Promise<Array<Block & { _key: string }>> {
     // Only StepBlocks should not have parentBlockId
     const res =
       parentBlockId != null
@@ -47,6 +64,7 @@ export class BlockService extends BaseService {
         : await this.db.query(aql`
         FOR block in ${this.collection}
           FILTER block.journeyId == ${journeyId}
+            AND block.__typename == 'StepBlock'
             AND block.parentOrder != null
           SORT block.parentOrder ASC
           RETURN block
@@ -55,7 +73,7 @@ export class BlockService extends BaseService {
   }
 
   async reorderSiblings(
-    siblings: Block[] | Array<{ _key: string; parentOrder: number }>
+    siblings: Array<Block & { _key: string }>
   ): Promise<Block[]> {
     const updatedSiblings = siblings.map((block, index) => ({
       ...block,
@@ -70,7 +88,7 @@ export class BlockService extends BaseService {
     journeyId: string,
     parentOrder: number
   ): Promise<Block[]> {
-    const block = idAsKey(await this.get(id)) as Block
+    const block = idAsKey(await this.get(id)) as Block & { _key: string }
 
     if (block.journeyId === journeyId && block.parentOrder != null) {
       const siblings = await this.getSiblingsInternal(
@@ -83,6 +101,158 @@ export class BlockService extends BaseService {
       return await this.reorderSiblings(siblings)
     }
     return []
+  }
+
+  async duplicateBlock(
+    id: string,
+    journeyId: string,
+    parentOrder?: number
+  ): Promise<Block[]> {
+    const block = idAsKey(await this.get(id)) as Block & { _key: string }
+
+    if (block.journeyId === journeyId) {
+      const blockAndChildrenData = await this.getDuplicateBlockAndChildren(
+        id,
+        journeyId,
+        block.parentBlockId ?? null
+      )
+      const duplicateBlockAndChildren: Block[] = await this.saveAll(
+        blockAndChildrenData
+      )
+      const duplicatedBlock = {
+        ...duplicateBlockAndChildren[0],
+        _key: duplicateBlockAndChildren[0].id
+      }
+      const duplicatedChildren = duplicateBlockAndChildren.slice(1)
+
+      // Newly duplicated block returns with original block and siblings.
+      const siblings = await this.getSiblingsInternal(
+        journeyId,
+        block.parentBlockId
+      )
+      const defaultDuplicateBlockIndex = siblings.findIndex(
+        (block) => block.id === duplicatedBlock.id
+      )
+      const insertIndex =
+        parentOrder != null ? parentOrder : siblings.length + 1
+      siblings.splice(defaultDuplicateBlockIndex, 1)
+      siblings.splice(insertIndex, 0, duplicatedBlock)
+      const reorderedBlocks: Block[] = await this.reorderSiblings(siblings)
+
+      return reorderedBlocks.concat(duplicatedChildren)
+    }
+    return []
+  }
+
+  async getDuplicateChildren(
+    children: Block[],
+    journeyId: string,
+    parentBlockId: string | null,
+    // Use to custom set children blockIds
+    duplicateIds: Map<string, string>,
+    // Below 2 only used when duplicating journeys
+    duplicateJourneyId?: string,
+    duplicateStepIds?: Map<string, string>
+  ): Promise<Array<Block & { _key: string }>> {
+    const duplicateChildren = await Promise.all(
+      children.map(async (block) => {
+        return await this.getDuplicateBlockAndChildren(
+          block.id,
+          journeyId,
+          parentBlockId,
+          duplicateIds.get(block.id),
+          duplicateJourneyId,
+          duplicateStepIds
+        )
+      })
+    )
+    return duplicateChildren.reduce<Array<Block & { _key: string }>>(
+      (acc, val) => {
+        return acc.concat(val)
+      },
+      []
+    )
+  }
+
+  async getDuplicateBlockAndChildren(
+    id: string,
+    journeyId: string,
+    parentBlockId: string | null,
+    duplicateId?: string,
+    // Below 2 only used when duplicating journeys
+    duplicateJourneyId?: string,
+    duplicateStepIds?: Map<string, string>
+  ): Promise<Array<Block & { _key: string }>> {
+    const block = keyAsId(await this.get(id)) as Block
+    const duplicateBlockId = duplicateId ?? uuidv4()
+
+    const children = await this.getBlocksForParentId(block.id, journeyId)
+    const childIds = new Map()
+    children.forEach((block) => {
+      childIds.set(block.id, uuidv4())
+    })
+    const updatedBlockProps = {}
+    Object.keys(block).forEach((key) => {
+      if (key === 'nextBlockId') {
+        updatedBlockProps[key] =
+          duplicateStepIds != null && block[key] != null
+            ? duplicateStepIds.get(block[key])
+            : null
+      } else if (key.includes('Id')) {
+        updatedBlockProps[key] = childIds.get(block[key]) ?? null
+      }
+      if (key === 'action') {
+        const action = block[key]
+        const navigateBlockAction = action as NavigateToBlockAction
+        updatedBlockProps[key] =
+          navigateBlockAction?.blockId != null && duplicateStepIds != null
+            ? {
+                ...action,
+                blockId:
+                  duplicateStepIds.get(navigateBlockAction.blockId) ??
+                  navigateBlockAction.blockId
+              }
+            : action
+      }
+    })
+    const defaultDuplicateBlock = {
+      _key: duplicateBlockId,
+      id: duplicateBlockId,
+      journeyId: duplicateJourneyId ?? block.journeyId,
+      parentBlockId
+    }
+    const duplicateBlock = {
+      ...block,
+      ...updatedBlockProps,
+      ...defaultDuplicateBlock
+    }
+
+    const duplicateChildren = await this.getDuplicateChildren(
+      children,
+      journeyId,
+      duplicateBlockId,
+      childIds,
+      duplicateJourneyId,
+      duplicateStepIds
+    )
+
+    return [duplicateBlock, ...duplicateChildren]
+  }
+
+  @KeyAsId()
+  async getBlocksForParentId(
+    parentId: string,
+    journeyId: string
+  ): Promise<Block[]> {
+    const res = await this.db.query(aql`
+      FOR block IN ${this.collection}
+        FILTER block.journeyId == ${journeyId}
+          AND block.parentBlockId == ${parentId}
+        SORT block.parentOrder ASC
+        RETURN block
+    `)
+
+    return await res.all()
   }
 
   protected async removeAllBlocksForParentId(
@@ -113,12 +283,9 @@ export class BlockService extends BaseService {
   ): Promise<Block[]> {
     const res: Block = await this.remove(blockId)
     await this.removeAllBlocksForParentId([blockId], [res])
-    const result =
-      parentBlockId == null
-        ? []
-        : await this.reorderSiblings(
-            await this.getSiblingsInternal(journeyId, parentBlockId)
-          )
+    const result = await this.reorderSiblings(
+      await this.getSiblingsInternal(journeyId, parentBlockId)
+    )
 
     return result as unknown as Block[]
   }

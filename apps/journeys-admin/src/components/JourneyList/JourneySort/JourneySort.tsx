@@ -16,7 +16,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Popover from '@mui/material/Popover'
 import RadioGroup from '@mui/material/RadioGroup'
 import Radio from '@mui/material/Radio'
-import { useBreakpoints } from '@core/shared/ui'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 export enum SortOrder {
   CREATED_AT = 'createdAt',
@@ -32,12 +32,14 @@ interface JourneySortProps {
   sortOrder?: SortOrder
   onChange: (value: SortOrder) => void
   open?: boolean // for testing
+  disabled?: boolean
 }
 
 export function JourneySort({
   sortOrder,
   onChange: handleChange,
-  open
+  open,
+  disabled
 }: JourneySortProps): ReactElement {
   const [showSortOrder, setShowSortOrder] = useState(open ?? false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -110,6 +112,13 @@ export function JourneySort({
         label={sortOrder != null ? sortOrderLabel[sortOrder] : 'Sort By'}
         onClick={handleClick}
         ref={chipRef}
+        sx={{
+          backgroundColor: 'white',
+          border: '1px solid',
+          borderColor: 'divider',
+          color: 'secondar.light'
+        }}
+        disabled={disabled != null && disabled}
       />
       {breakpoints.md ? (
         <Popover

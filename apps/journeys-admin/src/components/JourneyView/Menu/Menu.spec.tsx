@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney, publishedJourney } from '../data'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { Menu, JOURNEY_PUBLISH } from '.'
@@ -180,6 +180,25 @@ describe('JourneyView/Menu', () => {
     expect(getByRole('dialog')).toBeInTheDocument()
     expect(getByText('Edit Language')).toBeInTheDocument()
     expect(menu).not.toHaveAttribute('aria-expanded')
+  })
+
+  it('should handle edit cards', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const menu = getByRole('button')
+    fireEvent.click(menu)
+    expect(getByRole('menuitem', { name: 'Edit Cards' })).toHaveAttribute(
+      'href',
+      '/journeys/journey-id/edit'
+    )
   })
 
   it('should handle copy url', async () => {

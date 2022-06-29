@@ -2,16 +2,18 @@ import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
-import { ThemeProvider } from '@core/shared/ui'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import Link from 'next/link'
 import { GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
-import { createApolloClient } from '../src/libs/client'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { apolloClient } from '../src/libs/apolloClient'
 import {
   GetJourneys,
   GetJourneys_journeys as Journey
 } from '../__generated__/GetJourneys'
 import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
+import i18nConfig from '../next-i18next.config'
 
 interface JourneysPageProps {
   journeys: Journey[]
@@ -35,9 +37,10 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   )
 }
 
-export const getStaticProps: GetStaticProps<JourneysPageProps> = async () => {
-  const client = createApolloClient()
-  const { data } = await client.query<GetJourneys>({
+export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
+  context
+) => {
+  const { data } = await apolloClient.query<GetJourneys>({
     query: gql`
       query GetJourneys {
         journeys(where: { featured: true }) {
@@ -51,11 +54,24 @@ export const getStaticProps: GetStaticProps<JourneysPageProps> = async () => {
 
   if (data.journeys === null) {
     return {
-      notFound: true
+      props: {
+        ...(await serverSideTranslations(
+          context.locale ?? 'en',
+          ['apps-journeys', 'libs-journeys-ui'],
+          i18nConfig
+        ))
+      },
+      notFound: true,
+      revalidate: 60
     }
   } else {
     return {
       props: {
+        ...(await serverSideTranslations(
+          context.locale ?? 'en',
+          ['apps-journeys', 'libs-journeys-ui'],
+          i18nConfig
+        )),
         journeys: data.journeys
       },
       revalidate: 60

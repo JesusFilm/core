@@ -1,16 +1,20 @@
 import { ReactElement } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
-import { ThemeProvider } from '@core/shared/ui'
-import { transformer, JourneyProvider, JOURNEY_FIELDS } from '@core/journeys/ui'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { transformer } from '@core/journeys/ui/transformer'
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { Conductor } from '../src/components/Conductor'
-import { createApolloClient } from '../src/libs/client'
+import { apolloClient } from '../src/libs/apolloClient'
 import {
   GetJourney,
   GetJourney_journey as Journey
 } from '../__generated__/GetJourney'
 import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
+import i18nConfig from '../next-i18next.config'
 
 interface JourneyPageProps {
   journey: Journey
@@ -55,7 +59,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
-      <JourneyProvider value={{ journey, admin: false }}>
+      <JourneyProvider value={{ journey }}>
         <ThemeProvider
           themeName={journey.themeName}
           themeMode={journey.themeMode}
@@ -69,11 +73,10 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   )
 }
 
-export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
-  params
-}) => {
-  const client = createApolloClient()
-  const { data } = await client.query<GetJourney>({
+export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
+  context
+) => {
+  const { data } = await apolloClient.query<GetJourney>({
     query: gql`
       ${JOURNEY_FIELDS}
       query GetJourney($id: ID!) {
@@ -83,18 +86,30 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
       }
     `,
     variables: {
-      id: params?.journeySlug
+      id: context.params?.journeySlug
     }
   })
 
   if (data.journey === null) {
     return {
+      props: {
+        ...(await serverSideTranslations(
+          context.locale ?? 'en',
+          ['apps-journeys', 'libs-journeys-ui'],
+          i18nConfig
+        ))
+      },
       notFound: true,
       revalidate: 60
     }
   } else {
     return {
       props: {
+        ...(await serverSideTranslations(
+          context.locale ?? 'en',
+          ['apps-journeys', 'libs-journeys-ui'],
+          i18nConfig
+        )),
         journey: data.journey
       },
       revalidate: 60
@@ -103,8 +118,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async ({
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const client = createApolloClient()
-  const { data } = await client.query<GetJourneySlugs>({
+  const { data } = await apolloClient.query<GetJourneySlugs>({
     query: gql`
       query GetJourneySlugs {
         journeys {

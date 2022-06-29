@@ -17,6 +17,7 @@ export interface HorizontalSelectProps {
   children: ReactNode
   sx?: SxProps<Theme>
   footer?: ReactNode
+  isDragging?: boolean
 }
 
 export function HorizontalSelect({
@@ -24,7 +25,8 @@ export function HorizontalSelect({
   id,
   onChange,
   sx,
-  footer
+  footer,
+  isDragging
 }: HorizontalSelectProps): ReactElement {
   const selectedRef = useRef<HTMLElement>(null)
 
@@ -58,7 +60,7 @@ export function HorizontalSelect({
                 transition: '0.2s border-color ease-out',
                 position: 'relative',
                 outline: (theme) =>
-                  id === child.props.id
+                  id === child.props.id && isDragging !== true
                     ? `2px solid ${theme.palette.primary.main} `
                     : '2px solid transparent',
                 border: '3px solid transparent',
@@ -68,7 +70,6 @@ export function HorizontalSelect({
             >
               <Box
                 sx={{
-                  position: 'absolute',
                   top: 0,
                   right: 0,
                   bottom: 0,

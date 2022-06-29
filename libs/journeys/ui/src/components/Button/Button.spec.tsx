@@ -1,4 +1,7 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { v4 as uuidv4 } from 'uuid'
+import TagManager from 'react-gtm-module'
 import {
   ButtonVariant,
   ButtonColor,
@@ -7,9 +10,31 @@ import {
   IconName,
   IconSize
 } from '../../../__generated__/globalTypes'
-import { handleAction, TreeBlock } from '../..'
+import { handleAction } from '../../libs/action'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { TreeBlock, activeBlockVar, treeBlocksVar } from '../../libs/block'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { ButtonFields } from './__generated__/ButtonFields'
+import { BUTTON_CLICK_EVENT_CREATE } from './Button'
 import { Button } from '.'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+
+jest.mock('react-gtm-module', () => ({
+  __esModule: true,
+  default: {
+    dataLayer: jest.fn()
+  }
+}))
+
+const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
+  typeof TagManager.dataLayer
+>
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -24,6 +49,15 @@ jest.mock('next/router', () => ({
   useRouter() {
     return {
       push: () => null
+    }
+  }
+}))
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
     }
   }
 }))
@@ -44,8 +78,106 @@ const block: TreeBlock<ButtonFields> = {
 }
 
 describe('Button', () => {
+  it('should create a buttonClickEvent onClick', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+
+    const result = jest.fn(() => ({
+      data: {
+        buttonClickEventCreate: {
+          __typename: 'ButtonClickEvent',
+          id: 'uuiid'
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_CLICK_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <Button {...block} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(result).toBeCalled())
+  })
+
+  it('should add buttonClickEvent to dataLayer', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const activeBlock: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'Step1',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: []
+    }
+    activeBlockVar(activeBlock)
+    treeBlocksVar([activeBlock])
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_CLICK_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button'
+                }
+              }
+            },
+            result: {
+              data: {
+                buttonClickEventCreate: {
+                  __typename: 'ButtonClickEvent',
+                  id: 'uuiid'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <Button {...block} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    await waitFor(() =>
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'button_click',
+          eventId: 'uuid',
+          blockId: 'button',
+          stepName: 'Step {{number}}'
+        }
+      })
+    )
+  })
+
   it('should render the button successfully', () => {
-    const { getByText, getByRole } = render(<Button {...block} />)
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <Button {...block} />
+      </MockedProvider>
+    )
     expect(getByRole('button')).toHaveClass('MuiButton-root')
     expect(getByRole('button')).toHaveClass('MuiButton-contained')
     expect(getByRole('button')).toHaveClass('MuiButton-containedSizeSmall')
@@ -54,18 +186,28 @@ describe('Button', () => {
 
   it('should render with the contained value', () => {
     const { getByRole } = render(
-      <Button {...block} buttonVariant={ButtonVariant.contained} />
+      <MockedProvider>
+        <Button {...block} buttonVariant={ButtonVariant.contained} />
+      </MockedProvider>
     )
     expect(getByRole('button')).toHaveClass('MuiButton-contained')
   })
 
   it('should render with the size value', () => {
-    const { getByRole } = render(<Button {...block} size={ButtonSize.small} />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <Button {...block} size={ButtonSize.small} />
+      </MockedProvider>
+    )
     expect(getByRole('button')).toHaveClass('MuiButton-containedSizeSmall')
   })
 
   it('should render the default color value', () => {
-    const { getByRole } = render(<Button {...block} buttonColor={null} />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <Button {...block} buttonColor={null} />
+      </MockedProvider>
+    )
     expect(getByRole('button')).toHaveClass('MuiButton-containedPrimary')
   })
 
@@ -86,7 +228,11 @@ describe('Button', () => {
         }
       ]
     }
-    const { getByTestId } = render(<Button {...iconBlock} />)
+    const { getByTestId } = render(
+      <MockedProvider>
+        <Button {...iconBlock} />
+      </MockedProvider>
+    )
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
     expect(getByTestId('CheckCircleRoundedIcon').parentElement).toHaveClass(
       'MuiButton-startIcon'
@@ -109,7 +255,11 @@ describe('Button', () => {
         }
       ]
     }
-    const { getByTestId } = render(<Button {...iconBlock} />)
+    const { getByTestId } = render(
+      <MockedProvider>
+        <Button {...iconBlock} />
+      </MockedProvider>
+    )
     expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
     expect(getByTestId('CheckCircleRoundedIcon').parentElement).toHaveClass(
       'MuiButton-endIcon'
@@ -118,15 +268,17 @@ describe('Button', () => {
 
   it('should call actionHandler on click', () => {
     const { getByRole } = render(
-      <Button
-        {...block}
-        action={{
-          __typename: 'NavigateToBlockAction',
-          parentBlockId: block.id,
-          gtmEventName: 'gtmEventName',
-          blockId: 'def'
-        }}
-      />
+      <MockedProvider>
+        <Button
+          {...block}
+          action={{
+            __typename: 'NavigateToBlockAction',
+            parentBlockId: block.id,
+            gtmEventName: 'gtmEventName',
+            blockId: 'def'
+          }}
+        />
+      </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
     expect(handleAction).toBeCalledWith(

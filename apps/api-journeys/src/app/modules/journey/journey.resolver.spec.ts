@@ -1,12 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
+import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   IdType,
   Journey,
   JourneyStatus,
   ThemeMode,
   ThemeName,
-  UserJourneyRole
+  UserJourneyRole,
+  JourneysReportType
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
@@ -21,6 +23,15 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
+jest.mock('@core/nest/powerBi/getPowerBiEmbed', () => ({
+  __esModule: true,
+  getPowerBiEmbed: jest.fn()
+}))
+
+const mockGetPowerBiEmbed = getPowerBiEmbed as jest.MockedFunction<
+  typeof getPowerBiEmbed
+>
+
 describe('JourneyResolver', () => {
   beforeAll(() => {
     jest.useFakeTimers('modern')
@@ -33,6 +44,7 @@ describe('JourneyResolver', () => {
 
   let resolver: JourneyResolver,
     service: JourneyService,
+    bService: BlockService,
     ujService: UserJourneyService
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
@@ -51,11 +63,34 @@ describe('JourneyResolver', () => {
     createdAt
   }
 
+  const draftJourney = {
+    ...journey,
+    id: 'draftJourney',
+    publishedAt: null,
+    status: JourneyStatus.draft
+  }
+  const archivedJourney = {
+    ...journey,
+    id: 'archivedJourney',
+    status: JourneyStatus.archived
+  }
+  const trashedJourney = {
+    ...journey,
+    id: 'deletedJourney',
+    status: JourneyStatus.trashed
+  }
+  const trashedDraftJourney = {
+    ...journey,
+    id: 'deletedDraftJourney',
+    status: JourneyStatus.trashed,
+    publishedAt: null
+  }
+
   const block = {
     id: 'blockId',
     journeyId: 'journeyId',
     __typename: 'ImageBlock',
-    parentBlockId: null,
+    parentBlockId: 'stepId',
     parentOrder: 0,
     src: 'https://source.unsplash.com/random/1920x1080',
     alt: 'random image from unsplash',
@@ -89,15 +124,59 @@ describe('JourneyResolver', () => {
     role: UserJourneyRole.inviteRequested
   }
 
+  const stepBlock = {
+    id: 'stepId',
+    journeyId: 'journeyId',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    nextBlockId: null
+  }
+
+  const duplicatedStep = {
+    ...stepBlock,
+    id: 'duplicateStepId',
+    journeyId: 'duplicateJourneyId'
+  }
+
   const journeyService = {
     provide: JourneyService,
     useFactory: () => ({
-      get: jest.fn((id) => (id === journey.id ? journey : null)),
+      get: jest.fn((id) => {
+        switch (id) {
+          case journey.id:
+            return journey
+          case draftJourney.id:
+            return draftJourney
+          case archivedJourney.id:
+            return archivedJourney
+          case trashedJourney.id:
+            return trashedJourney
+          case trashedDraftJourney.id:
+            return trashedDraftJourney
+          default:
+            return null
+        }
+      }),
       getBySlug: jest.fn((slug) => (slug === journey.slug ? journey : null)),
       getAllPublishedJourneys: jest.fn(() => [journey, journey]),
+      getAllByIds: jest.fn((userId, ids) => {
+        switch (ids[0]) {
+          case archivedJourney.id:
+            return [archivedJourney]
+          case trashedJourney.id:
+            return [trashedJourney]
+          case trashedDraftJourney.id:
+            return [trashedDraftJourney]
+          default:
+            return [journey, draftJourney]
+        }
+      }),
       getAllByOwnerEditor: jest.fn(() => [journey, journey]),
+      getAllByTitle: jest.fn(() => [journey]),
       save: jest.fn((input) => input),
-      update: jest.fn(() => journey)
+      update: jest.fn(() => journey),
+      updateAll: jest.fn(() => [journey, draftJourney])
     })
   }
 
@@ -105,7 +184,10 @@ describe('JourneyResolver', () => {
     provide: BlockService,
     useFactory: () => ({
       forJourney: jest.fn(() => [block]),
-      get: jest.fn(() => block)
+      get: jest.fn(() => block),
+      getBlocksByType: jest.fn(() => [stepBlock]),
+      getDuplicateChildren: jest.fn(() => [duplicatedStep]),
+      saveAll: jest.fn(() => [duplicatedStep])
     })
   }
 
@@ -135,12 +217,179 @@ describe('JourneyResolver', () => {
     resolver = module.get<JourneyResolver>(JourneyResolver)
     service = module.get<JourneyService>(JourneyService)
     ujService = module.get<UserJourneyService>(UserJourneyService)
+    bService = module.get<BlockService>(BlockService)
+  })
+
+  describe('adminJourneysEmbed', () => {
+    it('should throw an error', async () => {
+      await expect(
+        resolver.adminJourneysReport('userId', JourneysReportType.multipleFull)
+      ).rejects.toThrow('server environment variables missing')
+    })
+
+    describe('with environment configuration', () => {
+      const OLD_ENV = process.env
+
+      beforeEach(() => {
+        jest.resetModules() // Most important - it clears the cache
+        process.env = { ...OLD_ENV } // Make a copy
+        process.env.POWER_BI_CLIENT_ID = 'POWER_BI_CLIENT_ID'
+        process.env.POWER_BI_CLIENT_SECRET = 'POWER_BI_CLIENT_SECRET'
+        process.env.POWER_BI_TENANT_ID = 'POWER_BI_TENANT_ID'
+        process.env.POWER_BI_WORKSPACE_ID = 'POWER_BI_WORKSPACE_ID'
+        process.env.POWER_BI_JOURNEYS_MULTIPLE_FULL_REPORT_ID =
+          'POWER_BI_JOURNEYS_MULTIPLE_FULL_REPORT_ID'
+        process.env.POWER_BI_JOURNEYS_MULTIPLE_SUMMARY_REPORT_ID =
+          'POWER_BI_JOURNEYS_MULTIPLE_SUMMARY_REPORT_ID'
+        process.env.POWER_BI_JOURNEYS_SINGLE_FULL_REPORT_ID =
+          'POWER_BI_JOURNEYS_SINGLE_FULL_REPORT_ID'
+        process.env.POWER_BI_JOURNEYS_SINGLE_SUMMARY_REPORT_ID =
+          'POWER_BI_JOURNEYS_SINGLE_SUMMARY_REPORT_ID'
+      })
+
+      afterAll(() => {
+        process.env = OLD_ENV // Restore old environment
+      })
+
+      it('should get power bi embed for multiple full', async () => {
+        mockGetPowerBiEmbed.mockResolvedValue({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        await expect(
+          resolver.adminJourneysReport(
+            'userId',
+            JourneysReportType.multipleFull
+          )
+        ).resolves.toEqual({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        expect(mockGetPowerBiEmbed).toHaveBeenCalledWith(
+          {
+            clientId: 'POWER_BI_CLIENT_ID',
+            clientSecret: 'POWER_BI_CLIENT_SECRET',
+            tenantId: 'POWER_BI_TENANT_ID',
+            workspaceId: 'POWER_BI_WORKSPACE_ID'
+          },
+          'POWER_BI_JOURNEYS_MULTIPLE_FULL_REPORT_ID',
+          'userId'
+        )
+      })
+
+      it('should get power bi embed for multiple summary', async () => {
+        mockGetPowerBiEmbed.mockResolvedValue({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        await expect(
+          resolver.adminJourneysReport(
+            'userId',
+            JourneysReportType.multipleSummary
+          )
+        ).resolves.toEqual({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        expect(mockGetPowerBiEmbed).toHaveBeenCalledWith(
+          {
+            clientId: 'POWER_BI_CLIENT_ID',
+            clientSecret: 'POWER_BI_CLIENT_SECRET',
+            tenantId: 'POWER_BI_TENANT_ID',
+            workspaceId: 'POWER_BI_WORKSPACE_ID'
+          },
+          'POWER_BI_JOURNEYS_MULTIPLE_SUMMARY_REPORT_ID',
+          'userId'
+        )
+      })
+
+      it('should get power bi embed for single full', async () => {
+        mockGetPowerBiEmbed.mockResolvedValue({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        await expect(
+          resolver.adminJourneysReport('userId', JourneysReportType.singleFull)
+        ).resolves.toEqual({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        expect(mockGetPowerBiEmbed).toHaveBeenCalledWith(
+          {
+            clientId: 'POWER_BI_CLIENT_ID',
+            clientSecret: 'POWER_BI_CLIENT_SECRET',
+            tenantId: 'POWER_BI_TENANT_ID',
+            workspaceId: 'POWER_BI_WORKSPACE_ID'
+          },
+          'POWER_BI_JOURNEYS_SINGLE_FULL_REPORT_ID',
+          'userId'
+        )
+      })
+
+      it('should get power bi embed for single summary', async () => {
+        mockGetPowerBiEmbed.mockResolvedValue({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        await expect(
+          resolver.adminJourneysReport(
+            'userId',
+            JourneysReportType.singleSummary
+          )
+        ).resolves.toEqual({
+          reportId: 'reportId',
+          reportName: 'reportName',
+          embedUrl: 'embedUrl',
+          accessToken: 'accessToken',
+          expiration: '2hrs'
+        })
+        expect(mockGetPowerBiEmbed).toHaveBeenCalledWith(
+          {
+            clientId: 'POWER_BI_CLIENT_ID',
+            clientSecret: 'POWER_BI_CLIENT_SECRET',
+            tenantId: 'POWER_BI_TENANT_ID',
+            workspaceId: 'POWER_BI_WORKSPACE_ID'
+          },
+          'POWER_BI_JOURNEYS_SINGLE_SUMMARY_REPORT_ID',
+          'userId'
+        )
+      })
+    })
   })
 
   describe('adminJourneys', () => {
     it('should get published journeys', async () => {
-      expect(await resolver.adminJourneys('userId')).toEqual([journey, journey])
-      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith('userId')
+      expect(
+        await resolver.adminJourneys('userId', [
+          JourneyStatus.draft,
+          JourneyStatus.published
+        ])
+      ).toEqual([journey, journey])
+      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith('userId', [
+        JourneyStatus.draft,
+        JourneyStatus.published
+      ])
     })
   })
 
@@ -327,6 +576,74 @@ describe('JourneyResolver', () => {
     })
   })
 
+  describe('journeyDuplicate', () => {
+    it('duplicates a Journey', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
+        ...journey,
+        id: 'duplicateJourneyId',
+        createdAt: new Date().toISOString(),
+        status: JourneyStatus.draft,
+        publishedAt: undefined,
+        slug: `${journey.title}-copy`,
+        title: `${journey.title} copy`
+      })
+    })
+
+    it('duplicates a UserJourney', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      await resolver.journeyDuplicate('journeyId', 'userId')
+      expect(ujService.save).toHaveBeenCalledWith({
+        userId: 'userId',
+        journeyId: 'duplicateJourneyId',
+        role: UserJourneyRole.owner
+      })
+    })
+
+    it('duplicates blocks in journey', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      mockUuidv4.mockReturnValueOnce('duplicateStepId')
+      const duplicateStepIds = new Map([[stepBlock.id, duplicatedStep.id]])
+      await resolver.journeyDuplicate('journeyId', 'userId')
+      expect(bService.getDuplicateChildren).toHaveBeenCalledWith(
+        [stepBlock],
+        'journeyId',
+        null,
+        duplicateStepIds,
+        'duplicateJourneyId',
+        duplicateStepIds
+      )
+      expect(bService.saveAll).toHaveBeenCalledWith([duplicatedStep])
+    })
+
+    it('increments copy number on title if multiple duplicates exist', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId2')
+      const mockGetAllByTitle = service.getAllByTitle as jest.MockedFunction<
+        typeof service.getAllByTitle
+      >
+      mockGetAllByTitle.mockImplementationOnce(
+        async () => await Promise.resolve([journey, journey])
+      )
+      expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
+        ...journey,
+        id: 'duplicateJourneyId2',
+        createdAt: new Date().toISOString(),
+        status: JourneyStatus.draft,
+        publishedAt: undefined,
+        slug: `${journey.title}-copy-2`,
+        title: `${journey.title} copy 2`
+      })
+    })
+
+    it('throws error and does not get stuck in retry loop', async () => {
+      const mockSave = service.save as jest.MockedFunction<typeof service.save>
+      mockSave.mockRejectedValueOnce(new Error('database error'))
+      await expect(
+        resolver.journeyDuplicate('journeyId', 'userId')
+      ).rejects.toThrow('database error')
+    })
+  })
+
   describe('journeyUpdate', () => {
     it('updates a Journey', async () => {
       await resolver.journeyUpdate('1', journeyUpdate)
@@ -370,6 +687,88 @@ describe('JourneyResolver', () => {
     })
   })
 
+  describe('journeysArchive', () => {
+    it('archives an array of Journeys', async () => {
+      const date = '2021-12-07T03:22:41.135Z'
+      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      await resolver.journeysArchive('1', [journey.id, draftJourney.id])
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          _key: journey.id,
+          status: JourneyStatus.archived,
+          archivedAt: date
+        },
+        {
+          _key: draftJourney.id,
+          status: JourneyStatus.archived,
+          archivedAt: date
+        }
+      ])
+    })
+  })
+
+  describe('journeysTrash', () => {
+    it('trashes an array of Journeys', async () => {
+      const date = '2021-12-07T03:22:41.135Z'
+      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      await resolver.journeysTrash('1', [journey.id, draftJourney.id])
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          _key: journey.id,
+          status: JourneyStatus.trashed,
+          trashedAt: date
+        },
+        {
+          _key: draftJourney.id,
+          status: JourneyStatus.trashed,
+          trashedAt: date
+        }
+      ])
+    })
+  })
+
+  describe('journeysDelete', () => {
+    it('deletes an array of Journeys', async () => {
+      const date = '2021-12-07T03:22:41.135Z'
+      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      await resolver.journeysDelete('1', [journey.id, draftJourney.id])
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          _key: journey.id,
+          status: JourneyStatus.deleted,
+          deletedAt: date
+        },
+        {
+          _key: draftJourney.id,
+          status: JourneyStatus.deleted,
+          deletedAt: date
+        }
+      ])
+    })
+  })
+
+  describe('journeysRestore', () => {
+    it('resores a published Journey', async () => {
+      await resolver.journeysRestore('1', [trashedJourney.id])
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          _key: trashedJourney.id,
+          status: JourneyStatus.published
+        }
+      ])
+    })
+
+    it('restores an draft Journey', async () => {
+      await resolver.journeysRestore('1', [trashedDraftJourney.id])
+      expect(service.updateAll).toHaveBeenCalledWith([
+        {
+          _key: trashedDraftJourney.id,
+          status: JourneyStatus.draft
+        }
+      ])
+    })
+  })
+
   describe('userJourneys', () => {
     it('should get userJourneys', async () => {
       expect(await resolver.userJourneys(journey)).toEqual([
@@ -377,18 +776,6 @@ describe('JourneyResolver', () => {
         userJourney
       ])
       expect(ujService.forJourney).toHaveBeenCalledWith(journey)
-    })
-  })
-
-  describe('status', () => {
-    it('should return draft', async () => {
-      expect(resolver.status({ ...journey, publishedAt: null })).toEqual(
-        JourneyStatus.draft
-      )
-    })
-
-    it('should return published', async () => {
-      expect(resolver.status(journey)).toEqual(JourneyStatus.published)
     })
   })
 

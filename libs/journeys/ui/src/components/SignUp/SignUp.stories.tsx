@@ -1,15 +1,15 @@
 import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { ReactElement } from 'react'
-import {
-  journeyUiConfig,
-  simpleComponentConfig,
-  StoryCard,
-  TreeBlock
-} from '../..'
+import { SnackbarProvider } from 'notistack'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import type { TreeBlock } from '../../libs/block'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { StoryCard } from '../StoryCard'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { IconName } from '../../../__generated__/globalTypes'
-import { SignUp, SIGN_UP_RESPONSE_CREATE } from './SignUp'
+import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
 
 const Demo = {
@@ -50,7 +50,7 @@ const Template: Story<TreeBlock<SignUpFields>> = ({
     mocks={[
       {
         request: {
-          query: SIGN_UP_RESPONSE_CREATE,
+          query: SIGN_UP_SUBMISSION_EVENT_CREATE,
           variables: {
             input: {
               id: 'uuid',
@@ -62,7 +62,7 @@ const Template: Story<TreeBlock<SignUpFields>> = ({
         },
         result: {
           data: {
-            signUpResponseCreate: {
+            signUpSubmissionEventCreate: {
               id: 'uuid',
               blockId: 'signUpBlockId1',
               name: 'Anon',
@@ -73,9 +73,11 @@ const Template: Story<TreeBlock<SignUpFields>> = ({
       }
     ]}
   >
-    <StoryCard>
-      <SignUp {...signUpProps} {...props} uuid={() => 'uuid'} />
-    </StoryCard>
+    <SnackbarProvider>
+      <StoryCard>
+        <SignUp {...signUpProps} {...props} uuid={() => 'uuid'} />
+      </StoryCard>
+    </SnackbarProvider>
   </MockedProvider>
 )
 
@@ -107,9 +109,13 @@ CustomButton.args = {
 
 const LoadingTemplate: Story<TreeBlock<SignUpFields>> = (): ReactElement => (
   <ApolloLoadingProvider>
-    <StoryCard>
-      <SignUp {...signUpProps} uuid={() => 'uuid'} />
-    </StoryCard>
+    <JourneyProvider>
+      <SnackbarProvider>
+        <StoryCard>
+          <SignUp {...signUpProps} uuid={() => 'uuid'} />
+        </StoryCard>
+      </SnackbarProvider>
+    </JourneyProvider>
   </ApolloLoadingProvider>
 )
 

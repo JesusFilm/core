@@ -1,9 +1,11 @@
 import { ReactElement, ReactNode, useMemo } from 'react'
-import { ThemeProvider, themes } from '@core/shared/ui'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { themes } from '@core/shared/ui/themes'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import { SxProps } from '@mui/system/styleFunctionSx'
-import { blurImage, TreeBlock } from '../..'
+import type { TreeBlock } from '../../libs/block'
+import { blurImage } from '../../libs/blurImage'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
@@ -62,12 +64,7 @@ export function Card({
 
   const blurUrl = useMemo(() => {
     return imageBlock != null
-      ? blurImage(
-          imageBlock.width,
-          imageBlock.height,
-          imageBlock.blurhash,
-          cardColor
-        )
+      ? blurImage(imageBlock.blurhash, cardColor)
       : undefined
   }, [imageBlock, cardColor])
 

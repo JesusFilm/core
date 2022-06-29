@@ -1,20 +1,25 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { styled } from '@mui/material/styles'
 import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { useMutation, gql } from '@apollo/client'
-import { TreeBlock, BlockRenderer } from '../..'
-import { WrappersProps } from '../BlockRenderer'
-import { RadioOption } from './RadioOption'
-import { RadioQuestionResponseCreate } from './__generated__/RadioQuestionResponseCreate'
+import TagManager from 'react-gtm-module'
+import { useTranslation } from 'react-i18next'
+import type { TreeBlock } from '../../libs/block'
+import { useBlocks } from '../../libs/block'
+import { getStepHeading } from '../../libs/getStepHeading'
+import { useJourney } from '../../libs/JourneyProvider'
+import { BlockRenderer, WrappersProps } from '../BlockRenderer'
+import { RadioOption } from '../RadioOption'
+import { RadioQuestionSubmissionEventCreate } from './__generated__/RadioQuestionSubmissionEventCreate'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 
-export const RADIO_QUESTION_RESPONSE_CREATE = gql`
-  mutation RadioQuestionResponseCreate(
-    $input: RadioQuestionResponseCreateInput!
+export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
+  mutation RadioQuestionSubmissionEventCreate(
+    $input: RadioQuestionSubmissionEventCreateInput!
   ) {
-    radioQuestionResponseCreate(input: $input) {
+    radioQuestionSubmissionEventCreate(input: $input) {
       id
       radioOptionBlockId
     }
@@ -38,30 +43,44 @@ export function RadioQuestion({
   wrappers,
   addOption
 }: RadioQuestionProps): ReactElement {
-  const [radioQuestionResponseCreate, { data }] =
-    useMutation<RadioQuestionResponseCreate>(RADIO_QUESTION_RESPONSE_CREATE)
+  const [radioQuestionSubmissionEventCreate] =
+    useMutation<RadioQuestionSubmissionEventCreate>(
+      RADIO_QUESTION_SUBMISSION_EVENT_CREATE
+    )
+  const { admin } = useJourney()
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const { activeBlock, treeBlocks } = useBlocks()
+  const { t } = useTranslation('libs-journeys-ui')
 
-  const handleClick = async (radioOptionBlockId: string): Promise<void> => {
-    const id = uuid()
-    await radioQuestionResponseCreate({
-      variables: {
-        input: {
-          id,
+  const heading =
+    activeBlock != null
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
+      : 'None'
+
+  const handleClick = (radioOptionBlockId: string): void => {
+    if (!admin) {
+      const id = uuid()
+      void radioQuestionSubmissionEventCreate({
+        variables: {
+          input: {
+            id,
+            blockId,
+            radioOptionBlockId
+          }
+        }
+      })
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'radio_question_submission',
+          eventId: id,
           blockId,
-          radioOptionBlockId
+          radioOptionSelectedId: radioOptionBlockId,
+          stepName: heading
         }
-      },
-      optimisticResponse: {
-        radioQuestionResponseCreate: {
-          id,
-          __typename: 'RadioQuestionResponse',
-          radioOptionBlockId
-        }
-      }
-    })
+      })
+    }
+    setSelectedId(radioOptionBlockId)
   }
-
-  const selectedId = data?.radioQuestionResponseCreate?.radioOptionBlockId
 
   const options = children?.map(
     (option) =>

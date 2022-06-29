@@ -10,6 +10,7 @@ import {
   descriptiveJourney,
   publishedJourney
 } from './journeyListData'
+import { GET_ACTIVE_JOURNEYS } from './StatusTabPanel/ActiveStatusTab/ActiveStatusTab'
 import { JourneyList } from '.'
 
 const JourneyListStory = {
@@ -23,8 +24,26 @@ const JourneyListStory = {
 }
 
 const Template: Story<JourneysListProps> = ({ ...args }) => (
-  <MockedProvider>
-    <PageWrapper title="Journeys">
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: GET_ACTIVE_JOURNEYS
+        },
+        result: {
+          data: {
+            journeys: [
+              defaultJourney,
+              oldJourney,
+              descriptiveJourney,
+              publishedJourney
+            ]
+          }
+        }
+      }
+    ]}
+  >
+    <PageWrapper title="Active Journeys">
       <JourneyList {...args} />
     </PageWrapper>
   </MockedProvider>
@@ -32,17 +51,14 @@ const Template: Story<JourneysListProps> = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney]
+  journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney],
+  disableCreation: true
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
-  journeys: undefined
-}
-
-export const Empty = Template.bind({})
-Empty.args = {
-  journeys: []
+export const Access = Template.bind({})
+Access.args = {
+  journeys: [],
+  disableCreation: true
 }
 
 export default JourneyListStory as Meta

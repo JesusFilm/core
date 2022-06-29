@@ -2,15 +2,16 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
+import Fade from '@mui/material/Fade'
 import { ReactElement, useEffect, useState } from 'react'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
-  BlockRenderer,
   useEditor,
   ActiveTab,
-  ActiveFab,
-  useJourney
-} from '@core/journeys/ui'
-import { ThemeProvider } from '@core/shared/ui'
+  ActiveFab
+} from '@core/journeys/ui/EditorProvider'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { FramePortal } from '../../FramePortal'
@@ -139,25 +140,32 @@ export function Canvas(): ReactElement {
                       step.id === selectedStep?.id ? 'none' : 'auto'
                   }}
                 />
+
                 <FramePortal width={356} height={536}>
                   <ThemeProvider
                     themeName={journey?.themeName ?? ThemeName.base}
                     themeMode={journey?.themeMode ?? ThemeMode.light}
                   >
-                    <Box sx={{ p: 1, height: '100%' }}>
-                      <BlockRenderer
-                        block={step}
-                        wrappers={{
-                          Wrapper: SelectableWrapper,
-                          TypographyWrapper: InlineEditWrapper,
-                          ButtonWrapper: InlineEditWrapper,
-                          RadioQuestionWrapper: InlineEditWrapper,
-                          RadioOptionWrapper: InlineEditWrapper,
-                          SignUpWrapper: InlineEditWrapper,
-                          VideoWrapper
-                        }}
-                      />
-                    </Box>
+                    <Fade
+                      in={selectedStep?.id === step.id}
+                      mountOnEnter
+                      unmountOnExit
+                    >
+                      <Box sx={{ p: 1, height: '100%' }}>
+                        <BlockRenderer
+                          block={step}
+                          wrappers={{
+                            Wrapper: SelectableWrapper,
+                            TypographyWrapper: InlineEditWrapper,
+                            ButtonWrapper: InlineEditWrapper,
+                            RadioQuestionWrapper: InlineEditWrapper,
+                            RadioOptionWrapper: InlineEditWrapper,
+                            SignUpWrapper: InlineEditWrapper,
+                            VideoWrapper
+                          }}
+                        />
+                      </Box>
+                    </Fade>
                   </ThemeProvider>
                 </FramePortal>
               </Box>

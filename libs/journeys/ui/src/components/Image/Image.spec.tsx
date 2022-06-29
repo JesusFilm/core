@@ -1,9 +1,10 @@
 import { render } from '@testing-library/react'
-import { TreeBlock, blurImage } from '../..'
+import type { TreeBlock } from '../../libs/block'
+import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from './__generated__/ImageFields'
 import { Image } from '.'
 
-jest.mock('../..', () => ({
+jest.mock('../../libs/blurImage', () => ({
   __esModule: true,
   blurImage: jest.fn()
 }))
@@ -36,12 +37,7 @@ describe('Image', () => {
       'random image from unsplash'
     )
 
-    expect(blurImage).toBeCalledWith(
-      block.width,
-      block.height,
-      block.blurhash,
-      '#fff'
-    )
+    expect(blurImage).toBeCalledWith(block.blurhash, '#fff')
   })
 
   it('should render the default image', () => {

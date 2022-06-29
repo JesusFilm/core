@@ -63,11 +63,23 @@ export class VideoBlockResolver {
       input.journeyId,
       input.parentBlockId
     )
-    return await this.blockService.save({
+
+    const block: VideoBlock = await this.blockService.save({
       ...input,
       __typename: 'VideoBlock',
       parentOrder: siblings.length
     })
+
+    const action = {
+      parentBlockId: block.id,
+      gtmEventName: 'NavigateAction',
+      blockId: null,
+      journeyId: null,
+      url: null,
+      target: null
+    }
+
+    return await this.blockService.update(block.id, { ...block, action })
   }
 
   @Mutation()

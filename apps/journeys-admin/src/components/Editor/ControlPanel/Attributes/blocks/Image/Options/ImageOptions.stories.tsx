@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
-import { TreeBlock, EditorProvider } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import MuiDrawer from '@mui/material/Drawer'
 import { MockedProvider } from '@apollo/client/testing'
 
@@ -14,7 +15,11 @@ const ImageOptionsStory = {
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Image/ImageOptions',
   parameters: {
     ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    chromatic: {
+      ...journeysAdminConfig.parameters.chromatic,
+      diffThreshold: 0.9
+    }
   }
 }
 

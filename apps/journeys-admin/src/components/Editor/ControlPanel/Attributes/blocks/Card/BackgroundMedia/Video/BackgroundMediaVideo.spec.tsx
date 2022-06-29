@@ -1,4 +1,5 @@
-import { TreeBlock, JourneyProvider } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { InMemoryCache } from '@apollo/client'
@@ -105,7 +106,8 @@ const getVideoMock = {
   request: {
     query: GET_VIDEO,
     variables: {
-      id: '2_0-Brand_Video'
+      id: '2_0-Brand_Video',
+      languageId: '529'
     }
   },
   result: {
@@ -132,7 +134,20 @@ const getVideoMock = {
           id: 'variantA',
           duration: 144,
           hls: 'https://arc.gt/opsgn'
-        }
+        },
+        variantLanguages: [
+          {
+            __typename: 'Language',
+            id: '529',
+            name: [
+              {
+                value: 'English',
+                primary: true,
+                __typename: 'Translation'
+              }
+            ]
+          }
+        ]
       }
     }
   }

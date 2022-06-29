@@ -1,14 +1,12 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  EditorProvider,
-  TreeBlock,
-  ActiveFab,
-  Button,
-  RadioQuestion,
-  SignUp,
-  Typography
-} from '@core/journeys/ui'
+import { EditorProvider, ActiveFab } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { Button } from '@core/journeys/ui/Button'
+import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
+import { SignUp } from '@core/journeys/ui/SignUp'
+import { Typography } from '@core/journeys/ui/Typography'
+import { SnackbarProvider } from 'notistack'
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
 import { RadioOptionFields } from '../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../__generated__/RadioQuestionFields'
@@ -146,18 +144,20 @@ describe('InlineEditWrapper', () => {
 
     const { getByDisplayValue, getByText, getByTestId } = render(
       <MockedProvider>
-        <EditorProvider
-          initialState={{
-            steps: [step(block)],
-            activeFab: ActiveFab.Add
-          }}
-        >
-          <SelectableWrapper block={block}>
-            <InlineEditWrapper block={block}>
-              <SignUp {...block} />
-            </InlineEditWrapper>
-          </SelectableWrapper>
-        </EditorProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step(block)],
+              activeFab: ActiveFab.Add
+            }}
+          >
+            <SelectableWrapper block={block}>
+              <InlineEditWrapper block={block}>
+                <SignUp {...block} />
+              </InlineEditWrapper>
+            </SelectableWrapper>
+          </EditorProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 

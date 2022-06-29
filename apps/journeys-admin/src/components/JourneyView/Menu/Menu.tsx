@@ -16,7 +16,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
 import NextLink from 'next/link'
 import { useSnackbar } from 'notistack'
-import { useJourney } from '@core/journeys/ui'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { DescriptionDialog } from './DescriptionDialog'
@@ -161,7 +161,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
               <ListItemText>Language</ListItemText>
             </MenuItem>
             <Divider />
-            <NextLink href={`/journeys/${journey.slug}/edit`} passHref>
+            <NextLink href={`/journeys/${journey.id}/edit`} passHref>
               <MenuItem>
                 <ListItemIcon>
                   <ViewCarouselIcon />

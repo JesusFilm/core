@@ -5,6 +5,8 @@ metadata:
   labels:
     app: api-videos-main
     type: api
+  annotations:
+    secrets.doppler.com/reload: 'true'
 spec:
   replicas: 1
   selector:
@@ -15,14 +17,14 @@ spec:
       labels:
         app: api-videos-main
     spec:
+      nodeSelector:
+        type: api
       containers:
         - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-videos:main
           imagePullPolicy: IfNotPresent
           name: jfp-api-videos
-          envFrom:
-            - secretRef:
-                name: env-db-main
-            - secretRef:
-                name: env-arclight
           ports:
             - containerPort: 4004
+          envFrom:
+            - secretRef:
+                name: doppler-api-videos-secret-prd

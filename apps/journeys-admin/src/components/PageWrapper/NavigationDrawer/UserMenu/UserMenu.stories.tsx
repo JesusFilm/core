@@ -9,7 +9,13 @@ import { UserMenu } from '.'
 const UserMenuStory = {
   ...simpleComponentConfig,
   component: UserMenu,
-  title: 'Journeys-Admin/PageWrapper/NavigationDrawer/UserMenu'
+  title: 'Journeys-Admin/PageWrapper/NavigationDrawer/UserMenu',
+  parameters: {
+    chromatic: {
+      ...simpleComponentConfig.parameters.chromatic,
+      diffThreshold: 0.95
+    }
+  }
 }
 
 const Template: Story<UserMenuProps> = ({ ...args }) => {

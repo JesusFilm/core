@@ -3,6 +3,7 @@
   "sourceRoot": "libs/journeys/ui/src",
   "projectType": "library",
   "tags": [],
+  "implicitDependencies": ["locales"],
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
@@ -52,6 +53,16 @@
           },
           {
             "command": "npx apollo client:codegen --config libs/journeys/ui/apollo.config.js --target typescript  --globalTypesFile=libs/journeys/ui/__generated__/globalTypes.ts"
+          }
+        ]
+      }
+    },
+    "extract-translations": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx i18next --config libs/journeys/ui/i18next-parser.config.js"
           }
         ]
       }

@@ -1,18 +1,16 @@
 import { ReactElement } from 'react'
-import {
-  Button,
-  Card,
-  Image,
-  GridItem,
-  GridContainer,
-  RadioOption,
-  RadioQuestion,
-  SignUp,
-  Step,
-  Typography,
-  Video
-} from '..'
-import { TreeBlock } from '../..'
+import { Button } from '../Button'
+import { Card } from '../Card'
+import { Image } from '../Image'
+import { GridItem } from '../GridItem'
+import { GridContainer } from '../GridContainer'
+import { RadioOption } from '../RadioOption'
+import { RadioQuestion } from '../RadioQuestion'
+import { SignUp } from '../SignUp'
+import { Step } from '../Step'
+import { Typography } from '../Typography'
+import { Video } from '../Video'
+import type { TreeBlock } from '../../libs/block'
 import {
   BlockFields as Block,
   BlockFields_ButtonBlock as ButtonBlock,
@@ -26,7 +24,7 @@ import {
   BlockFields_StepBlock as StepBlock,
   BlockFields_TypographyBlock as TypographyBlock,
   BlockFields_VideoBlock as VideoBlock
-} from '../../libs/transformer/__generated__/BlockFields'
+} from '../../libs/block/__generated__/BlockFields'
 
 export interface WrapperProps<T = Block> {
   block: TreeBlock<T>

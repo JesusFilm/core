@@ -2,11 +2,10 @@ import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
-import { JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { defaultJourney } from '../../data'
-import { GET_LANGUAGES } from '../../../LanguageSelect/LanguageSelect'
-import { JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
+import { JOURNEY_LANGUAGE_UPDATE, GET_LANGUAGES } from './LanguageDialog'
 import { LanguageDialog } from '.'
 
 const LanguageDialogStory = {

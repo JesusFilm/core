@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
-import { TreeBlock, useEditor } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ViewDayOutlinedIcon from '@mui/icons-material/ViewDayOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import FormatShapesRoundedIcon from '@mui/icons-material/FormatShapesRounded'

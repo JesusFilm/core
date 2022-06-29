@@ -1,7 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
-import { TreeBlock, JourneyProvider } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { DragDropContext } from 'react-beautiful-dnd'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
   GetJourney_journey as Journey
@@ -25,7 +27,11 @@ const CardPreviewStory = {
   title: 'Journeys-Admin/CardPreview',
   parameters: {
     ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    chromatic: {
+      ...journeysAdminConfig.parameters.chromatic,
+      diffThreshold: 0.9
+    }
   }
 }
 
@@ -665,12 +671,15 @@ const Template: Story = ({ ...args }) => {
           admin: true
         }}
       >
-        <CardPreview
-          onSelect={(step) => setSelectedStep(step)}
-          selected={selected}
-          steps={args.steps}
-          showAddButton={args.showAddButton}
-        />
+        <DragDropContext>
+          <CardPreview
+            onSelect={(step) => setSelectedStep(step)}
+            selected={selected}
+            steps={args.steps}
+            showAddButton={args.showAddButton}
+            isDraggable
+          />
+        </DragDropContext>
       </JourneyProvider>
     </MockedProvider>
   )

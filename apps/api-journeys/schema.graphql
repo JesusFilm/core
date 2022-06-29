@@ -81,7 +81,10 @@ type Journey @key(fields: "id") {
   themeName: ThemeName!
   description: String
   slug: String!
+  archivedAt: DateTime
+  deletedAt: DateTime
   publishedAt: DateTime
+  trashedAt: DateTime
   featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
@@ -405,8 +408,8 @@ type StepBlock implements Block {
   """
   nextBlockId contains the preferred block to navigate to when a
   NavigateAction occurs or if the user manually tries to advance to the next
-  step. If no nextBlockId is set it can be assumed that this step represents
-  the end of the current journey.
+  step. If no nextBlockId is set it will automatically navigate to the next
+  step in the journey based on parentOrder.
   """
   nextBlockId: ID
 
@@ -681,10 +684,20 @@ type StepViewEvent implements Event {
   block: StepBlock
 }
 
-enum VideoPlayEventStateEnum {
-  PLAYING
-  PAUSED
-  FINISHED
+input VideoStartEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoStartEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
 }
 
 input VideoPlayEventCreateInput {
@@ -693,15 +706,97 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
-  state: VideoPlayEventStateEnum!
   position: Float
 }
 
 type VideoPlayEvent implements Event {
   id: ID!
   userId: ID!
-  state: VideoPlayEventStateEnum!
-  position: Int
+  position: Float
+  block: VideoBlock
+}
+
+input VideoPauseEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoPauseEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
+}
+
+input VideoCompleteEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoCompleteEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
+}
+
+input VideoExpandEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoExpandEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
+}
+
+input VideoCollapseEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoCollapseEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
+}
+
+input VideoProgressEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+
+  """Progress of the video based on the startAt and endAt values of video"""
+  progress: Int!
+}
+
+type VideoProgressEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  progress: Int!
   block: VideoBlock
 }
 
@@ -711,12 +806,39 @@ enum IdType {
 }
 
 enum JourneyStatus {
+  archived
+  deleted
   draft
   published
+  trashed
 }
 
 input JourneysFilter {
   featured: Boolean
+}
+
+enum JourneysReportType {
+  multipleFull
+  multipleSummary
+  singleFull
+  singleSummary
+}
+
+type PowerBiEmbed {
+  """The report ID"""
+  reportId: String!
+
+  """The name of the report"""
+  reportName: String!
+
+  """The embed URL of the report"""
+  embedUrl: String!
+
+  """The embed token"""
+  accessToken: String!
+
+  """The date and time (UTC) of token expiration"""
+  expiration: String!
 }
 
 input JourneyCreateInput {
@@ -762,83 +884,6 @@ type UserJourney @key(fields: "id") {
   user: User
 }
 
-input RadioQuestionResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID @deprecated(reason: "use event instead of response")
-  blockId: ID @deprecated(reason: "use event instead of response")
-  radioOptionBlockId: ID @deprecated(reason: "use event instead of response")
-}
-
-type RadioQuestionResponse implements Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-  radioOptionBlockId: ID! @deprecated(reason: "use event instead of response")
-  block: RadioQuestionBlock @deprecated(reason: "use event instead of response")
-}
-
-interface Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-}
-
-input SignUpResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID @deprecated(reason: "use event instead of response")
-  blockId: ID @deprecated(reason: "use event instead of response")
-  name: String @deprecated(reason: "use event instead of response")
-  email: String @deprecated(reason: "use event instead of response")
-}
-
-type SignUpResponse implements Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-  name: String! @deprecated(reason: "use event instead of response")
-  email: String! @deprecated(reason: "use event instead of response")
-  block: SignUpBlock @deprecated(reason: "use event instead of response")
-}
-
-input StepResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID @deprecated(reason: "use event instead of response")
-  blockId: ID @deprecated(reason: "use event instead of response")
-}
-
-type StepResponse implements Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-  block: StepBlock @deprecated(reason: "use event instead of response")
-}
-
-enum VideoResponseStateEnum {
-  PLAYING @deprecated(reason: "use event instead of response")
-  PAUSED @deprecated(reason: "use event instead of response")
-  FINISHED @deprecated(reason: "use event instead of response")
-}
-
-input VideoResponseCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID @deprecated(reason: "use event instead of response")
-  blockId: ID @deprecated(reason: "use event instead of response")
-  state: VideoResponseStateEnum @deprecated(reason: "use event instead of response")
-  position: Float @deprecated(reason: "use event instead of response")
-}
-
-type VideoResponse implements Response {
-  id: ID! @deprecated(reason: "use event instead of response")
-  userId: ID! @deprecated(reason: "use event instead of response")
-  state: VideoResponseStateEnum! @deprecated(reason: "use event instead of response")
-  position: Int @deprecated(reason: "use event instead of response")
-  block: VideoBlock @deprecated(reason: "use event instead of response")
-}
-
 enum UserJourneyRole {
   inviteRequested
   editor
@@ -854,6 +899,19 @@ extend type Mutation {
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]!
+
+  """
+  blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
+  """
+  blockDuplicate(
+    id: ID!
+    journeyId: ID!
+
+    """
+    parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
+    """
+    parentOrder: Int
+  ): [Block!]!
   blockOrderUpdate(id: ID!, journeyId: ID!, parentOrder: Int!): [Block!]!
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(id: ID!, journeyId: ID!, input: ButtonBlockUpdateInput!): ButtonBlock
@@ -880,14 +938,31 @@ extend type Mutation {
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
+  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
+  videoCompleteEventCreate(input: VideoCompleteEventCreateInput!): VideoCompleteEvent!
+  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
+  videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
+  videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
   journeyCreate(input: JourneyCreateInput!): Journey!
+  journeyDuplicate(id: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
+
+  """Sets journey status to published"""
   journeyPublish(id: ID!): Journey
-  radioQuestionResponseCreate(input: RadioQuestionResponseCreateInput!): RadioQuestionResponse!
-  signUpResponseCreate(input: SignUpResponseCreateInput!): SignUpResponse!
-  stepResponseCreate(input: StepResponseCreateInput!): SignUpResponse!
-  videoResponseCreate(input: VideoResponseCreateInput!): VideoResponse!
+
+  """Sets journeys statuses to archived"""
+  journeysArchive(ids: [ID!]!): [Journey]
+
+  """Sets journeys statuses to deleted"""
+  journeysDelete(ids: [ID!]!): [Journey]
+
+  """Sets journeys statuses to trashed"""
+  journeysTrash(ids: [ID!]!): [Journey]
+
+  """Sets journeys statuses to last active status"""
+  journeysRestore(ids: [ID!]!): [Journey]
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
@@ -904,7 +979,8 @@ extend type Language @key(fields: "id") {
 }
 
 extend type Query {
-  adminJourneys: [Journey!]!
+  adminJourneys(status: [JourneyStatus!]): [Journey!]!
+  adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey

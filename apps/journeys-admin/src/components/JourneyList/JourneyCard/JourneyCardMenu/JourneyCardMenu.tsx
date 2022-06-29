@@ -14,12 +14,14 @@ import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
 
 export interface JourneyCardMenuProps {
+  id: string
   status: JourneyStatus
   slug: string
   forceMenu?: boolean
 }
 
 export function JourneyCardMenu({
+  id,
   status,
   slug,
   forceMenu // this is only used for storybook snapshots
@@ -56,7 +58,7 @@ export function JourneyCardMenu({
           'aria-labelledby': 'journey-actions'
         }}
       >
-        <Link href={`/journeys/${slug}`} passHref>
+        <Link href={`/journeys/${id}`} passHref>
           <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
             <ListItemIcon>
               <EditIcon color="secondary" />
@@ -103,7 +105,7 @@ export function JourneyCardMenu({
       </Menu>
 
       <AccessDialog
-        journeySlug={slug}
+        journeyId={id}
         open={openDialog}
         onClose={() => setOpenDialog(false)}
       />

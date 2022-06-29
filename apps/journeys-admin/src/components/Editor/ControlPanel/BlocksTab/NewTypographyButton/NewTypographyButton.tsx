@@ -1,13 +1,10 @@
 import { ReactElement } from 'react'
 import TextFieldsRounded from '@mui/icons-material/TextFieldsRounded'
 import { gql, useMutation } from '@apollo/client'
-import {
-  ActiveTab,
-  useEditor,
-  TreeBlock,
-  TYPOGRAPHY_FIELDS,
-  useJourney
-} from '@core/journeys/ui'
+import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
+import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '../../Button'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { TypographyBlockCreate } from '../../../../../../__generated__/TypographyBlockCreate'

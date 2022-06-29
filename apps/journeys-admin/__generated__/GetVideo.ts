@@ -26,6 +26,18 @@ export interface GetVideo_video_variant {
   hls: string | null;
 }
 
+export interface GetVideo_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface GetVideo_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: GetVideo_video_variantLanguages_name[];
+}
+
 export interface GetVideo_video {
   __typename: "Video";
   id: string;
@@ -34,6 +46,7 @@ export interface GetVideo_video {
   title: GetVideo_video_title[];
   description: GetVideo_video_description[];
   variant: GetVideo_video_variant | null;
+  variantLanguages: GetVideo_video_variantLanguages[];
 }
 
 export interface GetVideo {
@@ -42,4 +55,5 @@ export interface GetVideo {
 
 export interface GetVideoVariables {
   id: string;
+  languageId: string;
 }

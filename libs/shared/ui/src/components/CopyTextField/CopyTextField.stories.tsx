@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
-import { simpleComponentConfig } from '../..'
+import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { CopyTextFieldProps } from './CopyTextField'
 import { CopyTextField } from '.'
 

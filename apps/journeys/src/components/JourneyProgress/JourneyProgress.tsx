@@ -1,4 +1,4 @@
-import { useBlocks } from '@core/journeys/ui'
+import { useBlocks } from '@core/journeys/ui/block'
 import Box from '@mui/material/Box'
 import LinearProgress from '@mui/material/LinearProgress'
 import withStyles from '@mui/styles/withStyles'
@@ -23,17 +23,13 @@ export function JourneyProgress(): ReactElement {
 
   useEffect(() => {
     if (activeBlock != null) {
-      if (activeBlock.nextBlockId != null) {
-        const position = findIndex(treeBlocks, ['id', activeBlock.id])
-        if (position === -1) {
-          setPercentage(0)
-        } else if (position === 0) {
-          setPercentage(0)
-        } else {
-          setPercentage(((position + 1) / treeBlocks.length) * 100)
-        }
+      const position = findIndex(treeBlocks, ['id', activeBlock.id])
+      if (position === -1) {
+        setPercentage(0)
+      } else if (position === 0) {
+        setPercentage(0)
       } else {
-        setPercentage(100)
+        setPercentage(((position + 1) / treeBlocks.length) * 100)
       }
     } else {
       setPercentage(0)

@@ -1,5 +1,7 @@
 import { Story, Meta } from '@storybook/react'
-import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import {

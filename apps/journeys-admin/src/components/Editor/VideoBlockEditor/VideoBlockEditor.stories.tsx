@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
-import { TreeBlock } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import MuiDrawer from '@mui/material/Drawer'
 import { MockedProvider } from '@apollo/client/testing'
 
@@ -22,7 +22,11 @@ const BackgroundMediaStory = {
   title: 'Journeys-Admin/Editor/VideoBlockEditor',
   parameters: {
     ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    chromatic: {
+      ...journeysAdminConfig.parameters.chromatic,
+      diffThreshold: 0.9
+    }
   }
 }
 

@@ -8,19 +8,25 @@ import TagManager from 'react-gtm-module'
 import { datadogRum } from '@datadog/browser-rum'
 import { CacheProvider } from '@emotion/react'
 import type { EmotionCache } from '@emotion/cache'
-import { createEmotionCache } from '@core/shared/ui'
+import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { appWithTranslation } from 'next-i18next'
+import { useTranslation } from 'react-i18next'
 import { useApollo } from '../src/libs/apolloClient'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
+import i18nConfig from '../next-i18next.config'
 
+// your _app component
 initAuth()
 const clientSideEmotionCache = createEmotionCache()
 
-export default function JourneysAdminApp({
+function JourneysAdminApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
 }: AppProps & { emotionCache?: EmotionCache }): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const token =
     (pageProps.AuthUserSerialized != null
       ? (JSON.parse(pageProps.AuthUserSerialized)._token as string | null)
@@ -55,29 +61,33 @@ export default function JourneysAdminApp({
   }, [])
 
   return (
-    <CacheProvider value={emotionCache}>
-      <DefaultSeo
-        titleTemplate="%s | Next Steps"
-        defaultTitle="Admin | Next Steps"
-      />
-      <Head>
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width"
+    <FlagsProvider flags={pageProps.flags}>
+      <CacheProvider value={emotionCache}>
+        <DefaultSeo
+          titleTemplate={t('%s | Next Steps')}
+          defaultTitle={t('Admin | Next Steps')}
         />
-      </Head>
-      <ThemeProvider>
-        <ApolloProvider client={apolloClient}>
-          <SnackbarProvider
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-          >
-            <Component {...pageProps} />
-          </SnackbarProvider>
-        </ApolloProvider>
-      </ThemeProvider>
-    </CacheProvider>
+        <Head>
+          <meta
+            name="viewport"
+            content="minimum-scale=1, initial-scale=1, width=device-width"
+          />
+        </Head>
+        <ThemeProvider>
+          <ApolloProvider client={apolloClient}>
+            <SnackbarProvider
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+            >
+              <Component {...pageProps} />
+            </SnackbarProvider>
+          </ApolloProvider>
+        </ThemeProvider>
+      </CacheProvider>
+    </FlagsProvider>
   )
 }
+
+export default appWithTranslation(JourneysAdminApp, i18nConfig)

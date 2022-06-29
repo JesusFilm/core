@@ -5,6 +5,8 @@ metadata:
   labels:
     app: api-journeys-main
     type: api
+  annotations:
+    secrets.doppler.com/reload: 'true'
 spec:
   replicas: 1
   selector:
@@ -15,12 +17,14 @@ spec:
       labels:
         app: api-journeys-main
     spec:
+      nodeSelector:
+        type: api
       containers:
         - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-journeys:main
           imagePullPolicy: IfNotPresent
           name: jfp-api-journeys
-          envFrom:
-            - secretRef:
-                name: env-db-main
           ports:
             - containerPort: 4001
+          envFrom:
+            - secretRef:
+                name: doppler-api-journeys-secret-prd

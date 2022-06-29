@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider, JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -17,7 +18,14 @@ import { NavigateAction } from '.'
 const NavigateNextStory = {
   ...simpleComponentConfig,
   component: NavigateAction,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates',
+  parameters: {
+    ...simpleComponentConfig.parameters,
+    chromatic: {
+      ...simpleComponentConfig.parameters.chromatic,
+      diffThreshold: 0.9
+    }
+  }
 }
 
 const journeyTheme = {

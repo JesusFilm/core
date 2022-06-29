@@ -2,8 +2,8 @@
 
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard'
-import { CurrentUserId } from '@core/nest/decorators'
+import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   SignUpSubmissionEvent,
   SignUpSubmissionEventCreateInput
@@ -17,9 +17,12 @@ export class SignUpSubmissionEventResolver {
   @UseGuards(GqlAuthGuard)
   async signUpSubmissionEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: SignUpSubmissionEventCreateInput & { __typename }
+    @Args('input') input: SignUpSubmissionEventCreateInput
   ): Promise<SignUpSubmissionEvent> {
-    input.__typename = 'SignUpSubmissionEvent'
-    return await this.eventService.save({ ...input, userId })
+    return await this.eventService.save({
+      ...input,
+      __typename: 'SignUpSubmissionEvent',
+      userId
+    })
   }
 }

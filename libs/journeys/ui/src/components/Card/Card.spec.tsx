@@ -1,12 +1,13 @@
 import { render, waitFor } from '@testing-library/react'
-import { themes } from '@core/shared/ui'
-import { TreeBlock, blurImage } from '../..'
+import { themes } from '@core/shared/ui/themes'
+import type { TreeBlock } from '../../libs/block'
+import { blurImage } from '../../libs/blurImage'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 import { Card } from '.'
 
-jest.mock('../..', () => ({
+jest.mock('../../libs/blurImage', () => ({
   __esModule: true,
   blurImage: jest.fn()
 }))
@@ -160,12 +161,7 @@ describe('CardBlock', () => {
       />
     )
 
-    expect(blurImage).toBeCalledWith(
-      imageBlock.width,
-      imageBlock.height,
-      imageBlock.blurhash,
-      '#fff'
-    )
+    expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
     expect(getByTestId('ExpandedCover')).toBeInTheDocument()
     await waitFor(() =>
       expect(getByTestId('expandedBlurBackground')).toBeInTheDocument()
@@ -182,12 +178,7 @@ describe('CardBlock', () => {
     )
     const standaloneImageBlock = queryByTestId(`image-${imageBlock.id}`)
 
-    expect(blurImage).toBeCalledWith(
-      imageBlock.width,
-      imageBlock.height,
-      imageBlock.blurhash,
-      '#fff'
-    )
+    expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
     expect(queryByTestId('ContainedCover')).toBeInTheDocument()
     expect(queryByTestId('ContainedCardImageCover')).toHaveAccessibleName(
       'random image from unsplash'
@@ -205,12 +196,7 @@ describe('CardBlock', () => {
     )
     const standaloneVideoBlock = queryByTestId(`video-${videoBlock.id}`)
 
-    expect(blurImage).toBeCalledWith(
-      imageBlock.width,
-      imageBlock.height,
-      imageBlock.blurhash,
-      '#fff'
-    )
+    expect(blurImage).toBeCalledWith(imageBlock.blurhash, '#fff')
     expect(queryByTestId('ContainedCover')).toBeInTheDocument()
     expect(queryByTestId('VideoPosterCover')).toHaveAccessibleName(
       'random image from unsplash - video'

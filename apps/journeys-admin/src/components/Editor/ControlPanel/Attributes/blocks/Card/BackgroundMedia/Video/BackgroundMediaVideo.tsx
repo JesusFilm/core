@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
-import { TreeBlock, VIDEO_FIELDS, useJourney } from '@core/journeys/ui'
+import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import {

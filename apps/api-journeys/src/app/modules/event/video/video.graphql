@@ -1,7 +1,17 @@
-enum VideoPlayEventStateEnum {
-  PLAYING
-  PAUSED
-  FINISHED
+input VideoStartEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoStartEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
 }
 
 input VideoPlayEventCreateInput {
@@ -10,18 +20,113 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
-  state: VideoPlayEventStateEnum!
   position: Float
 }
 
 type VideoPlayEvent implements Event {
   id: ID!
   userId: ID!
-  state: VideoPlayEventStateEnum!
-  position: Int
+  position: Float
+  block: VideoBlock
+}
+
+input VideoPauseEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoPauseEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
+}
+
+input VideoCompleteEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoCompleteEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
+}
+
+input VideoExpandEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoExpandEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
+}
+
+input VideoCollapseEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+}
+
+type VideoCollapseEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  block: VideoBlock
+}
+
+input VideoProgressEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  position: Float
+  """
+  Progress of the video based on the startAt and endAt values of video
+  """
+  progress: Int!
+}
+
+type VideoProgressEvent implements Event {
+  id: ID!
+  userId: ID!
+  position: Float
+  progress: Int!
   block: VideoBlock
 }
 
 extend type Mutation {
+  videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
+  videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
+  videoCompleteEventCreate(
+    input: VideoCompleteEventCreateInput!
+  ): VideoCompleteEvent!
+  videoExpandEventCreate(input: VideoExpandEventCreateInput!): VideoExpandEvent!
+  videoCollapseEventCreate(
+    input: VideoCollapseEventCreateInput!
+  ): VideoCollapseEvent!
+  videoProgressEventCreate(
+    input: VideoProgressEventCreateInput!
+  ): VideoProgressEvent!
 }

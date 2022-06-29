@@ -1,0 +1,20 @@
+{
+  "%s | Next Steps": "%s | Next Steps",
+  "Admin | Next Steps": "Admin | Next Steps",
+  "Active Journeys": "Active Journeys",
+  "Archived Journeys": "Archived Journeys",
+  "Deleted Journeys": "Deleted Journeys",
+  "Journeys": "Journeys",
+  "Journey": "Journey",
+  "Journey Details": "Journey Details",
+  "Access Denied": "Access Denied",
+  "Edit {{title}}": "Edit {{title}}",
+  "Edit Journey": "Edit Journey",
+  "Sign In": "Sign In",
+  "Properties": "Properties",
+  "Access Control": "Access Control",
+  "Journey URL": "Journey URL",
+  "Edit URL": "Edit URL",
+  "Field update failed. Reload the page or try again.": "Field update failed. Reload the page or try again.",
+  "Cancel": "Cancel"
+}

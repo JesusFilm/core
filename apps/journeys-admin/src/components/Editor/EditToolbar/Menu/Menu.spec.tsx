@@ -1,7 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { EditorProvider, TreeBlock, JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ThemeProvider } from '../../../ThemeProvider'
 import {

@@ -1,10 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '../../data'
-import { GET_LANGUAGES } from '../../../LanguageSelect/LanguageSelect'
-import { JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
+import { JOURNEY_LANGUAGE_UPDATE, GET_LANGUAGES } from './LanguageDialog'
 import { LanguageDialog } from '.'
 
 const onClose = jest.fn()
@@ -79,6 +78,7 @@ describe('JourneyView/Menu/LanguageDialog', () => {
       </MockedProvider>
     )
 
+    await waitFor(() => expect(getByRole('textbox')).toHaveValue('English'))
     fireEvent.focus(getByRole('textbox'))
     fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
     await waitFor(() => getByRole('option', { name: 'French Français' }))

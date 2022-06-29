@@ -1,16 +1,14 @@
 import { NextRouter, useRouter } from 'next/router'
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  EditorProvider,
-  TreeBlock,
-  ActiveFab,
-  Button,
-  Image,
-  RadioQuestion,
-  SignUp,
-  Typography
-} from '@core/journeys/ui'
+import { EditorProvider, ActiveFab } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { Button } from '@core/journeys/ui/Button'
+import { Image } from '@core/journeys/ui/Image'
+import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
+import { SignUp } from '@core/journeys/ui/SignUp'
+import { Typography } from '@core/journeys/ui/Typography'
+import { SnackbarProvider } from 'notistack'
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
 import { SignUpFields } from '../../../../../__generated__/SignUpFields'
 import { ImageFields } from '../../../../../__generated__/ImageFields'
@@ -132,34 +130,36 @@ describe('SelectableWrapper', () => {
   it('should select blocks on click', async () => {
     const { getByRole, getByTestId, getByText } = render(
       <MockedProvider>
-        <EditorProvider
-          initialState={{
-            steps: [
-              step([imageBlock, typographyBlock, buttonBlock, signUpBlock])
-            ],
-            activeFab: ActiveFab.Add
-          }}
-        >
-          <SelectableWrapper block={imageBlock}>
-            <Image {...imageBlock} alt={'imageAlt'} />
-          </SelectableWrapper>
-          {/* Video */}
-          <SelectableWrapper block={typographyBlock}>
-            <Typography {...typographyBlock} />
-          </SelectableWrapper>
-          <SelectableWrapper block={buttonBlock}>
-            <Button {...buttonBlock} />
-          </SelectableWrapper>
-          <SelectableWrapper block={signUpBlock}>
-            <SignUp {...signUpBlock} />
-          </SelectableWrapper>
-          <SelectableWrapper block={radioQuestionBlock}>
-            <RadioQuestion
-              {...radioQuestionBlock}
-              wrappers={{ Wrapper: SelectableWrapper }}
-            />
-          </SelectableWrapper>
-        </EditorProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              steps: [
+                step([imageBlock, typographyBlock, buttonBlock, signUpBlock])
+              ],
+              activeFab: ActiveFab.Add
+            }}
+          >
+            <SelectableWrapper block={imageBlock}>
+              <Image {...imageBlock} alt={'imageAlt'} />
+            </SelectableWrapper>
+            {/* Video */}
+            <SelectableWrapper block={typographyBlock}>
+              <Typography {...typographyBlock} />
+            </SelectableWrapper>
+            <SelectableWrapper block={buttonBlock}>
+              <Button {...buttonBlock} />
+            </SelectableWrapper>
+            <SelectableWrapper block={signUpBlock}>
+              <SignUp {...signUpBlock} />
+            </SelectableWrapper>
+            <SelectableWrapper block={radioQuestionBlock}>
+              <RadioQuestion
+                {...radioQuestionBlock}
+                wrappers={{ Wrapper: SelectableWrapper }}
+              />
+            </SelectableWrapper>
+          </EditorProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -180,10 +180,12 @@ describe('SelectableWrapper', () => {
       zIndex: '1'
     })
     fireEvent.click(getByText('sign up label'))
-    expect(getByTestId(`selected-${signUpBlock.id}`)).toHaveStyle({
-      outline: '3px solid #C52D3A',
-      zIndex: '1'
-    })
+    await waitFor(() =>
+      expect(getByTestId(`selected-${signUpBlock.id}`)).toHaveStyle({
+        outline: '3px solid #C52D3A',
+        zIndex: '1'
+      })
+    )
     fireEvent.click(getByTestId(`radioQuestion-${radioQuestionBlock.id}`))
     expect(getByTestId(`selected-${radioQuestionBlock.id}`)).toHaveStyle({
       outline: '3px solid #C52D3A',

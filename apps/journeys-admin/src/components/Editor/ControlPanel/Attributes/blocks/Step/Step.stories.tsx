@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
-import { TreeBlock } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import Stack from '@mui/material/Stack'
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
@@ -32,7 +33,9 @@ export const Default: Story = () => {
         px: 6
       }}
     >
-      <Step {...block} />
+      <EditorProvider initialState={{ steps: [block] }}>
+        <Step {...block} />
+      </EditorProvider>
     </Stack>
   )
 }
@@ -58,7 +61,9 @@ export const Locked: Story = () => {
         px: 6
       }}
     >
-      <Step {...block} />
+      <EditorProvider initialState={{ steps: [block] }}>
+        <Step {...block} />
+      </EditorProvider>
     </Stack>
   )
 }

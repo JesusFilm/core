@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
-import { transformer, TreeBlock, useJourney } from '@core/journeys/ui'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { transformer } from '@core/journeys/ui/transformer'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import EditIcon from '@mui/icons-material/Edit'
@@ -37,9 +39,9 @@ export function JourneyView(): ReactElement {
       </Box>
       <Properties />
       <>
-        <CardView slug={journey?.slug} blocks={blocks} />
+        <CardView id={journey?.id} blocks={blocks} />
         <NextLink
-          href={journey != null ? `/journeys/${journey.slug}/edit` : ''}
+          href={journey != null ? `/journeys/${journey.id}/edit` : ''}
           passHref
         >
           <Fab

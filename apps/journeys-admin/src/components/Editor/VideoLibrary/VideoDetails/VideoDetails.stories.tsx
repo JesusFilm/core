@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import { GET_LANGUAGES } from '../../../LanguageSelect/LanguageSelect'
+import { GetVideo_video_variantLanguages as Language } from '../../../../../__generated__/GetVideo'
 import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
 import { GET_VIDEO } from './VideoDetails'
 import { VideoDetails } from '.'
@@ -14,6 +14,52 @@ const VideoDetailsStory = {
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
+const languages: Language[] = [
+  {
+    __typename: 'Language',
+    id: '529',
+    name: [
+      {
+        value: 'English',
+        primary: true,
+        __typename: 'Translation'
+      }
+    ]
+  },
+  {
+    id: '496',
+    __typename: 'Language',
+    name: [
+      {
+        value: 'Français',
+        primary: true,
+        __typename: 'Translation'
+      },
+      {
+        value: 'French',
+        primary: false,
+        __typename: 'Translation'
+      }
+    ]
+  },
+  {
+    id: '1106',
+    __typename: 'Language',
+    name: [
+      {
+        value: 'Deutsch',
+        primary: true,
+        __typename: 'Translation'
+      },
+      {
+        value: 'German, Standard',
+        primary: false,
+        __typename: 'Translation'
+      }
+    ]
+  }
+]
+
 const Template: Story = ({ id, onSelect }) => {
   const [open, setOpen] = useState(true)
 
@@ -24,7 +70,8 @@ const Template: Story = ({ id, onSelect }) => {
           request: {
             query: GET_VIDEO,
             variables: {
-              id: '2_Acts7302-0-0'
+              id: '2_Acts7302-0-0',
+              languageId: '529'
             }
           },
           result: {
@@ -51,57 +98,9 @@ const Template: Story = ({ id, onSelect }) => {
                   id: 'variantA',
                   duration: 144,
                   hls: 'https://arc.gt/opsgn'
-                }
+                },
+                variantLanguages: languages
               }
-            }
-          }
-        },
-        {
-          request: {
-            query: GET_LANGUAGES,
-            variables: {
-              languageId: '529'
-            }
-          },
-          result: {
-            data: {
-              languages: [
-                {
-                  id: '529',
-                  name: [
-                    {
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                },
-                {
-                  id: '496',
-                  name: [
-                    {
-                      value: 'Français',
-                      primary: true
-                    },
-                    {
-                      value: 'French',
-                      primary: false
-                    }
-                  ]
-                },
-                {
-                  id: '1106',
-                  name: [
-                    {
-                      value: 'Deutsch',
-                      primary: true
-                    },
-                    {
-                      value: 'German, Standard',
-                      primary: false
-                    }
-                  ]
-                }
-              ]
             }
           }
         }

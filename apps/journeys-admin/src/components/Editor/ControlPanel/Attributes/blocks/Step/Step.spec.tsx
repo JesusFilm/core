@@ -1,4 +1,6 @@
-import { TreeBlock, EditorProvider, JourneyProvider } from '@core/journeys/ui'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import {
@@ -12,6 +14,15 @@ import {
 import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 import { Step } from '.'
+
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
 
 describe('Step', () => {
   it('shows default messages', () => {
@@ -79,7 +90,7 @@ describe('Step', () => {
       expect(getByText('Locked With Interaction')).toBeInTheDocument()
     })
 
-    it('shows untitled', () => {
+    it('shows next step title', () => {
       const step1: TreeBlock<StepBlock> = {
         id: 'step1.id',
         __typename: 'StepBlock',
@@ -107,7 +118,7 @@ describe('Step', () => {
           <Step {...step1} />
         </EditorProvider>
       )
-      expect(getByText('Untitled')).toBeInTheDocument()
+      expect(getByText('Step {{number}}')).toBeInTheDocument()
     })
 
     it('shows first typography text', () => {
