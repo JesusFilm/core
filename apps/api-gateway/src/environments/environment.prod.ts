@@ -20,9 +20,11 @@ export const config: EnvironmentConfig = {
       // journeys-admin
       'https://journeys-admin.vercel.app',
       'https://admin.nextstep.is',
+      'https://admin-stage.nextstep.is',
       // journeys
       'https://journeys-phi.vercel.app',
       'https://your.nextstep.is',
+      'https://your-stage.nextstep.is',
       // watch
       'https://watch-one.vercel.app',
       // localhost
