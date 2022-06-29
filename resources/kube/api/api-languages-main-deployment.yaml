@@ -5,6 +5,8 @@ metadata:
   labels:
     app: api-languages-main
     type: api
+  annotations:
+    secrets.doppler.com/reload: 'true'
 spec:
   replicas: 1
   selector:
@@ -21,10 +23,8 @@ spec:
         - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-languages:main
           imagePullPolicy: IfNotPresent
           name: jfp-api-languages
-          envFrom:
-            - secretRef:
-                name: env-db-main
-            - secretRef:
-                name: env-arclight
           ports:
             - containerPort: 4003
+          envFrom:
+            - secretRef:
+                name: doppler-api-languages-secret-prd

@@ -56,7 +56,7 @@ describe('JourneyView', () => {
     )
     expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
       'href',
-      '/journeys/my-journey/edit'
+      '/journeys/journeyId/edit'
     )
   })
 })

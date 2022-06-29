@@ -182,6 +182,25 @@ describe('JourneyView/Menu', () => {
     expect(menu).not.toHaveAttribute('aria-expanded')
   })
 
+  it('should handle edit cards', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const menu = getByRole('button')
+    fireEvent.click(menu)
+    expect(getByRole('menuitem', { name: 'Edit Cards' })).toHaveAttribute(
+      'href',
+      '/journeys/journey-id/edit'
+    )
+  })
+
   it('should handle copy url', async () => {
     jest.spyOn(navigator.clipboard, 'writeText')
 
