@@ -188,6 +188,82 @@ export class JourneyResolver {
 
   @Mutation()
   @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
+  async journeyDuplicate(
+    @Args('id') id: string,
+    @CurrentUserId() userId: string
+  ): Promise<Journey | undefined> {
+    const journey: Journey = await this.journeyService.get(id)
+    const duplicateJourneyId = uuidv4()
+
+    const title = journey.title.split(' copy')[0]
+    const existingDuplicateJourneys = await this.journeyService.getAllByTitle(
+      title
+    )
+    const duplicateTitle = `${title} ${
+      existingDuplicateJourneys.length === 1
+        ? 'copy'
+        : `copy ${existingDuplicateJourneys.length}`
+    }`
+
+    const slug = slugify(duplicateTitle, {
+      lower: true,
+      strict: true
+    })
+
+    const originalBlocks = await this.blockService.getBlocksByType(
+      journey,
+      'StepBlock'
+    )
+
+    const duplicateStepIds = new Map()
+    originalBlocks.forEach((block) => {
+      duplicateStepIds.set(block.id, uuidv4())
+    })
+
+    const duplicateBlocks = await this.blockService.getDuplicateChildren(
+      originalBlocks,
+      id,
+      null,
+      duplicateStepIds,
+      duplicateJourneyId,
+      duplicateStepIds
+    )
+
+    const input = {
+      ...journey,
+      id: duplicateJourneyId,
+      slug,
+      title: duplicateTitle,
+      createdAt: new Date().toISOString(),
+      publishedAt: undefined,
+      status: JourneyStatus.draft
+    }
+
+    let retry = true
+    while (retry) {
+      try {
+        const journey: Journey = await this.journeyService.save(input)
+        await this.blockService.saveAll(duplicateBlocks)
+        await this.userJourneyService.save({
+          userId,
+          journeyId: journey.id,
+          role: UserJourneyRole.owner
+        })
+        retry = false
+        return journey
+      } catch (err) {
+        if (err.errorNum === ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED) {
+          input.slug = slugify(`${input.slug}-${input.id}`)
+        } else {
+          retry = false
+          throw err
+        }
+      }
+    }
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
   async journeyUpdate(
     @Args('id') id: string,
     @Args('input') input: JourneyUpdateInput

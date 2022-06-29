@@ -128,6 +128,16 @@ describe('JourneyService', () => {
     })
   })
 
+  describe('getAllByTitle', () => {
+    beforeEach(() => {
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [journey]))
+    })
+
+    it('should return all for title', async () => {
+      expect(await service.getAllByTitle('publish')).toEqual([journeyWithId])
+    })
+  })
+
   describe('getAllByOwnerEditor', () => {
     beforeEach(() => {
       db.query.mockReturnValueOnce(mockDbQueryResult(db, [journey]))
