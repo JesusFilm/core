@@ -27,11 +27,7 @@ const CardPreviewStory = {
   title: 'Journeys-Admin/CardPreview',
   parameters: {
     ...journeysAdminConfig.parameters,
-    layout: 'fullscreen',
-    chromatic: {
-      ...journeysAdminConfig.parameters.chromatic,
-      diffThreshold: 0.9
-    }
+    layout: 'fullscreen'
   }
 }
 
