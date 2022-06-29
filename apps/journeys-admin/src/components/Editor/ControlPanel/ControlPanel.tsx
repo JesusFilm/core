@@ -31,7 +31,6 @@ export function ControlPanel(): ReactElement {
   const handleSelectStepPreview = (step: TreeBlock<StepBlock>): void => {
     dispatch({ type: 'SetSelectedStepAction', step })
     dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-    dispatch({ type: 'SetActiveTabAction', activeTab: ActiveTab.Properties })
   }
 
   const handleAddFabClick = (): void => {
