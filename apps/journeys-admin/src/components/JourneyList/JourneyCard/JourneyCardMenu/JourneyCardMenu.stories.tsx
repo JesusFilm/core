@@ -1,4 +1,5 @@
 import { Story, Meta } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { journeysAdminConfig } from '../../../../libs/storybook'
@@ -25,14 +26,20 @@ const Template: Story<JourneyCardMenuProps> = ({ ...args }) => (
 export const Draft = Template.bind({})
 Draft.args = {
   status: JourneyStatus.draft,
-  slug: 'draft-journey',
-  forceMenu: true
+  slug: 'draft-journey'
+}
+Draft.play = () => {
+  const menuButton = screen.getByRole('button')
+  userEvent.click(menuButton)
 }
 export const Published = Template.bind({})
 Published.args = {
   status: JourneyStatus.published,
-  slug: 'published-journey',
-  forceMenu: true
+  slug: 'published-journey'
+}
+Published.play = () => {
+  const menuButton = screen.getByRole('button')
+  userEvent.click(menuButton)
 }
 
 export default JoruneyCardMenuDemo as Meta

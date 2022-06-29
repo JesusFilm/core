@@ -18,19 +18,15 @@ export interface JourneyCardMenuProps {
   id: string
   status: JourneyStatus
   slug: string
-  forceMenu?: boolean
-  journeyId?: string
 }
 
 export function JourneyCardMenu({
   id,
   status,
-  slug,
-  forceMenu, // this is only used for storybook snapshots
-  journeyId
+  slug
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const open = forceMenu === true ? true : Boolean(anchorEl)
+  const open = Boolean(anchorEl)
 
   const [openDialog, setOpenDialog] = useState(false)
 
@@ -106,7 +102,7 @@ export function JourneyCardMenu({
           </ListItemText>
         </MenuItem>
 
-        <DuplicateJourneyMenuItem journeyId={journeyId} />
+        <DuplicateJourneyMenuItem id={id} />
       </Menu>
 
       <AccessDialog

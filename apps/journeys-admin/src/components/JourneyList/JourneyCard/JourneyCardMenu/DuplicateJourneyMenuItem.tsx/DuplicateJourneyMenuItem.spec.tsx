@@ -40,7 +40,7 @@ describe('DuplicateJourneys', () => {
               admin: true
             }}
           >
-            <DuplicateJourneyMenuItem journeyId="journeyId" />
+            <DuplicateJourneyMenuItem id="journeyId" />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>

@@ -149,7 +149,6 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
               id={journey.id}
               status={journey.status}
               slug={journey.slug}
-              journeyId={journey.id}
             />
           ) : (
             <IconButton disabled>

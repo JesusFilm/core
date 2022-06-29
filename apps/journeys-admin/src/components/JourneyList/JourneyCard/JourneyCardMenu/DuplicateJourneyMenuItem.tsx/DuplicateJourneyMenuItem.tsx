@@ -9,7 +9,7 @@ import { useSnackbar } from 'notistack'
 import { JourneyDuplicate } from '../../../../../../__generated__/JourneyDuplicate'
 
 interface DuplicateJourneyMenuItemProps {
-  journeyId?: string
+  id?: string
 }
 
 export const JOURNEY_DUPLICATE = gql`
@@ -21,17 +21,17 @@ export const JOURNEY_DUPLICATE = gql`
 `
 
 export function DuplicateJourneyMenuItem({
-  journeyId
+  id
 }: DuplicateJourneyMenuItemProps): ReactElement {
   const [journeyDuplicate] = useMutation<JourneyDuplicate>(JOURNEY_DUPLICATE)
   const { enqueueSnackbar } = useSnackbar()
 
   const handleDuplicateJourney = async (): Promise<void> => {
-    if (journeyId == null) return
+    if (id == null) return
 
     await journeyDuplicate({
       variables: {
-        id: journeyId
+        id
       },
       update(cache, { data }) {
         if (data?.journeyDuplicate != null) {
