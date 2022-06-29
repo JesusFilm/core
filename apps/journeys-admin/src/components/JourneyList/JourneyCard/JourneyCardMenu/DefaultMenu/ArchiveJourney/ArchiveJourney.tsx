@@ -26,7 +26,7 @@ export const JOURNEY_UNARCHIVE = gql`
   }
 `
 
-interface ArchiveJourneyProps {
+export interface ArchiveJourneyProps {
   status: JourneyStatus
   id: string
   published: boolean
