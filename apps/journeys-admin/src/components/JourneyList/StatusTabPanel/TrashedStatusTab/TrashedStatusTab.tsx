@@ -48,7 +48,7 @@ export const GET_TRASHED_JOURNEYS = gql`
   }
 `
 
-const RESTORE_TRASHED_JOURNEYS = gql`
+export const RESTORE_TRASHED_JOURNEYS = gql`
   mutation RestoreTrashedJourneys($ids: [ID!]!) {
     journeysRestore(ids: $ids) {
       id

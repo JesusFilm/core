@@ -34,6 +34,7 @@ const noJourneysMock = {
     }
   }
 }
+
 describe('ActiveStatusTab', () => {
   it('should render journeys in descending createdAt date by default', async () => {
     const { getAllByLabelText } = render(
@@ -106,7 +107,7 @@ describe('ActiveStatusTab', () => {
     await waitFor(() => expect(onLoad).toHaveBeenCalled())
   })
 
-  describe('Archive All', () => {
+  describe('Unarchive All', () => {
     it('should display the unarchive all dialog', () => {
       const { getByText } = render(
         <MockedProvider mocks={[archivedJourneysMock]}>

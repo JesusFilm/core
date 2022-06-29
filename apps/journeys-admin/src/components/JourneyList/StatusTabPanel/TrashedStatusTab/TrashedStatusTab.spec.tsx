@@ -1,11 +1,41 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { defaultJourney, oldJourney } from '../../journeyListData'
 import { ThemeProvider } from '../../../ThemeProvider'
 import { SortOrder } from '../../JourneySort'
-import { TrashedStatusTab, GET_TRASHED_JOURNEYS } from './TrashedStatusTab'
+import {
+  TrashedStatusTab,
+  GET_TRASHED_JOURNEYS,
+  RESTORE_TRASHED_JOURNEYS,
+  DELETE_TRASHED_JOURNEYS
+} from './TrashedStatusTab'
+
+const trashedJourneysMock = {
+  request: {
+    query: GET_TRASHED_JOURNEYS
+  },
+  result: {
+    data: {
+      journeys: [
+        { ...defaultJourney, trashedAt: '2021-12-07T03:22:41.135Z' },
+        { ...oldJourney, trashedAt: '2021-12-07T03:22:41.135Z' }
+      ]
+    }
+  }
+}
+
+const noJourneysMock = {
+  request: {
+    query: GET_TRASHED_JOURNEYS
+  },
+  result: {
+    data: {
+      journeys: []
+    }
+  }
+}
 
 describe('ActiveStatusTab', () => {
   beforeAll(() => {
@@ -15,23 +45,7 @@ describe('ActiveStatusTab', () => {
 
   it('should render journeys in descending createdAt date by default', async () => {
     const { getAllByLabelText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_TRASHED_JOURNEYS
-            },
-            result: {
-              data: {
-                journeys: [
-                  { ...defaultJourney, trashedAt: '2021-12-07T03:22:41.135Z' },
-                  { ...oldJourney, trashedAt: '2021-12-07T03:22:41.135Z' }
-                ]
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider mocks={[trashedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
             <TrashedStatusTab onLoad={noop} />
@@ -52,23 +66,7 @@ describe('ActiveStatusTab', () => {
 
   it('should order journeys in alphabetical order', async () => {
     const { getAllByLabelText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_TRASHED_JOURNEYS
-            },
-            result: {
-              data: {
-                journeys: [
-                  { ...defaultJourney, trashedAt: '2021-12-07T03:22:41.135Z' },
-                  { ...oldJourney, trashedAt: '2021-12-07T03:22:41.135Z' }
-                ]
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider mocks={[trashedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
             <TrashedStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
@@ -140,20 +138,7 @@ describe('ActiveStatusTab', () => {
   it('should call onLoad when query is loaded', async () => {
     const onLoad = jest.fn()
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_TRASHED_JOURNEYS
-            },
-            result: {
-              data: {
-                journeys: []
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider mocks={[noJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
             <TrashedStatusTab onLoad={onLoad} />
@@ -162,5 +147,97 @@ describe('ActiveStatusTab', () => {
       </MockedProvider>
     )
     await waitFor(() => expect(onLoad).toHaveBeenCalled())
+  })
+
+  describe('Restore All', () => {
+    it('should display the restore all dialog', () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[trashedJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedStatusTab onLoad={noop} event="restoreAllTrashed" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      expect(getByText('Restore Journeys')).toBeInTheDocument()
+    })
+
+    it('should restore all journeys', async () => {
+      const result = jest.fn(() => ({
+        data: [{ id: defaultJourney.id, status: 'published' }]
+      }))
+      const archiveJourneysMock = {
+        request: {
+          query: RESTORE_TRASHED_JOURNEYS,
+          variables: {
+            ids: [defaultJourney.id, oldJourney.id]
+          }
+        },
+        result
+      }
+      const onLoad = jest.fn()
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[trashedJourneysMock, archiveJourneysMock, noJourneysMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedStatusTab onLoad={onLoad} event="restoreAllTrashed" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      fireEvent.click(getByText('Restore'))
+      await waitFor(() => expect(result).toHaveBeenCalled())
+    })
+  })
+
+  describe('Delete All', () => {
+    it('should display the delete all dialog', () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[trashedJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedStatusTab onLoad={noop} event="deleteAllTrashed" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      expect(getByText('Delete Journeys Forever')).toBeInTheDocument()
+    })
+
+    it('should trash all journeys', async () => {
+      const result = jest.fn(() => ({
+        data: [{ id: defaultJourney.id, status: 'deleted' }]
+      }))
+      const trashJourneysMock = {
+        request: {
+          query: DELETE_TRASHED_JOURNEYS,
+          variables: {
+            ids: [defaultJourney.id, oldJourney.id]
+          }
+        },
+        result
+      }
+      const onLoad = jest.fn()
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[trashedJourneysMock, trashJourneysMock, noJourneysMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedStatusTab onLoad={onLoad} event="deleteAllTrashed" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      fireEvent.click(getByText('Delete Forever'))
+      await waitFor(() => expect(result).toHaveBeenCalled())
+    })
   })
 })
