@@ -11,11 +11,13 @@ describe('ArchiveJourney', () => {
   it('should archive journey', async () => {
     const result = jest.fn(() => ({
       data: {
-        journeyArchive: {
-          id: 'journey-id',
-          __typename: 'Journey',
-          status: JourneyStatus.archived
-        }
+        journeysArchive: [
+          {
+            id: 'journey-id',
+            __typename: 'Journey',
+            status: JourneyStatus.archived
+          }
+        ]
       }
     }))
 
@@ -83,11 +85,13 @@ describe('ArchiveJourney', () => {
   it('should unarchive journey to draft', async () => {
     const result = jest.fn(() => ({
       data: {
-        journeyArchive: {
-          id: 'journey-id',
-          __typename: 'Journey',
-          status: JourneyStatus.draft
-        }
+        journeysRestore: [
+          {
+            id: 'journey-id',
+            __typename: 'Journey',
+            status: JourneyStatus.draft
+          }
+        ]
       }
     }))
 
@@ -125,11 +129,13 @@ describe('ArchiveJourney', () => {
   it('should unarchive journey to published', async () => {
     const result = jest.fn(() => ({
       data: {
-        journeyArchive: {
-          id: 'journey-id',
-          __typename: 'Journey',
-          status: JourneyStatus.published
-        }
+        journeysRestore: [
+          {
+            id: 'journey-id',
+            __typename: 'Journey',
+            status: JourneyStatus.published
+          }
+        ]
       }
     }))
 
