@@ -104,13 +104,13 @@ export function TrashedStatusTab({
                   {t('Your Trashed journeys will appear here.')}
                 </Typography>
               </Card>
-              <Box width="100%" sx={{ textAlign: 'center' }}>
-                <Typography variant="caption">
-                  {t('Trashed Journeys are moved here for up to 40 days.')}
-                </Typography>
-              </Box>
             </>
           )}
+          <Box width="100%" sx={{ textAlign: 'center' }}>
+            <Typography variant="caption">
+              {t('Trashed Journeys are moved here for up to 40 days.')}
+            </Typography>
+          </Box>
         </>
       ) : (
         <>
