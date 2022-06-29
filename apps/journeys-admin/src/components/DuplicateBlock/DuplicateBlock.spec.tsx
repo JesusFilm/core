@@ -53,7 +53,6 @@ describe('DuplicateBlock', () => {
   }
 
   const blockOrder = block?.parentOrder != null ? block.parentOrder : 0
-  const stepOrder = step?.parentOrder != null ? step.parentOrder : 0
 
   it('should duplicate a block on button click', async () => {
     const result = jest.fn(() => ({
@@ -161,7 +160,7 @@ describe('DuplicateBlock', () => {
               variables: {
                 id: step.id,
                 journeyId: 'journeyId',
-                parentOrder: stepOrder + 1
+                parentOrder: null
               }
             },
             result
@@ -206,7 +205,7 @@ describe('DuplicateBlock', () => {
               variables: {
                 id: step.id,
                 journeyId: 'journeyId',
-                parentOrder: stepOrder + 1
+                parentOrder: null
               }
             },
             result
