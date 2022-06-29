@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded'
+import Link from 'next/link'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { DynamicPowerBiReport } from '../DynamicPowerBiReport'
 
@@ -21,13 +22,15 @@ export function MultipleSummaryReport(): ReactElement {
           <Typography variant="subtitle1" sx={{ pt: 1 }}>
             Analytics
           </Typography>
-          <Button
-            size="small"
-            variant="text"
-            endIcon={<ArrowForwardIosRoundedIcon sx={{ fontSize: 1 }} />}
-          >
-            See all
-          </Button>
+          <Link href="/analytics" passHref>
+            <Button
+              size="small"
+              variant="text"
+              endIcon={<ArrowForwardIosRoundedIcon sx={{ fontSize: 1 }} />}
+            >
+              See all
+            </Button>
+          </Link>
         </Stack>
         <Box sx={{ height: '160px', pb: 8 }}>
           <DynamicPowerBiReport
