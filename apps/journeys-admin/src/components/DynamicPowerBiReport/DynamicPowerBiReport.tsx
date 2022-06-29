@@ -1,6 +1,5 @@
 import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
-import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { ReportProps } from './Report'
 
 export function DynamicPowerBiReport(props: ReportProps): ReactElement {
