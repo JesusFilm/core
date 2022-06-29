@@ -129,6 +129,13 @@ export enum JourneyStatus {
     trashed = "trashed"
 }
 
+export enum JourneysReportType {
+    multipleFull = "multipleFull",
+    multipleSummary = "multipleSummary",
+    singleFull = "singleFull",
+    singleSummary = "singleSummary"
+}
+
 export enum UserJourneyRole {
     inviteRequested = "inviteRequested",
     editor = "editor",
@@ -258,7 +265,6 @@ export class SignUpBlockUpdateInput {
 export class StepBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    parentOrder?: Nullable<number>;
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
 }
@@ -728,6 +734,15 @@ export class VideoProgressEvent implements Event {
     block?: Nullable<VideoBlock>;
 }
 
+export class PowerBiEmbed {
+    __typename?: 'PowerBiEmbed';
+    reportId: string;
+    reportName: string;
+    embedUrl: string;
+    accessToken: string;
+    expiration: string;
+}
+
 export class UserJourney {
     __typename?: 'UserJourney';
     journey?: Nullable<Journey>;
@@ -750,6 +765,8 @@ export abstract class IMutation {
     abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): LinkAction | Promise<LinkAction>;
 
     abstract blockDelete(id: string, journeyId: string, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
+
+    abstract blockDuplicate(id: string, journeyId: string, parentOrder?: Nullable<number>): Block[] | Promise<Block[]>;
 
     abstract blockOrderUpdate(id: string, journeyId: string, parentOrder: number): Block[] | Promise<Block[]>;
 
@@ -819,6 +836,8 @@ export abstract class IMutation {
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 
+    abstract journeyDuplicate(id: string): Journey | Promise<Journey>;
+
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
     abstract journeyPublish(id: string): Nullable<Journey> | Promise<Nullable<Journey>>;
@@ -851,6 +870,8 @@ export class Language {
 
 export abstract class IQuery {
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>): Journey[] | Promise<Journey[]>;
+
+    abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
 
     abstract adminJourney(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 
