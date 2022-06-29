@@ -14,7 +14,7 @@ import { ArchivedStatusTab } from '.'
 const ArchivedStatusTabStory = {
   ...journeysAdminConfig,
   component: ArchivedStatusTab,
-  title: 'Journeys-Admin/JourneyList/ActiveStatusTabPanel/ActiveStatusTab',
+  title: 'Journeys-Admin/JourneyList/ActiveStatusTabPanel/ArchivedStatusTab',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'

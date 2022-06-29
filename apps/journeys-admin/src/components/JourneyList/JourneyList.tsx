@@ -26,9 +26,11 @@ export function JourneyList({
 }: JourneysListProps): ReactElement {
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
-      {journeys != null && journeys.length > 0 && (
-        <AddJourneyButton variant="fab" />
-      )}
+      {journeys != null &&
+        journeys.length > 0 &&
+        !['archived', 'trashed'].includes(
+          (router?.query?.tab as string) ?? ''
+        ) && <AddJourneyButton variant="fab" />}
       {(journeys == null ||
         journeys.length > 0 ||
         disableCreation !== true) && (

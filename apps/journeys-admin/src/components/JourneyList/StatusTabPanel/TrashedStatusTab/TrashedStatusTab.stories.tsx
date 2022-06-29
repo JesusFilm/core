@@ -14,7 +14,7 @@ import { TrashedStatusTab } from '.'
 const TrashedStatusTabStory = {
   ...journeysAdminConfig,
   component: TrashedStatusTab,
-  title: 'Journeys-Admin/JourneyList/ActiveStatusTabPanel/ActiveStatusTab',
+  title: 'Journeys-Admin/JourneyList/ActiveStatusTabPanel/TrashedStatusTab',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
