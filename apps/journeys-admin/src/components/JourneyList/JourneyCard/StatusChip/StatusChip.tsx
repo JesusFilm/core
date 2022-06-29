@@ -7,7 +7,7 @@ import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
 import Typography from '@mui/material/Typography'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
-interface StatusChipProps {
+export interface StatusChipProps {
   status: JourneyStatus
 }
 
