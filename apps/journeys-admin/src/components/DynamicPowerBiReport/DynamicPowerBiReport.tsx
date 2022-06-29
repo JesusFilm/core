@@ -1,14 +1,9 @@
 import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
-import { ReportProps } from './Report/Report'
+import { ReportProps } from './Report'
 
-interface DynamicPowerBiReportProps {
-  reportType: JourneysReportType
-}
-export function DynamicPowerBiReport({
-  reportType
-}: DynamicPowerBiReportProps): ReactElement {
+export function DynamicPowerBiReport(props: ReportProps): ReactElement {
   // PowerBI needs dynamic import
   // See issue: https://github.com/microsoft/powerbi-client-react/issues/65
   const Report = dynamic<ReportProps>(
@@ -20,5 +15,5 @@ export function DynamicPowerBiReport({
     { ssr: false }
   )
 
-  return <Report reportType={reportType} />
+  return <Report {...props} />
 }
