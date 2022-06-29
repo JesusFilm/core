@@ -44,6 +44,7 @@ describe('JourneyResolver', () => {
 
   let resolver: JourneyResolver,
     service: JourneyService,
+    bService: BlockService,
     ujService: UserJourneyService
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
@@ -89,7 +90,7 @@ describe('JourneyResolver', () => {
     id: 'blockId',
     journeyId: 'journeyId',
     __typename: 'ImageBlock',
-    parentBlockId: null,
+    parentBlockId: 'stepId',
     parentOrder: 0,
     src: 'https://source.unsplash.com/random/1920x1080',
     alt: 'random image from unsplash',
@@ -121,6 +122,21 @@ describe('JourneyResolver', () => {
     userId: 'invitedUserId',
     journeyId: 'journeyId',
     role: UserJourneyRole.inviteRequested
+  }
+
+  const stepBlock = {
+    id: 'stepId',
+    journeyId: 'journeyId',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    nextBlockId: null
+  }
+
+  const duplicatedStep = {
+    ...stepBlock,
+    id: 'duplicateStepId',
+    journeyId: 'duplicateJourneyId'
   }
 
   const journeyService = {
@@ -157,6 +173,7 @@ describe('JourneyResolver', () => {
         }
       }),
       getAllByOwnerEditor: jest.fn(() => [journey, journey]),
+      getAllByTitle: jest.fn(() => [journey]),
       save: jest.fn((input) => input),
       update: jest.fn(() => journey),
       updateAll: jest.fn(() => [journey, draftJourney])
@@ -167,7 +184,10 @@ describe('JourneyResolver', () => {
     provide: BlockService,
     useFactory: () => ({
       forJourney: jest.fn(() => [block]),
-      get: jest.fn(() => block)
+      get: jest.fn(() => block),
+      getBlocksByType: jest.fn(() => [stepBlock]),
+      getDuplicateChildren: jest.fn(() => [duplicatedStep]),
+      saveAll: jest.fn(() => [duplicatedStep])
     })
   }
 
@@ -197,6 +217,7 @@ describe('JourneyResolver', () => {
     resolver = module.get<JourneyResolver>(JourneyResolver)
     service = module.get<JourneyService>(JourneyService)
     ujService = module.get<UserJourneyService>(UserJourneyService)
+    bService = module.get<BlockService>(BlockService)
   })
 
   describe('adminJourneysEmbed', () => {
@@ -555,6 +576,74 @@ describe('JourneyResolver', () => {
     })
   })
 
+  describe('journeyDuplicate', () => {
+    it('duplicates a Journey', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
+        ...journey,
+        id: 'duplicateJourneyId',
+        createdAt: new Date().toISOString(),
+        status: JourneyStatus.draft,
+        publishedAt: undefined,
+        slug: `${journey.title}-copy`,
+        title: `${journey.title} copy`
+      })
+    })
+
+    it('duplicates a UserJourney', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      await resolver.journeyDuplicate('journeyId', 'userId')
+      expect(ujService.save).toHaveBeenCalledWith({
+        userId: 'userId',
+        journeyId: 'duplicateJourneyId',
+        role: UserJourneyRole.owner
+      })
+    })
+
+    it('duplicates blocks in journey', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      mockUuidv4.mockReturnValueOnce('duplicateStepId')
+      const duplicateStepIds = new Map([[stepBlock.id, duplicatedStep.id]])
+      await resolver.journeyDuplicate('journeyId', 'userId')
+      expect(bService.getDuplicateChildren).toHaveBeenCalledWith(
+        [stepBlock],
+        'journeyId',
+        null,
+        duplicateStepIds,
+        'duplicateJourneyId',
+        duplicateStepIds
+      )
+      expect(bService.saveAll).toHaveBeenCalledWith([duplicatedStep])
+    })
+
+    it('increments copy number on title if multiple duplicates exist', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId2')
+      const mockGetAllByTitle = service.getAllByTitle as jest.MockedFunction<
+        typeof service.getAllByTitle
+      >
+      mockGetAllByTitle.mockImplementationOnce(
+        async () => await Promise.resolve([journey, journey])
+      )
+      expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
+        ...journey,
+        id: 'duplicateJourneyId2',
+        createdAt: new Date().toISOString(),
+        status: JourneyStatus.draft,
+        publishedAt: undefined,
+        slug: `${journey.title}-copy-2`,
+        title: `${journey.title} copy 2`
+      })
+    })
+
+    it('throws error and does not get stuck in retry loop', async () => {
+      const mockSave = service.save as jest.MockedFunction<typeof service.save>
+      mockSave.mockRejectedValueOnce(new Error('database error'))
+      await expect(
+        resolver.journeyDuplicate('journeyId', 'userId')
+      ).rejects.toThrow('database error')
+    })
+  })
+
   describe('journeyUpdate', () => {
     it('updates a Journey', async () => {
       await resolver.journeyUpdate('1', journeyUpdate)
@@ -605,12 +694,12 @@ describe('JourneyResolver', () => {
       await resolver.journeysArchive('1', [journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
-          id: journey.id,
+          _key: journey.id,
           status: JourneyStatus.archived,
           archivedAt: date
         },
         {
-          id: draftJourney.id,
+          _key: draftJourney.id,
           status: JourneyStatus.archived,
           archivedAt: date
         }
@@ -625,12 +714,12 @@ describe('JourneyResolver', () => {
       await resolver.journeysTrash('1', [journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
-          id: journey.id,
+          _key: journey.id,
           status: JourneyStatus.trashed,
           trashedAt: date
         },
         {
-          id: draftJourney.id,
+          _key: draftJourney.id,
           status: JourneyStatus.trashed,
           trashedAt: date
         }
@@ -645,12 +734,12 @@ describe('JourneyResolver', () => {
       await resolver.journeysDelete('1', [journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
-          id: journey.id,
+          _key: journey.id,
           status: JourneyStatus.deleted,
           deletedAt: date
         },
         {
-          id: draftJourney.id,
+          _key: draftJourney.id,
           status: JourneyStatus.deleted,
           deletedAt: date
         }
@@ -663,7 +752,7 @@ describe('JourneyResolver', () => {
       await resolver.journeysRestore('1', [trashedJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
-          id: trashedJourney.id,
+          _key: trashedJourney.id,
           status: JourneyStatus.published
         }
       ])
@@ -673,7 +762,7 @@ describe('JourneyResolver', () => {
       await resolver.journeysRestore('1', [trashedDraftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
-          id: trashedDraftJourney.id,
+          _key: trashedDraftJourney.id,
           status: JourneyStatus.draft
         }
       ])

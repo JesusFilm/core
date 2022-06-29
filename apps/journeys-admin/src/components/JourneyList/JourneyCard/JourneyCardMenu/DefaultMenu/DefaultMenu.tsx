@@ -30,7 +30,7 @@ export function DefaultMenu({
 }: DefaultMenuProps): ReactElement {
   return (
     <>
-      <Link href={`/journeys/${slug}`} passHref>
+      <Link href={`/journeys/${journeyId}`} passHref>
         <MenuItem
           icon={<EditIcon color="secondary" />}
           text="Edit"

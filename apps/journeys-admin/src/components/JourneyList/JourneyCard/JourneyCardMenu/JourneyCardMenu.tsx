@@ -11,17 +11,17 @@ import { DefaultMenu } from './DefaultMenu'
 import { TrashMenu } from './TrashMenu'
 
 export interface JourneyCardMenuProps {
+  id: string
   status: JourneyStatus
   slug: string
-  journeyId: string
   published: boolean
   forceMenu?: boolean
 }
 
 export function JourneyCardMenu({
+  id,
   status,
   slug,
-  journeyId,
   published,
   forceMenu // this is only used for storybook snapshots
 }: JourneyCardMenuProps): ReactElement {
@@ -70,7 +70,7 @@ export function JourneyCardMenu({
           <DefaultMenu
             status={status}
             slug={slug}
-            journeyId={journeyId}
+            journeyId={id}
             published={published}
             setOpenAccessDialog={() => setOpenAccessDialog(true)}
             handleCloseMenu={handleCloseMenu}
@@ -80,23 +80,23 @@ export function JourneyCardMenu({
       </Menu>
 
       <AccessDialog
-        journeySlug={slug}
+        journeyId={id}
         open={openAccessDialog}
         onClose={() => setOpenAccessDialog(false)}
       />
       <TrashJourneyDialog
-        id={journeyId}
+        id={id}
         open={openTrashDialog}
         handleClose={() => setOpenTrashDialog(false)}
       />
       <RestoreJourneyDialog
-        id={journeyId}
+        id={id}
         published={published}
         open={openRestoreDialog}
         handleClose={() => setOpenRestoreDialog(false)}
       />
       <DeleteJourneyDialog
-        id={journeyId}
+        id={id}
         open={openDeleteDialog}
         handleClose={() => setOpenDeleteDialog(false)}
       />

@@ -92,6 +92,6 @@ describe('JourneyCard', () => {
 
     expect(
       getByText('Default Journey Heading').parentElement?.parentElement
-    ).toHaveAttribute('href', '/journeys/default')
+    ).toHaveAttribute('href', '/journeys/journey-id')
   })
 })

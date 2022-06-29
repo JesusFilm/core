@@ -12,10 +12,10 @@ describe('JourneyCardMenu', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
+              id="journeyId"
               status={JourneyStatus.published}
               slug={'published-journey'}
               published={true}
-              journeyId={'journey-id'}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -46,10 +46,10 @@ describe('JourneyCardMenu', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
+              id="journeyId"
               status={JourneyStatus.trashed}
-              slug={'published-journey'}
-              published={true}
-              journeyId={'journey-id'}
+              slug={'trashed-journey'}
+              published={false}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -79,10 +79,10 @@ describe('JourneyCardMenu', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
+              id="journeyId"
               status={JourneyStatus.draft}
               slug={'draft-journey'}
               published={false}
-              journeyId={'journey-id'}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -104,10 +104,10 @@ describe('JourneyCardMenu', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
+              id="journeyId"
               status={JourneyStatus.draft}
               slug={'draft-journey'}
               published={false}
-              journeyId={'journey-id'}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -129,10 +129,10 @@ describe('JourneyCardMenu', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
+              id="journeyId"
               status={JourneyStatus.trashed}
               slug={'trashed-journey'}
               published={false}
-              journeyId={'journey-id'}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -154,10 +154,10 @@ describe('JourneyCardMenu', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
+              id={'journeyId'}
               status={JourneyStatus.trashed}
               slug={'trashed-journey'}
               published={false}
-              journeyId={'journey-id'}
             />
           </ThemeProvider>
         </SnackbarProvider>
