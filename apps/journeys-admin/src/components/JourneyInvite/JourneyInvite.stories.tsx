@@ -18,7 +18,7 @@ const Template: Story<JourneyInviteProps> = ({ ...args }) => {
           request: {
             query: USER_JOURNEY_REQUEST,
             variables: {
-              journeyId: 'journeySlug'
+              journeyId: 'journeyId'
             }
           },
           result: {
@@ -39,12 +39,12 @@ const Template: Story<JourneyInviteProps> = ({ ...args }) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  journeySlug: 'journeySlug'
+  journeyId: 'journeyId'
 }
 
 export const Sent = Template.bind({})
 Sent.args = {
-  journeySlug: 'journeySlug',
+  journeyId: 'journeyId',
   requestReceived: true
 }
 

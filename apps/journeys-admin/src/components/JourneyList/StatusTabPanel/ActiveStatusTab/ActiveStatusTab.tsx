@@ -162,7 +162,6 @@ export function ActiveStatusTab({
     <>
       {journeys != null ? (
         <>
-          {/* Cant test the filter until the more statuses are added */}
           {sortedJourneys.map((journey) => (
             <JourneyCard key={journey.id} journey={journey} />
           ))}

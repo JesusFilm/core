@@ -177,7 +177,6 @@ export function StatusTabPanel({
         </Card>
 
         {/* test for active tab to enforce refresh and journey id list */}
-
         {activeTab === 0 && (
           <TabPanel
             name="active-status-panel"
