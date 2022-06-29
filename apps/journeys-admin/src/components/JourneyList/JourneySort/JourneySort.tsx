@@ -32,12 +32,14 @@ interface JourneySortProps {
   sortOrder?: SortOrder
   onChange: (value: SortOrder) => void
   open?: boolean // for testing
+  disabled?: boolean
 }
 
 export function JourneySort({
   sortOrder,
   onChange: handleChange,
-  open
+  open,
+  disabled
 }: JourneySortProps): ReactElement {
   const [showSortOrder, setShowSortOrder] = useState(open ?? false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -116,6 +118,7 @@ export function JourneySort({
           borderColor: 'divider',
           color: 'secondar.light'
         }}
+        disabled={disabled != null && disabled}
       />
       {breakpoints.md ? (
         <Popover

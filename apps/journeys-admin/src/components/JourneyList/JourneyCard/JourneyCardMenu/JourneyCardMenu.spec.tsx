@@ -12,8 +12,9 @@ describe('JourneyCardMenu', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
+              id="journeyId"
               status={JourneyStatus.published}
-              slug={'published-journey'}
+              slug="published-journey"
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -38,8 +39,9 @@ describe('JourneyCardMenu', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
+              id="journeyId"
               status={JourneyStatus.published}
-              slug={'published-journey'}
+              slug="published-journey"
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -48,7 +50,7 @@ describe('JourneyCardMenu', () => {
     fireEvent.click(getByRole('button'))
     expect(getByRole('menuitem', { name: 'Edit' })).toHaveAttribute(
       'href',
-      '/journeys/published-journey'
+      '/journeys/journeyId'
     )
   })
   it('should handle preview', () => {
@@ -57,8 +59,9 @@ describe('JourneyCardMenu', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
+              id="journeyId"
               status={JourneyStatus.published}
-              slug={'published-journey'}
+              slug="published-journey"
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -81,8 +84,9 @@ describe('JourneyCardMenu', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
+              id="journeyId"
               status={JourneyStatus.draft}
-              slug={'draft-journey'}
+              slug="draft-journey"
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -100,8 +104,9 @@ describe('JourneyCardMenu', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
+              id="journeyId"
               status={JourneyStatus.draft}
-              slug={'draft-journey'}
+              slug="draft-journey"
             />
           </ThemeProvider>
         </SnackbarProvider>

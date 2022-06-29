@@ -29,7 +29,7 @@ const Template: Story<AccessAvatarsProps> = ({ ...args }) => (
         request: {
           query: GET_JOURNEY_WITH_USER_JOURNEYS,
           variables: {
-            id: 'journeySlug'
+            id: 'journeyId'
           }
         },
         result: {
@@ -97,27 +97,27 @@ const Template: Story<AccessAvatarsProps> = ({ ...args }) => (
 
 export const Default: Story<AccessAvatarsProps> = Template.bind({})
 Default.args = {
-  journeySlug: 'journeySlug',
+  journeyId: 'journeyId',
   userJourneys: [userJourney1, userJourney2, userJourney3]
 }
 
 export const Medium: Story<AccessAvatarsProps> = Template.bind({})
 Medium.args = {
-  journeySlug: 'journeySlug',
+  journeyId: 'journeyId',
   userJourneys: [userJourney1, userJourney2, userJourney3],
   size: 'medium'
 }
 
 export const Large: Story<AccessAvatarsProps> = Template.bind({})
 Large.args = {
-  journeySlug: 'journeySlug',
+  journeyId: 'journeyId',
   userJourneys: [userJourney1, userJourney2, userJourney3],
   size: 'large'
 }
 
 export const Overflow: Story<AccessAvatarsProps> = Template.bind({})
 Overflow.args = {
-  journeySlug: 'journeySlug',
+  journeyId: 'journeyId',
   userJourneys: [
     userJourney1,
     userJourney2,
@@ -130,7 +130,7 @@ Overflow.args = {
 
 export const NoImage: Story<AccessAvatarsProps> = Template.bind({})
 NoImage.args = {
-  journeySlug: 'journeySlug',
+  journeyId: 'journeyId',
   userJourneys: [
     { ...userJourney1, user: { ...userJourney1.user, imageUrl: null } },
     { ...userJourney2, user: { ...userJourney2.user, imageUrl: null } },
@@ -140,7 +140,7 @@ NoImage.args = {
 
 export const Loading: Story<AccessAvatarsProps> = Template.bind({})
 Loading.args = {
-  journeySlug: undefined,
+  journeyId: undefined,
   userJourneys: undefined
 }
 
