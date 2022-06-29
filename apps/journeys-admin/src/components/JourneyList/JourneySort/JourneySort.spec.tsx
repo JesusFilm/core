@@ -2,9 +2,9 @@ import { render, fireEvent } from '@testing-library/react'
 import { useState, ReactElement } from 'react'
 import { SortOrder, JourneySort } from '.'
 
-export const JourneySortMock = (): ReactElement => {
+export const JourneySortMock = ({ ...args }): ReactElement => {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
-  return <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
+  return <JourneySort sortOrder={sortOrder} onChange={setSortOrder} {...args} />
 }
 
 describe('JourneyList/JourneySort', () => {
@@ -44,5 +44,13 @@ describe('JourneyList/JourneySort', () => {
     fireEvent.click(getByText('Cancel'))
 
     expect(button).toBeInTheDocument()
+  })
+
+  it('should be disabled', () => {
+    const { getByRole } = render(<JourneySortMock disabled={true} />)
+    expect(getByRole('button', { name: 'Sort By' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
   })
 })

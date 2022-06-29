@@ -40,10 +40,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
       }}
     >
       <>
-        <Link
-          href={journey != null ? `/journeys/${journey.slug}` : ''}
-          passHref
-        >
+        <Link href={journey != null ? `/journeys/${journey.id}` : ''} passHref>
           <CardActionArea>
             <CardContent
               sx={{
@@ -98,7 +95,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
           <Grid container spacing={2} display="flex" alignItems="center">
             <Grid item>
               <AccessAvatars
-                journeySlug={journey?.slug}
+                journeyId={journey?.id}
                 userJourneys={journey?.userJourneys ?? undefined}
               />
             </Grid>
@@ -148,7 +145,11 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
             </Grid>
           </Grid>
           {journey != null ? (
-            <JourneyCardMenu status={journey.status} slug={journey.slug} />
+            <JourneyCardMenu
+              id={journey.id}
+              status={journey.status}
+              slug={journey.slug}
+            />
           ) : (
             <IconButton disabled>
               <MoreVertIcon />
