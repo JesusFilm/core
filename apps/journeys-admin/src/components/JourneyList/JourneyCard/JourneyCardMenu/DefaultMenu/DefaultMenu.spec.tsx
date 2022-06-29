@@ -29,7 +29,7 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument()
   })
 
-  it('should call correct functions Access click', () => {
+  it('should call correct functions on Access click', () => {
     const setOpenAccessDialog = jest.fn()
     const handleCloseMenu = jest.fn()
 
@@ -103,7 +103,7 @@ describe('DefaultMenu', () => {
     )
   })
 
-  it('should call correct functions Delete click', () => {
+  it('should call correct functions on Delete click', () => {
     const handleCloseMenu = jest.fn()
     const setOpenTrashDialog = jest.fn()
 
