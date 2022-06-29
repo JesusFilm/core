@@ -8,13 +8,9 @@ import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import Typography from '@mui/material/Typography'
-import { SxProps } from '@mui/system/styleFunctionSx'
-import { Theme } from '@mui/material/styles'
 import { useSnackbar } from 'notistack'
 import { gql, useMutation } from '@apollo/client'
 import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
-import { JourneyDuplicate } from '../../../__generated__/JourneyDuplicate'
 import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
@@ -22,8 +18,6 @@ import {
 
 interface DuplicateBlockProps {
   variant: 'button' | 'list-item'
-  sx?: SxProps<Theme>
-  journeyId?: string
 }
 
 export const BLOCK_DUPLICATE = gql`
@@ -34,21 +28,8 @@ export const BLOCK_DUPLICATE = gql`
   }
 `
 
-export const JOURNEY_DUPLICATE = gql`
-  mutation JourneyDuplicate($id: ID!) {
-    journeyDuplicate(id: $id) {
-      id
-    }
-  }
-`
-
-export function DuplicateBlock({
-  variant,
-  sx,
-  journeyId
-}: DuplicateBlockProps): ReactElement {
+export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
-  const [journeyDuplicate] = useMutation<JourneyDuplicate>(JOURNEY_DUPLICATE)
 
   const {
     state: { selectedBlock },
@@ -58,7 +39,6 @@ export function DuplicateBlock({
   const { journey } = useJourney()
   const blockLabel =
     selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
-  const label = journeyId != null ? 'Journey' : blockLabel
 
   const handleDuplicateBlock = async (): Promise<void> => {
     if (selectedBlock != null && journey != null) {
@@ -123,43 +103,7 @@ export function DuplicateBlock({
         })
       }
     }
-  }
-
-  const handleDuplicateJourney = async (): Promise<void> => {
-    await journeyDuplicate({
-      variables: {
-        id: journeyId
-      },
-      update(cache, { data }) {
-        if (data?.journeyDuplicate != null) {
-          cache.modify({
-            fields: {
-              adminJourneys(existingAdminJourneyRefs = []) {
-                const duplicatedJourneyRef = cache.writeFragment({
-                  data: data.journeyDuplicate,
-                  fragment: gql`
-                    fragment DuplicatedJourney on Journey {
-                      id
-                    }
-                  `
-                })
-                return [...existingAdminJourneyRefs, duplicatedJourneyRef]
-              }
-            }
-          })
-        }
-      }
-    })
-  }
-
-  const handleDuplicate = async (): Promise<void> => {
-    if (journeyId != null) {
-      await handleDuplicateJourney()
-    } else {
-      await handleDuplicateBlock()
-    }
-
-    enqueueSnackbar(`${label} Duplicated`, {
+    enqueueSnackbar(`${blockLabel} Duplicated`, {
       variant: 'success',
       preventDuplicate: true
     })
@@ -169,28 +113,18 @@ export function DuplicateBlock({
     <>
       {variant === 'button' ? (
         <IconButton
-          id={`duplicate - ${label} -actions`}
-          aria-label={`Duplicate ${label} Actions`}
-          onClick={handleDuplicate}
+          id={`duplicate-${blockLabel}-actions`}
+          aria-label={`Duplicate ${blockLabel} Actions`}
+          onClick={handleDuplicateBlock}
         >
           <ContentCopyRounded />
         </IconButton>
       ) : (
-        <MenuItem onClick={handleDuplicate} sx={{ ...sx }}>
+        <MenuItem onClick={handleDuplicateBlock}>
           <ListItemIcon>
-            <ContentCopyRounded
-              color={journeyId != null ? 'secondary' : 'inherit'}
-            />
+            <ContentCopyRounded color="inherit" />
           </ListItemIcon>
-          <ListItemText>
-            {journeyId != null ? (
-              <Typography variant="body1" sx={{ pl: 2 }}>
-                Duplicate
-              </Typography>
-            ) : (
-              `Duplicate ${blockLabel} `
-            )}
-          </ListItemText>
+          <ListItemText>Duplicate {blockLabel}</ListItemText>
         </MenuItem>
       )}
     </>
