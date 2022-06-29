@@ -14,7 +14,11 @@ import {
   TypographyAlign,
   TypographyColor
 } from '../../../__generated__/globalTypes'
-import { DuplicateBlock, BLOCK_DUPLICATE } from './DuplicateBlock'
+import {
+  DuplicateBlock,
+  BLOCK_DUPLICATE,
+  JOURNEY_DUPLICATE
+} from './DuplicateBlock'
 
 describe('DuplicateBlock', () => {
   const block: TreeBlock<TypographyBlock> = {
@@ -228,6 +232,46 @@ describe('DuplicateBlock', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('menuitem', { name: 'Duplicate Card' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should duplicate a journey on menu card click', async () => {
+    const result = jest.fn(() => {
+      return {
+        data: {
+          journeyDuplicate: {
+            id: 'duplicatedJourneyId'
+          }
+        }
+      }
+    })
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_DUPLICATE,
+              variables: {
+                id: 'journeyId'
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <DuplicateBlock variant="list-item" journeyId="journeyId" />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

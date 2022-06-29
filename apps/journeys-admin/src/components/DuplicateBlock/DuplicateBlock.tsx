@@ -14,6 +14,7 @@ import { Theme } from '@mui/material/styles'
 import { useSnackbar } from 'notistack'
 import { gql, useMutation } from '@apollo/client'
 import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
+import { JourneyDuplicate } from '../../../__generated__/JourneyDuplicate'
 import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
@@ -33,12 +34,21 @@ export const BLOCK_DUPLICATE = gql`
   }
 `
 
+export const JOURNEY_DUPLICATE = gql`
+  mutation JourneyDuplicate($id: ID!) {
+    journeyDuplicate(id: $id) {
+      id
+    }
+  }
+`
+
 export function DuplicateBlock({
   variant,
   sx,
   journeyId
 }: DuplicateBlockProps): ReactElement {
   const [blockDuplicate] = useMutation<BlockDuplicate>(BLOCK_DUPLICATE)
+  const [journeyDuplicate] = useMutation<JourneyDuplicate>(JOURNEY_DUPLICATE)
 
   const {
     state: { selectedBlock },
@@ -116,7 +126,30 @@ export function DuplicateBlock({
   }
 
   const handleDuplicateJourney = async (): Promise<void> => {
-    alert('Duplicate journey')
+    await journeyDuplicate({
+      variables: {
+        id: journeyId
+      },
+      update(cache, { data }) {
+        if (data?.journeyDuplicate != null) {
+          cache.modify({
+            fields: {
+              adminJourneys(existingAdminJourneyRefs = []) {
+                const duplicatedJourneyRef = cache.writeFragment({
+                  data: data.journeyDuplicate,
+                  fragment: gql`
+                    fragment DuplicatedJourney on Journey {
+                      id
+                    }
+                  `
+                })
+                return [...existingAdminJourneyRefs, duplicatedJourneyRef]
+              }
+            }
+          })
+        }
+      }
+    })
   }
 
   const handleDuplicate = async (): Promise<void> => {
@@ -136,14 +169,14 @@ export function DuplicateBlock({
     <>
       {variant === 'button' ? (
         <IconButton
-          id={`duplicate-${label}-actions`}
+          id={`duplicate - ${label} -actions`}
           aria-label={`Duplicate ${label} Actions`}
           onClick={handleDuplicate}
         >
           <ContentCopyRounded />
         </IconButton>
       ) : (
-        <MenuItem onClick={handleDuplicateBlock} sx={{ ...sx }}>
+        <MenuItem onClick={handleDuplicate} sx={{ ...sx }}>
           <ListItemIcon>
             <ContentCopyRounded
               color={journeyId != null ? 'secondary' : 'inherit'}
@@ -155,7 +188,7 @@ export function DuplicateBlock({
                 Duplicate
               </Typography>
             ) : (
-              `Duplicate ${blockLabel}`
+              `Duplicate ${blockLabel} `
             )}
           </ListItemText>
         </MenuItem>
