@@ -2,6 +2,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { NextRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
 import {
   defaultJourney,
   oldJourney,
@@ -40,9 +41,11 @@ describe('StatusTabPanel', () => {
           }
         ]}
       >
-        <ThemeProvider>
-          <StatusTabPanel />
-        </ThemeProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <StatusTabPanel />
+          </ThemeProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() =>
