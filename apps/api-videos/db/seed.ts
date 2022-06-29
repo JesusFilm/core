@@ -1,8 +1,92 @@
 import { aql } from 'arangojs'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
+import Crowdin, { Credentials } from '@crowdin/crowdin-api-client'
+import { parse, ParseResult } from 'papaparse'
+import { isEmpty, map } from 'lodash'
+
 import { VideoType } from '../src/app/__generated__/graphql'
 import { ArangoDB } from './db'
+
+// crowdin credentials
+const credentials: Credentials = {
+  token: process.env.CROWDIN_API_KEY ?? ''
+}
+
+const { translationsApi } = new Crowdin(credentials)
+
+const translationProjectId = 47654
+
+// from listTranslationFiles
+const translationIds = {
+  collectionTitles: 31,
+  collectionDescriptions: 33,
+  titles: 34,
+  longDescriptions: 35,
+  // bibleBooks: 36,
+  studyQuestions: 37
+}
+
+// hardcoded due to data inconsistencies. from getTranslationLanguages & languages collection
+const languageIds = {
+  en: '529',
+  fr: '496',
+  ar: '22658',
+  de: '1106',
+  he: '6930',
+  it: '4415',
+  ja: '7083',
+  ko: '3804',
+  ru: '3934',
+  tr: '1942',
+  'zh-CN': '21754', // zh-hans
+  'zh-TW': '21753', // zh-hant
+  'ur-PK': '407', // ur
+  vi: '3887',
+  'pt-BR': '584', // pt
+  id: '16639',
+  fa: '6788',
+  'es-MX': '21028', // es
+  th: '13169',
+  hi: '6464'
+  // no obvious value available for ne-NP
+}
+
+let languages,
+  existingSlugsById: Array<{ _key: string; slugs: string[] }>,
+  usedSlugs: string[]
+const translations = {}
+
+// Leaving commented code to find data later
+
+// async function getTranslationLanguages(projectId): Promise<string[]> {
+//   const response = await projectsGroupsApi.getProject(projectId)
+//   return response?.data?.targetLanguageIds
+// }
+
+// async function listTranslationFiles() {
+//   const result = await sourceFilesApi.listProjectFiles(translationProjectId)
+//   console.log(result.data)
+// }
+
+// Download translations
+async function downloadTranslations(
+  projectId,
+  fileId,
+  language
+): Promise<ParseResult<unknown>> {
+  const downloadLink = await translationsApi.buildProjectFileTranslation(
+    projectId,
+    fileId,
+    {
+      targetLanguageId: language
+    }
+  )
+  const response = await fetch(downloadLink.data.url)
+  const translations = await response.text()
+  const json = parse(translations, { header: true })
+  return json
+}
 
 interface Video {
   _key: string
@@ -144,37 +228,111 @@ async function getMediaComponentLanguage(
   return response._embedded.mediaComponentLanguage
 }
 
-const usedTitles: string[] = []
-function getIteration(slug: string, collection: string[]): string {
-  const exists = collection.find((t) => t === slug)
+function getIteration(slug: string): string {
+  const exists = usedSlugs.find((t) => t === slug)
   if (exists != null && slug !== '') {
     const regex = slug.match(/^(.*?)-(\d+)$/)
     const iteration = parseInt(regex?.[2] ?? '1') + 1
     const title = regex?.[1] ?? slug
     const value = `${title}-${iteration}`
-    return getIteration(value, collection)
+    return getIteration(value)
   }
   return slug
 }
 
-function getSeoSlug(title: string, collection: string[]): string {
-  const slug = slugify(title, { lower: true, remove: /[^a-zA-Z\d\s:]/g })
-  const newSlug = getIteration(slug, collection)
-  collection.push(newSlug)
+function getSeoSlugs(
+  _key: string,
+  existingSlugs: Translation[] = [],
+  titles: Translation[]
+): Translation[] {
+  titles.forEach((t) => {
+    const slug = getSlug(t.value)
+    const existing = existingSlugsById.find((s) => s._key === _key)
+    if (existing?.slugs?.includes(slug) ?? false) return
+
+    const newSlug = getNewSlug(t.value)
+    if (isEmpty(newSlug)) return
+
+    if (existing != null) existing.slugs.push(newSlug)
+    else existingSlugsById.push({ _key: _key, slugs: [newSlug] })
+
+    existingSlugs.push({
+      value: newSlug,
+      languageId: t.languageId,
+      primary: t.primary
+    })
+  })
+  return existingSlugs
+}
+
+function getSlug(title: string): string {
+  return slugify(title, { lower: true, remove: /[^a-zA-Z\d\s:]/g })
+}
+
+function getNewSlug(title: string): string {
+  const slug = getSlug(title)
+  const newSlug = getIteration(slug)
+  usedSlugs.push(newSlug)
   return newSlug
 }
-async function digestContent(
-  languages: Language[],
-  mediaComponent: MediaComponent
-): Promise<void> {
-  const video = await getVideo(mediaComponent.mediaComponentId)
-  if (video?.slug != null)
-    video.slug.forEach((title) => usedTitles.push(title.value))
 
-  const metadataLanguageId =
-    languages
-      .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
-      ?.languageId.toString() ?? '529' // english by default
+function getLanguageIdFromBcp(language: string): string {
+  return (
+    languages.find(({ bcp47 }) => bcp47 === language)?.languageId.toString() ??
+    '529'
+  )
+}
+
+function getTranslationFromObject(
+  refField: string,
+  refId: string,
+  translationId: string,
+  field: string
+): Translation[] {
+  const arr: Translation[] = []
+  for (const language in languageIds) {
+    if (language === 'en') continue
+
+    const translation = translations[language]?.[translationId]?.find(
+      (t) => t[refField] === refId
+    )
+    if (translation != null && !isEmpty(translation[field]))
+      arr.push({
+        value: translation[field],
+        languageId: languageIds[language],
+        primary: false
+      })
+  }
+  return arr
+}
+
+function getTranslationForStudyQuestion(
+  refId: string,
+  english: string
+): Translation[] {
+  const arr: Translation[] = []
+  for (const language in languageIds) {
+    if (language === 'en') continue
+
+    const translation = translations[language]?.studyQuestions?.find(
+      (t) => t.media_component_id === refId && t.eng_study_question === english
+    )
+    if (translation != null && !isEmpty(translation.study_question))
+      arr.push({
+        value: translation.study_question,
+        languageId: languageIds[language],
+        primary: false
+      })
+  }
+  return arr
+}
+
+async function digestContent(mediaComponent: MediaComponent): Promise<void> {
+  const video = await getVideo(mediaComponent.mediaComponentId)
+
+  const metadataLanguageId = getLanguageIdFromBcp(
+    mediaComponent.metadataLanguageTag
+  )
 
   console.log('content:', mediaComponent.mediaComponentId)
 
@@ -186,6 +344,12 @@ async function digestContent(
       await digestMediaComponentLanguage(mediaComponentLanguage, mediaComponent)
     )
   }
+  const translatedTitles = getTranslationFromObject(
+    'eng_title',
+    mediaComponent.title,
+    'titles',
+    'title'
+  )
 
   const body = {
     type: VideoType.standalone,
@@ -195,35 +359,53 @@ async function digestContent(
         value: mediaComponent.title,
         languageId: metadataLanguageId,
         primary: true
-      }
+      },
+      ...translatedTitles
     ],
     seoTitle: [
       {
         value: mediaComponent.title,
         languageId: metadataLanguageId,
         primary: true
-      }
+      },
+      ...translatedTitles
     ],
     snippet: [
       {
         value: mediaComponent.shortDescription,
         languageId: metadataLanguageId,
         primary: true
-      }
+      },
+      ...getTranslationFromObject(
+        'eng_title',
+        mediaComponent.title,
+        'longDescriptions',
+        'short_description'
+      )
     ],
     description: [
       {
         value: mediaComponent.longDescription,
         languageId: metadataLanguageId,
         primary: true
-      }
+      },
+      ...getTranslationFromObject(
+        'eng_title',
+        mediaComponent.title,
+        'longDescriptions',
+        'long_description'
+      )
     ],
     studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => [
       {
         languageId: metadataLanguageId,
         value: studyQuestion,
         primary: true
-      }
+      },
+      ...getTranslationForStudyQuestion(
+        mediaComponent.mediaComponentId,
+        studyQuestion
+      )
     ]),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     imageAlt: [
@@ -234,18 +416,24 @@ async function digestContent(
             : mediaComponent.title.substring(0, 99),
         languageId: metadataLanguageId,
         primary: true
-      }
+      },
+      ...translatedTitles.map((t) => ({
+        value: t.value.length <= 100 ? t.value : t.value.substring(0, 99),
+        languageId: t.languageId,
+        primary: t.primary
+      }))
     ],
     tagIds: [],
     episodeIds: [],
     variants,
-    slug: video?.slug ?? [
+    slug: getSeoSlugs(mediaComponent.mediaComponentId, video?.slug, [
       {
-        value: getSeoSlug(mediaComponent.title, usedTitles),
+        value: mediaComponent.title,
         languageId: metadataLanguageId,
         primary: true
-      }
-    ],
+      },
+      ...translatedTitles
+    ]),
     noIndex: false
   }
 
@@ -311,17 +499,12 @@ async function getMediaComponentLinks(
   return response.linkedMediaComponentIds.contains
 }
 
-async function digestSeriesContainer(
-  mediaComponent,
-  languages,
-  video
-): Promise<Video> {
-  if (video?.slug != null)
-    video.slug.forEach((title) => usedTitles.push(title.value))
-  const metadataLanguageId =
-    languages
-      .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
-      ?.languageId.toString() ?? '529' // english by default
+async function digestSeriesContainer(mediaComponent, video): Promise<Video> {
+  // if (video?.slug != null)
+  //   video.slug.forEach((title) => usedTitles.push(title.value))
+  const metadataLanguageId = getLanguageIdFromBcp(
+    mediaComponent.metadataLanguageTag
+  )
 
   const variants: VideoVariant[] = []
   for (const mediaComponentLanguage of await getMediaComponentLanguage(
@@ -331,6 +514,12 @@ async function digestSeriesContainer(
       await digestMediaComponentLanguage(mediaComponentLanguage, mediaComponent)
     )
   }
+  const translatedTitles = getTranslationFromObject(
+    'eng_name',
+    mediaComponent.title,
+    'collectionTitles',
+    'name'
+  )
 
   return {
     _key: mediaComponent.mediaComponentId,
@@ -341,35 +530,53 @@ async function digestSeriesContainer(
         value: mediaComponent.title,
         languageId: metadataLanguageId,
         primary: true
-      }
+      },
+      ...translatedTitles
     ],
     seoTitle: [
       {
         value: mediaComponent.title,
         languageId: metadataLanguageId,
         primary: true
-      }
+      },
+      ...translatedTitles
     ],
     snippet: [
       {
         value: mediaComponent.shortDescription,
         languageId: metadataLanguageId,
         primary: true
-      }
+      },
+      ...getTranslationFromObject(
+        'eng_name',
+        mediaComponent.title,
+        'collectionDescriptions',
+        'short_description'
+      )
     ],
     description: [
       {
         value: mediaComponent.longDescription,
         languageId: metadataLanguageId,
         primary: true
-      }
+      },
+      ...getTranslationFromObject(
+        'eng_name',
+        mediaComponent.title,
+        'collectionDescriptions',
+        'long_description'
+      )
     ],
     studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => [
       {
         languageId: metadataLanguageId,
         value: studyQuestion,
         primary: true
-      }
+      },
+      ...getTranslationForStudyQuestion(
+        mediaComponent.mediaComponentId,
+        studyQuestion
+      )
     ]),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     imageAlt: [
@@ -380,40 +587,46 @@ async function digestSeriesContainer(
             : mediaComponent.title.substring(0, 99),
         languageId: metadataLanguageId,
         primary: true
-      }
+      },
+      ...translatedTitles.map((t) => ({
+        value: t.value.length <= 100 ? t.value : t.value.substring(0, 99),
+        languageId: t.languageId,
+        primary: t.primary
+      }))
     ],
     tagIds: [],
-    slug: video?.slug ?? [
+    slug: getSeoSlugs(mediaComponent.mediaComponentId, video?.slug, [
       {
-        value: getSeoSlug(mediaComponent.title, usedTitles),
+        value: mediaComponent.title,
         languageId: metadataLanguageId,
         primary: true
-      }
-    ],
+      },
+      ...translatedTitles
+    ]),
     episodeIds: [],
     variants,
     noIndex: false
   }
 }
 
-async function digestContainer(
-  languages: Language[],
-  mediaComponent: MediaComponent
-): Promise<void> {
+async function getExistingSlugs(): Promise<void> {
+  const result = await db.query(aql`
+  FOR v in videos
+    RETURN { _key: v._key,  slugs: flatten(v.slug[*].value) }
+  `)
+  existingSlugsById = await result.all()
+}
+
+async function digestContainer(mediaComponent: MediaComponent): Promise<void> {
   console.log('container:', mediaComponent.mediaComponentId)
   let series, existingSeries
   if (mediaComponent.subType === 'series') {
     existingSeries = await getVideo(mediaComponent.mediaComponentId)
-    series = await digestSeriesContainer(
-      mediaComponent,
-      languages,
-      existingSeries
-    )
+    series = await digestSeriesContainer(mediaComponent, existingSeries)
   } else {
-    const metadataLanguageId =
-      languages
-        .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
-        ?.languageId.toString() ?? '529' // english by default
+    const metadataLanguageId = getLanguageIdFromBcp(
+      mediaComponent.metadataLanguageTag
+    )
     tags[mediaComponent.mediaComponentId] = {
       _key: mediaComponent.mediaComponentId,
       title: [
@@ -421,7 +634,13 @@ async function digestContainer(
           value: mediaComponent.title,
           languageId: metadataLanguageId,
           primary: true
-        }
+        },
+        ...getTranslationFromObject(
+          'eng_name',
+          mediaComponent.title,
+          'collectionTitles',
+          'name'
+        )
       ]
     }
   }
@@ -464,20 +683,35 @@ async function getVideo(videoId: string): Promise<Video | undefined> {
 }
 
 async function main(): Promise<void> {
+  // await listTranslationFiles()
+  for (const l in languageIds) {
+    translations[l] = {}
+    for (const key in translationIds) {
+      try {
+        console.log('translation:', `${key}: ${l}`)
+        const result = await downloadTranslations(
+          translationProjectId,
+          translationIds[key],
+          l
+        )
+        translations[l][key] = result?.data
+      } catch {}
+    }
+  }
+  // fs.writeFileSync('translations.json', JSON.stringify(translations))
+  // console.log(translations)
+
   if (!(await db.collection('videos').exists())) {
     await db.createCollection('videos', { keyOptions: { type: 'uuid' } })
   }
-
   if (!(await db.collection('videoTags').exists())) {
     await db.createCollection('videoTags', { keyOptions: { type: 'uuid' } })
   }
-
   await db.collection('videos').ensureIndex({
     name: 'language_id',
     type: 'persistent',
     fields: ['variants[*].languageId']
   })
-
   const view = {
     links: {
       videos: {
@@ -527,23 +761,24 @@ async function main(): Promise<void> {
     await db.createView('videosView', view)
   }
   console.log('view created')
+  languages = await getLanguages()
 
-  const languages = await getLanguages()
+  console.log('getting existing slugs')
+  await getExistingSlugs()
+  usedSlugs = map(existingSlugsById, 'slugs') as unknown as string[]
+
   for (const content of await getMediaComponents('content')) {
-    await digestContent(languages, content)
+    await digestContent(content)
   }
-
   for (const container of await getMediaComponents('container')) {
-    await digestContainer(languages, container)
+    await digestContainer(container)
   }
-
   await db.collection('videos').ensureIndex({
     name: 'slug',
     type: 'persistent',
     fields: ['slug[*].value'],
     unique: true
   })
-
   for (const key in tags) {
     await db.collection('videoTags').save(
       {
