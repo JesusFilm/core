@@ -51,7 +51,7 @@ const GET_JOURNEYS = gql`
   }
 `
 
-function IndexPage(): ReactElement {
+function IndexPage(props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
   const AuthUser = useAuthUser()
@@ -69,7 +69,8 @@ function IndexPage(): ReactElement {
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper title={pageTitle} authUser={AuthUser}>
-        <MultipleSummaryReport />
+        {props.flags.analytics === true && <MultipleSummaryReport />}
+
         <JourneyList
           journeys={data?.journeys}
           disableCreation
