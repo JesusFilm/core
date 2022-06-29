@@ -4,12 +4,13 @@ import IconButton from '@mui/material/IconButton'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import MenuItem from '@mui/material/MenuItem'
-import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useSnackbar } from 'notistack'
 import { gql, useMutation } from '@apollo/client'
+import last from 'lodash/last'
 import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
 import {
   BlockFields,
@@ -21,7 +22,7 @@ interface DuplicateBlockProps {
 }
 
 export const BLOCK_DUPLICATE = gql`
-  mutation BlockDuplicate($id: ID!, $journeyId: ID!, $parentOrder: Int!) {
+  mutation BlockDuplicate($id: ID!, $journeyId: ID!, $parentOrder: Int) {
     blockDuplicate(id: $id, journeyId: $journeyId, parentOrder: $parentOrder) {
       id
     }
@@ -49,7 +50,8 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
         variables: {
           id,
           journeyId: journey.id,
-          parentOrder: parentOrder + 1
+          parentOrder:
+            selectedBlock.__typename === 'StepBlock' ? null : parentOrder + 1
         },
         update(cache, { data }) {
           if (data?.blockDuplicate != null) {
@@ -57,8 +59,17 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
               id: cache.identify({ __typename: 'Journey', id: journey.id }),
               fields: {
                 blocks(existingBlockRefs = []) {
+                  const nextBlock = data.blockDuplicate[parentOrder + 1]
+                  const lastStep = last(
+                    data.blockDuplicate.filter(
+                      (block) => block.__typename === 'StepBlock'
+                    )
+                  )
                   const duplicatedBlockRef = cache.writeFragment({
-                    data: data.blockDuplicate[parentOrder + 1],
+                    data:
+                      selectedBlock.__typename === 'StepBlock'
+                        ? lastStep
+                        : nextBlock,
                     fragment: gql`
                       fragment DuplicatedBlock on Block {
                         id
@@ -80,7 +91,7 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
           const steps = stepBlocks.filter(
             (block) => block.__typename === 'StepBlock'
           )
-          const duplicatedStep = steps[parentOrder + 1]
+          const duplicatedStep = last(steps)
           dispatch({
             type: 'SetStepsAction',
             steps
@@ -97,10 +108,6 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
             block: duplicatedBlock
           })
         }
-        dispatch({
-          type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
-        })
       }
     }
     enqueueSnackbar(`${blockLabel} Duplicated`, {
