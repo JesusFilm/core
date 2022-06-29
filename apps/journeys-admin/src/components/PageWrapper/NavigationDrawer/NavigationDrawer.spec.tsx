@@ -31,6 +31,39 @@ describe('NavigationDrawer', () => {
     expect(getByText('Discover')).toBeInTheDocument()
   })
 
+  it('should show analytics button', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ analytics: true }}>
+          <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(getByText('Analytics')).toBeInTheDocument()
+  })
+
+  it('should hide analytics button', () => {
+    const { queryByText } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ analytics: false }}>
+          <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(queryByText('Analytics')).not.toBeInTheDocument()
+  })
+
+  it('should select the analytics button', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ analytics: true }}>
+          <NavigationDrawer open={true} onClose={onClose} title="Analytics" />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(getByTestId('AssessmentRoundedIcon')).toHaveStyle(` color: '#fff'`)
+  })
+
   it('should have avatar menu', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider
