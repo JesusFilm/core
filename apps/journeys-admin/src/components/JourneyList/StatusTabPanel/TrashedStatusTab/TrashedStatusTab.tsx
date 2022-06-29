@@ -58,7 +58,7 @@ const RESTORE_TRASHED_JOURNEYS = gql`
 `
 
 export const DELETE_TRASHED_JOURNEYS = gql`
-  mutation TrashActiveJourneys($ids: [ID!]!) {
+  mutation DeleteTrashedJourneys($ids: [ID!]!) {
     journeysDelete(ids: $ids) {
       id
       status
