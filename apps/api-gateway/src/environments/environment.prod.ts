@@ -26,7 +26,9 @@ export const config: EnvironmentConfig = {
       'https://your.nextstep.is',
       'https://your-stage.nextstep.is',
       // watch
-      'https://watch-one.vercel.app'
+      'https://watch-one.vercel.app',
+      // localhost
+      /http:\/\/localhost:*/
     ]
   }
 }
