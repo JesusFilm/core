@@ -4,6 +4,9 @@ metadata:
   name: api-gateway-stage
   labels:
     app: api-gateway-stage
+    type: api
+  annotations:
+    secrets.doppler.com/reload: 'true'
 spec:
   replicas: 1
   selector:
@@ -24,6 +27,4 @@ spec:
             - containerPort: 4000
           envFrom:
             - secretRef:
-                name: env-firebase-stage
-            - secretRef:
-                name: env-apollo-gateway-stage
+                name: doppler-api-gateway-secret-stg

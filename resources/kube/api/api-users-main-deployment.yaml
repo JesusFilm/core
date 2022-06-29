@@ -5,6 +5,8 @@ metadata:
   labels:
     app: api-users-main
     type: api
+  annotations:
+    secrets.doppler.com/reload: 'true'
 spec:
   replicas: 1
   selector:
@@ -25,6 +27,4 @@ spec:
             - containerPort: 4002
           envFrom:
             - secretRef:
-                name: env-db-main
-            - secretRef:
-                name: env-firebase-main
+                name: doppler-api-users-secret-prd
