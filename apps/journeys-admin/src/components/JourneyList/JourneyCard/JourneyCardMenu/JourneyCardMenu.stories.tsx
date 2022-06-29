@@ -39,4 +39,18 @@ Published.args = {
   forceMenu: true
 }
 
+export const Archived = Template.bind({})
+Archived.args = {
+  status: JourneyStatus.archived,
+  slug: 'archived-journey',
+  forceMenu: true
+}
+
+export const Trashed = Template.bind({})
+Trashed.args = {
+  status: JourneyStatus.trashed,
+  slug: 'trashed-journey',
+  forceMenu: true
+}
+
 export default JoruneyCardMenuDemo as Meta
