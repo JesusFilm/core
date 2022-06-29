@@ -15,7 +15,7 @@ export const JOURNEY_TRASH = gql`
   }
 `
 
-interface TrashJourneyDialogProps {
+export interface TrashJourneyDialogProps {
   id: string
   open: boolean
   handleClose: () => void

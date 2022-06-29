@@ -15,7 +15,7 @@ export const JOURNEY_RESTORE = gql`
   }
 `
 
-interface RestoreJourneyDialogProps {
+export interface RestoreJourneyDialogProps {
   id: string
   published: boolean
   open: boolean

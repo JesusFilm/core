@@ -15,7 +15,7 @@ export const JOURNEY_DELETE = gql`
   }
 `
 
-interface DeleteJourneyDialogProps {
+export interface DeleteJourneyDialogProps {
   id: string
   open: boolean
   handleClose: () => void
