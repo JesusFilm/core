@@ -8,7 +8,10 @@ import EditIcon from '@mui/icons-material/Edit'
 import Fab from '@mui/material/Fab'
 import Skeleton from '@mui/material/Skeleton'
 import NextLink from 'next/link'
+import Divider from '@mui/material/Divider'
+import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
+import { DynamicPowerBiReport } from '../DynamicPowerBiReport'
 import { Properties } from './Properties'
 import { CardView } from './CardView'
 
@@ -37,7 +40,13 @@ export function JourneyView(): ReactElement {
           )}
         </Typography>
       </Box>
+
       <Properties />
+
+      <Box sx={{ height: '213px', pb: '23' }}>
+        <DynamicPowerBiReport reportType={JourneysReportType.singleSummary} />
+        <Divider />
+      </Box>
       <>
         <CardView id={journey?.id} blocks={blocks} />
         <NextLink
