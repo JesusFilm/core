@@ -47,7 +47,7 @@ export const GET_ARCHIVED_JOURNEYS = gql`
   }
 `
 
-const RESTORE_ARCHIVED_JOURNEYS = gql`
+export const RESTORE_ARCHIVED_JOURNEYS = gql`
   mutation RestoreArchivedJourneys($ids: [ID!]!) {
     journeysRestore(ids: $ids) {
       id
