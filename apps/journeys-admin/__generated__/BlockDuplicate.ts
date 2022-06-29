@@ -22,5 +22,5 @@ export interface BlockDuplicate {
 export interface BlockDuplicateVariables {
   id: string;
   journeyId: string;
-  parentOrder: number;
+  parentOrder?: number | null;
 }
