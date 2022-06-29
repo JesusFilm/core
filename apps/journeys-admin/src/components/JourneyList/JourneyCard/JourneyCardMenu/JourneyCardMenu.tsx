@@ -15,6 +15,7 @@ import { AccessDialog } from '../../../AccessDialog'
 import { DuplicateJourneyMenuItem } from './DuplicateJourneyMenuItem.tsx/DuplicateJourneyMenuItem'
 
 export interface JourneyCardMenuProps {
+  id: string
   status: JourneyStatus
   slug: string
   forceMenu?: boolean
@@ -22,6 +23,7 @@ export interface JourneyCardMenuProps {
 }
 
 export function JourneyCardMenu({
+  id,
   status,
   slug,
   forceMenu, // this is only used for storybook snapshots
@@ -59,7 +61,7 @@ export function JourneyCardMenu({
           'aria-labelledby': 'journey-actions'
         }}
       >
-        <Link href={`/journeys/${slug}`} passHref>
+        <Link href={`/journeys/${id}`} passHref>
           <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
             <ListItemIcon>
               <EditIcon color="secondary" />
@@ -108,7 +110,7 @@ export function JourneyCardMenu({
       </Menu>
 
       <AccessDialog
-        journeySlug={slug}
+        journeyId={id}
         open={openDialog}
         onClose={() => setOpenDialog(false)}
       />

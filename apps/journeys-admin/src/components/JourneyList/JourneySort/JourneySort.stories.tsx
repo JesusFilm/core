@@ -3,10 +3,15 @@ import { ReactElement, useState } from 'react'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { JourneySort, SortOrder } from '.'
 
-const JourneySortMock = (): ReactElement => {
+const JourneySortMock = ({ ...args }): ReactElement => {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   return (
-    <JourneySort sortOrder={sortOrder} onChange={setSortOrder} open={true} />
+    <JourneySort
+      sortOrder={sortOrder}
+      onChange={setSortOrder}
+      open={true}
+      {...args}
+    />
   )
 }
 
@@ -16,8 +21,14 @@ const JourneySortDemo = {
   title: 'Journeys-Admin/JourneyList/JourneySort'
 }
 
-const Template: Story = () => <JourneySortMock />
+const Template: Story = (args) => <JourneySortMock {...args} />
 
 export const Default = Template.bind({})
+
+export const Disabled = Template.bind({})
+Disabled.args = {
+  open: false,
+  disabled: true
+}
 
 export default JourneySortDemo as Meta

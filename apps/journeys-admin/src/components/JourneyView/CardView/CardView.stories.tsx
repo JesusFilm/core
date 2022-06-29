@@ -20,7 +20,7 @@ const CardViewStory = {
   }
 }
 
-const Template: Story<Omit<CardViewProps, 'slug'>> = ({ ...args }) => (
+const Template: Story<Omit<CardViewProps, 'id'>> = ({ ...args }) => (
   <MockedProvider>
     <JourneyProvider
       value={{
@@ -32,7 +32,7 @@ const Template: Story<Omit<CardViewProps, 'slug'>> = ({ ...args }) => (
         admin: true
       }}
     >
-      <CardView slug="my-journey" {...args} />
+      <CardView id="journeyId" {...args} />
     </JourneyProvider>
   </MockedProvider>
 )

@@ -29,9 +29,7 @@ export function JourneyList({
       )}
       {(journeys == null ||
         journeys.length > 0 ||
-        disableCreation !== true) && (
-        <StatusTabPanel journeys={journeys} router={router} />
-      )}
+        disableCreation !== true) && <StatusTabPanel router={router} />}
       {journeys != null && journeys.length === 0 && disableCreation && (
         <Container maxWidth="sm" sx={{ mt: 20 }}>
           <Stack direction="column" spacing={8} alignItems="center">

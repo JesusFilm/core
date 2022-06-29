@@ -1,5 +1,4 @@
-import { ReactElement, SyntheticEvent, useState } from 'react'
-import { sortBy } from 'lodash'
+import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 import Card from '@mui/material/Card'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { Theme } from '@mui/material/styles'
@@ -8,13 +7,10 @@ import Tabs from '@mui/material/Tabs'
 import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { NextRouter } from 'next/router'
-import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { JourneySort, SortOrder } from '../JourneySort'
-import { StatusTab } from './StatusTab'
-import { TabLoadingSkeleton } from './TabLoadingSkeleton'
+import { ActiveStatusTab } from './ActiveStatusTab'
 
 export interface StatusTabPanelProps {
-  journeys?: Journey[]
   router?: NextRouter
 }
 
@@ -24,10 +20,7 @@ interface StatusOptions {
   tabIndex: number
 }
 
-export function StatusTabPanel({
-  journeys,
-  router
-}: StatusTabPanelProps): ReactElement {
+export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
   const journeyStatusTabs: StatusOptions[] = [
     {
       queryParam: 'active',
@@ -49,6 +42,18 @@ export function StatusTabPanel({
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
+  const [tabsLoaded, setTabsLoaded] = useState(false)
+  const [activeTabLoaded, setActiveTabLoaded] = useState(false)
+
+  function activeTabOnLoad(): void {
+    setActiveTabLoaded(true)
+  }
+  useEffect(() => {
+    if (activeTabLoaded) {
+      setTabsLoaded(true)
+    }
+  }, [activeTabLoaded])
+
   const tabIndex =
     router != null
       ? journeyStatusTabs.find(
@@ -56,13 +61,6 @@ export function StatusTabPanel({
         )?.tabIndex ?? 0
       : 0
   const [activeTab, setActiveTab] = useState(tabIndex)
-
-  const sortedJourneys =
-    sortOrder === SortOrder.TITLE
-      ? sortBy(journeys, 'title')
-      : sortBy(journeys, ({ createdAt }) =>
-          new Date(createdAt).getTime()
-        ).reverse()
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -83,63 +81,68 @@ export function StatusTabPanel({
 
   return (
     <>
-      {journeys != null ? (
-        <>
-          {!smUp && (
-            <Box sx={{ my: 4, ml: 6 }}>
-              <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
-            </Box>
-          )}
+      <>
+        {!smUp && (
+          <Box sx={{ my: 4, ml: 6 }}>
+            <JourneySort
+              sortOrder={sortOrder}
+              onChange={setSortOrder}
+              disabled={!tabsLoaded}
+            />
+          </Box>
+        )}
 
-          <Card
-            variant="outlined"
-            sx={{
-              mt: { xs: 0, sm: 6 },
-              borderColor: 'divider',
-              borderBottom: 'none',
-              borderTopLeftRadius: { xs: 0, sm: 12 },
-              borderTopRightRadius: { xs: 0, sm: 12 },
-              borderBottomLeftRadius: 0,
-              borderBottomRightRadius: 0
-            }}
-          >
-            <Tabs
-              value={activeTab}
-              onChange={handleChange}
-              aria-label="journey status tabs"
-              data-testid="journey-list"
-            >
-              <Tab
-                label={journeyStatusTabs[0].displayValue}
-                {...tabA11yProps('status-panel', journeyStatusTabs[0].tabIndex)}
-              />
-
-              {smUp && (
-                <Box
-                  sx={{
-                    mr: 6,
-                    ml: 'auto',
-                    mt: 3,
-                    mb: 2
-                  }}
-                >
-                  <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
-                </Box>
-              )}
-            </Tabs>
-          </Card>
-
-          <TabPanel
-            name="status-panel"
+        <Card
+          variant="outlined"
+          sx={{
+            mt: { xs: 0, sm: 6 },
+            borderColor: 'divider',
+            borderBottom: 'none',
+            borderTopLeftRadius: { xs: 0, sm: 12 },
+            borderTopRightRadius: { xs: 0, sm: 12 },
+            borderBottomLeftRadius: 0,
+            borderBottomRightRadius: 0
+          }}
+        >
+          <Tabs
             value={activeTab}
-            index={journeyStatusTabs[0].tabIndex}
+            onChange={handleChange}
+            aria-label="journey status tabs"
+            data-testid="journey-list"
           >
-            <StatusTab journeys={sortedJourneys} />
-          </TabPanel>
-        </>
-      ) : (
-        <TabLoadingSkeleton />
-      )}
+            <Tab
+              label={journeyStatusTabs[0].displayValue}
+              {...tabA11yProps('status-panel', journeyStatusTabs[0].tabIndex)}
+              disabled={!tabsLoaded}
+            />
+
+            {smUp && (
+              <Box
+                sx={{
+                  mr: 6,
+                  ml: 'auto',
+                  mt: 3,
+                  mb: 2
+                }}
+              >
+                <JourneySort
+                  sortOrder={sortOrder}
+                  onChange={setSortOrder}
+                  disabled={!tabsLoaded}
+                />
+              </Box>
+            )}
+          </Tabs>
+        </Card>
+
+        <TabPanel
+          name="status-panel"
+          value={activeTab}
+          index={journeyStatusTabs[0].tabIndex}
+        >
+          <ActiveStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
+        </TabPanel>
+      </>
     </>
   )
 }
