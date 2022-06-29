@@ -12,6 +12,7 @@ import {
 import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
+import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { JourneyInvite } from '../../src/components/JourneyInvite/JourneyInvite'
 import { GetJourney } from '../../__generated__/GetJourney'
 import { JourneyView } from '../../src/components/JourneyView'
@@ -22,18 +23,18 @@ import i18nConfig from '../../next-i18next.config'
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
   query GetJourney($id: ID!) {
-    journey: adminJourney(id: $id, idType: slug) {
+    journey: adminJourney(id: $id, idType: databaseId) {
       ...JourneyFields
     }
   }
 `
 
-function JourneySlugPage(): ReactElement {
+function JourneyIdPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const AuthUser = useAuthUser()
   const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
-    variables: { id: router.query.journeySlug }
+    variables: { id: router.query.journeyId }
   })
 
   return (
@@ -63,14 +64,14 @@ function JourneySlugPage(): ReactElement {
         'User has not received an invitation to edit this journey.' && (
         <>
           <NextSeo title={t('Access Denied')} />
-          <JourneyInvite journeySlug={router.query.journeySlug as string} />
+          <JourneyInvite journeyId={router.query.journeyId as string} />
         </>
       )}
       {error?.graphQLErrors[0].message === 'User invitation pending.' && (
         <>
           <NextSeo title={t('Access Denied')} />
           <JourneyInvite
-            journeySlug={router.query.journeySlug as string}
+            journeyId={router.query.journeyId as string}
             requestReceived
           />
         </>
@@ -81,9 +82,16 @@ function JourneySlugPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ locale }) => {
+})(async ({ AuthUser, locale }) => {
+  const launchDarklyClient = await getLaunchDarklyClient()
+  const flags = await launchDarklyClient.allFlagsState({
+    key: AuthUser.id as string,
+    firstName: AuthUser.displayName ?? undefined,
+    email: AuthUser.email ?? undefined
+  })
   return {
     props: {
+      flags: flags.toJSON(),
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-journeys-admin', 'libs-journeys-ui'],
@@ -95,4 +103,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(JourneySlugPage)
+})(JourneyIdPage)
