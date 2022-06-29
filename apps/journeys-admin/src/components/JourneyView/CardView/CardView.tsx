@@ -9,18 +9,18 @@ import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/Bl
 import { CardPreview } from '../../CardPreview'
 
 export interface CardViewProps {
-  slug?: string
+  id?: string
   blocks?: Array<TreeBlock<StepBlock>>
 }
 
-export function CardView({ slug, blocks }: CardViewProps): ReactElement {
+export function CardView({ id, blocks }: CardViewProps): ReactElement {
   const breakpoints = useBreakpoints()
   const router = useRouter()
 
   const handleSelect = (step: { id: string }): void => {
-    if (slug == null) return
+    if (id == null) return
 
-    void router.push(`/journeys/${slug}/edit?stepId=${step.id}`, undefined, {
+    void router.push(`/journeys/${id}/edit?stepId=${step.id}`, undefined, {
       shallow: true
     })
   }

@@ -14,7 +14,7 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { GetJourney } from '../../../__generated__/GetJourney'
 import { Editor } from '../../../src/components/Editor'
 import { PageWrapper } from '../../../src/components/PageWrapper'
-import { GET_JOURNEY } from '../[journeySlug]'
+import { GET_JOURNEY } from '../[journeyId]'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
 import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
 import { JourneyInvite } from '../../../src/components/JourneyInvite/JourneyInvite'
@@ -25,7 +25,7 @@ function JourneyEditPage(): ReactElement {
   const router = useRouter()
   const AuthUser = useAuthUser()
   const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
-    variables: { id: router.query.journeySlug }
+    variables: { id: router.query.journeyId }
   })
 
   return (
@@ -47,7 +47,7 @@ function JourneyEditPage(): ReactElement {
             <PageWrapper
               title={data?.journey?.title ?? t('Edit Journey')}
               showDrawer
-              backHref={`/journeys/${router.query.journeySlug as string}`}
+              backHref={`/journeys/${router.query.journeyId as string}`}
               menu={<EditToolbar />}
               authUser={AuthUser}
             >
@@ -60,14 +60,14 @@ function JourneyEditPage(): ReactElement {
         'User has not received an invitation to edit this journey.' && (
         <>
           <NextSeo title={t('Access Denied')} />
-          <JourneyInvite journeySlug={router.query.journeySlug as string} />
+          <JourneyInvite journeyId={router.query.journeyId as string} />
         </>
       )}
       {error?.graphQLErrors[0].message === 'User invitation pending.' && (
         <>
           <NextSeo title={t('Access Denied')} />
           <JourneyInvite
-            journeySlug={router.query.journeySlug as string}
+            journeyId={router.query.journeyId as string}
             requestReceived
           />
         </>

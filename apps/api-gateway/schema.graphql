@@ -340,8 +340,10 @@ type Journey
   @join__owner(graph: JOURNEYS)
   @join__type(graph: JOURNEYS, key: "id")
 {
+  archivedAt: DateTime @join__field(graph: JOURNEYS)
   blocks: [Block!] @join__field(graph: JOURNEYS)
   createdAt: DateTime! @join__field(graph: JOURNEYS)
+  deletedAt: DateTime @join__field(graph: JOURNEYS)
   description: String @join__field(graph: JOURNEYS)
   featuredAt: DateTime @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
@@ -355,6 +357,7 @@ type Journey
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
+  trashedAt: DateTime @join__field(graph: JOURNEYS)
   userJourneys: [UserJourney!] @join__field(graph: JOURNEYS)
 }
 
@@ -393,8 +396,11 @@ enum JourneysReportType {
 }
 
 enum JourneyStatus {
+  archived
+  deleted
   draft
   published
+  trashed
 }
 
 input JourneyUpdateInput {
@@ -485,9 +491,24 @@ type Mutation {
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
   imageBlockUpdate(id: ID!, input: ImageBlockUpdateInput!, journeyId: ID!): ImageBlock! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
+  journeyDuplicate(id: ID!): Journey! @join__field(graph: JOURNEYS)
+
+  """Sets journey status to published"""
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
+
+  """Sets journeys statuses to archived"""
+  journeysArchive(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
+
+  """Sets journeys statuses to deleted"""
+  journeysDelete(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
+
+  """Sets journeys statuses to last active status"""
+  journeysRestore(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
+
+  """Sets journeys statuses to trashed"""
+  journeysTrash(ids: [ID!]!): [Journey] @join__field(graph: JOURNEYS)
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioOptionBlockUpdate(id: ID!, input: RadioOptionBlockUpdateInput!, journeyId: ID!): RadioOptionBlock! @join__field(graph: JOURNEYS)
   radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput!): RadioQuestionBlock! @join__field(graph: JOURNEYS)
@@ -571,7 +592,7 @@ type PowerBiEmbed {
 
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
-  adminJourneys: [Journey!]! @join__field(graph: JOURNEYS)
+  adminJourneys(status: [JourneyStatus!]): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)

@@ -39,9 +39,9 @@ export function JourneyView(): ReactElement {
       </Box>
       <Properties />
       <>
-        <CardView slug={journey?.slug} blocks={blocks} />
+        <CardView id={journey?.id} blocks={blocks} />
         <NextLink
-          href={journey != null ? `/journeys/${journey.slug}/edit` : ''}
+          href={journey != null ? `/journeys/${journey.id}/edit` : ''}
           passHref
         >
           <Fab

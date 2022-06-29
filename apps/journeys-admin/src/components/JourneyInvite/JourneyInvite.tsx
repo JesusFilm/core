@@ -14,19 +14,19 @@ import logo from '../../../public/logo.svg'
 
 export const USER_JOURNEY_REQUEST = gql`
   mutation UserJourneyRequest($journeyId: ID!) {
-    userJourneyRequest(journeyId: $journeyId, idType: slug) {
+    userJourneyRequest(journeyId: $journeyId, idType: databaseId) {
       id
     }
   }
 `
 
 export interface JourneyInviteProps {
-  journeySlug: string
+  journeyId: string
   requestReceived?: boolean
 }
 
 export function JourneyInvite({
-  journeySlug,
+  journeyId,
   requestReceived: initialRequestReceived
 }: JourneyInviteProps): ReactElement {
   const [userJourneyRequest] =
@@ -37,7 +37,7 @@ export function JourneyInvite({
 
   const handleClick = async (): Promise<void> => {
     await userJourneyRequest({
-      variables: { journeyId: journeySlug }
+      variables: { journeyId: journeyId }
     })
     setRequestReceived(true)
   }
