@@ -19,7 +19,7 @@ describe('AccessAvatars', () => {
         <MockedProvider>
           <ThemeProvider>
             <AccessAvatars
-              journeySlug="journeySlug"
+              journeyId="journeyId"
               userJourneys={[
                 userJourney1,
                 userJourney2,
@@ -41,7 +41,7 @@ describe('AccessAvatars', () => {
         <MockedProvider>
           <ThemeProvider>
             <AccessAvatars
-              journeySlug="journeySlug"
+              journeyId="journeyId"
               userJourneys={[
                 userJourney1,
                 userJourney2,
@@ -63,7 +63,7 @@ describe('AccessAvatars', () => {
         <MockedProvider>
           <ThemeProvider>
             <AccessAvatars
-              journeySlug="journeySlug"
+              journeyId="journeyId"
               userJourneys={[
                 userJourney1,
                 userJourney2,
@@ -97,7 +97,7 @@ describe('AccessAvatars', () => {
         <MockedProvider>
           <ThemeProvider>
             <AccessAvatars
-              journeySlug="journeySlug"
+              journeyId="journeyId"
               userJourneys={[userJourney1]}
             />
           </ThemeProvider>

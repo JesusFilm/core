@@ -156,27 +156,33 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
           </Tabs>
         </Card>
 
-        <TabPanel
-          name="active-status-panel"
-          value={activeTab}
-          index={journeyStatusTabs[0].tabIndex}
-        >
-          <ActiveStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
-        </TabPanel>
-        <TabPanel
-          name="archived-status-panel"
-          value={activeTab}
-          index={journeyStatusTabs[1].tabIndex}
-        >
-          <ArchivedStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
-        </TabPanel>
-        <TabPanel
-          name="trashed-status-panel"
-          value={activeTab}
-          index={journeyStatusTabs[2].tabIndex}
-        >
-          <TrashedStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
-        </TabPanel>
+        {activeTab === 0 && (
+          <TabPanel
+            name="active-status-panel"
+            value={activeTab}
+            index={journeyStatusTabs[0].tabIndex}
+          >
+            <ActiveStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
+          </TabPanel>
+        )}
+        {activeTab === 1 && (
+          <TabPanel
+            name="archived-status-panel"
+            value={activeTab}
+            index={journeyStatusTabs[1].tabIndex}
+          >
+            <ArchivedStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
+          </TabPanel>
+        )}
+        {activeTab === 2 && (
+          <TabPanel
+            name="trashed-status-panel"
+            value={activeTab}
+            index={journeyStatusTabs[2].tabIndex}
+          >
+            <TrashedStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
+          </TabPanel>
+        )}
       </>
     </>
   )

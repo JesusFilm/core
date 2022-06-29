@@ -12,7 +12,7 @@ describe('JourneyInvite', () => {
             request: {
               query: USER_JOURNEY_REQUEST,
               variables: {
-                journeyId: 'journeySlug'
+                journeyId: 'journeyId'
               }
             },
             result: {
@@ -26,7 +26,7 @@ describe('JourneyInvite', () => {
           }
         ]}
       >
-        <JourneyInvite journeySlug="journeySlug" />
+        <JourneyInvite journeyId="journeyId" />
       </MockedProvider>
     )
     expect(getByText('You need access')).toBeInTheDocument()
@@ -37,7 +37,7 @@ describe('JourneyInvite', () => {
   it('should render invite request received', () => {
     const { getByText, queryByRole } = render(
       <MockedProvider mocks={[]}>
-        <JourneyInvite journeySlug="journeySlug" requestReceived />
+        <JourneyInvite journeyId="journeyId" requestReceived />
       </MockedProvider>
     )
     expect(

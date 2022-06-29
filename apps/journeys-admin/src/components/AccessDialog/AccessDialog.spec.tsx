@@ -23,7 +23,7 @@ const mocks = [
     request: {
       query: GET_JOURNEY_WITH_USER_JOURNEYS,
       variables: {
-        id: 'journeySlug'
+        id: 'journeyId'
       }
     },
     result: {
@@ -174,7 +174,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog journeySlug="journeySlug" open={true} onClose={noop} />
+          <AccessDialog journeyId="journeyId" open={true} onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -195,7 +195,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog journeySlug="journeySlug" open={true} onClose={noop} />
+          <AccessDialog journeyId="journeyId" open={true} onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -217,7 +217,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog journeySlug="journeySlug" open={true} onClose={noop} />
+          <AccessDialog journeyId="journeyId" open={true} onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -240,7 +240,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks}>
-          <AccessDialog journeySlug="journeySlug" open={true} onClose={noop} />
+          <AccessDialog journeyId="journeyId" open={true} onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -258,7 +258,7 @@ describe('AccessDialog', () => {
               request: {
                 query: GET_JOURNEY_WITH_USER_JOURNEYS,
                 variables: {
-                  id: 'journeySlug'
+                  id: 'journeyId'
                 }
               },
               result: {
@@ -327,7 +327,7 @@ describe('AccessDialog', () => {
             }
           ]}
         >
-          <AccessDialog journeySlug="journeySlug" open={true} onClose={noop} />
+          <AccessDialog journeyId="journeyId" open={true} onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -344,7 +344,7 @@ describe('AccessDialog', () => {
       <SnackbarProvider>
         <MockedProvider mocks={mocks}>
           <AccessDialog
-            journeySlug="journeySlug"
+            journeyId="journeyId"
             open={true}
             onClose={handleClose}
           />
@@ -375,15 +375,11 @@ describe('AccessDialog', () => {
       const { getByRole, getByText } = render(
         <SnackbarProvider>
           <MockedProvider mocks={mocks}>
-            <AccessDialog
-              journeySlug="journeySlug"
-              open={true}
-              onClose={noop}
-            />
+            <AccessDialog journeyId="journeyId" open={true} onClose={noop} />
           </MockedProvider>
         </SnackbarProvider>
       )
-      const link = 'http://localhost/journeys/journeySlug'
+      const link = 'http://localhost/journeys/journeyId'
       expect(getByRole('textbox')).toHaveValue(link)
       fireEvent.click(getByRole('button', { name: 'Copy' }))
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(link)

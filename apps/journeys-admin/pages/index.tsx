@@ -89,7 +89,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   })
   return {
     props: {
-      flags,
+      flags: flags.toJSON(),
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-journeys-admin', 'libs-journeys-ui'],
