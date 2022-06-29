@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
-import { ReportProps } from './Report'
+import { ReportProps } from './Report/Report'
 
 export function DynamicPowerBiReport(props: ReportProps): ReactElement {
   // PowerBI needs dynamic import
