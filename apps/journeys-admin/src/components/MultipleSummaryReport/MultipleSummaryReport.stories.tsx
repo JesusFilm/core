@@ -2,7 +2,6 @@ import { Story, Meta } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { PageWrapper } from '../PageWrapper'
 import { MultipleSummaryReport } from '.'
 
 const MultipleSummaryReportDemo = {
@@ -13,11 +12,9 @@ const MultipleSummaryReportDemo = {
 
 const Template: Story = () => (
   <ApolloLoadingProvider>
-    <PageWrapper title="Journeys">
-      <SnackbarProvider>
-        <MultipleSummaryReport />
-      </SnackbarProvider>
-    </PageWrapper>
+    <SnackbarProvider>
+      <MultipleSummaryReport />
+    </SnackbarProvider>
   </ApolloLoadingProvider>
 )
 
