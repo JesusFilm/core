@@ -5,8 +5,6 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { sortBy } from 'lodash'
 import { useTranslation } from 'react-i18next'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { useSnackbar } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
 import { GetArchivedJourneys } from '../../../../../__generated__/GetArchivedJourneys'
@@ -80,7 +78,6 @@ export function ArchivedStatusTab({
   event = '',
   authUser
 }: ArchivedStatusTabProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { data, loading, error, refetch } = useQuery<GetArchivedJourneys>(
@@ -239,8 +236,6 @@ export function ArchivedStatusTab({
           submitLabel: t('Unarchive'),
           closeLabel: t('Cancel')
         }}
-        divider={true}
-        fullscreen={!smUp}
       >
         <Typography>
           {t(
@@ -260,8 +255,6 @@ export function ArchivedStatusTab({
           submitLabel: t('Trash'),
           closeLabel: t('Cancel')
         }}
-        divider={true}
-        fullscreen={!smUp}
       >
         <Typography>
           {t(

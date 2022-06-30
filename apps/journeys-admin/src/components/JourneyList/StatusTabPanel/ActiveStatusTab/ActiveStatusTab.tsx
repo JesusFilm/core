@@ -4,8 +4,6 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { sortBy } from 'lodash'
 import { useTranslation } from 'react-i18next'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { AuthUser } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
 import { GetActiveJourneys } from '../../../../../__generated__/GetActiveJourneys'
@@ -81,7 +79,6 @@ export function ActiveStatusTab({
   authUser
 }: ActiveStatusTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { enqueueSnackbar } = useSnackbar()
   const { data, loading, error, refetch } =
     useQuery<GetActiveJourneys>(GET_ACTIVE_JOURNEYS)
@@ -226,8 +223,6 @@ export function ActiveStatusTab({
           submitLabel: t('Archive'),
           closeLabel: t('Cancel')
         }}
-        divider={true}
-        fullscreen={!smUp}
       >
         <Typography>
           {t(
@@ -247,8 +242,6 @@ export function ActiveStatusTab({
           submitLabel: t('Trash'),
           closeLabel: t('Cancel')
         }}
-        divider={true}
-        fullscreen={!smUp}
       >
         <Typography>
           {t(
