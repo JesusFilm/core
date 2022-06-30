@@ -34,14 +34,15 @@ function AnalyticsPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
-  const launchDarklyClient = await getLaunchDarklyClient()
-  const flags = (
-    await launchDarklyClient.allFlagsState({
-      key: AuthUser.id as string,
-      firstName: AuthUser.displayName ?? undefined,
-      email: AuthUser.email ?? undefined
-    })
-  ).toJSON() as { [key: string]: boolean | undefined }
+  const ldUser = {
+    key: AuthUser.id as string,
+    firstName: AuthUser.displayName ?? undefined,
+    email: AuthUser.email ?? undefined
+  }
+  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
+  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
+    [key: string]: boolean | undefined
+  }
   if (flags.analytics !== true) {
     return {
       redirect: {
