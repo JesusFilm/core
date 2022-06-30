@@ -127,7 +127,6 @@ export function CardPreview({
   }
 
   const onDragEnd = async ({ destination, source }): Promise<void> => {
-    setIsDragging(false)
     if (steps == null) return
     if (journey == null) return
     if (destination == null) return
@@ -161,6 +160,7 @@ export function CardPreview({
         }
       })
     }
+    setIsDragging(false)
   }
 
   return (
