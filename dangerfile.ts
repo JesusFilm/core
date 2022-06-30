@@ -1,6 +1,12 @@
 import { danger, warn, markdown } from 'danger'
 import lint from '@commitlint/lint'
 import load from '@commitlint/load'
+import {
+  LintOptions,
+  LintOutcome,
+  ParserOptions,
+  ParserPreset
+} from '@commitlint/types'
 import config from './commitlint.config'
 
 export default async () => {
@@ -26,11 +32,7 @@ export default async () => {
   }
 
   // check PR has well-formed title
-  const commitlintConfig = await load(config)
-  const commitlintReport = await lint(
-    danger.github.pr.title,
-    commitlintConfig.rules
-  )
+  const commitlintReport = await lintPrTitle(danger.github.pr.title)
   if (!commitlintReport.valid) {
     fail('Please ensure your PR title matches commitlint convention.')
     let errors = ''
@@ -109,4 +111,22 @@ export default async () => {
   ) {
     fail('Please request a reviewer for this PR.')
   }
+}
+
+async function lintPrTitle(title: string): Promise<LintOutcome> {
+  const loaded = await load(config)
+  const parserOpts = selectParserOpts(loaded.parserPreset)
+  const opts: LintOptions & { parserOpts: ParserOptions } = {
+    parserOpts: parserOpts ?? {},
+    plugins: loaded.plugins ?? {},
+    ignores: loaded.ignores ?? [],
+    defaultIgnores: loaded.defaultIgnores ?? true
+  }
+  return lint(title, loaded.rules, opts)
+}
+
+function selectParserOpts(preset?: ParserPreset): ParserOptions | undefined {
+  if (typeof preset !== 'object') return undefined
+  if (typeof preset.parserOpts !== 'object') return undefined
+  return preset.parserOpts ?? undefined
 }
