@@ -53,10 +53,10 @@ export function JourneyView(): ReactElement {
 
       <Properties />
 
-      <Box sx={{ height: '213px', pb: '23' }}>
+      <Box sx={{ height: '213px', pb: 6, mx: 6 }}>
         <DynamicPowerBiReport reportType={JourneysReportType.singleSummary} />
-        <Divider />
       </Box>
+      <Divider />
 
       {!smUp && (
         <>
