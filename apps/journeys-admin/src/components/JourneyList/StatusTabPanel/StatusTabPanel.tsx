@@ -7,6 +7,7 @@ import Tabs from '@mui/material/Tabs'
 import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { NextRouter } from 'next/router'
+import { AuthUser } from 'next-firebase-auth'
 import { JourneySort, SortOrder } from '../JourneySort'
 import { ActiveStatusTab } from './ActiveStatusTab'
 import { ArchivedStatusTab } from './ArchivedStatusTab'
@@ -15,6 +16,7 @@ import { TrashedStatusTab } from './TrashedStatusTab'
 export interface StatusTabPanelProps {
   router?: NextRouter
   event?: string | undefined
+  authUser?: AuthUser | undefined
 }
 
 interface StatusOptions {
@@ -25,7 +27,8 @@ interface StatusOptions {
 
 export function StatusTabPanel({
   router,
-  event = ''
+  event = '',
+  authUser
 }: StatusTabPanelProps): ReactElement {
   const journeyStatusTabs: StatusOptions[] = [
     {
@@ -187,6 +190,7 @@ export function StatusTabPanel({
               onLoad={activeTabOnLoad}
               sortOrder={sortOrder}
               event={event}
+              authUser={authUser}
             />
           </TabPanel>
         )}
@@ -200,6 +204,7 @@ export function StatusTabPanel({
               onLoad={activeTabOnLoad}
               sortOrder={sortOrder}
               event={event}
+              authUser={authUser}
             />
           </TabPanel>
         )}
@@ -213,6 +218,7 @@ export function StatusTabPanel({
               onLoad={activeTabOnLoad}
               sortOrder={sortOrder}
               event={event}
+              authUser={authUser}
             />
           </TabPanel>
         )}

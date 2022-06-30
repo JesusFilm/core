@@ -7,6 +7,7 @@ import Container from '@mui/material/Container'
 import NewReleasesRounded from '@mui/icons-material/NewReleasesRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import { NextRouter } from 'next/router'
+import { AuthUser } from 'next-firebase-auth'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { AddJourneyButton } from './AddJourneyButton'
 import { StatusTabPanel } from './StatusTabPanel'
@@ -16,13 +17,15 @@ export interface JourneysListProps {
   disableCreation?: boolean
   router?: NextRouter
   event?: string | undefined
+  authUser?: AuthUser
 }
 
 export function JourneyList({
   journeys,
   disableCreation,
   router,
-  event = ''
+  event = '',
+  authUser
 }: JourneysListProps): ReactElement {
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
@@ -34,7 +37,7 @@ export function JourneyList({
       {(journeys == null ||
         journeys.length > 0 ||
         disableCreation !== true) && (
-        <StatusTabPanel router={router} event={event} />
+        <StatusTabPanel router={router} event={event} authUser={authUser} />
       )}
       {journeys != null && journeys.length === 0 && disableCreation && (
         <Container maxWidth="sm" sx={{ mt: 20 }}>

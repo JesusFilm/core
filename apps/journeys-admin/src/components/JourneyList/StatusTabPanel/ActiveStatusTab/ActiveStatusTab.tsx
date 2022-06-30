@@ -6,6 +6,7 @@ import { sortBy } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { AuthUser } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
 import { GetActiveJourneys } from '../../../../../__generated__/GetActiveJourneys'
 import { JourneyCard } from '../../JourneyCard'
@@ -36,6 +37,7 @@ export const GET_ACTIVE_JOURNEYS = gql`
       seoDescription
       userJourneys {
         id
+        role
         user {
           id
           firstName
@@ -69,12 +71,14 @@ interface ActiveStatusTabProps {
   onLoad: () => void
   sortOrder?: SortOrder
   event?: string | undefined
+  authUser?: AuthUser
 }
 
 export function ActiveStatusTab({
   onLoad,
   sortOrder,
-  event = ''
+  event = '',
+  authUser
 }: ActiveStatusTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -86,7 +90,14 @@ export function ActiveStatusTab({
 
   const [archiveActive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     variables: {
-      ids: journeys?.map((journey) => journey.id)
+      ids: journeys
+        ?.filter(
+          (journey) =>
+            journey.userJourneys?.find(
+              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+            )?.role === 'owner'
+        )
+        .map((journey) => journey.id)
     },
     update(cache, { data }) {
       if (data?.journeysArchive != null) {
@@ -100,7 +111,14 @@ export function ActiveStatusTab({
 
   const [trashActive] = useMutation(TRASH_ACTIVE_JOURNEYS, {
     variables: {
-      ids: journeys?.map((journey) => journey.id)
+      ids: journeys
+        ?.filter(
+          (journey) =>
+            journey.userJourneys?.find(
+              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+            )?.role === 'owner'
+        )
+        .map((journey) => journey.id)
     },
     update(cache, { data }) {
       if (data?.journeysTrash != null) {

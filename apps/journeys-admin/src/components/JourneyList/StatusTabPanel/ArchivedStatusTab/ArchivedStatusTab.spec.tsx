@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
+import { AuthUser } from 'next-firebase-auth'
 
 import { defaultJourney, oldJourney } from '../../journeyListData'
 import { ThemeProvider } from '../../../ThemeProvider'
@@ -34,6 +35,8 @@ const noJourneysMock = {
     }
   }
 }
+
+const authUser = { id: 'user-id1' } as unknown as AuthUser
 
 describe('ActiveStatusTab', () => {
   it('should render journeys in descending createdAt date by default', async () => {
@@ -142,7 +145,11 @@ describe('ActiveStatusTab', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedStatusTab onLoad={onLoad} event="restoreAllArchived" />
+              <ArchivedStatusTab
+                onLoad={onLoad}
+                event="restoreAllArchived"
+                authUser={authUser}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -188,7 +195,11 @@ describe('ActiveStatusTab', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ArchivedStatusTab onLoad={onLoad} event="trashAllArchived" />
+              <ArchivedStatusTab
+                onLoad={onLoad}
+                event="trashAllArchived"
+                authUser={authUser}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>

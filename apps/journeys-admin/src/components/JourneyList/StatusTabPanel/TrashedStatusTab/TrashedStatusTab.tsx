@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useSnackbar } from 'notistack'
+import { AuthUser } from 'next-firebase-auth'
 import { GetTrashedJourneys } from '../../../../../__generated__/GetTrashedJourneys'
 import { JourneyCard } from '../../JourneyCard'
 import { SortOrder } from '../../JourneySort'
@@ -37,6 +38,7 @@ export const GET_TRASHED_JOURNEYS = gql`
       seoDescription
       userJourneys {
         id
+        role
         user {
           id
           firstName
@@ -70,12 +72,14 @@ interface TrashedStatusTabProps {
   onLoad: (journeys: string[] | undefined) => void
   sortOrder?: SortOrder
   event?: string | undefined
+  authUser?: AuthUser
 }
 
 export function TrashedStatusTab({
   onLoad,
   sortOrder,
-  event = ''
+  event = '',
+  authUser
 }: TrashedStatusTabProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
@@ -86,7 +90,14 @@ export function TrashedStatusTab({
 
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     variables: {
-      ids: journeys?.map((journey) => journey.id)
+      ids: journeys
+        ?.filter(
+          (journey) =>
+            journey.userJourneys?.find(
+              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+            )?.role === 'owner'
+        )
+        .map((journey) => journey.id)
     },
     update(cache, { data }) {
       if (data?.journeysRestore != null) {
@@ -100,7 +111,14 @@ export function TrashedStatusTab({
 
   const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
     variables: {
-      ids: journeys?.map((journey) => journey.id)
+      ids: journeys
+        ?.filter(
+          (journey) =>
+            journey.userJourneys?.find(
+              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+            )?.role === 'owner'
+        )
+        .map((journey) => journey.id)
     },
     update(cache, { data }) {
       if (data?.journeysDelete != null) {

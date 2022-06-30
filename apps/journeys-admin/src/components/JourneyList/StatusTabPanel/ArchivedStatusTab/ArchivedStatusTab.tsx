@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useSnackbar } from 'notistack'
+import { AuthUser } from 'next-firebase-auth'
 import { GetArchivedJourneys } from '../../../../../__generated__/GetArchivedJourneys'
 import { JourneyCard } from '../../JourneyCard'
 import { SortOrder } from '../../JourneySort'
@@ -36,6 +37,7 @@ export const GET_ARCHIVED_JOURNEYS = gql`
       seoDescription
       userJourneys {
         id
+        role
         user {
           id
           firstName
@@ -69,12 +71,14 @@ interface ArchivedStatusTabProps {
   onLoad: () => void
   sortOrder?: SortOrder
   event?: string | undefined
+  authUser?: AuthUser
 }
 
 export function ArchivedStatusTab({
   onLoad,
   sortOrder,
-  event = ''
+  event = '',
+  authUser
 }: ArchivedStatusTabProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { t } = useTranslation('apps-journeys-admin')
@@ -86,7 +90,14 @@ export function ArchivedStatusTab({
 
   const [restoreArchived] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     variables: {
-      ids: journeys?.map((journey) => journey.id)
+      ids: journeys
+        ?.filter(
+          (journey) =>
+            journey.userJourneys?.find(
+              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+            )?.role === 'owner'
+        )
+        .map((journey) => journey.id)
     },
     update(cache, { data }) {
       if (data?.journeysRestore != null) {
@@ -100,7 +111,14 @@ export function ArchivedStatusTab({
 
   const [trashArchived] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
     variables: {
-      ids: journeys?.map((journey) => journey.id)
+      ids: journeys
+        ?.filter(
+          (journey) =>
+            journey.userJourneys?.find(
+              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+            )?.role === 'owner'
+        )
+        .map((journey) => journey.id)
     },
     update(cache, { data }) {
       if (data?.journeyTrash != null) {

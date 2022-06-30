@@ -40,6 +40,7 @@ const GET_JOURNEYS = gql`
       seoDescription
       userJourneys {
         id
+        role
         user {
           id
           firstName
@@ -87,6 +88,7 @@ function IndexPage(): ReactElement {
           disableCreation
           router={router}
           event={listEvent}
+          authUser={AuthUser}
         />
       </PageWrapper>
     </>

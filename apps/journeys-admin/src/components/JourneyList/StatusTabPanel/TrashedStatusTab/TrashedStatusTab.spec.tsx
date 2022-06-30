@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
+import { AuthUser } from 'next-firebase-auth'
 import { defaultJourney, oldJourney } from '../../journeyListData'
 import { ThemeProvider } from '../../../ThemeProvider'
 import { SortOrder } from '../../JourneySort'
@@ -36,6 +37,8 @@ const noJourneysMock = {
     }
   }
 }
+
+const authUser = { id: 'user-id1' } as unknown as AuthUser
 
 describe('ActiveStatusTab', () => {
   beforeAll(() => {
@@ -178,13 +181,18 @@ describe('ActiveStatusTab', () => {
         result
       }
       const onLoad = jest.fn()
+
       const { getByText } = render(
         <MockedProvider
           mocks={[trashedJourneysMock, archiveJourneysMock, noJourneysMock]}
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedStatusTab onLoad={onLoad} event="restoreAllTrashed" />
+              <TrashedStatusTab
+                onLoad={onLoad}
+                event="restoreAllTrashed"
+                authUser={authUser}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -230,7 +238,11 @@ describe('ActiveStatusTab', () => {
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedStatusTab onLoad={onLoad} event="deleteAllTrashed" />
+              <TrashedStatusTab
+                onLoad={onLoad}
+                event="deleteAllTrashed"
+                authUser={authUser}
+              />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
