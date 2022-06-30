@@ -12,10 +12,10 @@
   "Edit {{title}}": "Edit {{title}}",
   "Edit Journey": "Edit Journey",
   "Sign In": "Sign In",
-  "Properties": "Properties",
-  "Access Control": "Access Control",
   "Journey URL": "Journey URL",
   "Edit URL": "Edit URL",
+  "Properties": "Properties",
+  "Access Control": "Access Control",
   "Field update failed. Reload the page or try again.": "Field update failed. Reload the page or try again.",
   "Cancel": "Cancel"
 }
