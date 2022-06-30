@@ -576,6 +576,65 @@ describe('JourneyResolver', () => {
     })
   })
 
+  describe('getFirstMissingNumber', () => {
+    it('returns the first missing number in an unsorted number list', async () => {
+      const array = [0, 1, 1, 2, 4, 5, 7, 8, 1, 0]
+      const firstMissing = resolver.getFirstMissingNumber(array)
+      expect(firstMissing).toEqual(3)
+    })
+
+    it('returns the next number in a sorted number list', async () => {
+      const array = [0, 1, 1, 2, 3]
+      const firstMissing = resolver.getFirstMissingNumber(array)
+      expect(firstMissing).toEqual(4)
+    })
+  })
+
+  describe('getJourneyDuplicateNumbers', () => {
+    it('generates the duplicate number array from journeys', async () => {
+      const array = [
+        journey,
+        {
+          ...journey,
+          title: `${journey.title} copy`
+        },
+        {
+          ...journey,
+          title: `${journey.title} copy 2`
+        },
+        {
+          ...journey,
+          title: `${journey.title} copy 4`
+        },
+        // Unique journey with same base title - returns 0
+        {
+          ...journey,
+          title: `${journey.title} copying`
+        },
+        // Unique journey with same base title - returns 0
+        {
+          ...journey,
+          title: `${journey.title} 3`
+        },
+        // User edited journey copy number is recognised
+        {
+          ...journey,
+          title: `${journey.title} copy 1`
+        },
+        // User edited journey copy number+alpha recognises only number
+        {
+          ...journey,
+          title: `${journey.title} copy-2a`
+        }
+      ]
+      const duplicateNumbers = resolver.getJourneyDuplicateNumbers(
+        array,
+        journey.title
+      )
+      expect(duplicateNumbers).toEqual([0, 1, 2, 4, 0, 0, 1, 2])
+    })
+  })
+
   describe('journeyDuplicate', () => {
     it('duplicates a Journey', async () => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')

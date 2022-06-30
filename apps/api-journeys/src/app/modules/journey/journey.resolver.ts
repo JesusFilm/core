@@ -186,6 +186,33 @@ export class JourneyResolver {
     }
   }
 
+  getFirstMissingNumber(@Args('arr') arr: number[]): number {
+    // May contain duplicate numbers in array so can't use binary search
+    arr.sort((a, b) => a - b)
+    let duplicateNumber = 0
+    arr.forEach((num, i) => {
+      if (arr[i] === duplicateNumber) duplicateNumber++
+    })
+    return duplicateNumber
+  }
+
+  getJourneyDuplicateNumbers(
+    @Args('journeys') journeys: Journey[],
+    title: string
+  ): number[] {
+    return journeys.map((journey) => {
+      if (journey.title === title) {
+        return 0
+      } else if (journey.title === `${title} copy`) {
+        return 1
+      } else {
+        const duplicate = journey.title.split(' copy')[1] ?? ''
+        const numbers = duplicate.match(/(\d+)/)
+        return numbers != null ? parseInt(numbers[0]) : 0
+      }
+    })
+  }
+
   @Mutation()
   @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
   async journeyDuplicate(
@@ -197,12 +224,18 @@ export class JourneyResolver {
 
     const title = journey.title.split(' copy')[0]
     const existingDuplicateJourneys = await this.journeyService.getAllByTitle(
+      title,
+      userId
+    )
+    const duplicates = this.getJourneyDuplicateNumbers(
+      existingDuplicateJourneys,
       title
     )
+    const duplicateNumber = this.getFirstMissingNumber(duplicates)
     const duplicateTitle = `${title} ${
       existingDuplicateJourneys.length === 1
         ? 'copy'
-        : `copy ${existingDuplicateJourneys.length}`
+        : `copy ${duplicateNumber}`
     }`
 
     const slug = slugify(duplicateTitle, {
@@ -214,12 +247,10 @@ export class JourneyResolver {
       journey,
       'StepBlock'
     )
-
     const duplicateStepIds = new Map()
     originalBlocks.forEach((block) => {
       duplicateStepIds.set(block.id, uuidv4())
     })
-
     const duplicateBlocks = await this.blockService.getDuplicateChildren(
       originalBlocks,
       id,
