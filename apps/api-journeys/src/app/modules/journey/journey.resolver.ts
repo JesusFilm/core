@@ -201,14 +201,13 @@ export class JourneyResolver {
     title: string
   ): number[] {
     return journeys.map((journey) => {
-      console.log('journey', journey, title)
       if (journey.title === title) {
         return 0
       } else if (journey.title === `${title} copy`) {
         return 1
       } else {
-        const duplicate = journey.title.split(' copy')[1] ?? ''
-        const numbers = duplicate.match(/(\d+)/)
+        const duplicate = journey.title.split(' copy')[1]?.trim() ?? ''
+        const numbers = duplicate.match(/^\d+$/)
         // If no duplicate number found, it's a unique journey. Return 0
         return numbers != null ? parseInt(numbers[0]) : 0
       }
@@ -223,8 +222,9 @@ export class JourneyResolver {
   ): Promise<Journey | undefined> {
     const journey: Journey = await this.journeyService.get(id)
     const duplicateJourneyId = uuidv4()
-
-    const title = journey.title.split(' copy')[0]
+    const title = /^\d+$/.test(journey.title.split(' copy')[1])
+      ? journey.title.split(' copy')[0]
+      : journey.title
     const existingDuplicateJourneys = await this.journeyService.getAllByTitle(
       title,
       userId

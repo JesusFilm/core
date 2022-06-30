@@ -606,32 +606,30 @@ describe('JourneyResolver', () => {
           ...journey,
           title: `${journey.title} copy 4`
         },
-        // Unique journey with same base title - returns 0
+        // Unique journeys with same base title - returns 0
         {
           ...journey,
-          title: `${journey.title} copying`
+          title: `${journey.title} copy test`
         },
-        // Unique journey with same base title - returns 0
         {
           ...journey,
           title: `${journey.title} 3`
+        },
+        {
+          ...journey,
+          title: `${journey.title} copy-2a4bil`
         },
         // User edited journey copy number is recognised
         {
           ...journey,
           title: `${journey.title} copy 1`
-        },
-        // User edited journey copy number+alpha recognises only number
-        {
-          ...journey,
-          title: `${journey.title} copy-2a`
         }
       ]
       const duplicateNumbers = resolver.getJourneyDuplicateNumbers(
         array,
         journey.title
       )
-      expect(duplicateNumbers).toEqual([0, 1, 2, 4, 0, 0, 1, 2])
+      expect(duplicateNumbers).toEqual([0, 1, 2, 4, 0, 0, 0, 1])
     })
   })
 
@@ -684,7 +682,8 @@ describe('JourneyResolver', () => {
         async () =>
           await Promise.resolve([
             journey,
-            { ...journey, title: `${journey.title} copy` }
+            { ...journey, title: `${journey.title} copy` },
+            { ...journey, title: `${journey.title} copy other` }
           ])
       )
       expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
