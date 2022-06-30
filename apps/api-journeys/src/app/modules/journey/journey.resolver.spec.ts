@@ -633,34 +633,6 @@ describe('JourneyResolver', () => {
     })
   })
 
-  describe('getBaseJourneyTitle', () => {
-    it('returns the base journey title without copy modifier', async () => {
-      expect(resolver.getBaseJourneyTitle('Journey')).toEqual('Journey')
-      expect(resolver.getBaseJourneyTitle('Journey copy')).toEqual('Journey')
-      expect(resolver.getBaseJourneyTitle('Journey copy 2')).toEqual('Journey')
-      expect(resolver.getBaseJourneyTitle('Journey copy 1')).toEqual('Journey')
-      expect(resolver.getBaseJourneyTitle('Journey test')).toEqual(
-        'Journey test'
-      )
-      expect(resolver.getBaseJourneyTitle('Journey 3')).toEqual('Journey 3')
-      expect(resolver.getBaseJourneyTitle('Journey copy-2a4bil')).toEqual(
-        'Journey copy-2a4bil'
-      )
-      expect(resolver.getBaseJourneyTitle('Journey copy copy')).toEqual(
-        'Journey copy'
-      )
-      expect(resolver.getBaseJourneyTitle('Journey copy copy 2')).toEqual(
-        'Journey copy'
-      )
-      expect(resolver.getBaseJourneyTitle('Journey copy 2 copy')).toEqual(
-        'Journey copy 2'
-      )
-      expect(resolver.getBaseJourneyTitle('Journey copy copy copy')).toEqual(
-        'Journey copy copy'
-      )
-    })
-  })
-
   describe('journeyDuplicate', () => {
     it('duplicates a Journey', async () => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
