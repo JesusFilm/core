@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useMemo } from 'react'
 import { transformer } from '@core/journeys/ui/transformer'
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
@@ -126,42 +126,47 @@ export function CardPreview({
     setIsDragging(true)
   }
 
-  const onDragEnd = async ({ destination, source }): Promise<void> => {
-    if (steps == null) return
-    if (journey == null) return
-    if (destination == null) return
+  const onDragEnd = useMemo(
+    () =>
+      async ({ destination, source }): Promise<void> => {
+        if (steps == null) return
+        if (journey == null) return
+        if (destination == null) return
 
-    const cardDragging = steps[source.index]
-    const destIndex: number = destination.index
+        const cardDragging = steps[source.index]
+        const destIndex: number = destination.index
 
-    if (
-      destination.droppableId === source.droppableId &&
-      destIndex === source.index
-    )
-      return
+        if (
+          destination.droppableId === source.droppableId &&
+          destIndex === source.index
+        )
+          return
 
-    if (cardDragging.parentOrder != null) {
-      const parentOrder = cardDragging.parentOrder + destIndex - source.index
+        if (cardDragging.parentOrder != null) {
+          const parentOrder =
+            cardDragging.parentOrder + destIndex - source.index
 
-      await stepsOrderUpdate({
-        variables: {
-          id: cardDragging.id,
-          journeyId: journey.id,
-          parentOrder
-        },
-        optimisticResponse: {
-          blockOrderUpdate: [
-            {
-              __typename: 'StepBlock',
+          await stepsOrderUpdate({
+            variables: {
               id: cardDragging.id,
+              journeyId: journey.id,
               parentOrder
+            },
+            optimisticResponse: {
+              blockOrderUpdate: [
+                {
+                  __typename: 'StepBlock',
+                  id: cardDragging.id,
+                  parentOrder
+                }
+              ]
             }
-          ]
+          })
         }
-      })
-    }
-    setIsDragging(false)
-  }
+        setIsDragging(false)
+      },
+    [steps, journey, stepsOrderUpdate]
+  )
 
   return (
     <>
