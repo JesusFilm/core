@@ -4,9 +4,6 @@ import load from '@commitlint/load'
 import config from './commitlint.config'
 
 export default async () => {
-  // ignore dependabot
-  if (danger.github.pr.user.login === 'dependabot[bot]') return
-
   // check lockfile updated when package changes
   const packageChanged = danger.git.modified_files.includes('package.json')
   const lockfileChanged =
@@ -90,7 +87,11 @@ export default async () => {
   })
 
   // check PR has milestone
-  if (currentPR.data.milestone === null) {
+  // ignore dependabot
+  if (
+    currentPR.data.milestone === null &&
+    danger.github.pr.user.login !== 'dependabot[bot]'
+  ) {
     fail('Please add milestone to this PR.')
   }
 
