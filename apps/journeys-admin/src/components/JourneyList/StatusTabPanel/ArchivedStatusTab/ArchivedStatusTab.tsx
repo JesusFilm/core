@@ -118,7 +118,7 @@ export function ArchivedStatusTab({
         .map((journey) => journey.id)
     },
     update(cache, { data }) {
-      if (data?.journeyTrash != null) {
+      if (data?.journeysTrash != null) {
         enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
         })
