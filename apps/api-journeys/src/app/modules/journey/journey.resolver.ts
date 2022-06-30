@@ -200,34 +200,19 @@ export class JourneyResolver {
     @Args('journeys') journeys: Journey[],
     @Args('title') title: string
   ): number[] {
-    return journeys.map((journey) => {
-      if (journey.title === title) {
+    return journeys.map((journey, i) => {
+      const splitTitle = journey.title.split(' copy')
+      if (journey.title === title || splitTitle.length > 2) {
         return 0
       } else if (journey.title === `${title} copy`) {
         return 1
       } else {
-        const duplicate = journey.title.split(' copy')[1]?.trim() ?? ''
+        const duplicate = splitTitle[splitTitle.length - 1]?.trim() ?? ''
         const numbers = duplicate.match(/^\d+$/)
         // If no duplicate number found, it's a unique journey. Return 0
         return numbers != null ? parseInt(numbers[0]) : 0
       }
     })
-  }
-
-  getBaseJourneyTitle(@Args('title') title: string): string {
-    const splitTitle = title.split(' copy')
-    const titleWithoutModifier =
-      splitTitle.length === 1
-        ? title
-        : splitTitle
-            .slice(0, splitTitle.length - 1)
-            .join(' copy')
-            .trim()
-
-    return splitTitle[splitTitle.length - 1] === '' ||
-      /^\d+$/.test(splitTitle[splitTitle.length - 1]?.trim())
-      ? titleWithoutModifier
-      : title
   }
 
   @Mutation()
@@ -238,17 +223,16 @@ export class JourneyResolver {
   ): Promise<Journey | undefined> {
     const journey: Journey = await this.journeyService.get(id)
     const duplicateJourneyId = uuidv4()
-    const title = this.getBaseJourneyTitle(journey.title)
     const existingDuplicateJourneys = await this.journeyService.getAllByTitle(
-      title,
+      journey.title,
       userId
     )
     const duplicates = this.getJourneyDuplicateNumbers(
       existingDuplicateJourneys,
-      title
+      journey.title
     )
     const duplicateNumber = this.getFirstMissingNumber(duplicates)
-    const duplicateTitle = `${title} copy ${
+    const duplicateTitle = `${journey.title} copy ${
       duplicateNumber === 1 ? '' : duplicateNumber
     }`.trimEnd()
 
