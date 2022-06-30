@@ -198,7 +198,7 @@ export class JourneyResolver {
 
   getJourneyDuplicateNumbers(
     @Args('journeys') journeys: Journey[],
-    title: string
+    @Args('title') title: string
   ): number[] {
     return journeys.map((journey) => {
       if (journey.title === title) {
@@ -214,6 +214,22 @@ export class JourneyResolver {
     })
   }
 
+  getBaseJourneyTitle(@Args('title') title: string): string {
+    const splitTitle = title.split(' copy')
+    const titleWithoutModifier =
+      splitTitle.length === 1
+        ? title
+        : splitTitle
+            .slice(0, splitTitle.length - 1)
+            .join(' copy')
+            .trim()
+
+    return splitTitle[splitTitle.length - 1] === '' ||
+      /^\d+$/.test(splitTitle[splitTitle.length - 1]?.trim())
+      ? titleWithoutModifier
+      : title
+  }
+
   @Mutation()
   @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
   async journeyDuplicate(
@@ -222,9 +238,7 @@ export class JourneyResolver {
   ): Promise<Journey | undefined> {
     const journey: Journey = await this.journeyService.get(id)
     const duplicateJourneyId = uuidv4()
-    const title = /^\d+$/.test(journey.title.split(' copy')[1])
-      ? journey.title.split(' copy')[0]
-      : journey.title
+    const title = this.getBaseJourneyTitle(journey.title)
     const existingDuplicateJourneys = await this.journeyService.getAllByTitle(
       title,
       userId
