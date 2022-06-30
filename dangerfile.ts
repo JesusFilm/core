@@ -10,6 +10,7 @@ import {
 import config from './commitlint.config'
 
 export default async () => {
+  const isDependabot = danger.github.pr.user.login === 'dependabot[bot]'
   // check lockfile updated when package changes
   const packageChanged = danger.git.modified_files.includes('package.json')
   const lockfileChanged =
@@ -48,7 +49,10 @@ export default async () => {
   }
 
   // check PR has basecamp link
-  if (!danger.github.pr.body.includes('https://3.basecamp.com/')) {
+  if (
+    !danger.github.pr.body.includes('https://3.basecamp.com/') &&
+    !isDependabot
+  ) {
     warn(
       'Is this PR related to a Basecamp issue? If so link it via the PR description.'
     )
@@ -90,10 +94,7 @@ export default async () => {
 
   // check PR has milestone
   // ignore dependabot
-  if (
-    currentPR.data.milestone === null &&
-    danger.github.pr.user.login !== 'dependabot[bot]'
-  ) {
+  if (currentPR.data.milestone === null && !isDependabot) {
     fail('Please add milestone to this PR.')
   }
 
