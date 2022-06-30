@@ -681,7 +681,11 @@ describe('JourneyResolver', () => {
         typeof service.getAllByTitle
       >
       mockGetAllByTitle.mockImplementationOnce(
-        async () => await Promise.resolve([journey, journey])
+        async () =>
+          await Promise.resolve([
+            journey,
+            { ...journey, title: `${journey.title} copy` }
+          ])
       )
       expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
         ...journey,
