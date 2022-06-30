@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { defaultJourney } from '../data'
@@ -90,9 +91,11 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <JourneyProvider value={{ journey: args.journey, admin: true }}>
-      <Menu {...args} />
-    </JourneyProvider>
+    <FlagsProvider flags={{ analytics: args.flags }}>
+      <JourneyProvider value={{ journey: args.journey, admin: true }}>
+        <Menu {...args} />
+      </JourneyProvider>
+    </FlagsProvider>
   </MockedProvider>
 )
 
@@ -106,6 +109,13 @@ Published.args = {
     publishedAt: '2021-11-19T12:34:56.647Z',
     status: JourneyStatus.published
   },
+  forceOpen: true
+}
+
+export const Analytics = Template.bind({})
+Analytics.args = {
+  journey: defaultJourney,
+  flags: { analytics: true },
   forceOpen: true
 }
 

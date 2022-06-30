@@ -10,6 +10,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import Box from '@mui/material/Box'
+import { useRouter } from 'next/router'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import i18nConfig from '../../../next-i18next.config'
 import { DynamicPowerBiReport } from '../../../src/components/DynamicPowerBiReport'
@@ -18,11 +19,16 @@ import { JourneysReportType } from '../../../__generated__/globalTypes'
 function AnalyticsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
+  const router = useRouter()
 
   return (
     <>
       <NextSeo title={t('Journey Analytics')} />
-      <PageWrapper title={t('Journey Analytics')} authUser={AuthUser}>
+      <PageWrapper
+        title={t('Journey Analytics')}
+        authUser={AuthUser}
+        backHref={`/journeys/${router.query.journeyId as string}`}
+      >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
           <DynamicPowerBiReport reportType={JourneysReportType.singleFull} />
         </Box>
