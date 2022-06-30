@@ -115,7 +115,8 @@ describe('BlockService', () => {
     journeyId: journey.id,
     parentBlockId: cardBlock.id,
     startIconId: null,
-    endIconId: 'icon'
+    endIconId: 'icon',
+    action: { parentBlockId: 'ButtonBlock', blockId: 'step' }
   }
   const iconBlock = {
     __typename: 'IconBlock',
@@ -394,7 +395,7 @@ describe('BlockService', () => {
       service.getBlocksForParentId = jest.fn().mockReturnValue([])
     })
 
-    it('should return block with new id', async () => {
+    it('should return block with randomised id', async () => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
         mockDbQueryResult(service.db, [{ id: 'block' }])
       )
@@ -413,78 +414,53 @@ describe('BlockService', () => {
           parentBlockId: cardBlock.id
         }
       ])
-
       expect(service.getBlocksForParentId).toBeCalledTimes(1)
     })
 
-    it('should return block and children with new ids', async () => {
+    it('should return block with specific id', async () => {
       ;(service.db as DeepMockProxy<Database>).query
-        .mockReturnValueOnce(mockDbQueryResult(service.db, [buttonBlock]))
-        .mockReturnValueOnce(mockDbQueryResult(service.db, [iconBlock]))
-
-      mockUuidv4
-        .mockReturnValueOnce(`${buttonBlock.id}Copy`)
-        .mockReturnValue(`${iconBlock.id}Copy`)
-
-      service.getBlocksForParentId = jest
-        .fn()
-        .mockReturnValueOnce([iconBlock])
-        .mockReturnValue([])
-
-      expect(
-        await service.getDuplicateBlockAndChildren(
-          buttonBlock.id,
-          '1',
-          cardBlock.id
-        )
-      ).toEqual([
-        {
-          ...buttonBlock,
-          _key: `${buttonBlock.id}Copy`,
-          id: `${buttonBlock.id}Copy`,
-          parentBlockId: cardBlock.id,
-          endIconId: `${iconBlock.id}Copy`
-        },
-        {
-          ...iconBlock,
-          _key: `${iconBlock.id}Copy`,
-          id: `${iconBlock.id}Copy`,
-          parentBlockId: `${buttonBlock.id}Copy`
-        }
-      ])
-
-      expect(service.getBlocksForParentId).toBeCalledTimes(2)
-    })
-
-    it('should set coverBlock and posterBlock on Card and Video blocks', async () => {
-      ;(service.db as DeepMockProxy<Database>).query
+        .mockReturnValueOnce(mockDbQueryResult(service.db, [stepBlock]))
         .mockReturnValueOnce(mockDbQueryResult(service.db, [cardBlock]))
         .mockReturnValueOnce(mockDbQueryResult(service.db, [videoBlock]))
+        .mockReturnValueOnce(mockDbQueryResult(service.db, [buttonBlock]))
         .mockReturnValueOnce(mockDbQueryResult(service.db, [imageBlock]))
-
+        .mockReturnValueOnce(mockDbQueryResult(service.db, [iconBlock]))
       mockUuidv4
         .mockReturnValueOnce(`${cardBlock.id}Copy`)
         .mockReturnValueOnce(`${videoBlock.id}Copy`)
+        .mockReturnValueOnce(`${buttonBlock.id}Copy`)
         .mockReturnValueOnce(`${imageBlock.id}Copy`)
-
+        .mockReturnValue(`${iconBlock.id}Copy`)
       service.getBlocksForParentId = jest
         .fn()
-        .mockReturnValueOnce([videoBlock])
+        .mockReturnValueOnce([cardBlock])
+        .mockReturnValueOnce([videoBlock, buttonBlock])
         .mockReturnValueOnce([imageBlock])
+        .mockReturnValueOnce([iconBlock])
         .mockReturnValue([])
 
+      // StepBlock uses specific id. Child block id's, parentBlockIds & unique block ids (coverBlockId, posterBlockId & iconIds) are randomised
+      // Actions remain the same & nextBlockId is made null
       expect(
         await service.getDuplicateBlockAndChildren(
-          cardBlock.id,
+          stepBlock.id,
           '1',
-          stepBlock.id
+          null,
+          'specificStepId'
         )
       ).toEqual([
+        {
+          ...stepBlock,
+          _key: 'specificStepId',
+          id: 'specificStepId',
+          parentBlockId: null,
+          nextBlockId: null
+        },
         {
           ...cardBlock,
           _key: `${cardBlock.id}Copy`,
           id: `${cardBlock.id}Copy`,
-          parentBlockId: stepBlock.id,
+          parentBlockId: 'specificStepId',
           coverBlockId: `${videoBlock.id}Copy`
         },
         {
@@ -499,36 +475,93 @@ describe('BlockService', () => {
           _key: `${imageBlock.id}Copy`,
           id: `${imageBlock.id}Copy`,
           parentBlockId: `${videoBlock.id}Copy`
+        },
+        {
+          ...buttonBlock,
+          _key: `${buttonBlock.id}Copy`,
+          id: `${buttonBlock.id}Copy`,
+          parentBlockId: `${cardBlock.id}Copy`,
+          endIconId: `${iconBlock.id}Copy`
+        },
+        {
+          ...iconBlock,
+          _key: `${iconBlock.id}Copy`,
+          id: `${iconBlock.id}Copy`,
+          parentBlockId: `${buttonBlock.id}Copy`
         }
       ])
 
-      expect(service.getBlocksForParentId).toBeCalledTimes(3)
+      expect(service.getBlocksForParentId).toBeCalledTimes(6)
     })
 
-    it('should set null nextBlockId on StepBlock', async () => {
+    it('should return block with updated journeyId & nextBlockId', async () => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValueOnce(
         mockDbQueryResult(service.db, [stepBlock])
       )
-
+      const duplicateStepIds = new Map()
+      duplicateStepIds.set(stepBlock.nextBlockId, 'duplicateStepId')
       mockUuidv4.mockReturnValueOnce(`${stepBlock.id}Copy`)
 
       expect(
         await service.getDuplicateBlockAndChildren(
           buttonBlock.id,
           '1',
-          cardBlock.id
+          cardBlock.id,
+          undefined,
+          'journey2',
+          duplicateStepIds
         )
       ).toEqual([
         {
           ...stepBlock,
           _key: `${stepBlock.id}Copy`,
           id: `${stepBlock.id}Copy`,
+          journeyId: 'journey2',
           parentBlockId: cardBlock.id,
-          nextBlockId: null
+          nextBlockId: 'duplicateStepId'
         }
       ])
 
       expect(service.getBlocksForParentId).toBeCalledTimes(1)
+    })
+  })
+
+  describe('getDuplicateChildren', () => {
+    it('should return an array of duplicate blocks from array', async () => {
+      ;(service.db as DeepMockProxy<Database>).query
+        .mockReturnValueOnce(mockDbQueryResult(service.db, [stepBlock]))
+        .mockReturnValueOnce(mockDbQueryResult(service.db, [cardBlock]))
+
+      service.getDuplicateBlockAndChildren = jest
+        .fn()
+        .mockReturnValueOnce([{ block: 'duplicateStepBlock' }])
+        .mockReturnValue([])
+
+      const duplicateStepIds = new Map([[stepBlock.id, 'step1']])
+
+      expect(
+        await service.getDuplicateChildren(
+          [stepBlock],
+          '1',
+          null,
+          duplicateStepIds,
+          'journey2',
+          duplicateStepIds
+        )
+      ).toEqual([
+        {
+          block: 'duplicateStepBlock'
+        }
+      ])
+
+      expect(service.getDuplicateBlockAndChildren).toHaveBeenCalledWith(
+        stepBlock.id,
+        '1',
+        null,
+        'step1',
+        'journey2',
+        duplicateStepIds
+      )
     })
   })
 

@@ -5,8 +5,11 @@ import { BaseService } from '@core/nest/database/BaseService'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId, keyAsId } from '@core/nest/decorators/KeyAsId'
 import { idAsKey } from '@core/nest/decorators/IdAsKey'
-
-import { Block, Journey } from '../../__generated__/graphql'
+import {
+  Block,
+  Journey,
+  NavigateToBlockAction
+} from '../../__generated__/graphql'
 
 @Injectable()
 export class BlockService extends BaseService {
@@ -17,6 +20,18 @@ export class BlockService extends BaseService {
       FOR block in ${this.collection}
         FILTER block.journeyId == ${journey.id}
           AND block._key != ${primaryImageBlockId}
+        SORT block.parentOrder ASC
+        RETURN block
+    `)
+    return await res.all()
+  }
+
+  @KeyAsId()
+  async getBlocksByType(journey: Journey, typename: string): Promise<Block[]> {
+    const res = await this.db.query(aql`
+      FOR block in ${this.collection}
+        FILTER block.journeyId == ${journey.id}
+          AND block.__typename == ${typename}
         SORT block.parentOrder ASC
         RETURN block
     `)
@@ -129,19 +144,46 @@ export class BlockService extends BaseService {
     return []
   }
 
+  async getDuplicateChildren(
+    children: Block[],
+    journeyId: string,
+    parentBlockId: string | null,
+    // Use to custom set children blockIds
+    duplicateIds: Map<string, string>,
+    // Below 2 only used when duplicating journeys
+    duplicateJourneyId?: string,
+    duplicateStepIds?: Map<string, string>
+  ): Promise<Array<Block & { _key: string }>> {
+    const duplicateChildren = await Promise.all(
+      children.map(async (block) => {
+        return await this.getDuplicateBlockAndChildren(
+          block.id,
+          journeyId,
+          parentBlockId,
+          duplicateIds.get(block.id),
+          duplicateJourneyId,
+          duplicateStepIds
+        )
+      })
+    )
+    return duplicateChildren.reduce<Array<Block & { _key: string }>>(
+      (acc, val) => {
+        return acc.concat(val)
+      },
+      []
+    )
+  }
+
   async getDuplicateBlockAndChildren(
     id: string,
     journeyId: string,
     parentBlockId: string | null,
-    duplicateId?: string
+    duplicateId?: string,
+    // Below 2 only used when duplicating journeys
+    duplicateJourneyId?: string,
+    duplicateStepIds?: Map<string, string>
   ): Promise<Array<Block & { _key: string }>> {
-    const block = keyAsId(await this.get(id)) as Block & {
-      __typename: string
-      startIconId: string | null
-      endIconId: string | null
-      coverBlockId: string | null
-      posterBlockId: string | null
-    }
+    const block = keyAsId(await this.get(id)) as Block
     const duplicateBlockId = duplicateId ?? uuidv4()
 
     const children = await this.getBlocksForParentId(block.id, journeyId)
@@ -149,65 +191,52 @@ export class BlockService extends BaseService {
     children.forEach((block) => {
       childIds.set(block.id, uuidv4())
     })
+    const updatedBlockProps = {}
+    Object.keys(block).forEach((key) => {
+      if (key === 'nextBlockId') {
+        updatedBlockProps[key] =
+          duplicateStepIds != null && block[key] != null
+            ? duplicateStepIds.get(block[key])
+            : null
+      } else if (key.includes('Id')) {
+        updatedBlockProps[key] = childIds.get(block[key]) ?? null
+      }
+      if (key === 'action') {
+        const action = block[key]
+        const navigateBlockAction = action as NavigateToBlockAction
+        updatedBlockProps[key] =
+          navigateBlockAction?.blockId != null && duplicateStepIds != null
+            ? {
+                ...action,
+                blockId:
+                  duplicateStepIds.get(navigateBlockAction.blockId) ??
+                  navigateBlockAction.blockId
+              }
+            : action
+      }
+    })
+    const defaultDuplicateBlock = {
+      _key: duplicateBlockId,
+      id: duplicateBlockId,
+      journeyId: duplicateJourneyId ?? block.journeyId,
+      parentBlockId
+    }
+    const duplicateBlock = {
+      ...block,
+      ...updatedBlockProps,
+      ...defaultDuplicateBlock
+    }
 
-    const duplicateBlock =
-      block.__typename === 'ButtonBlock'
-        ? {
-            ...block,
-            _key: duplicateBlockId,
-            id: duplicateBlockId,
-            parentBlockId,
-            startIconId: childIds.get(block.startIconId) ?? null,
-            endIconId: childIds.get(block.endIconId) ?? null
-          }
-        : block.__typename === 'CardBlock'
-        ? {
-            ...block,
-            _key: duplicateBlockId,
-            id: duplicateBlockId,
-            parentBlockId,
-            coverBlockId: childIds.get(block.coverBlockId) ?? null
-          }
-        : block.__typename === 'VideoBlock'
-        ? {
-            ...block,
-            _key: duplicateBlockId,
-            id: duplicateBlockId,
-            parentBlockId,
-            posterBlockId: childIds.get(block.posterBlockId) ?? null
-          }
-        : block.__typename === 'StepBlock'
-        ? {
-            ...block,
-            _key: duplicateBlockId,
-            id: duplicateBlockId,
-            parentBlockId,
-            nextBlockId: null
-          }
-        : {
-            ...block,
-            _key: duplicateBlockId,
-            id: duplicateBlockId,
-            parentBlockId
-          }
-
-    const duplicateChildren = await Promise.all(
-      children.map(async (block) => {
-        return await this.getDuplicateBlockAndChildren(
-          block.id,
-          journeyId,
-          duplicateBlockId,
-          childIds.get(block.id)
-        )
-      })
+    const duplicateChildren = await this.getDuplicateChildren(
+      children,
+      journeyId,
+      duplicateBlockId,
+      childIds,
+      duplicateJourneyId,
+      duplicateStepIds
     )
-    const childrenFlatArray = duplicateChildren.reduce<
-      Array<Block & { _key: string }>
-    >((acc, val) => {
-      return acc.concat(val)
-    }, [])
 
-    return [duplicateBlock, ...childrenFlatArray]
+    return [duplicateBlock, ...duplicateChildren]
   }
 
   @KeyAsId()

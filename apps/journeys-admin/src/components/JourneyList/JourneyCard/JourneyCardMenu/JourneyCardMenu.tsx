@@ -12,22 +12,21 @@ import PeopleIcon from '@mui/icons-material/People'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
+import { DuplicateJourneyMenuItem } from './DuplicateJourneyMenuItem.tsx/DuplicateJourneyMenuItem'
 
 export interface JourneyCardMenuProps {
   id: string
   status: JourneyStatus
   slug: string
-  forceMenu?: boolean
 }
 
 export function JourneyCardMenu({
   id,
   status,
-  slug,
-  forceMenu // this is only used for storybook snapshots
+  slug
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const open = forceMenu === true ? true : Boolean(anchorEl)
+  const open = Boolean(anchorEl)
 
   const [openDialog, setOpenDialog] = useState(false)
 
@@ -102,6 +101,8 @@ export function JourneyCardMenu({
             </Typography>
           </ListItemText>
         </MenuItem>
+
+        <DuplicateJourneyMenuItem id={id} />
       </Menu>
 
       <AccessDialog
