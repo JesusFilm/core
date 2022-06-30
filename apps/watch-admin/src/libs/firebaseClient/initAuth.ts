@@ -1,5 +1,6 @@
 import { init } from 'next-firebase-auth'
 import absoluteUrl from 'next-absolute-url'
+import { getFirebasePrivateKey } from '@core/shared/ui/getFirebasePrivateKey'
 
 export function initAuth(): void {
   init({
@@ -9,8 +10,7 @@ export function initAuth(): void {
       credential: {
         projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? '',
         clientEmail: process.env.PRIVATE_FIREBASE_CLIENT_EMAIL ?? '',
-        privateKey:
-          process.env.PRIVATE_FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n') ?? ''
+        privateKey: getFirebasePrivateKey()
       },
       databaseURL: ''
     },
