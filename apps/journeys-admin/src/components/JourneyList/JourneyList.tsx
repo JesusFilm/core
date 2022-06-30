@@ -25,7 +25,6 @@ export function JourneyList({
   router
 }: JourneysListProps): ReactElement {
   const { analytics } = useFlags()
-  console.log(analytics)
 
   return (
     <>

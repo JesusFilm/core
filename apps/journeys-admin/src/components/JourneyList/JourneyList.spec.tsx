@@ -1,6 +1,7 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '../ThemeProvider'
 import { defaultJourney, publishedJourney, oldJourney } from './journeyListData'
 import { JourneyList } from '.'
@@ -22,11 +23,13 @@ describe('JourneyList', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList
-              journeys={[defaultJourney, publishedJourney, oldJourney]}
-            />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -37,9 +40,11 @@ describe('JourneyList', () => {
     const { getByText, getByRole, queryByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList journeys={[]} disableCreation />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList journeys={[]} disableCreation />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -53,5 +58,22 @@ describe('JourneyList', () => {
       )
     ).toBeInTheDocument()
     expect(getByRole('button', { name: 'Contact Support' })).toBeInTheDocument()
+  })
+
+  it('should render report', async () => {
+    const { getByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <FlagsProvider flags={{ analytics: true }}>
+            <ThemeProvider>
+              <JourneyList journeys={[defaultJourney]} disableCreation />
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(getByTestId('powerBi-multipleSummary-report')).toBeInTheDocument()
+    )
   })
 })
