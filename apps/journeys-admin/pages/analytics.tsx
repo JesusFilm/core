@@ -1,5 +1,4 @@
 import { ReactElement } from 'react'
-import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -9,70 +8,24 @@ import {
 import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/router'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { GetJourneys } from '../__generated__/GetJourneys'
-import { JourneyList } from '../src/components/JourneyList'
+import Box from '@mui/material/Box'
 import { PageWrapper } from '../src/components/PageWrapper'
 import i18nConfig from '../next-i18next.config'
+import { DynamicPowerBiReport } from '../src/components/DynamicPowerBiReport'
+import { JourneysReportType } from '../__generated__/globalTypes'
 
-const GET_JOURNEYS = gql`
-  query GetJourneys {
-    journeys: adminJourneys {
-      id
-      title
-      createdAt
-      publishedAt
-      description
-      slug
-      themeName
-      themeMode
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
-      status
-      seoTitle
-      seoDescription
-      userJourneys {
-        id
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
-    }
-  }
-`
-
-function IndexPage(): ReactElement {
+function AnalyticsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
   const AuthUser = useAuthUser()
-  const router = useRouter()
-
-  const activeTab = router.query.tab ?? 'active'
-  const pageTitle =
-    activeTab === 'active'
-      ? t('Active Journeys')
-      : activeTab === 'archived'
-      ? t('Archived Journeys')
-      : t('Deleted Journeys')
 
   return (
     <>
-      <NextSeo title={t('Journeys')} />
-      <PageWrapper title={pageTitle} authUser={AuthUser}>
-        <JourneyList
-          journeys={data?.journeys}
-          disableCreation
-          router={router}
-        />
+      <NextSeo title={t('Analytics')} />
+      <PageWrapper title={t('Analytics')} authUser={AuthUser}>
+        <Box sx={{ height: 'calc(100vh - 48px)' }}>
+          <DynamicPowerBiReport reportType={JourneysReportType.multipleFull} />
+        </Box>
       </PageWrapper>
     </>
   )
@@ -90,6 +43,14 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
+  if (flags.analytics !== true) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/'
+      }
+    }
+  }
   return {
     props: {
       flags,
@@ -104,4 +65,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(IndexPage)
+})(AnalyticsPage)
