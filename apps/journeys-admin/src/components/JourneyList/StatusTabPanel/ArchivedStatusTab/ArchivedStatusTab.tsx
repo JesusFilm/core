@@ -98,7 +98,7 @@ export function ArchivedStatusTab({
     },
     update(cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Journeys restored.'), {
+        enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
         void refetch()
@@ -119,7 +119,7 @@ export function ArchivedStatusTab({
     },
     update(cache, { data }) {
       if (data?.journeyTrash != null) {
-        enqueueSnackbar(t('Journeys trashed.'), {
+        enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
         })
         void refetch()
@@ -130,13 +130,28 @@ export function ArchivedStatusTab({
   const [openRestoreAll, setOpenRestoreAll] = useState(false)
   const [openTrashAll, setOpenTrashAll] = useState(false)
 
+  const snackbarError = (error: Error): void => {
+    enqueueSnackbar(error.message, {
+      variant: 'error',
+      preventDuplicate: true
+    })
+  }
+
   const restoreAll = async (): Promise<void> => {
-    await restoreArchived()
+    try {
+      await restoreArchived()
+    } catch (error) {
+      snackbarError(error)
+    }
     handleClose()
   }
 
   const trashAll = async (): Promise<void> => {
-    await trashArchived()
+    try {
+      await trashArchived()
+    } catch (error) {
+      snackbarError(error)
+    }
     handleClose()
   }
 

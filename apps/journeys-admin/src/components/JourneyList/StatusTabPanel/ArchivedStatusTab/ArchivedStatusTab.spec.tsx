@@ -111,6 +111,20 @@ describe('ActiveStatusTab', () => {
   })
 
   describe('Unarchive All', () => {
+    const result = jest.fn(() => ({
+      data: [{ id: defaultJourney.id, status: 'published' }]
+    }))
+    const archiveJourneysMock = {
+      request: {
+        query: RESTORE_ARCHIVED_JOURNEYS,
+        variables: {
+          ids: [defaultJourney.id, oldJourney.id]
+        }
+      },
+      result
+    }
+    const onLoad = jest.fn()
+
     it('should display the unarchive all dialog', () => {
       const { getByText } = render(
         <MockedProvider mocks={[archivedJourneysMock]}>
@@ -126,19 +140,6 @@ describe('ActiveStatusTab', () => {
     })
 
     it('should unarchive all journeys', async () => {
-      const result = jest.fn(() => ({
-        data: [{ id: defaultJourney.id, status: 'published' }]
-      }))
-      const archiveJourneysMock = {
-        request: {
-          query: RESTORE_ARCHIVED_JOURNEYS,
-          variables: {
-            ids: [defaultJourney.id, oldJourney.id]
-          }
-        },
-        result
-      }
-      const onLoad = jest.fn()
       const { getByText } = render(
         <MockedProvider
           mocks={[archivedJourneysMock, archiveJourneysMock, noJourneysMock]}
@@ -158,9 +159,49 @@ describe('ActiveStatusTab', () => {
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
+
+    it('should show error', async () => {
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[
+            archivedJourneysMock,
+            { ...archiveJourneysMock, error: new Error('error') }
+          ]}
+        >
+          <SnackbarProvider>
+            <ThemeProvider>
+              <SnackbarProvider>
+                <ArchivedStatusTab
+                  onLoad={onLoad}
+                  event="restoreAllArchived"
+                  authUser={authUser}
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      fireEvent.click(getByText('Unarchive'))
+      await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
   })
 
   describe('Trash All', () => {
+    const result = jest.fn(() => ({
+      data: [{ id: defaultJourney.id, status: 'trashAllArchived' }]
+    }))
+    const trashJourneysMock = {
+      request: {
+        query: TRASH_ARCHIVED_JOURNEYS,
+        variables: {
+          ids: [defaultJourney.id, oldJourney.id]
+        }
+      },
+      result
+    }
+    const onLoad = jest.fn()
+
     it('should display the trash all dialog', () => {
       const { getByText } = render(
         <MockedProvider mocks={[archivedJourneysMock]}>
@@ -176,19 +217,6 @@ describe('ActiveStatusTab', () => {
     })
 
     it('should trash all journeys', async () => {
-      const result = jest.fn(() => ({
-        data: [{ id: defaultJourney.id, status: 'trashAllArchived' }]
-      }))
-      const trashJourneysMock = {
-        request: {
-          query: TRASH_ARCHIVED_JOURNEYS,
-          variables: {
-            ids: [defaultJourney.id, oldJourney.id]
-          }
-        },
-        result
-      }
-      const onLoad = jest.fn()
       const { getByText } = render(
         <MockedProvider
           mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
@@ -207,6 +235,32 @@ describe('ActiveStatusTab', () => {
       await waitFor(() => expect(onLoad).toHaveBeenCalled())
       fireEvent.click(getByText('Trash'))
       await waitFor(() => expect(result).toHaveBeenCalled())
+    })
+
+    it('should show error', async () => {
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[
+            archivedJourneysMock,
+            { ...trashJourneysMock, error: new Error('error') }
+          ]}
+        >
+          <SnackbarProvider>
+            <ThemeProvider>
+              <SnackbarProvider>
+                <ArchivedStatusTab
+                  onLoad={onLoad}
+                  event="trashAllArchived"
+                  authUser={authUser}
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      fireEvent.click(getByText('Trash'))
+      await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
 })

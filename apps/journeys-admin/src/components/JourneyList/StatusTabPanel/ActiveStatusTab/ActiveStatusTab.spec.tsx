@@ -143,20 +143,21 @@ describe('ActiveStatusTab', () => {
       expect(getByText('Archive Journeys')).toBeInTheDocument()
     })
 
+    const result = jest.fn(() => ({
+      data: [{ id: defaultJourney.id, status: 'archived' }]
+    }))
+    const archiveJourneysMock = {
+      request: {
+        query: ARCHIVE_ACTIVE_JOURNEYS,
+        variables: {
+          ids: [defaultJourney.id, oldJourney.id]
+        }
+      },
+      result
+    }
+    const onLoad = jest.fn()
+
     it('should archive all journeys', async () => {
-      const result = jest.fn(() => ({
-        data: [{ id: defaultJourney.id, status: 'archived' }]
-      }))
-      const archiveJourneysMock = {
-        request: {
-          query: ARCHIVE_ACTIVE_JOURNEYS,
-          variables: {
-            ids: [defaultJourney.id, oldJourney.id]
-          }
-        },
-        result
-      }
-      const onLoad = jest.fn()
       const { getByText } = render(
         <MockedProvider
           mocks={[activeJourneysMock, archiveJourneysMock, noJourneysMock]}
@@ -176,9 +177,49 @@ describe('ActiveStatusTab', () => {
       fireEvent.click(getByText('Archive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
+
+    it('should show error', async () => {
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[
+            activeJourneysMock,
+            { ...archiveJourneysMock, error: new Error('error') }
+          ]}
+        >
+          <SnackbarProvider>
+            <ThemeProvider>
+              <SnackbarProvider>
+                <ActiveStatusTab
+                  onLoad={onLoad}
+                  event="archiveAllActive"
+                  authUser={authUser}
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      fireEvent.click(getByText('Archive'))
+      await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
   })
 
   describe('Trash All', () => {
+    const result = jest.fn(() => ({
+      data: [{ id: defaultJourney.id, status: 'archived' }]
+    }))
+    const trashJourneysMock = {
+      request: {
+        query: TRASH_ACTIVE_JOURNEYS,
+        variables: {
+          ids: [defaultJourney.id, oldJourney.id]
+        }
+      },
+      result
+    }
+    const onLoad = jest.fn()
+
     it('should display the trash all dialog', () => {
       const { getByText } = render(
         <MockedProvider mocks={[activeJourneysMock]}>
@@ -194,19 +235,6 @@ describe('ActiveStatusTab', () => {
     })
 
     it('should trash all journeys', async () => {
-      const result = jest.fn(() => ({
-        data: [{ id: defaultJourney.id, status: 'archived' }]
-      }))
-      const trashJourneysMock = {
-        request: {
-          query: TRASH_ACTIVE_JOURNEYS,
-          variables: {
-            ids: [defaultJourney.id, oldJourney.id]
-          }
-        },
-        result
-      }
-      const onLoad = jest.fn()
       const { getByText } = render(
         <MockedProvider
           mocks={[activeJourneysMock, trashJourneysMock, noJourneysMock]}
@@ -225,6 +253,32 @@ describe('ActiveStatusTab', () => {
       await waitFor(() => expect(onLoad).toHaveBeenCalled())
       fireEvent.click(getByText('Trash'))
       await waitFor(() => expect(result).toHaveBeenCalled())
+    })
+
+    it('should show error', async () => {
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[
+            activeJourneysMock,
+            { ...trashJourneysMock, error: new Error('error') }
+          ]}
+        >
+          <SnackbarProvider>
+            <ThemeProvider>
+              <SnackbarProvider>
+                <ActiveStatusTab
+                  onLoad={onLoad}
+                  event="trashAllActive"
+                  authUser={authUser}
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      fireEvent.click(getByText('Trash'))
+      await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
 })

@@ -153,6 +153,20 @@ describe('ActiveStatusTab', () => {
   })
 
   describe('Restore All', () => {
+    const result = jest.fn(() => ({
+      data: [{ id: defaultJourney.id, status: 'published' }]
+    }))
+    const archiveJourneysMock = {
+      request: {
+        query: RESTORE_TRASHED_JOURNEYS,
+        variables: {
+          ids: [defaultJourney.id, oldJourney.id]
+        }
+      },
+      result
+    }
+    const onLoad = jest.fn()
+
     it('should display the restore all dialog', () => {
       const { getByText } = render(
         <MockedProvider mocks={[trashedJourneysMock]}>
@@ -168,20 +182,6 @@ describe('ActiveStatusTab', () => {
     })
 
     it('should restore all journeys', async () => {
-      const result = jest.fn(() => ({
-        data: [{ id: defaultJourney.id, status: 'published' }]
-      }))
-      const archiveJourneysMock = {
-        request: {
-          query: RESTORE_TRASHED_JOURNEYS,
-          variables: {
-            ids: [defaultJourney.id, oldJourney.id]
-          }
-        },
-        result
-      }
-      const onLoad = jest.fn()
-
       const { getByText } = render(
         <MockedProvider
           mocks={[trashedJourneysMock, archiveJourneysMock, noJourneysMock]}
@@ -201,9 +201,49 @@ describe('ActiveStatusTab', () => {
       fireEvent.click(getByText('Restore'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
+
+    it('should show error', async () => {
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[
+            trashedJourneysMock,
+            { ...archiveJourneysMock, error: new Error('error') }
+          ]}
+        >
+          <SnackbarProvider>
+            <ThemeProvider>
+              <SnackbarProvider>
+                <TrashedStatusTab
+                  onLoad={onLoad}
+                  event="restoreAllTrashed"
+                  authUser={authUser}
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      fireEvent.click(getByText('Restore'))
+      await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
   })
 
   describe('Delete All', () => {
+    const result = jest.fn(() => ({
+      data: [{ id: defaultJourney.id, status: 'deleted' }]
+    }))
+    const trashJourneysMock = {
+      request: {
+        query: DELETE_TRASHED_JOURNEYS,
+        variables: {
+          ids: [defaultJourney.id, oldJourney.id]
+        }
+      },
+      result
+    }
+    const onLoad = jest.fn()
+
     it('should display the delete all dialog', () => {
       const { getByText } = render(
         <MockedProvider mocks={[trashedJourneysMock]}>
@@ -219,19 +259,6 @@ describe('ActiveStatusTab', () => {
     })
 
     it('should trash all journeys', async () => {
-      const result = jest.fn(() => ({
-        data: [{ id: defaultJourney.id, status: 'deleted' }]
-      }))
-      const trashJourneysMock = {
-        request: {
-          query: DELETE_TRASHED_JOURNEYS,
-          variables: {
-            ids: [defaultJourney.id, oldJourney.id]
-          }
-        },
-        result
-      }
-      const onLoad = jest.fn()
       const { getByText } = render(
         <MockedProvider
           mocks={[trashedJourneysMock, trashJourneysMock, noJourneysMock]}
@@ -250,6 +277,32 @@ describe('ActiveStatusTab', () => {
       await waitFor(() => expect(onLoad).toHaveBeenCalled())
       fireEvent.click(getByText('Delete Forever'))
       await waitFor(() => expect(result).toHaveBeenCalled())
+    })
+
+    it('should show error', async () => {
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[
+            trashedJourneysMock,
+            { ...trashJourneysMock, error: new Error('error') }
+          ]}
+        >
+          <SnackbarProvider>
+            <ThemeProvider>
+              <SnackbarProvider>
+                <TrashedStatusTab
+                  onLoad={onLoad}
+                  event="deleteAllTrashed"
+                  authUser={authUser}
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      await waitFor(() => expect(onLoad).toHaveBeenCalled())
+      fireEvent.click(getByText('Delete Forever'))
+      await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
 })

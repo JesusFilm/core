@@ -98,7 +98,7 @@ export function TrashedStatusTab({
     },
     update(cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Journeys restored.'), {
+        enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
         void refetch()
@@ -119,7 +119,7 @@ export function TrashedStatusTab({
     },
     update(cache, { data }) {
       if (data?.journeysDelete != null) {
-        enqueueSnackbar(t('Journeys deleted.'), {
+        enqueueSnackbar(t('Journeys Deleted'), {
           variant: 'success'
         })
         void refetch()
@@ -130,13 +130,28 @@ export function TrashedStatusTab({
   const [openRestoreAll, setOpenRestoreAll] = useState(false)
   const [openDeleteAll, setOpenDeleteAll] = useState(false)
 
+  const snackbarError = (error: Error): void => {
+    enqueueSnackbar(error.message, {
+      variant: 'error',
+      preventDuplicate: true
+    })
+  }
+
   const restoreAll = async (): Promise<void> => {
-    await restoreTrashed()
+    try {
+      await restoreTrashed()
+    } catch (error) {
+      snackbarError(error)
+    }
     handleClose()
   }
 
   const deleteAll = async (): Promise<void> => {
-    await deleteTrashed()
+    try {
+      await deleteTrashed()
+    } catch (error) {
+      snackbarError(error)
+    }
     handleClose()
   }
 

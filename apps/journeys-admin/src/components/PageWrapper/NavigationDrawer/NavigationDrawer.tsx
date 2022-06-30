@@ -99,7 +99,7 @@ export function NavigationDrawer({
   const journeysSelected =
     title === 'Active Journeys' ||
     title === 'Archived Journeys' ||
-    title === 'Deleted Journeys' ||
+    title === 'Trashed Journeys' ||
     title === 'Journey Details'
 
   const profileOpen = Boolean(profileAnchorEl)

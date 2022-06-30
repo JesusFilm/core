@@ -98,7 +98,7 @@ export function ActiveStatusTab({
     },
     update(cache, { data }) {
       if (data?.journeysArchive != null) {
-        enqueueSnackbar(t('Journeys archived.'), {
+        enqueueSnackbar(t('Journeys Archived'), {
           variant: 'success'
         })
         void refetch()
@@ -119,7 +119,7 @@ export function ActiveStatusTab({
     },
     update(cache, { data }) {
       if (data?.journeysTrash != null) {
-        enqueueSnackbar(t('Journeys trashed.'), {
+        enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
         })
         void refetch()
@@ -130,13 +130,28 @@ export function ActiveStatusTab({
   const [openArchiveAll, setOpenArchiveAll] = useState(false)
   const [openTrashAll, setOpenTrashAll] = useState(false)
 
+  const snackbarError = (error: Error): void => {
+    enqueueSnackbar(error.message, {
+      variant: 'error',
+      preventDuplicate: true
+    })
+  }
+
   const archiveAll = async (): Promise<void> => {
-    await archiveActive()
+    try {
+      await archiveActive()
+    } catch (error) {
+      snackbarError(error)
+    }
     handleClose()
   }
 
   const trashAll = async (): Promise<void> => {
-    await trashActive()
+    try {
+      await trashActive()
+    } catch (error) {
+      snackbarError(error)
+    }
     handleClose()
   }
 

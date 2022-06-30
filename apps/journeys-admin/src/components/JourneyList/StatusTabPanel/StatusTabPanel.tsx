@@ -53,6 +53,7 @@ export function StatusTabPanel({
 
   const [tabsLoaded, setTabsLoaded] = useState(false)
   const [activeTabLoaded, setActiveTabLoaded] = useState(false)
+  const [activeEvent, setActiveEvent] = useState(event)
 
   function activeTabOnLoad(): void {
     setActiveTabLoaded(true)
@@ -63,6 +64,10 @@ export function StatusTabPanel({
       setTabsLoaded(true)
     }
   }, [activeTabLoaded])
+
+  useEffect(() => {
+    setActiveEvent(event)
+  }, [event])
 
   const tabIndex =
     router != null
@@ -82,17 +87,17 @@ export function StatusTabPanel({
       // ensure tab data is refreshed on change
       switch (newValue) {
         case 0:
-          event = 'refetchActive'
+          setActiveEvent('refetchActive')
           break
         case 1:
-          event = 'refetchArchived'
+          setActiveEvent('refetchArchived')
           break
         case 2:
-          event = 'refetchTrashed'
+          setActiveEvent('refetchTrashed')
           break
       }
       setTimeout(() => {
-        event = ''
+        setActiveEvent('')
       }, 1000)
       const tabParam =
         journeyStatusTabs.find((status) => status.tabIndex === newValue)
@@ -189,7 +194,7 @@ export function StatusTabPanel({
             <ActiveStatusTab
               onLoad={activeTabOnLoad}
               sortOrder={sortOrder}
-              event={event}
+              event={activeEvent}
               authUser={authUser}
             />
           </TabPanel>
@@ -203,7 +208,7 @@ export function StatusTabPanel({
             <ArchivedStatusTab
               onLoad={activeTabOnLoad}
               sortOrder={sortOrder}
-              event={event}
+              event={activeEvent}
               authUser={authUser}
             />
           </TabPanel>
@@ -217,7 +222,7 @@ export function StatusTabPanel({
             <TrashedStatusTab
               onLoad={activeTabOnLoad}
               sortOrder={sortOrder}
-              event={event}
+              event={activeEvent}
               authUser={authUser}
             />
           </TabPanel>
