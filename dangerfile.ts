@@ -1,6 +1,7 @@
 import { danger, warn, markdown } from 'danger'
 import lint from '@commitlint/lint'
 import load from '@commitlint/load'
+import config from './commitlint.config'
 
 export default async () => {
   // ignore dependabot
@@ -28,9 +29,7 @@ export default async () => {
   }
 
   // check PR has well-formed title
-  const commitlintConfig = await load({
-    extends: ['@commitlint/config-conventional']
-  })
+  const commitlintConfig = await load(config)
   const commitlintReport = await lint(
     danger.github.pr.title,
     commitlintConfig.rules
