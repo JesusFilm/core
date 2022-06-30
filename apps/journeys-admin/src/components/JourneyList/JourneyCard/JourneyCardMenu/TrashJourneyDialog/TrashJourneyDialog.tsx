@@ -46,7 +46,7 @@ export function TrashJourneyDialog({
   async function handleTrash(): Promise<void> {
     try {
       await trashJourney()
-      enqueueSnackbar('Moved To Trash', {
+      enqueueSnackbar('Journey trashed', {
         variant: 'success',
         preventDuplicate: true
       })
