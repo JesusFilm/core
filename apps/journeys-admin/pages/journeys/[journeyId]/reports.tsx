@@ -16,16 +16,16 @@ import i18nConfig from '../../../next-i18next.config'
 import { DynamicPowerBiReport } from '../../../src/components/DynamicPowerBiReport'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 
-function JourneyAnalyticsPage(): ReactElement {
+function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const router = useRouter()
 
   return (
     <>
-      <NextSeo title={t('Journey Analytics')} />
+      <NextSeo title={t('Journey Reports')} />
       <PageWrapper
-        title={t('Journey Analytics')}
+        title={t('Journey Reports')}
         authUser={AuthUser}
         backHref={`/journeys/${router.query.journeyId as string}`}
       >
@@ -71,4 +71,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(JourneyAnalyticsPage)
+})(JourneyReportsPage)

@@ -164,12 +164,12 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
               <ListItemText>Language</ListItemText>
             </MenuItem>
             {analytics && (
-              <NextLink href={`/journeys/${journey.id}/analytics`} passHref>
+              <NextLink href={`/journeys/${journey.id}/reports`} passHref>
                 <MenuItem>
                   <ListItemIcon>
                     <AssessmentRoundedIcon />
                   </ListItemIcon>
-                  <ListItemText>Analytics</ListItemText>
+                  <ListItemText>Reports</ListItemText>
                 </MenuItem>
               </NextLink>
             )}

@@ -103,7 +103,7 @@ export function NavigationDrawer({
     title === 'Archived Journeys' ||
     title === 'Deleted Journeys' ||
     title === 'Journey Details' ||
-    title === 'Journey Analytics'
+    title === 'Journey Reports'
 
   const { analytics } = useFlags()
 
