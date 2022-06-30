@@ -32,9 +32,12 @@ export function HorizontalSelect({
 
   useEffect(() => {
     if (selectedRef?.current != null) {
-      selectedRef.current.scrollIntoView({ inline: 'center' })
+      selectedRef.current.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center'
+      })
     }
-  }, [])
+  }, [id])
 
   return (
     <Stack
