@@ -201,6 +201,7 @@ export class JourneyResolver {
     title: string
   ): number[] {
     return journeys.map((journey) => {
+      console.log('journey', journey, title)
       if (journey.title === title) {
         return 0
       } else if (journey.title === `${title} copy`) {
@@ -208,6 +209,7 @@ export class JourneyResolver {
       } else {
         const duplicate = journey.title.split(' copy')[1] ?? ''
         const numbers = duplicate.match(/(\d+)/)
+        // If no duplicate number found, it's a unique journey. Return 0
         return numbers != null ? parseInt(numbers[0]) : 0
       }
     })
@@ -232,11 +234,9 @@ export class JourneyResolver {
       title
     )
     const duplicateNumber = this.getFirstMissingNumber(duplicates)
-    const duplicateTitle = `${title} ${
-      existingDuplicateJourneys.length === 1
-        ? 'copy'
-        : `copy ${duplicateNumber}`
-    }`
+    const duplicateTitle = `${title} copy ${
+      duplicateNumber === 1 ? '' : duplicateNumber
+    }`.trimEnd()
 
     const slug = slugify(duplicateTitle, {
       lower: true,
