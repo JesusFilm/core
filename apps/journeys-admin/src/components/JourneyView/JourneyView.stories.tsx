@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
 import { JourneyView } from './JourneyView'
@@ -19,16 +20,18 @@ const JourneyViewStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <JourneyProvider value={{ journey: args.journey }}>
-      <PageWrapper
-        title="Journey Details"
-        showDrawer
-        backHref="/"
-        menu={<Menu />}
-      >
-        <JourneyView />
-      </PageWrapper>
-    </JourneyProvider>
+    <FlagsProvider flags={{ analytics: true }}>
+      <JourneyProvider value={{ journey: args.journey }}>
+        <PageWrapper
+          title="Journey Details"
+          showDrawer
+          backHref="/"
+          menu={<Menu />}
+        >
+          <JourneyView />
+        </PageWrapper>
+      </JourneyProvider>
+    </FlagsProvider>
   </MockedProvider>
 )
 
