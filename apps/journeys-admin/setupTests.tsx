@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
 import './test/createMatchMedia'
+import crypto from 'crypto'
 import { configure } from '@testing-library/react'
 
 configure({ asyncUtilTimeout: 2500 })
@@ -15,3 +16,11 @@ jest.mock('next/image', () => ({
 jest.setTimeout(10000)
 
 Element.prototype.scrollIntoView = jest.fn()
+
+// getRandomValues is required for powerBi unit tests, see issue:
+// https://community.powerbi.com/t5/Developer/TypeError-cryptoObj-getRandomValues-is-not-a-function-unrelated/m-p/1963294
+Object.defineProperty(window.self, 'crypto', {
+  value: {
+    getRandomValues: (arr) => crypto.randomBytes(arr.length)
+  }
+})

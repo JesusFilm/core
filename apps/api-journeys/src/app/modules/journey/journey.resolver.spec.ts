@@ -786,12 +786,11 @@ describe('JourneyResolver', () => {
         id: 'languageId'
       })
     })
-  })
-
-  it('when no languageId returns object for federation with default', async () => {
-    expect(await resolver.language({})).toEqual({
-      __typename: 'Language',
-      id: '529'
+    it('when no languageId returns object for federation with default', async () => {
+      expect(await resolver.language({})).toEqual({
+        __typename: 'Language',
+        id: '529'
+      })
     })
   })
 })
