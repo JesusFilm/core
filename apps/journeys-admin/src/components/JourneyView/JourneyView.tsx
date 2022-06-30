@@ -14,6 +14,7 @@ import { Theme } from '@mui/material/styles'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import Button from '@mui/material/Button'
 import { useTranslation } from 'react-i18next'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { DynamicPowerBiReport } from '../DynamicPowerBiReport'
@@ -24,6 +25,7 @@ import { SlugDialog } from './Properties/SlugDialog'
 export function JourneyView(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const { analytics } = useFlags()
   const blocks =
     journey?.blocks != null
       ? (transformer(journey.blocks) as Array<TreeBlock<StepBlock>>)
@@ -53,10 +55,16 @@ export function JourneyView(): ReactElement {
 
       <Properties />
 
-      <Box sx={{ height: '213px', pb: 6, mx: 6 }}>
-        <DynamicPowerBiReport reportType={JourneysReportType.singleSummary} />
-      </Box>
-      <Divider />
+      {analytics && (
+        <>
+          <Box sx={{ height: '213px', pb: 6, mx: 6 }}>
+            <DynamicPowerBiReport
+              reportType={JourneysReportType.singleSummary}
+            />
+          </Box>
+          <Divider />
+        </>
+      )}
 
       {!smUp && (
         <>

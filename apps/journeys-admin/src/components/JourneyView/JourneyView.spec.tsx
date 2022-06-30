@@ -2,6 +2,7 @@ import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -56,11 +57,13 @@ describe('JourneyView', () => {
   it('should have edit button', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
-            <JourneyView />
-          </JourneyProvider>
-        </SnackbarProvider>
+        <FlagsProvider flags={{ analytics: true }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey, admin: true }}>
+              <JourneyView />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
@@ -71,11 +74,13 @@ describe('JourneyView', () => {
   it('should show analytics', async () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey, admin: true }}>
-            <JourneyView />
-          </JourneyProvider>
-        </SnackbarProvider>
+        <FlagsProvider flags={{ analytics: true }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey, admin: true }}>
+              <JourneyView />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     await waitFor(() =>
