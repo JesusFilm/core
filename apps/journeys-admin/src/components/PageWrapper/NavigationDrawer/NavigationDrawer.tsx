@@ -100,7 +100,8 @@ export function NavigationDrawer({
     title === 'Active Journeys' ||
     title === 'Archived Journeys' ||
     title === 'Deleted Journeys' ||
-    title === 'Journey Details'
+    title === 'Journey Details' ||
+    title === 'Journey Analytics'
 
   const profileOpen = Boolean(profileAnchorEl)
   const handleProfileClick = (event): void => {

@@ -37,7 +37,8 @@ export function PageWrapper({
     title === 'Active Journeys' ||
     title === 'Archived Journeys' ||
     title === 'Deleted Journeys' ||
-    title === 'Journey Details'
+    title === 'Journey Details' ||
+    title === 'Journey Analytics'
 
   return (
     <>
