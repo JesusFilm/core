@@ -72,7 +72,7 @@ export function TrashJourneyDialog({
     >
       <Typography>
         Journey will be moved to trash. You can find this journey under the
-        Trash tab until you delete it forever.
+        Trash tab for 40 days, until it is premanently deleted.
       </Typography>
     </Dialog>
   )

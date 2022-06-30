@@ -71,8 +71,8 @@ export function DeleteJourneyDialog({
       }}
     >
       <Typography>
-        Are you sure you would like to delete the journey forever? You will not
-        be able to undo this action.
+        Are you sure you would like to delete the journey immediately? You will
+        not be able to undo or restore these journeys.
       </Typography>
     </Dialog>
   )
