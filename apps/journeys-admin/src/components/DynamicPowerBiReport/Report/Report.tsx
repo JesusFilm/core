@@ -37,7 +37,7 @@ export function Report({ reportType }: ReportProps): ReactElement {
 
   function onError(): void {
     setError(true)
-    enqueueSnackbar('Error loading Reports', {
+    enqueueSnackbar('Error loading report', {
       variant: 'error',
       preventDuplicate: true
     })
