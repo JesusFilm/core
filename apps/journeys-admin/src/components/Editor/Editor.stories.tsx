@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import {
   ButtonColor,
@@ -383,7 +384,7 @@ const blocks: GetJourney_journey_blocks[] = [
   {
     id: 'image3.id',
     __typename: 'ImageBlock',
-    src: 'https://images.unsplash.com/photo-1527268835115-be8ff4ff5dec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1235&q=80',
+    src: 'https://images.unsplash.com/photo-1651069188152-bf30b5af2a0d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364&q=80',
     width: 1920,
     height: 1080,
     alt: 'random image from unsplash',
@@ -582,16 +583,18 @@ const blocks: GetJourney_journey_blocks[] = [
 
 const Template: Story = (args) => (
   <MockedProvider>
-    <Editor journey={args.journey}>
-      <PageWrapper
-        title={args.journey?.title ?? 'Edit Journey'}
-        showDrawer
-        menu={<EditToolbar />}
-        backHref="/journeys/nua-journey-ep-3-decision"
-      >
-        <JourneyEdit />
-      </PageWrapper>
-    </Editor>
+    <FlagsProvider>
+      <Editor journey={args.journey}>
+        <PageWrapper
+          title={args.journey?.title ?? 'Edit Journey'}
+          showDrawer
+          menu={<EditToolbar />}
+          backHref="/journeys/nua-journey-ep-3-decision"
+        >
+          <JourneyEdit />
+        </PageWrapper>
+      </Editor>
+    </FlagsProvider>
   </MockedProvider>
 )
 
