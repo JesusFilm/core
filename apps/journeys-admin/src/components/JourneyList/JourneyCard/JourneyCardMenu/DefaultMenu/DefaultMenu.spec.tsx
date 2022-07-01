@@ -11,6 +11,7 @@ describe('DefaultMenu', () => {
       <MockedProvider>
         <SnackbarProvider>
           <DefaultMenu
+            id="journeyId"
             slug="journey-slug"
             status={JourneyStatus.draft}
             journeyId="journey-id"
@@ -37,6 +38,7 @@ describe('DefaultMenu', () => {
       <MockedProvider>
         <SnackbarProvider>
           <DefaultMenu
+            id="journey-id"
             slug="journey-slug"
             status={JourneyStatus.draft}
             journeyId="journey-id"
@@ -59,6 +61,7 @@ describe('DefaultMenu', () => {
       <MockedProvider>
         <SnackbarProvider>
           <DefaultMenu
+            id="journey-id"
             slug="journey-slug"
             status={JourneyStatus.published}
             journeyId="journey-id"
@@ -86,6 +89,7 @@ describe('DefaultMenu', () => {
       <MockedProvider>
         <SnackbarProvider>
           <DefaultMenu
+            id="journey-id"
             slug="journey-slug"
             status={JourneyStatus.draft}
             journeyId="journey-id"
@@ -111,6 +115,7 @@ describe('DefaultMenu', () => {
       <MockedProvider>
         <SnackbarProvider>
           <DefaultMenu
+            id="journey-id"
             slug="journey-slug"
             status={JourneyStatus.draft}
             journeyId="journey-id"
