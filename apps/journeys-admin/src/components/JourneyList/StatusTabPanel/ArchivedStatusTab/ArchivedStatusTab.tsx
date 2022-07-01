@@ -196,13 +196,15 @@ export function ArchivedStatusTab({
             <JourneyCard key={journey.id} journey={journey} />
           ))}
           {journeys.length > 0 ? (
-            <Box width="100%" sx={{ textAlign: 'center' }}>
-              <Typography variant="caption">
-                {t(
-                  'Archived journeys are hidden from your active journey list for better organization.'
-                )}
-              </Typography>
-            </Box>
+            <span>
+              <Box width="100%" sx={{ textAlign: 'center' }}>
+                <Typography variant="caption">
+                  {t(
+                    'Archived journeys are hidden from your active journey list for better organization.'
+                  )}
+                </Typography>
+              </Box>
+            </span>
           ) : (
             <>
               <Card
