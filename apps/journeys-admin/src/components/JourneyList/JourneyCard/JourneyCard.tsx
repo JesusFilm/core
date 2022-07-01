@@ -42,7 +42,7 @@ export function JourneyCard({
         borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
-        '&:last-child': {
+        '&:last-of-type': {
           borderBottomLeftRadius: { xs: 0, sm: 12 },
           borderBottomRightRadius: { xs: 0, sm: 12 },
           borderBottom: '1px solid',
