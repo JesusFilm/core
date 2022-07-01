@@ -22,13 +22,7 @@ import { NextCard } from '.'
 const NextCardStory = {
   ...journeysAdminConfig,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Step/NextCard',
-  component: NextCard,
-  parameters: {
-    ...journeysAdminConfig.parameters,
-    chromatic: {
-      delay: 300
-    }
-  }
+  component: NextCard
 }
 
 const card = (index: number): TreeBlock<CardBlock> => {
