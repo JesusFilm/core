@@ -60,7 +60,7 @@
     "axios": "^0.26.1",
     "blurhash": "^1.1.4",
     "canvas": "^2.8.0",
-    "core-js": "^3.6.5",
+    "core-js": "^3.23.3",
     "date-fns": "^2.27.0",
     "express": "4.17.1",
     "firebase": "^9.0.2",
