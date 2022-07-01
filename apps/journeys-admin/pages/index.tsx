@@ -15,7 +15,6 @@ import { GetJourneys } from '../__generated__/GetJourneys'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/PageWrapper'
 import i18nConfig from '../next-i18next.config'
-import { MultipleSummaryReport } from '../src/components/MultipleSummaryReport'
 
 const GET_JOURNEYS = gql`
   query GetJourneys {
@@ -51,7 +50,7 @@ const GET_JOURNEYS = gql`
   }
 `
 
-function IndexPage(props): ReactElement {
+function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
   const AuthUser = useAuthUser()
@@ -69,8 +68,6 @@ function IndexPage(props): ReactElement {
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper title={pageTitle} authUser={AuthUser}>
-        {props.flags.reports === true && <MultipleSummaryReport />}
-
         <JourneyList
           journeys={data?.journeys}
           disableCreation
