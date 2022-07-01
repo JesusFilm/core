@@ -73,7 +73,7 @@ export function TrashJourneyDialog({
     <Dialog
       open={open}
       handleClose={handleClose}
-      dialogTitle={{ title: 'Delete Journey?', closeButton: true }}
+      dialogTitle={{ title: 'Trash Journey?', closeButton: true }}
       dialogAction={{
         onSubmit: handleTrash,
         submitLabel: 'Delete',

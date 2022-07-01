@@ -5,13 +5,13 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import Divider from '@mui/material/Divider'
 import Link from 'next/link'
+import { ApolloQueryResult } from '@apollo/client'
 import { MenuItem } from '../MenuItem'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { ArchiveJourney } from './ArchiveJourney'
-import { ApolloQueryResult } from '@apollo/client'
 import { GetActiveJourneys } from '../../../../../../__generated__/GetActiveJourneys'
 import { GetArchivedJourneys } from '../../../../../../__generated__/GetArchivedJourneys'
 import { GetTrashedJourneys } from '../../../../../../__generated__/GetTrashedJourneys'
+import { ArchiveJourney } from './ArchiveJourney'
 
 interface DefaultMenuProps {
   slug: string
@@ -81,7 +81,7 @@ export function DefaultMenu({
 
       <MenuItem
         icon={<DeleteOutlineRoundedIcon color="secondary" />}
-        text="Delete"
+        text="Trash"
         handleClick={() => {
           setOpenTrashDialog()
           handleCloseMenu()

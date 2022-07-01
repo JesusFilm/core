@@ -97,17 +97,20 @@ export function JourneyCardMenu({
         id={id}
         open={openTrashDialog}
         handleClose={() => setOpenTrashDialog(false)}
+        refetch={refetch}
       />
       <RestoreJourneyDialog
         id={id}
         published={published}
         open={openRestoreDialog}
         handleClose={() => setOpenRestoreDialog(false)}
+        refetch={refetch}
       />
       <DeleteJourneyDialog
         id={id}
         open={openDeleteDialog}
         handleClose={() => setOpenDeleteDialog(false)}
+        refetch={refetch}
       />
     </>
   )

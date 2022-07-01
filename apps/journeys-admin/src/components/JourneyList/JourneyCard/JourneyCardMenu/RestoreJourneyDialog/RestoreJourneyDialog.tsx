@@ -87,7 +87,7 @@ export function RestoreJourneyDialog({
       }}
     >
       <Typography>
-        Are you sure you would like to restore this journeys
+        Are you sure you would like to restore this journey?
       </Typography>
     </Dialog>
   )

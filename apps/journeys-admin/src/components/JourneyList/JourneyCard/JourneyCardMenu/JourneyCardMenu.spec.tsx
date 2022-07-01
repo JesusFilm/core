@@ -37,7 +37,7 @@ describe('JourneyCardMenu', () => {
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
   })
 
   it('should open trash menu on click', () => {
@@ -114,12 +114,12 @@ describe('JourneyCardMenu', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('menuitem', { name: 'Delete' }))
+    fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
 
-    expect(queryByText('Delete Journey?')).toBeInTheDocument()
+    expect(queryByText('Trash Journey?')).toBeInTheDocument()
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
-      expect(queryByText('Delete Journey?')).not.toBeInTheDocument()
+      expect(queryByText('Trash Journey?')).not.toBeInTheDocument()
     )
   })
 

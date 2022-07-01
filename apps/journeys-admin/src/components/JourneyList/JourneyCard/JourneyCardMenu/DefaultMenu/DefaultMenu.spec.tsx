@@ -26,7 +26,7 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
   })
 
   it('should call correct functions on Access click', () => {
@@ -123,7 +123,7 @@ describe('DefaultMenu', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('menuitem', { name: 'Delete' }))
+    fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
     expect(setOpenTrashDialog).toHaveBeenCalled()
     expect(handleCloseMenu).toHaveBeenCalled()
   })
