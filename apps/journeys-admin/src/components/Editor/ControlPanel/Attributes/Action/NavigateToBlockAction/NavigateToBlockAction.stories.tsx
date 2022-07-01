@@ -17,14 +17,7 @@ import { NavigateToBlockAction } from '.'
 const NavigateToBlockActionStory = {
   ...simpleComponentConfig,
   component: NavigateToBlockAction,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates',
-  parameters: {
-    ...simpleComponentConfig.parameters,
-    chromatic: {
-      ...simpleComponentConfig.parameters.chromatic,
-      diffThreshold: 0.9
-    }
-  }
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
 }
 
 const journeyTheme = {
