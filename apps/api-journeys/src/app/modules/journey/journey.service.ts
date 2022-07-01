@@ -61,7 +61,7 @@ export class JourneyService extends BaseService {
   @KeyAsId()
   async getAllByTitle(title: string, userId: string): Promise<Journey[]> {
     const result = await this.db.query(aql`
-     FOR userJourney in userJourneys
+    FOR userJourney in userJourneys
       FOR journey in ${this.collection}
         FILTER CONTAINS(journey.title, ${title}) && userJourney.journeyId == journey._key && userJourney.userId == ${userId} && journey.status IN ${[
       JourneyStatus.published,
