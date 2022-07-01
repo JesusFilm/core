@@ -16,6 +16,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
 import { DeleteBlock } from '../DeleteBlock'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { DuplicateBlock } from '../../../DuplicateBlock'
 
 export function Menu(): ReactElement {
   const {
@@ -50,6 +51,7 @@ export function Menu(): ReactElement {
           </ListItemIcon>
           <ListItemText>Preview</ListItemText>
         </MenuItem>
+        <DuplicateBlock variant="list-item" />
         <DeleteBlock variant="list-item" />
         {!smUp && (
           <MenuItem onClick={handleOpenSocial}>
@@ -79,6 +81,7 @@ export function Menu(): ReactElement {
           </ListItemIcon>
           <ListItemText>Preview</ListItemText>
         </MenuItem>
+        <DuplicateBlock variant="list-item" />
         <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
         {!smUp && (
           <MenuItem onClick={handleOpenSocial}>
