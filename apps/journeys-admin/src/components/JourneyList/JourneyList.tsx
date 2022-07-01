@@ -7,6 +7,7 @@ import Container from '@mui/material/Container'
 import NewReleasesRounded from '@mui/icons-material/NewReleasesRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import { NextRouter } from 'next/router'
+import { AuthUser } from 'next-firebase-auth'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { MultipleSummaryReport } from '../MultipleSummaryReport'
@@ -16,11 +17,15 @@ import { StatusTabPanel } from './StatusTabPanel'
 export interface JourneysListProps {
   journeys?: Journey[]
   router?: NextRouter
+  event?: string | undefined
+  authUser?: AuthUser
 }
 
 export function JourneyList({
   journeys,
-  router
+  router,
+  event = '',
+  authUser
 }: JourneysListProps): ReactElement {
   const { reports } = useFlags()
 

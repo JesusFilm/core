@@ -7,6 +7,7 @@ import Tabs from '@mui/material/Tabs'
 import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { NextRouter } from 'next/router'
+import { AuthUser } from 'next-firebase-auth'
 import { JourneySort, SortOrder } from '../JourneySort'
 import { ActiveStatusTab } from './ActiveStatusTab'
 import { ArchivedStatusTab } from './ArchivedStatusTab'
@@ -14,6 +15,8 @@ import { TrashedStatusTab } from './TrashedStatusTab'
 
 export interface StatusTabPanelProps {
   router?: NextRouter
+  event?: string | undefined
+  authUser?: AuthUser | undefined
 }
 
 interface StatusOptions {
@@ -22,7 +25,11 @@ interface StatusOptions {
   tabIndex: number
 }
 
-export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
+export function StatusTabPanel({
+  router,
+  event = '',
+  authUser
+}: StatusTabPanelProps): ReactElement {
   const journeyStatusTabs: StatusOptions[] = [
     {
       queryParam: 'active',
@@ -46,15 +53,21 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
 
   const [tabsLoaded, setTabsLoaded] = useState(false)
   const [activeTabLoaded, setActiveTabLoaded] = useState(false)
+  const [activeEvent, setActiveEvent] = useState(event)
 
   function activeTabOnLoad(): void {
     setActiveTabLoaded(true)
   }
+
   useEffect(() => {
     if (activeTabLoaded) {
       setTabsLoaded(true)
     }
   }, [activeTabLoaded])
+
+  useEffect(() => {
+    setActiveEvent(event)
+  }, [event])
 
   const tabIndex =
     router != null
@@ -71,6 +84,21 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
     if (newValue != null && router != null) {
       // handle change can't be tested until more tabs are added
       setActiveTab(newValue)
+      // ensure tab data is refreshed on change
+      switch (newValue) {
+        case 0:
+          setActiveEvent('refetchActive')
+          break
+        case 1:
+          setActiveEvent('refetchArchived')
+          break
+        case 2:
+          setActiveEvent('refetchTrashed')
+          break
+      }
+      setTimeout(() => {
+        setActiveEvent('')
+      }, 1000)
       const tabParam =
         journeyStatusTabs.find((status) => status.tabIndex === newValue)
           ?.queryParam ?? journeyStatusTabs[0].queryParam
@@ -162,7 +190,12 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
             value={activeTab}
             index={journeyStatusTabs[0].tabIndex}
           >
-            <ActiveStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
+            <ActiveStatusTab
+              onLoad={activeTabOnLoad}
+              sortOrder={sortOrder}
+              event={activeEvent}
+              authUser={authUser}
+            />
           </TabPanel>
         )}
         {activeTab === 1 && (
@@ -171,7 +204,12 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
             value={activeTab}
             index={journeyStatusTabs[1].tabIndex}
           >
-            <ArchivedStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
+            <ArchivedStatusTab
+              onLoad={activeTabOnLoad}
+              sortOrder={sortOrder}
+              event={activeEvent}
+              authUser={authUser}
+            />
           </TabPanel>
         )}
         {activeTab === 2 && (
@@ -180,7 +218,12 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
             value={activeTab}
             index={journeyStatusTabs[2].tabIndex}
           >
-            <TrashedStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
+            <TrashedStatusTab
+              onLoad={activeTabOnLoad}
+              sortOrder={sortOrder}
+              event={activeEvent}
+              authUser={authUser}
+            />
           </TabPanel>
         )}
       </>
