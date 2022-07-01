@@ -633,6 +633,10 @@ describe('JourneyResolver', () => {
         },
         {
           ...journey,
+          title: `journey copy 1`
+        },
+        {
+          ...journey,
           title: `journey copy copy`
         },
         {
@@ -644,7 +648,7 @@ describe('JourneyResolver', () => {
         arrayCopy,
         'journey copy'
       )
-      expect(duplicateNumbersCopy).toEqual([0, 1, 2])
+      expect(duplicateNumbersCopy).toEqual([0, 0, 1, 2])
     })
   })
 
