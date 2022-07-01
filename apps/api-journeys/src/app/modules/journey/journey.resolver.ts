@@ -186,6 +186,36 @@ export class JourneyResolver {
     }
   }
 
+  getFirstMissingNumber(@Args('arr') arr: number[]): number {
+    // May contain duplicate numbers in array so can't use binary search
+    arr.sort((a, b) => a - b)
+    let duplicateNumber = 0
+    arr.forEach((num, i) => {
+      if (arr[i] === duplicateNumber) duplicateNumber++
+    })
+    return duplicateNumber
+  }
+
+  getJourneyDuplicateNumbers(
+    @Args('journeys') journeys: Journey[],
+    @Args('title') title: string
+  ): number[] {
+    return journeys.map((journey, i) => {
+      if (journey.title === title) {
+        return 0
+      } else if (journey.title === `${title} copy`) {
+        return 1
+      } else {
+        // Find the difference between duplicated journey and journey in list titles, remove the "copy" to find duplicate number
+        const modifier = journey.title.split(title)[1]?.split(' copy')
+        const duplicate = modifier[1]?.trim() ?? ''
+        const numbers = duplicate.match(/^\d+$/)
+        // If no duplicate number found, it's a unique journey. Return 0
+        return numbers != null ? parseInt(numbers[0]) : 0
+      }
+    })
+  }
+
   @Mutation()
   @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
   async journeyDuplicate(
@@ -194,16 +224,18 @@ export class JourneyResolver {
   ): Promise<Journey | undefined> {
     const journey: Journey = await this.journeyService.get(id)
     const duplicateJourneyId = uuidv4()
-
-    const title = journey.title.split(' copy')[0]
     const existingDuplicateJourneys = await this.journeyService.getAllByTitle(
-      title
+      journey.title,
+      userId
     )
-    const duplicateTitle = `${title} ${
-      existingDuplicateJourneys.length === 1
-        ? 'copy'
-        : `copy ${existingDuplicateJourneys.length}`
-    }`
+    const duplicates = this.getJourneyDuplicateNumbers(
+      existingDuplicateJourneys,
+      journey.title
+    )
+    const duplicateNumber = this.getFirstMissingNumber(duplicates)
+    const duplicateTitle = `${journey.title} copy ${
+      duplicateNumber === 1 ? '' : duplicateNumber
+    }`.trimEnd()
 
     const slug = slugify(duplicateTitle, {
       lower: true,
@@ -214,12 +246,10 @@ export class JourneyResolver {
       journey,
       'StepBlock'
     )
-
     const duplicateStepIds = new Map()
     originalBlocks.forEach((block) => {
       duplicateStepIds.set(block.id, uuidv4())
     })
-
     const duplicateBlocks = await this.blockService.getDuplicateChildren(
       originalBlocks,
       id,

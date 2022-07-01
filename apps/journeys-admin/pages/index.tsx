@@ -85,7 +85,6 @@ function IndexPage(): ReactElement {
       >
         <JourneyList
           journeys={data?.journeys}
-          disableCreation
           router={router}
           event={listEvent}
           authUser={AuthUser}

@@ -59,7 +59,10 @@ export function Properties(): ReactElement {
             <CopyTextField
               value={
                 journey?.slug != null
-                  ? `https://your.nextstep.is/${journey.slug}`
+                  ? `${
+                      process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                      'https://your.nextstep.is'
+                    }/${journey.slug}`
                   : undefined
               }
             />
@@ -96,27 +99,6 @@ export function Properties(): ReactElement {
         </Divider>
         <Box sx={{ px: 6 }}>
           <JourneyDetails />
-        </Box>
-        <Divider />
-        <Box sx={{ px: 6 }}>
-          <CopyTextField
-            value={
-              journey?.slug != null
-                ? `https://your.nextstep.is/${journey.slug}`
-                : undefined
-            }
-            label={t('Journey URL')}
-          />
-          <Box sx={{ pt: 2 }}>
-            <Button
-              onClick={() => setShowSlugDialog(true)}
-              size="small"
-              startIcon={<EditIcon />}
-              disabled={journey == null}
-            >
-              {t('Edit URL')}
-            </Button>
-          </Box>
         </Box>
       </Stack>
       <SlugDialog

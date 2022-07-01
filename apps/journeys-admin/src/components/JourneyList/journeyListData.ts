@@ -172,4 +172,18 @@ export const descriptiveJourney: Journey = {
   ]
 }
 
-// https://source.unsplash.com/100x100
+export const archiveddJourney: Journey = {
+  ...defaultJourney,
+  id: 'archived-journey-id',
+  title: 'Archived Journey Heading',
+  description: 'a archived journey',
+  status: JourneyStatus.archived
+}
+
+export const trashedJourney: Journey = {
+  ...defaultJourney,
+  id: 'rashed-journey-id',
+  title: 'Trashed Journey Heading',
+  description: 'a trashed journey',
+  status: JourneyStatus.trashed
+}

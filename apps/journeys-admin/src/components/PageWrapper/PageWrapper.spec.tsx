@@ -17,7 +17,7 @@ describe('PageWrapper', () => {
     it('should show title', () => {
       const { getByText } = render(
         <MockedProvider>
-          <FlagsProvider flags={{ analytics: true }}>
+          <FlagsProvider>
             <PageWrapper title="Journeys" />
           </FlagsProvider>
         </MockedProvider>
@@ -28,7 +28,7 @@ describe('PageWrapper', () => {
     it('should show back button', () => {
       const { getByRole } = render(
         <MockedProvider>
-          <FlagsProvider flags={{ analytics: true }}>
+          <FlagsProvider>
             <PageWrapper title="Journeys" backHref="/" />
           </FlagsProvider>
         </MockedProvider>
@@ -39,7 +39,7 @@ describe('PageWrapper', () => {
     it('should show custom menu', () => {
       const { getByText } = render(
         <MockedProvider>
-          <FlagsProvider flags={{ analytics: true }}>
+          <FlagsProvider>
             <PageWrapper title="Journeys" menu={<>Custom Content</>} />
           </FlagsProvider>
         </MockedProvider>
@@ -50,7 +50,7 @@ describe('PageWrapper', () => {
     it('should show children', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <FlagsProvider flags={{ analytics: true }}>
+          <FlagsProvider>
             <PageWrapper title="Journeys">
               <div data-testid="test">Hello</div>
             </PageWrapper>
@@ -63,7 +63,7 @@ describe('PageWrapper', () => {
     it('should show the drawer on the left', () => {
       const { getAllByRole, getByTestId, getByText } = render(
         <MockedProvider>
-          <FlagsProvider flags={{ analytics: true }}>
+          <FlagsProvider>
             <PageWrapper title="Journeys" />
           </FlagsProvider>
         </MockedProvider>
@@ -84,7 +84,7 @@ describe('PageWrapper', () => {
     it('should show the drawer on mobile view', () => {
       const { getAllByRole, getByTestId, getByText } = render(
         <MockedProvider>
-          <FlagsProvider flags={{ analytics: true }}>
+          <FlagsProvider>
             <PageWrapper title="Active Journeys" />
           </FlagsProvider>
         </MockedProvider>
@@ -99,7 +99,7 @@ describe('PageWrapper', () => {
     it('should not show the drawer on mobile view', () => {
       const { queryByTestId, getByText } = render(
         <MockedProvider>
-          <FlagsProvider flags={{ analytics: true }}>
+          <FlagsProvider>
             <PageWrapper title="Journey Edit" />
           </FlagsProvider>
         </MockedProvider>

@@ -133,7 +133,7 @@ describe('AddJourneyButton', () => {
     ])
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
-        `/journeys/${resultData.journeyCreate.slug}/edit`,
+        `/journeys/${resultData.journeyCreate.id}/edit`,
         undefined,
         { shallow: true }
       )
@@ -196,7 +196,7 @@ describe('AddJourneyButton', () => {
     ])
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
-        `/journeys/${resultData.journeyCreate.slug}/edit`,
+        `/journeys/${resultData.journeyCreate.id}/edit`,
         undefined,
         { shallow: true }
       )

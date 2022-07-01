@@ -1,7 +1,6 @@
 {
   "%s | Next Steps": "%s | Next Steps",
   "Admin | Next Steps": "Admin | Next Steps",
-  "Analytics": "Analytics",
   "Active Journeys": "Active Journeys",
   "Archived Journeys": "Archived Journeys",
   "Trashed Journeys": "Trashed Journeys",
@@ -11,6 +10,8 @@
   "Access Denied": "Access Denied",
   "Edit {{title}}": "Edit {{title}}",
   "Edit Journey": "Edit Journey",
+  "Journey Report": "Journey Report",
+  "Reports": "Reports",
   "Sign In": "Sign In",
   "Archive All": "Archive All",
   "Trash All": "Trash All",
@@ -43,9 +44,9 @@
   "Delete Journeys Forever": "Delete Journeys Forever",
   "Delete Forever": "Delete Forever",
   "Are you sure you would like to permanently delete all trashed journeys immediately?": "Are you sure you would like to permanently delete all trashed journeys immediately?",
-  "Properties": "Properties",
-  "Access Control": "Access Control",
   "Journey URL": "Journey URL",
   "Edit URL": "Edit URL",
+  "Properties": "Properties",
+  "Access Control": "Access Control",
   "Field update failed. Reload the page or try again.": "Field update failed. Reload the page or try again."
 }

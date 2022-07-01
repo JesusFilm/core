@@ -1,6 +1,7 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { NextRouter } from 'next/router'
 import { ThemeProvider } from '../ThemeProvider'
 import { defaultJourney, publishedJourney, oldJourney } from './journeyListData'
@@ -23,11 +24,13 @@ describe('JourneyList', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList
-              journeys={[defaultJourney, publishedJourney, oldJourney]}
-            />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -38,9 +41,11 @@ describe('JourneyList', () => {
     const { getByText, getByRole, queryByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList journeys={[]} disableCreation />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList journeys={[]} />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -56,15 +61,72 @@ describe('JourneyList', () => {
     expect(getByRole('button', { name: 'Contact Support' })).toBeInTheDocument()
   })
 
+  it('should render report', async () => {
+    const { getByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <FlagsProvider flags={{ reports: true }}>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(getByTestId('powerBi-multipleSummary-report')).toBeInTheDocument()
+    )
+  })
+
+  it('should hide report if report flag is off', async () => {
+    const { queryByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <FlagsProvider flags={{ reports: false }}>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(queryByTestId('powerBi-multipleSummary-report')).toBeNull()
+    )
+  })
+
+  it('should hide report the user has no journeys', async () => {
+    const { queryByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <FlagsProvider flags={{ reports: true }}>
+            <ThemeProvider>
+              <JourneyList journeys={[]} />
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(queryByTestId('powerBi-multipleSummary-report')).toBeNull()
+    )
+  })
+
   it('should show add journey button', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList
-              journeys={[defaultJourney, publishedJourney, oldJourney]}
-            />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -76,12 +138,14 @@ describe('JourneyList', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList
-              journeys={[defaultJourney, publishedJourney, oldJourney]}
-              router={router}
-            />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+                router={router}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -93,12 +157,14 @@ describe('JourneyList', () => {
     const { queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList
-              journeys={[defaultJourney, publishedJourney, oldJourney]}
-              router={router}
-            />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+                router={router}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -110,12 +176,14 @@ describe('JourneyList', () => {
     const { queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList
-              journeys={[defaultJourney, publishedJourney, oldJourney]}
-              router={router}
-            />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+                router={router}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )

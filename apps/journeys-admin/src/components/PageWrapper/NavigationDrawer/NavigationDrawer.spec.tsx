@@ -20,7 +20,7 @@ describe('NavigationDrawer', () => {
   it('should render the drawer', () => {
     const { getByText, getAllByRole, getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ analytics: true }}>
+        <FlagsProvider>
           <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
         </FlagsProvider>
       </MockedProvider>
@@ -31,33 +31,33 @@ describe('NavigationDrawer', () => {
     expect(getByText('Discover')).toBeInTheDocument()
   })
 
-  it('should show analytics button', () => {
+  it('should show reports button', () => {
     const { getByText } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ analytics: true }}>
+        <FlagsProvider flags={{ reports: true }}>
           <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByText('Analytics')).toBeInTheDocument()
+    expect(getByText('Reports')).toBeInTheDocument()
   })
 
-  it('should hide analytics button', () => {
+  it('should hide reports button', () => {
     const { queryByText } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ analytics: false }}>
+        <FlagsProvider flags={{ reports: false }}>
           <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(queryByText('Analytics')).not.toBeInTheDocument()
+    expect(queryByText('Reports')).not.toBeInTheDocument()
   })
 
-  it('should select the analytics button', () => {
+  it('should select the reports button', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ analytics: true }}>
-          <NavigationDrawer open={true} onClose={onClose} title="Analytics" />
+        <FlagsProvider flags={{ reports: true }}>
+          <NavigationDrawer open={true} onClose={onClose} title="Reports" />
         </FlagsProvider>
       </MockedProvider>
     )
