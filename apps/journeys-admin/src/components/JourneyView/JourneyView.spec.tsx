@@ -84,7 +84,7 @@ describe('JourneyView', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByTestId('powerBi-singleSummary-report')).toBeInTheDocument()
+      expect(getByTestId('power-bi-report')).toBeInTheDocument()
     )
   })
 
@@ -100,8 +100,6 @@ describe('JourneyView', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    await waitFor(() =>
-      expect(queryByTestId('powerBi-singleSummary-report')).toBeNull()
-    )
+    expect(queryByTestId('power-bi-report')).not.toBeInTheDocument()
   })
 })

@@ -9,8 +9,6 @@ import Fab from '@mui/material/Fab'
 import Skeleton from '@mui/material/Skeleton'
 import NextLink from 'next/link'
 import Divider from '@mui/material/Divider'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { Theme } from '@mui/material/styles'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import Button from '@mui/material/Button'
 import { useTranslation } from 'react-i18next'
@@ -32,7 +30,6 @@ export function JourneyView(): ReactElement {
       : undefined
 
   const [showSlugDialog, setShowSlugDialog] = useState(false)
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
     <Box sx={{ mr: { sm: '328px' }, mb: '80px' }}>
@@ -57,7 +54,10 @@ export function JourneyView(): ReactElement {
 
       {reports && (
         <>
-          <Box sx={{ height: '213px', pb: 6, mx: 6 }}>
+          <Box
+            sx={{ height: '213px', pb: 6, mx: 6 }}
+            data-testid="power-bi-report"
+          >
             <DynamicPowerBiReport
               reportType={JourneysReportType.singleSummary}
             />
@@ -65,46 +65,44 @@ export function JourneyView(): ReactElement {
         </>
       )}
 
-      {!smUp && (
-        <>
-          <Divider />
-          <Box
-            sx={{
-              p: 6,
-              backgroundColor: !reports ? 'background.paper' : undefined
-            }}
-          >
-            <CopyTextField
-              value={
-                journey?.slug != null
-                  ? `https://your.nextstep.is/${journey.slug}`
-                  : undefined
-              }
-              label={t('Journey URL')}
-              sx={
-                reports
-                  ? {
-                      '.MuiFilledInput-root': {
-                        backgroundColor: 'background.paper'
-                      }
+      <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+        <Divider />
+        <Box
+          sx={{
+            p: 6,
+            backgroundColor: !reports ? 'background.paper' : undefined
+          }}
+        >
+          <CopyTextField
+            value={
+              journey?.slug != null
+                ? `https://your.nextstep.is/${journey.slug}`
+                : undefined
+            }
+            label={t('Journey URL')}
+            sx={
+              reports
+                ? {
+                    '.MuiFilledInput-root': {
+                      backgroundColor: 'background.paper'
                     }
-                  : undefined
-              }
-            />
-            <Box sx={{ pt: 2 }}>
-              <Button
-                onClick={() => setShowSlugDialog(true)}
-                size="small"
-                startIcon={<EditIcon />}
-                disabled={journey == null}
-              >
-                {t('Edit URL')}
-              </Button>
-            </Box>
+                  }
+                : undefined
+            }
+          />
+          <Box sx={{ pt: 2 }}>
+            <Button
+              onClick={() => setShowSlugDialog(true)}
+              size="small"
+              startIcon={<EditIcon />}
+              disabled={journey == null}
+            >
+              {t('Edit URL')}
+            </Button>
           </Box>
-          <Divider />
-        </>
-      )}
+        </Box>
+        <Divider />
+      </Box>
 
       <>
         <CardView id={journey?.id} blocks={blocks} />
