@@ -11,12 +11,14 @@ import BeenHereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditIcon from '@mui/icons-material/Edit'
 import DescriptionIcon from '@mui/icons-material/Description'
+import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
 import TranslateIcon from '@mui/icons-material/Translate'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
 import NextLink from 'next/link'
 import { useSnackbar } from 'notistack'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { DescriptionDialog } from './DescriptionDialog'
@@ -44,6 +46,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
+  const { reports } = useFlags()
 
   const openMenu = forceOpen ?? Boolean(anchorEl)
 
@@ -88,7 +91,9 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
     if (journey == null) return
 
     await navigator.clipboard.writeText(
-      `https://your.nextstep.is/${journey.slug}`
+      `${process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'}/${
+        journey.slug
+      }`
     )
     setAnchorEl(null)
     enqueueSnackbar('Link Copied', {
@@ -160,6 +165,16 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
               </ListItemIcon>
               <ListItemText>Language</ListItemText>
             </MenuItem>
+            {reports && (
+              <NextLink href={`/journeys/${journey.id}/reports`} passHref>
+                <MenuItem>
+                  <ListItemIcon>
+                    <AssessmentRoundedIcon />
+                  </ListItemIcon>
+                  <ListItemText>Reports</ListItemText>
+                </MenuItem>
+              </NextLink>
+            )}
             <Divider />
             <NextLink href={`/journeys/${journey.id}/edit`} passHref>
               <MenuItem>

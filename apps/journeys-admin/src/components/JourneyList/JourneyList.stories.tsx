@@ -44,7 +44,7 @@ const Template: Story<JourneysListProps> = ({ ...args }) => (
       }
     ]}
   >
-    <FlagsProvider flags={{ analytics: true }}>
+    <FlagsProvider flags={{ reports: true }}>
       <PageWrapper title="Active Journeys">
         <JourneyList {...args} />
       </PageWrapper>

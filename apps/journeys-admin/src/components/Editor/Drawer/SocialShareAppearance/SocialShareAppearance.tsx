@@ -44,7 +44,10 @@ export function SocialShareAppearance(): ReactElement {
               disabled={journey == null || !isPublished}
               href={
                 journey?.slug != null
-                  ? `https://www.facebook.com/sharer/sharer.php?u=https://your.nextstep.is/${journey.slug}`
+                  ? `https://www.facebook.com/sharer/sharer.php?u=${
+                      process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                      'https://your.nextstep.is'
+                    }/${journey.slug}`
                   : ''
               }
               target="_blank"
@@ -71,7 +74,10 @@ export function SocialShareAppearance(): ReactElement {
               disabled={journey == null || !isPublished}
               href={
                 journey?.slug != null
-                  ? `https://twitter.com/intent/tweet?url=https://your.nextstep.is/${journey.slug}`
+                  ? `https://twitter.com/intent/tweet?url=${
+                      process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                      'https://your.nextstep.is'
+                    }/${journey.slug}`
                   : ''
               }
               target="_blank"
