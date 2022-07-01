@@ -63,7 +63,7 @@ function IndexPage(props): ReactElement {
       ? t('Active Journeys')
       : activeTab === 'archived'
       ? t('Archived Journeys')
-      : t('Deleted Journeys')
+      : t('Trashed Journeys')
 
   return (
     <>
