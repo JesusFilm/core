@@ -63,7 +63,6 @@ export function SignUpEdit({
       multiline
       autoFocus
       value={value}
-      onBlur={handleSaveBlock}
       onChange={(e) => {
         setValue(e.currentTarget.value)
       }}

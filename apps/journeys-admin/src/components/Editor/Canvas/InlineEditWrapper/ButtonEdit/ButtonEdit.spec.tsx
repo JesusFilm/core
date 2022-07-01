@@ -34,7 +34,7 @@ describe('ButtonEdit', () => {
     expect(input).toHaveFocus()
   })
 
-  it('saves the button label on blur', async () => {
+  it('saves the button label on outside click', async () => {
     const result = jest.fn(() => ({
       data: {
         buttonBlockUpdate: [
@@ -72,7 +72,10 @@ describe('ButtonEdit', () => {
           }}
         >
           <EditorProvider>
-            <ButtonEdit {...props} />
+            <h1>Other content</h1>
+            <iframe>
+              <ButtonEdit {...props} />
+            </iframe>
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -81,7 +84,7 @@ describe('ButtonEdit', () => {
     const input = getByRole('textbox')
     fireEvent.click(input)
     fireEvent.change(input, { target: { value: '    updated label    ' } })
-    fireEvent.blur(input)
+    fireEvent.click(getByRole('heading', { level: 1 }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
   it('saves the button label on outside click', async () => {

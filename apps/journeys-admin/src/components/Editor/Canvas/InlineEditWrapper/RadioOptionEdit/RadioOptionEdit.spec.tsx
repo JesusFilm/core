@@ -30,7 +30,7 @@ describe('RadioOptionEdit', () => {
     expect(input).toHaveAttribute('placeholder', 'Type your text here...')
   })
 
-  it('saves the option label on blur', async () => {
+  it('saves the option label on outside click', async () => {
     const result = jest.fn(() => ({
       data: {
         radioOptionBlockUpdate: [
@@ -68,7 +68,10 @@ describe('RadioOptionEdit', () => {
           }}
         >
           <EditorProvider>
-            <RadioOptionEdit {...props} />
+            <h1>Other content</h1>
+            <iframe>
+              <RadioOptionEdit {...props} />
+            </iframe>
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -77,7 +80,7 @@ describe('RadioOptionEdit', () => {
     const input = getByRole('textbox')
     fireEvent.click(input)
     fireEvent.change(input, { target: { value: '    updated label    ' } })
-    fireEvent.blur(input)
+    fireEvent.click(getByRole('heading', { level: 1 }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
   it('saves the option label on outside click', async () => {

@@ -35,7 +35,7 @@ describe('TypographyEdit', () => {
     expect(input).toHaveFocus()
   })
 
-  it('saves the text content on blur', async () => {
+  it('saves the text content on outside click', async () => {
     const result = jest.fn(() => ({
       data: {
         typographyBlockUpdate: [
@@ -73,7 +73,10 @@ describe('TypographyEdit', () => {
           }}
         >
           <EditorProvider>
-            <TypographyEdit {...props} />
+            <h1>Other content</h1>
+            <iframe>
+              <TypographyEdit {...props} />
+            </iframe>
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -82,7 +85,7 @@ describe('TypographyEdit', () => {
     const input = getByRole('textbox')
     fireEvent.click(input)
     fireEvent.change(input, { target: { value: '    updated content    ' } })
-    fireEvent.blur(input)
+    fireEvent.click(getByRole('heading', { level: 1 }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 

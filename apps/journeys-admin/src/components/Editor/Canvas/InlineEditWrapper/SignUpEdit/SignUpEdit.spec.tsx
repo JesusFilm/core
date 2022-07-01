@@ -32,7 +32,7 @@ describe('SignUpEdit', () => {
     await waitFor(() => expect(input).toHaveFocus())
   })
 
-  it('saves the signUp label on blur', async () => {
+  it('saves the signUp label on outside click', async () => {
     const result = jest.fn(() => ({
       data: {
         signUpBlockUpdate: [
@@ -71,7 +71,10 @@ describe('SignUpEdit', () => {
             }}
           >
             <EditorProvider>
-              <SignUpEdit {...props} />
+              <h1>Other Content</h1>
+              <iframe>
+                <SignUpEdit {...props} />
+              </iframe>
             </EditorProvider>
           </JourneyProvider>
         </SnackbarProvider>
@@ -81,7 +84,7 @@ describe('SignUpEdit', () => {
     const input = getByRole('textbox', { name: '' })
     fireEvent.click(input)
     fireEvent.change(input, { target: { value: '    updated label    ' } })
-    fireEvent.blur(input)
+    fireEvent.click(getByRole('heading', { level: 1 }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 

@@ -74,7 +74,6 @@ export function TypographyEdit({
       fullWidth
       autoFocus
       value={value}
-      onBlur={handleSaveBlock}
       onChange={(e) => {
         setValue(e.currentTarget.value)
       }}
