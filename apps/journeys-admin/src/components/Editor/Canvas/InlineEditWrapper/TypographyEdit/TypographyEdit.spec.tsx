@@ -35,57 +35,6 @@ describe('TypographyEdit', () => {
     expect(input).toHaveFocus()
   })
 
-  it('saves the text content on blur', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        typographyBlockUpdate: [
-          {
-            __typename: 'TypographyBlock',
-            id: 'typography.id',
-            content: 'updated content'
-          }
-        ]
-      }
-    }))
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'typography.id',
-                journeyId: 'journeyId',
-                input: {
-                  content: 'updated content'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <EditorProvider>
-            <TypographyEdit {...props} />
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    const input = getByRole('textbox')
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: '    updated content    ' } })
-    fireEvent.blur(input)
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
   it('saves the text content on outside click', async () => {
     const result = jest.fn(() => ({
       data: {

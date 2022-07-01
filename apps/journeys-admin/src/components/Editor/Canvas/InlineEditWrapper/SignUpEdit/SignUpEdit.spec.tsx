@@ -32,59 +32,6 @@ describe('SignUpEdit', () => {
     await waitFor(() => expect(input).toHaveFocus())
   })
 
-  it('saves the signUp label on blur', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        signUpBlockUpdate: [
-          {
-            __typename: 'SignUpBlock',
-            id: 'signUp.id',
-            submitLabel: 'updated label'
-          }
-        ]
-      }
-    }))
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: SIGN_UP_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'signUp.id',
-                journeyId: 'journeyId',
-                input: {
-                  submitLabel: 'updated label'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              admin: true
-            }}
-          >
-            <EditorProvider>
-              <SignUpEdit {...props} />
-            </EditorProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    const input = getByRole('textbox', { name: '' })
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: '    updated label    ' } })
-    fireEvent.blur(input)
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
   it('saves the signUp label on outside click', async () => {
     const result = jest.fn(() => ({
       data: {
