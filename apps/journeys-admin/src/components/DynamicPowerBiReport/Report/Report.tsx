@@ -98,7 +98,7 @@ export function Report({ reportType }: ReportProps): ReactElement {
             <Typography variant="overline" color="secondary.light">
               {error
                 ? 'There was an error loading the report'
-                : 'The reports are loading...'}
+                : 'The report is loading...'}
             </Typography>
           </Box>
         </Fade>
