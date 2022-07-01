@@ -21,7 +21,10 @@ const BackgroundColorStory = {
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Card/BackgroundColor',
   parameters: {
     ...journeysAdminConfig.parameters,
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    chromatic: {
+      delay: 300
+    }
   }
 }
 

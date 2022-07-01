@@ -18,7 +18,14 @@ import { NavigateAction } from '.'
 const NavigateNextStory = {
   ...simpleComponentConfig,
   component: NavigateAction,
-  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates'
+  title: 'Journeys-Admin/Editor/ControlPanel/Attributes/Action/ActionStates',
+  parameters: {
+    ...simpleComponentConfig.parameters,
+    chromatic: {
+      ...simpleComponentConfig.parameters.chromatic,
+      delay: 300
+    }
+  }
 }
 
 const journeyTheme = {
