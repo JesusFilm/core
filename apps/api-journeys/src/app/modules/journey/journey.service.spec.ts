@@ -134,7 +134,9 @@ describe('JourneyService', () => {
     })
 
     it('should return all for title', async () => {
-      expect(await service.getAllByTitle('publish')).toEqual([journeyWithId])
+      expect(await service.getAllByTitle('publish', 'userId')).toEqual([
+        journeyWithId
+      ])
     })
   })
 
