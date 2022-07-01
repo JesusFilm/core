@@ -48,7 +48,7 @@ describe('TrashJourneyDialog', () => {
     fireEvent.click(getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(handleClose).toHaveBeenCalled()
-    expect(getByText('Moved To Trash')).toBeInTheDocument()
+    expect(getByText('Journey trashed')).toBeInTheDocument()
   })
 
   it('should show error if trash fails', async () => {

@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
+import { SnackbarProvider } from 'notistack'
 import { defaultJourney, oldJourney } from '../../journeyListData'
 import { ThemeProvider } from '../../../ThemeProvider'
 import { SortOrder } from '../../JourneySort'
@@ -31,9 +32,11 @@ describe('ActiveStatusTab', () => {
           }
         ]}
       >
-        <ThemeProvider>
-          <TrashedStatusTab onLoad={noop} />
-        </ThemeProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <TrashedStatusTab onLoad={noop} />
+          </ThemeProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -66,9 +69,11 @@ describe('ActiveStatusTab', () => {
           }
         ]}
       >
-        <ThemeProvider>
-          <TrashedStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
-        </ThemeProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <TrashedStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
+          </ThemeProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -101,9 +106,11 @@ describe('ActiveStatusTab', () => {
           }
         ]}
       >
-        <ThemeProvider>
-          <TrashedStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
-        </ThemeProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <TrashedStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
+          </ThemeProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
