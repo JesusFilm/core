@@ -57,7 +57,7 @@ describe('JourneyView', () => {
   it('should have edit button', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ analytics: true }}>
+        <FlagsProvider flags={{ reports: true }}>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, admin: true }}>
               <JourneyView />
@@ -71,10 +71,10 @@ describe('JourneyView', () => {
       '/journeys/journeyId/edit'
     )
   })
-  it('should show analytics', async () => {
+  it('should show reports', async () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ analytics: true }}>
+        <FlagsProvider flags={{ reports: true }}>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, admin: true }}>
               <JourneyView />

@@ -25,7 +25,7 @@ import { SlugDialog } from './Properties/SlugDialog'
 export function JourneyView(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { analytics } = useFlags()
+  const { reports } = useFlags()
   const blocks =
     journey?.blocks != null
       ? (transformer(journey.blocks) as Array<TreeBlock<StepBlock>>)
@@ -55,7 +55,7 @@ export function JourneyView(): ReactElement {
 
       <Properties />
 
-      {analytics && (
+      {reports && (
         <>
           <Box sx={{ height: '213px', pb: 6, mx: 6 }}>
             <DynamicPowerBiReport
@@ -71,7 +71,7 @@ export function JourneyView(): ReactElement {
           <Box
             sx={{
               p: 6,
-              backgroundColor: !analytics ? 'background.paper' : undefined
+              backgroundColor: !reports ? 'background.paper' : undefined
             }}
           >
             <CopyTextField
@@ -82,7 +82,7 @@ export function JourneyView(): ReactElement {
               }
               label={t('Journey URL')}
               customSx={
-                analytics
+                reports
                   ? {
                       '.MuiFilledInput-root': {
                         backgroundColor: 'background.paper'

@@ -20,7 +20,7 @@ const JourneyViewStory = {
 
 const Template: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
-    <FlagsProvider flags={{ analytics: args.analytics }}>
+    <FlagsProvider flags={{ reports: args.reports }}>
       <JourneyProvider value={{ journey: args.journey }}>
         <PageWrapper
           title="Journey Details"
@@ -40,10 +40,10 @@ Default.args = {
   journey: publishedJourney
 }
 
-export const WithAnalytics = Template.bind({})
-WithAnalytics.args = {
+export const Reports = Template.bind({})
+Reports.args = {
   journey: publishedJourney,
-  analytics: true
+  reports: true
 }
 
 export const Loading = Template.bind({})
