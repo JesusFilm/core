@@ -38,7 +38,7 @@ const noJourneysMock = {
 
 const authUser = { id: 'user-id1' } as unknown as AuthUser
 
-describe('ActiveStatusTab', () => {
+describe('ArchivedStatusTab', () => {
   it('should render journeys in descending createdAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[archivedJourneysMock]}>
