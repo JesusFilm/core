@@ -91,7 +91,9 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
     if (journey == null) return
 
     await navigator.clipboard.writeText(
-      `https://your.nextstep.is/${journey.slug}`
+      `${process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'}/${
+        journey.slug
+      }`
     )
     setAnchorEl(null)
     enqueueSnackbar('Link Copied', {

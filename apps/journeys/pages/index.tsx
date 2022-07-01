@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { apolloClient } from '../src/libs/apolloClient'
+import { createApolloClient } from '../src/libs/apolloClient'
 import {
   GetJourneys,
   GetJourneys_journeys as Journey
@@ -40,6 +40,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
 export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
   context
 ) => {
+  const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<GetJourneys>({
     query: gql`
       query GetJourneys {
