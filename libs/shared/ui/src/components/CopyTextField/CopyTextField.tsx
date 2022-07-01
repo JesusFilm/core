@@ -5,19 +5,22 @@ import TextField from '@mui/material/TextField'
 import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
 import { useSnackbar } from 'notistack'
+import { SxProps } from '@mui/system/styleFunctionSx'
 
 export interface CopyTextFieldProps {
   label?: string
   value?: string
   helperText?: string
   messageText?: string
+  customSx?: SxProps
 }
 
 export function CopyTextField({
   label,
   value,
   helperText,
-  messageText
+  messageText,
+  customSx = {}
 }: CopyTextFieldProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -41,7 +44,8 @@ export function CopyTextField({
         },
         '.MuiInputAdornment-root.MuiInputAdornment-positionStart': {
           marginTop: '0 !important'
-        }
+        },
+        ...customSx
       }}
       hiddenLabel={label == null}
       label={label}

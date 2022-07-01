@@ -62,13 +62,18 @@ export function JourneyView(): ReactElement {
               reportType={JourneysReportType.singleSummary}
             />
           </Box>
-          <Divider />
         </>
       )}
 
       {!smUp && (
         <>
-          <Box sx={{ p: 6 }}>
+          <Divider />
+          <Box
+            sx={{
+              p: 6,
+              backgroundColor: !analytics ? 'background.paper' : undefined
+            }}
+          >
             <CopyTextField
               value={
                 journey?.slug != null
@@ -76,6 +81,15 @@ export function JourneyView(): ReactElement {
                   : undefined
               }
               label={t('Journey URL')}
+              customSx={
+                analytics
+                  ? {
+                      '.MuiFilledInput-root': {
+                        backgroundColor: 'background.paper'
+                      }
+                    }
+                  : undefined
+              }
             />
             <Box sx={{ pt: 2 }}>
               <Button

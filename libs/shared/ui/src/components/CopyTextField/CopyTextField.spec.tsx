@@ -64,4 +64,22 @@ describe('CopyTextField', () => {
       expect(getByText('Custom link copied')).toBeInTheDocument()
     )
   })
+
+  it('should show custom styling', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <CopyTextField
+          value={'test'}
+          customSx={{
+            '.MuiFilledInput-root': {
+              backgroundColor: 'rgb (255, 255, 255)'
+            }
+          }}
+        />
+      </SnackbarProvider>
+    )
+    expect(getByRole('textbox')).toHaveStyle(
+      'background-color: rgb (255, 255, 255)'
+    )
+  })
 })
