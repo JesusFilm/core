@@ -9,6 +9,8 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { NextRouter } from 'next/router'
 import { JourneySort, SortOrder } from '../JourneySort'
 import { ActiveStatusTab } from './ActiveStatusTab'
+import { ArchivedStatusTab } from './ArchivedStatusTab'
+import { TrashedStatusTab } from './TrashedStatusTab'
 
 export interface StatusTabPanelProps {
   router?: NextRouter
@@ -33,8 +35,8 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
       tabIndex: 1
     },
     {
-      queryParam: 'deleted',
-      displayValue: 'Deleted',
+      queryParam: 'trashed',
+      displayValue: 'Trash',
       tabIndex: 2
     }
   ]
@@ -112,7 +114,26 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
           >
             <Tab
               label={journeyStatusTabs[0].displayValue}
-              {...tabA11yProps('status-panel', journeyStatusTabs[0].tabIndex)}
+              {...tabA11yProps(
+                'active-status-panel',
+                journeyStatusTabs[0].tabIndex
+              )}
+              disabled={!tabsLoaded}
+            />
+            <Tab
+              label={journeyStatusTabs[1].displayValue}
+              {...tabA11yProps(
+                'archived-status-panel',
+                journeyStatusTabs[1].tabIndex
+              )}
+              disabled={!tabsLoaded}
+            />
+            <Tab
+              label={journeyStatusTabs[2].displayValue}
+              {...tabA11yProps(
+                'trashed-status-panel',
+                journeyStatusTabs[2].tabIndex
+              )}
               disabled={!tabsLoaded}
             />
 
@@ -135,13 +156,33 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
           </Tabs>
         </Card>
 
-        <TabPanel
-          name="status-panel"
-          value={activeTab}
-          index={journeyStatusTabs[0].tabIndex}
-        >
-          <ActiveStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
-        </TabPanel>
+        {activeTab === 0 && (
+          <TabPanel
+            name="active-status-panel"
+            value={activeTab}
+            index={journeyStatusTabs[0].tabIndex}
+          >
+            <ActiveStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
+          </TabPanel>
+        )}
+        {activeTab === 1 && (
+          <TabPanel
+            name="archived-status-panel"
+            value={activeTab}
+            index={journeyStatusTabs[1].tabIndex}
+          >
+            <ArchivedStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
+          </TabPanel>
+        )}
+        {activeTab === 2 && (
+          <TabPanel
+            name="trashed-status-panel"
+            value={activeTab}
+            index={journeyStatusTabs[2].tabIndex}
+          >
+            <TrashedStatusTab onLoad={activeTabOnLoad} sortOrder={sortOrder} />
+          </TabPanel>
+        )}
       </>
     </>
   )
