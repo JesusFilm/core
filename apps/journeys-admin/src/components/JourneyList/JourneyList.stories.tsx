@@ -60,7 +60,8 @@ Default.args = {
       descriptiveJourney
     ],
     disableCreation: true
-  }
+  },
+  reports: true
 }
 
 export const Reports = Template.bind({})
@@ -79,7 +80,8 @@ Reports.args = {
 
 export const Access = Template.bind({})
 Access.args = {
-  props: { journeys: [], disableCreation: true }
+  props: { journeys: [], disableCreation: true },
+  reports: true
 }
 
 export default JourneyListStory as Meta
