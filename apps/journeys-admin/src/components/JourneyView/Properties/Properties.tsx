@@ -59,7 +59,10 @@ export function Properties(): ReactElement {
             <CopyTextField
               value={
                 journey?.slug != null
-                  ? `https://your.nextstep.is/${journey.slug}`
+                  ? `${
+                      process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                      'https://your.nextstep.is'
+                    }/${journey.slug}`
                   : undefined
               }
             />
@@ -102,7 +105,10 @@ export function Properties(): ReactElement {
           <CopyTextField
             value={
               journey?.slug != null
-                ? `https://your.nextstep.is/${journey.slug}`
+                ? `${
+                    process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                    'https://your.nextstep.is'
+                  }/${journey.slug}`
                 : undefined
             }
             label={t('Journey URL')}
