@@ -87,4 +87,21 @@ describe('JourneyView', () => {
       expect(getByTestId('powerBi-singleSummary-report')).toBeInTheDocument()
     )
   })
+
+  it('should hide reports', async () => {
+    const { queryByTestId } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ reports: false }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey, admin: true }}>
+              <JourneyView />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(queryByTestId('powerBi-singleSummary-report')).toBeNull()
+    )
+  })
 })
