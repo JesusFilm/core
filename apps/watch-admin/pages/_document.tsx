@@ -5,7 +5,9 @@ import type { EmotionCache } from '@emotion/cache'
 import type { Enhancer, AppType } from 'next/dist/shared/lib/utils'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
-export default class MyDocument extends Document {
+export default class MyDocument extends Document<{
+  emotionStyleTags: ReactElement[]
+}> {
   render(): ReactElement {
     return (
       <Html lang="en">
@@ -28,6 +30,8 @@ export default class MyDocument extends Document {
             href="/favicon-16x16.png"
           />
           <link rel="manifest" href="/site.webmanifest" />
+          {/* Inject MUI styles first to match with the prepend: true configuration. */}
+          {this.props.emotionStyleTags}
         </Head>
         <body>
           <Main />
