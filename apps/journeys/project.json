@@ -43,7 +43,7 @@
       },
       "configurations": {
         "production": {
-          "buildTarget": "journeys:build:production",
+          "buildTarget": "journeys:_build:production",
           "dev": false
         }
       }
