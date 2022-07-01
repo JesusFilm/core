@@ -1,7 +1,6 @@
 {
   "%s | Next Steps": "%s | Next Steps",
   "Admin | Next Steps": "Admin | Next Steps",
-  "Analytics": "Analytics",
   "Active Journeys": "Active Journeys",
   "Archived Journeys": "Archived Journeys",
   "Trashed Journeys": "Trashed Journeys",
@@ -12,6 +11,7 @@
   "Edit {{title}}": "Edit {{title}}",
   "Edit Journey": "Edit Journey",
   "Journey Reports": "Journey Reports",
+  "Reports": "Reports",
   "Sign In": "Sign In",
   "Archived journeys are hidden from your active journey list for better organization.": "Archived journeys are hidden from your active journey list for better organization.",
   "No archived journeys.": "No archived journeys.",
