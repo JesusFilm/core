@@ -43,7 +43,7 @@ describe('JourneyList', () => {
         <MockedProvider>
           <FlagsProvider>
             <ThemeProvider>
-              <JourneyList journeys={[]} disableCreation />
+              <JourneyList journeys={[]} />
             </ThemeProvider>
           </FlagsProvider>
         </MockedProvider>
