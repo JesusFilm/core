@@ -40,7 +40,7 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <FlagsProvider flags={{ analytics: args.analytics }}>
+    <FlagsProvider flags={{ reports: args.reports }}>
       <PageWrapper {...(args.props as unknown as PageWrapperProps)} />
     </FlagsProvider>
   </MockedProvider>
@@ -49,19 +49,19 @@ const Template: Story = ({ ...args }) => (
 export const Default = Template.bind({})
 Default.args = {
   props: { title: 'Active Journeys' },
-  analytics: true
+  reports: true
 }
 
-export const Analytics = Template.bind({})
-Analytics.args = {
-  props: { title: 'Analytics' },
-  analytics: true
+export const Reports = Template.bind({})
+Reports.args = {
+  props: { title: 'reports' },
+  reports: true
 }
 
-export const AnalyticsOff = Template.bind({})
-AnalyticsOff.args = {
+export const ReportsOff = Template.bind({})
+ReportsOff.args = {
   props: { title: 'Journeys' },
-  analytics: false
+  reports: false
 }
 
 export const Complete = Template.bind({})
@@ -82,7 +82,7 @@ Complete.args = {
       </IconButton>
     )
   },
-  analytics: true
+  reports: true
 }
 
 export default PageWrapperStory as Meta

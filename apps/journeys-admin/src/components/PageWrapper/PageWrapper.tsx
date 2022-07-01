@@ -38,7 +38,8 @@ export function PageWrapper({
     title === 'Archived Journeys' ||
     title === 'Trashed Journeys' ||
     title === 'Journey Details' ||
-    title === 'Journey Reports'
+    title === 'Journey Reports' ||
+    title === 'Reports'
 
   return (
     <>

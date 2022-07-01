@@ -91,7 +91,7 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <FlagsProvider flags={{ analytics: args.reports }}>
+    <FlagsProvider flags={{ reports: args.reports }}>
       <JourneyProvider value={{ journey: args.journey, admin: true }}>
         <Menu {...args} />
       </JourneyProvider>
@@ -112,8 +112,8 @@ Published.args = {
   forceOpen: true
 }
 
-export const Analytics = Template.bind({})
-Analytics.args = {
+export const Reports = Template.bind({})
+Reports.args = {
   journey: defaultJourney,
   reports: true,
   forceOpen: true

@@ -37,7 +37,7 @@ export function Report({ reportType }: ReportProps): ReactElement {
 
   function onError(): void {
     setError(true)
-    enqueueSnackbar('Error loading Analytics', {
+    enqueueSnackbar('Error loading Reports', {
       variant: 'error',
       preventDuplicate: true
     })
@@ -98,7 +98,7 @@ export function Report({ reportType }: ReportProps): ReactElement {
             <Typography variant="overline" color="secondary.light">
               {error
                 ? 'There was an error loading the report'
-                : 'The analytics are loading...'}
+                : 'The reports are loading...'}
             </Typography>
           </Box>
         </Fade>
