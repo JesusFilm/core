@@ -160,3 +160,15 @@ export const publishedJourney: Journey = {
     }
   ]
 }
+
+export const archivedJourney: Journey = {
+  ...defaultJourney,
+  id: 'archived-journey-id',
+  status: JourneyStatus.archived
+}
+
+export const trashedJourney: Journey = {
+  ...defaultJourney,
+  id: 'trashed-journey-id',
+  status: JourneyStatus.trashed
+}
