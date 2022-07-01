@@ -10,6 +10,7 @@ import {
   descriptiveJourney,
   publishedJourney
 } from './journeyListData'
+import { GET_ACTIVE_JOURNEYS } from './StatusTabPanel/ActiveStatusTab/ActiveStatusTab'
 import { JourneyList } from '.'
 
 const JourneyListStory = {
@@ -23,7 +24,25 @@ const JourneyListStory = {
 }
 
 const Template: Story<JourneysListProps> = ({ ...args }) => (
-  <MockedProvider>
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: GET_ACTIVE_JOURNEYS
+        },
+        result: {
+          data: {
+            journeys: [
+              defaultJourney,
+              oldJourney,
+              descriptiveJourney,
+              publishedJourney
+            ]
+          }
+        }
+      }
+    ]}
+  >
     <PageWrapper title="Active Journeys">
       <JourneyList {...args} />
     </PageWrapper>

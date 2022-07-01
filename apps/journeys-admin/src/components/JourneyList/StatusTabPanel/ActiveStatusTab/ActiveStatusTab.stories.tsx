@@ -1,20 +1,20 @@
 import { Story, Meta } from '@storybook/react'
-
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import noop from 'lodash/noop'
+import { journeysAdminConfig } from '../../../../libs/storybook'
 import {
   defaultJourney,
   oldJourney,
   descriptiveJourney,
   publishedJourney
-} from '../journeyListData'
-import { GET_ACTIVE_JOURNEYS } from './ActiveStatusTab/ActiveStatusTab'
-import { StatusTabPanel } from '.'
+} from '../../journeyListData'
+import { GET_ACTIVE_JOURNEYS } from './ActiveStatusTab'
+import { ActiveStatusTab } from '.'
 
-const StatusTabPanelStory = {
+const ActiveStatusTabStory = {
   ...journeysAdminConfig,
-  component: StatusTabPanel,
-  title: 'Journeys-Admin/JourneyList/StatusTabPanel',
+  component: ActiveStatusTab,
+  title: 'Journeys-Admin/JourneyList/ActiveStatusTabPanel/ActiveStatusTab',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -23,12 +23,15 @@ const StatusTabPanelStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
-    <StatusTabPanel />
+    <ActiveStatusTab {...args.props} />
   </MockedProvider>
 )
 
 export const Default = Template.bind({})
 Default.args = {
+  props: {
+    onLoad: noop
+  },
   mocks: [
     {
       request: {
@@ -48,9 +51,31 @@ Default.args = {
   ]
 }
 
+export const NoJourneys = Template.bind({})
+NoJourneys.args = {
+  props: {
+    onLoad: noop
+  },
+  mocks: [
+    {
+      request: {
+        query: GET_ACTIVE_JOURNEYS
+      },
+      result: {
+        data: {
+          journeys: []
+        }
+      }
+    }
+  ]
+}
+
 export const Loading = Template.bind({})
 Loading.args = {
+  props: {
+    onLoad: noop
+  },
   mocks: []
 }
 
-export default StatusTabPanelStory as Meta
+export default ActiveStatusTabStory as Meta

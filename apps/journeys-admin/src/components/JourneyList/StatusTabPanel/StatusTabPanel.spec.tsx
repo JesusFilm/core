@@ -1,9 +1,16 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { defaultJourney, oldJourney } from '../journeyListData'
+import { NextRouter } from 'next/router'
+import {
+  defaultJourney,
+  oldJourney,
+  descriptiveJourney,
+  publishedJourney
+} from '../journeyListData'
 import { ThemeProvider } from '../../ThemeProvider'
 import { StatusTabPanel } from './StatusTabPanel'
+import { GET_ACTIVE_JOURNEYS } from './ActiveStatusTab/ActiveStatusTab'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -11,68 +18,144 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('StatusTabPanel', () => {
-  describe('journeys list', () => {
-    beforeEach(() =>
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
+  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+  it('should render journey cards', async () => {
+    const { getAllByLabelText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ACTIVE_JOURNEYS
+            },
+            result: {
+              data: {
+                journeys: [
+                  defaultJourney,
+                  oldJourney,
+                  descriptiveJourney,
+                  publishedJourney
+                ]
+              }
+            }
+          }
+        ]}
+      >
+        <ThemeProvider>
+          <StatusTabPanel />
+        </ThemeProvider>
+      </MockedProvider>
     )
-
-    it('should render journeys in descending createdAt date by default', () => {
-      const { getAllByLabelText } = render(
-        <MockedProvider>
-          <ThemeProvider>
-            <StatusTabPanel journeys={[defaultJourney, oldJourney]} />
-          </ThemeProvider>
-        </MockedProvider>
-      )
-
-      const journeyCards = getAllByLabelText('journey-card')
-
-      expect(journeyCards[0].textContent).toContain('January 1')
-      expect(journeyCards[1].textContent).toContain('November 19, 2020')
-    })
-
-    it('should order journeys in alphabetical order', () => {
-      const { getAllByLabelText, getByRole } = render(
-        <MockedProvider>
-          <ThemeProvider>
-            <StatusTabPanel journeys={[defaultJourney, oldJourney]} />
-          </ThemeProvider>
-        </MockedProvider>
-      )
-
-      const journeyCards = getAllByLabelText('journey-card')
-
-      fireEvent.click(getByRole('button', { name: 'Sort By' }))
-      fireEvent.click(getByRole('radio', { name: 'Name' }))
-
-      expect(journeyCards[0].textContent).toContain('Default Journey Heading')
-      expect(journeyCards[1].textContent).toContain('An Old Journey Heading')
-    })
-
-    it('should render skeleton tab panel', () => {
-      const { getByTestId } = render(
-        <MockedProvider>
-          <ThemeProvider>
-            <StatusTabPanel journeys={undefined} />
-          </ThemeProvider>
-        </MockedProvider>
-      )
-      expect(getByTestId('skeleton-journey-list')).toBeInTheDocument()
-    })
+    await waitFor(() =>
+      expect(getAllByLabelText('journey-card')).toHaveLength(4)
+    )
   })
 
-  describe('tab panel', () => {
-    it('should not change tab if clicking a already selected tab', () => {
-      const { getByRole } = render(
-        <MockedProvider>
-          <ThemeProvider>
-            <StatusTabPanel journeys={[defaultJourney, oldJourney]} />
-          </ThemeProvider>
-        </MockedProvider>
-      )
-      expect(getByRole('tab')).toHaveAttribute('aria-selected', 'true')
-      fireEvent.click(getByRole('tab', { name: 'Active' }))
-      expect(getByRole('tab')).toHaveAttribute('aria-selected', 'true')
-    })
+  it('should disable tab when waiting for journeys to load', () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <StatusTabPanel />
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('tab', { name: 'Active' })).toBeDisabled()
+  })
+
+  it('should not change tab if clicking a already selected tab', async () => {
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ACTIVE_JOURNEYS
+            },
+            result: {
+              data: {
+                journeys: [defaultJourney]
+              }
+            }
+          }
+        ]}
+      >
+        <ThemeProvider>
+          <StatusTabPanel />
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('tab', { name: 'Active' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+    fireEvent.click(getByRole('tab', { name: 'Active' }))
+    expect(getByRole('tab', { name: 'Active' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+  })
+
+  it('should show active tab on default', () => {
+    const router = {
+      query: {
+        tab: undefined
+      }
+    } as unknown as NextRouter
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ACTIVE_JOURNEYS
+            },
+            result: {
+              data: {
+                journeys: [defaultJourney]
+              }
+            }
+          }
+        ]}
+      >
+        <ThemeProvider>
+          <StatusTabPanel router={router} />
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('tab', { name: 'Active' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+  })
+
+  it('should set active tab based on url query params', () => {
+    const router = {
+      query: {
+        tab: 'active'
+      }
+    } as unknown as NextRouter
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ACTIVE_JOURNEYS
+            },
+            result: {
+              data: {
+                journeys: [defaultJourney]
+              }
+            }
+          }
+        ]}
+      >
+        <ThemeProvider>
+          <StatusTabPanel router={router} />
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('tab', { name: 'Active' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 })
