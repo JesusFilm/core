@@ -102,7 +102,7 @@ export function JourneyCardMenu({
           </ListItemText>
         </MenuItem>
 
-        <DuplicateJourneyMenuItem id={id} />
+        <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       </Menu>
 
       <AccessDialog
