@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
-import { screen, userEvent } from '@storybook/testing-library'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../ThemeProvider'
@@ -30,9 +30,12 @@ Draft.args = {
   published: false,
   journeyId: 'journey-id'
 }
-Draft.play = () => {
-  const menuButton = screen.getByTestId('MoreVertIcon')
+Draft.play = async () => {
+  const menuButton = screen.getByRole('button')
   userEvent.click(menuButton)
+  await waitFor(async () => {
+    await userEvent.hover(screen.getByRole('menu'))
+  })
 }
 
 export const Published = Template.bind({})
@@ -42,9 +45,12 @@ Published.args = {
   published: true,
   journeyId: 'journey-id'
 }
-Published.play = () => {
-  const menuButton = screen.getByTestId('MoreVertIcon')
+Published.play = async () => {
+  const menuButton = screen.getByRole('button')
   userEvent.click(menuButton)
+  await waitFor(async () => {
+    await userEvent.hover(screen.getByRole('menu'))
+  })
 }
 
 export const Archived = Template.bind({})

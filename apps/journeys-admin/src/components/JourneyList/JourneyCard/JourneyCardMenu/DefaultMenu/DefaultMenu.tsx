@@ -7,6 +7,7 @@ import Divider from '@mui/material/Divider'
 import Link from 'next/link'
 import { ApolloQueryResult } from '@apollo/client'
 import { MenuItem } from '../MenuItem'
+import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem.tsx/DuplicateJourneyMenuItem'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { GetActiveJourneys } from '../../../../../../__generated__/GetActiveJourneys'
 import { GetArchivedJourneys } from '../../../../../../__generated__/GetArchivedJourneys'
@@ -14,6 +15,7 @@ import { GetTrashedJourneys } from '../../../../../../__generated__/GetTrashedJo
 import { ArchiveJourney } from './ArchiveJourney'
 
 interface DefaultMenuProps {
+  id: string
   slug: string
   status: JourneyStatus
   journeyId: string
@@ -29,6 +31,7 @@ interface DefaultMenuProps {
 }
 
 export function DefaultMenu({
+  id,
   slug,
   status,
   journeyId,
@@ -68,6 +71,8 @@ export function DefaultMenu({
           rel: 'noopener'
         }}
       />
+
+      <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
 
       <Divider />
 

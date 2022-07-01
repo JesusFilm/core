@@ -1,10 +1,8 @@
 import { Story, Meta } from '@storybook/react'
-
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
-import { JourneysListProps } from './JourneyList'
 import {
   defaultJourney,
   oldJourney,
@@ -24,7 +22,7 @@ const JourneyListStory = {
   }
 }
 
-const Template: Story<JourneysListProps> = ({ ...args }) => (
+const Template: Story = ({ ...args }) => (
   <MockedProvider
     mocks={[
       {
@@ -44,9 +42,9 @@ const Template: Story<JourneysListProps> = ({ ...args }) => (
       }
     ]}
   >
-    <FlagsProvider flags={{ analytics: true }}>
+    <FlagsProvider flags={{ reports: args.reports }}>
       <PageWrapper title="Active Journeys">
-        <JourneyList {...args} />
+        <JourneyList {...args.props} />
       </PageWrapper>
     </FlagsProvider>
   </MockedProvider>
@@ -54,14 +52,24 @@ const Template: Story<JourneysListProps> = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney],
-  disableCreation: true
+  props: {
+    journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney]
+  },
+  reports: true
+}
+
+export const Reports = Template.bind({})
+Reports.args = {
+  props: {
+    journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney]
+  },
+  reports: true
 }
 
 export const Access = Template.bind({})
 Access.args = {
-  journeys: [],
-  disableCreation: true
+  props: { journeys: [] },
+  reports: true
 }
 
 export default JourneyListStory as Meta

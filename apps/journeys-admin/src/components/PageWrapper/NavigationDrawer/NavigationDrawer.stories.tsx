@@ -38,7 +38,7 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <FlagsProvider flags={{ analytics: args.analytics }}>
+      <FlagsProvider flags={{ reports: args.reports }}>
         <NavigationDrawer
           open={open}
           onClose={() => setOpen(!open)}
@@ -59,19 +59,19 @@ const Template: Story = ({ ...args }) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  analytics: true,
+  reports: true,
   title: 'Active Journeys'
 }
 
-export const Analytics = Template.bind({})
-Analytics.args = {
-  analytics: true,
-  title: 'Analytics'
+export const Reports = Template.bind({})
+Reports.args = {
+  reports: true,
+  title: 'Reports'
 }
 
-export const AnalyticsOff = Template.bind({})
-AnalyticsOff.args = {
-  analytics: false,
+export const ReportsOff = Template.bind({})
+ReportsOff.args = {
+  reports: false,
   title: 'Journeys'
 }
 

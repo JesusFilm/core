@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
@@ -8,16 +8,28 @@ import EditIcon from '@mui/icons-material/Edit'
 import Fab from '@mui/material/Fab'
 import Skeleton from '@mui/material/Skeleton'
 import NextLink from 'next/link'
+import Divider from '@mui/material/Divider'
+import { CopyTextField } from '@core/shared/ui/CopyTextField'
+import Button from '@mui/material/Button'
+import { useTranslation } from 'react-i18next'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
+import { DynamicPowerBiReport } from '../DynamicPowerBiReport'
 import { Properties } from './Properties'
 import { CardView } from './CardView'
+import { SlugDialog } from './Properties/SlugDialog'
 
 export function JourneyView(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const { reports } = useFlags()
   const blocks =
     journey?.blocks != null
       ? (transformer(journey.blocks) as Array<TreeBlock<StepBlock>>)
       : undefined
+
+  const [showSlugDialog, setShowSlugDialog] = useState(false)
 
   return (
     <Box sx={{ mr: { sm: '328px' }, mb: '80px' }}>
@@ -37,7 +49,64 @@ export function JourneyView(): ReactElement {
           )}
         </Typography>
       </Box>
+
       <Properties />
+
+      {reports && (
+        <>
+          <Box
+            sx={{ height: '213px', pb: 6, mx: 6 }}
+            data-testid="power-bi-report"
+          >
+            <DynamicPowerBiReport
+              reportType={JourneysReportType.singleSummary}
+            />
+          </Box>
+        </>
+      )}
+
+      <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+        <Divider />
+        <Box
+          sx={{
+            p: 6,
+            backgroundColor: !reports ? 'background.paper' : undefined
+          }}
+        >
+          <CopyTextField
+            value={
+              journey?.slug != null
+                ? `${
+                    process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                    'https://your.nextstep.is'
+                  }/${journey.slug}`
+                : undefined
+            }
+            label={t('Journey URL')}
+            sx={
+              reports
+                ? {
+                    '.MuiFilledInput-root': {
+                      backgroundColor: 'background.paper'
+                    }
+                  }
+                : undefined
+            }
+          />
+          <Box sx={{ pt: 2 }}>
+            <Button
+              onClick={() => setShowSlugDialog(true)}
+              size="small"
+              startIcon={<EditIcon />}
+              disabled={journey == null}
+            >
+              {t('Edit URL')}
+            </Button>
+          </Box>
+        </Box>
+        <Divider />
+      </Box>
+
       <>
         <CardView id={journey?.id} blocks={blocks} />
         <NextLink
@@ -60,6 +129,11 @@ export function JourneyView(): ReactElement {
           </Fab>
         </NextLink>
       </>
+
+      <SlugDialog
+        open={showSlugDialog}
+        onClose={() => setShowSlugDialog(false)}
+      />
     </Box>
   )
 }

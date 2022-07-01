@@ -76,6 +76,7 @@ export function JourneyCardMenu({
           />
         ) : (
           <DefaultMenu
+            id={id}
             status={status}
             slug={slug}
             journeyId={id}
