@@ -12,7 +12,7 @@ export interface CopyTextFieldProps {
   value?: string
   helperText?: string
   messageText?: string
-  customSx?: SxProps
+  sx?: SxProps
 }
 
 export function CopyTextField({
@@ -20,7 +20,7 @@ export function CopyTextField({
   value,
   helperText,
   messageText,
-  customSx = {}
+  sx = {}
 }: CopyTextFieldProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -45,7 +45,7 @@ export function CopyTextField({
         '.MuiInputAdornment-root.MuiInputAdornment-positionStart': {
           marginTop: '0 !important'
         },
-        ...customSx
+        ...sx
       }}
       hiddenLabel={label == null}
       label={label}

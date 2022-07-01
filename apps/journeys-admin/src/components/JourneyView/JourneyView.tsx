@@ -81,7 +81,7 @@ export function JourneyView(): ReactElement {
                   : undefined
               }
               label={t('Journey URL')}
-              customSx={
+              sx={
                 reports
                   ? {
                       '.MuiFilledInput-root': {

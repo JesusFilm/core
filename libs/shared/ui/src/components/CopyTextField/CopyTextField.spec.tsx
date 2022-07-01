@@ -70,7 +70,7 @@ describe('CopyTextField', () => {
       <SnackbarProvider>
         <CopyTextField
           value={'test'}
-          customSx={{
+          sx={{
             '.MuiFilledInput-root': {
               backgroundColor: 'rgb (255, 255, 255)'
             }
