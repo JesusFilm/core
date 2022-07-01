@@ -67,7 +67,9 @@ describe('JourneyList', () => {
         <MockedProvider>
           <FlagsProvider flags={{ reports: true }}>
             <ThemeProvider>
-              <JourneyList journeys={[defaultJourney]} disableCreation />
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+              />
             </ThemeProvider>
           </FlagsProvider>
         </MockedProvider>

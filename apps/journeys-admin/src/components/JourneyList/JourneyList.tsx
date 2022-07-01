@@ -28,7 +28,8 @@ export function JourneyList({
 
   return (
     <>
-      {reports && <MultipleSummaryReport />}
+      {(journeys == null || journeys.length > 0 || disableCreation !== true) &&
+        reports && <MultipleSummaryReport />}
       <Container sx={{ px: { xs: 0, sm: 8 } }}>
         {journeys != null &&
           journeys.length > 0 &&
