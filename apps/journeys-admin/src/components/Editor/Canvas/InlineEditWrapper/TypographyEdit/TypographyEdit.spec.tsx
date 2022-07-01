@@ -152,6 +152,7 @@ describe('TypographyEdit', () => {
             admin: true
           }}
         >
+          <h1>Other content</h1>
           <TypographyEdit {...props} />
         </JourneyProvider>
       </MockedProvider>
@@ -160,7 +161,7 @@ describe('TypographyEdit', () => {
 
     fireEvent.click(input)
     fireEvent.change(input, { target: { value: '' } })
-    fireEvent.blur(input)
+    fireEvent.click(getByRole('heading', { level: 1 }))
 
     expect(onDelete).toHaveBeenCalled()
   })
