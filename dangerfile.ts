@@ -1,11 +1,16 @@
 import { danger, warn, markdown } from 'danger'
 import lint from '@commitlint/lint'
 import load from '@commitlint/load'
+import {
+  LintOptions,
+  LintOutcome,
+  ParserOptions,
+  ParserPreset
+} from '@commitlint/types'
+import config from './commitlint.config'
 
 export default async () => {
-  // ignore dependabot
-  if (danger.github.pr.user.login === 'dependabot[bot]') return
-
+  const isDependabot = danger.github.pr.user.login === 'dependabot[bot]'
   // check lockfile updated when package changes
   const packageChanged = danger.git.modified_files.includes('package.json')
   const lockfileChanged =
@@ -28,13 +33,7 @@ export default async () => {
   }
 
   // check PR has well-formed title
-  const commitlintConfig = await load({
-    extends: ['@commitlint/config-conventional']
-  })
-  const commitlintReport = await lint(
-    danger.github.pr.title,
-    commitlintConfig.rules
-  )
+  const commitlintReport = await lintPrTitle(danger.github.pr.title)
   if (!commitlintReport.valid) {
     fail('Please ensure your PR title matches commitlint convention.')
     let errors = ''
@@ -50,7 +49,10 @@ export default async () => {
   }
 
   // check PR has basecamp link
-  if (!danger.github.pr.body.includes('https://3.basecamp.com/')) {
+  if (
+    !danger.github.pr.body.includes('https://3.basecamp.com/') &&
+    !isDependabot
+  ) {
     warn(
       'Is this PR related to a Basecamp issue? If so link it via the PR description.'
     )
@@ -91,7 +93,8 @@ export default async () => {
   })
 
   // check PR has milestone
-  if (currentPR.data.milestone === null) {
+  // ignore dependabot
+  if (currentPR.data.milestone === null && !isDependabot) {
     fail('Please add milestone to this PR.')
   }
 
@@ -109,4 +112,22 @@ export default async () => {
   ) {
     fail('Please request a reviewer for this PR.')
   }
+}
+
+async function lintPrTitle(title: string): Promise<LintOutcome> {
+  const loaded = await load(config)
+  const parserOpts = selectParserOpts(loaded.parserPreset)
+  const opts: LintOptions & { parserOpts: ParserOptions } = {
+    parserOpts: parserOpts ?? {},
+    plugins: loaded.plugins ?? {},
+    ignores: loaded.ignores ?? [],
+    defaultIgnores: loaded.defaultIgnores ?? true
+  }
+  return lint(title, loaded.rules, opts)
+}
+
+function selectParserOpts(preset?: ParserPreset): ParserOptions | undefined {
+  if (typeof preset !== 'object') return undefined
+  if (typeof preset.parserOpts !== 'object') return undefined
+  return preset.parserOpts ?? undefined
 }

@@ -5,7 +5,9 @@ import {
   defaultJourney,
   descriptiveJourney,
   oldJourney,
-  publishedJourney
+  publishedJourney,
+  archiveddJourney,
+  trashedJourney
 } from '../journeyListData'
 import { JourneyCard } from './JourneyCard'
 
@@ -29,6 +31,16 @@ Default.args = {
 export const Published = Template.bind({})
 Published.args = {
   journey: publishedJourney
+}
+
+export const Archived = Template.bind({})
+Archived.args = {
+  journey: archiveddJourney
+}
+
+export const Trashed = Template.bind({})
+Trashed.args = {
+  journey: trashedJourney
 }
 
 export const ExcessContent = Template.bind({})
