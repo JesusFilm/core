@@ -20,7 +20,7 @@ const JourneyViewStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <FlagsProvider flags={{ analytics: true }}>
+    <FlagsProvider flags={{ reports: true }}>
       <JourneyProvider value={{ journey: args.journey }}>
         <PageWrapper
           title="Journey Details"
