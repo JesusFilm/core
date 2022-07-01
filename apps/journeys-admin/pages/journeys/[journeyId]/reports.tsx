@@ -49,7 +49,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
-  if (flags.analytics !== true) {
+  if (flags.reports !== true) {
     return {
       redirect: {
         permanent: false,

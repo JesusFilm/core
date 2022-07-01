@@ -46,7 +46,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
-  const { analytics } = useFlags()
+  const { reports } = useFlags()
 
   const openMenu = forceOpen ?? Boolean(anchorEl)
 
@@ -163,7 +163,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
               </ListItemIcon>
               <ListItemText>Language</ListItemText>
             </MenuItem>
-            {analytics && (
+            {reports && (
               <NextLink href={`/journeys/${journey.id}/reports`} passHref>
                 <MenuItem>
                   <ListItemIcon>
