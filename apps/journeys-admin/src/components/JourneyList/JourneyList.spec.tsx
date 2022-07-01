@@ -80,6 +80,42 @@ describe('JourneyList', () => {
     )
   })
 
+  it('should hide report if report flag is off', async () => {
+    const { queryByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <FlagsProvider flags={{ reports: false }}>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(queryByTestId('powerBi-multipleSummary-report')).toBeNull()
+    )
+  })
+
+  it('should hide report the user has no journeys', async () => {
+    const { queryByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <FlagsProvider flags={{ reports: true }}>
+            <ThemeProvider>
+              <JourneyList journeys={[]} />
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(queryByTestId('powerBi-multipleSummary-report')).toBeNull()
+    )
+  })
+
   it('should show add journey button', () => {
     const { getByRole } = render(
       <SnackbarProvider>
