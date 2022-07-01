@@ -66,7 +66,7 @@ Default.args = {
 export const Reports = Template.bind({})
 Reports.args = {
   reports: true,
-  title: 'reports'
+  title: 'Reports'
 }
 
 export const ReportsOff = Template.bind({})

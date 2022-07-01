@@ -54,7 +54,7 @@ Default.args = {
 
 export const Reports = Template.bind({})
 Reports.args = {
-  props: { title: 'reports' },
+  props: { title: 'Reports' },
   reports: true
 }
 
