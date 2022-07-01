@@ -193,7 +193,7 @@ export function ArchivedStatusTab({
       {journeys != null ? (
         <>
           {sortedJourneys.map((journey) => (
-            <JourneyCard key={journey.id} journey={journey} />
+            <JourneyCard key={journey.id} journey={journey} refetch={refetch} />
           ))}
           {journeys.length > 0 ? (
             <Box width="100%" sx={{ textAlign: 'center' }}>

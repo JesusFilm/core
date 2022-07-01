@@ -12,6 +12,10 @@ import Link from 'next/link'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import { ApolloQueryResult } from '@apollo/client'
+import { GetActiveJourneys } from '../../../../__generated__/GetActiveJourneys'
+import { GetArchivedJourneys } from '../../../../__generated__/GetArchivedJourneys'
+import { GetTrashedJourneys } from '../../../../__generated__/GetTrashedJourneys'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyCardMenu } from './JourneyCardMenu'
@@ -19,9 +23,17 @@ import { StatusChip } from './StatusChip'
 
 interface JourneyCardProps {
   journey?: Journey
+  refetch?: () => Promise<
+    ApolloQueryResult<
+      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
+    >
+  >
 }
 
-export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
+export function JourneyCard({
+  journey,
+  refetch
+}: JourneyCardProps): ReactElement {
   return (
     <Card
       aria-label="journey-card"
@@ -137,6 +149,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
               status={journey.status}
               slug={journey.slug}
               published={journey.publishedAt != null}
+              refetch={refetch}
             />
           ) : (
             <IconButton disabled>

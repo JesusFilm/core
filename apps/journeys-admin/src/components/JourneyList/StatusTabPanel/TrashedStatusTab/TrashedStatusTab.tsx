@@ -203,7 +203,11 @@ export function TrashedStatusTab({
           {sortedJourneys
             .filter((journey) => new Date(journey.trashedAt) > daysAgo)
             .map((journey) => (
-              <JourneyCard key={journey.id} journey={journey} />
+              <JourneyCard
+                key={journey.id}
+                journey={journey}
+                refetch={refetch}
+              />
             ))}
           {journeys.length === 0 && (
             <>

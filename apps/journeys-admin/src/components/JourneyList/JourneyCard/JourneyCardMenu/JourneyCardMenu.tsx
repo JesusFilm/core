@@ -2,8 +2,12 @@ import { ReactElement, useState } from 'react'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import { ApolloQueryResult } from '@apollo/client'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
+import { GetActiveJourneys } from '../../../../../__generated__/GetActiveJourneys'
+import { GetArchivedJourneys } from '../../../../../__generated__/GetArchivedJourneys'
+import { GetTrashedJourneys } from '../../../../../__generated__/GetTrashedJourneys'
 import { TrashJourneyDialog } from './TrashJourneyDialog'
 import { RestoreJourneyDialog } from './RestoreJourneyDialog'
 import { DeleteJourneyDialog } from './DeleteJourneyDialog'
@@ -15,13 +19,19 @@ export interface JourneyCardMenuProps {
   status: JourneyStatus
   slug: string
   published: boolean
+  refetch?: () => Promise<
+    ApolloQueryResult<
+      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
+    >
+  >
 }
 
 export function JourneyCardMenu({
   id,
   status,
   slug,
-  published
+  published,
+  refetch
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -73,6 +83,7 @@ export function JourneyCardMenu({
             setOpenAccessDialog={() => setOpenAccessDialog(true)}
             handleCloseMenu={handleCloseMenu}
             setOpenTrashDialog={() => setOpenTrashDialog(true)}
+            refetch={refetch}
           />
         )}
       </Menu>

@@ -1,10 +1,13 @@
 import { ReactElement } from 'react'
-import { useMutation, gql } from '@apollo/client'
+import { useMutation, gql, ApolloQueryResult } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
 import { JourneyDelete } from '../../../../../../__generated__/JourneyDelete'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { Dialog } from '../../../../Dialog'
+import { GetActiveJourneys } from '../../../../../../__generated__/GetActiveJourneys'
+import { GetArchivedJourneys } from '../../../../../../__generated__/GetArchivedJourneys'
+import { GetTrashedJourneys } from '../../../../../../__generated__/GetTrashedJourneys'
 
 export const JOURNEY_DELETE = gql`
   mutation JourneyDelete($ids: [ID!]!) {
@@ -19,12 +22,18 @@ export interface DeleteJourneyDialogProps {
   id: string
   open: boolean
   handleClose: () => void
+  refetch?: () => Promise<
+    ApolloQueryResult<
+      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
+    >
+  >
 }
 
 export function DeleteJourneyDialog({
   id,
   open,
-  handleClose
+  handleClose,
+  refetch
 }: DeleteJourneyDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
@@ -51,6 +60,7 @@ export function DeleteJourneyDialog({
         variant: 'success',
         preventDuplicate: true
       })
+      await refetch?.()
     } catch (error) {
       enqueueSnackbar(error.message, {
         variant: 'error',

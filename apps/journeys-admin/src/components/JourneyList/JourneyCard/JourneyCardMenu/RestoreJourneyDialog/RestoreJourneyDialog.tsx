@@ -1,10 +1,13 @@
 import { ReactElement } from 'react'
-import { useMutation, gql } from '@apollo/client'
+import { useMutation, gql, ApolloQueryResult } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import Typography from '@mui/material/Typography'
 import { JourneyRestore } from '../../../../../../__generated__/JourneyRestore'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { Dialog } from '../../../../Dialog'
+import { GetActiveJourneys } from '../../../../../../__generated__/GetActiveJourneys'
+import { GetArchivedJourneys } from '../../../../../../__generated__/GetArchivedJourneys'
+import { GetTrashedJourneys } from '../../../../../../__generated__/GetTrashedJourneys'
 
 export const JOURNEY_RESTORE = gql`
   mutation JourneyRestore($ids: [ID!]!) {
@@ -20,13 +23,19 @@ export interface RestoreJourneyDialogProps {
   published: boolean
   open: boolean
   handleClose: () => void
+  refetch?: () => Promise<
+    ApolloQueryResult<
+      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
+    >
+  >
 }
 
 export function RestoreJourneyDialog({
   id,
   published,
   open,
-  handleClose
+  handleClose,
+  refetch
 }: RestoreJourneyDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
@@ -57,6 +66,7 @@ export function RestoreJourneyDialog({
         variant: 'success',
         preventDuplicate: true
       })
+      await refetch?.()
     } catch (error) {
       enqueueSnackbar(error.message, {
         variant: 'error',

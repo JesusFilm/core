@@ -193,7 +193,7 @@ export function ActiveStatusTab({
       {journeys != null ? (
         <>
           {sortedJourneys.map((journey) => (
-            <JourneyCard key={journey.id} journey={journey} />
+            <JourneyCard key={journey.id} journey={journey} refetch={refetch} />
           ))}
           {journeys.length === 0 && (
             <Card

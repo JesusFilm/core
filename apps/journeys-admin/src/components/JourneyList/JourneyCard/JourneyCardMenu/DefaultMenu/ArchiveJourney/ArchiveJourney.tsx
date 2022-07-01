@@ -7,6 +7,10 @@ import { MenuItem } from '../../MenuItem'
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { JourneyArchive } from '../../../../../../../__generated__/JourneyArchive'
 import { JourneyUnarchive } from '../../../../../../../__generated__/JourneyUnarchive'
+import { ApolloQueryResult } from '@apollo/client'
+import { GetActiveJourneys } from '../../../../../../../__generated__/GetActiveJourneys'
+import { GetArchivedJourneys } from '../../../../../../../__generated__/GetArchivedJourneys'
+import { GetTrashedJourneys } from '../../../../../../../__generated__/GetTrashedJourneys'
 
 export const JOURNEY_ARCHIVE = gql`
   mutation JourneyArchive($ids: [ID!]!) {
@@ -31,13 +35,19 @@ export interface ArchiveJourneyProps {
   id: string
   published: boolean
   handleClose: () => void
+  refetch?: () => Promise<
+    ApolloQueryResult<
+      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
+    >
+  >
 }
 
 export function ArchiveJourney({
   status,
   id,
   published,
-  handleClose
+  handleClose,
+  refetch
 }: ArchiveJourneyProps): ReactElement {
   const previousStatus = published
     ? JourneyStatus.published
@@ -88,6 +98,7 @@ export function ArchiveJourney({
           preventDuplicate: true
         })
       }
+      await refetch?.()
       handleClose()
     } catch (error) {
       enqueueSnackbar(error.message, {
