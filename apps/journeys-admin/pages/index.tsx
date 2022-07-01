@@ -68,11 +68,7 @@ function IndexPage(): ReactElement {
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper title={pageTitle} authUser={AuthUser}>
-        <JourneyList
-          journeys={data?.journeys}
-          disableCreation
-          router={router}
-        />
+        <JourneyList journeys={data?.journeys} router={router} />
       </PageWrapper>
     </>
   )
