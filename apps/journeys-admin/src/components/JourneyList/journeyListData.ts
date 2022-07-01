@@ -7,13 +7,15 @@ import {
 import {
   ThemeName,
   ThemeMode,
-  JourneyStatus
+  JourneyStatus,
+  UserJourneyRole
 } from '../../../__generated__/globalTypes'
 
 const userJourneys: User[] = [
   {
     __typename: 'UserJourney',
     id: 'user-journey-id',
+    role: UserJourneyRole.owner,
     user: {
       __typename: 'User',
       id: 'user-id1',
@@ -25,6 +27,7 @@ const userJourneys: User[] = [
   {
     __typename: 'UserJourney',
     id: 'user-journey-id2',
+    role: UserJourneyRole.editor,
     user: {
       __typename: 'User',
       id: 'user-id2',
@@ -36,6 +39,7 @@ const userJourneys: User[] = [
   {
     __typename: 'UserJourney',
     id: 'user-journey-id3',
+    role: UserJourneyRole.editor,
     user: {
       __typename: 'User',
       id: 'user-id3',
@@ -121,6 +125,7 @@ export const descriptiveJourney: Journey = {
     {
       __typename: 'UserJourney',
       id: 'user-journey-id4',
+      role: UserJourneyRole.editor,
       user: {
         __typename: 'User',
         id: 'user-id4',
@@ -132,6 +137,7 @@ export const descriptiveJourney: Journey = {
     {
       __typename: 'UserJourney',
       id: 'user-journey-id5',
+      role: UserJourneyRole.editor,
       user: {
         __typename: 'User',
         id: 'user-id5',
@@ -143,6 +149,7 @@ export const descriptiveJourney: Journey = {
     {
       __typename: 'UserJourney',
       id: 'user-journey-id6',
+      role: UserJourneyRole.editor,
       user: {
         __typename: 'User',
         id: 'user-id6',
@@ -154,6 +161,7 @@ export const descriptiveJourney: Journey = {
     {
       __typename: 'UserJourney',
       id: 'user-journey-id7',
+      role: UserJourneyRole.editor,
       user: {
         __typename: 'User',
         id: 'user-id7',
@@ -165,4 +173,18 @@ export const descriptiveJourney: Journey = {
   ]
 }
 
-// https://source.unsplash.com/100x100
+export const archiveddJourney: Journey = {
+  ...defaultJourney,
+  id: 'archived-journey-id',
+  title: 'Archived Journey Heading',
+  description: 'a archived journey',
+  status: JourneyStatus.archived
+}
+
+export const trashedJourney: Journey = {
+  ...defaultJourney,
+  id: 'rashed-journey-id',
+  title: 'Trashed Journey Heading',
+  description: 'a trashed journey',
+  status: JourneyStatus.trashed
+}

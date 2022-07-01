@@ -111,7 +111,6 @@ export function DeleteBlock({
       {variant === 'button' ? (
         <IconButton
           id="delete-block-actions"
-          edge="end"
           aria-label="Delete Block Actions"
           aria-controls="delete-block-actions"
           aria-haspopup="true"

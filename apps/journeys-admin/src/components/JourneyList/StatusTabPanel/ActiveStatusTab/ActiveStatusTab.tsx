@@ -1,12 +1,16 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Card from '@mui/material/Card'
-import { gql, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { sortBy } from 'lodash'
+import { useTranslation } from 'react-i18next'
+import { AuthUser } from 'next-firebase-auth'
+import { useSnackbar } from 'notistack'
 import { GetActiveJourneys } from '../../../../../__generated__/GetActiveJourneys'
 import { JourneyCard } from '../../JourneyCard'
 import { AddJourneyButton } from '../../AddJourneyButton'
 import { SortOrder } from '../../JourneySort'
+import { Dialog } from '../../../Dialog'
 
 export const GET_ACTIVE_JOURNEYS = gql`
   query GetActiveJourneys {
@@ -31,6 +35,7 @@ export const GET_ACTIVE_JOURNEYS = gql`
       seoDescription
       userJourneys {
         id
+        role
         user {
           id
           firstName
@@ -42,24 +47,138 @@ export const GET_ACTIVE_JOURNEYS = gql`
   }
 `
 
+export const ARCHIVE_ACTIVE_JOURNEYS = gql`
+  mutation ArchiveActiveJourneys($ids: [ID!]!) {
+    journeysArchive(ids: $ids) {
+      id
+      status
+    }
+  }
+`
+
+export const TRASH_ACTIVE_JOURNEYS = gql`
+  mutation TrashActiveJourneys($ids: [ID!]!) {
+    journeysTrash(ids: $ids) {
+      id
+      status
+    }
+  }
+`
+
 interface ActiveStatusTabProps {
   onLoad: () => void
   sortOrder?: SortOrder
+  event?: string | undefined
+  authUser?: AuthUser
 }
 
 export function ActiveStatusTab({
   onLoad,
-  sortOrder
+  sortOrder,
+  event = '',
+  authUser
 }: ActiveStatusTabProps): ReactElement {
-  const { data, loading, error } =
+  const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
+  const { data, loading, error, refetch } =
     useQuery<GetActiveJourneys>(GET_ACTIVE_JOURNEYS)
+
   const journeys = data?.journeys
+
+  const [archiveActive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
+    variables: {
+      ids: journeys
+        ?.filter(
+          (journey) =>
+            journey.userJourneys?.find(
+              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+            )?.role === 'owner'
+        )
+        .map((journey) => journey.id)
+    },
+    update(cache, { data }) {
+      if (data?.journeysArchive != null) {
+        enqueueSnackbar(t('Journeys Archived'), {
+          variant: 'success'
+        })
+        void refetch()
+      }
+    }
+  })
+
+  const [trashActive] = useMutation(TRASH_ACTIVE_JOURNEYS, {
+    variables: {
+      ids: journeys
+        ?.filter(
+          (journey) =>
+            journey.userJourneys?.find(
+              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
+            )?.role === 'owner'
+        )
+        .map((journey) => journey.id)
+    },
+    update(cache, { data }) {
+      if (data?.journeysTrash != null) {
+        enqueueSnackbar(t('Journeys Trashed'), {
+          variant: 'success'
+        })
+        void refetch()
+      }
+    }
+  })
+
+  const [openArchiveAll, setOpenArchiveAll] = useState(false)
+  const [openTrashAll, setOpenTrashAll] = useState(false)
+
+  const snackbarError = (error: Error): void => {
+    enqueueSnackbar(error.message, {
+      variant: 'error',
+      preventDuplicate: true
+    })
+  }
+
+  const archiveAll = async (): Promise<void> => {
+    try {
+      await archiveActive()
+    } catch (error) {
+      snackbarError(error)
+    }
+    handleClose()
+  }
+
+  const trashAll = async (): Promise<void> => {
+    try {
+      await trashActive()
+    } catch (error) {
+      snackbarError(error)
+    }
+    handleClose()
+  }
+
+  const handleClose = (): void => {
+    setOpenArchiveAll(false)
+    setOpenTrashAll(false)
+  }
 
   useEffect(() => {
     if (!loading && error == null) {
       onLoad()
     }
   }, [onLoad, loading, error])
+
+  useEffect(() => {
+    switch (event) {
+      case 'archiveAllActive':
+        setOpenArchiveAll(true)
+        break
+      case 'trashAllActive':
+        setOpenTrashAll(true)
+        break
+      case 'refetchActive':
+        void refetch()
+        break
+    }
+  }, [event, refetch])
 
   // orders of the first characters ascii value
   const sortedJourneys =
@@ -107,6 +226,44 @@ export function ActiveStatusTab({
           <JourneyCard />
         </>
       )}
+      <Dialog
+        open={openArchiveAll ?? false}
+        handleClose={handleClose}
+        dialogTitle={{
+          title: t('Archive Journeys'),
+          closeButton: true
+        }}
+        dialogAction={{
+          onSubmit: archiveAll,
+          submitLabel: t('Archive'),
+          closeLabel: t('Cancel')
+        }}
+      >
+        <Typography>
+          {t(
+            'Are you sure you would like to archive all active journeys immediately?'
+          )}
+        </Typography>
+      </Dialog>
+      <Dialog
+        open={openTrashAll ?? false}
+        handleClose={handleClose}
+        dialogTitle={{
+          title: t('Trash Journeys'),
+          closeButton: true
+        }}
+        dialogAction={{
+          onSubmit: trashAll,
+          submitLabel: t('Trash'),
+          closeLabel: t('Cancel')
+        }}
+      >
+        <Typography>
+          {t(
+            'Are you sure you would like to trash all active journeys immediately?'
+          )}
+        </Typography>
+      </Dialog>
     </>
   )
 }

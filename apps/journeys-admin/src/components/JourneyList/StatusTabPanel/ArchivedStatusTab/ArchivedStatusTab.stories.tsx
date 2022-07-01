@@ -14,7 +14,7 @@ import { ArchivedStatusTab } from '.'
 const ArchivedStatusTabStory = {
   ...journeysAdminConfig,
   component: ArchivedStatusTab,
-  title: 'Journeys-Admin/JourneyList/ActiveStatusTabPanel/ArchivedStatusTab',
+  title: 'Journeys-Admin/JourneyList/StatusTabPanel/ArchivedStatusTab',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -74,6 +74,24 @@ export const Loading = Template.bind({})
 Loading.args = {
   props: {
     onLoad: noop
+  },
+  mocks: []
+}
+
+export const UnarchiveAll = Template.bind({})
+UnarchiveAll.args = {
+  props: {
+    onLoad: noop,
+    event: 'restoreAllArchived'
+  },
+  mocks: []
+}
+
+export const TrashAll = Template.bind({})
+TrashAll.args = {
+  props: {
+    onLoad: noop,
+    event: 'trashAllArchived'
   },
   mocks: []
 }
