@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
+import { NextRouter } from 'next/router'
 import { ThemeProvider } from '../ThemeProvider'
 import { defaultJourney, publishedJourney, oldJourney } from './journeyListData'
 import { JourneyList } from '.'
@@ -53,5 +54,71 @@ describe('JourneyList', () => {
       )
     ).toBeInTheDocument()
     expect(getByRole('button', { name: 'Contact Support' })).toBeInTheDocument()
+  })
+
+  it('should show add journey button', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList
+              journeys={[defaultJourney, publishedJourney, oldJourney]}
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
+  })
+
+  it('should show add journey button', () => {
+    const router = { query: { tab: 'active' } } as unknown as NextRouter
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList
+              journeys={[defaultJourney, publishedJourney, oldJourney]}
+              router={router}
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
+  })
+
+  it('should hide add journey button', () => {
+    const router = { query: { tab: 'trashed' } } as unknown as NextRouter
+    const { queryByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList
+              journeys={[defaultJourney, publishedJourney, oldJourney]}
+              router={router}
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(queryByRole('button', { name: 'Add' })).toBeNull()
+  })
+
+  it('should hide add journey button', () => {
+    const router = { query: { tab: 'archived' } } as unknown as NextRouter
+    const { queryByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList
+              journeys={[defaultJourney, publishedJourney, oldJourney]}
+              router={router}
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(queryByRole('button', { name: 'Add' })).toBeNull()
   })
 })

@@ -1,0 +1,1 @@
+export { DynamicPowerBiReport } from './DynamicPowerBiReport'

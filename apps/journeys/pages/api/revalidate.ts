@@ -13,7 +13,7 @@ export default async function handler(
   }
 
   try {
-    await res.unstable_revalidate(`/${req.query.slug as string}`)
+    await res.revalidate(`/${req.query.slug as string}`)
     return res.json({ revalidated: true })
   } catch (err) {
     // If there was an error, Next.js will continue
