@@ -186,6 +186,111 @@ export class JourneyResolver {
     }
   }
 
+  getFirstMissingNumber(@Args('arr') arr: number[]): number {
+    // May contain duplicate numbers in array so can't use binary search
+    arr.sort((a, b) => a - b)
+    let duplicateNumber = 0
+    arr.forEach((num, i) => {
+      if (arr[i] === duplicateNumber) duplicateNumber++
+    })
+    return duplicateNumber
+  }
+
+  getJourneyDuplicateNumbers(
+    @Args('journeys') journeys: Journey[],
+    @Args('title') title: string
+  ): number[] {
+    return journeys.map((journey, i) => {
+      const splitTitle = journey.title.split(' copy')
+      if (journey.title === title || splitTitle.length > 2) {
+        return 0
+      } else if (journey.title === `${title} copy`) {
+        return 1
+      } else {
+        const duplicate = splitTitle[splitTitle.length - 1]?.trim() ?? ''
+        const numbers = duplicate.match(/^\d+$/)
+        // If no duplicate number found, it's a unique journey. Return 0
+        return numbers != null ? parseInt(numbers[0]) : 0
+      }
+    })
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
+  async journeyDuplicate(
+    @Args('id') id: string,
+    @CurrentUserId() userId: string
+  ): Promise<Journey | undefined> {
+    const journey: Journey = await this.journeyService.get(id)
+    const duplicateJourneyId = uuidv4()
+    const existingDuplicateJourneys = await this.journeyService.getAllByTitle(
+      journey.title,
+      userId
+    )
+    const duplicates = this.getJourneyDuplicateNumbers(
+      existingDuplicateJourneys,
+      journey.title
+    )
+    const duplicateNumber = this.getFirstMissingNumber(duplicates)
+    const duplicateTitle = `${journey.title} copy ${
+      duplicateNumber === 1 ? '' : duplicateNumber
+    }`.trimEnd()
+
+    const slug = slugify(duplicateTitle, {
+      lower: true,
+      strict: true
+    })
+
+    const originalBlocks = await this.blockService.getBlocksByType(
+      journey,
+      'StepBlock'
+    )
+    const duplicateStepIds = new Map()
+    originalBlocks.forEach((block) => {
+      duplicateStepIds.set(block.id, uuidv4())
+    })
+    const duplicateBlocks = await this.blockService.getDuplicateChildren(
+      originalBlocks,
+      id,
+      null,
+      duplicateStepIds,
+      duplicateJourneyId,
+      duplicateStepIds
+    )
+
+    const input = {
+      ...journey,
+      id: duplicateJourneyId,
+      slug,
+      title: duplicateTitle,
+      createdAt: new Date().toISOString(),
+      publishedAt: undefined,
+      status: JourneyStatus.draft
+    }
+
+    let retry = true
+    while (retry) {
+      try {
+        const journey: Journey = await this.journeyService.save(input)
+        await this.blockService.saveAll(duplicateBlocks)
+        await this.userJourneyService.save({
+          userId,
+          journeyId: journey.id,
+          role: UserJourneyRole.owner
+        })
+        retry = false
+        return journey
+      } catch (err) {
+        if (err.errorNum === ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED) {
+          input.slug = slugify(`${input.slug}-${input.id}`)
+        } else {
+          retry = false
+          throw err
+        }
+      }
+    }
+  }
+
   @Mutation()
   @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
   async journeyUpdate(

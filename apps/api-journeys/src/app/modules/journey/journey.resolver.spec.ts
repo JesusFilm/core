@@ -44,6 +44,7 @@ describe('JourneyResolver', () => {
 
   let resolver: JourneyResolver,
     service: JourneyService,
+    bService: BlockService,
     ujService: UserJourneyService
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
@@ -89,7 +90,7 @@ describe('JourneyResolver', () => {
     id: 'blockId',
     journeyId: 'journeyId',
     __typename: 'ImageBlock',
-    parentBlockId: null,
+    parentBlockId: 'stepId',
     parentOrder: 0,
     src: 'https://source.unsplash.com/random/1920x1080',
     alt: 'random image from unsplash',
@@ -121,6 +122,21 @@ describe('JourneyResolver', () => {
     userId: 'invitedUserId',
     journeyId: 'journeyId',
     role: UserJourneyRole.inviteRequested
+  }
+
+  const stepBlock = {
+    id: 'stepId',
+    journeyId: 'journeyId',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    nextBlockId: null
+  }
+
+  const duplicatedStep = {
+    ...stepBlock,
+    id: 'duplicateStepId',
+    journeyId: 'duplicateJourneyId'
   }
 
   const journeyService = {
@@ -157,6 +173,7 @@ describe('JourneyResolver', () => {
         }
       }),
       getAllByOwnerEditor: jest.fn(() => [journey, journey]),
+      getAllByTitle: jest.fn(() => [journey]),
       save: jest.fn((input) => input),
       update: jest.fn(() => journey),
       updateAll: jest.fn(() => [journey, draftJourney])
@@ -167,7 +184,10 @@ describe('JourneyResolver', () => {
     provide: BlockService,
     useFactory: () => ({
       forJourney: jest.fn(() => [block]),
-      get: jest.fn(() => block)
+      get: jest.fn(() => block),
+      getBlocksByType: jest.fn(() => [stepBlock]),
+      getDuplicateChildren: jest.fn(() => [duplicatedStep]),
+      saveAll: jest.fn(() => [duplicatedStep])
     })
   }
 
@@ -197,6 +217,7 @@ describe('JourneyResolver', () => {
     resolver = module.get<JourneyResolver>(JourneyResolver)
     service = module.get<JourneyService>(JourneyService)
     ujService = module.get<UserJourneyService>(UserJourneyService)
+    bService = module.get<BlockService>(BlockService)
   })
 
   describe('adminJourneysEmbed', () => {
@@ -555,6 +576,136 @@ describe('JourneyResolver', () => {
     })
   })
 
+  describe('getFirstMissingNumber', () => {
+    it('returns the first missing number in an unsorted number list', async () => {
+      const array = [0, 1, 1, 2, 4, 5, 7, 8, 1, 0]
+      const firstMissing = resolver.getFirstMissingNumber(array)
+      expect(firstMissing).toEqual(3)
+    })
+
+    it('returns the next number in a sorted number list', async () => {
+      const array = [0, 1, 1, 2, 3]
+      const firstMissing = resolver.getFirstMissingNumber(array)
+      expect(firstMissing).toEqual(4)
+    })
+  })
+
+  describe('getJourneyDuplicateNumbers', () => {
+    it('generates the duplicate number array from journeys', async () => {
+      const array = [
+        journey,
+        {
+          ...journey,
+          title: `${journey.title} copy`
+        },
+        {
+          ...journey,
+          title: `${journey.title} copy 2`
+        },
+        {
+          ...journey,
+          title: `${journey.title} copy 4`
+        },
+        // Unique journeys with same base title - returns 0
+        {
+          ...journey,
+          title: `${journey.title} copy test`
+        },
+        {
+          ...journey,
+          title: `${journey.title} 3`
+        },
+        {
+          ...journey,
+          title: `${journey.title} copy-2a4bil`
+        },
+        // User edited journey copy number is recognised
+        {
+          ...journey,
+          title: `${journey.title} copy 1`
+        }
+      ]
+      const duplicateNumbers = resolver.getJourneyDuplicateNumbers(
+        array,
+        journey.title
+      )
+      expect(duplicateNumbers).toEqual([0, 1, 2, 4, 0, 0, 0, 1])
+    })
+  })
+
+  describe('journeyDuplicate', () => {
+    it('duplicates a Journey', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
+        ...journey,
+        id: 'duplicateJourneyId',
+        createdAt: new Date().toISOString(),
+        status: JourneyStatus.draft,
+        publishedAt: undefined,
+        slug: `${journey.title}-copy`,
+        title: `${journey.title} copy`
+      })
+    })
+
+    it('duplicates a UserJourney', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      await resolver.journeyDuplicate('journeyId', 'userId')
+      expect(ujService.save).toHaveBeenCalledWith({
+        userId: 'userId',
+        journeyId: 'duplicateJourneyId',
+        role: UserJourneyRole.owner
+      })
+    })
+
+    it('duplicates blocks in journey', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      mockUuidv4.mockReturnValueOnce('duplicateStepId')
+      const duplicateStepIds = new Map([[stepBlock.id, duplicatedStep.id]])
+      await resolver.journeyDuplicate('journeyId', 'userId')
+      expect(bService.getDuplicateChildren).toHaveBeenCalledWith(
+        [stepBlock],
+        'journeyId',
+        null,
+        duplicateStepIds,
+        'duplicateJourneyId',
+        duplicateStepIds
+      )
+      expect(bService.saveAll).toHaveBeenCalledWith([duplicatedStep])
+    })
+
+    it('increments copy number on journey if multiple duplicates exist', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId2')
+      const mockGetAllByTitle = service.getAllByTitle as jest.MockedFunction<
+        typeof service.getAllByTitle
+      >
+      mockGetAllByTitle.mockImplementationOnce(
+        async () =>
+          await Promise.resolve([
+            journey,
+            { ...journey, title: `${journey.title} copy` },
+            { ...journey, title: `${journey.title} copy other` }
+          ])
+      )
+      expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
+        ...journey,
+        id: 'duplicateJourneyId2',
+        createdAt: new Date().toISOString(),
+        status: JourneyStatus.draft,
+        publishedAt: undefined,
+        slug: `${journey.title}-copy-2`,
+        title: `${journey.title} copy 2`
+      })
+    })
+
+    it('throws error and does not get stuck in retry loop', async () => {
+      const mockSave = service.save as jest.MockedFunction<typeof service.save>
+      mockSave.mockRejectedValueOnce(new Error('database error'))
+      await expect(
+        resolver.journeyDuplicate('journeyId', 'userId')
+      ).rejects.toThrow('database error')
+    })
+  })
+
   describe('journeyUpdate', () => {
     it('updates a Journey', async () => {
       await resolver.journeyUpdate('1', journeyUpdate)
@@ -697,12 +848,11 @@ describe('JourneyResolver', () => {
         id: 'languageId'
       })
     })
-  })
-
-  it('when no languageId returns object for federation with default', async () => {
-    expect(await resolver.language({})).toEqual({
-      __typename: 'Language',
-      id: '529'
+    it('when no languageId returns object for federation with default', async () => {
+      expect(await resolver.language({})).toEqual({
+        __typename: 'Language',
+        id: '529'
+      })
     })
   })
 })

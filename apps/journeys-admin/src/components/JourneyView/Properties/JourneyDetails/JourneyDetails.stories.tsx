@@ -2,7 +2,12 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { simpleComponentConfig } from '../../../../libs/storybook'
-import { defaultJourney, publishedJourney } from '../../data'
+import {
+  defaultJourney,
+  publishedJourney,
+  archivedJourney,
+  trashedJourney
+} from '../../data'
 import { JourneyDetails } from './JourneyDetails'
 
 const JourneyDetailsStory = {
@@ -27,6 +32,15 @@ Default.args = {
 export const Publish = Template.bind({})
 Publish.args = {
   journey: publishedJourney
+}
+
+export const Archived = Template.bind({})
+Archived.args = {
+  journey: archivedJourney
+}
+export const Trashed = Template.bind({})
+Trashed.args = {
+  journey: trashedJourney
 }
 
 export const PreviousYear = Template.bind({})

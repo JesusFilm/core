@@ -22,11 +22,7 @@ const BackgroundMediaStory = {
   title: 'Journeys-Admin/Editor/VideoBlockEditor',
   parameters: {
     ...journeysAdminConfig.parameters,
-    layout: 'fullscreen',
-    chromatic: {
-      ...journeysAdminConfig.parameters.chromatic,
-      diffThreshold: 0.9
-    }
+    layout: 'fullscreen'
   }
 }
 

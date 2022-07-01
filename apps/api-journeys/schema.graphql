@@ -946,6 +946,7 @@ extend type Mutation {
   videoCollapseEventCreate(input: VideoCollapseEventCreateInput!): VideoCollapseEvent!
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent!
   journeyCreate(input: JourneyCreateInput!): Journey!
+  journeyDuplicate(id: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
 
   """Sets journey status to published"""

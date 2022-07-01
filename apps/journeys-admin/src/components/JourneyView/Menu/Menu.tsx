@@ -161,7 +161,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
               <ListItemText>Language</ListItemText>
             </MenuItem>
             <Divider />
-            <NextLink href={`/journeys/${journey.slug}/edit`} passHref>
+            <NextLink href={`/journeys/${journey.id}/edit`} passHref>
               <MenuItem>
                 <ListItemIcon>
                   <ViewCarouselIcon />

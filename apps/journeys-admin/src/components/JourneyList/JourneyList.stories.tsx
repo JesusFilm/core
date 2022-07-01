@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 
 import { MockedProvider } from '@apollo/client/testing'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
 import { JourneysListProps } from './JourneyList'
@@ -10,6 +11,7 @@ import {
   descriptiveJourney,
   publishedJourney
 } from './journeyListData'
+import { GET_ACTIVE_JOURNEYS } from './StatusTabPanel/ActiveStatusTab/ActiveStatusTab'
 import { JourneyList } from '.'
 
 const JourneyListStory = {
@@ -23,10 +25,30 @@ const JourneyListStory = {
 }
 
 const Template: Story<JourneysListProps> = ({ ...args }) => (
-  <MockedProvider>
-    <PageWrapper title="Active Journeys">
-      <JourneyList {...args} />
-    </PageWrapper>
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: GET_ACTIVE_JOURNEYS
+        },
+        result: {
+          data: {
+            journeys: [
+              defaultJourney,
+              oldJourney,
+              descriptiveJourney,
+              publishedJourney
+            ]
+          }
+        }
+      }
+    ]}
+  >
+    <FlagsProvider flags={{ analytics: true }}>
+      <PageWrapper title="Active Journeys">
+        <JourneyList {...args} />
+      </PageWrapper>
+    </FlagsProvider>
   </MockedProvider>
 )
 

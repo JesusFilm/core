@@ -1,31 +1,40 @@
 import { ReactElement } from 'react'
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
-import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { GetJourney } from '../../../__generated__/GetJourney'
-import { Editor } from '../../../src/components/Editor'
-import { PageWrapper } from '../../../src/components/PageWrapper'
-import { GET_JOURNEY } from '../[journeySlug]'
-import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
-import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
-import { JourneyInvite } from '../../../src/components/JourneyInvite/JourneyInvite'
-import i18nConfig from '../../../next-i18next.config'
+import { JourneyInvite } from '../../src/components/JourneyInvite/JourneyInvite'
+import { GetJourney } from '../../__generated__/GetJourney'
+import { JourneyView } from '../../src/components/JourneyView'
+import { PageWrapper } from '../../src/components/PageWrapper'
+import { Menu } from '../../src/components/JourneyView/Menu'
+import i18nConfig from '../../next-i18next.config'
 
-function JourneyEditPage(): ReactElement {
+export const GET_JOURNEY = gql`
+  ${JOURNEY_FIELDS}
+  query GetJourney($id: ID!) {
+    journey: adminJourney(id: $id, idType: databaseId) {
+      ...JourneyFields
+    }
+  }
+`
+
+function JourneyIdPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const AuthUser = useAuthUser()
   const { data, error } = useQuery<GetJourney>(GET_JOURNEY, {
-    variables: { id: router.query.journeySlug }
+    variables: { id: router.query.journeyId }
   })
 
   return (
@@ -33,41 +42,36 @@ function JourneyEditPage(): ReactElement {
       {error == null && (
         <>
           <NextSeo
-            title={
-              data?.journey?.title != null
-                ? t('Edit {{title}}', { title: data.journey.title })
-                : t('Edit Journey')
-            }
+            title={data?.journey?.title ?? t('Journey')}
             description={data?.journey?.description ?? undefined}
           />
-          <Editor
-            journey={data?.journey ?? undefined}
-            selectedStepId={router.query.stepId as string | undefined}
+          <JourneyProvider
+            value={{ journey: data?.journey ?? undefined, admin: true }}
           >
             <PageWrapper
-              title={data?.journey?.title ?? t('Edit Journey')}
+              title={t('Journey Details')}
               showDrawer
-              backHref={`/journeys/${router.query.journeySlug as string}`}
-              menu={<EditToolbar />}
+              backHref="/"
+              menu={<Menu />}
               authUser={AuthUser}
             >
-              <JourneyEdit />
+              <JourneyView />
             </PageWrapper>
-          </Editor>
+          </JourneyProvider>
         </>
       )}
       {error?.graphQLErrors[0].message ===
         'User has not received an invitation to edit this journey.' && (
         <>
           <NextSeo title={t('Access Denied')} />
-          <JourneyInvite journeySlug={router.query.journeySlug as string} />
+          <JourneyInvite journeyId={router.query.journeyId as string} />
         </>
       )}
       {error?.graphQLErrors[0].message === 'User invitation pending.' && (
         <>
           <NextSeo title={t('Access Denied')} />
           <JourneyInvite
-            journeySlug={router.query.journeySlug as string}
+            journeyId={router.query.journeyId as string}
             requestReceived
           />
         </>
@@ -79,15 +83,18 @@ function JourneyEditPage(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
-  const launchDarklyClient = await getLaunchDarklyClient()
-  const flags = await launchDarklyClient.allFlagsState({
+  const ldUser = {
     key: AuthUser.id as string,
     firstName: AuthUser.displayName ?? undefined,
     email: AuthUser.email ?? undefined
-  })
+  }
+  const launchDarklyClient = await getLaunchDarklyClient(ldUser)
+  const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
+    [key: string]: boolean | undefined
+  }
   return {
     props: {
-      flags: flags.toJSON(),
+      flags,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-journeys-admin', 'libs-journeys-ui'],
@@ -99,4 +106,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(JourneyEditPage)
+})(JourneyIdPage)
