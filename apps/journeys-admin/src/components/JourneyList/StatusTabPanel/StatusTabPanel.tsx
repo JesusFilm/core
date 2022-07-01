@@ -42,8 +42,6 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
   ]
 
   const [sortOrder, setSortOrder] = useState<SortOrder>()
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
   const [tabsLoaded, setTabsLoaded] = useState(false)
   const [activeTabLoaded, setActiveTabLoaded] = useState(false)
 
@@ -84,15 +82,13 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
   return (
     <>
       <>
-        {!smUp && (
-          <Box sx={{ my: 4, ml: 6 }}>
-            <JourneySort
-              sortOrder={sortOrder}
-              onChange={setSortOrder}
-              disabled={!tabsLoaded}
-            />
-          </Box>
-        )}
+        <Box sx={{ my: 4, ml: 6, display: { xs: 'block', sm: 'none' } }}>
+          <JourneySort
+            sortOrder={sortOrder}
+            onChange={setSortOrder}
+            disabled={!tabsLoaded}
+          />
+        </Box>
 
         <Card
           variant="outlined"
@@ -136,23 +132,21 @@ export function StatusTabPanel({ router }: StatusTabPanelProps): ReactElement {
               )}
               disabled={!tabsLoaded}
             />
-
-            {smUp && (
-              <Box
-                sx={{
-                  mr: 6,
-                  ml: 'auto',
-                  mt: 3,
-                  mb: 2
-                }}
-              >
-                <JourneySort
-                  sortOrder={sortOrder}
-                  onChange={setSortOrder}
-                  disabled={!tabsLoaded}
-                />
-              </Box>
-            )}
+            <Box
+              sx={{
+                mr: 6,
+                ml: 'auto',
+                mt: 3,
+                mb: 2,
+                display: { xs: 'none', sm: 'block' }
+              }}
+            >
+              <JourneySort
+                sortOrder={sortOrder}
+                onChange={setSortOrder}
+                disabled={!tabsLoaded}
+              />
+            </Box>
           </Tabs>
         </Card>
 

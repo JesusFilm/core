@@ -8,9 +8,7 @@ import Link from 'next/link'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import Image from 'next/image'
 import { AuthUser } from 'next-firebase-auth'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import MenuIcon from '@mui/icons-material/Menu'
-import { Theme } from '@mui/material/styles'
 import taskbarIcon from '../../../public/taskbar-icon.svg'
 import { NavigationDrawer } from './NavigationDrawer'
 
@@ -32,7 +30,6 @@ export function PageWrapper({
   authUser
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const showAppBarMobile =
     title === 'Active Journeys' ||
     title === 'Archived Journeys' ||
@@ -55,37 +52,34 @@ export function PageWrapper({
           }
         }}
       >
-        {!smUp && showAppBarMobile ? (
-          <Toolbar
+        <Toolbar
+          sx={{
+            display: { xs: showAppBarMobile ? 'flex' : 'none', sm: 'none' },
+            backgroundColor: 'secondary.dark',
+            justifyContent: 'center'
+          }}
+        >
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="open drawer"
+            onClick={() => setOpen(!open)}
             sx={{
-              backgroundColor: 'secondary.dark',
-              justifyContent: 'center'
+              position: 'absolute',
+              left: '25px'
             }}
           >
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={() => setOpen(!open)}
-              sx={{
-                position: 'absolute',
-                left: '25px'
-              }}
-            >
-              <MenuIcon sx={{ color: 'background.paper' }} />
-            </IconButton>
-            <Image
-              src={taskbarIcon}
-              width={32}
-              height={32}
-              layout="fixed"
-              alt="Next Steps"
-            />
-          </Toolbar>
-        ) : (
-          <></>
-        )}
+            <MenuIcon sx={{ color: 'background.paper' }} />
+          </IconButton>
+          <Image
+            src={taskbarIcon}
+            width={32}
+            height={32}
+            layout="fixed"
+            alt="Next Steps"
+          />
+        </Toolbar>
         <Toolbar>
           {backHref != null && (
             <Link href={backHref} passHref>
