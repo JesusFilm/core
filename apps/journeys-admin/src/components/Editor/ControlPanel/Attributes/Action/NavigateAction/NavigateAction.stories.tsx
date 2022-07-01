@@ -23,7 +23,6 @@ const NavigateNextStory = {
     ...simpleComponentConfig.parameters,
     chromatic: {
       ...simpleComponentConfig.parameters.chromatic,
-      diffThreshold: 0.9,
       delay: 300
     }
   }
