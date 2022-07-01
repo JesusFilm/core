@@ -8,7 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { Conductor } from '../src/components/Conductor'
-import { apolloClient } from '../src/libs/apolloClient'
+import { createApolloClient } from '../src/libs/apolloClient'
 import {
   GetJourney,
   GetJourney_journey as Journey
@@ -76,6 +76,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
 export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
   context
 ) => {
+  const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<GetJourney>({
     query: gql`
       ${JOURNEY_FIELDS}
@@ -118,6 +119,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<GetJourneySlugs>({
     query: gql`
       query GetJourneySlugs {

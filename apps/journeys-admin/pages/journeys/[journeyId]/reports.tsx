@@ -10,21 +10,27 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import Box from '@mui/material/Box'
-import { PageWrapper } from '../src/components/PageWrapper'
-import i18nConfig from '../next-i18next.config'
-import { DynamicPowerBiReport } from '../src/components/DynamicPowerBiReport'
-import { JourneysReportType } from '../__generated__/globalTypes'
+import { useRouter } from 'next/router'
+import { PageWrapper } from '../../../src/components/PageWrapper'
+import i18nConfig from '../../../next-i18next.config'
+import { DynamicPowerBiReport } from '../../../src/components/DynamicPowerBiReport'
+import { JourneysReportType } from '../../../__generated__/globalTypes'
 
-function AnalyticsPage(): ReactElement {
+function JourneyReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
+  const router = useRouter()
 
   return (
     <>
-      <NextSeo title={t('Analytics')} />
-      <PageWrapper title={t('Analytics')} authUser={AuthUser}>
+      <NextSeo title={t('Journey Reports')} />
+      <PageWrapper
+        title={t('Journey Reports')}
+        authUser={AuthUser}
+        backHref={`/journeys/${router.query.journeyId as string}`}
+      >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
-          <DynamicPowerBiReport reportType={JourneysReportType.multipleFull} />
+          <DynamicPowerBiReport reportType={JourneysReportType.singleFull} />
         </Box>
       </PageWrapper>
     </>
@@ -43,7 +49,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
-  if (flags.analytics !== true) {
+  if (flags.reports !== true) {
     return {
       redirect: {
         permanent: false,
@@ -65,4 +71,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(AnalyticsPage)
+})(JourneyReportsPage)

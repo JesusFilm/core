@@ -12,7 +12,7 @@ import { SnackbarProvider } from 'notistack'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { appWithTranslation } from 'next-i18next'
 import { useTranslation } from 'react-i18next'
-import { apolloClient } from '../src/libs/apolloClient'
+import { useApollo } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
 import i18nConfig from '../next-i18next.config'
 
@@ -63,6 +63,7 @@ function JourneysApp({
       }
     })
   }, [])
+  const apolloClient = useApollo()
 
   return (
     <CacheProvider value={emotionCache}>
