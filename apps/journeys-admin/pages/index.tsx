@@ -69,7 +69,7 @@ function IndexPage(props): ReactElement {
     <>
       <NextSeo title={t('Journeys')} />
       <PageWrapper title={pageTitle} authUser={AuthUser}>
-        {props.flags.analytics === true && <MultipleSummaryReport />}
+        {props.flags.reports === true && <MultipleSummaryReport />}
 
         <JourneyList
           journeys={data?.journeys}

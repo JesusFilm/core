@@ -65,7 +65,7 @@ describe('JourneyList', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <FlagsProvider flags={{ analytics: true }}>
+          <FlagsProvider flags={{ reports: true }}>
             <ThemeProvider>
               <JourneyList journeys={[defaultJourney]} disableCreation />
             </ThemeProvider>
@@ -82,11 +82,13 @@ describe('JourneyList', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList
-              journeys={[defaultJourney, publishedJourney, oldJourney]}
-            />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -98,12 +100,14 @@ describe('JourneyList', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList
-              journeys={[defaultJourney, publishedJourney, oldJourney]}
-              router={router}
-            />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+                router={router}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -115,12 +119,14 @@ describe('JourneyList', () => {
     const { queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList
-              journeys={[defaultJourney, publishedJourney, oldJourney]}
-              router={router}
-            />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+                router={router}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -132,12 +138,14 @@ describe('JourneyList', () => {
     const { queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList
-              journeys={[defaultJourney, publishedJourney, oldJourney]}
-              router={router}
-            />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+                router={router}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )

@@ -24,11 +24,11 @@ export function JourneyList({
   disableCreation,
   router
 }: JourneysListProps): ReactElement {
-  const { analytics } = useFlags()
+  const { reports } = useFlags()
 
   return (
     <>
-      {analytics && <MultipleSummaryReport />}
+      {reports && <MultipleSummaryReport />}
       <Container sx={{ px: { xs: 0, sm: 8 } }}>
         {journeys != null &&
           journeys.length > 0 &&

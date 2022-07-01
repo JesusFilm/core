@@ -42,7 +42,7 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <FlagsProvider flags={{ analytics: args.analytics }}>
+    <FlagsProvider flags={{ reports: args.reports }}>
       <PageWrapper title="Active Journeys">
         <JourneyList {...args.props} />
       </PageWrapper>
@@ -63,8 +63,8 @@ Default.args = {
   }
 }
 
-export const Analytics = Template.bind({})
-Analytics.args = {
+export const Reports = Template.bind({})
+Reports.args = {
   props: {
     journeys: [
       defaultJourney,
@@ -74,7 +74,7 @@ Analytics.args = {
     ],
     disableCreation: true
   },
-  analytics: true
+  reports: true
 }
 
 export const Access = Template.bind({})

@@ -20,9 +20,9 @@ export function MultipleSummaryReport(): ReactElement {
       <Container maxWidth="lg" sx={{ px: { xs: 6, sm: 8 } }}>
         <Stack direction="row" spacing={4} sx={{ py: 2 }}>
           <Typography variant="subtitle1" sx={{ pt: 1 }}>
-            Analytics
+            Reports
           </Typography>
-          <Link href="/analytics" passHref>
+          <Link href="/reports" passHref>
             <Button
               size="small"
               variant="text"

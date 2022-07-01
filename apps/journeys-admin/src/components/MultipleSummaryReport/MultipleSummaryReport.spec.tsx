@@ -13,7 +13,7 @@ describe('MultipleSummaryReport', () => {
       </MockedProvider>
     )
 
-    expect(getByText('Analytics')).toBeInTheDocument()
+    expect(getByText('Reports')).toBeInTheDocument()
     expect(getByText('See all')).toBeInTheDocument()
     await waitFor(() =>
       expect(getByTestId('powerBi-multipleSummary-report')).toBeInTheDocument()
