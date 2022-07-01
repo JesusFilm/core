@@ -13,3 +13,5 @@ updates:
       - 'tataihono'
     labels:
       - 'type: chore'
+      - 'priority: 2day'
+      - 'effort: 1'
