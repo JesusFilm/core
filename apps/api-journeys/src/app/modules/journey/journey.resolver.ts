@@ -201,13 +201,14 @@ export class JourneyResolver {
     @Args('title') title: string
   ): number[] {
     return journeys.map((journey, i) => {
-      const splitTitle = journey.title.split(' copy')
-      if (journey.title === title || splitTitle.length > 2) {
+      if (journey.title === title) {
         return 0
       } else if (journey.title === `${title} copy`) {
         return 1
       } else {
-        const duplicate = splitTitle[splitTitle.length - 1]?.trim() ?? ''
+        // Find the difference between duplicated journey and journey in list titles, remove the "copy" to find duplicate number
+        const modifier = journey.title.split(title)[1]?.split(' copy')
+        const duplicate = modifier[1]?.trim() ?? ''
         const numbers = duplicate.match(/^\d+$/)
         // If no duplicate number found, it's a unique journey. Return 0
         return numbers != null ? parseInt(numbers[0]) : 0
