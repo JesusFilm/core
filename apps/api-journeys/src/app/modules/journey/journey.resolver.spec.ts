@@ -602,10 +602,6 @@ describe('JourneyResolver', () => {
           ...journey,
           title: `${journey.title} copy 2`
         },
-        {
-          ...journey,
-          title: `${journey.title} copy 4`
-        },
         // Unique journeys with same base title - returns 0
         {
           ...journey,
@@ -629,7 +625,26 @@ describe('JourneyResolver', () => {
         array,
         journey.title
       )
-      expect(duplicateNumbers).toEqual([0, 1, 2, 4, 0, 0, 0, 1])
+      expect(duplicateNumbers).toEqual([0, 1, 2, 0, 0, 0, 1])
+      const arrayCopy = [
+        {
+          ...journey,
+          title: `journey copy`
+        },
+        {
+          ...journey,
+          title: `journey copy copy`
+        },
+        {
+          ...journey,
+          title: `journey copy copy 2`
+        }
+      ]
+      const duplicateNumbersCopy = resolver.getJourneyDuplicateNumbers(
+        arrayCopy,
+        'journey copy'
+      )
+      expect(duplicateNumbersCopy).toEqual([0, 1, 2])
     })
   })
 
