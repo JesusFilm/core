@@ -85,6 +85,59 @@ describe('SignUpEdit', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
+  it('should not save if label hasnt changed', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        signUpBlockUpdate: [
+          {
+            __typename: 'SignUpBlock',
+            id: 'signUp.id',
+            submitLabel: 'Submit'
+          }
+        ]
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: SIGN_UP_BLOCK_UPDATE_CONTENT,
+              variables: {
+                id: 'signUp.id',
+                journeyId: 'journeyId',
+                input: {
+                  submitLabel: 'Submit'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider>
+              <SignUpEdit {...props} />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const input = getByRole('textbox', { name: '' })
+    fireEvent.click(input)
+    fireEvent.change(input, { target: { value: 'Submit' } })
+    fireEvent.blur(input)
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
+
   it('saves the signUp label on outside click', async () => {
     const result = jest.fn(() => ({
       data: {

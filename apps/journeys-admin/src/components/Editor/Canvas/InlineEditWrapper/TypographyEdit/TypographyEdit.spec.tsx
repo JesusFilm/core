@@ -141,6 +141,58 @@ describe('TypographyEdit', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
+  it('should not call updateContent if the content is not changed', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        typographyBlockUpdate: [
+          {
+            __typename: 'TypographyBlock',
+            id: 'typography.id',
+            content: 'test content'
+          }
+        ]
+      }
+    }))
+
+    const { getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
+              variables: {
+                id: 'typography.id',
+                journeyId: 'journeyId',
+                input: {
+                  content: 'test content'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider>
+            <TypographyEdit {...props} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByText('test content'))
+    fireEvent.change(getByText('test content'), {
+      target: { value: 'test content' }
+    })
+    fireEvent.blur(getByText('test content'))
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+  })
+
   it('calls onDelete when text content deleted', async () => {
     const { getByRole } = render(
       <MockedProvider>
