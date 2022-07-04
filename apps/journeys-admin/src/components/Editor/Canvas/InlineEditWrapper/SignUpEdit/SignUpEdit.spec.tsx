@@ -71,10 +71,7 @@ describe('SignUpEdit', () => {
             }}
           >
             <EditorProvider>
-              <h1>Other Content</h1>
-              <iframe>
-                <SignUpEdit {...props} />
-              </iframe>
+              <SignUpEdit {...props} />
             </EditorProvider>
           </JourneyProvider>
         </SnackbarProvider>
@@ -84,7 +81,7 @@ describe('SignUpEdit', () => {
     const input = getByRole('textbox', { name: '' })
     fireEvent.click(input)
     fireEvent.change(input, { target: { value: '    updated label    ' } })
-    fireEvent.click(getByRole('heading', { level: 1 }))
+    fireEvent.blur(input)
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 

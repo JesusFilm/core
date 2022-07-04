@@ -35,20 +35,20 @@ export function SignUpEdit({
   const [value, setValue] = useState(submitLabel ?? '')
 
   async function handleSaveBlock(): Promise<void> {
-    if (journey == null) return
+    const currentSubmitLabel = value.trim().replace(/\n/g, '')
+    if (journey == null || submitLabel === currentSubmitLabel) return
 
-    const submitLabel = value.trim().replace(/\n/g, '')
     await signUpBlockUpdate({
       variables: {
         id,
         journeyId: journey.id,
-        input: { submitLabel }
+        input: { submitLabel: currentSubmitLabel }
       },
       optimisticResponse: {
         signUpBlockUpdate: {
           id,
           __typename: 'SignUpBlock',
-          submitLabel
+          submitLabel: currentSubmitLabel
         }
       }
     })

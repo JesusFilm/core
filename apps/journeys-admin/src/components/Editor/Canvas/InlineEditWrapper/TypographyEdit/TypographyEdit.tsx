@@ -62,8 +62,6 @@ export function TypographyEdit({
         }
       })
     }
-
-    console.log('UPDATE')
   }
   const inputRef = useOnClickOutside(async () => {
     await handleSaveBlock()

@@ -72,10 +72,7 @@ describe('ButtonEdit', () => {
           }}
         >
           <EditorProvider>
-            <h1>Other content</h1>
-            <iframe>
-              <ButtonEdit {...props} />
-            </iframe>
+            <ButtonEdit {...props} />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -84,7 +81,7 @@ describe('ButtonEdit', () => {
     const input = getByRole('textbox')
     fireEvent.click(input)
     fireEvent.change(input, { target: { value: '    updated label    ' } })
-    fireEvent.click(getByRole('heading', { level: 1 }))
+    fireEvent.blur(input)
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 

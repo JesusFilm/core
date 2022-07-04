@@ -127,9 +127,7 @@ describe('TypographyEdit', () => {
           }}
         >
           <EditorProvider>
-            <iframe>
-              <TypographyEdit {...props} />
-            </iframe>
+            <TypographyEdit {...props} />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

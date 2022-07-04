@@ -36,20 +36,20 @@ export function ButtonEdit({
   const [value, setValue] = useState(label)
 
   async function handleSaveBlock(): Promise<void> {
-    if (journey == null) return
+    const currentLabel = value.trim().replace(/\n/g, '')
+    if (journey == null || label === currentLabel) return
 
-    const label = value.trim().replace(/\n/g, '')
     await buttonBlockUpdate({
       variables: {
         id,
         journeyId: journey.id,
-        input: { label }
+        input: { label: currentLabel }
       },
       optimisticResponse: {
         buttonBlockUpdate: {
           id,
           __typename: 'ButtonBlock',
-          label
+          label: currentLabel
         }
       }
     })
