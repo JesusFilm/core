@@ -61,6 +61,7 @@ export function RadioOptionEdit({
       fullWidth
       multiline
       autoFocus
+      onBlur={handleSaveBlock}
       value={value}
       placeholder="Type your text here..."
       onChange={(e) => {

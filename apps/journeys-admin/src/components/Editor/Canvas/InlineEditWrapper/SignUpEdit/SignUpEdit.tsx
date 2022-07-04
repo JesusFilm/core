@@ -62,6 +62,7 @@ export function SignUpEdit({
       fullWidth
       multiline
       autoFocus
+      onBlur={handleSaveBlock}
       value={value}
       onChange={(e) => {
         setValue(e.currentTarget.value)

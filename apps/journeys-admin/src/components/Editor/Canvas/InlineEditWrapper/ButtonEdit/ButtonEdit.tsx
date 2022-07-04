@@ -63,6 +63,7 @@ export function ButtonEdit({
       fullWidth
       multiline
       autoFocus
+      onBlur={handleSaveBlock}
       value={value}
       onChange={(e) => {
         setValue(e.currentTarget.value)

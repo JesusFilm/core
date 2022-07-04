@@ -41,30 +41,33 @@ export function TypographyEdit({
   const [value, setValue] = useState(content)
 
   async function handleSaveBlock(): Promise<void> {
-    if (journey == null) return
+    const currentContent = value.trimStart().trimEnd()
+    if (journey == null || content === currentContent) return
 
-    const content = value.trimStart().trimEnd()
-
-    if (content === '') {
+    if (currentContent === '') {
       deleteSelf()
     } else {
       await typographyBlockUpdate({
         variables: {
           id,
           journeyId: journey.id,
-          input: { content }
+          input: { content: currentContent }
         },
         optimisticResponse: {
           typographyBlockUpdate: {
             id,
             __typename: 'TypographyBlock',
-            content
+            content: currentContent
           }
         }
       })
     }
+
+    console.log('UPDATE')
   }
-  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
+  const inputRef = useOnClickOutside(async () => {
+    await handleSaveBlock()
+  })
 
   const input = (
     <InlineEditInput
@@ -74,6 +77,7 @@ export function TypographyEdit({
       fullWidth
       autoFocus
       value={value}
+      onBlur={handleSaveBlock}
       onChange={(e) => {
         setValue(e.currentTarget.value)
       }}

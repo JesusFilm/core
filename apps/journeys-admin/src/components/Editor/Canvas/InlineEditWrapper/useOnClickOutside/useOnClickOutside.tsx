@@ -4,6 +4,7 @@ export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
   callback: () => void | Promise<void>
 ): RefObject<T> {
   const elementRef = useRef<T>(null)
+
   useEffect(() => {
     const handleClick = (event: MouseEvent): void => {
       if (

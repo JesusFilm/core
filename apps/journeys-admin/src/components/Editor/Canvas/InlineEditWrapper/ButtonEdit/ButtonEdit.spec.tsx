@@ -34,6 +34,60 @@ describe('ButtonEdit', () => {
     expect(input).toHaveFocus()
   })
 
+  it('saves the button label on onBlur', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        buttonBlockUpdate: [
+          {
+            __typename: 'ButtonBlock',
+            id: 'button.id',
+            label: 'updated label'
+          }
+        ]
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_BLOCK_UPDATE_CONTENT,
+              variables: {
+                id: 'button.id',
+                journeyId: 'journeyId',
+                input: {
+                  label: 'updated label'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <EditorProvider>
+            <h1>Other content</h1>
+            <iframe>
+              <ButtonEdit {...props} />
+            </iframe>
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const input = getByRole('textbox')
+    fireEvent.click(input)
+    fireEvent.change(input, { target: { value: '    updated label    ' } })
+    fireEvent.click(getByRole('heading', { level: 1 }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
   it('saves the button label on outside click', async () => {
     const result = jest.fn(() => ({
       data: {
