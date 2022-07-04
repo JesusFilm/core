@@ -262,7 +262,7 @@ describe('JourneyView/Menu', () => {
 
     const menu = getByRole('button')
     fireEvent.click(menu)
-    expect(getByRole('menuitem', { name: 'Reports' })).toHaveAttribute(
+    expect(getByRole('menuitem', { name: 'Report' })).toHaveAttribute(
       'href',
       '/journeys/journey-id/reports'
     )
@@ -283,6 +283,6 @@ describe('JourneyView/Menu', () => {
 
     const menu = getByRole('button')
     fireEvent.click(menu)
-    expect(queryByRole('menuitem', { name: 'Reports' })).toBeNull()
+    expect(queryByRole('menuitem', { name: 'Report' })).toBeNull()
   })
 })

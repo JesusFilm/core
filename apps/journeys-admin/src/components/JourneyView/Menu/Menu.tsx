@@ -171,7 +171,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
                   <ListItemIcon>
                     <AssessmentRoundedIcon />
                   </ListItemIcon>
-                  <ListItemText>Reports</ListItemText>
+                  <ListItemText>Report</ListItemText>
                 </MenuItem>
               </NextLink>
             )}

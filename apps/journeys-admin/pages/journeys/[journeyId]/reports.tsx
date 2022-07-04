@@ -23,9 +23,9 @@ function JourneyReportsPage(): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('Journey Reports')} />
+      <NextSeo title={t('Journey Report')} />
       <PageWrapper
-        title={t('Journey Reports')}
+        title={t('Journey Report')}
         authUser={AuthUser}
         backHref={`/journeys/${router.query.journeyId as string}`}
       >

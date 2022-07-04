@@ -72,6 +72,7 @@ export class JourneyService extends BaseService {
     return await result.all()
   }
 
+  @KeyAsId()
   async getAllByIds(userId: string, ids: string[]): Promise<Journey[]> {
     const result = await this.db.query(aql`
     FOR userJourney in userJourneys
