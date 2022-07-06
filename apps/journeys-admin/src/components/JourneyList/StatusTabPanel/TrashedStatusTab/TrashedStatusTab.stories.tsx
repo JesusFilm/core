@@ -31,7 +31,7 @@ export const Default = Template.bind({})
 Default.args = {
   props: {
     onLoad: noop,
-    event:''
+    event: ''
   },
   mocks: [
     {
