@@ -123,7 +123,8 @@ const CardItem = ({
         width: 95,
         height: 140,
         position: 'relative',
-        top: provided != null ? -24 : undefined
+        // top: provided != null ? -24 : undefined,
+        overflow: 'hidden'
       }}
       {...(provided != null ? provided.draggableProps : {})}
     >
