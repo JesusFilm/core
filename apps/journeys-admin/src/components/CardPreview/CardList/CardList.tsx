@@ -140,11 +140,11 @@ const CardItem = ({
       data-testid={`preview-${id}`}
       sx={{
         width: 95,
-        height: 160,
+        height: provided != null ? 160 : 140,
         position: 'relative',
         top: provided != null ? -24 : undefined,
         mb: provided != null ? -24 : undefined,
-        overflow: 'hidden'
+        overflow: provided != null ? 'hidden' : undefined
       }}
       {...(provided != null ? provided.draggableProps : {})}
     >
