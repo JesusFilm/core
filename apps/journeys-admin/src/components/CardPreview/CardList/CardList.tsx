@@ -78,15 +78,34 @@ export function CardList({
             draggableId={step.id}
             index={index}
           >
-            {(provided, snapshot) => (
-              <CardItem
-                key={step.id}
-                id={step.id}
-                provided={provided}
-                step={step}
-                snapshot={snapshot}
-              />
-            )}
+            {(provided, snapshot) => {
+              return (
+                <>
+                  {/* {provided != null && snapshot != null && (
+                    <Box
+                      {...(provided != null ? provided.dragHandleProps : {})}
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <DragHandleRounded
+                        sx={{
+                          opacity: snapshot.isDragging === true ? 1 : 0.5
+                        }}
+                      />
+                    </Box>
+                  )} */}
+                  <CardItem
+                    key={step.id}
+                    id={step.id}
+                    provided={provided}
+                    step={step}
+                    snapshot={snapshot}
+                  />
+                </>
+              )
+            }}
           </Draggable>
         ))}
       {droppableProvided == null &&
@@ -121,9 +140,10 @@ const CardItem = ({
       data-testid={`preview-${id}`}
       sx={{
         width: 95,
-        height: 140,
+        height: 160,
         position: 'relative',
-        // top: provided != null ? -24 : undefined,
+        top: provided != null ? -24 : undefined,
+        mb: provided != null ? -24 : undefined,
         overflow: 'hidden'
       }}
       {...(provided != null ? provided.draggableProps : {})}
