@@ -29,6 +29,7 @@ interface CardListProps {
   handleClick?: () => void
   handleChange?: (selectedId: string) => void
   isDragging?: boolean
+  isDraggable?: boolean
 }
 
 export function CardList({
@@ -38,7 +39,8 @@ export function CardList({
   droppableProvided,
   handleClick,
   handleChange,
-  isDragging
+  isDragging,
+  isDraggable
 }: CardListProps): ReactElement {
   const AddCardSlide = (): ReactElement => (
     <Card
@@ -85,6 +87,7 @@ export function CardList({
                 provided={provided}
                 step={step}
                 snapshot={snapshot}
+                isDraggable={isDraggable}
               />
             )}
           </Draggable>
@@ -103,13 +106,15 @@ interface CardItemProps {
   id: string
   provided?: DraggableProvided
   snapshot?: DraggableStateSnapshot
+  isDraggable?: boolean
 }
 
 const CardItem = ({
   step,
   id,
   provided,
-  snapshot
+  snapshot,
+  isDraggable
 }: CardItemProps): ReactElement => {
   const { journey } = useJourney()
 
@@ -121,11 +126,11 @@ const CardItem = ({
       data-testid={`preview-${id}`}
       sx={{
         width: 95,
-        height: provided != null ? 160 : 140,
         position: 'relative',
-        top: provided != null ? -24 : undefined,
-        mb: provided != null ? -24 : undefined,
-        overflow: provided != null ? 'hidden' : undefined
+        height: isDraggable === true ? 160 : 140,
+        top: isDraggable === true ? '-24px' : undefined,
+        mb: isDraggable === true ? '-24px' : undefined,
+        overflow: isDraggable === true ? 'hidden' : undefined
       }}
       {...(provided != null ? provided.draggableProps : {})}
     >
