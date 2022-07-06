@@ -68,14 +68,14 @@ export const TRASH_ACTIVE_JOURNEYS = gql`
 interface ActiveStatusTabProps {
   onLoad: () => void
   sortOrder?: SortOrder
-  event?: string | undefined
+  event: string | undefined
   authUser?: AuthUser
 }
 
 export function ActiveStatusTab({
   onLoad,
   sortOrder,
-  event = '',
+  event,
   authUser
 }: ActiveStatusTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

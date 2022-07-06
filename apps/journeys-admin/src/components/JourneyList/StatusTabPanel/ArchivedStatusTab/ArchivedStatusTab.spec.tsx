@@ -65,7 +65,11 @@ describe('ArchivedStatusTab', () => {
       <MockedProvider mocks={[archivedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ArchivedStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
+            <ArchivedStatusTab
+              onLoad={noop}
+              sortOrder={SortOrder.TITLE}
+              event=""
+            />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -86,7 +90,7 @@ describe('ArchivedStatusTab', () => {
       <MockedProvider mocks={[]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ArchivedStatusTab onLoad={noop} />
+            <ArchivedStatusTab onLoad={noop} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -102,7 +106,7 @@ describe('ArchivedStatusTab', () => {
       <MockedProvider mocks={[noJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ArchivedStatusTab onLoad={onLoad} />
+            <ArchivedStatusTab onLoad={onLoad} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>

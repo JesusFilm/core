@@ -51,7 +51,7 @@ describe('TrashedStatusTab', () => {
       <MockedProvider mocks={[trashedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedStatusTab onLoad={noop} />
+            <TrashedStatusTab onLoad={noop} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -72,7 +72,11 @@ describe('TrashedStatusTab', () => {
       <MockedProvider mocks={[trashedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
+            <TrashedStatusTab
+              onLoad={noop}
+              sortOrder={SortOrder.TITLE}
+              event=""
+            />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -109,7 +113,11 @@ describe('TrashedStatusTab', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
+            <TrashedStatusTab
+              onLoad={noop}
+              sortOrder={SortOrder.TITLE}
+              event=""
+            />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -128,7 +136,7 @@ describe('TrashedStatusTab', () => {
       <MockedProvider mocks={[]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedStatusTab onLoad={noop} />
+            <TrashedStatusTab onLoad={noop} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -144,7 +152,7 @@ describe('TrashedStatusTab', () => {
       <MockedProvider mocks={[noJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedStatusTab onLoad={onLoad} />
+            <TrashedStatusTab onLoad={onLoad} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>

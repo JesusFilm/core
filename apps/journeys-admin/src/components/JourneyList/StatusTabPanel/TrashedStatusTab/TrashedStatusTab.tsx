@@ -69,14 +69,14 @@ export const DELETE_TRASHED_JOURNEYS = gql`
 interface TrashedStatusTabProps {
   onLoad: (journeys: string[] | undefined) => void
   sortOrder?: SortOrder
-  event?: string | undefined
+  event: string | undefined
   authUser?: AuthUser
 }
 
 export function TrashedStatusTab({
   onLoad,
   sortOrder,
-  event = '',
+  event,
   authUser
 }: TrashedStatusTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

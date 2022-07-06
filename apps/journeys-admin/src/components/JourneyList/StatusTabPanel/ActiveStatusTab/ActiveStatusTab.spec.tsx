@@ -43,7 +43,7 @@ describe('ActiveStatusTab', () => {
       <MockedProvider mocks={[activeJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveStatusTab onLoad={noop} />
+            <ActiveStatusTab onLoad={noop} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -64,7 +64,11 @@ describe('ActiveStatusTab', () => {
       <MockedProvider mocks={[activeJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveStatusTab onLoad={noop} sortOrder={SortOrder.TITLE} />
+            <ActiveStatusTab
+              onLoad={noop}
+              sortOrder={SortOrder.TITLE}
+              event=""
+            />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -85,7 +89,7 @@ describe('ActiveStatusTab', () => {
       <MockedProvider mocks={[noJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveStatusTab onLoad={noop} />
+            <ActiveStatusTab onLoad={noop} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -104,7 +108,7 @@ describe('ActiveStatusTab', () => {
       <MockedProvider mocks={[]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveStatusTab onLoad={noop} />
+            <ActiveStatusTab onLoad={noop} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -120,7 +124,7 @@ describe('ActiveStatusTab', () => {
       <MockedProvider mocks={[noJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveStatusTab onLoad={onLoad} />
+            <ActiveStatusTab onLoad={onLoad} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>

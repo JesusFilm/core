@@ -30,7 +30,8 @@ const Template: Story = ({ ...args }) => (
 export const Default = Template.bind({})
 Default.args = {
   props: {
-    onLoad: noop
+    onLoad: noop,
+    event: ''
   },
   mocks: [
     {
@@ -54,7 +55,8 @@ Default.args = {
 export const NoJourneys = Template.bind({})
 NoJourneys.args = {
   props: {
-    onLoad: noop
+    onLoad: noop,
+    event: ''
   },
   mocks: [
     {
@@ -73,7 +75,8 @@ NoJourneys.args = {
 export const Loading = Template.bind({})
 Loading.args = {
   props: {
-    onLoad: noop
+    onLoad: noop,
+    event: ''
   },
   mocks: []
 }

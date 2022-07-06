@@ -43,7 +43,7 @@ describe('StatusTabPanel', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <StatusTabPanel />
+            <StatusTabPanel event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -58,7 +58,7 @@ describe('StatusTabPanel', () => {
       <MockedProvider>
         <ThemeProvider>
           <SnackbarProvider>
-            <StatusTabPanel />
+            <StatusTabPanel event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -84,7 +84,7 @@ describe('StatusTabPanel', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <StatusTabPanel />
+            <StatusTabPanel event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -124,7 +124,7 @@ describe('StatusTabPanel', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <StatusTabPanel router={router} />
+            <StatusTabPanel router={router} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -159,7 +159,7 @@ describe('StatusTabPanel', () => {
           ]}
         >
           <ThemeProvider>
-            <StatusTabPanel router={router} />
+            <StatusTabPanel router={router} event="" />
           </ThemeProvider>
         </MockedProvider>
       </SnackbarProvider>
