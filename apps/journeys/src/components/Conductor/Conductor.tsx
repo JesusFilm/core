@@ -220,33 +220,35 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   </Box>
                 </SwiperSlide>
               ))}
-              <IconButton
-                data-testid="conductorPrevButton"
-                onClick={handleNext}
-                disabled={true}
-                disableRipple
-                sx={{
-                  display: showNavArrows ? 'flex' : 'none',
-                  position: 'absolute',
-                  top: 0,
-                  bottom: 0,
-                  zIndex: 2,
-                  left: 0,
-                  width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
-                  pl: ` ${gapBetweenSlides - 100}px`,
-                  color: (theme) => theme.palette.text.primary
-                }}
-              >
-                <ChevronLeftIcon
-                  fontSize={'large'}
+              {activeBlock !== treeBlocks[0] && (
+                <IconButton
+                  data-testid="conductorPrevButton"
+                  onClick={handleNext}
+                  disabled={true}
+                  disableRipple
                   sx={{
-                    display: 'none',
-                    [theme.breakpoints.only('xl')]: {
-                      display: 'block'
-                    }
+                    display: showNavArrows ? 'flex' : 'none',
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    zIndex: 2,
+                    left: 0,
+                    width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
+                    pl: ` ${gapBetweenSlides - 100}px`,
+                    color: (theme) => theme.palette.text.primary
                   }}
-                />
-              </IconButton>
+                >
+                  <ChevronLeftIcon
+                    fontSize={'large'}
+                    sx={{
+                      display: 'none',
+                      [theme.breakpoints.only('xl')]: {
+                        display: 'block'
+                      }
+                    }}
+                  />
+                </IconButton>
+              )}
               <Box
                 sx={{
                   position: 'absolute',
@@ -260,35 +262,37 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   width: (theme) => theme.spacing(4)
                 }}
               />
-              <IconButton
-                data-testid="conductorNextButton"
-                onClick={handleNext}
-                disabled={
-                  activeBlock?.locked === true || lastStep === activeBlock
-                }
-                disableRipple
-                sx={{
-                  display: showNavArrows ? 'flex' : 'none',
-                  position: 'absolute',
-                  top: 0,
-                  bottom: 0,
-                  zIndex: 2,
-                  right: 0,
-                  width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
-                  pr: ` ${gapBetweenSlides - 100}px`,
-                  color: (theme) => theme.palette.text.primary
-                }}
-              >
-                <ChevronRightIcon
-                  fontSize={'large'}
+              {activeBlock !== lastStep && (
+                <IconButton
+                  data-testid="conductorNextButton"
+                  onClick={handleNext}
+                  disabled={
+                    activeBlock?.locked === true || lastStep === activeBlock
+                  }
+                  disableRipple
                   sx={{
-                    display: 'none',
-                    [theme.breakpoints.only('xl')]: {
-                      display: 'block'
-                    }
+                    display: showNavArrows ? 'flex' : 'none',
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    zIndex: 2,
+                    right: 0,
+                    width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
+                    pr: ` ${gapBetweenSlides - 100}px`,
+                    color: (theme) => theme.palette.text.primary
                   }}
-                />
-              </IconButton>
+                >
+                  <ChevronRightIcon
+                    fontSize={'large'}
+                    sx={{
+                      display: 'none',
+                      [theme.breakpoints.only('xl')]: {
+                        display: 'block'
+                      }
+                    }}
+                  />
+                </IconButton>
+              )}
             </Swiper>
           </Box>
         </Stack>

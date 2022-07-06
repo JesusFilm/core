@@ -431,7 +431,7 @@ describe('Conductor', () => {
         ]
       }
     ]
-    const { getByRole, getByTestId } = render(
+    const { getByRole, getByTestId, queryByTestId } = render(
       <MockedProvider>
         <Conductor blocks={blocks} />
       </MockedProvider>
@@ -449,10 +449,9 @@ describe('Conductor', () => {
     expect(activeBlockVar()?.id).toBe('step3.id')
     fireEvent.click(conductorNextButton)
     expect(activeBlockVar()?.id).toBe('step4.id')
-    expect(conductorNextButton).toHaveStyle('cursor: default;')
     fireEvent.click(getByRole('button', { name: '3. Step 4 (End)' }))
     expect(activeBlockVar()?.id).toBe('step4.id')
-    expect(conductorNextButton).toHaveStyle('cursor: default;')
+    expect(queryByTestId('conductorNextButton')).toBeNull()
   })
 
   it('should not throw error if no blocks', () => {
