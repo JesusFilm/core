@@ -68,14 +68,14 @@ export const TRASH_ARCHIVED_JOURNEYS = gql`
 interface ArchivedStatusTabProps {
   onLoad: () => void
   sortOrder?: SortOrder
-  event?: string | undefined
+  event: string | undefined
   authUser?: AuthUser
 }
 
 export function ArchivedStatusTab({
   onLoad,
   sortOrder,
-  event = '',
+  event,
   authUser
 }: ArchivedStatusTabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

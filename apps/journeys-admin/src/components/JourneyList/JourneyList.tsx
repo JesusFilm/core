@@ -17,14 +17,14 @@ import { StatusTabPanel } from './StatusTabPanel'
 export interface JourneysListProps {
   journeys?: Journey[]
   router?: NextRouter
-  event?: string | undefined
+  event: string | undefined
   authUser?: AuthUser
 }
 
 export function JourneyList({
   journeys,
   router,
-  event = '',
+  event,
   authUser
 }: JourneysListProps): ReactElement {
   const { reports } = useFlags()
@@ -36,7 +36,7 @@ export function JourneyList({
       )}
       <Container sx={{ px: { xs: 0, sm: 8 } }}>
         {(journeys == null || journeys.length > 0) && (
-          <StatusTabPanel router={router} />
+          <StatusTabPanel router={router} event={event} authUser={authUser} />
         )}
         {journeys != null &&
           (journeys.length > 0 ? (
