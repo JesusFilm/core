@@ -23,8 +23,6 @@ import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
 import last from 'lodash/last'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
-import { BlockFields_CardBlock as CardBlock } from '../../../__generated__/BlockFields'
-import { JourneyProgress } from '../JourneyProgress'
 import { Footer } from '../Footer'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
@@ -92,16 +90,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
   }
 
-  const cardBlock = activeBlock?.children.find(
-    (child) => child.__typename === 'CardBlock'
-  ) as TreeBlock<CardBlock> | undefined
-
-  const videoBlockExists =
-    cardBlock?.children.some(
-      (child) =>
-        child.__typename === 'VideoBlock' && child.id !== cardBlock.coverBlockId
-    ) ?? false
-
   const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
 
   useEffect(() => {
@@ -144,13 +132,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               py: 6,
               pt: { lg: 0 }
             }}
-          >
-            <Fade in={!videoBlockExists}>
-              <Box data-testid="journey-progress">
-                <JourneyProgress />
-              </Box>
-            </Fade>
-          </Box>
+          />
           <Box
             sx={{
               flexGrow: 1,
