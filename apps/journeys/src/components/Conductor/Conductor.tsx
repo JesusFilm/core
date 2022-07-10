@@ -128,7 +128,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         >
           <Box
             sx={{
-              // pb: 6,
               pt: { sm: 0, xs: 6 },
               flexGrow: 1,
               display: 'flex',
