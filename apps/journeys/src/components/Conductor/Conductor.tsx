@@ -128,13 +128,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         >
           <Box
             sx={{
-              px: `${edgeSlideWidth + gapBetweenSlides}px`,
               py: 6,
-              pt: { lg: 0 }
-            }}
-          />
-          <Box
-            sx={{
+              pt: { lg: 0 },
               flexGrow: 1,
               display: 'flex',
               [theme.breakpoints.only('sm')]: {
