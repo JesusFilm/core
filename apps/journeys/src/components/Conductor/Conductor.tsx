@@ -128,8 +128,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         >
           <Box
             sx={{
-              py: 6,
-              pt: { lg: 0 },
+              pb: 6,
+              pt: { lg: 0, sm: 6, xs: 6 },
               flexGrow: 1,
               display: 'flex',
               [theme.breakpoints.only('sm')]: {
