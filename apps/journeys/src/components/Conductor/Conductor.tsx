@@ -129,13 +129,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           <Box
             sx={{
               pb: 6,
-              pt: { lg: 0, sm: 6, xs: 6 },
+              pt: { sm: 0, xs: 6 },
               flexGrow: 1,
               display: 'flex',
               [theme.breakpoints.only('sm')]: {
                 maxHeight: '460px'
               },
-              [theme.breakpoints.up('lg')]: {
+              [theme.breakpoints.up('md')]: {
                 maxHeight: '480px'
               }
             }}
