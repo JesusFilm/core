@@ -72,7 +72,7 @@ describe('VideoBlockEditor', () => {
   })
 
   describe('existing block', () => {
-    it('shows title and hls link', async () => {
+    it('shows title and language', async () => {
       const { getByText } = render(
         <ThemeProvider>
           <MockedProvider>
@@ -86,6 +86,79 @@ describe('VideoBlockEditor', () => {
       )
       expect(getByText('FallingPlates')).toBeInTheDocument()
       expect(getByText('English')).toBeInTheDocument()
+    })
+
+    it('shows title and language (with local only)', async () => {
+      const { getByText } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <VideoBlockEditor
+              selectedBlock={{
+                ...video,
+                video: {
+                  ...video.video,
+                  variantLanguages: [
+                    {
+                      __typename: 'Language',
+                      id: '529',
+                      name: [
+                        {
+                          __typename: 'Translation',
+                          value: 'English',
+                          primary: false
+                        }
+                      ]
+                    }
+                  ]
+                } as unknown as VideoBlock['video']
+              }}
+              onChange={jest.fn()}
+              onDelete={jest.fn()}
+            />
+          </MockedProvider>
+        </ThemeProvider>
+      )
+      expect(getByText('FallingPlates')).toBeInTheDocument()
+      expect(getByText('English')).toBeInTheDocument()
+    })
+
+    it('shows title and language (with native)', async () => {
+      const { getByText } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <VideoBlockEditor
+              selectedBlock={{
+                ...video,
+                video: {
+                  ...video.video,
+                  variantLanguages: [
+                    {
+                      __typename: 'Language',
+                      id: '529',
+                      name: [
+                        {
+                          __typename: 'Translation',
+                          value: 'English 2',
+                          primary: true
+                        },
+                        {
+                          __typename: 'Translation',
+                          value: 'English',
+                          primary: false
+                        }
+                      ]
+                    }
+                  ]
+                } as unknown as VideoBlock['video']
+              }}
+              onChange={jest.fn()}
+              onDelete={jest.fn()}
+            />
+          </MockedProvider>
+        </ThemeProvider>
+      )
+      expect(getByText('FallingPlates')).toBeInTheDocument()
+      expect(getByText('English (English 2)')).toBeInTheDocument()
     })
 
     it('calls onDelete', async () => {
