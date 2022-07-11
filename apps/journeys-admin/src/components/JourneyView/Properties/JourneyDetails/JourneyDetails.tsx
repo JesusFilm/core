@@ -1,5 +1,5 @@
 import { isThisYear, parseISO, intlFormat } from 'date-fns'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
@@ -14,6 +14,8 @@ import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 export function JourneyDetails(): ReactElement {
   const { journey } = useJourney()
+  const [localLanguage, setLocalLanguage] = useState<string | undefined>()
+  const [nativeLanguage, setNativeLanguage] = useState<string | undefined>()
 
   const options = [
     {
@@ -42,6 +44,14 @@ export function JourneyDetails(): ReactElement {
     (option) => option.journeyStatus === journey?.status
   )
 
+  useEffect(() => {
+    setLocalLanguage(
+      journey?.language.name.find(({ primary }) => !primary)?.value
+    )
+    setNativeLanguage(
+      journey?.language.name.find(({ primary }) => primary)?.value
+    )
+  }, [journey])
   return (
     <>
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -83,7 +93,12 @@ export function JourneyDetails(): ReactElement {
         <TranslateRounded fontSize="small" />
         <Typography variant="body2" sx={{ ml: 2 }}>
           {journey != null ? (
-            journey.language.name.find(({ primary }) => primary)?.value
+            <span>
+              {localLanguage ?? nativeLanguage}
+              {localLanguage != null &&
+                localLanguage !== nativeLanguage &&
+                nativeLanguage && <span>&nbsp;({nativeLanguage})</span>}
+            </span>
           ) : (
             <Skeleton variant="text" width={40} />
           )}
