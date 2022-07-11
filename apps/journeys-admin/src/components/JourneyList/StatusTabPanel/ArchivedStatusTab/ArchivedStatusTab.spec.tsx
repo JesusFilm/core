@@ -61,8 +61,25 @@ describe('ArchivedStatusTab', () => {
   })
 
   it('should order journeys in alphabetical order', async () => {
+    const lowerCaseJourneyTitle = {
+      ...defaultJourney,
+      title: 'a lower case title'
+    }
     const { getAllByLabelText } = render(
-      <MockedProvider mocks={[archivedJourneysMock]}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ARCHIVED_JOURNEYS
+            },
+            result: {
+              data: {
+                journeys: [lowerCaseJourneyTitle, oldJourney]
+              }
+            }
+          }
+        ]}
+      >
         <ThemeProvider>
           <SnackbarProvider>
             <ArchivedStatusTab
@@ -81,7 +98,7 @@ describe('ArchivedStatusTab', () => {
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'Default Journey Heading'
+      'a lower case title'
     )
   })
 
