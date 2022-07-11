@@ -1,6 +1,6 @@
 import { defaultJourney, oldJourney } from '../../journeyListData'
 import { SortOrder } from '../JourneySort'
-import { GetActiveJourneys_journeys as ActiveJourneys } from '../../../../../__generated__/GetActiveJourneys'
+import { GetActiveJourneys_journeys as ActiveJourney } from '../../../../../__generated__/GetActiveJourneys'
 import { sortJourneys } from './sortJourneys'
 
 describe('sortJourneys', () => {
@@ -21,26 +21,26 @@ describe('sortJourneys', () => {
     const journeys = [
       {
         title: 'Z'
-      } as unknown as ActiveJourneys,
+      } as unknown as ActiveJourney,
       {
-        title: 'aB'
-      } as unknown as ActiveJourneys,
+        title: 'aA'
+      } as unknown as ActiveJourney,
       {
         title: 'AB'
-      } as unknown as ActiveJourneys
+      } as unknown as ActiveJourney
     ]
 
     const sorted = sortJourneys(journeys, SortOrder.TITLE)
     expect(sorted).toEqual([
       {
         title: 'AB'
-      } as unknown as ActiveJourneys,
+      } as unknown as ActiveJourney,
       {
-        title: 'aB'
-      } as unknown as ActiveJourneys,
+        title: 'aA'
+      } as unknown as ActiveJourney,
       {
         title: 'Z'
-      } as unknown as ActiveJourneys
+      } as unknown as ActiveJourney
     ])
   })
 })

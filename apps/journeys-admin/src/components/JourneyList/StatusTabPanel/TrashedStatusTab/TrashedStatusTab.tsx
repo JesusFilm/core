@@ -8,7 +8,7 @@ import { useSnackbar } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
 import {
   GetTrashedJourneys,
-  GetTrashedJourneys_journeys as TrashedJourneys
+  GetTrashedJourneys_journeys as TrashedJourney
 } from '../../../../../__generated__/GetTrashedJourneys'
 import { JourneyCard } from '../../JourneyCard'
 import { SortOrder } from '../../JourneySort'
@@ -189,7 +189,7 @@ export function TrashedStatusTab({
 
   const sortedJourneys =
     journeys != null
-      ? (sortJourneys(journeys, sortOrder) as TrashedJourneys[])
+      ? (sortJourneys(journeys, sortOrder) as TrashedJourney[])
       : undefined
 
   // calculate 40 days ago. may later be replaced by cron job
