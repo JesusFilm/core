@@ -36,8 +36,10 @@ export function PageWrapper({
   const showAppBarMobile =
     title === 'Active Journeys' ||
     title === 'Archived Journeys' ||
-    title === 'Deleted Journeys' ||
-    title === 'Journey Details'
+    title === 'Trashed Journeys' ||
+    title === 'Journey Details' ||
+    title === 'Journey Report' ||
+    title === 'Reports'
 
   return (
     <>

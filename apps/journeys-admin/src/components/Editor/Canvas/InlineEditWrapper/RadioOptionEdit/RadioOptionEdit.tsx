@@ -6,6 +6,7 @@ import { RadioOption } from '@core/journeys/ui/RadioOption'
 import { RadioOptionBlockUpdateContent } from '../../../../../../__generated__/RadioOptionBlockUpdateContent'
 import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 import { InlineEditInput } from '../InlineEditInput'
+import { useOnClickOutside } from '../useOnClickOutside'
 
 export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
   mutation RadioOptionBlockUpdateContent(
@@ -33,34 +34,36 @@ export function RadioOptionEdit({
   const [value, setValue] = useState(label)
 
   async function handleSaveBlock(): Promise<void> {
-    if (journey == null) return
+    const currentLabel = value.trim().replace(/\n/g, '')
+    if (journey == null || label === currentLabel) return
 
-    const label = value.trim().replace(/\n/g, '')
     await radioOptionBlockUpdate({
       variables: {
         id,
         journeyId: journey.id,
-        input: { label }
+        input: { label: currentLabel }
       },
       optimisticResponse: {
         radioOptionBlockUpdate: {
           id,
           __typename: 'RadioOptionBlock',
-          label
+          label: currentLabel
         }
       }
     })
   }
+  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
 
   const input = (
     <InlineEditInput
       name={`edit-${id}`}
+      ref={inputRef}
       fullWidth
       multiline
       autoFocus
+      onBlur={handleSaveBlock}
       value={value}
       placeholder="Type your text here..."
-      onBlur={handleSaveBlock}
       onChange={(e) => {
         setValue(e.currentTarget.value)
       }}

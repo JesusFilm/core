@@ -3,8 +3,9 @@ import { Meta, Story } from '@storybook/react'
 import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthUser } from 'next-firebase-auth'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { GET_ME, NavigationDrawerProps } from './NavigationDrawer'
+import { GET_ME } from './NavigationDrawer'
 import { NavigationDrawer } from '.'
 
 const NavigationDrawerStory = {
@@ -13,7 +14,7 @@ const NavigationDrawerStory = {
   title: 'Journeys-Admin/PageWrapper/NavigationDrawer'
 }
 
-const Template: Story<NavigationDrawerProps> = () => {
+const Template: Story = ({ ...args }) => {
   const [open, setOpen] = useState(true)
 
   return (
@@ -37,23 +38,41 @@ const Template: Story<NavigationDrawerProps> = () => {
         }
       ]}
     >
-      <NavigationDrawer
-        open={open}
-        onClose={() => setOpen(!open)}
-        authUser={
-          {
-            displayName: 'Amin One',
-            photoURL: 'https://bit.ly/3Gth4Yf',
-            email: 'amin@email.com',
-            signOut: noop
-          } as unknown as AuthUser
-        }
-        title="Active Journeys"
-      />
+      <FlagsProvider flags={{ reports: args.reports }}>
+        <NavigationDrawer
+          open={open}
+          onClose={() => setOpen(!open)}
+          authUser={
+            {
+              displayName: 'Amin One',
+              photoURL: 'https://bit.ly/3Gth4Yf',
+              email: 'amin@email.com',
+              signOut: noop
+            } as unknown as AuthUser
+          }
+          title={args.title}
+        />
+      </FlagsProvider>
     </MockedProvider>
   )
 }
 
 export const Default = Template.bind({})
+Default.args = {
+  reports: true,
+  title: 'Active Journeys'
+}
+
+export const Reports = Template.bind({})
+Reports.args = {
+  reports: true,
+  title: 'Reports'
+}
+
+export const ReportsOff = Template.bind({})
+ReportsOff.args = {
+  reports: false,
+  title: 'Journeys'
+}
 
 export default NavigationDrawerStory as Meta

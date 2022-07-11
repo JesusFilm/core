@@ -6,6 +6,7 @@ import { SignUp } from '@core/journeys/ui/SignUp'
 import { SignUpBlockUpdateContent } from '../../../../../../__generated__/SignUpBlockUpdateContent'
 import { SignUpFields } from '../../../../../../__generated__/SignUpFields'
 import { InlineEditInput } from '../InlineEditInput'
+import { useOnClickOutside } from '../useOnClickOutside/useOnClickOutside'
 
 export const SIGN_UP_BLOCK_UPDATE_CONTENT = gql`
   mutation SignUpBlockUpdateContent(
@@ -34,33 +35,35 @@ export function SignUpEdit({
   const [value, setValue] = useState(submitLabel ?? '')
 
   async function handleSaveBlock(): Promise<void> {
-    if (journey == null) return
+    const currentSubmitLabel = value.trim().replace(/\n/g, '')
+    if (journey == null || submitLabel === currentSubmitLabel) return
 
-    const submitLabel = value.trim().replace(/\n/g, '')
     await signUpBlockUpdate({
       variables: {
         id,
         journeyId: journey.id,
-        input: { submitLabel }
+        input: { submitLabel: currentSubmitLabel }
       },
       optimisticResponse: {
         signUpBlockUpdate: {
           id,
           __typename: 'SignUpBlock',
-          submitLabel
+          submitLabel: currentSubmitLabel
         }
       }
     })
   }
+  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
 
   const input = (
     <InlineEditInput
       name={`edit-${id}`}
+      ref={inputRef}
       fullWidth
       multiline
       autoFocus
-      value={value}
       onBlur={handleSaveBlock}
+      value={value}
       onChange={(e) => {
         setValue(e.currentTarget.value)
       }}

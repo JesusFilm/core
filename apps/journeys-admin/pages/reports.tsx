@@ -15,14 +15,14 @@ import i18nConfig from '../next-i18next.config'
 import { DynamicPowerBiReport } from '../src/components/DynamicPowerBiReport'
 import { JourneysReportType } from '../__generated__/globalTypes'
 
-function AnalyticsPage(): ReactElement {
+function ReportsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
 
   return (
     <>
-      <NextSeo title={t('Analytics')} />
-      <PageWrapper title={t('Analytics')} authUser={AuthUser}>
+      <NextSeo title={t('Reports')} />
+      <PageWrapper title={t('Reports')} authUser={AuthUser}>
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
           <DynamicPowerBiReport reportType={JourneysReportType.multipleFull} />
         </Box>
@@ -43,7 +43,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
-  if (flags.analytics !== true) {
+  if (flags.reports !== true) {
     return {
       redirect: {
         permanent: false,
@@ -65,4 +65,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(AnalyticsPage)
+})(ReportsPage)

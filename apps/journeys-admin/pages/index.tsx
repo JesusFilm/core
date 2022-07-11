@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
@@ -15,6 +15,7 @@ import { GetJourneys } from '../__generated__/GetJourneys'
 import { JourneyList } from '../src/components/JourneyList'
 import { PageWrapper } from '../src/components/PageWrapper'
 import i18nConfig from '../next-i18next.config'
+import JourneyListMenu from '../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
 
 const GET_JOURNEYS = gql`
   query GetJourneys {
@@ -39,6 +40,7 @@ const GET_JOURNEYS = gql`
       seoDescription
       userJourneys {
         id
+        role
         user {
           id
           firstName
@@ -55,6 +57,7 @@ function IndexPage(): ReactElement {
   const { data } = useQuery<GetJourneys>(GET_JOURNEYS)
   const AuthUser = useAuthUser()
   const router = useRouter()
+  const [listEvent, setListEvent] = useState('')
 
   const activeTab = router.query.tab ?? 'active'
   const pageTitle =
@@ -62,16 +65,29 @@ function IndexPage(): ReactElement {
       ? t('Active Journeys')
       : activeTab === 'archived'
       ? t('Archived Journeys')
-      : t('Deleted Journeys')
+      : t('Trashed Journeys')
+
+  const handleClick = (event: string): void => {
+    setListEvent(event)
+    // remove event after component lifecycle
+    setTimeout(() => {
+      setListEvent('')
+    }, 1000)
+  }
 
   return (
     <>
       <NextSeo title={t('Journeys')} />
-      <PageWrapper title={pageTitle} authUser={AuthUser}>
+      <PageWrapper
+        title={pageTitle}
+        authUser={AuthUser}
+        menu={<JourneyListMenu router={router} onClick={handleClick} />}
+      >
         <JourneyList
           journeys={data?.journeys}
-          disableCreation
           router={router}
+          event={listEvent}
+          authUser={AuthUser}
         />
       </PageWrapper>
     </>

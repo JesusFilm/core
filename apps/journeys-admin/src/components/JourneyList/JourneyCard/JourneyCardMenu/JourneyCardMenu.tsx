@@ -1,35 +1,45 @@
 import { ReactElement, useState } from 'react'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import Typography from '@mui/material/Typography'
-import Link from 'next/link'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import EditIcon from '@mui/icons-material/Edit'
-import PeopleIcon from '@mui/icons-material/People'
-import VisibilityIcon from '@mui/icons-material/Visibility'
+import { ApolloQueryResult } from '@apollo/client'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { AccessDialog } from '../../../AccessDialog'
+import { GetActiveJourneys } from '../../../../../__generated__/GetActiveJourneys'
+import { GetArchivedJourneys } from '../../../../../__generated__/GetArchivedJourneys'
+import { GetTrashedJourneys } from '../../../../../__generated__/GetTrashedJourneys'
+import { TrashJourneyDialog } from './TrashJourneyDialog'
+import { RestoreJourneyDialog } from './RestoreJourneyDialog'
+import { DeleteJourneyDialog } from './DeleteJourneyDialog'
+import { DefaultMenu } from './DefaultMenu'
+import { TrashMenu } from './TrashMenu'
 
 export interface JourneyCardMenuProps {
   id: string
   status: JourneyStatus
   slug: string
-  forceMenu?: boolean
+  published: boolean
+  refetch?: () => Promise<
+    ApolloQueryResult<
+      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
+    >
+  >
 }
 
 export function JourneyCardMenu({
   id,
   status,
   slug,
-  forceMenu // this is only used for storybook snapshots
+  published,
+  refetch
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const open = forceMenu === true ? true : Boolean(anchorEl)
+  const open = Boolean(anchorEl)
 
-  const [openDialog, setOpenDialog] = useState(false)
+  const [openAccessDialog, setOpenAccessDialog] = useState(false)
+  const [openTrashDialog, setOpenTrashDialog] = useState(false)
+  const [openRestoreDialog, setOpenRestoreDialog] = useState(false)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -58,56 +68,50 @@ export function JourneyCardMenu({
           'aria-labelledby': 'journey-actions'
         }}
       >
-        <Link href={`/journeys/${id}`} passHref>
-          <MenuItem sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}>
-            <ListItemIcon>
-              <EditIcon color="secondary" />
-            </ListItemIcon>
-            <ListItemText>
-              <Typography variant="body1" sx={{ pl: 2 }}>
-                Edit
-              </Typography>
-            </ListItemText>
-          </MenuItem>
-        </Link>
-
-        <MenuItem
-          sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-          onClick={() => setOpenDialog(true)}
-        >
-          <ListItemIcon>
-            <PeopleIcon color="secondary" />
-          </ListItemIcon>
-          <ListItemText>
-            <Typography variant="body1" sx={{ pl: 2 }}>
-              Access
-            </Typography>
-          </ListItemText>
-        </MenuItem>
-
-        <MenuItem
-          sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-          disabled={status === JourneyStatus.draft}
-          component="a"
-          href={`/api/preview?slug=${slug}`}
-          target="_blank"
-          rel="noopener"
-        >
-          <ListItemIcon>
-            <VisibilityIcon color="secondary" />
-          </ListItemIcon>
-          <ListItemText>
-            <Typography variant="body1" sx={{ pl: 2 }}>
-              Preview
-            </Typography>
-          </ListItemText>
-        </MenuItem>
+        {status === JourneyStatus.trashed ? (
+          <TrashMenu
+            setOpenRestoreDialog={() => setOpenRestoreDialog(true)}
+            setOpenDeleteDialog={() => setOpenDeleteDialog(true)}
+            handleCloseMenu={handleCloseMenu}
+          />
+        ) : (
+          <DefaultMenu
+            id={id}
+            status={status}
+            slug={slug}
+            journeyId={id}
+            published={published}
+            setOpenAccessDialog={() => setOpenAccessDialog(true)}
+            handleCloseMenu={handleCloseMenu}
+            setOpenTrashDialog={() => setOpenTrashDialog(true)}
+            refetch={refetch}
+          />
+        )}
       </Menu>
 
       <AccessDialog
         journeyId={id}
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
+        open={openAccessDialog}
+        onClose={() => setOpenAccessDialog(false)}
+      />
+      <TrashJourneyDialog
+        id={id}
+        open={openTrashDialog}
+        handleClose={() => setOpenTrashDialog(false)}
+        refetch={refetch}
+      />
+      <RestoreJourneyDialog
+        id={id}
+        published={published}
+        open={openRestoreDialog}
+        handleClose={() => setOpenRestoreDialog(false)}
+        refetch={refetch}
+      />
+      <DeleteJourneyDialog
+        id={id}
+        open={openDeleteDialog}
+        handleClose={() => setOpenDeleteDialog(false)}
+        refetch={refetch}
       />
     </>
   )

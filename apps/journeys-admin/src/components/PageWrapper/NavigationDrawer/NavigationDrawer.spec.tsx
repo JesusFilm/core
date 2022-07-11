@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { AuthUser } from 'next-firebase-auth'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GET_ME } from './NavigationDrawer'
 import { NavigationDrawer } from '.'
 
@@ -19,13 +20,48 @@ describe('NavigationDrawer', () => {
   it('should render the drawer', () => {
     const { getByText, getAllByRole, getByTestId } = render(
       <MockedProvider>
-        <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+        <FlagsProvider>
+          <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+        </FlagsProvider>
       </MockedProvider>
     )
     expect(getAllByRole('button')[0]).toContainElement(
       getByTestId('ChevronLeftRoundedIcon')
     )
     expect(getByText('Discover')).toBeInTheDocument()
+  })
+
+  it('should show reports button', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ reports: true }}>
+          <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(getByText('Reports')).toBeInTheDocument()
+  })
+
+  it('should hide reports button', () => {
+    const { queryByText } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ reports: false }}>
+          <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(queryByText('Reports')).not.toBeInTheDocument()
+  })
+
+  it('should select the reports button', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ reports: true }}>
+          <NavigationDrawer open={true} onClose={onClose} title="Reports" />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(getByTestId('AssessmentRoundedIcon')).toHaveStyle(` color: '#fff'`)
   })
 
   it('should have avatar menu', async () => {
@@ -50,19 +86,21 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <NavigationDrawer
-          open={true}
-          onClose={onClose}
-          authUser={
-            {
-              displayName: 'Amin One',
-              photoURL: 'https://bit.ly/3Gth4Yf',
-              email: 'amin@email.com',
-              signOut
-            } as unknown as AuthUser
-          }
-          title="Journeys"
-        />
+        <FlagsProvider>
+          <NavigationDrawer
+            open={true}
+            onClose={onClose}
+            authUser={
+              {
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as AuthUser
+            }
+            title="Journeys"
+          />
+        </FlagsProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -77,7 +115,9 @@ describe('NavigationDrawer', () => {
   it('should close the navigation drawer on chevron left click', () => {
     const { getAllByRole, getByTestId } = render(
       <MockedProvider>
-        <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+        <FlagsProvider>
+          <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+        </FlagsProvider>
       </MockedProvider>
     )
     const button = getAllByRole('button')[0]
@@ -89,11 +129,13 @@ describe('NavigationDrawer', () => {
   it('should select the journeys drawer', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <NavigationDrawer
-          open={true}
-          onClose={onClose}
-          title="Active Journeys"
-        />
+        <FlagsProvider>
+          <NavigationDrawer
+            open={true}
+            onClose={onClose}
+            title="Active Journeys"
+          />
+        </FlagsProvider>
       </MockedProvider>
     )
     expect(getByTestId('ExploreRoundedIcon').parentElement).toHaveStyle(

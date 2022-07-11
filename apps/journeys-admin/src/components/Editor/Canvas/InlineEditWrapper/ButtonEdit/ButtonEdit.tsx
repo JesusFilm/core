@@ -6,6 +6,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { ButtonBlockUpdateContent } from '../../../../../../__generated__/ButtonBlockUpdateContent'
 import { ButtonFields } from '../../../../../../__generated__/ButtonFields'
 import { InlineEditInput } from '../InlineEditInput'
+import { useOnClickOutside } from '../useOnClickOutside'
 
 export const BUTTON_BLOCK_UPDATE_CONTENT = gql`
   mutation ButtonBlockUpdateContent(
@@ -35,33 +36,35 @@ export function ButtonEdit({
   const [value, setValue] = useState(label)
 
   async function handleSaveBlock(): Promise<void> {
-    if (journey == null) return
+    const currentLabel = value.trim().replace(/\n/g, '')
+    if (journey == null || label === currentLabel) return
 
-    const label = value.trim().replace(/\n/g, '')
     await buttonBlockUpdate({
       variables: {
         id,
         journeyId: journey.id,
-        input: { label }
+        input: { label: currentLabel }
       },
       optimisticResponse: {
         buttonBlockUpdate: {
           id,
           __typename: 'ButtonBlock',
-          label
+          label: currentLabel
         }
       }
     })
   }
+  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
 
   const input = (
     <InlineEditInput
       name={`edit-${id}`}
+      ref={inputRef}
       fullWidth
       multiline
       autoFocus
-      value={value}
       onBlur={handleSaveBlock}
+      value={value}
       onChange={(e) => {
         setValue(e.currentTarget.value)
       }}

@@ -1,6 +1,8 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { NextRouter } from 'next/router'
 import { ThemeProvider } from '../ThemeProvider'
 import { defaultJourney, publishedJourney, oldJourney } from './journeyListData'
 import { JourneyList } from '.'
@@ -22,11 +24,14 @@ describe('JourneyList', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList
-              journeys={[defaultJourney, publishedJourney, oldJourney]}
-            />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+                event=""
+              />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -37,9 +42,11 @@ describe('JourneyList', () => {
     const { getByText, getByRole, queryByText } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <ThemeProvider>
-            <JourneyList journeys={[]} disableCreation />
-          </ThemeProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList journeys={[]} event="" />
+            </ThemeProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -53,5 +60,140 @@ describe('JourneyList', () => {
       )
     ).toBeInTheDocument()
     expect(getByRole('button', { name: 'Contact Support' })).toBeInTheDocument()
+  })
+
+  it('should render report', async () => {
+    const { getByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <FlagsProvider flags={{ reports: true }}>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+                event=""
+              />
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(getByTestId('powerBi-multipleSummary-report')).toBeInTheDocument()
+    )
+  })
+
+  it('should hide report if report flag is off', async () => {
+    const { queryByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <FlagsProvider flags={{ reports: false }}>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+                event=""
+              />
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(queryByTestId('powerBi-multipleSummary-report')).toBeNull()
+    )
+  })
+
+  it('should hide report the user has no journeys', async () => {
+    const { queryByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <FlagsProvider flags={{ reports: true }}>
+            <ThemeProvider>
+              <JourneyList journeys={[]} event="" />
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(queryByTestId('powerBi-multipleSummary-report')).toBeNull()
+    )
+  })
+
+  it('should show add journey button', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+                event=""
+              />
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
+  })
+
+  it('should show add journey button', () => {
+    const router = { query: { tab: 'active' } } as unknown as NextRouter
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+                router={router}
+                event=""
+              />
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
+  })
+
+  it('should hide add journey button', () => {
+    const router = { query: { tab: 'trashed' } } as unknown as NextRouter
+    const { queryByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+                event=""
+                router={router}
+              />
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(queryByRole('button', { name: 'Add' })).toBeNull()
+  })
+
+  it('should hide add journey button', () => {
+    const router = { query: { tab: 'archived' } } as unknown as NextRouter
+    const { queryByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <FlagsProvider>
+            <ThemeProvider>
+              <JourneyList
+                journeys={[defaultJourney, publishedJourney, oldJourney]}
+                router={router}
+                event=""
+              />
+            </ThemeProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(queryByRole('button', { name: 'Add' })).toBeNull()
   })
 })

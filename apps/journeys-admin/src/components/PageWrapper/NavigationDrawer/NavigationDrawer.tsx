@@ -12,6 +12,7 @@ import ListItemText from '@mui/material/ListItemText'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Link from 'next/link'
+import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
@@ -19,6 +20,7 @@ import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
 import { compact } from 'lodash'
 import { gql, useQuery } from '@apollo/client'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
@@ -99,8 +101,11 @@ export function NavigationDrawer({
   const journeysSelected =
     title === 'Active Journeys' ||
     title === 'Archived Journeys' ||
-    title === 'Deleted Journeys' ||
-    title === 'Journey Details'
+    title === 'Trashed Journeys' ||
+    title === 'Journey Details' ||
+    title === 'Journey Reports'
+
+  const { reports } = useFlags()
 
   const profileOpen = Boolean(profileAnchorEl)
   const handleProfileClick = (event): void => {
@@ -156,6 +161,28 @@ export function NavigationDrawer({
             />
           </ListItemButton>
         </Link>
+
+        {reports && (
+          <Link href="/reports" passHref>
+            <ListItemButton>
+              <ListItemIcon
+                sx={{
+                  color:
+                    title === 'Reports' ? 'background.paper' : 'secondary.light'
+                }}
+              >
+                <AssessmentRoundedIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Reports"
+                sx={{
+                  color:
+                    title === 'Reports' ? 'background.paper' : 'secondary.light'
+                }}
+              />
+            </ListItemButton>
+          </Link>
+        )}
         {authUser != null && data?.me != null && (
           <>
             <Divider sx={{ m: 6, mt: 0, borderColor: 'secondary.main' }} />

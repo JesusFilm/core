@@ -9,20 +9,31 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import Skeleton from '@mui/material/Skeleton'
 import Link from 'next/link'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import EditIcon from '@mui/icons-material/Edit'
 import TranslateIcon from '@mui/icons-material/Translate'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import { ApolloQueryResult } from '@apollo/client'
+import { GetActiveJourneys } from '../../../../__generated__/GetActiveJourneys'
+import { GetArchivedJourneys } from '../../../../__generated__/GetArchivedJourneys'
+import { GetTrashedJourneys } from '../../../../__generated__/GetTrashedJourneys'
 import { GetJourneys_journeys as Journey } from '../../../../__generated__/GetJourneys'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyCardMenu } from './JourneyCardMenu'
+import { StatusChip } from './StatusChip'
 
 interface JourneyCardProps {
   journey?: Journey
+  refetch?: () => Promise<
+    ApolloQueryResult<
+      GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
+    >
+  >
 }
 
-export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
+export function JourneyCard({
+  journey,
+  refetch
+}: JourneyCardProps): ReactElement {
   return (
     <Card
       aria-label="journey-card"
@@ -31,7 +42,7 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
         borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
-        '&:last-child': {
+        '&:last-of-type': {
           borderBottomLeftRadius: { xs: 0, sm: 12 },
           borderBottomRightRadius: { xs: 0, sm: 12 },
           borderBottom: '1px solid',
@@ -92,49 +103,37 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
             pb: 4
           }}
         >
-          <Grid container spacing={2} display="flex" alignItems="center">
-            <Grid item>
+          <Grid
+            container
+            spacing={2}
+            display="flex"
+            alignItems="center"
+            sx={{ mt: 0 }}
+          >
+            <Grid item sx={{ py: 2 }}>
               <AccessAvatars
                 journeyId={journey?.id}
                 userJourneys={journey?.userJourneys ?? undefined}
               />
             </Grid>
             {journey != null ? (
-              journey.status === JourneyStatus.draft ? (
-                <>
-                  <Grid item>
-                    <EditIcon color="warning" sx={{ fontSize: 13 }} />
-                  </Grid>
-                  <Grid item sx={{ pr: 2 }}>
-                    <Typography variant="caption">Draft</Typography>
-                  </Grid>
-                </>
-              ) : (
-                <>
-                  <Grid item>
-                    <CheckCircleIcon color="success" sx={{ fontSize: 13 }} />
-                  </Grid>
-                  <Grid item sx={{ pr: 2 }}>
-                    <Typography variant="caption">Published</Typography>
-                  </Grid>
-                </>
-              )
+              <StatusChip status={journey.status} />
             ) : (
               <>
-                <Grid item>
+                <Grid item sx={{ py: 2 }}>
                   <EditIcon sx={{ fontSize: 13 }} />
                 </Grid>
-                <Grid item sx={{ pr: 2 }}>
+                <Grid item sx={{ pr: 2, py: 2 }}>
                   <Typography variant="caption">
                     <Skeleton variant="text" width={30} />
                   </Typography>
                 </Grid>
               </>
             )}
-            <Grid item>
+            <Grid item sx={{ py: 2 }}>
               <TranslateIcon sx={{ fontSize: 13 }} />
             </Grid>
-            <Grid item>
+            <Grid item sx={{ py: 2 }}>
               <Typography variant="caption">
                 {journey != null ? (
                   journey.language.name.find(({ primary }) => primary)?.value
@@ -149,6 +148,8 @@ export function JourneyCard({ journey }: JourneyCardProps): ReactElement {
               id={journey.id}
               status={journey.status}
               slug={journey.slug}
+              published={journey.publishedAt != null}
+              refetch={refetch}
             />
           ) : (
             <IconButton disabled>

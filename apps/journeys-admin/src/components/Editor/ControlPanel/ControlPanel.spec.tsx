@@ -69,7 +69,7 @@ describe('ControlPanel', () => {
     ]
   }
 
-  it('should render the element', () => {
+  it('should render tabs and tab panels', () => {
     const { getByTestId, getByText, getByRole } = render(
       <MockedProvider>
         <JourneyProvider
@@ -88,14 +88,18 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
+    // Default start on Cards
     expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
-    fireEvent.click(getByTestId('preview-step1.id'))
+    fireEvent.click(getByRole('tab', { name: 'Properties' }))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
-    expect(getByRole('tab', { name: 'Properties' })).not.toBeDisabled()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Cards' }))
+    expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
     fireEvent.click(getByTestId('preview-step2.id'))
     expect(getByText('Locked With Interaction')).toBeInTheDocument()
+    fireEvent.click(getByRole('tab', { name: 'Blocks' }))
+    expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Text' }))
   })
 
   it('should hide add button when clicking blocks tab', async () => {
@@ -117,9 +121,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Blocks' }))
-    expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     await waitFor(() =>
       expect(queryByRole('button', { name: 'Add' })).not.toBeInTheDocument()
     )
@@ -144,7 +146,6 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     // TODO: Flakey expectation passes locally, fails remotely
@@ -202,9 +203,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('tab', { name: 'Cards' })).toBeInTheDocument()
     fireEvent.click(getByTestId('preview-step3.id'))
-    expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Text' }))
@@ -294,9 +293,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('tab', { name: 'Cards' })).toBeInTheDocument()
     fireEvent.click(getByTestId('preview-step3.id'))
-    expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Subscribe' }))
@@ -449,9 +446,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('tab', { name: 'Cards' })).toBeInTheDocument()
     fireEvent.click(getByTestId('preview-step3.id'))
-    expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Poll' }))
@@ -514,9 +509,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('tab', { name: 'Cards' })).toBeInTheDocument()
     fireEvent.click(getByTestId('preview-step3.id'))
-    expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Image' }))
@@ -582,9 +575,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('tab', { name: 'Cards' })).toBeInTheDocument()
     fireEvent.click(getByTestId('preview-step3.id'))
-    expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Video' }))
@@ -692,9 +683,7 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('tab', { name: 'Cards' })).toBeInTheDocument()
     fireEvent.click(getByTestId('preview-step3.id'))
-    expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Add' }))
     expect(getByRole('tabpanel', { name: 'Blocks' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Button' }))

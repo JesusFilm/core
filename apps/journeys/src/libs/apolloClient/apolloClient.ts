@@ -1,6 +1,11 @@
-import { ApolloClient, createHttpLink } from '@apollo/client'
+import {
+  ApolloClient,
+  createHttpLink,
+  NormalizedCacheObject
+} from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import { getAuth, signInAnonymously } from 'firebase/auth'
+import { useMemo } from 'react'
 import { firebaseClient } from '../firebaseClient'
 import { cache } from './cache'
 
@@ -21,7 +26,14 @@ const authLink = setContext(async (_, { headers }) => {
   }
 })
 
-export const apolloClient = new ApolloClient({
-  link: typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
-  cache: cache()
-})
+export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
+  return new ApolloClient({
+    ssrMode: typeof window === 'undefined',
+    link: typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
+    cache: cache()
+  })
+}
+
+export function useApollo(): ApolloClient<NormalizedCacheObject> {
+  return useMemo(() => createApolloClient(), [])
+}

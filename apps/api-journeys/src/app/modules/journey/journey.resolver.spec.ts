@@ -576,6 +576,82 @@ describe('JourneyResolver', () => {
     })
   })
 
+  describe('getFirstMissingNumber', () => {
+    it('returns the first missing number in an unsorted number list', async () => {
+      const array = [0, 1, 1, 2, 4, 5, 7, 8, 1, 0]
+      const firstMissing = resolver.getFirstMissingNumber(array)
+      expect(firstMissing).toEqual(3)
+    })
+
+    it('returns the next number in a sorted number list', async () => {
+      const array = [0, 1, 1, 2, 3]
+      const firstMissing = resolver.getFirstMissingNumber(array)
+      expect(firstMissing).toEqual(4)
+    })
+  })
+
+  describe('getJourneyDuplicateNumbers', () => {
+    it('generates the duplicate number array from journeys', async () => {
+      const array = [
+        journey,
+        {
+          ...journey,
+          title: `${journey.title} copy`
+        },
+        {
+          ...journey,
+          title: `${journey.title} copy 2`
+        },
+        // Unique journeys with same base title - returns 0
+        {
+          ...journey,
+          title: `${journey.title} copy test`
+        },
+        {
+          ...journey,
+          title: `${journey.title} 3`
+        },
+        {
+          ...journey,
+          title: `${journey.title} copy-2a4bil`
+        },
+        // User edited journey copy number is recognised
+        {
+          ...journey,
+          title: `${journey.title} copy 1`
+        }
+      ]
+      const duplicateNumbers = resolver.getJourneyDuplicateNumbers(
+        array,
+        journey.title
+      )
+      expect(duplicateNumbers).toEqual([0, 1, 2, 0, 0, 0, 1])
+      const arrayCopy = [
+        {
+          ...journey,
+          title: `journey copy`
+        },
+        {
+          ...journey,
+          title: `journey copy 1`
+        },
+        {
+          ...journey,
+          title: `journey copy copy`
+        },
+        {
+          ...journey,
+          title: `journey copy copy 2`
+        }
+      ]
+      const duplicateNumbersCopy = resolver.getJourneyDuplicateNumbers(
+        arrayCopy,
+        'journey copy'
+      )
+      expect(duplicateNumbersCopy).toEqual([0, 0, 1, 2])
+    })
+  })
+
   describe('journeyDuplicate', () => {
     it('duplicates a Journey', async () => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
@@ -616,13 +692,18 @@ describe('JourneyResolver', () => {
       expect(bService.saveAll).toHaveBeenCalledWith([duplicatedStep])
     })
 
-    it('increments copy number on title if multiple duplicates exist', async () => {
+    it('increments copy number on journey if multiple duplicates exist', async () => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId2')
       const mockGetAllByTitle = service.getAllByTitle as jest.MockedFunction<
         typeof service.getAllByTitle
       >
       mockGetAllByTitle.mockImplementationOnce(
-        async () => await Promise.resolve([journey, journey])
+        async () =>
+          await Promise.resolve([
+            journey,
+            { ...journey, title: `${journey.title} copy` },
+            { ...journey, title: `${journey.title} copy other` }
+          ])
       )
       expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
         ...journey,
@@ -786,12 +867,11 @@ describe('JourneyResolver', () => {
         id: 'languageId'
       })
     })
-  })
-
-  it('when no languageId returns object for federation with default', async () => {
-    expect(await resolver.language({})).toEqual({
-      __typename: 'Language',
-      id: '529'
+    it('when no languageId returns object for federation with default', async () => {
+      expect(await resolver.language({})).toEqual({
+        __typename: 'Language',
+        id: '529'
+      })
     })
   })
 })

@@ -27,11 +27,7 @@ const CardPreviewStory = {
   title: 'Journeys-Admin/CardPreview',
   parameters: {
     ...journeysAdminConfig.parameters,
-    layout: 'fullscreen',
-    chromatic: {
-      ...journeysAdminConfig.parameters.chromatic,
-      diffThreshold: 0.9
-    }
+    layout: 'fullscreen'
   }
 }
 
@@ -335,7 +331,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
           {
             id: 'image3.id',
             __typename: 'ImageBlock',
-            src: 'https://images.unsplash.com/photo-1527268835115-be8ff4ff5dec?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1235&q=80',
+            src: 'https://images.unsplash.com/photo-1651069188152-bf30b5af2a0d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364&q=80',
             width: 1920,
             height: 1080,
             alt: 'random image from unsplash',
@@ -677,7 +673,7 @@ const Template: Story = ({ ...args }) => {
             selected={selected}
             steps={args.steps}
             showAddButton={args.showAddButton}
-            isDraggable
+            isDraggable={args.isDraggable}
           />
         </DragDropContext>
       </JourneyProvider>
@@ -688,6 +684,12 @@ const Template: Story = ({ ...args }) => {
 export const Default = Template.bind({})
 Default.args = {
   steps
+}
+
+export const Draggable = Template.bind({})
+Draggable.args = {
+  steps,
+  isDraggable: true
 }
 
 export const AddButton = Template.bind({})
