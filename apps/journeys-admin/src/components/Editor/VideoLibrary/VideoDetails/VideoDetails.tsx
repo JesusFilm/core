@@ -43,7 +43,7 @@ export const GET_VIDEO = gql`
       }
       variantLanguages {
         id
-        name(languageId: $languageId) {
+        name(languageId: $languageId, primary: true) {
           value
           primary
         }
