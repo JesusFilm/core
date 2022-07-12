@@ -161,6 +161,45 @@ describe('VideoBlockEditor', () => {
       expect(getByText('English (English 2)')).toBeInTheDocument()
     })
 
+    it('shows title and language (only shows local when the same as native)', async () => {
+      const { getByText } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <VideoBlockEditor
+              selectedBlock={{
+                ...video,
+                video: {
+                  ...video.video,
+                  variantLanguages: [
+                    {
+                      __typename: 'Language',
+                      id: '529',
+                      name: [
+                        {
+                          __typename: 'Translation',
+                          value: 'English',
+                          primary: true
+                        },
+                        {
+                          __typename: 'Translation',
+                          value: 'English',
+                          primary: false
+                        }
+                      ]
+                    }
+                  ]
+                } as unknown as VideoBlock['video']
+              }}
+              onChange={jest.fn()}
+              onDelete={jest.fn()}
+            />
+          </MockedProvider>
+        </ThemeProvider>
+      )
+      expect(getByText('FallingPlates')).toBeInTheDocument()
+      expect(getByText('English')).toBeInTheDocument()
+    })
+
     it('calls onDelete', async () => {
       const onDelete = jest.fn()
       const { getByTestId } = render(
