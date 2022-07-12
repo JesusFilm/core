@@ -20,22 +20,6 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   return (
     <>
       <Attribute
-        id={`${id}-typography-color`}
-        icon={<ColorDisplayIcon color={color} />}
-        name="Color"
-        value={capitalize(color?.toString() ?? 'primary')}
-        description="Text Color"
-        onClick={() => {
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Text Color',
-            mobileOpen: true,
-            children: <Color />
-          })
-        }}
-      />
-
-      <Attribute
         id={`${id}-typography-variant`}
         icon={<TextFieldsRoundedIcon />}
         name="Text Variant"
@@ -49,6 +33,22 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
             title: 'Text Variant',
             mobileOpen: true,
             children: <Variant />
+          })
+        }}
+      />
+
+      <Attribute
+        id={`${id}-typography-color`}
+        icon={<ColorDisplayIcon color={color} />}
+        name="Color"
+        value={capitalize(color?.toString() ?? 'primary')}
+        description="Text Color"
+        onClick={() => {
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Text Color',
+            mobileOpen: true,
+            children: <Color />
           })
         }}
       />

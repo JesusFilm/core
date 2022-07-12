@@ -53,7 +53,13 @@ const Template: Story = ({ ...args }) => (
 export const Default = Template.bind({})
 Default.args = {
   props: {
-    journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney]
+    journeys: [
+      defaultJourney,
+      publishedJourney,
+      oldJourney,
+      descriptiveJourney
+    ],
+    event: ''
   },
   reports: true
 }
@@ -61,14 +67,20 @@ Default.args = {
 export const Reports = Template.bind({})
 Reports.args = {
   props: {
-    journeys: [defaultJourney, publishedJourney, oldJourney, descriptiveJourney]
+    journeys: [
+      defaultJourney,
+      publishedJourney,
+      oldJourney,
+      descriptiveJourney
+    ],
+    event: ''
   },
   reports: true
 }
 
 export const Access = Template.bind({})
 Access.args = {
-  props: { journeys: [] },
+  props: { journeys: [], event: '' },
   reports: true
 }
 

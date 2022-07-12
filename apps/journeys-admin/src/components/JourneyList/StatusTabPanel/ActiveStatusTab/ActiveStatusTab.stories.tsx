@@ -14,7 +14,7 @@ import { ActiveStatusTab } from '.'
 const ActiveStatusTabStory = {
   ...journeysAdminConfig,
   component: ActiveStatusTab,
-  title: 'Journeys-Admin/JourneyList/ActiveStatusTabPanel/ActiveStatusTab',
+  title: 'Journeys-Admin/JourneyList/StatusTabPanel/ActiveStatusTab',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -30,7 +30,8 @@ const Template: Story = ({ ...args }) => (
 export const Default = Template.bind({})
 Default.args = {
   props: {
-    onLoad: noop
+    onLoad: noop,
+    event: ''
   },
   mocks: [
     {
@@ -54,7 +55,8 @@ Default.args = {
 export const NoJourneys = Template.bind({})
 NoJourneys.args = {
   props: {
-    onLoad: noop
+    onLoad: noop,
+    event: ''
   },
   mocks: [
     {
@@ -73,7 +75,26 @@ NoJourneys.args = {
 export const Loading = Template.bind({})
 Loading.args = {
   props: {
-    onLoad: noop
+    onLoad: noop,
+    event: ''
+  },
+  mocks: []
+}
+
+export const ArchiveAll = Template.bind({})
+ArchiveAll.args = {
+  props: {
+    onLoad: noop,
+    event: 'archiveAllActive'
+  },
+  mocks: []
+}
+
+export const TrashAll = Template.bind({})
+TrashAll.args = {
+  props: {
+    onLoad: noop,
+    event: 'trashAllActive'
   },
   mocks: []
 }

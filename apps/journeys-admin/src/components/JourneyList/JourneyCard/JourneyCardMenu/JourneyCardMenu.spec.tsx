@@ -6,7 +6,7 @@ import { ThemeProvider } from '../../../ThemeProvider'
 import { JourneyCardMenu } from '.'
 
 describe('JourneyCardMenu', () => {
-  it('should open menu on click', () => {
+  it('should open default menu on click', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -14,7 +14,8 @@ describe('JourneyCardMenu', () => {
             <JourneyCardMenu
               id="journeyId"
               status={JourneyStatus.published}
-              slug="published-journey"
+              slug={'published-journey'}
+              published={true}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -32,70 +33,44 @@ describe('JourneyCardMenu', () => {
       'aria-labelledby',
       'journey-actions'
     )
-  })
-  it('should handle edit journey', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <JourneyCardMenu
-              id="journeyId"
-              status={JourneyStatus.published}
-              slug="published-journey"
-            />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Edit' })).toHaveAttribute(
-      'href',
-      '/journeys/journeyId'
-    )
-  })
-  it('should handle preview', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <JourneyCardMenu
-              id="journeyId"
-              status={JourneyStatus.published}
-              slug="published-journey"
-            />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
-      'href',
-      '/api/preview?slug=published-journey'
-    )
-    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
-      'target',
-      '_blank'
-    )
+    expect(getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
   })
 
-  it('should have a disabled preview button is journey is draft', () => {
+  it('should open trash menu on click', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
               id="journeyId"
-              status={JourneyStatus.draft}
-              slug="draft-journey"
+              status={JourneyStatus.trashed}
+              slug={'trashed-journey'}
+              published={false}
             />
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
-    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
-      'aria-disabled'
+
+    expect(getByRole('button')).toHaveAttribute(
+      'aria-controls',
+      'journey-actions'
     )
+    expect(getByRole('button')).toHaveAttribute('aria-haspopup', 'true')
+    expect(getByRole('button')).toHaveAttribute('aria-expanded', 'false')
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menu')).toHaveAttribute(
+      'aria-labelledby',
+      'journey-actions'
+    )
+    expect(getByRole('menuitem', { name: 'Restore' })).toBeInTheDocument()
+    expect(
+      getByRole('menuitem', { name: 'Delete Forever' })
+    ).toBeInTheDocument()
   })
 
   it('should show access dialog on click', async () => {
@@ -106,7 +81,8 @@ describe('JourneyCardMenu', () => {
             <JourneyCardMenu
               id="journeyId"
               status={JourneyStatus.draft}
-              slug="draft-journey"
+              slug={'draft-journey'}
+              published={false}
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -119,6 +95,81 @@ describe('JourneyCardMenu', () => {
     fireEvent.click(getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(queryByText('Invite Other Editors')).not.toBeInTheDocument()
+    )
+  })
+
+  it('should show trash dialog on click', async () => {
+    const { getByRole, queryByText, getByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <JourneyCardMenu
+              id="journeyId"
+              status={JourneyStatus.draft}
+              slug={'draft-journey'}
+              published={false}
+            />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
+
+    expect(queryByText('Trash Journey?')).toBeInTheDocument()
+    fireEvent.click(getByTestId('dialog-close-button'))
+    await waitFor(() =>
+      expect(queryByText('Trash Journey?')).not.toBeInTheDocument()
+    )
+  })
+
+  it('should show restore dialog on click', async () => {
+    const { getByRole, queryByText, getByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <JourneyCardMenu
+              id="journeyId"
+              status={JourneyStatus.trashed}
+              slug={'trashed-journey'}
+              published={false}
+            />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('menuitem', { name: 'Restore' }))
+
+    expect(queryByText('Restore Journey?')).toBeInTheDocument()
+    fireEvent.click(getByTestId('dialog-close-button'))
+    await waitFor(() =>
+      expect(queryByText('Restore Journey?')).not.toBeInTheDocument()
+    )
+  })
+
+  it('should show delete forever dialog on click', async () => {
+    const { getByRole, queryByText, getByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <JourneyCardMenu
+              id={'journeyId'}
+              status={JourneyStatus.trashed}
+              slug={'trashed-journey'}
+              published={false}
+            />
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('menuitem', { name: 'Delete Forever' }))
+
+    expect(queryByText('Delete Forever?')).toBeInTheDocument()
+    fireEvent.click(getByTestId('dialog-close-button'))
+    await waitFor(() =>
+      expect(queryByText('Delete Forever?')).not.toBeInTheDocument()
     )
   })
 })

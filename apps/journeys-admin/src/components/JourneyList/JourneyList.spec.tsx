@@ -28,6 +28,7 @@ describe('JourneyList', () => {
             <ThemeProvider>
               <JourneyList
                 journeys={[defaultJourney, publishedJourney, oldJourney]}
+                event=""
               />
             </ThemeProvider>
           </FlagsProvider>
@@ -43,7 +44,7 @@ describe('JourneyList', () => {
         <MockedProvider>
           <FlagsProvider>
             <ThemeProvider>
-              <JourneyList journeys={[]} />
+              <JourneyList journeys={[]} event="" />
             </ThemeProvider>
           </FlagsProvider>
         </MockedProvider>
@@ -69,6 +70,7 @@ describe('JourneyList', () => {
             <ThemeProvider>
               <JourneyList
                 journeys={[defaultJourney, publishedJourney, oldJourney]}
+                event=""
               />
             </ThemeProvider>
           </FlagsProvider>
@@ -88,6 +90,7 @@ describe('JourneyList', () => {
             <ThemeProvider>
               <JourneyList
                 journeys={[defaultJourney, publishedJourney, oldJourney]}
+                event=""
               />
             </ThemeProvider>
           </FlagsProvider>
@@ -105,7 +108,7 @@ describe('JourneyList', () => {
         <MockedProvider>
           <FlagsProvider flags={{ reports: true }}>
             <ThemeProvider>
-              <JourneyList journeys={[]} />
+              <JourneyList journeys={[]} event="" />
             </ThemeProvider>
           </FlagsProvider>
         </MockedProvider>
@@ -124,6 +127,7 @@ describe('JourneyList', () => {
             <ThemeProvider>
               <JourneyList
                 journeys={[defaultJourney, publishedJourney, oldJourney]}
+                event=""
               />
             </ThemeProvider>
           </FlagsProvider>
@@ -143,6 +147,7 @@ describe('JourneyList', () => {
               <JourneyList
                 journeys={[defaultJourney, publishedJourney, oldJourney]}
                 router={router}
+                event=""
               />
             </ThemeProvider>
           </FlagsProvider>
@@ -161,6 +166,7 @@ describe('JourneyList', () => {
             <ThemeProvider>
               <JourneyList
                 journeys={[defaultJourney, publishedJourney, oldJourney]}
+                event=""
                 router={router}
               />
             </ThemeProvider>
@@ -181,6 +187,7 @@ describe('JourneyList', () => {
               <JourneyList
                 journeys={[defaultJourney, publishedJourney, oldJourney]}
                 router={router}
+                event=""
               />
             </ThemeProvider>
           </FlagsProvider>
