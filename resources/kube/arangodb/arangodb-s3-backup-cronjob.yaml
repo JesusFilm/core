@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: arangodb-s3-backup-cronjob
+spec:
+  schedule: '0 0 * * *'
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: arangodb-s3-backup
+              image: arangodb/arangodb:3.9.0
+              imagePullPolicy: IfNotPresent
+              command:
+                - arangobackup upload --server.endpoint http+tcp://arangodb:8529 --rclone-config-file /path/to/remote.json --identifier 2019-05-13T07.15.43Z_some-label --remote-path S3://remote-endpoint/remote-directory
+              envFrom:
+                - secretRef:
+                    name: doppler-arangodb-s3-backup-secret-prd
+          restartPolicy: OnFailure
