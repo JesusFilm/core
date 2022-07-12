@@ -199,7 +199,6 @@ export function EditorProvider({
       })
       stepRef.current = true
 
-      // only used to instantiate tests
       if (initialState?.selectedBlock != null)
         dispatch({
           type: 'SetSelectedBlockAction',
