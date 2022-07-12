@@ -15,16 +15,6 @@ Object.assign(navigator, {
 
 describe('JourneyView/Menu', () => {
   const originalEnv = process.env
-  // beforeEach(() => {
-  //   jest.resetModules()
-  //   process.env = {
-  //     ...originalEnv,
-  //     NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'
-  //   }
-  // })
-  // afterEach(() => {
-  //   process.env = originalEnv
-  // })
 
   it('should open menu on click', () => {
     const { getByRole } = render(

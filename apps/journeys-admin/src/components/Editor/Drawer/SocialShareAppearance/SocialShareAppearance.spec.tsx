@@ -7,6 +7,8 @@ import { SocialShareAppearance } from '.'
 
 describe('SocialShareAppearance', () => {
   const slug = 'untitiled-journey'
+  const originalEnv = process.env
+
   it('should render SocialShareAppearance', () => {
     const { getByText, getByTestId, getByRole } = render(
       <MockedProvider>
@@ -28,7 +30,44 @@ describe('SocialShareAppearance', () => {
     expect(getByRole('button', { name: 'Twitter' })).toBeInTheDocument()
   })
 
-  it('should open facebook share in new window', () => {
+  it('should open facebook share in new window in development', () => {
+    jest.resetModules()
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'
+    }
+
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${process.env.NEXT_PUBLIC_JOURNEYS_URL}/${slug}`
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: { slug } as unknown as Journey, admin: true }}
+        >
+          <SocialShareAppearance />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByRole('link', { name: 'Facebook' })).toHaveAttribute(
+      'href',
+      facebookUrl
+    )
+    expect(getByRole('link', { name: 'Facebook' })).toHaveAttribute(
+      'target',
+      '_blank'
+    )
+
+    process.env = originalEnv
+  })
+
+  it('should open facebook share in new window in production', () => {
+    jest.resetModules()
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_JOURNEYS_URL: undefined
+    }
+
     const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=https://your.nextstep.is/${slug}`
 
     const { getByRole } = render(
@@ -49,9 +88,48 @@ describe('SocialShareAppearance', () => {
       'target',
       '_blank'
     )
+
+    process.env = originalEnv
   })
 
-  it('should open twitter share in new window', () => {
+  it('should open twitter share in new window in development', () => {
+    jest.resetModules()
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'
+    }
+
+    const twitterUrl = `https://twitter.com/intent/tweet?url=${process.env.NEXT_PUBLIC_JOURNEYS_URL}/${slug}`
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: { slug } as unknown as Journey, admin: true }}
+        >
+          <SocialShareAppearance />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByRole('link', { name: 'Twitter' })).toHaveAttribute(
+      'href',
+      twitterUrl
+    )
+    expect(getByRole('link', { name: 'Twitter' })).toHaveAttribute(
+      'target',
+      '_blank'
+    )
+
+    process.env = originalEnv
+  })
+
+  it('should open twitter share in new window in production', () => {
+    jest.resetModules()
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_JOURNEYS_URL: undefined
+    }
+
     const twitterUrl = `https://twitter.com/intent/tweet?url=https://your.nextstep.is/${slug}`
 
     const { getByRole } = render(
@@ -72,6 +150,8 @@ describe('SocialShareAppearance', () => {
       'target',
       '_blank'
     )
+
+    process.env = originalEnv
   })
 
   it('should disable share buttons  and show tool tip if journey is not published', async () => {
