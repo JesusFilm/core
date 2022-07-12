@@ -70,7 +70,7 @@ export function VideoBlockEditor({
               ? 'Select Video File'
               : selectedBlock.video.title[0].value
           }
-          caption={language ?? undefined}
+          caption={language}
           showDelete={showDelete && selectedBlock?.video != null}
           onDelete={handleVideoDelete}
         />
