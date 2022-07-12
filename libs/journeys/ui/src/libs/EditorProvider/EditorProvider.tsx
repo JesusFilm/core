@@ -198,21 +198,15 @@ export function EditorProvider({
         step: initialState.selectedStep
       })
       stepRef.current = true
-    }
-  }, [initialState?.selectedStep])
 
-  // only run once
-  const blockRef = useRef(false)
-  useEffect(() => {
-    if (blockRef.current) return
-    if (initialState?.selectedBlock != null) {
-      dispatch({
-        type: 'SetSelectedBlockAction',
-        block: initialState.selectedBlock
-      })
-      blockRef.current = true
+      // only used to instantiate tests
+      if (initialState?.selectedBlock != null)
+        dispatch({
+          type: 'SetSelectedBlockAction',
+          block: initialState.selectedBlock
+        })
     }
-  }, [initialState?.selectedBlock])
+  }, [initialState?.selectedStep, initialState?.selectedBlock])
 
   return (
     <EditorContext.Provider value={{ state, dispatch }}>
