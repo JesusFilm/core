@@ -14,6 +14,18 @@ Object.assign(navigator, {
 })
 
 describe('JourneyView/Menu', () => {
+  const originalEnv = process.env
+  // beforeEach(() => {
+  //   jest.resetModules()
+  //   process.env = {
+  //     ...originalEnv,
+  //     NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'
+  //   }
+  // })
+  // afterEach(() => {
+  //   process.env = originalEnv
+  // })
+
   it('should open menu on click', () => {
     const { getByRole } = render(
       <SnackbarProvider>
@@ -220,7 +232,48 @@ describe('JourneyView/Menu', () => {
     )
   })
 
-  it('should handle copy url', async () => {
+  it('should handle copy url in development', async () => {
+    jest.resetModules()
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'
+    }
+
+    jest.spyOn(navigator.clipboard, 'writeText')
+
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <FlagsProvider>
+            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+              <Menu />
+            </JourneyProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const menu = getByRole('button')
+    fireEvent.click(menu)
+    fireEvent.click(getByRole('menuitem', { name: 'Copy Link' }))
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      `${process.env.NEXT_PUBLIC_JOURNEYS_URL as string}/${defaultJourney.slug}`
+    )
+    await waitFor(() => {
+      expect(getByText('Link Copied')).toBeInTheDocument()
+    })
+    expect(menu).not.toHaveAttribute('aria-expanded')
+
+    process.env = originalEnv
+  })
+
+  it('should handle copy url in production', async () => {
+    jest.resetModules()
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_JOURNEYS_URL: undefined
+    }
+
     jest.spyOn(navigator.clipboard, 'writeText')
 
     const { getByRole, getByText } = render(
@@ -245,6 +298,8 @@ describe('JourneyView/Menu', () => {
       expect(getByText('Link Copied')).toBeInTheDocument()
     })
     expect(menu).not.toHaveAttribute('aria-expanded')
+
+    process.env = originalEnv
   })
 
   it('should handle reports', () => {
