@@ -5,7 +5,8 @@ import {
   ReactNode,
   useEffect,
   useContext,
-  useReducer
+  useReducer,
+  useRef
 } from 'react'
 import { searchBlocks } from '../searchBlocks'
 import type { TreeBlock } from '../block'
@@ -186,6 +187,25 @@ export function EditorProvider({
     if (initialState?.steps != null)
       dispatch({ type: 'SetStepsAction', steps: initialState.steps })
   }, [initialState?.steps])
+
+  // only run once
+  const stepRef = useRef(false)
+  useEffect(() => {
+    if (stepRef.current) return
+    if (initialState?.selectedStep != null) {
+      dispatch({
+        type: 'SetSelectedStepAction',
+        step: initialState.selectedStep
+      })
+      stepRef.current = true
+
+      if (initialState?.selectedBlock != null)
+        dispatch({
+          type: 'SetSelectedBlockAction',
+          block: initialState.selectedBlock
+        })
+    }
+  }, [initialState?.selectedStep, initialState?.selectedBlock])
 
   return (
     <EditorContext.Provider value={{ state, dispatch }}>
