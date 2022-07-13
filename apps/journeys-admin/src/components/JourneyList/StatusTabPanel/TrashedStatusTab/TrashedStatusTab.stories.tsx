@@ -14,7 +14,7 @@ import { TrashedStatusTab } from '.'
 const TrashedStatusTabStory = {
   ...journeysAdminConfig,
   component: TrashedStatusTab,
-  title: 'Journeys-Admin/JourneyList/ActiveStatusTabPanel/TrashedStatusTab',
+  title: 'Journeys-Admin/JourneyList/StatusTabPanel/TrashedStatusTab',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -30,7 +30,8 @@ const Template: Story = ({ ...args }) => (
 export const Default = Template.bind({})
 Default.args = {
   props: {
-    onLoad: noop
+    onLoad: noop,
+    event: ''
   },
   mocks: [
     {
@@ -54,7 +55,8 @@ Default.args = {
 export const NoJourneys = Template.bind({})
 NoJourneys.args = {
   props: {
-    onLoad: noop
+    onLoad: noop,
+    event: ''
   },
   mocks: [
     {
@@ -73,7 +75,26 @@ NoJourneys.args = {
 export const Loading = Template.bind({})
 Loading.args = {
   props: {
-    onLoad: noop
+    onLoad: noop,
+    event: ''
+  },
+  mocks: []
+}
+
+export const RestoreAll = Template.bind({})
+RestoreAll.args = {
+  props: {
+    onLoad: noop,
+    event: 'restoreAllTrashed'
+  },
+  mocks: []
+}
+
+export const DeleteAll = Template.bind({})
+DeleteAll.args = {
+  props: {
+    onLoad: noop,
+    event: 'deleteAllTrashed'
   },
   mocks: []
 }

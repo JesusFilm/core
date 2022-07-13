@@ -9,7 +9,11 @@ describe('useClickOutside', () => {
 
   const Content = (): ReactElement => {
     const inputRef = useOnClickOutside<HTMLParagraphElement>(onClickOutside)
-    return <h2 ref={inputRef}>Content</h2>
+    return (
+      <h2 className="Mui-focused" ref={inputRef}>
+        Content
+      </h2>
+    )
   }
 
   // E2E test needed to properly catch browser differences in rendering the ref element. See react issue.

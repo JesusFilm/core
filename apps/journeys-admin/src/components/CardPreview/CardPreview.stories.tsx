@@ -673,7 +673,7 @@ const Template: Story = ({ ...args }) => {
             selected={selected}
             steps={args.steps}
             showAddButton={args.showAddButton}
-            isDraggable
+            isDraggable={args.isDraggable}
           />
         </DragDropContext>
       </JourneyProvider>
@@ -684,6 +684,12 @@ const Template: Story = ({ ...args }) => {
 export const Default = Template.bind({})
 Default.args = {
   steps
+}
+
+export const Draggable = Template.bind({})
+Draggable.args = {
+  steps,
+  isDraggable: true
 }
 
 export const AddButton = Template.bind({})

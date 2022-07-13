@@ -23,7 +23,7 @@ const StatusTabPanelStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
-    <StatusTabPanel />
+    <StatusTabPanel event="" />
   </MockedProvider>
 )
 

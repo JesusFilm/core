@@ -10,6 +10,7 @@ import { JourneyDuplicate } from '../../../../../../__generated__/JourneyDuplica
 
 interface DuplicateJourneyMenuItemProps {
   id?: string
+  handleCloseMenu: () => void
 }
 
 export const JOURNEY_DUPLICATE = gql`
@@ -21,7 +22,8 @@ export const JOURNEY_DUPLICATE = gql`
 `
 
 export function DuplicateJourneyMenuItem({
-  id
+  id,
+  handleCloseMenu
 }: DuplicateJourneyMenuItemProps): ReactElement {
   const [journeyDuplicate] = useMutation<JourneyDuplicate>(JOURNEY_DUPLICATE)
   const { enqueueSnackbar } = useSnackbar()
@@ -53,6 +55,7 @@ export function DuplicateJourneyMenuItem({
         }
       }
     })
+    handleCloseMenu()
     enqueueSnackbar(`Journey Duplicated`, {
       variant: 'success',
       preventDuplicate: true

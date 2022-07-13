@@ -8,7 +8,8 @@ export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
     const handleClick = (event: MouseEvent): void => {
       if (
         elementRef.current != null &&
-        !elementRef.current.contains(event.target as HTMLElement)
+        !elementRef.current.contains(event.target as HTMLElement) &&
+        elementRef.current.classList.contains('Mui-focused')
       ) {
         void callback()
       }

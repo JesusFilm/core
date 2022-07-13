@@ -9,6 +9,7 @@ import {
 } from './DuplicateJourneyMenuItem'
 
 describe('DuplicateJourneys', () => {
+  const handleCloseMenu = jest.fn()
   it('should duplicate a journey on menu card click', async () => {
     const result = jest.fn(() => {
       return {
@@ -40,12 +41,55 @@ describe('DuplicateJourneys', () => {
               admin: true
             }}
           >
-            <DuplicateJourneyMenuItem id="journeyId" />
+            <DuplicateJourneyMenuItem
+              id="journeyId"
+              handleCloseMenu={handleCloseMenu}
+            />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should close the menu on click', () => {
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_DUPLICATE,
+              variables: {
+                id: 'journeyId'
+              }
+            },
+            result: {
+              data: {
+                journeyDuplicate: {
+                  id: 'duplicatedJourneyId'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <DuplicateJourneyMenuItem
+              id="journeyId"
+              handleCloseMenu={handleCloseMenu}
+            />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
+    expect(handleCloseMenu).toHaveBeenCalled()
   })
 })

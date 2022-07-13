@@ -73,6 +73,11 @@ module.exports = {
   core: {
     builder: 'webpack5'
   },
+  resolve: {
+    fallback: {
+      util: require.resolve('util/')
+    }
+  },
   webpackFinal: async (config) => {
     const tsPaths = new TsconfigPathsPlugin({
       configFile: './tsconfig.base.json'
