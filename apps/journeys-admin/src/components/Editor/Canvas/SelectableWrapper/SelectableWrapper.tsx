@@ -7,6 +7,9 @@ import {
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import Box from '@mui/material/Box'
+import { Variant } from '../../ControlPanel/Attributes/blocks/Typography/Variant'
+import { ImageOptions } from '../../ControlPanel/Attributes/blocks/Image/Options/ImageOptions'
+import { Action } from '../../ControlPanel/Attributes/Action'
 
 export function SelectableWrapper({
   block,
@@ -37,6 +40,78 @@ export function SelectableWrapper({
     })
     dispatch({ type: 'SetSelectedBlockAction', block })
     dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
+    if (block.__typename === 'TypographyBlock') {
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        id: `${block.id}-typography-variant`
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Text Variant',
+        mobileOpen: true,
+        children: <Variant />
+      })
+    }
+    if (block.__typename === 'ImageBlock') {
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        id: `${block.id}-video-options`
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Image Source',
+        mobileOpen: true,
+        children: <ImageOptions />
+      })
+    }
+    if (block.__typename === 'VideoBlock') {
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        id: `${block.id}-video-action`
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Action',
+        mobileOpen: true,
+        children: <Action />
+      })
+    }
+    if (block.__typename === 'SignUpBlock') {
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        id: `${block.id}-signup-action`
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Form Submission',
+        mobileOpen: true,
+        children: <Action />
+      })
+    }
+    if (block.__typename === 'RadioOptionBlock') {
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        id: `${block.id}-radio-option-action`
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Action',
+        mobileOpen: true,
+        children: <Action />
+      })
+    }
+    if (block.__typename === 'ButtonBlock') {
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        id: `${block.id}-button-action`
+      })
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Action',
+        mobileOpen: true,
+        children: <Action />
+      })
+    }
   }
 
   const selectBlock = (block: TreeBlock): void => {
