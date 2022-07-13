@@ -37,7 +37,9 @@ describe('SocialShareAppearance', () => {
       NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'
     }
 
-    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${process.env.NEXT_PUBLIC_JOURNEYS_URL}/${slug}`
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${
+      process.env.NEXT_PUBLIC_JOURNEYS_URL as string
+    }/${slug}`
 
     const { getByRole } = render(
       <MockedProvider>
@@ -99,7 +101,9 @@ describe('SocialShareAppearance', () => {
       NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'
     }
 
-    const twitterUrl = `https://twitter.com/intent/tweet?url=${process.env.NEXT_PUBLIC_JOURNEYS_URL}/${slug}`
+    const twitterUrl = `https://twitter.com/intent/tweet?url=${
+      process.env.NEXT_PUBLIC_JOURNEYS_URL as string
+    }/${slug}`
 
     const { getByRole } = render(
       <MockedProvider>
