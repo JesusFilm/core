@@ -82,7 +82,6 @@ export function StatusTabPanel({
     newValue: number
   ): void => {
     if (newValue != null && router != null) {
-      // handle change can't be tested until more tabs are added
       setActiveTab(newValue)
       // ensure tab data is refreshed on change
       switch (newValue) {
@@ -102,10 +101,14 @@ export function StatusTabPanel({
       const tabParam =
         journeyStatusTabs.find((status) => status.tabIndex === newValue)
           ?.queryParam ?? journeyStatusTabs[0].queryParam
-      void router.push({
-        href: '/',
-        query: { tab: tabParam }
-      })
+      void router.push(
+        {
+          href: '/',
+          query: { tab: tabParam }
+        },
+        undefined,
+        { shallow: true }
+      )
     }
   }
 
