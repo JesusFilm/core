@@ -5,12 +5,16 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import { AuthUser } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
-import { GetActiveJourneys } from '../../../../../__generated__/GetActiveJourneys'
+import {
+  GetActiveJourneys,
+  GetActiveJourneys_journeys as Journeys
+} from '../../../../../__generated__/GetActiveJourneys'
 import { JourneyCard } from '../../JourneyCard'
 import { AddJourneyButton } from '../../AddJourneyButton'
 import { SortOrder } from '../../JourneySort'
 import { Dialog } from '../../../Dialog'
 import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
+import { getDuplicatedJourney } from './utils/getDuplicatedJourney'
 
 export const GET_ACTIVE_JOURNEYS = gql`
   query GetActiveJourneys {
@@ -85,20 +89,15 @@ export function ActiveStatusTab({
 
   const journeys = data?.journeys
 
-  const [oldJourneys, setOldJourneys] = useState(data?.journeys)
+  const [oldJourneys, setOldJourneys] = useState<Journeys[]>()
+  const [newJourneys, setNewJourneys] = useState<Journeys[]>()
 
   useEffect(() => {
-    if (data != null) {
-      setOldJourneys(data.journeys)
-    }
-  }, [data])
+    setOldJourneys(newJourneys)
+    setNewJourneys(journeys)
+  }, [data, journeys, newJourneys, oldJourneys])
 
-  let duplicatedJourneyId: string | undefined
-  if (oldJourneys !== journeys && oldJourneys != null) {
-    duplicatedJourneyId = journeys?.find(
-      (journey, i) => journey !== oldJourneys[i]
-    )?.id
-  }
+  const duplicatedJourneyId = getDuplicatedJourney(oldJourneys, newJourneys)
 
   const [archiveActive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     variables: {
