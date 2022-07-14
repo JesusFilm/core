@@ -1,8 +1,11 @@
 export const getDuplicatedJourney = (
   oldJourneys,
-  newJourneys
+  journeys
 ): string | undefined => {
-  if ((oldJourneys.length as number) + 1 === newJourneys.length) {
-    return newJourneys?.find((journey, i) => journey !== oldJourneys[i])?.id
+  if (
+    oldJourneys != null &&
+    (oldJourneys.length as number) + 1 === journeys.length
+  ) {
+    return journeys?.find((journey, i) => journey !== oldJourneys[i])?.id
   }
 }

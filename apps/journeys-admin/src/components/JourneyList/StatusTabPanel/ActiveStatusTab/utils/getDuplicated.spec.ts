@@ -67,18 +67,20 @@ describe('getDuplicatedJourney', () => {
   }
 
   const oldJourneys = [journey1, journey2]
-  const newJourneys = [journey1, journey2, duplicatedJourney]
+  const journeys = [journey1, journey2, duplicatedJourney]
 
   it('should return the duplicated journeys id', () => {
-    const duplicatedJourneyId = getDuplicatedJourney(oldJourneys, newJourneys)
+    const duplicatedJourneyId = getDuplicatedJourney(oldJourneys, journeys)
     expect(duplicatedJourneyId).toEqual('duplicated-journey-id')
   })
 
-  it('should not return the duplicated journey id if journey length is the same', () => {
-    const duplicatedJourneyId = getDuplicatedJourney(
+  it('should return undefined if journey length is not 1 more than old journeys', () => {
+    const lowerBoundResult = getDuplicatedJourney([journey1], journeys)
+    const upperBoundResult = getDuplicatedJourney(
       [...oldJourneys, journey1],
-      newJourneys
+      journeys
     )
-    expect(duplicatedJourneyId).not.toEqual('duplicated-journey-id')
+    expect(lowerBoundResult).toBeUndefined()
+    expect(upperBoundResult).toBeUndefined()
   })
 })

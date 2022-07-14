@@ -87,17 +87,15 @@ export function ActiveStatusTab({
   const { data, loading, error, refetch } =
     useQuery<GetActiveJourneys>(GET_ACTIVE_JOURNEYS)
 
-  const journeys = data?.journeys
-
   const [oldJourneys, setOldJourneys] = useState<Journeys[]>()
-  const [newJourneys, setNewJourneys] = useState<Journeys[]>()
+  const [journeys, setJourneys] = useState<Journeys[]>()
 
   useEffect(() => {
-    setOldJourneys(newJourneys)
-    setNewJourneys(journeys)
-  }, [data, journeys, newJourneys, oldJourneys])
+    setOldJourneys(journeys)
+    setJourneys(data?.journeys)
+  }, [data, journeys, oldJourneys])
 
-  const duplicatedJourneyId = getDuplicatedJourney(oldJourneys, newJourneys)
+  const duplicatedJourneyId = getDuplicatedJourney(oldJourneys, journeys)
 
   const [archiveActive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     variables: {
