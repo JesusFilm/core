@@ -41,7 +41,8 @@ export function JourneyCard({
   useEffect(() => {
     if (duplicatedJourneyId != null && duplicatedJourneyRef.current != null) {
       duplicatedJourneyRef.current.scrollIntoView({
-        behavior: 'smooth'
+        behavior: 'smooth',
+        block: 'center'
       })
     }
   }, [duplicatedJourneyId, journey])
