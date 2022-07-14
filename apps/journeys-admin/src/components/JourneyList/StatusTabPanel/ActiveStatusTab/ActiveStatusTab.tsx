@@ -85,6 +85,21 @@ export function ActiveStatusTab({
 
   const journeys = data?.journeys
 
+  const [oldJourneys, setOldJourneys] = useState(data?.journeys)
+
+  useEffect(() => {
+    if (data != null) {
+      setOldJourneys(data.journeys)
+    }
+  }, [data])
+
+  let duplicatedJourneyId: string | undefined
+  if (oldJourneys !== journeys && oldJourneys != null) {
+    duplicatedJourneyId = journeys?.find(
+      (journey, i) => journey !== oldJourneys[i]
+    )?.id
+  }
+
   const [archiveActive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     variables: {
       ids: journeys
@@ -188,7 +203,12 @@ export function ActiveStatusTab({
       {journeys != null && sortedJourneys != null ? (
         <>
           {sortedJourneys.map((journey) => (
-            <JourneyCard key={journey.id} journey={journey} refetch={refetch} />
+            <JourneyCard
+              key={journey.id}
+              journey={journey}
+              refetch={refetch}
+              duplicatedJourneyId={duplicatedJourneyId}
+            />
           ))}
           {journeys.length === 0 && (
             <Card

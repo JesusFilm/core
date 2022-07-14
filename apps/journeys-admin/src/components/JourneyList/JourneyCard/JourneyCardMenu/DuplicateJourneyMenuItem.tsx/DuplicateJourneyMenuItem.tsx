@@ -60,7 +60,6 @@ export function DuplicateJourneyMenuItem({
       variant: 'success',
       preventDuplicate: true
     })
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
