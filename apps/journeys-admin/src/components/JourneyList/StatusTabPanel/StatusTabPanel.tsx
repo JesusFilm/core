@@ -115,15 +115,13 @@ export function StatusTabPanel({
   return (
     <>
       <>
-        {!smUp && (
-          <Box sx={{ my: 4, ml: 6 }}>
-            <JourneySort
-              sortOrder={sortOrder}
-              onChange={setSortOrder}
-              disabled={!tabsLoaded}
-            />
-          </Box>
-        )}
+        <Box sx={{ my: 4, ml: 6, display: smUp ? 'none' : 'block' }}>
+          <JourneySort
+            sortOrder={sortOrder}
+            onChange={setSortOrder}
+            disabled={!tabsLoaded}
+          />
+        </Box>
 
         <Card
           variant="outlined"
@@ -168,22 +166,21 @@ export function StatusTabPanel({
               disabled={!tabsLoaded}
             />
 
-            {smUp && (
-              <Box
-                sx={{
-                  mr: 6,
-                  ml: 'auto',
-                  mt: 3,
-                  mb: 2
-                }}
-              >
-                <JourneySort
-                  sortOrder={sortOrder}
-                  onChange={setSortOrder}
-                  disabled={!tabsLoaded}
-                />
-              </Box>
-            )}
+            <Box
+              sx={{
+                mr: 6,
+                ml: 'auto',
+                mt: 3,
+                mb: 2,
+                display: !smUp ? 'none' : 'block'
+              }}
+            >
+              <JourneySort
+                sortOrder={sortOrder}
+                onChange={setSortOrder}
+                disabled={!tabsLoaded}
+              />
+            </Box>
           </Tabs>
         </Card>
 
