@@ -97,7 +97,7 @@ describe('Step', () => {
         parentBlockId: null,
         parentOrder: 0,
         locked: false,
-        nextBlockId: 'step2.id',
+        nextBlockId: null,
         children: []
       }
       const step2: TreeBlock<StepBlock> = {
@@ -121,6 +121,72 @@ describe('Step', () => {
       expect(getByText('Step {{number}}')).toBeInTheDocument()
     })
 
+    it('shows custom next step title', () => {
+      const step1: TreeBlock<StepBlock> = {
+        id: 'step1.id',
+        __typename: 'StepBlock',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: 'step5.id',
+        children: []
+      }
+      const step2: TreeBlock<StepBlock> = {
+        id: 'step2.id',
+        __typename: 'StepBlock',
+        parentBlockId: null,
+        parentOrder: 1,
+        locked: false,
+        nextBlockId: null,
+        children: []
+      }
+      const step5: TreeBlock<StepBlock> = {
+        id: 'step5.id',
+        __typename: 'StepBlock',
+        parentBlockId: null,
+        parentOrder: 4,
+        locked: false,
+        nextBlockId: null,
+        children: [
+          {
+            __typename: 'CardBlock',
+            id: 'card1.id',
+            parentBlockId: 'step2.id',
+            coverBlockId: null,
+            parentOrder: 0,
+            backgroundColor: null,
+            themeMode: null,
+            themeName: null,
+            fullscreen: false,
+            children: [
+              {
+                __typename: 'TypographyBlock',
+                id: 'typography',
+                content: 'my Title',
+                parentBlockId: 'card1.id',
+                parentOrder: 0,
+                align: null,
+                color: null,
+                variant: null,
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+
+      const { getByText } = render(
+        <EditorProvider
+          initialState={{
+            steps: [step1, step2, step5]
+          }}
+        >
+          <Step {...step1} />
+        </EditorProvider>
+      )
+      expect(getByText('my Title')).toBeInTheDocument()
+    })
+
     it('shows first typography text', () => {
       const step1: TreeBlock<StepBlock> = {
         id: 'step1.id',
@@ -128,7 +194,7 @@ describe('Step', () => {
         parentBlockId: null,
         parentOrder: 0,
         locked: false,
-        nextBlockId: 'step2.id',
+        nextBlockId: null,
         children: []
       }
       const step2: TreeBlock<StepBlock> = {
@@ -175,6 +241,37 @@ describe('Step', () => {
         </EditorProvider>
       )
       expect(getByText('my Title')).toBeInTheDocument()
+    })
+
+    it('should show none', () => {
+      const step1: TreeBlock<StepBlock> = {
+        id: 'step1.id',
+        __typename: 'StepBlock',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        children: []
+      }
+      const step2: TreeBlock<StepBlock> = {
+        id: 'step2.id',
+        __typename: 'StepBlock',
+        parentBlockId: null,
+        parentOrder: 1,
+        locked: false,
+        nextBlockId: null,
+        children: []
+      }
+      const { getByText } = render(
+        <EditorProvider
+          initialState={{
+            steps: [step1, step2]
+          }}
+        >
+          <Step {...step2} />
+        </EditorProvider>
+      )
+      expect(getByText('None')).toBeInTheDocument()
     })
   })
 })
