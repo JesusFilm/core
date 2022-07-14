@@ -3,17 +3,18 @@ kind: CronJob
 metadata:
   name: arangodb-s3-backup-cronjob
 spec:
-  schedule: '0 0 * * *'
+  schedule: '0 3 * * *'
   jobTemplate:
     spec:
       template:
         spec:
           containers:
             - name: arangodb-s3-backup
-              image: arangodb/arangodb:3.9.0
+              image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-arangodb-s3-backup:latest
               imagePullPolicy: IfNotPresent
               command:
-                - arangobackup upload --server.endpoint http+tcp://arangodb:8529 --rclone-config-file /path/to/remote.json --identifier 2019-05-13T07.15.43Z_some-label --remote-path S3://remote-endpoint/remote-directory
+                - arangobackup create --server.endpoint $DATABSE_URL --server.authentication true --server.database $DATABASE_DB --server.username $DATABASE_USER --server.password $DATABASE_PASS
+                - aws s3 cp . $S3_BUCKET
               envFrom:
                 - secretRef:
                     name: doppler-arangodb-s3-backup-secret-prd
