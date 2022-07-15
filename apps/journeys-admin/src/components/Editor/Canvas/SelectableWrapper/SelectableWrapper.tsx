@@ -33,18 +33,26 @@ export function SelectableWrapper({
     block.__typename !== 'GridContainerBlock' &&
     block.__typename !== 'GridItemBlock'
 
-  const updateEditor = (block: TreeBlock): void => {
+  const openDrawer = (block: TreeBlock): void => {
+    const description =
+      block.__typename === 'TypographyBlock'
+        ? 'typography-variant'
+        : block.__typename === 'ImageBlock'
+        ? 'video-options'
+        : block.__typename === 'VideoBlock'
+        ? 'video-action'
+        : block.__typename === 'SignUpBlock'
+        ? 'signup-action'
+        : block.__typename === 'RadioOptionBlock'
+        ? 'radio-option-action'
+        : block.__typename === 'ButtonBlock'
+        ? 'button-action'
+        : ''
     dispatch({
-      type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Properties
+      type: 'SetSelectedAttributeIdAction',
+      id: `${block.id}-${description}`
     })
-    dispatch({ type: 'SetSelectedBlockAction', block })
-    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
     if (block.__typename === 'TypographyBlock') {
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        id: `${block.id}-typography-variant`
-      })
       dispatch({
         type: 'SetDrawerPropsAction',
         title: 'Text Variant',
@@ -54,57 +62,18 @@ export function SelectableWrapper({
     }
     if (block.__typename === 'ImageBlock') {
       dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        id: `${block.id}-video-options`
-      })
-      dispatch({
         type: 'SetDrawerPropsAction',
         title: 'Image Source',
         mobileOpen: true,
         children: <ImageOptions />
       })
     }
-    if (block.__typename === 'VideoBlock') {
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        id: `${block.id}-video-action`
-      })
-      dispatch({
-        type: 'SetDrawerPropsAction',
-        title: 'Action',
-        mobileOpen: true,
-        children: <Action />
-      })
-    }
-    if (block.__typename === 'SignUpBlock') {
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        id: `${block.id}-signup-action`
-      })
-      dispatch({
-        type: 'SetDrawerPropsAction',
-        title: 'Form Submission',
-        mobileOpen: true,
-        children: <Action />
-      })
-    }
-    if (block.__typename === 'RadioOptionBlock') {
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        id: `${block.id}-radio-option-action`
-      })
-      dispatch({
-        type: 'SetDrawerPropsAction',
-        title: 'Action',
-        mobileOpen: true,
-        children: <Action />
-      })
-    }
-    if (block.__typename === 'ButtonBlock') {
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        id: `${block.id}-button-action`
-      })
+    if (
+      block.__typename === 'VideoBlock' ||
+      block.__typename === 'SignUpBlock' ||
+      block.__typename === 'RadioOptionBlock' ||
+      block.__typename === 'ButtonBlock'
+    ) {
       dispatch({
         type: 'SetDrawerPropsAction',
         title: 'Action',
@@ -114,9 +83,18 @@ export function SelectableWrapper({
     }
   }
 
+  const updateEditor = (block: TreeBlock): void => {
+    dispatch({
+      type: 'SetActiveTabAction',
+      activeTab: ActiveTab.Properties
+    })
+    dispatch({ type: 'SetSelectedBlockAction', block })
+  }
+
   const selectBlock = (block: TreeBlock): void => {
     dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
     updateEditor(block)
+    openDrawer(block)
   }
 
   const editBlock = (): void => {
