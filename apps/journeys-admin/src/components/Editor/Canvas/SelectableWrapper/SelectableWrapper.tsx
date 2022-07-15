@@ -38,7 +38,7 @@ export function SelectableWrapper({
       block.__typename === 'TypographyBlock'
         ? 'typography-variant'
         : block.__typename === 'ImageBlock'
-        ? 'video-options'
+        ? 'image-options'
         : block.__typename === 'VideoBlock'
         ? 'video-action'
         : block.__typename === 'SignUpBlock'
