@@ -62,7 +62,6 @@ export function SelectedCard(): ReactElement {
     }
   }, [steps, nextBlockId, selectedBlock, lastStep, parentOrder])
 
-  // TODO: Set as block itself for now, still need to manually set next block
   async function handleRemoveCustomNextStep(): Promise<void> {
     if (journey == null) return
 
@@ -71,14 +70,14 @@ export function SelectedCard(): ReactElement {
         id,
         journeyId: journey.id,
         input: {
-          nextBlockId: id
+          nextBlockId: null
         }
       },
       optimisticResponse: {
         stepBlockUpdate: {
           id,
           __typename: 'StepBlock',
-          nextBlockId: id
+          nextBlockId: null
         }
       }
     })
