@@ -22,7 +22,7 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
   return (
     <>
       <Attribute
-        id={`${id}-video-options`}
+        id={`${id}-image-options`}
         icon={<Photo />}
         name="Image Source"
         value={block?.alt ?? ''}

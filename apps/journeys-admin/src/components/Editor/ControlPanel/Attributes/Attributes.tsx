@@ -1,11 +1,9 @@
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import MuiTypography from '@mui/material/Typography'
-import { ReactElement, useEffect } from 'react'
-import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
+import { ReactElement } from 'react'
 import {
   Card,
   Step,
@@ -90,15 +88,6 @@ interface AttributesProps {
 }
 
 export function Attributes({ selected, step }: AttributesProps): ReactElement {
-  const { dispatch } = useEditor()
-  useEffect(() => {
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: 'Social Share Appearance',
-      mobileOpen: false,
-      children: <SocialShareAppearance />
-    })
-  }, [selected.id, dispatch])
   return (
     <>
       <Stack

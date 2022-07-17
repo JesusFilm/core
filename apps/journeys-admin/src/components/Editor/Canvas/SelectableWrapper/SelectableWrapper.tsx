@@ -7,6 +7,9 @@ import {
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import Box from '@mui/material/Box'
+import { Variant } from '../../ControlPanel/Attributes/blocks/Typography/Variant'
+import { ImageOptions } from '../../ControlPanel/Attributes/blocks/Image/Options/ImageOptions'
+import { Action } from '../../ControlPanel/Attributes/Action'
 
 export function SelectableWrapper({
   block,
@@ -30,18 +33,68 @@ export function SelectableWrapper({
     block.__typename !== 'GridContainerBlock' &&
     block.__typename !== 'GridItemBlock'
 
+  const openDrawer = (block: TreeBlock): void => {
+    const description =
+      block.__typename === 'TypographyBlock'
+        ? 'typography-variant'
+        : block.__typename === 'ImageBlock'
+        ? 'image-options'
+        : block.__typename === 'VideoBlock'
+        ? 'video-action'
+        : block.__typename === 'SignUpBlock'
+        ? 'signup-action'
+        : block.__typename === 'RadioOptionBlock'
+        ? 'radio-option-action'
+        : block.__typename === 'ButtonBlock'
+        ? 'button-action'
+        : ''
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      id: `${block.id}-${description}`
+    })
+    if (block.__typename === 'TypographyBlock') {
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Text Variant',
+        mobileOpen: true,
+        children: <Variant />
+      })
+    }
+    if (block.__typename === 'ImageBlock') {
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Image Source',
+        mobileOpen: true,
+        children: <ImageOptions />
+      })
+    }
+    if (
+      block.__typename === 'VideoBlock' ||
+      block.__typename === 'SignUpBlock' ||
+      block.__typename === 'RadioOptionBlock' ||
+      block.__typename === 'ButtonBlock'
+    ) {
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Action',
+        mobileOpen: true,
+        children: <Action />
+      })
+    }
+  }
+
   const updateEditor = (block: TreeBlock): void => {
     dispatch({
       type: 'SetActiveTabAction',
       activeTab: ActiveTab.Properties
     })
     dispatch({ type: 'SetSelectedBlockAction', block })
-    dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
   }
 
   const selectBlock = (block: TreeBlock): void => {
     dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
     updateEditor(block)
+    openDrawer(block)
   }
 
   const editBlock = (): void => {
