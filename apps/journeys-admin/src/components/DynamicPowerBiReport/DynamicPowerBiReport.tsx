@@ -1,8 +1,8 @@
-import { ReactElement } from 'react'
+import { ReactElement, memo } from 'react'
 import dynamic from 'next/dynamic'
 import { ReportProps } from './Report/Report'
 
-export function DynamicPowerBiReport(props: ReportProps): ReactElement {
+function DynamicPowerBiReport(props: ReportProps): ReactElement {
   // PowerBI needs dynamic import
   // See issue: https://github.com/microsoft/powerbi-client-react/issues/65
   const Report = dynamic<ReportProps>(
@@ -16,3 +16,5 @@ export function DynamicPowerBiReport(props: ReportProps): ReactElement {
 
   return <Report {...props} />
 }
+
+export const MemoizedDynamicReport = memo(DynamicPowerBiReport)

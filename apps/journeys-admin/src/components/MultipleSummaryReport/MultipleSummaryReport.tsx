@@ -7,7 +7,7 @@ import Button from '@mui/material/Button'
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded'
 import Link from 'next/link'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
-import { DynamicPowerBiReport } from '../DynamicPowerBiReport'
+import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
 
 export function MultipleSummaryReport(): ReactElement {
   return (
@@ -33,7 +33,7 @@ export function MultipleSummaryReport(): ReactElement {
           </Link>
         </Stack>
         <Box sx={{ height: '160px', pb: 8 }}>
-          <DynamicPowerBiReport
+          <MemoizedDynamicReport
             reportType={JourneysReportType.multipleSummary}
           />
         </Box>

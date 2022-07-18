@@ -13,7 +13,7 @@ import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import i18nConfig from '../../../next-i18next.config'
-import { DynamicPowerBiReport } from '../../../src/components/DynamicPowerBiReport'
+import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 
 function JourneyReportsPage(): ReactElement {
@@ -30,7 +30,7 @@ function JourneyReportsPage(): ReactElement {
         backHref={`/journeys/${router.query.journeyId as string}`}
       >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
-          <DynamicPowerBiReport reportType={JourneysReportType.singleFull} />
+          <MemoizedDynamicReport reportType={JourneysReportType.singleFull} />
         </Box>
       </PageWrapper>
     </>

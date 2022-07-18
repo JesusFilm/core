@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
-import { DynamicPowerBiReport } from '../DynamicPowerBiReport'
+import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
 import { Properties } from './Properties'
 import { CardView } from './CardView'
 import { SlugDialog } from './Properties/SlugDialog'
@@ -58,7 +58,7 @@ export function JourneyView(): ReactElement {
             sx={{ height: '213px', pb: 6, mx: 6 }}
             data-testid="power-bi-report"
           >
-            <DynamicPowerBiReport
+            <MemoizedDynamicReport
               reportType={JourneysReportType.singleSummary}
             />
           </Box>

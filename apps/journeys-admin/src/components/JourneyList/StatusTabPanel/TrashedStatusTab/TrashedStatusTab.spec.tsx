@@ -68,8 +68,30 @@ describe('TrashedStatusTab', () => {
   })
 
   it('should order journeys in alphabetical order', async () => {
+    const trashedLowerCaseJourneyTitle = {
+      ...defaultJourney,
+      title: 'a lower case title',
+      trashedAt: '2021-12-07T03:22:41.135Z'
+    }
+    const trashedOldJourney = {
+      ...oldJourney,
+      trashedAt: '2021-12-07T03:22:41.135Z'
+    }
     const { getAllByLabelText } = render(
-      <MockedProvider mocks={[trashedJourneysMock]}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_TRASHED_JOURNEYS
+            },
+            result: {
+              data: {
+                journeys: [trashedLowerCaseJourneyTitle, trashedOldJourney]
+              }
+            }
+          }
+        ]}
+      >
         <ThemeProvider>
           <SnackbarProvider>
             <TrashedStatusTab
@@ -88,7 +110,7 @@ describe('TrashedStatusTab', () => {
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'Default Journey Heading'
+      'a lower case title'
     )
   })
 

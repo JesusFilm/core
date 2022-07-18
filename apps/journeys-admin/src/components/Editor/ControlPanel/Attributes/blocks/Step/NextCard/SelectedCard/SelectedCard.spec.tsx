@@ -47,12 +47,12 @@ describe('Selected Card', () => {
 
   const steps = [selectedBlock, nextBlock, noNextBlockId, lastBlock]
 
-  it('updates nextBlockId to the step itself on remove button click', async () => {
+  it('removes nextBlockId on remove button click', async () => {
     const result = jest.fn(() => ({
       data: {
         stepBlockUpdate: {
           id: 'step0.id',
-          nextBlockId: 'step0.id'
+          nextBlockId: null
         }
       }
     }))
@@ -67,7 +67,7 @@ describe('Selected Card', () => {
                 id: selectedBlock.id,
                 journeyId: 'journeyId',
                 input: {
-                  nextBlockId: selectedBlock.id
+                  nextBlockId: null
                 }
               }
             },
