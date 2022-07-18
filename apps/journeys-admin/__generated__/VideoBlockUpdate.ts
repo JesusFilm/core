@@ -20,12 +20,25 @@ export interface VideoBlockUpdate_videoBlockUpdate_video_variant {
   hls: string | null;
 }
 
+export interface VideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: VideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name[];
+}
+
 export interface VideoBlockUpdate_videoBlockUpdate_video {
   __typename: "Video";
   id: string;
   title: VideoBlockUpdate_videoBlockUpdate_video_title[];
   image: string | null;
   variant: VideoBlockUpdate_videoBlockUpdate_video_variant | null;
+  variantLanguages: VideoBlockUpdate_videoBlockUpdate_video_variantLanguages[];
 }
 
 export interface VideoBlockUpdate_videoBlockUpdate_action_NavigateAction {

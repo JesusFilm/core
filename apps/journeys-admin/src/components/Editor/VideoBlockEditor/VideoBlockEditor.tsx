@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
@@ -32,6 +32,27 @@ export function VideoBlockEditor({
     await onDelete?.()
   }
 
+  const [language, setLanguage] = useState<string | undefined>()
+
+  useEffect(() => {
+    const localLanguage = selectedBlock?.video?.variantLanguages
+      .find((variant) => variant.id === selectedBlock?.videoVariantLanguageId)
+      ?.name.find(({ primary }) => !primary)?.value
+    const nativeLanguage = selectedBlock?.video?.variantLanguages
+      .find((variant) => variant.id === selectedBlock?.videoVariantLanguageId)
+      ?.name.find(({ primary }) => primary)?.value
+    let language = localLanguage ?? nativeLanguage
+    if (
+      language != null &&
+      nativeLanguage != null &&
+      nativeLanguage !== language
+    )
+      language = `${language} (${nativeLanguage})`
+    setLanguage(language)
+  }, [
+    selectedBlock?.video?.variantLanguages,
+    selectedBlock?.videoVariantLanguageId
+  ])
   return (
     <>
       <Box sx={{ px: 6, pt: 4 }}>
@@ -49,7 +70,7 @@ export function VideoBlockEditor({
               ? 'Select Video File'
               : selectedBlock.video.title[0].value
           }
-          caption={selectedBlock?.video?.variant?.hls ?? undefined}
+          caption={language}
           showDelete={showDelete && selectedBlock?.video != null}
           onDelete={handleVideoDelete}
         />
