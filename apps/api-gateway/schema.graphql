@@ -356,7 +356,7 @@ type Journey
   status: JourneyStatus! @join__field(graph: JOURNEYS)
 
   """The journey is a template if not null"""
-  template: Template @join__field(graph: JOURNEYS)
+  template: TemplateStatus @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
@@ -752,7 +752,7 @@ input StepViewEventCreateInput {
   id: ID
 }
 
-enum Template {
+enum TemplateStatus {
   """Not in the template library"""
   private
 

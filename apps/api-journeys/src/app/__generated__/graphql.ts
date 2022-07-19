@@ -136,7 +136,7 @@ export enum JourneysReportType {
     singleSummary = "singleSummary"
 }
 
-export enum Template {
+export enum TemplateStatus {
     "private" = "private",
     "public" = "public"
 }
@@ -487,7 +487,7 @@ export class Journey {
     status: JourneyStatus;
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
-    template?: Nullable<Template>;
+    template?: Nullable<TemplateStatus>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 

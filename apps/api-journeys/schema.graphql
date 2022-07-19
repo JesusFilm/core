@@ -92,7 +92,7 @@ type Journey @key(fields: "id") {
   seoDescription: String
 
   """The journey is a template if not null"""
-  template: Template
+  template: TemplateStatus
   userJourneys: [UserJourney!]
 }
 
@@ -844,7 +844,7 @@ type PowerBiEmbed {
   expiration: String!
 }
 
-enum Template {
+enum TemplateStatus {
   """Not in the template library"""
   private
 

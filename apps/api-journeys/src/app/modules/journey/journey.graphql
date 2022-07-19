@@ -22,7 +22,7 @@ type Journey @key(fields: "id") {
   """
   The journey is a template if not null
   """
-  template: Template
+  template: TemplateStatus
 }
 
 enum IdType {
@@ -72,7 +72,7 @@ type PowerBiEmbed {
   expiration: String!
 }
 
-enum Template {
+enum TemplateStatus {
   """
   Not in the template library
   """
