@@ -36,7 +36,7 @@ describe('UserResolver', () => {
       expect(await resolver.me(user.id)).toEqual(user)
     })
 
-    it('returns user with publisher role', async () => {
+    it('returns user with a special role', async () => {
       const publisher = {
         ...user,
         id: '2',
