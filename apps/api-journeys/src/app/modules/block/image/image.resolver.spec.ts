@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 
+import axios from 'axios'
 import {
   CardBlock,
   ImageBlock,
@@ -12,6 +13,9 @@ import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { ImageBlockResolver } from './image.resolver'
+
+jest.mock('axios')
+const mockedAxios = axios as jest.Mocked<typeof axios>
 
 describe('ImageBlockResolver', () => {
   let resolver: ImageBlockResolver,
@@ -102,7 +106,14 @@ describe('ImageBlockResolver', () => {
 
   describe('imageBlockCreate', () => {
     it('creates an ImageBlock', async () => {
+      mockedAxios.get.mockResolvedValue({
+        data: {
+          mockData: 'mockData' // this kinda doesnt matter since sharp returns the data we need, but still need to mock so it doesnt run the API
+        }
+      })
+
       await resolver.imageBlockCreate(blockCreate)
+
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockCreate.journeyId,
         blockCreate.parentBlockId
@@ -110,6 +121,7 @@ describe('ImageBlockResolver', () => {
       expect(service.save).toHaveBeenCalledWith(createdBlock)
       expect(service.update).not.toHaveBeenCalled()
     })
+
     it('creates a cover ImageBlock', async () => {
       await resolver.imageBlockCreate({ ...blockCreate, isCover: true })
 
