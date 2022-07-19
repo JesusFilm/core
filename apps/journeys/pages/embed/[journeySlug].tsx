@@ -8,14 +8,14 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { Conductor } from '../src/components/Conductor'
-import { createApolloClient } from '../src/libs/apolloClient'
+import { EmbeddedConductor } from '../../src/components/EmbeddedConductor'
+import { createApolloClient } from '../../src/libs/apolloClient'
 import {
   GetJourney,
   GetJourney_journey as Journey
-} from '../__generated__/GetJourney'
-import { GetJourneySlugs } from '../__generated__/GetJourneySlugs'
-import i18nConfig from '../next-i18next.config'
+} from '../../__generated__/GetJourney'
+import { GetJourneySlugs } from '../../__generated__/GetJourneySlugs'
+import i18nConfig from '../../next-i18next.config'
 
 interface JourneyPageProps {
   journey: Journey
@@ -24,9 +24,9 @@ interface JourneyPageProps {
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   const router = useRouter()
   const isIframe = typeof window !== 'undefined' && window.self !== window.top
-  if (isIframe) {
-    void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
-  }
+  // if (!isIframe) {
+  //   void router.push('/[journeySlug]', `/${journey.slug}`)
+  // }
   return (
     <>
       <NextSeo
@@ -37,7 +37,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
           title: journey.seoTitle ?? journey.title,
           url: `https://${
             process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
-          }/${journey.slug}`,
+          }/embed/${journey.slug}`,
           description:
             journey.seoDescription ?? journey.description ?? undefined,
           images:
@@ -71,7 +71,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
           themeMode={journey.themeMode}
         >
           {journey.blocks != null && (
-            <Conductor blocks={transformer(journey.blocks)} />
+            <EmbeddedConductor blocks={transformer(journey.blocks)} />
           )}
         </ThemeProvider>
       </JourneyProvider>
