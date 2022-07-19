@@ -17,6 +17,26 @@ import { ImageBlockResolver } from './image.resolver'
 jest.mock('axios')
 const mockedAxios = axios as jest.Mocked<typeof axios>
 
+jest.mock('sharp', () => () => ({
+  raw: () => ({
+    ensureAlpha: () => ({
+      toBuffer: () => ({
+        data: new Uint8ClampedArray([]),
+        info: {
+          width: 640,
+          height: 425
+        }
+      })
+    })
+  })
+}))
+
+jest.mock('blurhash', () => {
+  return {
+    encode: jest.fn(() => 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ')
+  }
+})
+
 describe('ImageBlockResolver', () => {
   let resolver: ImageBlockResolver,
     blockResolver: BlockResolver,
@@ -26,7 +46,7 @@ describe('ImageBlockResolver', () => {
     id: '1',
     journeyId: '2',
     parentBlockId: 'parentBlockId',
-    src: 'https://blurha.sh/assets/images/img2.jpg',
+    src: 'https://unsplash.it/640/425?image=42',
     alt: 'grid image'
   }
 
@@ -36,10 +56,10 @@ describe('ImageBlockResolver', () => {
     __typename: 'ImageBlock',
     parentBlockId: 'parentBlockId',
     parentOrder: 2,
-    src: 'https://blurha.sh/assets/images/img2.jpg',
+    src: 'https://unsplash.it/640/425?image=42',
     alt: 'grid image',
-    width: 301,
-    height: 193,
+    width: 640,
+    height: 425,
     blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
   }
 
