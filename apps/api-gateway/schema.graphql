@@ -841,6 +841,7 @@ type User
   id: ID! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
+  role: UserRole @join__field(graph: USERS)
 }
 
 type UserJourney
@@ -859,6 +860,14 @@ enum UserJourneyRole {
   editor
   inviteRequested
   owner
+}
+
+enum UserRole {
+  """
+  User can create templates and
+  add them to template library
+  """
+  publisher
 }
 
 type Video
