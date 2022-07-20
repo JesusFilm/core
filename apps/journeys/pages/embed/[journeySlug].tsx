@@ -7,8 +7,7 @@ import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
-import { EmbeddedConductor } from '../../src/components/EmbeddedConductor'
+import { EmbeddedPreview } from '../../src/components/EmbeddedPreview'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import {
   GetJourney,
@@ -22,11 +21,6 @@ interface JourneyPageProps {
 }
 
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
-  const router = useRouter()
-  const isIframe = typeof window !== 'undefined' && window.self !== window.top
-  // if (!isIframe) {
-  //   void router.push('/[journeySlug]', `/${journey.slug}`)
-  // }
   return (
     <>
       <NextSeo
@@ -71,7 +65,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
           themeMode={journey.themeMode}
         >
           {journey.blocks != null && (
-            <EmbeddedConductor blocks={transformer(journey.blocks)} />
+            <EmbeddedPreview blocks={transformer(journey.blocks)} />
           )}
         </ThemeProvider>
       </JourneyProvider>
