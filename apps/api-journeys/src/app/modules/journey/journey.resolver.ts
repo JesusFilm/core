@@ -30,6 +30,7 @@ import {
   JourneyCreateInput,
   JourneyStatus,
   JourneyUpdateInput,
+  TemplateStatus,
   ThemeMode,
   ThemeName,
   UserJourney,
@@ -398,6 +399,25 @@ export class JourneyResolver {
     return (await this.journeyService.updateAll(
       results
     )) as unknown as Journey[]
+  }
+
+  // once mutation is working add the roleguard for publisher
+  @Mutation()
+  async createTemplate(
+    @Args('id') id: string,
+    @CurrentUserId() userId: string
+  ): Promise<Journey | undefined> {
+    const duplicatedJourney = await this.journeyDuplicate(id, userId)
+    // Nice to haves:
+    // Author
+    // Use Cases
+    return await this.journeyService.save({
+      ...duplicatedJourney,
+      template: TemplateStatus.private,
+      status: JourneyStatus.published,
+      createdAt: new Date().toISOString(),
+      publishedAt: new Date().toISOString()
+    })
   }
 
   @ResolveField()

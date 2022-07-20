@@ -8,7 +8,8 @@ import {
   ThemeMode,
   ThemeName,
   UserJourneyRole,
-  JourneysReportType
+  JourneysReportType,
+  TemplateStatus
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
@@ -137,6 +138,17 @@ describe('JourneyResolver', () => {
     ...stepBlock,
     id: 'duplicateStepId',
     journeyId: 'duplicateJourneyId'
+  }
+
+  const journeyTemplate = {
+    ...journey,
+    id: 'duplicateJourneyId',
+    slug: `${journey.title}-copy`,
+    title: `${journey.title} copy`,
+    template: TemplateStatus.private,
+    status: JourneyStatus.published,
+    createdAt,
+    publishedAt
   }
 
   const journeyService = {
@@ -856,6 +868,17 @@ describe('JourneyResolver', () => {
           status: JourneyStatus.draft
         }
       ])
+    })
+  })
+
+  describe('createTemplate', () => {
+    it('creates a template from a journey', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      const date = '2021-11-19T12:34:56.647Z'
+      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      expect(await resolver.createTemplate('journeyId', 'userId')).toEqual(
+        journeyTemplate
+      )
     })
   })
 

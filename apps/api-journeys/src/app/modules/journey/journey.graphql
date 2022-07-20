@@ -152,6 +152,10 @@ extend type Mutation {
   Sets journeys statuses to last active status
   """
   journeysRestore(ids: [ID!]!): [Journey]
+  """
+  Creates a template from a journey
+  """
+  createTemplate(id: ID!): Journey!
 }
 
 extend type NavigateToJourneyAction {

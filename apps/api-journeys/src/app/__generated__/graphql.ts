@@ -856,6 +856,8 @@ export abstract class IMutation {
 
     abstract journeysRestore(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
 
+    abstract createTemplate(id: string): Journey | Promise<Journey>;
+
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 
     abstract userJourneyPromote(id: string): UserJourney | Promise<UserJourney>;
