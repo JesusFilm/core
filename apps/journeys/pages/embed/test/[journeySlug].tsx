@@ -9,9 +9,8 @@ export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
 }
 
 IFrameTest.getInitialProps = (context): IFrameTestProps => {
-  console.log('context', context.params)
   return {
-    journeySlug: context.params?.journeySlug
+    journeySlug: context.query?.journeySlug
   }
 }
 

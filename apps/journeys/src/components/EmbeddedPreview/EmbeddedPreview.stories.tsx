@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
+
 import { journeysConfig } from '../../libs/storybook'
 import {
   basic,
@@ -7,35 +8,36 @@ import {
   videoBlocks,
   videoLoop
 } from '../../libs/testData/storyData'
-import { Conductor, ConductorProps } from '.'
+
+import { EmbeddedPreview, EmbeddedPreviewProps } from './EmbeddedPreview'
 
 const Demo = {
   ...journeysConfig,
-  component: Conductor,
-  title: 'Journeys/Conductor',
+  component: EmbeddedPreview,
+  title: 'Journeys/EmbeddedPreview',
   parameters: {
     ...journeysConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-const Template: Story<ConductorProps> = ({ ...props }) => (
+const Template: Story<EmbeddedPreviewProps> = ({ ...props }) => (
   <MockedProvider>
-    <Conductor {...props} />
+    <EmbeddedPreview {...props} />
   </MockedProvider>
 )
 
-export const Default: Story<ConductorProps> = Template.bind({})
+export const Default: Story<EmbeddedPreviewProps> = Template.bind({})
 Default.args = {
   blocks: basic
 }
 
-export const WithContent: Story<ConductorProps> = Template.bind({})
+export const WithContent: Story<EmbeddedPreviewProps> = Template.bind({})
 WithContent.args = {
   blocks: imageBlocks
 }
 
-export const WithVideo: Story<ConductorProps> = Template.bind({})
+export const WithVideo: Story<EmbeddedPreviewProps> = Template.bind({})
 WithVideo.args = {
   blocks: videoBlocks
 }
@@ -43,7 +45,7 @@ WithVideo.parameters = {
   chromatic: { delay: 100, diffThreshold: 0.2 }
 }
 
-export const WithVideoLoop: Story<ConductorProps> = Template.bind({})
+export const WithVideoLoop: Story<EmbeddedPreviewProps> = Template.bind({})
 WithVideoLoop.args = {
   blocks: videoLoop
 }
