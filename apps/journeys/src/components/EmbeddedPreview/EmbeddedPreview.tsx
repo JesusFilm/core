@@ -28,6 +28,7 @@ export function EmbeddedPreview({
   } catch {
     isFullscreen = false
   }
+
   // use router internally on this component as it does not function properly when passed as prop
   const router = useRouter()
   const once = useRef(false)
@@ -68,12 +69,30 @@ export function EmbeddedPreview({
               />
             )}
           </Box>
-          <div ref={maximizableElement}>
-            <IconButton sx={{ position: 'absolute', top: 0, right: 0 }}>
-              <Close />
-            </IconButton>
-            {isFullscreen && <Conductor blocks={blocks} />}
-          </div>
+          <Box
+            ref={maximizableElement}
+            sx={{
+              backgroundColor: (theme) => theme.palette.background.default
+            }}
+          >
+            {isFullscreen && (
+              <>
+                <IconButton
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    color: (theme) => theme.palette.text.primary
+                  }}
+                  onClick={() => setIsFullscreen(false)}
+                >
+                  <Close />
+                </IconButton>
+                <Conductor blocks={blocks} />
+              </>
+            )}
+          </Box>
+
           <Box
             sx={{
               px: 8,

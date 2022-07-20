@@ -24,17 +24,27 @@ export default function useFullscreenStatus(
     document[getBrowserFullscreenElementProp()] != null
   )
 
-  const setFullscreen = (): void => {
+  const setFullscreen = (value: boolean): void => {
     if (elRef.current == null) return
 
-    elRef.current
-      .requestFullscreen()
-      .then(() => {
-        setIsFullscreen(document[getBrowserFullscreenElementProp()] != null)
-      })
-      .catch(() => {
-        setIsFullscreen(false)
-      })
+    if (value)
+      elRef.current
+        .requestFullscreen()
+        .then(() => {
+          setIsFullscreen(document[getBrowserFullscreenElementProp()] != null)
+        })
+        .catch(() => {
+          setIsFullscreen(false)
+        })
+    else
+      elRef.current
+        .requestFullscreen()
+        .then(() => {
+          setIsFullscreen(document[getBrowserFullscreenExitProp()]() != null)
+        })
+        .catch(() => {
+          setIsFullscreen(false)
+        })
   }
 
   useLayoutEffect(() => {
@@ -56,6 +66,20 @@ function getBrowserFullscreenElementProp(): string {
     return 'mozFullScreenElement'
   } else if (typeof document.msFullscreenElement !== 'undefined') {
     return 'msFullscreenElement'
+  } else if (typeof document.webkitFullscreenElement !== 'undefined') {
+    return 'webkitExitFullscreen'
+  } else {
+    throw new Error('fullscreenElement is not supported by this browser')
+  }
+}
+
+function getBrowserFullscreenExitProp(): string {
+  if (typeof document.fullscreenElement !== 'undefined') {
+    return 'exitFullscreen'
+  } else if (typeof document.mozFullScreenElement !== 'undefined') {
+    return 'mozCancelFullScreen'
+  } else if (typeof document.msFullscreenElement !== 'undefined') {
+    return 'msExitFullscreen'
   } else if (typeof document.webkitFullscreenElement !== 'undefined') {
     return 'webkitFullscreenElement'
   } else {
