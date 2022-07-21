@@ -493,7 +493,6 @@ export class Journey {
     seoDescription?: Nullable<string>;
     template?: Nullable<TemplateStatus>;
     userJourneys?: Nullable<UserJourney[]>;
-    userRole?: Nullable<UserRole>;
 }
 
 export class ButtonBlock implements Block {

@@ -1,4 +1,4 @@
-type UserRoles @key(fields: "id") {
+type UserRole @key(fields: "id") {
   id: ID!
   userId: ID!
   role: Role
@@ -18,5 +18,5 @@ extend type User @key(fields: "id") {
 }
 
 extend type Query {
-  getUserRole(id: ID!): UserRoles
+  getUserRole(id: ID!): UserRole
 }

@@ -11,12 +11,12 @@ import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { AuthenticationError } from 'apollo-server-errors'
 import { JourneyService } from '../journey/journey.service'
-import { UserRolesService } from './userRoles.service'
+import { UserRoleService } from './userRole.service'
 
-@Resolver('UserRoles')
-export class UserRolesResolver {
+@Resolver('UserRole')
+export class UserRoleResolver {
   constructor(
-    private readonly userRoleService: UserRolesService,
+    private readonly userRoleService: UserRoleService,
     private readonly journeyService: JourneyService
   ) {}
 }

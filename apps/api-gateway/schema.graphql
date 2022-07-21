@@ -600,7 +600,7 @@ type Query {
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
-  getUserRole(id: ID!): UserRoles @join__field(graph: JOURNEYS)
+  getUserRole(id: ID!): UserRole @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
@@ -850,7 +850,6 @@ type User
   id: ID! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
-  role: UserRole @deprecated(reason: "this role is being moved into api-journeys") @join__field(graph: USERS)
 }
 
 type UserJourney
@@ -871,15 +870,7 @@ enum UserJourneyRole {
   owner
 }
 
-enum UserRole {
-  """
-  User can create templates and
-  add them to template library
-  """
-  publisher @deprecated(reason: "this role is being moved into api-journeys")
-}
-
-type UserRoles
+type UserRole
   @join__owner(graph: JOURNEYS)
   @join__type(graph: JOURNEYS, key: "id")
 {

@@ -35,27 +35,6 @@ describe('UserResolver', () => {
     it('returns User', async () => {
       expect(await resolver.me(user.id)).toEqual(user)
     })
-
-    it('returns user with a special role', async () => {
-      const publisher = {
-        ...user,
-        id: '2',
-        role: UserRole.publisher
-      }
-
-      const userService = {
-        provide: UserService,
-        useFactory: () => ({
-          getByUserId: jest.fn(() => publisher)
-        })
-      }
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [UserResolver, userService]
-      }).compile()
-      resolver = module.get<UserResolver>(UserResolver)
-
-      expect(await resolver.me(publisher.id)).toEqual(publisher)
-    })
   })
 
   describe('resolveReference', () => {
