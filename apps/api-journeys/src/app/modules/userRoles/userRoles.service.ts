@@ -3,6 +3,6 @@ import { Injectable } from '@nestjs/common'
 import { DocumentCollection } from 'arangojs/collection'
 
 @Injectable()
-export class UserRoleService extends BaseService {
+export class UserRolesService extends BaseService {
   collection: DocumentCollection = this.db.collection('userRoles')
 }

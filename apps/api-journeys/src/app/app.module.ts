@@ -10,7 +10,7 @@ import { BlockModule } from './modules/block/block.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { EventModule } from './modules/event/event.module'
 import { UserJourneyModule } from './modules/userJourney/userJourney.module'
-import { UserRoleModule } from './modules/userRole/userRole.module'
+import { UserRolesModule } from './modules/userRoles/userRoles.module'
 // import { UserJourneyService } from './modules/userJourney/userJourney.service'
 
 @Module({
@@ -20,7 +20,7 @@ import { UserRoleModule } from './modules/userRole/userRole.module'
     JourneyModule,
     EventModule,
     UserJourneyModule,
-    UserRoleModule,
+    UserRolesModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths: [

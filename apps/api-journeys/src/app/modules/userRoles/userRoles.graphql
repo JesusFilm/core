@@ -1,8 +1,4 @@
-extend type Journey {
-  userRole: UserRole
-}
-
-type UserRole @key(fields: "id") {
+type UserRoles @key(fields: "id") {
   id: ID!
   userId: ID!
   role: Role
@@ -17,10 +13,10 @@ enum Role {
   publisher
 }
 
-extend type User @key(fiellds: "id") {
+extend type User @key(fields: "id") {
   id: ID! @external
 }
 
 extend type Query {
-  getUserRole(id: ID!): UserRole
+  getUserRole(id: ID!): UserRoles
 }

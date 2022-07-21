@@ -901,6 +901,21 @@ enum UserJourneyRole {
   owner
 }
 
+type UserRoles @key(fields: "id") {
+  id: ID!
+  userId: ID!
+  role: Role
+  user: User
+}
+
+enum Role {
+  """
+  User can create templates and
+  add them to template library
+  """
+  publisher
+}
+
 extend type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction!
@@ -995,6 +1010,7 @@ extend type Query {
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
+  getUserRole(id: ID!): UserRoles
 }
 
 extend type User @key(fields: "id") {
