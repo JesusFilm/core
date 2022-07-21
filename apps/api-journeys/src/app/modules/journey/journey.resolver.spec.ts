@@ -143,8 +143,8 @@ describe('JourneyResolver', () => {
   const journeyTemplate = {
     ...journey,
     id: 'duplicateJourneyId',
-    slug: `${journey.title}-copy`,
-    title: `${journey.title} copy`,
+    slug: `${journey.title}-template`,
+    title: `${journey.title} template`,
     template: TemplateStatus.private,
     status: JourneyStatus.published,
     createdAt,
@@ -879,6 +879,14 @@ describe('JourneyResolver', () => {
       expect(await resolver.createTemplate('journeyId', 'userId')).toEqual(
         journeyTemplate
       )
+    })
+
+    it('throws error and does not get stuck in retry loop', async () => {
+      const mockSave = service.save as jest.MockedFunction<typeof service.save>
+      mockSave.mockRejectedValueOnce(new Error('database error'))
+      await expect(
+        resolver.createTemplate('journeyId', 'userId')
+      ).rejects.toThrow('database error')
     })
   })
 

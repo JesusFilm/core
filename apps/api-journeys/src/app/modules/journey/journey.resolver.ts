@@ -401,23 +401,45 @@ export class JourneyResolver {
     )) as unknown as Journey[]
   }
 
-  // once mutation is working add the roleguard for publisher
   @Mutation()
   async createTemplate(
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<Journey | undefined> {
     const duplicatedJourney = await this.journeyDuplicate(id, userId)
-    // Nice to haves:
-    // Author
-    // Use Cases
-    return await this.journeyService.save({
+    if (duplicatedJourney == null) return
+
+    const modifier = duplicatedJourney.title.replace(/\scopy/g, '')
+    const title = modifier.replace(/\s[0-9]/g, '')
+    const slug = slugify(title, {
+      lower: true,
+      strict: true
+    })
+
+    const input = {
       ...duplicatedJourney,
       template: TemplateStatus.private,
       status: JourneyStatus.published,
+      title: `${title} template`,
+      slug: `${slug}-template`,
       createdAt: new Date().toISOString(),
       publishedAt: new Date().toISOString()
-    })
+    }
+
+    let retry = true
+    while (retry) {
+      try {
+        retry = false
+        return await this.journeyService.save(input)
+      } catch (err) {
+        if (err.errorNum === ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED) {
+          input.slug = slugify(`${input.slug}-${input.id}`)
+        } else {
+          retry = false
+          throw err
+        }
+      }
+    }
   }
 
   @ResolveField()
