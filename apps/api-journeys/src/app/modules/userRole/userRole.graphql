@@ -1,0 +1,26 @@
+extend type Journey {
+  userRole: UserRole
+}
+
+type UserRole @key(fields: "id") {
+  id: ID!
+  userId: ID!
+  role: Role
+  user: User
+}
+
+enum Role {
+  """
+  User can create templates and
+  add them to template library
+  """
+  publisher
+}
+
+extend type User @key(fiellds: "id") {
+  id: ID! @external
+}
+
+extend type Query {
+  getUserRole(id: ID!): UserRole
+}
