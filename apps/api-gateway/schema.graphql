@@ -841,7 +841,7 @@ type User
   id: ID! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
-  role: UserRole @join__field(graph: USERS)
+  role: UserRole @deprecated(reason: "this role is being moved into api-journeys") @join__field(graph: USERS)
 }
 
 type UserJourney
@@ -867,7 +867,7 @@ enum UserRole {
   User can create templates and
   add them to template library
   """
-  publisher
+  publisher @deprecated(reason: "this role is being moved into api-journeys")
 }
 
 type Video

@@ -4,7 +4,7 @@ type User @key(fields: "id") {
   lastName: String
   email: String!
   imageUrl: String
-  role: UserRole
+  role: UserRole @deprecated(reason: "this role is being moved into api-journeys")
 }
 
 enum UserRole {
@@ -12,7 +12,7 @@ enum UserRole {
   User can create templates and
   add them to template library
   """
-  publisher
+  publisher @deprecated(reason: "this role is being moved into api-journeys")
 }
 
 extend type Query {
