@@ -22,10 +22,10 @@ describe('Typography properties', () => {
       children: []
     }
     const { getByRole } = render(<Typography {...block} />)
-    expect(getByRole('button', { name: 'Color Primary' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Variant Body 2' })
     ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color Primary' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Alignment Left' })
     ).toBeInTheDocument()
@@ -44,10 +44,10 @@ describe('Typography properties', () => {
       children: []
     }
     const { getByRole } = render(<Typography {...block} />)
-    expect(getByRole('button', { name: 'Color Secondary' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Variant Header 2' })
     ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Color Secondary' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Alignment Center' })
     ).toBeInTheDocument()

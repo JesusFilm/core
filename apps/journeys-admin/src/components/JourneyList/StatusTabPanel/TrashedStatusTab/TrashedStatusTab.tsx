@@ -3,14 +3,17 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import Typography from '@mui/material/Typography'
-import { sortBy } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
-import { GetTrashedJourneys } from '../../../../../__generated__/GetTrashedJourneys'
+import {
+  GetTrashedJourneys,
+  GetTrashedJourneys_journeys as TrashedJourney
+} from '../../../../../__generated__/GetTrashedJourneys'
 import { JourneyCard } from '../../JourneyCard'
 import { SortOrder } from '../../JourneySort'
 import { Dialog } from '../../../Dialog'
+import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
 
 export const GET_TRASHED_JOURNEYS = gql`
   query GetTrashedJourneys {
@@ -184,13 +187,10 @@ export function TrashedStatusTab({
     }
   }, [event, refetch])
 
-  // orders of the first characters ascii value
   const sortedJourneys =
-    sortOrder === SortOrder.TITLE
-      ? sortBy(journeys, 'title')
-      : sortBy(journeys, ({ createdAt }) =>
-          new Date(createdAt).getTime()
-        ).reverse()
+    journeys != null
+      ? (sortJourneys(journeys, sortOrder) as TrashedJourney[])
+      : undefined
 
   // calculate 40 days ago. may later be replaced by cron job
   const daysAgo = new Date()
@@ -198,7 +198,7 @@ export function TrashedStatusTab({
 
   return (
     <>
-      {journeys != null ? (
+      {journeys != null && sortedJourneys != null ? (
         <>
           {sortedJourneys
             .filter((journey) => new Date(journey.trashedAt) > daysAgo)

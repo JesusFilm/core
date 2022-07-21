@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useRef, useEffect } from 'react'
 import { parseISO, isThisYear, intlFormat } from 'date-fns'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
@@ -23,6 +23,7 @@ import { StatusChip } from './StatusChip'
 
 interface JourneyCardProps {
   journey?: Journey
+  duplicatedJourneyId?: string
   refetch?: () => Promise<
     ApolloQueryResult<
       GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
@@ -32,10 +33,25 @@ interface JourneyCardProps {
 
 export function JourneyCard({
   journey,
+  duplicatedJourneyId,
   refetch
 }: JourneyCardProps): ReactElement {
+  const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (duplicatedJourneyId != null && duplicatedJourneyRef.current != null) {
+      duplicatedJourneyRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      })
+    }
+  }, [duplicatedJourneyId, journey])
+
   return (
     <Card
+      ref={
+        journey?.id === duplicatedJourneyId ? duplicatedJourneyRef : undefined
+      }
       aria-label="journey-card"
       variant="outlined"
       sx={{

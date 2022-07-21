@@ -354,6 +354,9 @@ type Journey
   seoTitle: String @join__field(graph: JOURNEYS)
   slug: String! @join__field(graph: JOURNEYS)
   status: JourneyStatus! @join__field(graph: JOURNEYS)
+
+  """The journey is a template if not null"""
+  template: TemplateStatus @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
@@ -749,6 +752,14 @@ input StepViewEventCreateInput {
   id: ID
 }
 
+enum TemplateStatus {
+  """Not in the template library"""
+  private
+
+  """In the template library"""
+  public
+}
+
 enum ThemeMode {
   dark
   light
@@ -830,6 +841,7 @@ type User
   id: ID! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
+  role: UserRole @join__field(graph: USERS)
 }
 
 type UserJourney
@@ -848,6 +860,14 @@ enum UserJourneyRole {
   editor
   inviteRequested
   owner
+}
+
+enum UserRole {
+  """
+  User can create templates and
+  add them to template library
+  """
+  publisher
 }
 
 type Video

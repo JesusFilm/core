@@ -57,11 +57,12 @@ export function PageWrapper({
           }
         }}
       >
-        {!smUp && showAppBarMobile ? (
+        {showAppBarMobile ? (
           <Toolbar
             sx={{
               backgroundColor: 'secondary.dark',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              display: smUp ? 'none' : 'flex'
             }}
           >
             <IconButton

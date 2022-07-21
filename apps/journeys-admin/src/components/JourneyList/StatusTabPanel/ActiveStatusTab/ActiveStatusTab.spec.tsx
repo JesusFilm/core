@@ -60,8 +60,26 @@ describe('ActiveStatusTab', () => {
   })
 
   it('should order journeys in alphabetical order', async () => {
+    const lowerCaseJourneyTitle = {
+      ...defaultJourney,
+      title: 'a lower case title'
+    }
+
     const { getAllByLabelText } = render(
-      <MockedProvider mocks={[activeJourneysMock]}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ACTIVE_JOURNEYS
+            },
+            result: {
+              data: {
+                journeys: [lowerCaseJourneyTitle, oldJourney]
+              }
+            }
+          }
+        ]}
+      >
         <ThemeProvider>
           <SnackbarProvider>
             <ActiveStatusTab
@@ -80,7 +98,7 @@ describe('ActiveStatusTab', () => {
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'Default Journey Heading'
+      'a lower case title'
     )
   })
 
