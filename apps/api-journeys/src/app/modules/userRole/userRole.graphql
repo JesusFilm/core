@@ -1,8 +1,7 @@
 type UserRole @key(fields: "id") {
   id: ID!
   userId: ID!
-  role: Role
-  user: User
+  roles: [Role!]
 }
 
 enum Role {
@@ -18,5 +17,5 @@ extend type User @key(fields: "id") {
 }
 
 extend type Query {
-  getUserRole(id: ID!): UserRole
+  getUserRole(): UserRole
 }
