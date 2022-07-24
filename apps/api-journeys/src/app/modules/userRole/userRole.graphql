@@ -12,10 +12,6 @@ enum Role {
   publisher
 }
 
-extend type User @key(fields: "id") {
-  id: ID! @external
-}
-
 extend type Query {
-  getUserRole(): UserRole
+  getUserRole: UserRole
 }

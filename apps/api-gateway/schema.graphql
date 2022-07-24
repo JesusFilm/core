@@ -600,7 +600,7 @@ type Query {
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
-  getUserRole(id: ID!): UserRole @join__field(graph: JOURNEYS)
+  getUserRole: UserRole @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
@@ -875,8 +875,7 @@ type UserRole
   @join__type(graph: JOURNEYS, key: "id")
 {
   id: ID! @join__field(graph: JOURNEYS)
-  role: Role @join__field(graph: JOURNEYS)
-  user: User @join__field(graph: JOURNEYS)
+  roles: [Role!] @join__field(graph: JOURNEYS)
   userId: ID! @join__field(graph: JOURNEYS)
 }
 
