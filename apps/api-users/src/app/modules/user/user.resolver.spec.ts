@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { UserRole } from '../../__generated__/graphql'
 
 import { UserResolver } from './user.resolver'
 import { UserService } from './user.service'
