@@ -51,7 +51,7 @@ export class TemplateUseEventResolver {
 export class TemplatePreviewEventResolver {
   constructor(private readonly eventService: EventService) {}
   @Mutation()
-  async templatePreivewEventCreate(
+  async templatePreviewEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: TemplatePreviewEventInput
   ): Promise<TemplatePreviewEvent> {
