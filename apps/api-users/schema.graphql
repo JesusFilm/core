@@ -4,15 +4,6 @@ type User @key(fields: "id") {
   lastName: String
   email: String!
   imageUrl: String
-  role: UserRole
-}
-
-enum UserRole {
-  """
-  User can create templates and
-  add them to template library
-  """
-  publisher
 }
 
 extend type Query {
