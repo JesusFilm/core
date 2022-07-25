@@ -53,5 +53,6 @@
         "linter": "eslint"
       }
     }
-  }
+  },
+  "defaultProject": "api-media"
 }

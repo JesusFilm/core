@@ -15,3 +15,7 @@ subgraphs:
     routing_url: http://api-videos-stage:443/graphql
     schema:
       file: ../../dist/apps/api-gateway/api-videos-schema.graphql
+  media:
+    routing_url: http://api-media-stage:443/graphql
+    schema:
+      file: ../../dist/apps/api-gateway/api-media-schema.graphql
