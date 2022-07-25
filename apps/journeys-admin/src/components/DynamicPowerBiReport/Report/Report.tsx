@@ -6,6 +6,7 @@ import { useSnackbar } from 'notistack'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Fade from '@mui/material/Fade'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneysReportType } from '../../../../__generated__/globalTypes'
 import { GetAdminJourneysReport } from '../../../../__generated__/GetAdminJourneysReport'
 
@@ -22,6 +23,7 @@ export interface ReportProps {
 }
 
 export function Report({ reportType }: ReportProps): ReactElement {
+  const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
@@ -43,6 +45,17 @@ export function Report({ reportType }: ReportProps): ReactElement {
     })
   }
 
+  const singleReportFilter: models.IBasicFilter = {
+    $schema: 'http://powerbi.com/product/schema#basic',
+    target: {
+      table: 'prod_journey_ns',
+      column: 'jrny_key'
+    },
+    filterType: models.FilterType.Basic,
+    operator: 'In',
+    values: journey != null ? [journey.id] : []
+  }
+
   const embedProps: EmbedProps = {
     embedConfig: {
       embedUrl: data?.adminJourneysReport?.embedUrl,
@@ -57,7 +70,12 @@ export function Report({ reportType }: ReportProps): ReactElement {
             visible: false
           }
         }
-      }
+      },
+      filters:
+        reportType === JourneysReportType.singleFull ||
+        reportType === JourneysReportType.singleSummary
+          ? [singleReportFilter]
+          : undefined
     },
     eventHandlers: new Map([
       ['rendered', onLoad],
