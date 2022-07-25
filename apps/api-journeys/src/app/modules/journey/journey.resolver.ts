@@ -223,6 +223,13 @@ export class JourneyResolver {
     @CurrentUserId() userId: string
   ): Promise<Journey | undefined> {
     const journey: Journey = await this.journeyService.get(id)
+    return await this.duplicate(journey, userId)
+  }
+
+  async duplicate(
+    @Args('journey') journey: Journey,
+    @Args('userId') userId: string
+  ): Promise<Journey | undefined> {
     const duplicateJourneyId = uuidv4()
     const existingDuplicateJourneys = await this.journeyService.getAllByTitle(
       journey.title,
@@ -252,7 +259,7 @@ export class JourneyResolver {
     })
     const duplicateBlocks = await this.blockService.getDuplicateChildren(
       originalBlocks,
-      id,
+      journey.id,
       null,
       duplicateStepIds,
       duplicateJourneyId,
