@@ -7,10 +7,6 @@
 
 /* tslint:disable */
 /* eslint-disable */
-export enum UserRole {
-    publisher = "publisher"
-}
-
 export class User {
     __typename?: 'User';
     id: string;
@@ -18,7 +14,6 @@ export class User {
     lastName?: Nullable<string>;
     email: string;
     imageUrl?: Nullable<string>;
-    role?: Nullable<UserRole>;
 }
 
 export abstract class IQuery {

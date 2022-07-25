@@ -147,6 +147,10 @@ export enum UserJourneyRole {
     owner = "owner"
 }
 
+export enum Role {
+    publisher = "publisher"
+}
+
 export class NavigateActionInput {
     gtmEventName?: Nullable<string>;
 }
@@ -759,6 +763,14 @@ export class UserJourney {
     user?: Nullable<User>;
 }
 
+export class UserRole {
+    __typename?: 'UserRole';
+    id: string;
+    userId: string;
+    role?: Nullable<Role>;
+    user?: Nullable<User>;
+}
+
 export abstract class IMutation {
     abstract blockDeleteAction(id: string, journeyId: string): Block | Promise<Block>;
 
@@ -886,6 +898,8 @@ export abstract class IQuery {
     abstract journeys(where?: Nullable<JourneysFilter>): Journey[] | Promise<Journey[]>;
 
     abstract journey(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
+
+    abstract getUserRole(id: string): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 }
 
 export class User {
