@@ -1,30 +1,29 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import FormGroup from '@mui/material/FormGroup'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useSnackbar } from 'notistack'
 import { useTranslation } from 'react-i18next'
 import { Dialog } from '../../../Dialog'
 import { EmbedCardPreview } from './EmbedCardPreview'
 
-interface EmbedDialogProps {
+interface EmbedJourneyDialogProps {
   open: boolean
   onClose: () => void
 }
 
-export function EmbedDialog({ open, onClose }: EmbedDialogProps): ReactElement {
-  const [height, setHeight] = useState('640')
+export function EmbedJourneyDialog({
+  open,
+  onClose
+}: EmbedJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
 
   const iframeLink = `<iframe src=${
     process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'your.nextstep.is'
-  }/embed/${journey?.slug as string} width="400" height=${height} />`
+  }/embed/${journey?.slug as string} />`
 
   const handleSubmit = async (): Promise<void> => {
     await navigator.clipboard.writeText(iframeLink ?? '')
@@ -49,9 +48,13 @@ export function EmbedDialog({ open, onClose }: EmbedDialogProps): ReactElement {
       }}
       divider={true}
     >
-      <Stack direction="row" spacing={6}>
+      <Stack direction="row" sx={{ height: 290 }}>
         <EmbedCardPreview />
-        <Stack direction="column" spacing={2}>
+        <Stack
+          direction="column"
+          spacing={2}
+          sx={{ justifyContent: 'space-between' }}
+        >
           <TextField
             id="embed-url"
             multiline
@@ -59,15 +62,6 @@ export function EmbedDialog({ open, onClose }: EmbedDialogProps): ReactElement {
             defaultValue={iframeLink}
             disabled={true}
           />
-          <FormGroup>
-            {/* <FormControlLabel control={<Checkbox />} label="Responsive" /> */}
-            <FormControlLabel control={<Checkbox />} label="Custom Size" />
-            <TextField
-              defaultValue={height}
-              size="small"
-              onChange={(e) => setHeight(e.target.value)}
-            />
-          </FormGroup>
           <Typography variant="body1">
             {t(
               'By embedding a Journey to your site, you agree to the Terms and Agreement'

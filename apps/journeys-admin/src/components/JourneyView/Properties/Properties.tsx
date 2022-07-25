@@ -14,7 +14,7 @@ import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyDetails } from './JourneyDetails'
 import { SlugDialog } from './SlugDialog'
-import { EmbedDialog } from './EmbedDialog'
+import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 
 export function Properties(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -115,7 +115,7 @@ export function Properties(): ReactElement {
         open={showSlugDialog}
         onClose={() => setShowSlugDialog(false)}
       />
-      <EmbedDialog
+      <EmbedJourneyDialog
         open={showEmbedDialog}
         onClose={() => setShowEmbedDialog(false)}
       />
