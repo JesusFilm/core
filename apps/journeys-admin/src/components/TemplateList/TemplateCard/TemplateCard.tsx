@@ -50,7 +50,7 @@ export function TemplateCard({ template }: TemplateCardProps): ReactElement {
             />
             <Stack direction="column" spacing={1}>
               <Typography variant="subtitle1">{template.title}</Typography>
-              <Typography variant="caption">{`${template.date}- ${template.description}`}</Typography>
+              <Typography variant="caption">{`${template.date} - ${template.description}`}</Typography>
             </Stack>
           </Stack>
         </CardContent>
