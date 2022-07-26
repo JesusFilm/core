@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-media-stage
+  labels:
+    app: api-media-stage
+    type: api
+  annotations:
+    secrets.doppler.com/reload: 'true'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-media-stage
+  template:
+    metadata:
+      labels:
+        app: api-media-stage
+    spec:
+      nodeSelector:
+        type: api
+      containers:
+        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-media:stage
+          imagePullPolicy: IfNotPresent
+          name: jfp-api-media
+          ports:
+            - containerPort: 4005
+          envFrom:
+            - secretRef:
+                name: doppler-api-media-secret-stg
