@@ -9,11 +9,14 @@ import {
   ThemeName,
   UserJourneyRole,
   JourneysReportType,
-  TemplateStatus
+  TemplateStatus,
+  Role
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
+import { UserRoleService } from '../userRole/userRole.service'
+import { UserRoleResolver } from '../userRole/userRole.resolver'
 import { JourneyResolver } from './journey.resolver'
 import { JourneyService } from './journey.service'
 
@@ -125,6 +128,12 @@ describe('JourneyResolver', () => {
     role: UserJourneyRole.inviteRequested
   }
 
+  const userRole = {
+    id: 'userRoleId',
+    userId: 'userId',
+    roles: [Role.publisher]
+  }
+
   const stepBlock = {
     id: 'stepId',
     journeyId: 'journeyId',
@@ -216,6 +225,14 @@ describe('JourneyResolver', () => {
     })
   }
 
+  const userRoleService = {
+    provide: UserRoleService,
+    useFactory: () => ({
+      save: jest.fn((userId) => userId),
+      getUserRoleById: jest.fn((userId) => userRole)
+    })
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -223,7 +240,9 @@ describe('JourneyResolver', () => {
         journeyService,
         blockService,
         BlockResolver,
-        userJourneyService
+        userJourneyService,
+        UserRoleResolver,
+        userRoleService
       ]
     }).compile()
     resolver = module.get<JourneyResolver>(JourneyResolver)

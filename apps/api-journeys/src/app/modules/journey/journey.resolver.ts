@@ -15,6 +15,7 @@ import {
 } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   ApolloError,
+  AuthenticationError,
   ForbiddenError,
   UserInputError
 } from 'apollo-server-errors'
@@ -40,6 +41,7 @@ import {
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
+import { UserRoleService } from '../userRole/userRole.service'
 import { JourneyService } from './journey.service'
 
 const ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED = 1210
@@ -49,7 +51,8 @@ export class JourneyResolver {
   constructor(
     private readonly journeyService: JourneyService,
     private readonly blockService: BlockService,
-    private readonly userJourneyService: UserJourneyService
+    private readonly userJourneyService: UserJourneyService,
+    private readonly userRoleService: UserRoleService
   ) {}
 
   @Query()
@@ -406,6 +409,12 @@ export class JourneyResolver {
     @Args('id') id: string,
     @CurrentUserId() userId: string
   ): Promise<Journey | undefined> {
+    const userRole = await this.userRoleService.getUserRoleById(userId)
+    if (userRole == null)
+      throw new AuthenticationError(
+        'User does not have the role to perform this action'
+      )
+
     const duplicatedJourney = await this.journeyDuplicate(id, userId)
     if (duplicatedJourney == null) return
 
@@ -429,8 +438,9 @@ export class JourneyResolver {
     let retry = true
     while (retry) {
       try {
+        const journeyTemplate: Journey = await this.journeyService.save(input)
         retry = false
-        return await this.journeyService.save(input)
+        return journeyTemplate
       } catch (err) {
         if (err.errorNum === ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED) {
           input.slug = slugify(`${input.slug}-${input.id}`)
