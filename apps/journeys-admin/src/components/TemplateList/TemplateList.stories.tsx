@@ -9,12 +9,12 @@ const TemplateListStory = {
   title: 'Journeys-Admin/TemplateList'
 }
 
-const Template: Story = ({ props }) => (
-  <TemplateList templates={props.templates} />
+const Template: Story = ({ ...args }) => (
+  <TemplateList templates={args.templates} />
 )
 
 export const Default = Template.bind({})
-Default.props = {
+Default.args = {
   templates: templatesData
 }
 
