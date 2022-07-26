@@ -35,7 +35,8 @@ import {
   UserJourney,
   UserJourneyRole,
   JourneysFilter,
-  JourneysReportType
+  JourneysReportType,
+  TemplateStatus
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
@@ -224,6 +225,19 @@ export class JourneyResolver {
   ): Promise<Journey | undefined> {
     const journey: Journey = await this.journeyService.get(id)
     return await this.duplicate(journey, userId)
+  }
+
+  @Mutation()
+  async templateImport(
+    @Args('id') id: string,
+    @CurrentUserId() userId: string
+  ): Promise<Journey | undefined> {
+    const journey: Journey = await this.journeyService.get(id)
+    if (journey.template === TemplateStatus.public) {
+      return await this.duplicate(journey, userId)
+    } else {
+      throw new ApolloError('Journey is not an available template')
+    }
   }
 
   async duplicate(

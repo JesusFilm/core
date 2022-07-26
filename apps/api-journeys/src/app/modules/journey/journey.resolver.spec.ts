@@ -8,7 +8,8 @@ import {
   ThemeMode,
   ThemeName,
   UserJourneyRole,
-  JourneysReportType
+  JourneysReportType,
+  TemplateStatus
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
@@ -86,6 +87,18 @@ describe('JourneyResolver', () => {
     publishedAt: null
   }
 
+  const publicTemplateJourney = {
+    ...journey,
+    id: 'publicTemplateJourney',
+    template: TemplateStatus.public
+  }
+
+  const privateTemplateJourney = {
+    ...journey,
+    id: 'privateTemplateJourney',
+    template: TemplateStatus.private
+  }
+
   const block = {
     id: 'blockId',
     journeyId: 'journeyId',
@@ -154,6 +167,10 @@ describe('JourneyResolver', () => {
             return trashedJourney
           case trashedDraftJourney.id:
             return trashedDraftJourney
+          case publicTemplateJourney.id:
+            return publicTemplateJourney
+          case privateTemplateJourney.id:
+            return privateTemplateJourney
           default:
             return null
         }
@@ -662,9 +679,53 @@ describe('JourneyResolver', () => {
   })
 
   describe('journeyDuplicate', () => {
-    it('duplicates a Journey', async () => {
+    it('should duplicate journey', async () => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
+        ...journey,
+        id: 'duplicateJourneyId',
+        createdAt: new Date().toISOString(),
+        status: JourneyStatus.draft,
+        publishedAt: undefined,
+        slug: `${journey.title}-copy`,
+        title: `${journey.title} copy`
+      })
+    })
+  })
+
+  describe('templateImport', () => {
+    it('shoud duplicate a template', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      expect(
+        await resolver.templateImport('publicTemplateJourney', 'userId')
+      ).toEqual({
+        ...publicTemplateJourney,
+        id: 'duplicateJourneyId',
+        createdAt: new Date().toISOString(),
+        status: JourneyStatus.draft,
+        publishedAt: undefined,
+        slug: `${publicTemplateJourney.title}-copy`,
+        title: `${publicTemplateJourney.title} copy`
+      })
+    })
+
+    it('shoud throw error if journey is a private template', async () => {
+      await expect(
+        resolver.templateImport('privateTemplateJourney', 'userId')
+      ).rejects.toThrow('Journey is not an available template')
+    })
+
+    it('shoud throw error if journey is not a template', async () => {
+      await expect(
+        resolver.templateImport('journeyId', 'userId')
+      ).rejects.toThrow('Journey is not an available template')
+    })
+  })
+
+  describe('duplicate', () => {
+    it('duplicates a Journey', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      expect(await resolver.duplicate(journey, 'userId')).toEqual({
         ...journey,
         id: 'duplicateJourneyId',
         createdAt: new Date().toISOString(),
@@ -677,7 +738,7 @@ describe('JourneyResolver', () => {
 
     it('duplicates a UserJourney', async () => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
-      await resolver.journeyDuplicate('journeyId', 'userId')
+      await resolver.duplicate(journey, 'userId')
       expect(ujService.save).toHaveBeenCalledWith({
         userId: 'userId',
         journeyId: 'duplicateJourneyId',
@@ -689,7 +750,7 @@ describe('JourneyResolver', () => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       mockUuidv4.mockReturnValueOnce('duplicateStepId')
       const duplicateStepIds = new Map([[stepBlock.id, duplicatedStep.id]])
-      await resolver.journeyDuplicate('journeyId', 'userId')
+      await resolver.duplicate(journey, 'userId')
       expect(bService.getDuplicateChildren).toHaveBeenCalledWith(
         [stepBlock],
         'journeyId',
@@ -714,7 +775,7 @@ describe('JourneyResolver', () => {
             { ...journey, title: `${journey.title} copy other` }
           ])
       )
-      expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
+      expect(await resolver.duplicate(journey, 'userId')).toEqual({
         ...journey,
         id: 'duplicateJourneyId2',
         createdAt: new Date().toISOString(),
@@ -728,9 +789,9 @@ describe('JourneyResolver', () => {
     it('throws error and does not get stuck in retry loop', async () => {
       const mockSave = service.save as jest.MockedFunction<typeof service.save>
       mockSave.mockRejectedValueOnce(new Error('database error'))
-      await expect(
-        resolver.journeyDuplicate('journeyId', 'userId')
-      ).rejects.toThrow('database error')
+      await expect(resolver.duplicate(journey, 'userId')).rejects.toThrow(
+        'database error'
+      )
     })
   })
 
