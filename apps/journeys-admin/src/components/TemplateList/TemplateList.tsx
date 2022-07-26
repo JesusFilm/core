@@ -6,7 +6,7 @@ interface TemplateListProps {
   templates: Template[]
 }
 
-// This interface should be templateJourney generated type
+// todo replace with templateJourney generated type
 export interface Template {
   id: string
   title: string
