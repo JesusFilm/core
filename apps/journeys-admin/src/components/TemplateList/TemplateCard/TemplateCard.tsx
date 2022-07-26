@@ -8,18 +8,10 @@ import CardActions from '@mui/material/CardActions'
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
 import IconButton from '@mui/material/IconButton'
 import Box from '@mui/material/Box'
+import { Template } from '../TemplateList'
 
-interface TemplateCardProps {
-  template: Template
-}
-
-// This should be updated to use type journey
-interface Template {
-  id: string
-  title: string
-  date: string
-  description: string
-  socialShareImage: string
+export interface TemplateCardProps {
+  template: Template // todo update prop type
 }
 
 export function TemplateCard({ template }: TemplateCardProps): ReactElement {
