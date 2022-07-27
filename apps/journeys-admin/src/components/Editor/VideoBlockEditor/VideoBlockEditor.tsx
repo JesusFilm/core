@@ -2,11 +2,13 @@ import { ReactElement, useEffect, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
+import { gql, useQuery } from '@apollo/client'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../__generated__/GetJourney'
+import { GetVideoVariantLanguages } from '../../../../__generated__/GetVideoVariantLanguages'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 import { Source } from './Source'
 import { VideoBlockEditorSettings } from './Settings'
@@ -17,6 +19,21 @@ interface VideoBlockEditorProps {
   showDelete?: boolean
   onDelete?: () => Promise<void>
 }
+
+export const GET_VIDEO_VARIANT_LANGUAGES = gql`
+  query GetVideoVariantLanguages($id: ID!) {
+    video(id: $id) {
+      id
+      variantLanguages {
+        id
+        name(languageId: "529", primary: true) {
+          value
+          primary
+        }
+      }
+    }
+  }
+`
 
 export function VideoBlockEditor({
   selectedBlock,
@@ -32,13 +49,22 @@ export function VideoBlockEditor({
     await onDelete?.()
   }
 
+  const { data } = useQuery<GetVideoVariantLanguages>(
+    GET_VIDEO_VARIANT_LANGUAGES,
+    {
+      variables: {
+        id: selectedBlock?.id
+      },
+      skip: selectedBlock?.video?.id == null
+    }
+  )
   const [language, setLanguage] = useState<string | undefined>()
 
   useEffect(() => {
-    const localLanguage = selectedBlock?.video?.variantLanguages
+    const localLanguage = data?.video?.variantLanguages
       .find((variant) => variant.id === selectedBlock?.videoVariantLanguageId)
       ?.name.find(({ primary }) => !primary)?.value
-    const nativeLanguage = selectedBlock?.video?.variantLanguages
+    const nativeLanguage = data?.video?.variantLanguages
       .find((variant) => variant.id === selectedBlock?.videoVariantLanguageId)
       ?.name.find(({ primary }) => primary)?.value
     let language = localLanguage ?? nativeLanguage
@@ -49,10 +75,7 @@ export function VideoBlockEditor({
     )
       language = `${language} (${nativeLanguage})`
     setLanguage(language)
-  }, [
-    selectedBlock?.video?.variantLanguages,
-    selectedBlock?.videoVariantLanguageId
-  ])
+  }, [data?.video?.variantLanguages, selectedBlock?.videoVariantLanguageId])
   return (
     <>
       <Box sx={{ px: 6, pt: 4 }}>

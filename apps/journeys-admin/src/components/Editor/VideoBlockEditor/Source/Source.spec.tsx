@@ -66,20 +66,7 @@ describe('Source', () => {
                     id: 'variantA',
                     duration: 144,
                     hls: 'https://arc.gt/opsgn'
-                  },
-                  variantLanguages: [
-                    {
-                      __typename: 'Language',
-                      id: '529',
-                      name: [
-                        {
-                          value: 'English',
-                          primary: true,
-                          __typename: 'Translation'
-                        }
-                      ]
-                    }
-                  ]
+                  },                  
                 }
               }
             }

@@ -9,12 +9,16 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../__generated__/GetJourney'
+import { GetVideoVariantLanguages_video } from '../../../../__generated__/GetVideoVariantLanguages'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { ThemeMode } from '../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../ThemeProvider'
 import { videos } from '../VideoLibrary/VideoList/VideoListData'
 import { GET_VIDEOS } from '../VideoLibrary/VideoList/VideoList'
-import { VideoBlockEditor } from './VideoBlockEditor'
+import {
+  GET_VIDEO_VARIANT_LANGUAGES,
+  VideoBlockEditor
+} from './VideoBlockEditor'
 
 const BackgroundMediaStory = {
   ...journeysAdminConfig,
@@ -67,20 +71,7 @@ const video: TreeBlock<VideoBlock> = {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
       hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    },
-    variantLanguages: [
-      {
-        __typename: 'Language',
-        id: '529',
-        name: [
-          {
-            __typename: 'Translation',
-            value: 'English',
-            primary: true
-          }
-        ]
-      }
-    ]
+    }
   },
   posterBlockId: 'poster1.id',
   children: []
@@ -102,6 +93,24 @@ const poster: TreeBlock<ImageBlock> = {
 const onChange = async (): Promise<void> => await Promise.resolve()
 const onDelete = async (): Promise<void> => await Promise.resolve()
 
+const videoLanguages: GetVideoVariantLanguages_video = {
+  __typename: 'Video',
+  id: '2_0-FallingPlates',
+  variantLanguages: [
+    {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'English',
+          primary: true
+        }
+      ]
+    }
+  ]
+}
+
 const Template: Story = ({ ...args }) => (
   <MockedProvider
     mocks={[
@@ -120,6 +129,19 @@ const Template: Story = ({ ...args }) => (
         result: {
           data: {
             videos
+          }
+        }
+      },
+      {
+        request: {
+          query: GET_VIDEO_VARIANT_LANGUAGES,
+          variables: {
+            id: video.id
+          }
+        },
+        result: {
+          data: {
+            video: videoLanguages
           }
         }
       }
