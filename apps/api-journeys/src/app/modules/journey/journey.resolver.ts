@@ -236,8 +236,8 @@ export class JourneyResolver {
     )
     const duplicateNumber = this.getFirstMissingNumber(duplicates)
     const duplicateTitle =
-      input?.title != null
-        ? `${journey.title} ${input.title}`
+      input?.extraTitle != null
+        ? `${journey.title} ${input.extraTitle}`
         : `${journey.title} copy ${
             duplicateNumber === 1 ? '' : duplicateNumber
           }`.trimEnd()

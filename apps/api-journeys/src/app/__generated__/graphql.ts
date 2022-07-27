@@ -414,7 +414,7 @@ export class JourneyCreateInput {
 }
 
 export class JourneyDuplicateInput {
-    title?: Nullable<string>;
+    extraTitle?: Nullable<string>;
     clearUserJourneys?: Nullable<boolean>;
 }
 

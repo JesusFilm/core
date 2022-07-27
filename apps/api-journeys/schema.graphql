@@ -875,7 +875,7 @@ input JourneyCreateInput {
 }
 
 input JourneyDuplicateInput {
-  title: String
+  extraTitle: String
   clearUserJourneys: Boolean
 }
 

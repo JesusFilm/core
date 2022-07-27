@@ -389,7 +389,7 @@ input JourneyCreateInput {
 
 input JourneyDuplicateInput {
   clearUserJourneys: Boolean
-  title: String
+  extraTitle: String
 }
 
 input JourneysFilter {
