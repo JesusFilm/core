@@ -90,9 +90,7 @@ type Journey @key(fields: "id") {
   status: JourneyStatus!
   seoTitle: String
   seoDescription: String
-
-  """The journey is a template if not null"""
-  template: TemplateStatus
+  template: Boolean
   userJourneys: [UserJourney!]
 }
 
@@ -842,14 +840,6 @@ type PowerBiEmbed {
 
   """The date and time (UTC) of token expiration"""
   expiration: String!
-}
-
-enum TemplateStatus {
-  """Not in the template library"""
-  private
-
-  """In the template library"""
-  public
 }
 
 input JourneyCreateInput {

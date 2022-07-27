@@ -144,7 +144,6 @@ export class JourneyResolver {
       idType === IdType.slug
         ? await this.journeyService.getBySlug(id)
         : await this.journeyService.get(id)
-    if (result?.publishedAt == null) return null
     return result
   }
 
