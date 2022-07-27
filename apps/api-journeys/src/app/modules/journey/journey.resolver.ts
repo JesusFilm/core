@@ -30,6 +30,7 @@ import {
   JourneyCreateInput,
   JourneyStatus,
   JourneyUpdateInput,
+  JourneyDuplicateInput,
   ThemeMode,
   ThemeName,
   UserJourney,
@@ -220,7 +221,8 @@ export class JourneyResolver {
   @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
   async journeyDuplicate(
     @Args('id') id: string,
-    @CurrentUserId() userId: string
+    @CurrentUserId() userId: string,
+    @Args('input') input?: JourneyDuplicateInput
   ): Promise<Journey | undefined> {
     const journey: Journey = await this.journeyService.get(id)
     const duplicateJourneyId = uuidv4()
@@ -233,9 +235,12 @@ export class JourneyResolver {
       journey.title
     )
     const duplicateNumber = this.getFirstMissingNumber(duplicates)
-    const duplicateTitle = `${journey.title} copy ${
-      duplicateNumber === 1 ? '' : duplicateNumber
-    }`.trimEnd()
+    const duplicateTitle =
+      input?.title != null
+        ? `${journey.title} ${input.title}`
+        : `${journey.title} copy ${
+            duplicateNumber === 1 ? '' : duplicateNumber
+          }`.trimEnd()
 
     const slug = slugify(duplicateTitle, {
       lower: true,
@@ -259,31 +264,33 @@ export class JourneyResolver {
       duplicateStepIds
     )
 
-    const input = {
+    const inputJourney = {
       ...journey,
       id: duplicateJourneyId,
       slug,
       title: duplicateTitle,
       createdAt: new Date().toISOString(),
       publishedAt: undefined,
-      status: JourneyStatus.draft
+      status: JourneyStatus.draft,
+      template: false
     }
 
     let retry = true
     while (retry) {
       try {
-        const journey: Journey = await this.journeyService.save(input)
+        const journey: Journey = await this.journeyService.save(inputJourney)
         await this.blockService.saveAll(duplicateBlocks)
-        await this.userJourneyService.save({
-          userId,
-          journeyId: journey.id,
-          role: UserJourneyRole.owner
-        })
+        input?.clearUserJourneys !== true &&
+          (await this.userJourneyService.save({
+            userId,
+            journeyId: journey.id,
+            role: UserJourneyRole.owner
+          }))
         retry = false
         return journey
       } catch (err) {
         if (err.errorNum === ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED) {
-          input.slug = slugify(`${input.slug}-${input.id}`)
+          inputJourney.slug = slugify(`${inputJourney.slug}-${inputJourney.id}`)
         } else {
           retry = false
           throw err
