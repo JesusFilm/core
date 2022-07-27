@@ -220,8 +220,7 @@ export class JourneyResolver {
   @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
   async journeyDuplicate(
     @Args('id') id: string,
-    @CurrentUserId() userId: string,
-    @Args('input') input?: JourneyDuplicateInput
+    @CurrentUserId() userId: string
   ): Promise<Journey | undefined> {
     const journey: Journey = await this.journeyService.get(id)
     const duplicateJourneyId = uuidv4()
@@ -234,12 +233,9 @@ export class JourneyResolver {
       journey.title
     )
     const duplicateNumber = this.getFirstMissingNumber(duplicates)
-    const duplicateTitle =
-      input?.extraTitle != null
-        ? `${journey.title} ${input.extraTitle}`
-        : `${journey.title} copy ${
-            duplicateNumber === 1 ? '' : duplicateNumber
-          }`.trimEnd()
+    const duplicateTitle = `${journey.title} copy ${
+      duplicateNumber === 1 ? '' : duplicateNumber
+    }`.trimEnd()
 
     const slug = slugify(duplicateTitle, {
       lower: true,
@@ -263,7 +259,7 @@ export class JourneyResolver {
       duplicateStepIds
     )
 
-    const inputJourney = {
+    const input = {
       ...journey,
       id: duplicateJourneyId,
       slug,
@@ -277,19 +273,18 @@ export class JourneyResolver {
     let retry = true
     while (retry) {
       try {
-        const journey: Journey = await this.journeyService.save(inputJourney)
+        const journey: Journey = await this.journeyService.save(input)
         await this.blockService.saveAll(duplicateBlocks)
-        input?.clearUserJourneys !== true &&
-          (await this.userJourneyService.save({
-            userId,
-            journeyId: journey.id,
-            role: UserJourneyRole.owner
-          }))
+        await this.userJourneyService.save({
+          userId,
+          journeyId: journey.id,
+          role: UserJourneyRole.owner
+        })
         retry = false
         return journey
       } catch (err) {
         if (err.errorNum === ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED) {
-          inputJourney.slug = slugify(`${inputJourney.slug}-${inputJourney.id}`)
+          input.slug = slugify(`${input.slug}-${input.id}`)
         } else {
           retry = false
           throw err
