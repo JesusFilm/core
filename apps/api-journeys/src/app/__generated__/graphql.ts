@@ -136,11 +136,6 @@ export enum JourneysReportType {
     singleSummary = "singleSummary"
 }
 
-export enum TemplateStatus {
-    "private" = "private",
-    "public" = "public"
-}
-
 export enum UserJourneyRole {
     inviteRequested = "inviteRequested",
     editor = "editor",
@@ -491,7 +486,7 @@ export class Journey {
     status: JourneyStatus;
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
-    template?: Nullable<TemplateStatus>;
+    template?: Nullable<boolean>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -767,8 +762,7 @@ export class UserRole {
     __typename?: 'UserRole';
     id: string;
     userId: string;
-    role?: Nullable<Role>;
-    user?: Nullable<User>;
+    roles?: Nullable<Role[]>;
 }
 
 export abstract class IMutation {
@@ -897,7 +891,7 @@ export abstract class IQuery {
 
     abstract journey(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 
-    abstract getUserRole(id: string): Nullable<UserRole> | Promise<Nullable<UserRole>>;
+    abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 }
 
 export class User {
