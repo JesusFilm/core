@@ -396,6 +396,7 @@ export class VideoProgressEventCreateInput {
 
 export class JourneysFilter {
     featured?: Nullable<boolean>;
+    publicTemplate?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {

@@ -387,6 +387,7 @@ input JourneyCreateInput {
 
 input JourneysFilter {
   featured: Boolean
+  publicTemplate: Boolean
 }
 
 enum JourneysReportType {

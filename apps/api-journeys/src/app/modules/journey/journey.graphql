@@ -37,6 +37,7 @@ enum JourneyStatus {
 
 input JourneysFilter {
   featured: Boolean
+  publicTemplate: Boolean
 }
 
 enum JourneysReportType {
