@@ -30,7 +30,6 @@ import {
   JourneyCreateInput,
   JourneyStatus,
   JourneyUpdateInput,
-  JourneyDuplicateInput,
   ThemeMode,
   ThemeName,
   UserJourney,
