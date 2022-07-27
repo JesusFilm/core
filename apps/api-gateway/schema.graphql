@@ -354,9 +354,7 @@ type Journey
   seoTitle: String @join__field(graph: JOURNEYS)
   slug: String! @join__field(graph: JOURNEYS)
   status: JourneyStatus! @join__field(graph: JOURNEYS)
-
-  """The journey is a template if not null"""
-  template: TemplateStatus @join__field(graph: JOURNEYS)
+  template: Boolean @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
@@ -759,14 +757,6 @@ input StepViewEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-}
-
-enum TemplateStatus {
-  """Not in the template library"""
-  private
-
-  """In the template library"""
-  public
 }
 
 enum ThemeMode {
