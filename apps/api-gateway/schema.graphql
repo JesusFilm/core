@@ -385,11 +385,6 @@ input JourneyCreateInput {
   title: String!
 }
 
-input JourneyDuplicateInput {
-  clearUserJourneys: Boolean
-  extraTitle: String
-}
-
 input JourneysFilter {
   featured: Boolean
 }
@@ -497,7 +492,7 @@ type Mutation {
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
   imageBlockUpdate(id: ID!, input: ImageBlockUpdateInput!, journeyId: ID!): ImageBlock! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!): Journey! @join__field(graph: JOURNEYS)
-  journeyDuplicate(id: ID!, input: JourneyDuplicateInput): Journey! @join__field(graph: JOURNEYS)
+  journeyDuplicate(id: ID!): Journey! @join__field(graph: JOURNEYS)
 
   """Sets journey status to published"""
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)

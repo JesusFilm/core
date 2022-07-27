@@ -408,11 +408,6 @@ export class JourneyCreateInput {
     slug?: Nullable<string>;
 }
 
-export class JourneyDuplicateInput {
-    extraTitle?: Nullable<string>;
-    clearUserJourneys?: Nullable<boolean>;
-}
-
 export class JourneyUpdateInput {
     title?: Nullable<string>;
     languageId?: Nullable<string>;
@@ -853,7 +848,7 @@ export abstract class IMutation {
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 
-    abstract journeyDuplicate(id: string, input?: Nullable<JourneyDuplicateInput>): Journey | Promise<Journey>;
+    abstract journeyDuplicate(id: string): Journey | Promise<Journey>;
 
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
