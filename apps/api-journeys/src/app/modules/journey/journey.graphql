@@ -112,6 +112,11 @@ input JourneyCreateInput {
   slug: String
 }
 
+input JourneyDuplicateInput {
+  title: String
+  clearUserJourneys: Boolean
+}
+
 input JourneyUpdateInput {
   title: String
   languageId: String
@@ -130,7 +135,7 @@ extend type UserJourney {
 
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
-  journeyDuplicate(id: ID!): Journey!
+  journeyDuplicate(id: ID!, input: JourneyDuplicateInput): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   """
   Sets journey status to published

@@ -413,6 +413,11 @@ export class JourneyCreateInput {
     slug?: Nullable<string>;
 }
 
+export class JourneyDuplicateInput {
+    title?: Nullable<string>;
+    clearUserJourneys?: Nullable<boolean>;
+}
+
 export class JourneyUpdateInput {
     title?: Nullable<string>;
     languageId?: Nullable<string>;
@@ -767,8 +772,7 @@ export class UserRole {
     __typename?: 'UserRole';
     id: string;
     userId: string;
-    role?: Nullable<Role>;
-    user?: Nullable<User>;
+    roles?: Nullable<Role[]>;
 }
 
 export abstract class IMutation {
@@ -854,7 +858,7 @@ export abstract class IMutation {
 
     abstract journeyCreate(input: JourneyCreateInput): Journey | Promise<Journey>;
 
-    abstract journeyDuplicate(id: string): Journey | Promise<Journey>;
+    abstract journeyDuplicate(id: string, input?: Nullable<JourneyDuplicateInput>): Journey | Promise<Journey>;
 
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
@@ -897,7 +901,7 @@ export abstract class IQuery {
 
     abstract journey(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 
-    abstract getUserRole(id: string): Nullable<UserRole> | Promise<Nullable<UserRole>>;
+    abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 }
 
 export class User {
