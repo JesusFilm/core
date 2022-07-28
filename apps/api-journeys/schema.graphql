@@ -816,7 +816,7 @@ enum JourneyStatus {
 
 input JourneysFilter {
   featured: Boolean
-  publicTemplate: Boolean
+  template: Boolean
 }
 
 enum JourneysReportType {

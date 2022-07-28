@@ -3,6 +3,7 @@ import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database/BaseService'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
+import { AqlQuery } from 'arangojs/aql'
 import {
   Journey,
   JourneyStatus,
@@ -12,34 +13,51 @@ import {
 
 @Injectable()
 export class JourneyService extends BaseService {
+  journeyFilter(filter?: JourneysFilter): AqlQuery {
+    const { featured, publicTemplate } = filter ?? {}
+
+    return aql.join(
+      [
+        featured === true &&
+          publicTemplate !== true &&
+          aql`FILTER journey.status == ${JourneyStatus.published} AND journey.featuredAt != null AND NOT journey.template !== true`,
+        featured === false &&
+          publicTemplate !== true &&
+          aql` FILTER journey.status == ${JourneyStatus.published} AND journey.featuredAt == null AND NOT journey.template !== true`,
+        publicTemplate === true &&
+          aql` FILTER journey.template == true AND journey.status == ${JourneyStatus.published}`
+      ].filter((x) => x !== false)
+    )
+  }
+
   @KeyAsId()
   async getAllPublishedJourneys(filter?: JourneysFilter): Promise<Journey[]> {
-    if (filter?.featured === true) {
-      return await (
-        await this.db.query(aql`
-          FOR journey IN ${this.collection}
-            FILTER journey.status == ${JourneyStatus.published}
-              AND journey.featuredAt != null
-            RETURN journey
-        `)
-      ).all()
-    } else if (filter?.featured === false) {
-      return await (
-        await this.db.query(aql`
-          FOR journey IN ${this.collection}
-            FILTER journey.status == ${JourneyStatus.published}
-              AND journey.featuredAt == null
-            RETURN journey
-        `)
-      ).all()
-    }
-    return await (
-      await this.db.query(aql`
-        FOR journey IN ${this.collection}
-          FILTER journey.status == ${JourneyStatus.published}
-          RETURN journey
-      `)
-    ).all()
+    // if (filter?.featured === true) {
+    //   return await (
+    //     await this.db.query(aql`
+    //       FOR journey IN ${this.collection}
+    //         FILTER journey.status == ${JourneyStatus.published}
+    //           AND journey.featuredAt != null
+    //         RETURN journey
+    //     `)
+    //   ).all()
+    // } else if (filter?.featured === false) {
+    //   return await (
+    //     await this.db.query(aql`
+    //       FOR journey IN ${this.collection}
+    //         FILTER journey.status == ${JourneyStatus.published}
+    //           AND journey.featuredAt == null
+    //         RETURN journey
+    //     `)
+    //   ).all()
+    // }
+    // return await (
+    //   await this.db.query(aql`
+    //     FOR journey IN ${this.collection}
+    //       FILTER journey.status == ${JourneyStatus.published}
+    //       RETURN journey
+    //   `)
+    // ).all()
   }
 
   @KeyAsId()
