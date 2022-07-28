@@ -15,6 +15,7 @@ import {
 } from '../../__generated__/GetJourney'
 import { GetJourneySlugs } from '../../__generated__/GetJourneySlugs'
 import i18nConfig from '../../next-i18next.config'
+import { GET_JOURNEY, GET_JOURNEY_SLUGS } from '../[journeySlug]'
 
 interface JourneyPageProps {
   journey: Journey
@@ -78,14 +79,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
 ) => {
   const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<GetJourney>({
-    query: gql`
-      ${JOURNEY_FIELDS}
-      query GetJourney($id: ID!) {
-        journey(id: $id, idType: slug) {
-          ...JourneyFields
-        }
-      }
-    `,
+    query: GET_JOURNEY,
     variables: {
       id: context.params?.journeySlug
     }
@@ -121,13 +115,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
 export const getStaticPaths: GetStaticPaths = async () => {
   const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<GetJourneySlugs>({
-    query: gql`
-      query GetJourneySlugs {
-        journeys {
-          slug
-        }
-      }
-    `
+    query: GET_JOURNEY_SLUGS
   })
 
   const paths = data.journeys.map(({ slug: journeySlug }) => ({

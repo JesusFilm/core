@@ -79,19 +79,21 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   )
 }
 
+export const GET_JOURNEY = gql`
+  ${JOURNEY_FIELDS}
+  query GetJourney($id: ID!) {
+    journey(id: $id, idType: slug) {
+      ...JourneyFields
+    }
+  }
+`
+
 export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<GetJourney>({
-    query: gql`
-      ${JOURNEY_FIELDS}
-      query GetJourney($id: ID!) {
-        journey(id: $id, idType: slug) {
-          ...JourneyFields
-        }
-      }
-    `,
+    query: GET_JOURNEY,
     variables: {
       id: context.params?.journeySlug
     }
@@ -124,16 +126,18 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
   }
 }
 
+export const GET_JOURNEY_SLUGS = gql`
+  query GetJourneySlugs {
+    journeys {
+      slug
+    }
+  }
+`
+
 export const getStaticPaths: GetStaticPaths = async () => {
   const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<GetJourneySlugs>({
-    query: gql`
-      query GetJourneySlugs {
-        journeys {
-          slug
-        }
-      }
-    `
+    query: GET_JOURNEY_SLUGS
   })
 
   const paths = data.journeys.map(({ slug: journeySlug }) => ({
