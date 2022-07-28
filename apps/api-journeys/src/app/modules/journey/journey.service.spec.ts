@@ -150,11 +150,11 @@ describe('JourneyService', () => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(
           aql`
-    FOR userJourney in userJourneys
       FOR journey in undefined
+        FOR userJourney in userJourneys
           FILTER userJourney.journeyId == journey._key && userJourney.userId == @value0
-           && (userJourney.role == @value1 || userJourney.role == @value2)
-           && journey.status IN @value3
+            && (userJourney.role == @value1 || userJourney.role == @value2)
+        && journey.status IN @value3
           RETURN journey
     `.query
         )

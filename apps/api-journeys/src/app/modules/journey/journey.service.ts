@@ -7,7 +7,8 @@ import {
   Journey,
   JourneyStatus,
   UserJourneyRole,
-  JourneysFilter
+  JourneysFilter,
+  Role
 } from '../../__generated__/graphql'
 
 @Injectable()
@@ -88,16 +89,25 @@ export class JourneyService extends BaseService {
   @KeyAsId()
   async getAllByOwnerEditor(
     userId: string,
-    status?: JourneyStatus[]
+    status?: JourneyStatus[],
+    template?: boolean
   ): Promise<Journey[]> {
-    const filter =
+    const statusFilter =
       status != null ? aql`&& journey.status IN ${status}` : aql`&& true`
-    const result = await this.db.query(aql`
-    FOR userJourney in userJourneys
-      FOR journey in ${this.collection}
+
+    const roleFilter =
+      template === true
+        ? aql`FOR user in userRoles
+          FILTER user.userId == ${userId} &&  ${Role.publisher} IN user.roles
+            FILTER journey.template == true`
+        : aql`FOR userJourney in userJourneys
           FILTER userJourney.journeyId == journey._key && userJourney.userId == ${userId}
-           && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})
-           ${filter}
+            && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})`
+
+    const result = await this.db.query(aql`
+      FOR journey in ${this.collection}
+        ${roleFilter}
+        ${statusFilter}
           RETURN journey
     `)
     return await result.all()
