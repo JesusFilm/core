@@ -141,7 +141,7 @@ describe('JourneyService', () => {
     })
   })
 
-  describe('getAllByOwnerEditor', () => {
+  describe('getAllByRole', () => {
     beforeEach(() => {
       db.query.mockReturnValueOnce(mockDbQueryResult(db, [journey]))
     })
@@ -170,7 +170,7 @@ describe('JourneyService', () => {
       await service.getAllPublishedJourneys({ featured: true })
       expect(db.query).toHaveBeenCalled()
       expect(
-        await service.getAllByOwnerEditor('1', [JourneyStatus.published])
+        await service.getAllByRole('1', [JourneyStatus.published])
       ).toEqual([journeyWithId])
     })
 
@@ -195,7 +195,7 @@ describe('JourneyService', () => {
       })
       await service.getAllPublishedJourneys({ featured: true })
       expect(db.query).toHaveBeenCalled()
-      expect(await service.getAllByOwnerEditor('1', undefined, true)).toEqual([
+      expect(await service.getAllByRole('1', undefined, true)).toEqual([
         journeyWithId
       ])
     })

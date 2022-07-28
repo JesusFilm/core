@@ -172,7 +172,7 @@ describe('JourneyResolver', () => {
             return [journey, draftJourney]
         }
       }),
-      getAllByOwnerEditor: jest.fn(() => [journey, journey]),
+      getAllByRole: jest.fn(() => [journey, journey]),
       getAllByTitle: jest.fn(() => [journey]),
       save: jest.fn((input) => input),
       update: jest.fn(() => journey),
@@ -396,7 +396,7 @@ describe('JourneyResolver', () => {
           undefined
         )
       ).toEqual([journey, journey])
-      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith(
+      expect(service.getAllByRole).toHaveBeenCalledWith(
         'userId',
         [JourneyStatus.draft, JourneyStatus.published],
         undefined

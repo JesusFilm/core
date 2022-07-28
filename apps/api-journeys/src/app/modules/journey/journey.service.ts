@@ -87,7 +87,7 @@ export class JourneyService extends BaseService {
   }
 
   @KeyAsId()
-  async getAllByOwnerEditor(
+  async getAllByRole(
     userId: string,
     status?: JourneyStatus[],
     template?: boolean
