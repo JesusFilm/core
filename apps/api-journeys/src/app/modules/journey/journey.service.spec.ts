@@ -9,6 +9,7 @@ import { DocumentCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery } from 'arangojs/aql'
 import {
+  JourneysFilter,
   JourneyStatus,
   Role,
   ThemeMode,
@@ -79,6 +80,44 @@ describe('JourneyService', () => {
 
     it('should return a journey', async () => {
       expect(await service.getBySlug('slug')).toEqual(journeyWithId)
+    })
+  })
+
+  describe('journeyFilter', () => {
+    it('should return template query', async () => {
+      const filter: JourneysFilter = { featured: true, template: true }
+      const response = await service.journeyFilter(filter)
+      expect(response.query).toEqual(
+        aql`FOR user in userRoles
+          FILTER journey.template == true
+            AND user.roles IN @value0`.query
+      )
+    })
+    it('should return featured query', async () => {
+      const filter: JourneysFilter = { featured: true, template: false }
+      const response = await service.journeyFilter(filter)
+      expect(response.query).toEqual(
+        aql`FILTER journey.status == @value0
+          AND journey.featuredAt != null
+            AND journey.template != true`.query
+      )
+    })
+    it('should return not featured query', async () => {
+      const filter: JourneysFilter = { featured: false }
+      const response = await service.journeyFilter(filter)
+      expect(response.query).toEqual(
+        aql`FILTER journey.status == @value0
+          AND journey.featuredAt == null
+            AND journey.template != true`.query
+      )
+    })
+    it('should return published query', async () => {
+      const filter: JourneysFilter = {}
+      const response = await service.journeyFilter(filter)
+      expect(response.query).toEqual(
+        aql`FILTER journey.status == @value0
+          AND journey.template != true`.query
+      )
     })
   })
 
