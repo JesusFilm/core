@@ -11,7 +11,6 @@ import { AqlQuery } from 'arangojs/aql'
 import {
   JourneysFilter,
   JourneyStatus,
-  Role,
   ThemeMode,
   ThemeName
 } from '../../__generated__/graphql'
@@ -88,9 +87,8 @@ describe('JourneyService', () => {
       const filter: JourneysFilter = { featured: true, template: true }
       const response = await service.journeyFilter(filter)
       expect(response.query).toEqual(
-        aql`FOR user in userRoles
-          FILTER journey.template == true
-            AND user.roles IN @value0`.query
+        aql`FILTER journey.template == true
+        AND journey.status == ${JourneyStatus.published}`.query
       )
     })
     it('should return featured query', async () => {
@@ -177,14 +175,13 @@ describe('JourneyService', () => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(
           aql`FOR journey IN undefined
-          FOR user in userRoles
           FILTER journey.template == true
-            AND user.roles IN @value0
+        AND journey.status == @value0
           RETURN journey
       `.query
         )
         expect(bindVars).toEqual({
-          value0: Role.publisher
+          value0: 'published'
         })
         return await mockDbQueryResult(db, [templateJourney])
       })

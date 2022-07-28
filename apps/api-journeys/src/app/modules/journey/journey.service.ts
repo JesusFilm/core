@@ -8,8 +8,7 @@ import {
   Journey,
   JourneyStatus,
   UserJourneyRole,
-  JourneysFilter,
-  Role
+  JourneysFilter
 } from '../../__generated__/graphql'
 
 @Injectable()
@@ -20,9 +19,8 @@ export class JourneyService extends BaseService {
     let query: AqlQuery
 
     if (template === true) {
-      query = aql`FOR user in userRoles
-          FILTER journey.template == true
-            AND user.roles IN ${Role.publisher}`
+      query = aql`FILTER journey.template == true
+        AND journey.status == ${JourneyStatus.published}`
     } else if (featured === true) {
       query = aql`FILTER journey.status == ${JourneyStatus.published}
           AND journey.featuredAt != null
