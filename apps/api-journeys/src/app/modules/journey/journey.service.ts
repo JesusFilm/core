@@ -22,8 +22,7 @@ export class JourneyService extends BaseService {
     if (template === true) {
       query = aql`FOR user in userRoles
           FILTER journey.template == true
-            AND user.roles
-              IN ${Role.publisher}`
+            AND user.roles IN ${Role.publisher}`
     } else if (featured === true) {
       query = aql`FILTER journey.status == ${JourneyStatus.published}
           AND journey.featuredAt != null
