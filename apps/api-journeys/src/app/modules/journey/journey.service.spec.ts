@@ -10,6 +10,7 @@ import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery } from 'arangojs/aql'
 import {
   JourneyStatus,
+  Role,
   ThemeMode,
   ThemeName
 } from '../../__generated__/graphql'
@@ -171,6 +172,32 @@ describe('JourneyService', () => {
       expect(
         await service.getAllByOwnerEditor('1', [JourneyStatus.published])
       ).toEqual([journeyWithId])
+    })
+
+    it('should return templates for publishers', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(
+          aql`
+      FOR journey in undefined
+        FOR user in userRoles
+          FILTER user.userId == @value0 && @value1 IN user.roles
+            FILTER journey.template == true
+        && true
+          RETURN journey
+    `.query
+        )
+        expect(bindVars).toEqual({
+          value0: '1',
+          value1: Role.publisher
+        })
+        return await mockDbQueryResult(db, [journey])
+      })
+      await service.getAllPublishedJourneys({ featured: true })
+      expect(db.query).toHaveBeenCalled()
+      expect(await service.getAllByOwnerEditor('1', undefined, true)).toEqual([
+        journeyWithId
+      ])
     })
   })
 

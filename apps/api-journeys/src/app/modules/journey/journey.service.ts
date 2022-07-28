@@ -98,7 +98,7 @@ export class JourneyService extends BaseService {
     const roleFilter =
       template === true
         ? aql`FOR user in userRoles
-          FILTER user.userId == ${userId} &&  ${Role.publisher} IN user.roles
+          FILTER user.userId == ${userId} && ${Role.publisher} IN user.roles
             FILTER journey.template == true`
         : aql`FOR userJourney in userJourneys
           FILTER userJourney.journeyId == journey._key && userJourney.userId == ${userId}
