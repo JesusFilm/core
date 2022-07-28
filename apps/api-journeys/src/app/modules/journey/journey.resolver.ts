@@ -131,7 +131,7 @@ export class JourneyResolver {
 
   @Query()
   async journeys(@Args('where') where?: JourneysFilter): Promise<Journey[]> {
-    return await this.journeyService.getAllPublishedJourneys(where)
+    return await this.journeyService.getAllFilteredJourneys(where)
   }
 
   @Query()

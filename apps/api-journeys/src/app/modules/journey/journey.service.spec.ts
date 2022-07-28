@@ -121,10 +121,10 @@ describe('JourneyService', () => {
     })
   })
 
-  describe('getAllPublishedJourneys', () => {
+  describe('getAllFilteredJourneys', () => {
     it('should return published journeys', async () => {
       db.query.mockReturnValueOnce(mockDbQueryResult(db, [journey]))
-      expect(await service.getAllPublishedJourneys()).toEqual([journeyWithId])
+      expect(await service.getAllFilteredJourneys()).toEqual([journeyWithId])
     })
 
     it('should filter by featured', async () => {
@@ -143,7 +143,7 @@ describe('JourneyService', () => {
         })
         return await mockDbQueryResult(db, [journey])
       })
-      await service.getAllPublishedJourneys({ featured: true })
+      await service.getAllFilteredJourneys({ featured: true })
       expect(db.query).toHaveBeenCalled()
     })
 
@@ -163,7 +163,7 @@ describe('JourneyService', () => {
         })
         return await mockDbQueryResult(db, [journey])
       })
-      await service.getAllPublishedJourneys({ featured: false })
+      await service.getAllFilteredJourneys({ featured: false })
       expect(db.query).toHaveBeenCalled()
     })
 
@@ -188,7 +188,7 @@ describe('JourneyService', () => {
         })
         return await mockDbQueryResult(db, [templateJourney])
       })
-      await service.getAllPublishedJourneys({ featured: true, template: true })
+      await service.getAllFilteredJourneys({ featured: true, template: true })
       expect(db.query).toHaveBeenCalled()
     })
   })
@@ -231,7 +231,7 @@ describe('JourneyService', () => {
         })
         return await mockDbQueryResult(db, [journey])
       })
-      await service.getAllPublishedJourneys({ featured: true })
+      await service.getAllFilteredJourneys({ featured: true })
       expect(db.query).toHaveBeenCalled()
       expect(
         await service.getAllByOwnerEditor('1', [JourneyStatus.published])

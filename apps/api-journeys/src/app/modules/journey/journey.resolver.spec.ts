@@ -159,7 +159,7 @@ describe('JourneyResolver', () => {
         }
       }),
       getBySlug: jest.fn((slug) => (slug === journey.slug ? journey : null)),
-      getAllPublishedJourneys: jest.fn(() => [journey, journey]),
+      getAllFilteredJourneys: jest.fn(() => [journey, journey]),
       getAllByIds: jest.fn((userId, ids) => {
         switch (ids[0]) {
           case archivedJourney.id:
@@ -405,7 +405,7 @@ describe('JourneyResolver', () => {
   describe('journeys', () => {
     it('should get published journeys', async () => {
       expect(await resolver.journeys()).toEqual([journey, journey])
-      expect(service.getAllPublishedJourneys).toHaveBeenCalledWith(undefined)
+      expect(service.getAllFilteredJourneys).toHaveBeenCalledWith(undefined)
     })
 
     it('should get published and featured journeys', async () => {
@@ -413,7 +413,7 @@ describe('JourneyResolver', () => {
         journey,
         journey
       ])
-      expect(service.getAllPublishedJourneys).toHaveBeenCalledWith({
+      expect(service.getAllFilteredJourneys).toHaveBeenCalledWith({
         featured: true
       })
     })
