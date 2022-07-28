@@ -91,12 +91,12 @@ describe('JourneyService', () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(
-          aql`
-          FOR journey IN undefined
-            FILTER journey.status == @value0
-              AND journey.featuredAt != null
-            RETURN journey
-        `.query
+          aql`FOR journey IN undefined
+          FILTER journey.status == @value0
+          AND journey.featuredAt != null
+            AND journey.template != true
+          RETURN journey
+      `.query
         )
         expect(bindVars).toEqual({
           value0: 'published'
@@ -111,12 +111,12 @@ describe('JourneyService', () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(
-          aql`
-          FOR journey IN undefined
-            FILTER journey.status == @value0
-              AND journey.featuredAt == null
-            RETURN journey
-        `.query
+          aql`FOR journey IN undefined
+          FILTER journey.status == @value0
+          AND journey.featuredAt == null
+            AND journey.template != true
+          RETURN journey
+      `.query
         )
         expect(bindVars).toEqual({
           value0: 'published'
