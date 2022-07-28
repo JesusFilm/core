@@ -19,6 +19,7 @@ type Journey @key(fields: "id") {
   status: JourneyStatus!
   seoTitle: String
   seoDescription: String
+  template: Boolean
 }
 
 enum IdType {
