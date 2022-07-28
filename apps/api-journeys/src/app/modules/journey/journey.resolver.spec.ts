@@ -390,15 +390,17 @@ describe('JourneyResolver', () => {
   describe('adminJourneys', () => {
     it('should get published journeys', async () => {
       expect(
-        await resolver.adminJourneys('userId', [
-          JourneyStatus.draft,
-          JourneyStatus.published
-        ])
+        await resolver.adminJourneys(
+          'userId',
+          [JourneyStatus.draft, JourneyStatus.published],
+          undefined
+        )
       ).toEqual([journey, journey])
-      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith('userId', [
-        JourneyStatus.draft,
-        JourneyStatus.published
-      ])
+      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith(
+        'userId',
+        [JourneyStatus.draft, JourneyStatus.published],
+        undefined
+      )
     })
   })
 

@@ -99,10 +99,14 @@ export class JourneyResolver {
   @Query()
   async adminJourneys(
     @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[]
-    @Args('template') template: boolean
+    @Args('status') status: JourneyStatus[],
+    @Args('template') template?: boolean
   ): Promise<Journey[]> {
-    return await this.journeyService.getAllByOwnerEditor(userId, status, template)
+    return await this.journeyService.getAllByOwnerEditor(
+      userId,
+      status,
+      template
+    )
   }
 
   @Query()
