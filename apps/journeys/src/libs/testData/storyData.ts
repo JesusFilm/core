@@ -1205,6 +1205,616 @@ export const videoBlocks: TreeBlock[] = [
   }
 ]
 
+export const videoBlocksNoPoster: TreeBlock[] = [
+  {
+    id: 'step1.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    locked: false,
+    nextBlockId: 'step2.id',
+    children: [
+      {
+        id: 'card1.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step1.id',
+        coverBlockId: null,
+        parentOrder: 0,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'video1.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 0,
+            autoplay: true,
+            muted: true,
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              },
+              variantLanguages: [
+                {
+                  __typename: 'Language',
+                  id: '529',
+                  name: [
+                    {
+                      __typename: 'Translation',
+                      value: 'English',
+                      primary: true
+                    }
+                  ]
+                }
+              ]
+            },
+            endAt: null,
+            startAt: 5,
+            posterBlockId: null,
+            fullsize: true,
+            action: null,
+            children: [
+              {
+                id: 'trigger.id',
+                __typename: 'VideoTriggerBlock',
+                parentBlockId: 'video1.id',
+                parentOrder: 0,
+                triggerStart: 20,
+                triggerAction: {
+                  __typename: 'NavigateToBlockAction',
+                  parentBlockId: 'trigger.id',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step2.id'
+                },
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'step2.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 1,
+    locked: true,
+    nextBlockId: 'step3.id',
+    children: [
+      {
+        id: 'card2.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step2.id',
+        parentOrder: 0,
+        backgroundColor: null,
+        coverBlockId: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'typographyBlockId1',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 0,
+            align: null,
+            color: null,
+            content: 'Step 2',
+            variant: TypographyVariant.h3,
+            children: []
+          },
+          {
+            id: 'typographyBlockId2',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 1,
+            align: null,
+            color: null,
+            content: 'Locked',
+            variant: TypographyVariant.body2,
+            children: []
+          },
+          {
+            id: 'radioQuestion1.id',
+            __typename: 'RadioQuestionBlock',
+            parentBlockId: 'card2.id',
+            parentOrder: 2,
+            children: [
+              {
+                id: 'radioOption1.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                parentOrder: 0,
+                label: 'Video with Poster',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  parentBlockId: 'radioOption1.id',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step3.id'
+                },
+                children: []
+              },
+              {
+                id: 'radioOption2.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                parentOrder: 1,
+                label: 'Video With Autoplay',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  parentBlockId: 'radioOption2.id',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step4.id'
+                },
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'step3.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 2,
+    locked: false,
+    nextBlockId: 'step4.id',
+    children: [
+      {
+        id: 'card3.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step3.id',
+        parentOrder: 0,
+        backgroundColor: null,
+        coverBlockId: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'video2.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card3.id',
+            parentOrder: 0,
+            autoplay: false,
+            muted: false,
+            posterBlockId: 'posterBlockId',
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              },
+              variantLanguages: [
+                {
+                  __typename: 'Language',
+                  id: '529',
+                  name: [
+                    {
+                      __typename: 'Translation',
+                      value: 'English',
+                      primary: true
+                    }
+                  ]
+                }
+              ]
+            },
+            endAt: null,
+            startAt: null,
+            fullsize: true,
+            action: null,
+            children: [
+              {
+                id: 'posterBlockId',
+                __typename: 'ImageBlock',
+                src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+                alt: 'random image from unsplash',
+                width: 1600,
+                height: 1067,
+                blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+                parentBlockId: 'videoBlockId',
+                parentOrder: 0,
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'step4.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 3,
+    locked: false,
+    nextBlockId: null,
+    children: [
+      {
+        id: 'card4.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step4.id',
+        parentOrder: 0,
+        backgroundColor: null,
+        coverBlockId: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'video3.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card4.id',
+            parentOrder: 0,
+            autoplay: true,
+            muted: false,
+            posterBlockId: null,
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              },
+              variantLanguages: [
+                {
+                  __typename: 'Language',
+                  id: '529',
+                  name: [
+                    {
+                      __typename: 'Translation',
+                      value: 'English',
+                      primary: true
+                    }
+                  ]
+                }
+              ]
+            },
+            endAt: null,
+            startAt: 10,
+            fullsize: true,
+            action: null,
+            children: []
+          }
+        ]
+      }
+    ]
+  }
+]
+
+export const videoBlocksNoVideo: TreeBlock[] = [
+  {
+    id: 'step1.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    locked: false,
+    nextBlockId: 'step2.id',
+    children: [
+      {
+        id: 'card1.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step1.id',
+        coverBlockId: null,
+        parentOrder: 0,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'video1.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 0,
+            autoplay: true,
+            muted: true,
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: null,
+
+            endAt: null,
+            startAt: 5,
+            posterBlockId: null,
+            fullsize: true,
+            action: null,
+            children: [
+              {
+                id: 'trigger.id',
+                __typename: 'VideoTriggerBlock',
+                parentBlockId: 'video1.id',
+                parentOrder: 0,
+                triggerStart: 20,
+                triggerAction: {
+                  __typename: 'NavigateToBlockAction',
+                  parentBlockId: 'trigger.id',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step2.id'
+                },
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'step2.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 1,
+    locked: true,
+    nextBlockId: 'step3.id',
+    children: [
+      {
+        id: 'card2.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step2.id',
+        parentOrder: 0,
+        backgroundColor: null,
+        coverBlockId: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'typographyBlockId1',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 0,
+            align: null,
+            color: null,
+            content: 'Step 2',
+            variant: TypographyVariant.h3,
+            children: []
+          },
+          {
+            id: 'typographyBlockId2',
+            __typename: 'TypographyBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 1,
+            align: null,
+            color: null,
+            content: 'Locked',
+            variant: TypographyVariant.body2,
+            children: []
+          },
+          {
+            id: 'radioQuestion1.id',
+            __typename: 'RadioQuestionBlock',
+            parentBlockId: 'card2.id',
+            parentOrder: 2,
+            children: [
+              {
+                id: 'radioOption1.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                parentOrder: 0,
+                label: 'Video with Poster',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  parentBlockId: 'radioOption1.id',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step3.id'
+                },
+                children: []
+              },
+              {
+                id: 'radioOption2.id',
+                __typename: 'RadioOptionBlock',
+                parentBlockId: 'radioQuestion1.id',
+                parentOrder: 1,
+                label: 'Video With Autoplay',
+                action: {
+                  __typename: 'NavigateToBlockAction',
+                  parentBlockId: 'radioOption2.id',
+                  gtmEventName: 'gtmEventName',
+                  blockId: 'step4.id'
+                },
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'step3.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 2,
+    locked: false,
+    nextBlockId: 'step4.id',
+    children: [
+      {
+        id: 'card3.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step3.id',
+        parentOrder: 0,
+        backgroundColor: null,
+        coverBlockId: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'video2.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card3.id',
+            parentOrder: 0,
+            autoplay: false,
+            muted: false,
+            posterBlockId: 'posterBlockId',
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              },
+              variantLanguages: [
+                {
+                  __typename: 'Language',
+                  id: '529',
+                  name: [
+                    {
+                      __typename: 'Translation',
+                      value: 'English',
+                      primary: true
+                    }
+                  ]
+                }
+              ]
+            },
+            endAt: null,
+            startAt: null,
+            fullsize: true,
+            action: null,
+            children: [
+              {
+                id: 'posterBlockId',
+                __typename: 'ImageBlock',
+                src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+                alt: 'random image from unsplash',
+                width: 1600,
+                height: 1067,
+                blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+                parentBlockId: 'videoBlockId',
+                parentOrder: 0,
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'step4.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 3,
+    locked: false,
+    nextBlockId: null,
+    children: [
+      {
+        id: 'card4.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step4.id',
+        parentOrder: 0,
+        backgroundColor: null,
+        coverBlockId: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: [
+          {
+            id: 'video3.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card4.id',
+            parentOrder: 0,
+            autoplay: true,
+            muted: false,
+            posterBlockId: null,
+            videoId: '2_0-FallingPlates',
+            videoVariantLanguageId: '529',
+            video: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'Translation',
+                  value: 'FallingPlates'
+                }
+              ],
+              image:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+              variant: {
+                __typename: 'VideoVariant',
+                id: '2_0-FallingPlates-529',
+                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+              },
+              variantLanguages: [
+                {
+                  __typename: 'Language',
+                  id: '529',
+                  name: [
+                    {
+                      __typename: 'Translation',
+                      value: 'English',
+                      primary: true
+                    }
+                  ]
+                }
+              ]
+            },
+            endAt: null,
+            startAt: 10,
+            fullsize: true,
+            action: null,
+            children: []
+          }
+        ]
+      }
+    ]
+  }
+]
+
 export const videoLoop: TreeBlock[] = [
   {
     id: 'step0.id',
