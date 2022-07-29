@@ -219,8 +219,8 @@ describe('JourneyResolver', () => {
     provide: UserJourneyService,
     useFactory: () => ({
       save: jest.fn((input) => input),
-      get: jest.fn(() => userJourney),
-      remove: jest.fn(() => userJourney),
+      getAll: jest.fn(() => [userJourney]),
+      removeAll: jest.fn(() => [userJourney]),
       forJourney: jest.fn(() => [userJourney, userJourney]),
       forJourneyUser: jest.fn((journeyId, userId) => {
         if (userId === invitedUserJourney.userId) return invitedUserJourney
@@ -899,8 +899,8 @@ describe('JourneyResolver', () => {
 
   describe('journeyTemplate', () => {
     it('updates template and removes userJourney', async () => {
-      await resolver.journeyTemplate('1', templateUpdate, 'userJourneyId')
-      expect(ujService.remove).toHaveBeenCalledWith('userJourneyId')
+      await resolver.journeyTemplate('1', templateUpdate)
+      expect(ujService.removeAll).toHaveBeenCalledWith(['userJourneyId'])
       expect(service.update).toHaveBeenCalledWith('1', templateUpdate)
     })
   })
