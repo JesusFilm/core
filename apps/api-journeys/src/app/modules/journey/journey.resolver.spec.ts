@@ -222,9 +222,18 @@ describe('JourneyResolver', () => {
 
   describe('adminJourneysEmbed', () => {
     it('should throw an error', async () => {
+      jest.resetModules()
+      const OLD_ENV = process.env
+      process.env = {
+        ...OLD_ENV,
+        POWER_BI_JOURNEYS_MULTIPLE_FULL_REPORT_ID: undefined
+      }
+
       await expect(
-        resolver.adminJourneysReport('userId', JourneysReportType.multipleFull)
+        resolver.adminJourneysReport('test id', JourneysReportType.multipleFull)
       ).rejects.toThrow('server environment variables missing')
+
+      process.env = OLD_ENV
     })
 
     describe('with environment configuration', () => {
@@ -662,7 +671,8 @@ describe('JourneyResolver', () => {
         status: JourneyStatus.draft,
         publishedAt: undefined,
         slug: `${journey.title}-copy`,
-        title: `${journey.title} copy`
+        title: `${journey.title} copy`,
+        template: false
       })
     })
 
@@ -712,7 +722,8 @@ describe('JourneyResolver', () => {
         status: JourneyStatus.draft,
         publishedAt: undefined,
         slug: `${journey.title}-copy-2`,
-        title: `${journey.title} copy 2`
+        title: `${journey.title} copy 2`,
+        template: false
       })
     })
 

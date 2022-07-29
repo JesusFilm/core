@@ -8,12 +8,7 @@ export function Footer(): ReactElement {
   const { t } = useTranslation('apps-journeys')
 
   return (
-    <Stack
-      direction="row"
-      spacing={3}
-      alignItems="center"
-      data-testid="journeys-footer"
-    >
+    <Stack direction="row" spacing={3} alignItems="center">
       <Typography variant="caption">
         {t('NextSteps © {{year}}', { year: new Date().getFullYear() })}
         <MuiLink

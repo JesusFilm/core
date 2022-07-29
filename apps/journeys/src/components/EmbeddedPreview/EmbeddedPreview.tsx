@@ -1,4 +1,11 @@
-import { ReactElement, useEffect, useMemo, useRef } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import videojs from 'video.js'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
@@ -30,6 +37,7 @@ export function EmbeddedPreview({
   blocks
 }: EmbeddedPreviewProps): ReactElement {
   const maximizableElement = useRef(null)
+  const [allowFullscreen, setAllowFullscreen] = useState(true)
   let isFullscreen: boolean, setIsFullscreen
   try {
     ;[isFullscreen, setIsFullscreen] = useFullscreenStatus(maximizableElement)
@@ -41,12 +49,22 @@ export function EmbeddedPreview({
   const router = useRouter()
   const once = useRef(false)
 
+  const handleClick = useCallback((): void => {
+    if (allowFullscreen) setIsFullscreen(true)
+  }, [allowFullscreen, setIsFullscreen])
+
   useEffect(() => {
-    if (!once.current && router?.query?.autoexpand === 'true') {
-      setIsFullscreen(true)
-      once.current = true
+    if (!once.current) {
+      if (router?.query?.preview === 'true') {
+        setAllowFullscreen(false)
+        once.current = true
+      }
+      if (router?.query?.autoexpand === 'true') {
+        handleClick()
+        once.current = true
+      }
     }
-  })
+  }, [setAllowFullscreen, handleClick, router?.query])
 
   return (
     <>
@@ -62,10 +80,10 @@ export function EmbeddedPreview({
               p: 8,
               flexGrow: 1,
               display: 'flex',
-              cursor: 'pointer',
+              cursor: allowFullscreen ? 'pointer' : 'default',
               zindex: 10
             }}
-            onClick={() => setIsFullscreen(true)}
+            onClick={() => handleClick()}
           >
             {!isFullscreen && (
               <BlockRenderer

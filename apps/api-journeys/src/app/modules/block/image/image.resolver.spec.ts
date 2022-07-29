@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 
+import axios from 'axios'
 import {
   CardBlock,
   ImageBlock,
@@ -13,6 +14,29 @@ import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { ImageBlockResolver } from './image.resolver'
 
+jest.mock('axios')
+const mockedAxios = axios as jest.Mocked<typeof axios>
+
+jest.mock('sharp', () => () => ({
+  raw: () => ({
+    ensureAlpha: () => ({
+      toBuffer: () => ({
+        data: new Uint8ClampedArray([]),
+        info: {
+          width: 640,
+          height: 425
+        }
+      })
+    })
+  })
+}))
+
+jest.mock('blurhash', () => {
+  return {
+    encode: jest.fn(() => 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ')
+  }
+})
+
 describe('ImageBlockResolver', () => {
   let resolver: ImageBlockResolver,
     blockResolver: BlockResolver,
@@ -22,7 +46,7 @@ describe('ImageBlockResolver', () => {
     id: '1',
     journeyId: '2',
     parentBlockId: 'parentBlockId',
-    src: 'https://blurha.sh/assets/images/img2.jpg',
+    src: 'https://unsplash.it/640/425?image=42',
     alt: 'grid image'
   }
 
@@ -32,10 +56,10 @@ describe('ImageBlockResolver', () => {
     __typename: 'ImageBlock',
     parentBlockId: 'parentBlockId',
     parentOrder: 2,
-    src: 'https://blurha.sh/assets/images/img2.jpg',
+    src: 'https://unsplash.it/640/425?image=42',
     alt: 'grid image',
-    width: 301,
-    height: 193,
+    width: 640,
+    height: 425,
     blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
   }
 
@@ -102,7 +126,14 @@ describe('ImageBlockResolver', () => {
 
   describe('imageBlockCreate', () => {
     it('creates an ImageBlock', async () => {
+      mockedAxios.get.mockResolvedValue({
+        data: {
+          mockData: 'mockData' // this kinda doesnt matter since sharp returns the data we need, but still need to mock so it doesnt run the API
+        }
+      })
+
       await resolver.imageBlockCreate(blockCreate)
+
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockCreate.journeyId,
         blockCreate.parentBlockId
@@ -110,6 +141,7 @@ describe('ImageBlockResolver', () => {
       expect(service.save).toHaveBeenCalledWith(createdBlock)
       expect(service.update).not.toHaveBeenCalled()
     })
+
     it('creates a cover ImageBlock', async () => {
       await resolver.imageBlockCreate({ ...blockCreate, isCover: true })
 

@@ -15,13 +15,4 @@ describe('EmbeddedPreview', () => {
       getByText((basic[0].children[0].children[0] as TypographyBlock).content)
     ).toBeInTheDocument()
   })
-
-  it('renders the footer', () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <EmbeddedPreview blocks={basic} />
-      </MockedProvider>
-    )
-    expect(getByTestId('journeys-footer')).toBeInTheDocument()
-  })
 })
