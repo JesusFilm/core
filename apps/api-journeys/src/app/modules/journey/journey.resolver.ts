@@ -408,13 +408,7 @@ export class JourneyResolver {
     @Args('id') id: string,
     @Args('input') input: JourneyTemplateInput
   ): Promise<Journey> {
-    const journey: Journey = await this.journeyService.update(id, input)
-    const userJourneys: UserJourney[] = await this.userJourneyService.getAll()
-    const userJourneyIds: string[] = userJourneys.map((user) => user.id)
-    userJourneys != null &&
-      (await this.userJourneyService.removeAll(userJourneyIds))
-
-    return journey
+    return await this.journeyService.update(id, input)
   }
 
   @ResolveField()
