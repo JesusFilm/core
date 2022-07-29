@@ -15,7 +15,6 @@ import {
 } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   ApolloError,
-  AuthenticationError,
   ForbiddenError,
   UserInputError
 } from 'apollo-server-errors'
@@ -36,6 +35,7 @@ import {
   UserJourney,
   UserJourneyRole,
   JourneysFilter,
+  JourneyTemplateInput,
   JourneysReportType
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
@@ -406,16 +406,14 @@ export class JourneyResolver {
   @Mutation()
   async journeyTemplate(
     @Args('id') id: string,
+    @Args('input') input: JourneyTemplateInput,
     @CurrentUserId() userId: string
-  ): Promise<Journey | undefined> {
-    const duplicatedJourney = await this.journeyDuplicate(id, userId)
+  ): Promise<Journey> {
+    const journey: Journey = await this.journeyService.update(id, input)
+    const userJourney = await this.userJourneyService.get(userId)
+    userJourney != null && (await this.userJourneyService.remove(userId))
 
-    const input = {
-      ...duplicatedJourney,
-      template: true
-    }
-
-    return await this.journeyService.save(input)
+    return journey
   }
 
   @ResolveField()
