@@ -420,6 +420,10 @@ export class JourneyUpdateInput {
     seoDescription?: Nullable<string>;
 }
 
+export class JourneyTemplateInput {
+    template?: Nullable<boolean>;
+}
+
 export interface Action {
     parentBlockId: string;
     gtmEventName?: Nullable<string>;
@@ -862,7 +866,7 @@ export abstract class IMutation {
 
     abstract journeysRestore(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
 
-    abstract journeyTemplate(id: string): Journey | Promise<Journey>;
+    abstract journeyTemplate(id: string, input: JourneyTemplateInput): Journey | Promise<Journey>;
 
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 

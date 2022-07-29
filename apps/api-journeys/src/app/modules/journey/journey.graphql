@@ -114,6 +114,10 @@ extend type UserJourney {
   journey: Journey
 }
 
+input JourneyTemplateInput {
+  template: Boolean
+}
+
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyDuplicate(id: ID!): Journey!
@@ -141,7 +145,7 @@ extend type Mutation {
   """
   Creates a template from a journey
   """
-  journeyTemplate(id: ID!): Journey!
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
 }
 
 extend type NavigateToJourneyAction {

@@ -31,7 +31,6 @@ import {
   JourneyCreateInput,
   JourneyStatus,
   JourneyUpdateInput,
-  TemplateStatus,
   ThemeMode,
   ThemeName,
   UserJourney,
@@ -413,8 +412,7 @@ export class JourneyResolver {
 
     const input = {
       ...duplicatedJourney,
-      template: TemplateStatus.private,
-      userJourneys: null
+      template: true
     }
 
     return await this.journeyService.save(input)

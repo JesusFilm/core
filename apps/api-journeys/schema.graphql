@@ -885,6 +885,10 @@ type UserJourney @key(fields: "id") {
   user: User
 }
 
+input JourneyTemplateInput {
+  template: Boolean
+}
+
 enum UserJourneyRole {
   inviteRequested
   editor
@@ -980,7 +984,7 @@ extend type Mutation {
   journeysRestore(ids: [ID!]!): [Journey]
 
   """Creates a template from a journey"""
-  journeyTemplate(id: ID!): Journey!
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
