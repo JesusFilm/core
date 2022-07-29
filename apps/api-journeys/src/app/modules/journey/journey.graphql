@@ -155,7 +155,7 @@ extend type Mutation {
   """
   Creates a template from a journey
   """
-  createTemplate(id: ID!): Journey!
+  journeyTemplate(id: ID!): Journey!
 }
 
 extend type NavigateToJourneyAction {

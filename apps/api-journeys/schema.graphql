@@ -990,7 +990,7 @@ extend type Mutation {
   journeysRestore(ids: [ID!]!): [Journey]
 
   """Creates a template from a journey"""
-  createTemplate(id: ID!): Journey!
+  journeyTemplate(id: ID!): Journey!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
