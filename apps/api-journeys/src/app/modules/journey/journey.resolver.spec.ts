@@ -9,7 +9,6 @@ import {
   ThemeName,
   UserJourneyRole,
   JourneysReportType,
-  TemplateStatus,
   Role
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
@@ -114,6 +113,10 @@ describe('JourneyResolver', () => {
     seoDescription: 'Social media description'
   }
 
+  const templateUpdate = {
+    template: true
+  }
+
   const userJourney = {
     id: 'userJourneyId',
     userId: 'userId',
@@ -149,16 +152,16 @@ describe('JourneyResolver', () => {
     journeyId: 'duplicateJourneyId'
   }
 
-  const journeyTemplate = {
-    ...journey,
-    id: 'duplicateJourneyId',
-    slug: `${journey.title}-template`,
-    title: `${journey.title} template`,
-    template: TemplateStatus.private,
-    status: JourneyStatus.published,
-    createdAt,
-    publishedAt
-  }
+  // const journeyTemplate = {
+  //   ...journey,
+  //   id: 'duplicateJourneyId',
+  //   slug: `${journey.title}-template`,
+  //   title: `${journey.title} template`,
+  //   template: true,
+  //   status: JourneyStatus.published,
+  //   createdAt,
+  //   publishedAt
+  // }
 
   const journeyService = {
     provide: JourneyService,
@@ -216,6 +219,8 @@ describe('JourneyResolver', () => {
     provide: UserJourneyService,
     useFactory: () => ({
       save: jest.fn((input) => input),
+      get: jest.fn(() => userJourney),
+      remove: jest.fn(() => userJourney),
       forJourney: jest.fn(() => [userJourney, userJourney]),
       forJourneyUser: jest.fn((journeyId, userId) => {
         if (userId === invitedUserJourney.userId) return invitedUserJourney
@@ -892,22 +897,11 @@ describe('JourneyResolver', () => {
     })
   })
 
-  describe('createTemplate', () => {
-    it('creates a template from a journey', async () => {
-      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
-      const date = '2021-11-19T12:34:56.647Z'
-      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      expect(await resolver.createTemplate('journeyId', 'userId')).toEqual(
-        journeyTemplate
-      )
-    })
-
-    it('throws error and does not get stuck in retry loop', async () => {
-      const mockSave = service.save as jest.MockedFunction<typeof service.save>
-      mockSave.mockRejectedValueOnce(new Error('database error'))
-      await expect(
-        resolver.createTemplate('journeyId', 'userId')
-      ).rejects.toThrow('database error')
+  describe('journeyTemplate', () => {
+    it('updates template and removes userJourney', async () => {
+      await resolver.journeyTemplate('1', templateUpdate, 'userJourneyId')
+      expect(ujService.remove).toHaveBeenCalledWith('userJourneyId')
+      expect(service.update).toHaveBeenCalledWith('1', templateUpdate)
     })
   })
 
