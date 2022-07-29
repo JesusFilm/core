@@ -152,17 +152,6 @@ describe('JourneyResolver', () => {
     journeyId: 'duplicateJourneyId'
   }
 
-  // const journeyTemplate = {
-  //   ...journey,
-  //   id: 'duplicateJourneyId',
-  //   slug: `${journey.title}-template`,
-  //   title: `${journey.title} template`,
-  //   template: true,
-  //   status: JourneyStatus.published,
-  //   createdAt,
-  //   publishedAt
-  // }
-
   const journeyService = {
     provide: JourneyService,
     useFactory: () => ({
