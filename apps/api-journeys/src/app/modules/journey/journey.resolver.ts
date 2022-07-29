@@ -265,7 +265,8 @@ export class JourneyResolver {
       title: duplicateTitle,
       createdAt: new Date().toISOString(),
       publishedAt: undefined,
-      status: JourneyStatus.draft
+      status: JourneyStatus.draft,
+      template: false
     }
 
     let retry = true
