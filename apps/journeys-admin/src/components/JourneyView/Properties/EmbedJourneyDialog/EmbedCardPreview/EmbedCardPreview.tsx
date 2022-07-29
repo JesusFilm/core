@@ -29,21 +29,21 @@ export function EmbedCardPreview(): ReactElement {
           display: 'flex',
           flexDirection: 'column',
           transform: 'scale(0.5)',
-          transformOrigin: 'top left'
+          transformOrigin: 'top left',
         }}
       >
         <Box
           sx={{
-            backgroundColor: '#AAACBB',
+            backgroundColor: '#DCDDE5',
             width: CARD_WIDTH - 50,
             height: 10,
-            borderRadius: '15px 15px 0 0',
+            borderRadius: '16px 16px 0 0',
             ml: 6
           }}
         />
         <Box
           sx={{
-            backgroundColor: '#7F8292',
+            backgroundColor: '#AAACBB',
             width: CARD_WIDTH - 25,
             height: 10,
             borderRadius: '16px 16px 0 0',
@@ -55,13 +55,15 @@ export function EmbedCardPreview(): ReactElement {
             themeName={journey?.themeName ?? ThemeName.base}
             themeMode={journey?.themeMode ?? ThemeMode.light}
           >
-            <BlockRenderer
-              block={block}
-              wrappers={{
-                ImageWrapper: NullWrapper,
-                VideoWrapper: NullWrapper
-              }}
-            />
+            <Box sx={{ height: '100%' }}>
+              <BlockRenderer
+                block={block}
+                wrappers={{
+                  ImageWrapper: NullWrapper,
+                  VideoWrapper: NullWrapper
+                }}
+              />
+            </Box>
           </ThemeProvider>
         </FramePortal>
       </Box>

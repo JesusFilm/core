@@ -10,7 +10,7 @@ import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import EditIcon from '@mui/icons-material/Edit'
-import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
+import DeveloperModeRoundedIcon from '@mui/icons-material/DeveloperModeRounded'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyDetails } from './JourneyDetails'
 import { SlugDialog } from './SlugDialog'
@@ -81,9 +81,9 @@ export function Properties(): ReactElement {
               <Button
                 onClick={() => setShowEmbedDialog(true)}
                 size="small"
-                startIcon={<ShareRoundedIcon />}
+                startIcon={<DeveloperModeRoundedIcon />}
               >
-                {t('Embed Code')}
+                {t('Embed Journey')}
               </Button>
             </Stack>
           </Box>
