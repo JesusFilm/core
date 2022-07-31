@@ -20,7 +20,7 @@ export class JourneyService extends BaseService {
       [
         template === true
           ? aql`AND journey.template == true`
-          : aql`AND journey.template == false`,
+          : aql`AND journey.template != true`,
         featured === true &&
           (template === false || template == null) &&
           aql`AND journey.featuredAt != null`,
