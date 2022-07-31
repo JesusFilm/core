@@ -71,12 +71,14 @@ describe('UserJourneyResolver', () => {
       }),
       getAll: jest.fn(() => [userJourney, userJourney]),
       remove: jest.fn((input) => input),
+      removeAll: jest.fn(() => [userJourney, userJourney]),
       save: jest.fn((input) => input),
       update: jest.fn((input) => input),
       forJourneyUser: jest.fn((key, userId) => {
         if (userId === actorUserJourney.userId) return actorUserJourney
         return userJourney
-      })
+      }),
+      getUserJourneysByJourneyId: jest.fn(() => [userJourney, userJourney])
     })
   }
 
@@ -160,6 +162,16 @@ describe('UserJourneyResolver', () => {
         .userJourneyRemove(actorUserJourney.id, actorUserJourney.userId)
         .catch((err) => console.log(err))
       expect(service.remove).toHaveBeenCalledWith(actorUserJourney.id)
+    })
+  })
+
+  describe('userJourneyRemoveAll', () => {
+    it('removes all userJourneys', async () => {
+      await resolver.userJourneyRemoveAll(journey.id)
+      expect(service.removeAll).toHaveBeenCalledWith([
+        userJourney.id,
+        userJourney.id
+      ])
     })
   })
 })

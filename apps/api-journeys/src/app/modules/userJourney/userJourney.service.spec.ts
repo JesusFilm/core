@@ -88,6 +88,20 @@ describe('UserJourneyService', () => {
     })
   })
 
+  describe('getUserJourneysByJourneyId', () => {
+    beforeEach(() => {
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [userJourney, userJourney])
+      )
+    })
+    it('should return userJourneys for journey', async () => {
+      expect(await service.getUserJourneysByJourneyId('1')).toEqual([
+        userJourneyWithId,
+        userJourneyWithId
+      ])
+    })
+  })
+
   describe('remove', () => {
     beforeEach(() => {
       ;(
