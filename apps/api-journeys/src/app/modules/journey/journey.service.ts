@@ -38,7 +38,7 @@ export class JourneyService extends BaseService {
   }
 
   @KeyAsId()
-  async getAllFilteredJourneys(filter?: JourneysFilter): Promise<Journey[]> {
+  async getAllPublishedJourneys(filter?: JourneysFilter): Promise<Journey[]> {
     const search = this.journeyFilter(filter)
 
     return await (
