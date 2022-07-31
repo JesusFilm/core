@@ -31,11 +31,9 @@ export function EmbedJourneyDialog({
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  const iframeLink = `<div style="position: relative; padding-top: 66.66%;"><iframe src=${
-    process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'your.nextstep.is'
-  }/embed/${
-    journey?.slug as string
-  } style={position: absolute; top: 0; left: 0; bottom: 0; right: 0; height: 100%;} /></div>`
+  const iframeLink = `<div style="position: relative; padding-top: 150%;"><iframe src="${process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'your.nextstep.is'
+    }/embed/${journey?.slug as string
+    }" style="position: absolute, top: 0, left: 0, bottom: 0, right: 0, height: 100%" /></div>`
 
   const handleSubmit = async (): Promise<void> => {
     await navigator.clipboard.writeText(iframeLink ?? '')
