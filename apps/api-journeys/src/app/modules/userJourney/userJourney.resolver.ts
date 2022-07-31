@@ -121,6 +121,17 @@ export class UserJourneyResolver {
     return await this.userJourneyService.remove(id)
   }
 
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  // todo add role guard for publisher and template
+  async userJourneyRemoveAll(@Args('id') id: string): Promise<UserJourney[]> {
+    const userJourneys =
+      await this.userJourneyService.getUserJourneysByJourneyId(id)
+    const userJourneyIds: string[] = userJourneys.map((user) => user.id)
+
+    return await this.userJourneyService.removeAll(userJourneyIds)
+  }
+
   @ResolveField()
   async journey(@Parent() userJourney: UserJourney): Promise<Journey> {
     return await this.journeyService.get(userJourney.journeyId)
