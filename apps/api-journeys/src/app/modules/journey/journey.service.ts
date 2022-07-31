@@ -16,25 +16,15 @@ export class JourneyService extends BaseService {
   journeyFilter(filter?: JourneysFilter): AqlQuery {
     const { featured, template } = filter ?? {}
 
-    let query: AqlQuery
-
-    if (template === true) {
-      query = aql`FILTER journey.template == true
-        AND journey.status == ${JourneyStatus.published}`
-    } else if (featured === true) {
-      query = aql`FILTER journey.status == ${JourneyStatus.published}
-          AND journey.featuredAt != null
-            AND journey.template != true`
-    } else if (featured === false) {
-      query = aql`FILTER journey.status == ${JourneyStatus.published}
-          AND journey.featuredAt == null
-            AND journey.template != true`
-    } else {
-      query = aql`FILTER journey.status == ${JourneyStatus.published}
-          AND journey.template != true`
-    }
-
-    return query
+    return aql.join(
+      [
+        template === true
+          ? aql`AND journey.template == true`
+          : aql`AND journey.template == false`,
+        featured === true && aql`AND journey.featuredAt != null`,
+        featured === false && aql`AND journey.featuredAt == null`
+      ].filter((x) => x !== false)
+    )
   }
 
   @KeyAsId()
@@ -43,6 +33,7 @@ export class JourneyService extends BaseService {
 
     return await (
       await this.db.query(aql`FOR journey IN ${this.collection}
+          FILTER journey.status == ${JourneyStatus.published}
           ${search}
           RETURN journey
       `)
