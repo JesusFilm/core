@@ -86,36 +86,26 @@ describe('JourneyService', () => {
     it('should return template query', async () => {
       const filter: JourneysFilter = { featured: true, template: true }
       const response = await service.journeyFilter(filter)
-      expect(response.query).toEqual(
-        aql`FILTER journey.template == true
-        AND journey.status == ${JourneyStatus.published}`.query
-      )
+      expect(response.query).toEqual(aql`AND journey.template == true`.query)
     })
     it('should return featured query', async () => {
       const filter: JourneysFilter = { featured: true, template: false }
       const response = await service.journeyFilter(filter)
       expect(response.query).toEqual(
-        aql`FILTER journey.status == @value0
-          AND journey.featuredAt != null
-            AND journey.template != true`.query
+        aql`AND journey.template != true AND journey.featuredAt != null`.query
       )
     })
     it('should return not featured query', async () => {
       const filter: JourneysFilter = { featured: false }
       const response = await service.journeyFilter(filter)
       expect(response.query).toEqual(
-        aql`FILTER journey.status == @value0
-          AND journey.featuredAt == null
-            AND journey.template != true`.query
+        aql`AND journey.template != true AND journey.featuredAt == null`.query
       )
     })
     it('should return published query', async () => {
       const filter: JourneysFilter = {}
       const response = await service.journeyFilter(filter)
-      expect(response.query).toEqual(
-        aql`FILTER journey.status == @value0
-          AND journey.template != true`.query
-      )
+      expect(response.query).toEqual(aql`AND journey.template != true`.query)
     })
   })
 
@@ -131,8 +121,7 @@ describe('JourneyService', () => {
         expect(query).toEqual(
           aql`FOR journey IN undefined
           FILTER journey.status == @value0
-          AND journey.featuredAt != null
-            AND journey.template != true
+          AND journey.template != true AND journey.featuredAt != null
           RETURN journey
       `.query
         )
@@ -151,8 +140,7 @@ describe('JourneyService', () => {
         expect(query).toEqual(
           aql`FOR journey IN undefined
           FILTER journey.status == @value0
-          AND journey.featuredAt == null
-            AND journey.template != true
+          AND journey.template != true AND journey.featuredAt == null
           RETURN journey
       `.query
         )
@@ -175,8 +163,8 @@ describe('JourneyService', () => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(
           aql`FOR journey IN undefined
-          FILTER journey.template == true
-        AND journey.status == @value0
+          FILTER journey.status == @value0
+          AND journey.template == true
           RETURN journey
       `.query
         )
