@@ -136,7 +136,7 @@ const Template: Story = ({ ...args }) => (
         request: {
           query: GET_VIDEO_VARIANT_LANGUAGES,
           variables: {
-            id: '2_0-FallingPlates'
+            id: videoLanguages.id
           }
         },
         result: {

@@ -10,6 +10,8 @@ import { ThemeProvider } from '../../../../../../ThemeProvider'
 import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoList/VideoList'
 import { GET_VIDEO } from '../../../../../VideoLibrary/VideoDetails/VideoDetails'
 import { videos } from '../../../../../VideoLibrary/VideoList/VideoListData'
+import { GetVideoVariantLanguages_video } from '../../../../../../../../__generated__/GetVideoVariantLanguages'
+import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/VideoBlockEditor'
 import { VideoOptions } from './VideoOptions'
 
 const VideoOptionsStory = {
@@ -54,6 +56,24 @@ const video: TreeBlock<VideoBlock> = {
   },
   posterBlockId: 'poster1.id',
   children: []
+}
+
+const videoLanguages: GetVideoVariantLanguages_video = {
+  __typename: 'Video',
+  id: '2_0-FallingPlates',
+  variantLanguages: [
+    {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'English',
+          primary: true
+        }
+      ]
+    }
+  ]
 }
 
 export const Default: Story = () => (
@@ -110,6 +130,19 @@ export const Default: Story = () => (
                 hls: 'https://arc.gt/opsgn'
               }
             }
+          }
+        }
+      },
+      {
+        request: {
+          query: GET_VIDEO_VARIANT_LANGUAGES,
+          variables: {
+            id: videoLanguages.id
+          }
+        },
+        result: {
+          data: {
+            video: videoLanguages
           }
         }
       }
