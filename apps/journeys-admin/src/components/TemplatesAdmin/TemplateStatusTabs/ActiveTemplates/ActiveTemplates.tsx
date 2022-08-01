@@ -18,7 +18,7 @@ interface ActiveTemplatesProps {
 }
 
 // replace with query getPublishedJourneys({where: template: true})
-const activeTemplates = [
+export const activeTemplates = [
   {
     id: 'template1.id',
     title: 'Active 1',
@@ -166,6 +166,7 @@ export function ActiveTemplates({
       {sortedTemplates.map((template) => (
         <Typography key={template.id}>{template.title}</Typography>
       ))}
+
       <Dialog
         open={openArchiveAll ?? false}
         handleClose={handleClose}
