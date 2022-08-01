@@ -65,7 +65,7 @@ const mocks = [
     request: {
       query: GET_VIDEO_VARIANT_LANGUAGES,
       variables: {
-        id: video.id
+        id: '2_0-FallingPlates'
       }
     },
     result: {
@@ -151,7 +151,7 @@ describe('VideoBlockEditor', () => {
           request: {
             query: GET_VIDEO_VARIANT_LANGUAGES,
             variables: {
-              id: video.id
+              id: '2_0-FallingPlates'
             }
           },
           result: {
