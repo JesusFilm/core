@@ -5,9 +5,10 @@ import Typography from '@mui/material/Typography'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
+import CardMedia from '@mui/material/CardMedia'
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
 import IconButton from '@mui/material/IconButton'
-import Box from '@mui/material/Box'
+import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
 import { Template } from '../TemplateList'
 
 export interface TemplateCardProps {
@@ -34,29 +35,32 @@ export function TemplateCard({ template }: TemplateCardProps): ReactElement {
         display: 'flex'
       }}
     >
+      <CardMedia
+        component="img"
+        image={template.socialShareImage}
+        height="129px"
+        alt={template.title}
+        sx={{
+          width: '129px'
+        }}
+      />
+
       <CardActionArea>
         <CardContent>
           <Stack direction="row" spacing={6}>
-            <Box
-              component="img"
-              src={template.socialShareImage}
-              alt={template.title}
-              sx={{
-                height: '120px',
-                width: '120px',
-                objectFit: 'cover',
-                borderRadius: 1
-              }}
-            />
             <Stack direction="column" spacing={1}>
               <Typography variant="subtitle1">{template.title}</Typography>
               <Typography variant="caption">{`${template.date} - ${template.description}`}</Typography>
+              <Typography variant="body2">
+                <TranslateRoundedIcon fontSize="small" />
+                {template.language}
+              </Typography>
             </Stack>
           </Stack>
         </CardContent>
       </CardActionArea>
 
-      <CardActions sx={{ alignSelf: 'flex-start' }}>
+      <CardActions sx={{ alignSelf: 'flex-end' }}>
         <IconButton>
           <MoreVertRoundedIcon />
         </IconButton>

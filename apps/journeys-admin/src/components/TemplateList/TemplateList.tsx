@@ -13,6 +13,7 @@ export interface Template {
   date: string
   description: string
   socialShareImage: string
+  language: string
 }
 
 export function TemplateList({ templates }: TemplateListProps): ReactElement {
