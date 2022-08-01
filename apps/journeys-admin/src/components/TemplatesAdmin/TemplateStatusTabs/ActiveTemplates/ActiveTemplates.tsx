@@ -21,7 +21,7 @@ interface ActiveTemplatesProps {
 export const activeTemplates = [
   {
     id: 'template1.id',
-    title: 'Active 1',
+    title: 'Template 1',
     userJourneys: [
       {
         id: 'userJourney1.id',
@@ -31,11 +31,12 @@ export const activeTemplates = [
           firstName: 'John'
         }
       }
-    ]
+    ],
+    trashedAt: new Date()
   },
   {
     id: 'template2.id',
-    title: 'Active 2',
+    title: 'Template 2',
     userJourneys: [
       {
         id: 'userJourney2.id',
@@ -45,11 +46,12 @@ export const activeTemplates = [
           firstName: 'Jane'
         }
       }
-    ]
+    ],
+    trashedAt: new Date()
   },
   {
     id: 'template3.id',
-    title: 'Active 3',
+    title: 'Template 3',
     userJourneys: [
       {
         id: 'userJourney3.id',
@@ -59,7 +61,8 @@ export const activeTemplates = [
           firstName: 'Steve'
         }
       }
-    ]
+    ],
+    trashedAt: new Date()
   }
 ]
 
