@@ -1,5 +1,5 @@
 import { NextRouter } from 'next/router'
-import { ReactElement, useState, SyntheticEvent } from 'react'
+import { ReactElement, useState, useEffect, SyntheticEvent } from 'react'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
@@ -13,6 +13,7 @@ import { ArchivedTemplates } from './ArchivedTemplates'
 import { TrashedTemplates } from './TrashedTemplates'
 
 interface TemplateStatusTabsProps {
+  event: string | undefined
   router?: NextRouter
 }
 
@@ -41,10 +42,16 @@ const tabs: TabOptions[] = [
 ]
 
 export function TemplateStatusTabs({
+  event,
   router
 }: TemplateStatusTabsProps): ReactElement {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const [activeEvent, setActiveEvent] = useState(event)
+
+  useEffect(() => {
+    setActiveEvent(event)
+  }, [event])
 
   const tabIndex =
     router != null
@@ -59,6 +66,22 @@ export function TemplateStatusTabs({
   ): void => {
     if (newValue != null && router != null) {
       setActiveTab(newValue)
+
+      switch (newValue) {
+        case 0:
+          setActiveEvent('refetchActive')
+          break
+        case 1:
+          setActiveEvent('refetchArchived')
+          break
+        case 2:
+          setActiveEvent('refetchTrashed')
+          break
+      }
+      setTimeout(() => {
+        setActiveEvent('')
+      }, 1000)
+
       const tabParam =
         tabs.find((status) => status.tabIndex === newValue)?.queryParam ??
         tabs[0].queryParam
@@ -129,7 +152,7 @@ export function TemplateStatusTabs({
           value={activeTab}
           index={tabs[0].tabIndex}
         >
-          <ActiveTemplates />
+          <ActiveTemplates event={activeEvent} />
         </TabPanel>
       )}
       {activeTab === 1 && (
@@ -138,7 +161,7 @@ export function TemplateStatusTabs({
           value={activeTab}
           index={tabs[1].tabIndex}
         >
-          <ArchivedTemplates />
+          <ArchivedTemplates event={activeEvent} />
         </TabPanel>
       )}
       {activeTab === 2 && (
@@ -147,7 +170,7 @@ export function TemplateStatusTabs({
           value={activeTab}
           index={tabs[2].tabIndex}
         >
-          <TrashedTemplates />
+          <TrashedTemplates event={activeEvent} />
         </TabPanel>
       )}
     </>

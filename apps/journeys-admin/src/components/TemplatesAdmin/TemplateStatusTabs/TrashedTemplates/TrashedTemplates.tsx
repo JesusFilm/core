@@ -1,5 +1,11 @@
 import { ReactElement } from 'react'
 
-export function TrashedTemplates(): ReactElement {
+interface TrashedTemplatesProps {
+  event: string | undefined
+}
+
+export function TrashedTemplates({
+  event
+}: TrashedTemplatesProps): ReactElement {
   return <>Trashed Templates</>
 }

@@ -1,5 +1,5 @@
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import {
   AuthAction,
   useAuthUser,
@@ -12,15 +12,29 @@ import { useRouter } from 'next/router'
 import { TemplatesAdmin } from '../../src/components/TemplatesAdmin'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
+import JourneyListMenu from '../../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
 
 function TemplateAdmin(): ReactElement {
   const router = useRouter()
   const AuthUser = useAuthUser()
+  const [listEvent, setListEvent] = useState('')
+
+  const handleClick = (event: string): void => {
+    setListEvent(event)
+    // remove event after component lifecycle
+    setTimeout(() => {
+      setListEvent('')
+    }, 1000)
+  }
   return (
     <>
       <NextSeo title={'Templates Admin'} />
-      <PageWrapper title={'Templates Admin'} authUser={AuthUser}>
-        <TemplatesAdmin router={router} />
+      <PageWrapper
+        title={'Templates Admin'}
+        authUser={AuthUser}
+        menu={<JourneyListMenu router={router} onClick={handleClick} />}
+      >
+        <TemplatesAdmin router={router} event={listEvent} />
       </PageWrapper>
     </>
   )

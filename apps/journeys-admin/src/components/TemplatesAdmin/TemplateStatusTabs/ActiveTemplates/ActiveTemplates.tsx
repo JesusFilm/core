@@ -1,5 +1,9 @@
 import { ReactElement } from 'react'
 
-export function ActiveTemplates(): ReactElement {
+interface ActiveTemplatesProps {
+  event: string | undefined
+}
+
+export function ActiveTemplates({ event }: ActiveTemplatesProps): ReactElement {
   return <>Active Templates</>
 }

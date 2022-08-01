@@ -4,13 +4,17 @@ import Container from '@mui/material/Container'
 import { TemplateStatusTabs } from './TemplateStatusTabs'
 
 interface TemplatesAdminProps {
+  event: string | undefined
   router?: NextRouter
 }
 
-export function TemplatesAdmin({ router }: TemplatesAdminProps): ReactElement {
+export function TemplatesAdmin({
+  event,
+  router
+}: TemplatesAdminProps): ReactElement {
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
-      <TemplateStatusTabs router={router} />
+      <TemplateStatusTabs event={event} router={router} />
     </Container>
   )
 }

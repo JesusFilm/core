@@ -1,5 +1,11 @@
 import { ReactElement } from 'react'
 
-export function ArchivedTemplates(): ReactElement {
+interface ArchivedTemplateProps {
+  event: string | undefined
+}
+
+export function ArchivedTemplates({
+  event
+}: ArchivedTemplateProps): ReactElement {
   return <>Archived Templates</>
 }
