@@ -53,7 +53,7 @@ export function VideoBlockEditor({
     GET_VIDEO_VARIANT_LANGUAGES,
     {
       variables: {
-        id: selectedBlock?.id
+        id: selectedBlock?.video?.id
       },
       skip: selectedBlock?.video?.id == null
     }
@@ -76,6 +76,7 @@ export function VideoBlockEditor({
       language = `${language} (${nativeLanguage})`
     setLanguage(language)
   }, [data?.video?.variantLanguages, selectedBlock?.videoVariantLanguageId])
+
   return (
     <>
       <Box sx={{ px: 6, pt: 4 }}>
