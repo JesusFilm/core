@@ -152,7 +152,7 @@ export function TemplateStatusTabs({
           value={activeTab}
           index={tabs[0].tabIndex}
         >
-          <ActiveTemplates event={activeEvent} />
+          <ActiveTemplates event={activeEvent} sortOrder={sortOrder} />
         </TabPanel>
       )}
       {activeTab === 1 && (
@@ -161,7 +161,7 @@ export function TemplateStatusTabs({
           value={activeTab}
           index={tabs[1].tabIndex}
         >
-          <ArchivedTemplates event={activeEvent} />
+          <ArchivedTemplates event={activeEvent} sortOrder={sortOrder} />
         </TabPanel>
       )}
       {activeTab === 2 && (
@@ -170,7 +170,7 @@ export function TemplateStatusTabs({
           value={activeTab}
           index={tabs[2].tabIndex}
         >
-          <TrashedTemplates event={activeEvent} />
+          <TrashedTemplates event={activeEvent} sortOrder={sortOrder} />
         </TabPanel>
       )}
     </>
