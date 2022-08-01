@@ -127,7 +127,7 @@ export function ArchivedTemplates({
         <span>
           <Box width="100%" sx={{ textAlign: 'center' }}>
             <Typography variant="caption">
-              Archived journeys are hidden from your active journey list for
+              Archived journeys are hidden from your active templates list for
               better organization.
             </Typography>
           </Box>
@@ -148,13 +148,13 @@ export function ArchivedTemplates({
             }}
           >
             <Typography variant="subtitle1" align="center" gutterBottom>
-              No archived journeys.
+              No archived templates.
             </Typography>
           </Card>
           <Box width="100%" sx={{ textAlign: 'center' }}>
             <Typography variant="caption">
-              You can archive a Journey to hide it from your active Journey list
-              for better organization.
+              You can archive a Template to hide it from your active Template
+              list for better organization.
             </Typography>
           </Box>
         </>
@@ -164,7 +164,7 @@ export function ArchivedTemplates({
         open={openRestoreAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: 'Unarchive Journeys',
+          title: 'Unarchive Templates',
           closeButton: true
         }}
         dialogAction={{
@@ -174,7 +174,7 @@ export function ArchivedTemplates({
         }}
       >
         <Typography>
-          Are you sure you would like to unarchive all archived journeys
+          Are you sure you would like to unarchive all archived templates
           immediately?
         </Typography>
       </Dialog>
@@ -182,7 +182,7 @@ export function ArchivedTemplates({
         open={openTrashAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: 'Trash Journeys',
+          title: 'Trash Templates',
           closeButton: true
         }}
         dialogAction={{
@@ -192,7 +192,7 @@ export function ArchivedTemplates({
         }}
       >
         <Typography>
-          Are you sure you would like to trash all archived journeys
+          Are you sure you would like to trash all archived templates
           immediately?
         </Typography>
       </Dialog>

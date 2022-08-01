@@ -143,7 +143,7 @@ export function TrashedTemplates({
           }}
         >
           <Typography variant="subtitle1" align="center" gutterBottom>
-            Your Trashed journeys will appear here.
+            Your Trashed templates will appear here.
           </Typography>
         </Card>
       )}
@@ -152,17 +152,17 @@ export function TrashedTemplates({
         open={openRestoreAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: 'Restore Journeys',
+          title: 'Restore Templates',
           closeButton: true
         }}
         dialogAction={{
           onSubmit: restoreAll,
-          submitLabel: 'Restore',
+          submitLabel: 'Templates',
           closeLabel: 'Cancel'
         }}
       >
         <Typography>
-          Are you sure you would like to restore all trashed journeys
+          Are you sure you would like to restore all trashed templates
           immediately?
         </Typography>
       </Dialog>
@@ -170,7 +170,7 @@ export function TrashedTemplates({
         open={openDeleteAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: 'Delete Journeys Forever',
+          title: 'Delete Template Forever',
           closeButton: true
         }}
         dialogAction={{
@@ -180,8 +180,8 @@ export function TrashedTemplates({
         }}
       >
         <Typography>
-          Are you sure you would like to permanently delete all trashed journeys
-          immediately?
+          Are you sure you would like to permanently delete all trashed
+          templates immediately?
         </Typography>
       </Dialog>
     </>

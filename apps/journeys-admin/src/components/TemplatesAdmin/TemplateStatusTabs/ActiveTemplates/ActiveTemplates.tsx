@@ -174,7 +174,7 @@ export function ActiveTemplates({
         open={openArchiveAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: 'Archive Journeys',
+          title: 'Archive Templates',
           closeButton: true
         }}
         dialogAction={{
@@ -184,7 +184,7 @@ export function ActiveTemplates({
         }}
       >
         <Typography>
-          Are you sure you would like to archive all active journeys
+          Are you sure you would like to archive all active templates
           immediately?
         </Typography>
       </Dialog>
@@ -192,7 +192,7 @@ export function ActiveTemplates({
         open={openTrashAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: 'Trash Journeys',
+          title: 'Trash Templates',
           closeButton: true
         }}
         dialogAction={{
@@ -202,7 +202,7 @@ export function ActiveTemplates({
         }}
       >
         <Typography>
-          Are you sure you would like to trash all active journeys immediately?
+          Are you sure you would like to trash all active templates immediately?
         </Typography>
       </Dialog>
     </>
