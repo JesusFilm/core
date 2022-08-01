@@ -16,8 +16,8 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
+import { CardView } from '../CardView'
 import { Properties } from './Properties'
-import { CardView } from './CardView'
 import { SlugDialog } from './Properties/SlugDialog'
 
 export function JourneyView(): ReactElement {

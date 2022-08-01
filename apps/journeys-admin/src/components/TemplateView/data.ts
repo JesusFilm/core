@@ -81,6 +81,17 @@ export const publishedJourney: Journey = {
     'The resurrection story is the account of Jesus Christ rising from the dead after being crucified on the cross and buried in the tomb. Jesus remained on earth for 40 days after He was resurrected from the dead on that Sunday morning.',
   publishedAt: '2021-12-19T12:34:56.647Z',
   status: JourneyStatus.published,
+  primaryImageBlock: {
+    id: 'image1.id',
+    __typename: 'ImageBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+    alt: 'image.jpg',
+    width: 1920,
+    height: 1080,
+    blurhash: ''
+  },
   blocks: [
     {
       id: 'step0.id',

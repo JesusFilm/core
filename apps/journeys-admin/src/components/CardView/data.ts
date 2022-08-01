@@ -1,5 +1,5 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -7,7 +7,7 @@ import {
   IconName,
   IconSize,
   TypographyVariant
-} from '../../../../__generated__/globalTypes'
+} from '../../../__generated__/globalTypes'
 
 export const oneStep: Array<TreeBlock<StepBlock>> = [
   {
