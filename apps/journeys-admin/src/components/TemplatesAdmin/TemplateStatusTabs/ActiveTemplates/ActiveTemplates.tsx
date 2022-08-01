@@ -17,6 +17,7 @@ interface ActiveTemplatesProps {
   authUser?: AuthUser
 }
 
+// replace with query getPublishedJourneys({where: template: true})
 const activeTemplates = [
   {
     id: 'template1.id',

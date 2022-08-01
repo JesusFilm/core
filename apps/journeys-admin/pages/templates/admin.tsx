@@ -34,7 +34,7 @@ function TemplateAdmin(): ReactElement {
         authUser={AuthUser}
         menu={<JourneyListMenu router={router} onClick={handleClick} />}
       >
-        <TemplatesAdmin router={router} event={listEvent} />
+        <TemplatesAdmin router={router} event={listEvent} authUser={AuthUser} />
       </PageWrapper>
     </>
   )

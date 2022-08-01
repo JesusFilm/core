@@ -7,6 +7,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Card from '@mui/material/Card'
 import Box from '@mui/material/Box'
+import { AuthUser } from 'next-firebase-auth'
 import { JourneySort, SortOrder } from '../../JourneyList/JourneySort'
 import { ActiveTemplates } from './ActiveTemplates'
 import { ArchivedTemplates } from './ArchivedTemplates'
@@ -15,6 +16,7 @@ import { TrashedTemplates } from './TrashedTemplates'
 interface TemplateStatusTabsProps {
   event: string | undefined
   router?: NextRouter
+  authUser?: AuthUser | undefined
 }
 
 interface TabOptions {
@@ -43,7 +45,8 @@ const tabs: TabOptions[] = [
 
 export function TemplateStatusTabs({
   event,
-  router
+  router,
+  authUser
 }: TemplateStatusTabsProps): ReactElement {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -152,7 +155,11 @@ export function TemplateStatusTabs({
           value={activeTab}
           index={tabs[0].tabIndex}
         >
-          <ActiveTemplates event={activeEvent} sortOrder={sortOrder} />
+          <ActiveTemplates
+            event={activeEvent}
+            sortOrder={sortOrder}
+            authUser={authUser}
+          />
         </TabPanel>
       )}
       {activeTab === 1 && (
@@ -161,7 +168,11 @@ export function TemplateStatusTabs({
           value={activeTab}
           index={tabs[1].tabIndex}
         >
-          <ArchivedTemplates event={activeEvent} sortOrder={sortOrder} />
+          <ArchivedTemplates
+            event={activeEvent}
+            sortOrder={sortOrder}
+            authUser={authUser}
+          />
         </TabPanel>
       )}
       {activeTab === 2 && (
@@ -170,7 +181,11 @@ export function TemplateStatusTabs({
           value={activeTab}
           index={tabs[2].tabIndex}
         >
-          <TrashedTemplates event={activeEvent} sortOrder={sortOrder} />
+          <TrashedTemplates
+            event={activeEvent}
+            sortOrder={sortOrder}
+            authUser={authUser}
+          />
         </TabPanel>
       )}
     </>
