@@ -1,0 +1,1 @@
+export { TemplatesAdmin } from './TemplatesAdmin'

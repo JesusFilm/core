@@ -8,6 +8,7 @@ import {
 } from 'next-firebase-auth'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+import { TemplatesAdmin } from '../../src/components/TemplatesAdmin'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 
@@ -17,7 +18,7 @@ function TemplateAdmin(): ReactElement {
     <>
       <NextSeo title={'Templates Admin'} />
       <PageWrapper title={'Templates Admin'} authUser={AuthUser}>
-        {/* Template List */}
+        <TemplatesAdmin />
       </PageWrapper>
     </>
   )
