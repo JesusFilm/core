@@ -17,7 +17,7 @@ interface ActiveTemplatesProps {
   authUser?: AuthUser
 }
 
-// replace with query getPublishedJourneys({where: template: true})
+// TODO: replace with query getPublishedJourneys({where: template: true})
 export const activeTemplates = [
   {
     id: 'template1.id',
@@ -72,6 +72,8 @@ export function ActiveTemplates({
   authUser
 }: ActiveTemplatesProps): ReactElement {
   const [templates, setTemplates] = useState(activeTemplates)
+  // TODO
+  // const [oldTemplates, setOldTemplates] = useState<Journeys[]>()
   const [openArchiveAll, setOpenArchiveAll] = useState(false)
   const [openTrashAll, setOpenTrashAll] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
@@ -147,6 +149,22 @@ export function ActiveTemplates({
     }
     handleClose()
   }
+  // TODO
+  //   useEffect(() => {
+  //     setOldJourneys(journeys)
+  //     setJourneys(data?.journeys)
+  //   }, [data, journeys, oldJourneys])
+  //  })
+
+  // TODO
+  // useEffect(() => {
+  //   if (!loading && error == null) {
+  //     onLoad()
+  //   }
+  // }, [onLoad, loading, error])
+
+  // TODO
+  // const duplicatedJourneyId = getDuplicatedJourney(oldJourneys, journeys)
 
   useEffect(() => {
     switch (event) {
@@ -164,6 +182,7 @@ export function ActiveTemplates({
 
   const sortedTemplates = templates // templates != null ? sortJourneys(templates, sortOrder) : undefined
 
+  // TODO: loading states
   return (
     <>
       {sortedTemplates.map((template) => (

@@ -51,6 +51,9 @@ export function TemplateStatusTabs({
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [activeEvent, setActiveEvent] = useState(event)
+  // TODO: loaded events
+  // const [tabsLoaded, setTabsLoaded] = useState(false)
+  // const [activeTabLoaded, setActiveTabLoaded] = useState(false)
 
   useEffect(() => {
     setActiveEvent(event)

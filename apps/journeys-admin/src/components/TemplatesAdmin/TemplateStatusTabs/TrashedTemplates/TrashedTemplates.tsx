@@ -100,6 +100,17 @@ export function TrashedTemplates({
     setOpenDeleteAll(false)
   }
 
+  // TODO
+  // const once = useRef(false)
+  // useEffect(() => {
+  //   if (!once.current) {
+  //     if (!loading && error == null) {
+  //       onLoad(journeys?.map((journey) => journey.id))
+  //       once.current = true
+  //     }
+  //   }
+  // }, [onLoad, loading, error, journeys, once])
+
   useEffect(() => {
     switch (event) {
       case 'restoreAllTrashed':

@@ -101,6 +101,13 @@ export function ArchivedTemplates({
     setOpenTrashAll(false)
   }
 
+  // TODO
+  // useEffect(() => {
+  //   if (!loading && error == null) {
+  //     onLoad()
+  //   }
+  // }, [onLoad, loading, error])
+
   useEffect(() => {
     switch (event) {
       case 'restoreAllArchived':
@@ -117,6 +124,7 @@ export function ArchivedTemplates({
 
   const sortedTemplates = archivedTemplates // archivedTemplates != null ? sortJourneys(archivedTemplates, sortOrder) : undefined
 
+  // TODO: loading state
   return (
     <>
       {sortedTemplates.map((template) => (
