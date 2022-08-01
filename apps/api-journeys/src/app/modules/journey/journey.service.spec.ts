@@ -86,7 +86,9 @@ describe('JourneyService', () => {
     it('should return template query', async () => {
       const filter: JourneysFilter = { featured: true, template: true }
       const response = await service.journeyFilter(filter)
-      expect(response.query).toEqual(aql`AND journey.template == true`.query)
+      expect(response.query).toEqual(
+        aql`AND journey.template == true AND journey.featuredAt != null`.query
+      )
     })
     it('should return featured query', async () => {
       const filter: JourneysFilter = { featured: true, template: false }

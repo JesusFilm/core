@@ -16,6 +16,7 @@ export class JourneyService extends BaseService {
   journeyFilter(filter?: JourneysFilter): AqlQuery {
     const { featured, template } = filter ?? {}
 
+    // ? aql`AND journey.template == ${template === true}`
     return aql.join(
       [
         template === true
