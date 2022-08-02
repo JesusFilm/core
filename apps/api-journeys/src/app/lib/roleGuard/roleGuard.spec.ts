@@ -291,53 +291,76 @@ describe('RoleGuard', () => {
     })
   })
 
-  // describe('custome Roles', () => {
-  //   it('should return true if role is publisher and template true and status published', async () => {
-  //     const gqlContext = gqlContextMockFactory(
-  //       { id: '2' },
-  //       {
-  //         headers: { 'user-id': '1' },
-  //         req: createMock<Request>()
-  //       }
-  //     )
-  //     const RoleGuardClass = RoleGuard(
-  //       'id',
-  //       [
-  //         {
-  //           role: Role.publisher,
-  //           attributes: { template: true, status: JourneyStatus.published }
-  //         }
-  //       ],
-  //       fetchUserJourney,
-  //       fetchUserRole,
-  //       fetchJourney
-  //     )
-  //     const roleGuard = new RoleGuardClass(gqlContext)
-  //     expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
-  //   })
+  describe('custom Roles', () => {
+    it('should return true if role is publisher and template true', async () => {
+      const gqlContext = gqlContextMockFactory(
+        { id: '2' },
+        {
+          headers: { 'user-id': '1' },
+          req: createMock<Request>()
+        }
+      )
+      const RoleGuardClass = RoleGuard(
+        'id',
+        [
+          {
+            role: Role.publisher,
+            attributes: { template: true }
+          }
+        ],
+        fetchUserJourney,
+        fetchUserRole,
+        fetchJourney
+      )
+      const roleGuard = new RoleGuardClass(gqlContext)
+      expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
+    })
 
-  //   it('should return true if role is public and template true', async () => {
-  //     const gqlContext = gqlContextMockFactory(
-  //       { id: '2' },
-  //       {
-  //         headers: { 'user-id': '1' },
-  //         req: createMock<Request>()
-  //       }
-  //     )
-  //     const RoleGuardClass = RoleGuard(
-  //       'id',
-  //       [
-  //         {
-  //           role: 'public',
-  //           attributes: { template: true }
-  //         }
-  //       ],
-  //       fetchUserJourney,
-  //       fetchUserRole,
-  //       fetchJourney
-  //     )
-  //     const roleGuard = new RoleGuardClass(gqlContext)
-  //     expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
-  //   })
-  // })
+    it('should return true if role is an array and includes publisher', async () => {
+      const gqlContext = gqlContextMockFactory(
+        { id: '2' },
+        {
+          headers: { 'user-id': '1' },
+          req: createMock<Request>()
+        }
+      )
+      const RoleGuardClass = RoleGuard(
+        'id',
+        [
+          {
+            role: [Role.publisher]
+          }
+        ],
+        fetchUserJourney,
+        fetchUserRole,
+        fetchJourney
+      )
+      const roleGuard = new RoleGuardClass(gqlContext)
+      await expect(roleGuard.canActivate(gqlContext)).resolves.toEqual(true)
+    })
+
+    it('should return true if role is public and template true and status published', async () => {
+      const gqlContext = gqlContextMockFactory(
+        { id: '2' },
+        {
+          headers: { 'user-id': '1' },
+          req: createMock<Request>()
+        }
+      )
+      const RoleGuardClass = RoleGuard(
+        'id',
+        [
+          {
+            role: ['public'],
+            attributes: { template: true, status: JourneyStatus.published }
+          }
+        ],
+        fetchUserJourney,
+        fetchUserRole,
+        fetchJourney
+      )
+      const roleGuard = new RoleGuardClass(gqlContext)
+      expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
+    })
+  })
 })

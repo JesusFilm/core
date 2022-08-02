@@ -12,7 +12,6 @@ import { AuthenticationError } from 'apollo-server-errors'
 import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
 import {
   Journey,
-  JourneyStatus,
   Role,
   UserJourney,
   UserJourneyRole,
@@ -73,13 +72,28 @@ export const RoleGuard = (
       private readonly journeyService: JourneyService
     ) {}
 
+    checkAttributes(journey: Journey, attributes?: Partial<Journey>): boolean {
+      if (attributes == null) return true
+      if (attributes.template === journey.template) return true
+      if (
+        attributes.template === journey.template &&
+        attributes.status === journey.status
+      )
+        return true
+      return false
+    }
+
     publicRole(permission: Permission): boolean {
       if (permission === 'public') return true
       return false
     }
 
     userJourneyRole(permission: Permission, userJourney: UserJourney): boolean {
-      if (permission === userJourney.role) return true
+      if (
+        permission !== UserJourneyRole.inviteRequested &&
+        permission === userJourney.role
+      )
+        return true
       return false
     }
 
@@ -90,69 +104,49 @@ export const RoleGuard = (
       return false
     }
 
-    customRole(
-      permission: Permission,
-      journey: Journey,
-      userJourney: UserJourney,
-      userRole: UserRole
-    ): boolean {
-      const customRole = permission as CustomRole
-      let userAccess
-
-      if (Array.isArray(customRole.role)) {
-        userAccess = reduce(
-          customRole.role,
-          (result, role) => {
-            if (result) return true
-            if (this.publicRole(role)) return true
-            if (this.userJourneyRole(role, userJourney)) return true
-            if (this.userRole(role, userRole)) return true
-            return false
-          },
-          false
-        )
-      } else {
-        userAccess =
-          this.publicRole(customRole.role) ||
-          this.userJourneyRole(customRole.role, userJourney) ||
-          this.userRole(customRole.role, userRole)
-      }
-      // check if journey has attributes
-
-      if (
-        customRole.role === Role.publisher &&
-        customRole.attributes ===
-          { template: journey.template, status: journey.status }
-      )
-        return true
-
-      if (
-        customRole.role === 'public' &&
-        customRole.attributes === { template: true }
-      )
-        return true
-
-      if (userAccess === true && customRole.attributes === journey.template)
-        return true
-      return false
-    }
-
     checkAllowedAccess(
       permissions: Permission[],
       journey: Journey,
       userJourney: UserJourney,
-      userRole: UserRole
+      userRole: UserRole,
+      attributes?: Partial<Journey>
     ): boolean {
       return reduce(
         permissions,
         (result, permission) => {
           if (result) return true
-          if (this.publicRole(permission)) return true
-          if (this.userJourneyRole(permission, userJourney)) return true
-          if (this.userRole(permission, userRole)) return true
-          if (this.customRole(permission, journey, userJourney, userRole))
+
+          if (
+            this.publicRole(permission) &&
+            this.checkAttributes(journey, attributes)
+          )
             return true
-          return result
+
+          if (
+            this.userJourneyRole(permission, userJourney) &&
+            this.checkAttributes(journey, attributes)
+          )
+            return true
+
+          if (
+            this.userRole(permission, userRole) &&
+            this.checkAttributes(journey, attributes)
+          )
+            return true
+
+          const customRole = (permission as CustomRole)?.role
+          if (
+            customRole != null &&
+            this.checkAllowedAccess(
+              Array.isArray(customRole) ? customRole : [customRole],
+              journey,
+              userJourney,
+              userRole,
+              (permission as CustomRole).attributes
+            )
+          )
+            return true
+          return false
         },
         false
       )
@@ -206,23 +200,3 @@ export const RoleGuard = (
   const guard = mixin(RolesGuard)
   return guard
 }
-
-// check permission is public
-// return true
-
-// check permission is user journey role
-// return true if user has user journey role
-
-// check permission is role
-// return true if user has role
-
-// check permission is custom role and journey has attributes
-// if role is array for each the following
-// check permission is public
-// return true
-
-// check permission is user journey role
-// return true if user has user journey role
-
-// check permission is role
-// return true if user has role
