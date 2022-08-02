@@ -124,20 +124,7 @@ const blocks: GetJourney_journey_blocks[] = [
         __typename: 'VideoVariant',
         id: '2_0-FallingPlates-529',
         hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-      },
-      variantLanguages: [
-        {
-          __typename: 'Language',
-          id: '529',
-          name: [
-            {
-              __typename: 'Translation',
-              value: 'English',
-              primary: true
-            }
-          ]
-        }
-      ]
+      }
     },
     startAt: null,
     endAt: null,
@@ -437,20 +424,7 @@ const blocks: GetJourney_journey_blocks[] = [
         __typename: 'VideoVariant',
         id: '2_0-FallingPlates-529',
         hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-      },
-      variantLanguages: [
-        {
-          __typename: 'Language',
-          id: '529',
-          name: [
-            {
-              __typename: 'Translation',
-              value: 'English',
-              primary: true
-            }
-          ]
-        }
-      ]
+      }
     },
     startAt: null,
     endAt: null,
