@@ -12,6 +12,8 @@ import {
   ButtonBlock
 } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
+import { UserRoleService } from '../../userRole/userRole.service'
+import { JourneyService } from '../../journey/journey.service'
 import { ButtonBlockResolver } from './button.resolver'
 
 describe('Button', () => {
@@ -103,6 +105,8 @@ describe('Button', () => {
         blockService,
         ButtonBlockResolver,
         UserJourneyService,
+        UserRoleService,
+        JourneyService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()

@@ -3,7 +3,9 @@ import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 
 import { CardBlock, ThemeMode, ThemeName } from '../../../__generated__/graphql'
+import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
+import { UserRoleService } from '../../userRole/userRole.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { CardBlockResolver } from './card.resolver'
@@ -68,6 +70,8 @@ describe('CardBlockResolver', () => {
         blockService,
         CardBlockResolver,
         UserJourneyService,
+        UserRoleService,
+        JourneyService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()
