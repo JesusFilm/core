@@ -354,9 +354,7 @@ type Journey
   seoTitle: String @join__field(graph: JOURNEYS)
   slug: String! @join__field(graph: JOURNEYS)
   status: JourneyStatus! @join__field(graph: JOURNEYS)
-
-  """The journey is a template if not null"""
-  template: TemplateStatus @join__field(graph: JOURNEYS)
+  template: Boolean @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
@@ -523,6 +521,9 @@ type Mutation {
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
+  templateLibraryViewEventCreate: TemplateLibraryViewEvent! @join__field(graph: JOURNEYS)
+  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @join__field(graph: JOURNEYS)
+  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
@@ -761,12 +762,37 @@ input StepViewEventCreateInput {
   id: ID
 }
 
+type TemplateLibraryViewEvent implements Event {
+  id: ID!
+  userId: ID!
+}
+
+type TemplatePreviewEvent implements Event {
+  id: ID!
+  journeyId: ID!
+  userId: ID!
+}
+
+input TemplatePreviewEventInput {
+  journeyId: ID!
+}
+
 enum TemplateStatus {
   """Not in the template library"""
   private
 
   """In the template library"""
   public
+}
+
+type TemplateUseEvent implements Event {
+  id: ID!
+  journeyId: ID!
+  userId: ID!
+}
+
+input TemplateUseEventInput {
+  journeyId: ID!
 }
 
 enum ThemeMode {

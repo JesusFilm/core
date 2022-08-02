@@ -64,20 +64,7 @@ const video: TreeBlock<VideoBlock> = {
       __typename: 'VideoVariant',
       id: '5_0-NUA0201-0-0-529',
       hls: 'https://arc.gt/hls/5_0-NUA0201-0-0/529'
-    },
-    variantLanguages: [
-      {
-        __typename: 'Language',
-        id: '529',
-        name: [
-          {
-            __typename: 'Translation',
-            value: 'English',
-            primary: true
-          }
-        ]
-      }
-    ]
+    }
   },
   posterBlockId: null,
   children: []

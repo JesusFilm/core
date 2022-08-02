@@ -90,9 +90,7 @@ type Journey @key(fields: "id") {
   status: JourneyStatus!
   seoTitle: String
   seoDescription: String
-
-  """The journey is a template if not null"""
-  template: TemplateStatus
+  template: Boolean
   userJourneys: [UserJourney!]
 }
 
@@ -687,6 +685,31 @@ type StepViewEvent implements Event {
   block: StepBlock
 }
 
+type TemplateLibraryViewEvent implements Event {
+  id: ID!
+  userId: ID!
+}
+
+input TemplateUseEventInput {
+  journeyId: ID!
+}
+
+type TemplateUseEvent implements Event {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+}
+
+input TemplatePreviewEventInput {
+  journeyId: ID!
+}
+
+type TemplatePreviewEvent implements Event {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+}
+
 input VideoStartEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -844,14 +867,6 @@ type PowerBiEmbed {
   expiration: String!
 }
 
-enum TemplateStatus {
-  """Not in the template library"""
-  private
-
-  """In the template library"""
-  public
-}
-
 input JourneyCreateInput {
   """
   ID should be unique Response UUID
@@ -963,6 +978,9 @@ extend type Mutation {
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
+  templateLibraryViewEventCreate: TemplateLibraryViewEvent!
+  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent!
+  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent!
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
   videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
