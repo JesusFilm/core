@@ -159,6 +159,7 @@ export const RoleGuard = (
       if (userId == null) return false
 
       const args = context.getArgByIndex(1)
+      const access = Array.isArray(permissions) ? permissions : [permissions]
       const journeyId = get(args, journeyIdArgName)
       if (journeyId == null)
         throw new AuthenticationError('No journeyId provided')
@@ -174,9 +175,6 @@ export const RoleGuard = (
             userId
           )
 
-          const access = Array.isArray(permissions)
-            ? permissions
-            : [permissions]
           result = this.checkAllowedAccess(
             access,
             journey,
@@ -194,7 +192,6 @@ export const RoleGuard = (
           userId
         )
 
-        const access = Array.isArray(permissions) ? permissions : [permissions]
         result = this.checkAllowedAccess(access, journey, userJourney, userRole)
       }
       if (!result)
