@@ -115,7 +115,7 @@ describe('JourneyService', () => {
       expect(await service.getAllPublishedJourneys()).toEqual([journeyWithId])
     })
 
-    it('should filter by featured', async () => {
+    it('should filter by filter query', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(
@@ -131,49 +131,6 @@ describe('JourneyService', () => {
         return await mockDbQueryResult(db, [journey])
       })
       await service.getAllPublishedJourneys({ featured: true })
-      expect(db.query).toHaveBeenCalled()
-    })
-
-    it('should filter by not featured', async () => {
-      db.query.mockImplementationOnce(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(
-          aql`FOR journey IN undefined
-          FILTER journey.status == @value0
-          AND journey.template != true AND journey.featuredAt == null
-          RETURN journey
-      `.query
-        )
-        expect(bindVars).toEqual({
-          value0: 'published'
-        })
-        return await mockDbQueryResult(db, [journey])
-      })
-      await service.getAllPublishedJourneys({ featured: false })
-      expect(db.query).toHaveBeenCalled()
-    })
-
-    it('should filter by template', async () => {
-      const templateJourney = {
-        ...journey,
-        template: true
-      }
-
-      db.query.mockImplementationOnce(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(
-          aql`FOR journey IN undefined
-          FILTER journey.status == @value0
-          AND journey.template == true AND journey.featuredAt != null
-          RETURN journey
-      `.query
-        )
-        expect(bindVars).toEqual({
-          value0: 'published'
-        })
-        return await mockDbQueryResult(db, [templateJourney])
-      })
-      await service.getAllPublishedJourneys({ featured: true, template: true })
       expect(db.query).toHaveBeenCalled()
     })
   })
