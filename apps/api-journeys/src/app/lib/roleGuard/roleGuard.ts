@@ -174,8 +174,15 @@ export const RoleGuard = (
             userId
           )
 
-          const per = Array.isArray(permissions) ? permissions : [permissions]
-          result = this.checkAllowedAccess(per, journey, userJourney, userRole)
+          const access = Array.isArray(permissions)
+            ? permissions
+            : [permissions]
+          result = this.checkAllowedAccess(
+            access,
+            journey,
+            userJourney,
+            userRole
+          )
           if (!result) break
         }
       } else {
@@ -187,8 +194,8 @@ export const RoleGuard = (
           userId
         )
 
-        const per = Array.isArray(permissions) ? permissions : [permissions]
-        result = this.checkAllowedAccess(per, journey, userJourney, userRole)
+        const access = Array.isArray(permissions) ? permissions : [permissions]
+        result = this.checkAllowedAccess(access, journey, userJourney, userRole)
       }
       if (!result)
         throw new AuthenticationError(

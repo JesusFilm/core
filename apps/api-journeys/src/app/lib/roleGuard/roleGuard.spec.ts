@@ -202,7 +202,26 @@ describe('RoleGuard', () => {
       expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
     })
 
-    it('should return true on different roles', async () => {
+    it('should return true with different roles', async () => {
+      const gqlContext = gqlContextMockFactory(
+        { id: '2' },
+        {
+          headers: { 'user-id': '1' },
+          req: createMock<Request>()
+        }
+      )
+      const RoleGuardClass = RoleGuard(
+        'id',
+        [UserJourneyRole.editor, UserJourneyRole.owner, Role.publisher],
+        fetchUserJourney,
+        fetchUserRole,
+        fetchJourney
+      )
+      const roleGuard = new RoleGuardClass(gqlContext)
+      expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
+    })
+
+    it('should return true with defined roles and custom roles', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
