@@ -404,6 +404,7 @@ export class VideoProgressEventCreateInput {
 
 export class JourneysFilter {
     featured?: Nullable<boolean>;
+    template?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {
