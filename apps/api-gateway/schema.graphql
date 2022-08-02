@@ -354,9 +354,7 @@ type Journey
   seoTitle: String @join__field(graph: JOURNEYS)
   slug: String! @join__field(graph: JOURNEYS)
   status: JourneyStatus! @join__field(graph: JOURNEYS)
-
-  """The journey is a template if not null"""
-  template: TemplateStatus @join__field(graph: JOURNEYS)
+  template: Boolean @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
@@ -603,6 +601,7 @@ type Query {
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
+  getUserRole: UserRole @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
@@ -663,6 +662,14 @@ input RadioQuestionSubmissionEventCreateInput {
   """
   id: ID
   radioOptionBlockId: ID!
+}
+
+enum Role {
+  """
+  User can create templates and
+  add them to template library
+  """
+  publisher
 }
 
 type SignUpBlock implements Block {
@@ -869,7 +876,6 @@ type User
   id: ID! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
-  role: UserRole @join__field(graph: USERS)
 }
 
 type UserJourney
@@ -890,12 +896,13 @@ enum UserJourneyRole {
   owner
 }
 
-enum UserRole {
-  """
-  User can create templates and
-  add them to template library
-  """
-  publisher
+type UserRole
+  @join__owner(graph: JOURNEYS)
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  id: ID! @join__field(graph: JOURNEYS)
+  roles: [Role!] @join__field(graph: JOURNEYS)
+  userId: ID! @join__field(graph: JOURNEYS)
 }
 
 type Video

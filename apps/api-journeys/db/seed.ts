@@ -25,6 +25,11 @@ async function main(): Promise<void> {
       keyOptions: { type: 'uuid' }
     })
 
+  if (!(await db.collection('userRoles').exists()))
+    await db.createCollection('userRoles', {
+      keyOptions: { type: 'uuid' }
+    })
+
   await db.collection('journeys').ensureIndex({
     type: 'persistent',
     fields: ['slug'],
