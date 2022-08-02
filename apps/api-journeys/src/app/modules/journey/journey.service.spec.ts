@@ -150,11 +150,10 @@ describe('JourneyService', () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(
-          aql`
-      FOR journey in undefined
-        FOR userJourney in userJourneys
-          FILTER userJourney.journeyId == journey._key && userJourney.userId == @value0
-            && (userJourney.role == @value1 || userJourney.role == @value2)
+          aql`FOR userJourney in userJourneys
+          FOR journey in undefined
+            FILTER userJourney.journeyId == journey._key && userJourney.userId == @value0
+              && (userJourney.role == @value1 || userJourney.role == @value2)
         && journey.status IN @value3
           RETURN journey
     `.query
@@ -178,11 +177,11 @@ describe('JourneyService', () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(
-          aql`
-      FOR journey in undefined
-        FOR user in userRoles
-          FILTER user.userId == @value0 && @value1 IN user.roles
-            FILTER journey.template == true
+          aql`FOR user in userRoles
+          FOR journey in undefined
+            FILTER user.userId == @value0 && @value1 IN user.roles
+              FILTER journey.template == true
+              LIMIT 1
         && true
           RETURN journey
     `.query

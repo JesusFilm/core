@@ -98,15 +98,16 @@ export class JourneyService extends BaseService {
     const roleFilter =
       template === true
         ? aql`FOR user in userRoles
-          FILTER user.userId == ${userId} && ${Role.publisher} IN user.roles
-            FILTER journey.template == true`
+          FOR journey in ${this.collection}
+            FILTER user.userId == ${userId} && ${Role.publisher} IN user.roles
+              FILTER journey.template == true
+              LIMIT 1`
         : aql`FOR userJourney in userJourneys
-          FILTER userJourney.journeyId == journey._key && userJourney.userId == ${userId}
-            && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})`
+          FOR journey in ${this.collection}
+            FILTER userJourney.journeyId == journey._key && userJourney.userId == ${userId}
+              && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})`
 
-    const result = await this.db.query(aql`
-      FOR journey in ${this.collection}
-        ${roleFilter}
+    const result = await this.db.query(aql`${roleFilter}
         ${statusFilter}
           RETURN journey
     `)
