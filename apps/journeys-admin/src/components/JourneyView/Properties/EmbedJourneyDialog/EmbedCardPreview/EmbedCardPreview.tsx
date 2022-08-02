@@ -13,7 +13,7 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { FramePortal } from '../../../../FramePortal'
 
-// const CARD_WIDTH = 360
+const CARD_WIDTH = 380
 
 export function EmbedCardPreview(): ReactElement {
   const { journey } = useJourney()
@@ -23,48 +23,58 @@ export function EmbedCardPreview(): ReactElement {
   return (
     <Box
       sx={{
-        transform: smUp ? 'scale(0.5)' : 'scale(0.8)',
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        transformOrigin: smUp ? '15% top' : null
+        width: 255,
+        position: 'relative',
+        height: 294,
+        mb: '-24px',
+        overflow: 'hidden'
       }}
     >
-      {/* <Box
-        sx={{
-          backgroundColor: '#DCDDE5',
-          width: CARD_WIDTH - 50,
-          height: 10,
-          borderRadius: '16px 16px 0 0',
-          ml: 6
-        }}
-      />
       <Box
         sx={{
-          backgroundColor: '#AAACBB',
-          width: CARD_WIDTH - 25,
-          height: 10,
-          borderRadius: '16px 16px 0 0',
-          ml: 3
+          transform: 'scale(0.5)',
+          transformOrigin: smUp ? 'top left' : '22.5% top'
         }}
-      /> */}
-      <FramePortal height={520}>
-        <ThemeProvider
-          themeName={journey?.themeName ?? ThemeName.base}
-          themeMode={journey?.themeMode ?? ThemeMode.light}
-        >
-          {block != null && (
-            <BlockRenderer
-              block={block}
-              wrappers={{
-                ImageWrapper: NullWrapper,
-                VideoWrapper: NullWrapper
-              }}
-            />
-          )}
-        </ThemeProvider>
-      </FramePortal>
+      >
+        <Box
+          sx={{
+            ml: 7,
+            mb: '-3.5px',
+            height: 12,
+            width: CARD_WIDTH - 55,
+            backgroundColor: '#DCDDE5',
+            borderRadius: '16px 16px 0 0'
+          }}
+        />
+        <Box
+          sx={{
+            ml: 3.5,
+            mb: '-3.5px',
+            height: 12,
+            width: CARD_WIDTH - 30,
+            backgroundColor: '#AAACBB',
+            borderRadius: '16px 16px 0 0'
+          }}
+        />
+        <FramePortal width={380} height={520}>
+          <ThemeProvider
+            themeName={journey?.themeName ?? ThemeName.base}
+            themeMode={journey?.themeMode ?? ThemeMode.light}
+          >
+            <Box sx={{ height: '100%' }}>
+              {block != null && (
+                <BlockRenderer
+                  block={block}
+                  wrappers={{
+                    ImageWrapper: NullWrapper,
+                    VideoWrapper: NullWrapper
+                  }}
+                />
+              )}
+            </Box>
+          </ThemeProvider>
+        </FramePortal>
+      </Box>
     </Box>
   )
 }

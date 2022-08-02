@@ -33,7 +33,7 @@ export function EmbedJourneyDialog({
 
   const iframeLink = `<div style="position: relative; padding-top: 150%;"><iframe src="${process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'your.nextstep.is'
     }/embed/${journey?.slug as string
-    }" style="position: absolute, top: 0, left: 0, bottom: 0, right: 0, height: 100%" /></div>`
+    }" style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; height: 100%" /></div>`
 
   const handleSubmit = async (): Promise<void> => {
     await navigator.clipboard.writeText(iframeLink ?? '')
@@ -59,12 +59,13 @@ export function EmbedJourneyDialog({
     >
       <Stack
         direction={smUp ? 'row' : 'column'}
-        spacing={smUp ? 0 : 5}
+        spacing={smUp ? 3 : 5}
         sx={{ height: 270 }}
       >
         {smUp ? (
           <Box
             sx={{
+              padding: 0,
               overflowY: smUp ? 'hidden' : null
             }}
           >
@@ -87,7 +88,7 @@ export function EmbedJourneyDialog({
             >
               <Typography variant="subtitle2">{t('Show Preview')}</Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <EmbedCardPreview />
             </AccordionDetails>
           </Accordion>
