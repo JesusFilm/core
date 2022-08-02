@@ -308,6 +308,25 @@ describe('RoleGuard', () => {
       const roleGuard = new RoleGuardClass(gqlContext)
       expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
     })
+
+    it('should return true if role is an array and includes publisher', async () => {
+      const gqlContext = gqlContextMockFactory(
+        { id: '2' },
+        {
+          headers: { 'user-id': '1' },
+          req: createMock<Request>()
+        }
+      )
+      const RoleGuardClass = RoleGuard(
+        'id',
+        [Role.publisher],
+        fetchUserJourney,
+        fetchUserRole,
+        fetchJourney
+      )
+      const roleGuard = new RoleGuardClass(gqlContext)
+      expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
+    })
   })
 
   describe('custom Roles', () => {

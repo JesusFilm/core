@@ -348,7 +348,6 @@ export class JourneyResolver {
   @UseGuards(
     RoleGuard('ids', [
       UserJourneyRole.owner,
-      Role.publisher,
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
@@ -373,7 +372,6 @@ export class JourneyResolver {
   @UseGuards(
     RoleGuard('ids', [
       UserJourneyRole.owner,
-      Role.publisher,
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
@@ -397,7 +395,6 @@ export class JourneyResolver {
   @UseGuards(
     RoleGuard('ids', [
       UserJourneyRole.owner,
-      Role.publisher,
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
@@ -422,7 +419,6 @@ export class JourneyResolver {
   @UseGuards(
     RoleGuard('ids', [
       UserJourneyRole.owner,
-      Role.publisher,
       { role: Role.publisher, attributes: { template: true } }
     ])
   )

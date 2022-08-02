@@ -7,7 +7,7 @@ import {
   Inject
 } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
-import { get, reduce } from 'lodash'
+import { get, includes, reduce } from 'lodash'
 import { AuthenticationError } from 'apollo-server-errors'
 import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
 import {
@@ -73,35 +73,25 @@ export const RoleGuard = (
     ) {}
 
     checkAttributes(journey: Journey, attributes?: Partial<Journey>): boolean {
-      if (attributes == null) return true
-      if (attributes.template === journey.template) return true
-      if (
-        attributes.template === journey.template &&
-        attributes.status === journey.status
+      if (attributes == null || attributes === {}) return true
+      return Object.keys(attributes).every(
+        (key: any) => attributes[key] === journey[key]
       )
-        return true
-      return false
     }
 
     publicRole(permission: Permission): boolean {
-      if (permission === 'public') return true
-      return false
+      return permission === 'public'
     }
 
     userJourneyRole(permission: Permission, userJourney: UserJourney): boolean {
-      if (
+      return (
         permission !== UserJourneyRole.inviteRequested &&
         permission === userJourney.role
       )
-        return true
-      return false
     }
 
     userRole(permission: Permission, userRole: UserRole): boolean {
-      const role = userRole.roles?.find((role) => role === Role.publisher)
-      if (role == null) return false
-      if (permission === role) return true
-      return false
+      return includes(userRole.roles, permission) ?? false
     }
 
     checkAllowedAccess(
