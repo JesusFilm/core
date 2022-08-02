@@ -84,14 +84,12 @@ describe('JourneyService', () => {
 
   describe('journeyFilter', () => {
     it('should return template query', async () => {
-      const filter: JourneysFilter = { featured: true, template: true }
+      const filter: JourneysFilter = { template: true }
       const response = await service.journeyFilter(filter)
-      expect(response.query).toEqual(
-        aql`AND journey.template == true AND journey.featuredAt != null`.query
-      )
+      expect(response.query).toEqual(aql`AND journey.template == true`.query)
     })
     it('should return featured query', async () => {
-      const filter: JourneysFilter = { featured: true, template: false }
+      const filter: JourneysFilter = { featured: true }
       const response = await service.journeyFilter(filter)
       expect(response.query).toEqual(
         aql`AND journey.template != true AND journey.featuredAt != null`.query
@@ -166,7 +164,7 @@ describe('JourneyService', () => {
         expect(query).toEqual(
           aql`FOR journey IN undefined
           FILTER journey.status == @value0
-          AND journey.template == true
+          AND journey.template == true AND journey.featuredAt != null
           RETURN journey
       `.query
         )
