@@ -49,20 +49,7 @@ describe('CardWrapper', () => {
               __typename: 'VideoVariant',
               id: '2_0-FallingPlates-529',
               hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-            },
-            variantLanguages: [
-              {
-                __typename: 'Language',
-                id: '529',
-                name: [
-                  {
-                    __typename: 'Translation',
-                    value: 'English',
-                    primary: true
-                  }
-                ]
-              }
-            ]
+            }
           },
           startAt: null,
           endAt: null,
@@ -137,20 +124,7 @@ describe('CardWrapper', () => {
                 __typename: 'VideoVariant',
                 hls: null,
                 id: '2_0-FallingPlates-529'
-              },
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      __typename: 'Translation',
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              }
             },
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529'
@@ -305,20 +279,7 @@ describe('CardWrapper', () => {
             ],
             image:
               'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-            variant: null,
-            variantLanguages: [
-              {
-                __typename: 'Language',
-                id: '529',
-                name: [
-                  {
-                    __typename: 'Translation',
-                    value: 'English',
-                    primary: true
-                  }
-                ]
-              }
-            ]
+            variant: null
           },
           startAt: null,
           endAt: null,
@@ -389,20 +350,7 @@ describe('CardWrapper', () => {
               ],
               image:
                 'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-              variant: null,
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      __typename: 'Translation',
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              variant: null
             },
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529'

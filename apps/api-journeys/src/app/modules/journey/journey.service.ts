@@ -3,6 +3,7 @@ import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database/BaseService'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
+import { AqlQuery } from 'arangojs/aql'
 import {
   Journey,
   JourneyStatus,
@@ -12,31 +13,26 @@ import {
 
 @Injectable()
 export class JourneyService extends BaseService {
+  journeyFilter(filter?: JourneysFilter): AqlQuery {
+    const { featured, template } = filter ?? {}
+
+    return aql.join(
+      [
+        aql`AND journey.template == ${template === true}`,
+        featured === true && aql`AND journey.featuredAt != null`,
+        featured === false && aql`AND journey.featuredAt == null`
+      ].filter((x) => x !== false)
+    )
+  }
+
   @KeyAsId()
   async getAllPublishedJourneys(filter?: JourneysFilter): Promise<Journey[]> {
-    if (filter?.featured === true) {
-      return await (
-        await this.db.query(aql`
-          FOR journey IN ${this.collection}
-            FILTER journey.status == ${JourneyStatus.published}
-              AND journey.featuredAt != null
-            RETURN journey
-        `)
-      ).all()
-    } else if (filter?.featured === false) {
-      return await (
-        await this.db.query(aql`
-          FOR journey IN ${this.collection}
-            FILTER journey.status == ${JourneyStatus.published}
-              AND journey.featuredAt == null
-            RETURN journey
-        `)
-      ).all()
-    }
+    const search = this.journeyFilter(filter)
+
     return await (
-      await this.db.query(aql`
-        FOR journey IN ${this.collection}
+      await this.db.query(aql`FOR journey IN ${this.collection}
           FILTER journey.status == ${JourneyStatus.published}
+          ${search}
           RETURN journey
       `)
     ).all()
