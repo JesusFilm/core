@@ -8,11 +8,13 @@ import {
   ThemeMode,
   ThemeName,
   UserJourneyRole,
-  JourneysReportType
+  JourneysReportType,
+  Role
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
+import { UserRoleService } from '../userRole/userRole.service'
 import { JourneyResolver } from './journey.resolver'
 import { JourneyService } from './journey.service'
 
@@ -45,7 +47,8 @@ describe('JourneyResolver', () => {
   let resolver: JourneyResolver,
     service: JourneyService,
     bService: BlockService,
-    ujService: UserJourneyService
+    ujService: UserJourneyService,
+    urService: UserRoleService
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
@@ -115,6 +118,12 @@ describe('JourneyResolver', () => {
     userId: 'userId',
     journeyId: 'journeyId',
     role: UserJourneyRole.editor
+  }
+
+  const userRole = {
+    id: 'userRole.id',
+    userId: 'user.id',
+    roles: [Role.publisher]
   }
 
   const invitedUserJourney = {
@@ -204,6 +213,13 @@ describe('JourneyResolver', () => {
     })
   }
 
+  const userRoleService = {
+    provide: UserRoleService,
+    useFactory: () => ({
+      getUserRoleById: jest.fn(() => userRole)
+    })
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -211,13 +227,15 @@ describe('JourneyResolver', () => {
         journeyService,
         blockService,
         BlockResolver,
-        userJourneyService
+        userJourneyService,
+        userRoleService
       ]
     }).compile()
     resolver = module.get<JourneyResolver>(JourneyResolver)
     service = module.get<JourneyService>(JourneyService)
     ujService = module.get<UserJourneyService>(UserJourneyService)
     bService = module.get<BlockService>(BlockService)
+    urService = module.get<UserRoleService>(UserRoleService)
   })
 
   describe('adminJourneysEmbed', () => {
@@ -391,13 +409,14 @@ describe('JourneyResolver', () => {
     it('should get published journeys', async () => {
       expect(
         await resolver.adminJourneys(
-          'userId',
+          'userRole.id',
           [JourneyStatus.draft, JourneyStatus.published],
           undefined
         )
       ).toEqual([journey, journey])
+      expect(urService.getUserRoleById).toHaveBeenCalledWith('userRole.id')
       expect(service.getAllByRole).toHaveBeenCalledWith(
-        'userId',
+        userRole,
         [JourneyStatus.draft, JourneyStatus.published],
         undefined
       )

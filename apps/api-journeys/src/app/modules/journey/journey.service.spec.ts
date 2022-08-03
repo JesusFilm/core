@@ -50,6 +50,12 @@ describe('JourneyService', () => {
     slug: 'published-slug'
   }
 
+  const userRole = {
+    id: 'userRole.id',
+    userId: 'user.id',
+    roles: [Role.publisher]
+  }
+
   const journeyWithId = keyAsId(journey)
 
   describe('getAll', () => {
@@ -159,7 +165,7 @@ describe('JourneyService', () => {
     `.query
         )
         expect(bindVars).toEqual({
-          value0: '1',
+          value0: 'user.id',
           value1: 'owner',
           value2: 'editor',
           value3: ['published']
@@ -169,32 +175,25 @@ describe('JourneyService', () => {
       await service.getAllPublishedJourneys({ featured: true })
       expect(db.query).toHaveBeenCalled()
       expect(
-        await service.getAllByRole('1', [JourneyStatus.published])
+        await service.getAllByRole(userRole, [JourneyStatus.published])
       ).toEqual([journeyWithId])
     })
 
     it('should return templates for publishers', async () => {
       db.query.mockImplementationOnce(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
+        const { query } = q as unknown as AqlQuery
         expect(query).toEqual(
-          aql`FOR user in userRoles
-          FOR journey in undefined
-            FILTER user.userId == @value0 && @value1 IN user.roles
+          aql`FOR journey in undefined
               FILTER journey.template == true
-              LIMIT 1
         && true
           RETURN journey
     `.query
         )
-        expect(bindVars).toEqual({
-          value0: '1',
-          value1: Role.publisher
-        })
         return await mockDbQueryResult(db, [journey])
       })
       await service.getAllPublishedJourneys({ featured: true })
       expect(db.query).toHaveBeenCalled()
-      expect(await service.getAllByRole('1', undefined, true)).toEqual([
+      expect(await service.getAllByRole(userRole, undefined, true)).toEqual([
         journeyWithId
       ])
     })
