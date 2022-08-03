@@ -22,4 +22,9 @@ Default.args = {
   templates: [oldTemplate, publihedTemplate, descriptiveTemplate]
 }
 
+export const Loading = Template.bind({})
+Loading.args = {
+  templates: null
+}
+
 export default TemplateListStory as Meta

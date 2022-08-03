@@ -71,7 +71,9 @@ export function TemplateCard({
             justifyContent: 'center',
             alignItems: 'center',
             maxWidth: '129px',
-            minWidth: '129px'
+            minWidth: '129px',
+            borderRight: '1px solid',
+            borderColor: 'divider'
           }}
         >
           <InsertPhotoRoundedIcon />
