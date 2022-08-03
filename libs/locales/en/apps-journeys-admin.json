@@ -46,9 +46,11 @@
   "Are you sure you would like to permanently delete all trashed journeys immediately?": "Are you sure you would like to permanently delete all trashed journeys immediately?",
   "Journey URL": "Journey URL",
   "Edit URL": "Edit URL",
-  "By embedding a Journey to your site, you agree to the Terms and Agreement": "By embedding a Journey to your site, you agree to the Terms and Agreement",
+  "Embed Journey": "Embed Journey",
+  "Show Preview": "Show Preview",
+  "By embedding a Journey to your site, you agree to the ": "By embedding a Journey to your site, you agree to the ",
+  "Terms of agreement": "Terms of agreement",
   "Properties": "Properties",
   "Access Control": "Access Control",
-  "Embed Code": "Embed Code",
   "Field update failed. Reload the page or try again.": "Field update failed. Reload the page or try again."
 }
