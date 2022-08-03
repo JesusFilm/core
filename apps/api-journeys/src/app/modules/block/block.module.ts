@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 
 import { DatabaseModule } from '@core/nest/database/DatabaseModule'
+import { JourneyService } from '../journey/journey.service'
 import { BlockService } from './block.service'
 import { BlockResolver } from './block.resolver'
 import { CardBlockResolver } from './card/card.resolver'
@@ -26,6 +27,7 @@ import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
     CardBlockResolver,
     IconBlockResolver,
     ImageBlockResolver,
+    JourneyService,
     RadioOptionBlockResolver,
     RadioQuestionBlockResolver,
     SignUpBlockResolver,

@@ -7,7 +7,9 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../__generated__/graphql'
+import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
+import { UserRoleService } from '../../userRole/userRole.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { TypographyBlockResolver } from './typography.resolver'
@@ -69,6 +71,8 @@ describe('TypographyBlockResolver', () => {
         blockService,
         TypographyBlockResolver,
         UserJourneyService,
+        UserRoleService,
+        JourneyService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()

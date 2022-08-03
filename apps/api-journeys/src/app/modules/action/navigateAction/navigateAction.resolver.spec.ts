@@ -2,7 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import { BlockService } from '../../block/block.service'
+import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
+import { UserRoleService } from '../../userRole/userRole.service'
 import { ActionResolver } from '../action.resolver'
 import { NavigateActionResolver } from './navigateAction.resolver'
 
@@ -45,6 +47,8 @@ describe('NavigateActionResolver', () => {
         NavigateActionResolver,
         ActionResolver,
         UserJourneyService,
+        UserRoleService,
+        JourneyService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()

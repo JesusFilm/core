@@ -7,6 +7,8 @@ import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { StepBlock } from '../../../__generated__/graphql'
+import { UserRoleService } from '../../userRole/userRole.service'
+import { JourneyService } from '../../journey/journey.service'
 import { StepBlockResolver } from './step.resolver'
 
 describe('StepBlockResolver', () => {
@@ -49,6 +51,8 @@ describe('StepBlockResolver', () => {
         blockService,
         StepBlockResolver,
         UserJourneyService,
+        UserRoleService,
+        JourneyService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()
