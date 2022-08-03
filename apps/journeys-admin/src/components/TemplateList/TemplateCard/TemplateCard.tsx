@@ -34,11 +34,16 @@ export function TemplateCard({
       ? nativeLanguage
       : `${nativeLanguage} (${localLanguage})`
 
-  const date = intlFormat(parseISO(template?.createdAt), {
-    day: 'numeric',
-    month: 'long',
-    year: isThisYear(parseISO(template?.createdAt)) ? undefined : 'numeric'
-  })
+  const date =
+    template != null
+      ? intlFormat(parseISO(template.createdAt), {
+          day: 'numeric',
+          month: 'long',
+          year: isThisYear(parseISO(template?.createdAt))
+            ? undefined
+            : 'numeric'
+        })
+      : ''
 
   return (
     <Card
