@@ -692,7 +692,8 @@ describe('JourneyResolver', () => {
         status: JourneyStatus.draft,
         publishedAt: undefined,
         slug: `${journey.title}-copy`,
-        title: `${journey.title} copy`
+        title: `${journey.title} copy`,
+        template: false
       })
     })
 
@@ -742,7 +743,8 @@ describe('JourneyResolver', () => {
         status: JourneyStatus.draft,
         publishedAt: undefined,
         slug: `${journey.title}-copy-2`,
-        title: `${journey.title} copy 2`
+        title: `${journey.title} copy 2`,
+        template: false
       })
     })
 

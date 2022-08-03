@@ -1,0 +1,32 @@
+type TemplateLibraryViewEvent implements Event {
+  id: ID!
+  userId: ID!
+}
+
+input TemplateUseEventInput {
+  journeyId: ID!
+}
+
+type TemplateUseEvent implements Event {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+}
+
+input TemplatePreviewEventInput {
+  journeyId: ID!
+}
+
+type TemplatePreviewEvent implements Event {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+}
+
+extend type Mutation {
+  templateLibraryViewEventCreate: TemplateLibraryViewEvent!
+  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent!
+  templatePreviewEventCreate(
+    input: TemplatePreviewEventInput!
+  ): TemplatePreviewEvent!
+}

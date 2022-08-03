@@ -9,6 +9,7 @@ import { DocumentCollection } from 'arangojs/collection'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery } from 'arangojs/aql'
 import {
+  JourneysFilter,
   JourneyStatus,
   Role,
   ThemeMode,
@@ -88,49 +89,58 @@ describe('JourneyService', () => {
     })
   })
 
+  describe('journeyFilter', () => {
+    it('should return template query', async () => {
+      const filter: JourneysFilter = { template: true }
+      const response = await service.journeyFilter(filter)
+      expect(response.query).toEqual(aql`AND journey.template == @value0`.query)
+    })
+    it('should return featured query', async () => {
+      const filter: JourneysFilter = { featured: true }
+      const response = await service.journeyFilter(filter)
+      expect(response.query).toEqual(
+        aql`AND journey.template == @value0 AND journey.featuredAt != null`
+          .query
+      )
+    })
+    it('should return not featured query', async () => {
+      const filter: JourneysFilter = { featured: false }
+      const response = await service.journeyFilter(filter)
+      expect(response.query).toEqual(
+        aql`AND journey.template == @value0 AND journey.featuredAt == null`
+          .query
+      )
+    })
+    it('should return published query', async () => {
+      const filter: JourneysFilter = {}
+      const response = await service.journeyFilter(filter)
+      expect(response.query).toEqual(aql`AND journey.template == @value0`.query)
+    })
+  })
+
   describe('getAllPublishedJourneys', () => {
     it('should return published journeys', async () => {
       db.query.mockReturnValueOnce(mockDbQueryResult(db, [journey]))
       expect(await service.getAllPublishedJourneys()).toEqual([journeyWithId])
     })
 
-    it('should filter by featured', async () => {
+    it('should filter by filter query', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(
-          aql`
-          FOR journey IN undefined
-            FILTER journey.status == @value0
-              AND journey.featuredAt != null
-            RETURN journey
-        `.query
+          aql`FOR journey IN undefined
+          FILTER journey.status == @value0
+          AND journey.template == @value1 AND journey.featuredAt != null
+          RETURN journey
+      `.query
         )
         expect(bindVars).toEqual({
-          value0: 'published'
+          value0: 'published',
+          value1: false
         })
         return await mockDbQueryResult(db, [journey])
       })
       await service.getAllPublishedJourneys({ featured: true })
-      expect(db.query).toHaveBeenCalled()
-    })
-
-    it('should filter by not featured', async () => {
-      db.query.mockImplementationOnce(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(
-          aql`
-          FOR journey IN undefined
-            FILTER journey.status == @value0
-              AND journey.featuredAt == null
-            RETURN journey
-        `.query
-        )
-        expect(bindVars).toEqual({
-          value0: 'published'
-        })
-        return await mockDbQueryResult(db, [journey])
-      })
-      await service.getAllPublishedJourneys({ featured: false })
       expect(db.query).toHaveBeenCalled()
     })
   })

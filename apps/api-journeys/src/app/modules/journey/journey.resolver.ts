@@ -35,7 +35,8 @@ import {
   UserJourney,
   UserJourneyRole,
   JourneysFilter,
-  JourneysReportType
+  JourneysReportType,
+  Role
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
@@ -220,7 +221,16 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
+  @UseGuards(
+    RoleGuard('id', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      {
+        role: 'public',
+        attributes: { template: true, status: JourneyStatus.published }
+      }
+    ])
+  )
   async journeyDuplicate(
     @Args('id') id: string,
     @CurrentUserId() userId: string
@@ -269,7 +279,8 @@ export class JourneyResolver {
       title: duplicateTitle,
       createdAt: new Date().toISOString(),
       publishedAt: undefined,
-      status: JourneyStatus.draft
+      status: JourneyStatus.draft,
+      template: false
     }
 
     let retry = true
@@ -296,7 +307,13 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
+  @UseGuards(
+    RoleGuard('id', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeyUpdate(
     @Args('id') id: string,
     @Args('input') input: JourneyUpdateInput
@@ -318,7 +335,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('id', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeyPublish(@Args('id') id: string): Promise<Journey> {
     return await this.journeyService.update(id, {
       status: JourneyStatus.published,
@@ -327,7 +349,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('ids', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeysArchive(
     @CurrentUserId() userId: string,
     @Args('ids') ids: string[]
@@ -346,7 +373,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('ids', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeysDelete(
     @CurrentUserId() userId: string,
     @Args('ids') ids: string[]
@@ -364,7 +396,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('ids', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeysTrash(
     @CurrentUserId() userId: string,
     @Args('ids') ids: string[]
@@ -383,7 +420,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('ids', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeysRestore(
     @CurrentUserId() userId: string,
     @Args('ids') ids: string[]
