@@ -47,7 +47,7 @@ describe('embedJourneyDialog', () => {
 
     it('should copy the embed code from the modal', async () => {
       const embedCode =
-        '<div style="position: relative; padding-top: 150%;"><iframe src="your.nextstep.is/embed/undefined" style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; height: 100%" /></div>'
+        '<div style="position: relative; width: 356px; height: 546px; overflow: hidden;"><iframe src="your.nextstep.is/embed/undefined" style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; width: 100%; height: 100%; border: none;" /></div>'
       const { getByText, getByRole } = render(
         <SnackbarProvider>
           <EmbedJourneyDialog open onClose={onClose} />
@@ -56,9 +56,7 @@ describe('embedJourneyDialog', () => {
       expect(getByRole('textbox')).toHaveValue(embedCode)
       fireEvent.click(getByRole('button', { name: 'Copy Code' }))
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(embedCode)
-      await waitFor(() =>
-        expect(getByText('Embed Code Copied')).toBeInTheDocument()
-      )
+      await waitFor(() => expect(getByText('Code Copied')).toBeInTheDocument())
     })
   })
 })
