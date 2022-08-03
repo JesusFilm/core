@@ -1,13 +1,7 @@
 import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import {
-  defaultTemplate,
-  descriptiveTemplate,
-  publihedTemplate,
-  archivedTemplate,
-  trashedTemplate
-} from '../TemplateListData'
+import { defaultTemplate, descriptiveTemplate } from '../TemplateListData'
 import { TemplateCard } from '.'
 
 const TemplateCardStory = {
@@ -43,24 +37,6 @@ Loading.args = {
 export const AdminDraft = Template.bind({})
 AdminDraft.args = {
   template: defaultTemplate,
-  admin: true
-}
-
-export const AdminPublished = Template.bind({})
-AdminPublished.args = {
-  template: publihedTemplate,
-  admin: true
-}
-
-export const AdminArchived = Template.bind({})
-AdminArchived.args = {
-  template: archivedTemplate,
-  admin: true
-}
-
-export const AdminTrashed = Template.bind({})
-AdminTrashed.args = {
-  template: trashedTemplate,
   admin: true
 }
 
