@@ -149,32 +149,17 @@ export const RoleGuard = (
       if (userId == null) return false
 
       const args = context.getArgByIndex(1)
-      const access = Array.isArray(permissions) ? permissions : [permissions]
       const journeyId = get(args, journeyIdArgName)
       if (journeyId == null)
         throw new AuthenticationError('No journeyId provided')
 
-      let result = false
-      if (Array.isArray(journeyId)) {
-        for (let i = 0; i < journeyId.length; i++) {
-          const journey = await fj(this.journeyService, journeyId[i])
-          const userRole = await fur(this.userRoleService, userId)
-          const userJourney = await fuj(
-            this.userJourneyService,
-            journeyId[i],
-            userId
-          )
+      const userRole = await fur(this.userRoleService, userId)
 
-          result = this.checkAllowedAccess(
-            access,
-            journey,
-            userJourney,
-            userRole
-          )
-          if (!result) break
-        }
-      } else {
-        const userRole = await fur(this.userRoleService, userId)
+      const access = Array.isArray(permissions) ? permissions : [permissions]
+      const journeyIds = Array.isArray(journeyId) ? journeyId : [journeyId]
+
+      let result = false
+      for (const journeyId of journeyIds) {
         const journey = await fj(this.journeyService, journeyId)
         const userJourney = await fuj(
           this.userJourneyService,
@@ -184,6 +169,7 @@ export const RoleGuard = (
 
         result = this.checkAllowedAccess(access, journey, userJourney, userRole)
       }
+
       if (!result)
         throw new AuthenticationError(
           'User does not have the role to perform this action'
