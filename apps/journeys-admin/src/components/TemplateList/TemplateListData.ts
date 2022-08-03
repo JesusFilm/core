@@ -63,7 +63,7 @@ export const oldTemplate: Template = {
   }
 }
 
-export const publihedTemplate: Template = {
+export const publishedTemplate: Template = {
   ...defaultTemplate,
   id: 'published-template-id',
   title: 'Published Template Heading',

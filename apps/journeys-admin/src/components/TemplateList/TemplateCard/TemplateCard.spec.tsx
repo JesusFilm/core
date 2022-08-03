@@ -6,6 +6,7 @@ import {
   oldTemplate,
   descriptiveTemplate
 } from '../TemplateListData'
+import { GetPublicTemplates_journeys as Template } from '../../../../__generated__/GetPublicTemplates'
 import { TemplateCard } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -22,6 +23,7 @@ describe('TemplateCard', () => {
         'November 19, 2020 - Template created before the current year should also show the year in the date'
       )
     ).toBeInTheDocument()
+    expect(getByText('English')).toBeInTheDocument()
   })
 
   it('should show native and local language', () => {
@@ -29,6 +31,30 @@ describe('TemplateCard', () => {
       <TemplateCard template={descriptiveTemplate} />
     )
     expect(getByText('普通話 (Chinese, Mandarin)')).toBeInTheDocument()
+  })
+
+  it('should show only native language if its the same as local language', () => {
+    const template: Template = {
+      ...defaultTemplate,
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
+          {
+            __typename: 'Translation',
+            value: 'English',
+            primary: true
+          },
+          {
+            __typename: 'Translation',
+            value: 'English',
+            primary: false
+          }
+        ]
+      }
+    }
+    const { getByText } = render(<TemplateCard template={template} />)
+    expect(getByText('English')).toBeInTheDocument()
   })
 
   it('should link to template details', () => {
@@ -44,7 +70,7 @@ describe('TemplateCard', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByText('English')).toBeInTheDocument()
+    expect(getByText('Draft')).toBeInTheDocument()
     expect(getByRole('button')).toBeInTheDocument()
   })
 })
