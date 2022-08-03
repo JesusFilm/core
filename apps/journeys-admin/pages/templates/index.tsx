@@ -12,7 +12,6 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { TemplateList } from '../../src/components/TemplateList'
-// import { templatesData } from '../../src/components/TemplateList/TemplateListData'
 import { GetPublicTemplates } from '../../__generated__/GetPublicTemplates'
 
 const GET_PUBLIC_TEMPLATES = gql`

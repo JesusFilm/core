@@ -9,19 +9,25 @@ interface TemplateListProps {
 
 export function TemplateList({ templates }: TemplateListProps): ReactElement {
   return (
-    <>
-      {templates != null && (
-        <Box
-          sx={{
-            pt: 6,
-            px: { xs: 0, sm: 8 }
-          }}
-        >
-          {templates?.map((template) => (
+    <Box
+      sx={{
+        pt: 6,
+        px: { xs: 0, sm: 8 }
+      }}
+    >
+      {templates != null ? (
+        <>
+          {templates.map((template) => (
             <TemplateCard key={template.id} template={template} />
           ))}
-        </Box>
+        </>
+      ) : (
+        <>
+          <TemplateCard />
+          <TemplateCard />
+          <TemplateCard />
+        </>
       )}
-    </>
+    </Box>
   )
 }
