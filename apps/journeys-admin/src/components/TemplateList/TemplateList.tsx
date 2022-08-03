@@ -7,6 +7,8 @@ interface TemplateListProps {
   templates?: Template[]
 }
 
+// TODO update language
+
 export function TemplateList({ templates }: TemplateListProps): ReactElement {
   return (
     <Container

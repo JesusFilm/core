@@ -1,24 +1,39 @@
 import { render } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { SnackbarProvider } from 'notistack'
+import { defaultTemplate, oldTemplate } from '../TemplateListData'
 import { TemplateCard } from '.'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
 
 describe('TemplateCard', () => {
   it('should render', () => {
-    const templateCard = {
-      id: '1',
-      title: 'Default Journey',
-      date: '25 September',
-      description: 'A short preview of the description',
-      socialShareImage:
-        'https://images.unsplash.com/photo-1657299142317-00e647447f80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHw2fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60'
-    }
-
-    const { getByText } = render(<TemplateCard template={templateCard} />)
-    expect(getByText('Default Journey')).toBeInTheDocument()
+    const { getByText } = render(<TemplateCard template={oldTemplate} />)
+    expect(getByText('An Old Template Heading')).toBeInTheDocument()
+    expect(
+      getByText(
+        'November 19, 2020 - Template created before the current year should also show the year in the date'
+      )
+    ).toBeInTheDocument()
   })
 
-  it('should display date and description', () => {})
+  it('should link to template details', () => {
+    const { getByRole } = render(<TemplateCard template={defaultTemplate} />)
+    expect(getByRole('link')).toHaveAttribute('href', '/templates/template-id')
+  })
 
-  it('should open menu', () => {})
-
-  it('should link to template details', () => {})
+  it('should render in admin mode', () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <TemplateCard template={defaultTemplate} admin={true} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(getByText('English')).toBeInTheDocument()
+    expect(getByRole('button')).toBeInTheDocument()
+  })
 })
