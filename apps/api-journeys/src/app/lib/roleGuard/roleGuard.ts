@@ -75,7 +75,7 @@ export const RoleGuard = (
     checkAttributes(journey: Journey, attributes?: Partial<Journey>): boolean {
       if (attributes == null || attributes === {}) return true
       return Object.keys(attributes).every(
-        (key: any) => attributes[key] === journey[key]
+        (key: string) => attributes[key] === journey[key]
       )
     }
 

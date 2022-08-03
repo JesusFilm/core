@@ -290,7 +290,7 @@ describe('RoleGuard', () => {
   })
 
   describe('user Role', () => {
-    it('should return true if user role includes publisher', async () => {
+    it('should return true for single user role', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
@@ -309,7 +309,7 @@ describe('RoleGuard', () => {
       expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
     })
 
-    it('should return true if role is an array and includes publisher', async () => {
+    it('should return true for user role in array', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
@@ -354,7 +354,7 @@ describe('RoleGuard', () => {
       expect(await roleGuard.canActivate(gqlContext)).toEqual(true)
     })
 
-    it('should return true if role is an array and includes publisher', async () => {
+    it('should return true for role in an array', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
@@ -377,7 +377,7 @@ describe('RoleGuard', () => {
       await expect(roleGuard.canActivate(gqlContext)).resolves.toEqual(true)
     })
 
-    it('should return true if role is public and template true and status published', async () => {
+    it('should return true for role with attributes', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
