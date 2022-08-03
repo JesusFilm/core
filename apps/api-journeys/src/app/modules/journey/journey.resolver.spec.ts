@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
+import { Database } from 'arangojs'
+import { mockDeep } from 'jest-mock-extended'
 import {
   IdType,
   Journey,
@@ -13,6 +15,7 @@ import {
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
+import { UserRoleService } from '../userRole/userRole.service'
 import { JourneyResolver } from './journey.resolver'
 import { JourneyService } from './journey.service'
 
@@ -172,7 +175,7 @@ describe('JourneyResolver', () => {
             return [journey, draftJourney]
         }
       }),
-      getAllByOwnerEditor: jest.fn(() => [journey, journey]),
+      getAllByRole: jest.fn(() => [journey, journey]),
       getAllByTitle: jest.fn(() => [journey]),
       save: jest.fn((input) => input),
       update: jest.fn(() => journey),
@@ -204,6 +207,11 @@ describe('JourneyResolver', () => {
     })
   }
 
+  const userRoleService = {
+    provide: UserRoleService,
+    useFactory: () => mockDeep<Database>()
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -211,7 +219,8 @@ describe('JourneyResolver', () => {
         journeyService,
         blockService,
         BlockResolver,
-        userJourneyService
+        userJourneyService,
+        userRoleService
       ]
     }).compile()
     resolver = module.get<JourneyResolver>(JourneyResolver)
@@ -390,15 +399,17 @@ describe('JourneyResolver', () => {
   describe('adminJourneys', () => {
     it('should get published journeys', async () => {
       expect(
-        await resolver.adminJourneys('userId', [
-          JourneyStatus.draft,
-          JourneyStatus.published
-        ])
+        await resolver.adminJourneys(
+          'userId',
+          [JourneyStatus.draft, JourneyStatus.published],
+          undefined
+        )
       ).toEqual([journey, journey])
-      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith('userId', [
-        JourneyStatus.draft,
-        JourneyStatus.published
-      ])
+      expect(service.getAllByRole).toHaveBeenCalledWith(
+        'userId',
+        [JourneyStatus.draft, JourneyStatus.published],
+        undefined
+      )
     })
   })
 

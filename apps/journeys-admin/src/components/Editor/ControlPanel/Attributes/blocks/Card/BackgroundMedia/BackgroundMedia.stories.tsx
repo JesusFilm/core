@@ -18,6 +18,8 @@ import {
 } from '../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import { Drawer } from '../../../../../Drawer'
+import { GetVideoVariantLanguages_video } from '../../../../../../../../__generated__/GetVideoVariantLanguages'
+import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/VideoBlockEditor'
 import { BackgroundMedia } from '.'
 
 const BackgroundMediaStory = {
@@ -100,20 +102,7 @@ const video: TreeBlock<VideoBlock> = {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
       hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    },
-    variantLanguages: [
-      {
-        __typename: 'Language',
-        id: '529',
-        name: [
-          {
-            __typename: 'Translation',
-            value: 'English',
-            primary: true
-          }
-        ]
-      }
-    ]
+    }
   },
   posterBlockId: 'poster1.id',
   children: []
@@ -145,8 +134,42 @@ const image: TreeBlock<ImageBlock> = {
   children: []
 }
 
+const videoLanguages: GetVideoVariantLanguages_video = {
+  __typename: 'Video',
+  id: '2_0-FallingPlates',
+  variantLanguages: [
+    {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'English',
+          primary: true
+        }
+      ]
+    }
+  ]
+}
+
 const Template: Story = ({ ...args }) => (
-  <MockedProvider>
+  <MockedProvider
+    mocks={[
+      {
+        request: {
+          query: GET_VIDEO_VARIANT_LANGUAGES,
+          variables: {
+            id: videoLanguages.id
+          }
+        },
+        result: {
+          data: {
+            video: videoLanguages
+          }
+        }
+      }
+    ]}
+  >
     <ThemeProvider>
       <JourneyProvider value={{ journey, admin: true }}>
         <EditorProvider

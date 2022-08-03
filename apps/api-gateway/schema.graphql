@@ -387,6 +387,7 @@ input JourneyCreateInput {
 
 input JourneysFilter {
   featured: Boolean
+  template: Boolean
 }
 
 enum JourneysReportType {
@@ -521,6 +522,9 @@ type Mutation {
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
+  templateLibraryViewEventCreate: TemplateLibraryViewEvent! @join__field(graph: JOURNEYS)
+  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @join__field(graph: JOURNEYS)
+  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
@@ -593,7 +597,7 @@ type PowerBiEmbed {
 
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
-  adminJourneys(status: [JourneyStatus!]): [Journey!]! @join__field(graph: JOURNEYS)
+  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
@@ -757,6 +761,39 @@ input StepViewEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+}
+
+type TemplateLibraryViewEvent implements Event {
+  id: ID!
+  userId: ID!
+}
+
+type TemplatePreviewEvent implements Event {
+  id: ID!
+  journeyId: ID!
+  userId: ID!
+}
+
+input TemplatePreviewEventInput {
+  journeyId: ID!
+}
+
+enum TemplateStatus {
+  """Not in the template library"""
+  private
+
+  """In the template library"""
+  public
+}
+
+type TemplateUseEvent implements Event {
+  id: ID!
+  journeyId: ID!
+  userId: ID!
+}
+
+input TemplateUseEventInput {
+  journeyId: ID!
 }
 
 enum ThemeMode {

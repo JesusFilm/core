@@ -12,6 +12,8 @@ import {
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
+import { UserRoleService } from '../../userRole/userRole.service'
+import { JourneyService } from '../../journey/journey.service'
 import { ImageBlockResolver } from './image.resolver'
 
 jest.mock('axios')
@@ -106,6 +108,8 @@ describe('ImageBlockResolver', () => {
         blockService,
         ImageBlockResolver,
         UserJourneyService,
+        UserRoleService,
+        JourneyService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()

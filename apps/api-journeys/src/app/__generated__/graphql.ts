@@ -351,6 +351,14 @@ export class StepViewEventCreateInput {
     blockId: string;
 }
 
+export class TemplateUseEventInput {
+    journeyId: string;
+}
+
+export class TemplatePreviewEventInput {
+    journeyId: string;
+}
+
 export class VideoStartEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -396,6 +404,7 @@ export class VideoProgressEventCreateInput {
 
 export class JourneysFilter {
     featured?: Nullable<boolean>;
+    template?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {
@@ -682,6 +691,26 @@ export class StepViewEvent implements Event {
     block?: Nullable<StepBlock>;
 }
 
+export class TemplateLibraryViewEvent implements Event {
+    __typename?: 'TemplateLibraryViewEvent';
+    id: string;
+    userId: string;
+}
+
+export class TemplateUseEvent implements Event {
+    __typename?: 'TemplateUseEvent';
+    id: string;
+    userId: string;
+    journeyId: string;
+}
+
+export class TemplatePreviewEvent implements Event {
+    __typename?: 'TemplatePreviewEvent';
+    id: string;
+    userId: string;
+    journeyId: string;
+}
+
 export class VideoStartEvent implements Event {
     __typename?: 'VideoStartEvent';
     id: string;
@@ -832,6 +861,12 @@ export abstract class IMutation {
 
     abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
 
+    abstract templateLibraryViewEventCreate(): TemplateLibraryViewEvent | Promise<TemplateLibraryViewEvent>;
+
+    abstract templateUseEventCreate(input: TemplateUseEventInput): TemplateUseEvent | Promise<TemplateUseEvent>;
+
+    abstract templatePreviewEventCreate(input: TemplatePreviewEventInput): TemplatePreviewEvent | Promise<TemplatePreviewEvent>;
+
     abstract videoStartEventCreate(input: VideoStartEventCreateInput): VideoStartEvent | Promise<VideoStartEvent>;
 
     abstract videoPlayEventCreate(input: VideoPlayEventCreateInput): VideoPlayEvent | Promise<VideoPlayEvent>;
@@ -881,7 +916,7 @@ export class Language {
 }
 
 export abstract class IQuery {
-    abstract adminJourneys(status?: Nullable<JourneyStatus[]>): Journey[] | Promise<Journey[]>;
+    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
 
     abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
 

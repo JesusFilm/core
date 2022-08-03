@@ -95,7 +95,9 @@ describe('BlockService', () => {
     id: cardBlock.coverBlockId,
     journeyId: journey.id,
     parentBlockId: cardBlock.id,
-    posterBlockId: 'image'
+    posterBlockId: 'image',
+    videoId: 'videoId',
+    videoVariantLanguageId: 'videoVariantLanguageId'
   }
   const imageBlock = {
     __typename: 'ImageBlock',

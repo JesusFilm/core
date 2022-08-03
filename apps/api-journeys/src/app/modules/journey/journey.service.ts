@@ -3,40 +3,37 @@ import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database/BaseService'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
+import { AqlQuery } from 'arangojs/aql'
 import {
   Journey,
   JourneyStatus,
   UserJourneyRole,
-  JourneysFilter
+  JourneysFilter,
+  Role
 } from '../../__generated__/graphql'
 
 @Injectable()
 export class JourneyService extends BaseService {
+  journeyFilter(filter?: JourneysFilter): AqlQuery {
+    const { featured, template } = filter ?? {}
+
+    return aql.join(
+      [
+        aql`AND journey.template == ${template === true}`,
+        featured === true && aql`AND journey.featuredAt != null`,
+        featured === false && aql`AND journey.featuredAt == null`
+      ].filter((x) => x !== false)
+    )
+  }
+
   @KeyAsId()
   async getAllPublishedJourneys(filter?: JourneysFilter): Promise<Journey[]> {
-    if (filter?.featured === true) {
-      return await (
-        await this.db.query(aql`
-          FOR journey IN ${this.collection}
-            FILTER journey.status == ${JourneyStatus.published}
-              AND journey.featuredAt != null
-            RETURN journey
-        `)
-      ).all()
-    } else if (filter?.featured === false) {
-      return await (
-        await this.db.query(aql`
-          FOR journey IN ${this.collection}
-            FILTER journey.status == ${JourneyStatus.published}
-              AND journey.featuredAt == null
-            RETURN journey
-        `)
-      ).all()
-    }
+    const search = this.journeyFilter(filter)
+
     return await (
-      await this.db.query(aql`
-        FOR journey IN ${this.collection}
+      await this.db.query(aql`FOR journey IN ${this.collection}
           FILTER journey.status == ${JourneyStatus.published}
+          ${search}
           RETURN journey
       `)
     ).all()
@@ -86,18 +83,28 @@ export class JourneyService extends BaseService {
   }
 
   @KeyAsId()
-  async getAllByOwnerEditor(
+  async getAllByRole(
     userId: string,
-    status?: JourneyStatus[]
+    status?: JourneyStatus[],
+    template?: boolean
   ): Promise<Journey[]> {
-    const filter =
+    const statusFilter =
       status != null ? aql`&& journey.status IN ${status}` : aql`&& true`
-    const result = await this.db.query(aql`
-    FOR userJourney in userJourneys
-      FOR journey in ${this.collection}
-          FILTER userJourney.journeyId == journey._key && userJourney.userId == ${userId}
-           && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})
-           ${filter}
+
+    const roleFilter =
+      template === true
+        ? aql`FOR user in userRoles
+          FOR journey in ${this.collection}
+            FILTER user.userId == ${userId} && ${Role.publisher} IN user.roles
+              FILTER journey.template == true
+              LIMIT 1`
+        : aql`FOR userJourney in userJourneys
+          FOR journey in ${this.collection}
+            FILTER userJourney.journeyId == journey._key && userJourney.userId == ${userId}
+              && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})`
+
+    const result = await this.db.query(aql`${roleFilter}
+        ${statusFilter}
           RETURN journey
     `)
     return await result.all()
