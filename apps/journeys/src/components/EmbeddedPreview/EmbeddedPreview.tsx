@@ -80,11 +80,32 @@ export function EmbeddedPreview({
               p: 8,
               flexGrow: 1,
               display: 'flex',
+              flexDirection: 'column',
               cursor: allowFullscreen ? 'pointer' : 'default',
               zindex: 10
             }}
             onClick={() => handleClick()}
           >
+            <Box
+              sx={{
+                mx: 'auto',
+                mb: '-3.5px',
+                height: 10,
+                width: 'calc(100% - 17.5%)',
+                backgroundColor: '#DCDDE5',
+                borderRadius: '16px 16px 0 0'
+              }}
+            />
+            <Box
+              sx={{
+                mx: 'auto',
+                mb: '-3.5px',
+                height: 10,
+                width: 'calc(100% - 10%)',
+                backgroundColor: '#AAACBB',
+                borderRadius: '16px 16px 0 0'
+              }}
+            />
             {!isFullscreen && (
               <BlockRenderer
                 data-testid="embedded-preview-block-renderer"

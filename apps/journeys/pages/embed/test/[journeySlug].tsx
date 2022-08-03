@@ -5,7 +5,30 @@ interface IFrameTestProps {
 }
 
 export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
-  return <iframe src={`/embed/${journeySlug}`} width="800" height="600" />
+  return (
+    <div
+      style={{
+        position: 'relative',
+        width: 356,
+        height: 546,
+        overflow: 'hidden'
+      }}
+    >
+      <iframe
+        src={`/embed/${journeySlug}`}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          width: '100%',
+          height: '100%',
+          border: 'none'
+        }}
+      />
+    </div>
+  )
 }
 
 IFrameTest.getInitialProps = (context): IFrameTestProps => {
