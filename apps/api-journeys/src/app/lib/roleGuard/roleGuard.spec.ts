@@ -330,7 +330,7 @@ describe('RoleGuard', () => {
   })
 
   describe('custom Roles', () => {
-    it('should return true if role is publisher and template true', async () => {
+    it('should return true for 1 role', async () => {
       const gqlContext = gqlContextMockFactory(
         { id: '2' },
         {
