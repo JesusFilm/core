@@ -27,6 +27,13 @@ export function TemplateCard({
   template,
   admin
 }: TemplateCardProps): ReactElement {
+  const nativeLanguage = template?.language.name[0].value ?? ''
+  const localLanguage = template?.language.name[1]?.value
+  const displayLanguage =
+    nativeLanguage === localLanguage || localLanguage == null
+      ? nativeLanguage
+      : `${nativeLanguage} (${localLanguage})`
+
   return (
     <Card
       aria-label="template-card"
@@ -118,7 +125,7 @@ export function TemplateCard({
                       }}
                     >
                       <TranslateRoundedIcon sx={{ fontSize: '14px', mr: 1 }} />
-                      {template.language.name[0].value}
+                      {displayLanguage}
                     </Typography>
                   </Stack>
                 </>

@@ -1,7 +1,11 @@
 import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
-import { defaultTemplate, oldTemplate } from '../TemplateListData'
+import {
+  defaultTemplate,
+  oldTemplate,
+  descriptiveTemplate
+} from '../TemplateListData'
 import { TemplateCard } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -18,6 +22,13 @@ describe('TemplateCard', () => {
         'November 19, 2020 - Template created before the current year should also show the year in the date'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should show native and local language', () => {
+    const { getByText } = render(
+      <TemplateCard template={descriptiveTemplate} />
+    )
+    expect(getByText('普通話 (Chinese, Mandarin)')).toBeInTheDocument()
   })
 
   it('should link to template details', () => {
