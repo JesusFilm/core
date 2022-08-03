@@ -34,6 +34,12 @@ export function TemplateCard({
       ? nativeLanguage
       : `${nativeLanguage} (${localLanguage})`
 
+  const date = intlFormat(parseISO(template?.createdAt), {
+    day: 'numeric',
+    month: 'long',
+    year: isThisYear(parseISO(template?.createdAt)) ? undefined : 'numeric'
+  })
+
   return (
     <Card
       aria-label="template-card"
@@ -90,23 +96,15 @@ export function TemplateCard({
       )}
 
       <Link href={template != null ? `/templates/${template.id}` : ''} passHref>
-        <CardActionArea>
+        <CardActionArea sx={{ width: 'calc(100% - 129px)' }}>
           <CardContent>
             {template != null ? (
               <>
                 <Typography variant="subtitle1" noWrap>
                   {template.title}
                 </Typography>
-                <Typography variant="caption" noWrap sx={{ pb: 4 }}>
-                  {template != null &&
-                    intlFormat(parseISO(template.createdAt), {
-                      day: 'numeric',
-                      month: 'long',
-                      year: isThisYear(parseISO(template.createdAt))
-                        ? undefined
-                        : 'numeric'
-                    })}
-                  {` - ${template.description ?? ''}`}
+                <Typography variant="body2" noWrap sx={{ pb: 4, fontSize: 12 }}>
+                  {`${date} - ${template?.description ?? ''}`}
                 </Typography>
 
                 <Stack direction="row">
