@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
 import { GetPublicTemplates_journeys as Template } from '../../../__generated__/GetPublicTemplates'
 import { TemplateCard } from './TemplateCard'
 
@@ -9,7 +9,7 @@ interface TemplateListProps {
 
 export function TemplateList({ templates }: TemplateListProps): ReactElement {
   return (
-    <Box
+    <Container
       sx={{
         pt: 6,
         px: { xs: 0, sm: 8 }
@@ -28,6 +28,6 @@ export function TemplateList({ templates }: TemplateListProps): ReactElement {
           <TemplateCard />
         </>
       )}
-    </Box>
+    </Container>
   )
 }

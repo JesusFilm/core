@@ -31,7 +31,7 @@ export function TemplateCard({
       aria-label="template-card"
       variant="outlined"
       sx={{
-        borderRadius: 0,
+        maxWidth: '100%',
         borderColor: 'divider',
         borderBottom: 'none',
         display: 'flex',
@@ -56,7 +56,8 @@ export function TemplateCard({
           height="129px"
           alt={template.title}
           sx={{
-            width: '129px'
+            maxWidth: '129px',
+            minWidth: '129px'
           }}
         />
       ) : (
@@ -77,55 +78,54 @@ export function TemplateCard({
 
       <CardActionArea>
         <CardContent>
-          <Stack direction="row" spacing={6}>
-            <Stack direction="column" spacing={1}>
-              {template != null ? (
-                <>
-                  <Typography variant="subtitle1">{template.title}</Typography>
+          <Stack direction="column">
+            {template != null ? (
+              <>
+                <Typography variant="subtitle1" noWrap>
+                  {template.title}
+                </Typography>
+                <Typography variant="caption" noWrap sx={{ pb: 4 }}>
+                  {template != null &&
+                    intlFormat(parseISO(template.createdAt), {
+                      day: 'numeric',
+                      month: 'long',
+                      year: isThisYear(parseISO(template.createdAt))
+                        ? undefined
+                        : 'numeric'
+                    })}
+                  {` - ${template.description ?? ''}`}
+                </Typography>
 
-                  <Typography variant="caption" sx={{ pb: 4 }}>
-                    {template != null &&
-                      intlFormat(parseISO(template.createdAt), {
-                        day: 'numeric',
-                        month: 'long',
-                        year: isThisYear(parseISO(template.createdAt))
-                          ? undefined
-                          : 'numeric'
-                      })}
-                    {` - ${template.description as string}`}
+                <Stack direction="row">
+                  {admin === true && (
+                    <>
+                      <StatusChip status={template.status} />
+                      <Box sx={{ pr: 6 }} />
+                    </>
+                  )}
+
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <TranslateRoundedIcon sx={{ fontSize: '14px', mr: 1 }} />
+                    {template.language.name[0].value}
                   </Typography>
-
-                  <Stack direction="row">
-                    {admin === true && (
-                      <>
-                        <StatusChip status={template.status} />
-                        <Box sx={{ pr: 6 }} />
-                      </>
-                    )}
-
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center'
-                      }}
-                    >
-                      <TranslateRoundedIcon sx={{ fontSize: '14px', mr: 1 }} />
-                      {template.language.name[0].value}
-                    </Typography>
-                  </Stack>
-                </>
-              ) : (
-                <>
-                  <Skeleton variant="text" width={250} />
-                  <Skeleton variant="text" width={500} sx={{ mb: 4 }} />
-                  <Stack direction="row" spacing={6}>
-                    <Skeleton variant="text" width={50} />
-                    <Skeleton variant="text" width={50} />
-                  </Stack>
-                </>
-              )}
-            </Stack>
+                </Stack>
+              </>
+            ) : (
+              <>
+                <Skeleton variant="text" width={250} />
+                <Skeleton variant="text" width={500} sx={{ mb: 4 }} />
+                <Stack direction="row" spacing={6}>
+                  <Skeleton variant="text" width={50} />
+                  <Skeleton variant="text" width={50} />
+                </Stack>
+              </>
+            )}
           </Stack>
         </CardContent>
       </CardActionArea>

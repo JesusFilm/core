@@ -1,6 +1,10 @@
 import { Meta, Story } from '@storybook/react'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { templatesData } from './TemplateListData'
+import {
+  oldTemplate,
+  publihedTemplate,
+  descriptiveTemplate
+} from './TemplateListData'
 import { TemplateList } from '.'
 
 const TemplateListStory = {
@@ -15,7 +19,7 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  templates: templatesData
+  templates: [oldTemplate, publihedTemplate, descriptiveTemplate]
 }
 
 export default TemplateListStory as Meta
