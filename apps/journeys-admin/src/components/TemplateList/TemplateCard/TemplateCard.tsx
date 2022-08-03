@@ -69,7 +69,9 @@ export function TemplateCard({
             display: 'flex',
             position: 'relative',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
+            maxWidth: '129px',
+            minWidth: '129px'
           }}
         >
           <InsertPhotoRoundedIcon />
@@ -121,7 +123,7 @@ export function TemplateCard({
                 <Skeleton variant="text" width={250} />
                 <Skeleton variant="text" width={500} sx={{ mb: 4 }} />
                 <Stack direction="row" spacing={6}>
-                  <Skeleton variant="text" width={50} />
+                  {admin === true && <Skeleton variant="text" width={50} />}
                   <Skeleton variant="text" width={50} />
                 </Stack>
               </>

@@ -104,3 +104,27 @@ export const descriptiveTemplate: Template = {
     src: 'https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80'
   }
 }
+
+export const archivedTemplate = {
+  ...defaultTemplate,
+  title: 'Archived Template Heading',
+  description: 'a archived template',
+  publishedAt: formatISO(startOfYear(new Date())),
+  status: JourneyStatus.archived,
+  primaryImageBlock: {
+    ...imageBlock,
+    src: 'https://images.unsplash.com/photo-1659456194848-a61987e81510?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2071&q=80'
+  }
+}
+
+export const trashedTemplate = {
+  ...defaultTemplate,
+  title: 'Trashed Template Heading',
+  description: 'a trashed template',
+  publishedAt: formatISO(startOfYear(new Date())),
+  status: JourneyStatus.trashed,
+  primaryImageBlock: {
+    ...imageBlock,
+    src: 'https://images.unsplash.com/photo-1517917822086-6988b4ca9b31?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80'
+  }
+}
