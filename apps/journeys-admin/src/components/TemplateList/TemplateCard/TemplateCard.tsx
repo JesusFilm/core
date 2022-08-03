@@ -9,6 +9,7 @@ import CardActions from '@mui/material/CardActions'
 import CardMedia from '@mui/material/CardMedia'
 import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
+import EditIcon from '@mui/icons-material/Edit'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import IconButton from '@mui/material/IconButton'
@@ -134,10 +135,31 @@ export function TemplateCard({
               </>
             ) : (
               <>
-                <Skeleton variant="text" width={250} />
-                <Skeleton variant="text" width={500} sx={{ mb: 4 }} />
-                <Stack direction="row" spacing={6}>
-                  {admin === true && <Skeleton variant="text" width={50} />}
+                <Skeleton variant="text" width={120} />
+                <Skeleton
+                  variant="text"
+                  sx={{
+                    display: 'flex',
+                    justifySelf: 'flex-end',
+                    mr: '20%',
+                    mb: 4
+                  }}
+                />
+                <Stack
+                  direction="row"
+                  spacing={4}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  {admin === true && (
+                    <>
+                      <EditIcon sx={{ fontSize: '14px' }} />
+                      <Skeleton variant="text" width={50} />
+                    </>
+                  )}
+                  <TranslateRoundedIcon sx={{ fontSize: '14px' }} />
                   <Skeleton variant="text" width={50} />
                 </Stack>
               </>
