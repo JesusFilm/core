@@ -73,4 +73,17 @@ Trashed.play = () => {
   userEvent.click(menuButton)
 }
 
+export const TemplateJourney = Template.bind({})
+TemplateJourney.args = {
+  status: JourneyStatus.published,
+  slug: 'template-journey',
+  published: true,
+  journeyId: 'template-id',
+  template: true
+}
+TemplateJourney.play = () => {
+  const menuButton = screen.getByTestId('MoreVertIcon')
+  userEvent.click(menuButton)
+}
+
 export default JoruneyCardMenuDemo as Meta

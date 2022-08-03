@@ -23,6 +23,7 @@ interface DefaultMenuProps {
   setOpenAccessDialog: () => void
   handleCloseMenu: () => void
   setOpenTrashDialog: () => void
+  template?: boolean
   refetch?: () => Promise<
     ApolloQueryResult<
       GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
@@ -39,26 +40,39 @@ export function DefaultMenu({
   setOpenAccessDialog,
   handleCloseMenu,
   setOpenTrashDialog,
+  template,
   refetch
 }: DefaultMenuProps): ReactElement {
   return (
     <>
-      <Link href={`/journeys/${journeyId}`} passHref>
-        <MenuItem
-          icon={<EditIcon color="secondary" />}
-          text="Edit"
-          options={{ component: 'a' }}
-        />
-      </Link>
+      {template !== true ? (
+        <Link href={`/journeys/${journeyId}`} passHref>
+          <MenuItem
+            icon={<EditIcon color="secondary" />}
+            text="Edit"
+            options={{ component: 'a' }}
+          />
+        </Link>
+      ) : (
+        <Link href={`/templates/${journeyId}`} passHref>
+          <MenuItem
+            icon={<EditIcon color="secondary" />}
+            text="Edit"
+            options={{ component: 'a' }}
+          />
+        </Link>
+      )}
 
-      <MenuItem
-        icon={<PeopleIcon color="secondary" />}
-        text="Access"
-        handleClick={() => {
-          setOpenAccessDialog()
-          handleCloseMenu()
-        }}
-      />
+      {template !== true && (
+        <MenuItem
+          icon={<PeopleIcon color="secondary" />}
+          text="Access"
+          handleClick={() => {
+            setOpenAccessDialog()
+            handleCloseMenu()
+          }}
+        />
+      )}
 
       <MenuItem
         icon={<VisibilityIcon color="secondary" />}

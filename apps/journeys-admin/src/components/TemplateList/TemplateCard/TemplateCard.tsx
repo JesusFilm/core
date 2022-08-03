@@ -141,6 +141,7 @@ export function TemplateCard({
                 status={template.status}
                 slug={template.slug}
                 published={template.publishedAt != null}
+                template={true}
               />
             </CardActions>
           ) : (
