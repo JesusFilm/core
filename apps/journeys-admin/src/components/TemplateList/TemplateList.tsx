@@ -8,9 +8,10 @@ interface TemplateListProps {
 }
 
 // TODO update journeyCard menu
-
 // TODO add link to get to template list to page wrapper
+
 // TODO add link to templateCard to /templates/[journeyId]
+// TODO scroll to duplicated template
 
 export function TemplateList({ templates }: TemplateListProps): ReactElement {
   return (

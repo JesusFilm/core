@@ -13,6 +13,7 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import IconButton from '@mui/material/IconButton'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import Link from 'next/link'
 import { GetPublicTemplates_journeys as Template } from '../../../../__generated__/GetPublicTemplates'
 import { JourneyCardMenu } from '../../JourneyList/JourneyCard/JourneyCardMenu'
 import { StatusChip } from '../../JourneyList/JourneyCard/StatusChip'
@@ -80,59 +81,61 @@ export function TemplateCard({
         </CardMedia>
       )}
 
-      <CardActionArea>
-        <CardContent>
-          <Stack direction="column">
-            {template != null ? (
-              <>
-                <Typography variant="subtitle1" noWrap>
-                  {template.title}
-                </Typography>
-                <Typography variant="caption" noWrap sx={{ pb: 4 }}>
-                  {template != null &&
-                    intlFormat(parseISO(template.createdAt), {
-                      day: 'numeric',
-                      month: 'long',
-                      year: isThisYear(parseISO(template.createdAt))
-                        ? undefined
-                        : 'numeric'
-                    })}
-                  {` - ${template.description ?? ''}`}
-                </Typography>
-
-                <Stack direction="row">
-                  {admin === true && (
-                    <>
-                      <StatusChip status={template.status} />
-                      <Box sx={{ pr: 6 }} />
-                    </>
-                  )}
-
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <TranslateRoundedIcon sx={{ fontSize: '14px', mr: 1 }} />
-                    {template.language.name[0].value}
+      <Link href={template != null ? `/templates/${template.id}` : ''} passHref>
+        <CardActionArea>
+          <CardContent>
+            <Stack direction="column">
+              {template != null ? (
+                <>
+                  <Typography variant="subtitle1" noWrap>
+                    {template.title}
                   </Typography>
-                </Stack>
-              </>
-            ) : (
-              <>
-                <Skeleton variant="text" width={250} />
-                <Skeleton variant="text" width={500} sx={{ mb: 4 }} />
-                <Stack direction="row" spacing={6}>
-                  {admin === true && <Skeleton variant="text" width={50} />}
-                  <Skeleton variant="text" width={50} />
-                </Stack>
-              </>
-            )}
-          </Stack>
-        </CardContent>
-      </CardActionArea>
+                  <Typography variant="caption" noWrap sx={{ pb: 4 }}>
+                    {template != null &&
+                      intlFormat(parseISO(template.createdAt), {
+                        day: 'numeric',
+                        month: 'long',
+                        year: isThisYear(parseISO(template.createdAt))
+                          ? undefined
+                          : 'numeric'
+                      })}
+                    {` - ${template.description ?? ''}`}
+                  </Typography>
+
+                  <Stack direction="row">
+                    {admin === true && (
+                      <>
+                        <StatusChip status={template.status} />
+                        <Box sx={{ pr: 6 }} />
+                      </>
+                    )}
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <TranslateRoundedIcon sx={{ fontSize: '14px', mr: 1 }} />
+                      {template.language.name[0].value}
+                    </Typography>
+                  </Stack>
+                </>
+              ) : (
+                <>
+                  <Skeleton variant="text" width={250} />
+                  <Skeleton variant="text" width={500} sx={{ mb: 4 }} />
+                  <Stack direction="row" spacing={6}>
+                    {admin === true && <Skeleton variant="text" width={50} />}
+                    <Skeleton variant="text" width={50} />
+                  </Stack>
+                </>
+              )}
+            </Stack>
+          </CardContent>
+        </CardActionArea>
+      </Link>
 
       {admin === true && (
         <>
