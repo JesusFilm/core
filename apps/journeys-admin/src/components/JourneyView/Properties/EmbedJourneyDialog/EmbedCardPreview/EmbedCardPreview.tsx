@@ -30,39 +30,39 @@ export function EmbedCardPreview(): ReactElement {
         overflow: 'hidden'
       }}
     >
-      <Box
-        sx={{
-          transform: 'scale(0.5)',
-          transformOrigin: smUp ? 'top left' : '22.5% top'
-        }}
-      >
+      {block != null && (
         <Box
           sx={{
-            ml: 7,
-            mb: '-3.5px',
-            height: 12,
-            width: CARD_WIDTH - 55,
-            backgroundColor: '#DCDDE5',
-            borderRadius: '16px 16px 0 0'
+            transform: 'scale(0.5)',
+            transformOrigin: smUp ? 'top left' : '22.5% top'
           }}
-        />
-        <Box
-          sx={{
-            ml: 3.5,
-            mb: '-3.5px',
-            height: 12,
-            width: CARD_WIDTH - 30,
-            backgroundColor: '#AAACBB',
-            borderRadius: '16px 16px 0 0'
-          }}
-        />
-        <FramePortal width={380} height={520}>
-          <ThemeProvider
-            themeName={journey?.themeName ?? ThemeName.base}
-            themeMode={journey?.themeMode ?? ThemeMode.light}
-          >
-            <Box sx={{ height: '100%' }}>
-              {block != null && (
+        >
+          <Box
+            sx={{
+              ml: 7,
+              mb: '-3.5px',
+              height: 12,
+              width: CARD_WIDTH - 55,
+              backgroundColor: '#DCDDE5',
+              borderRadius: '16px 16px 0 0'
+            }}
+          />
+          <Box
+            sx={{
+              ml: 3.5,
+              mb: '-3.5px',
+              height: 12,
+              width: CARD_WIDTH - 30,
+              backgroundColor: '#AAACBB',
+              borderRadius: '16px 16px 0 0'
+            }}
+          />
+          <FramePortal width={380} height={520}>
+            <ThemeProvider
+              themeName={journey?.themeName ?? ThemeName.base}
+              themeMode={journey?.themeMode ?? ThemeMode.light}
+            >
+              <Box sx={{ height: '100%' }}>
                 <BlockRenderer
                   block={block}
                   wrappers={{
@@ -70,11 +70,11 @@ export function EmbedCardPreview(): ReactElement {
                     VideoWrapper: NullWrapper
                   }}
                 />
-              )}
-            </Box>
-          </ThemeProvider>
-        </FramePortal>
-      </Box>
+              </Box>
+            </ThemeProvider>
+          </FramePortal>
+        </Box>
+      )}
     </Box>
   )
 }

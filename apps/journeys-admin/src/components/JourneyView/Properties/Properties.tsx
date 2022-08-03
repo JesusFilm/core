@@ -62,9 +62,10 @@ export function Properties(): ReactElement {
             <CopyTextField
               value={
                 journey?.slug != null
-                  ? `${process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                  'https://your.nextstep.is'
-                  }/${journey.slug}`
+                  ? `${
+                      process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                      'https://your.nextstep.is'
+                    }/${journey.slug}`
                   : undefined
               }
             />

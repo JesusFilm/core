@@ -31,13 +31,15 @@ export function EmbedJourneyDialog({
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  const iframeLink = `<div style="position: relative; padding-top: 150%;"><iframe src="${process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'your.nextstep.is'
-    }/embed/${journey?.slug as string
-    }" style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; height: 100%" /></div>`
+  const iframeLink = `<div style="position: relative; padding-top: 150%;"><iframe src="${
+    process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'your.nextstep.is'
+  }/embed/${
+    journey?.slug as string
+  }" style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; height: 100%" /></div>`
 
   const handleSubmit = async (): Promise<void> => {
     await navigator.clipboard.writeText(iframeLink ?? '')
-    enqueueSnackbar('Embed Code Coppied', {
+    enqueueSnackbar('Embed Code Copied', {
       variant: 'success',
       preventDuplicate: true
     })
@@ -60,7 +62,7 @@ export function EmbedJourneyDialog({
       <Stack
         direction={smUp ? 'row' : 'column'}
         spacing={smUp ? 3 : 5}
-        sx={{ height: 270 }}
+        sx={{ height: 310, pt: 9 }}
       >
         {smUp ? (
           <Box
@@ -88,7 +90,13 @@ export function EmbedJourneyDialog({
             >
               <Typography variant="subtitle2">{t('Show Preview')}</Typography>
             </AccordionSummary>
-            <AccordionDetails sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <AccordionDetails
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
               <EmbedCardPreview />
             </AccordionDetails>
           </Accordion>
@@ -103,7 +111,6 @@ export function EmbedJourneyDialog({
             multiline
             maxRows={smUp ? 8 : 3}
             defaultValue={iframeLink}
-            disabled={true}
           />
           <Typography variant="caption">
             {t('By embedding a Journey to your site, you agree to the ')}
@@ -114,7 +121,7 @@ export function EmbedJourneyDialog({
               rel="noopener"
               color="#0041B2"
             >
-              {t('Terms and Agreement')}
+              {t('Terms of agreement')}
             </Link>
           </Typography>
         </Stack>

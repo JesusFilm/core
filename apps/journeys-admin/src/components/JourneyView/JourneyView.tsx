@@ -23,7 +23,6 @@ import { CardView } from './CardView'
 import { SlugDialog } from './Properties/SlugDialog'
 import { EmbedJourneyDialog } from './Properties/EmbedJourneyDialog'
 
-
 export function JourneyView(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -81,19 +80,20 @@ export function JourneyView(): ReactElement {
           <CopyTextField
             value={
               journey?.slug != null
-                ? `${process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                'https://your.nextstep.is'
-                }/${journey.slug}`
+                ? `${
+                    process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                    'https://your.nextstep.is'
+                  }/${journey.slug}`
                 : undefined
             }
             label={t('Journey URL')}
             sx={
               reports
                 ? {
-                  '.MuiFilledInput-root': {
-                    backgroundColor: 'background.paper'
+                    '.MuiFilledInput-root': {
+                      backgroundColor: 'background.paper'
+                    }
                   }
-                }
                 : undefined
             }
           />
