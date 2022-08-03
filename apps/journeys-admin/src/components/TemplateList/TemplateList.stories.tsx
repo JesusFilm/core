@@ -2,7 +2,7 @@ import { Meta, Story } from '@storybook/react'
 import { journeysAdminConfig } from '../../libs/storybook'
 import {
   oldTemplate,
-  publihedTemplate,
+  publishedTemplate,
   descriptiveTemplate
 } from './TemplateListData'
 import { TemplateList } from '.'
@@ -19,7 +19,7 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  templates: [oldTemplate, publihedTemplate, descriptiveTemplate]
+  templates: [oldTemplate, publishedTemplate, descriptiveTemplate]
 }
 
 export const Loading = Template.bind({})
