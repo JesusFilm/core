@@ -53,7 +53,8 @@ export function Report({ reportType }: ReportProps): ReactElement {
     },
     filterType: models.FilterType.Basic,
     operator: 'In',
-    values: journey != null ? [journey.id] : []
+    values: journey != null ? [journey.id] : [],
+    requireSingleSelection: true
   }
 
   const embedProps: EmbedProps = {
