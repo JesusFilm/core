@@ -29,6 +29,7 @@ describe('NavigationDrawer', () => {
       getByTestId('ChevronLeftRoundedIcon')
     )
     expect(getByText('Discover')).toBeInTheDocument()
+    expect(getByText('Templates')).toBeInTheDocument()
   })
 
   it('should show reports button', () => {

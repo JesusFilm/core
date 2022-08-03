@@ -67,7 +67,11 @@ function TemplateIndex(): ReactElement {
   return (
     <>
       <NextSeo title={'Journey Templates'} />
-      <PageWrapper title={'Journey Templates'} authUser={AuthUser}>
+      <PageWrapper
+        title={'Journey Templates'}
+        authUser={AuthUser}
+        backHref={'/'}
+      >
         <TemplateList templates={data?.journeys} />
       </PageWrapper>
     </>

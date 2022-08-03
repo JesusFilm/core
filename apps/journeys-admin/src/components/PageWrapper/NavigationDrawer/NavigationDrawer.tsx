@@ -16,6 +16,7 @@ import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
+import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
 import { compact } from 'lodash'
@@ -157,6 +158,30 @@ export function NavigationDrawer({
               primary="Discover"
               sx={{
                 color: journeysSelected ? 'background.paper' : 'secondary.light'
+              }}
+            />
+          </ListItemButton>
+        </Link>
+
+        <Link href="/templates" passHref>
+          <ListItemButton>
+            <ListItemIcon
+              sx={{
+                color:
+                  title === 'Journey Templates'
+                    ? 'background.paper'
+                    : 'secondary.light'
+              }}
+            >
+              <ViewCarouselRoundedIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Templates"
+              sx={{
+                color:
+                  title === 'Journey Templates'
+                    ? 'background.paper'
+                    : 'secondary.light'
               }}
             />
           </ListItemButton>

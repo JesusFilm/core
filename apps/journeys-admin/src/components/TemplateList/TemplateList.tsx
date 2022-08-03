@@ -11,6 +11,7 @@ interface TemplateListProps {
 // TODO add link to get to template list to page wrapper
 
 // TODO add link to templateCard to /templates/[journeyId]
+// TODO add back button to templates page
 // TODO scroll to duplicated template
 
 export function TemplateList({ templates }: TemplateListProps): ReactElement {
