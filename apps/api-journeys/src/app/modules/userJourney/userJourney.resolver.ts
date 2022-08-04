@@ -13,10 +13,12 @@ import { AuthenticationError, UserInputError } from 'apollo-server-errors'
 import {
   IdType,
   Journey,
+  Role,
   UserJourney,
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { JourneyService } from '../journey/journey.service'
+import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { UserJourneyService } from './userJourney.service'
 
 @Resolver('UserJourney')
@@ -122,8 +124,7 @@ export class UserJourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(GqlAuthGuard)
-  // todo add role guard for publisher and template
+  @UseGuards(GqlAuthGuard, RoleGuard('id', { role: Role.publisher }))
   async userJourneyRemoveAll(@Args('id') id: string): Promise<UserJourney[]> {
     const userJourneys =
       await this.userJourneyService.getUserJourneysByJourneyId(id)
