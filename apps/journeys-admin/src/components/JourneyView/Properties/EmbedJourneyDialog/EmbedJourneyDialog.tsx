@@ -31,7 +31,7 @@ export function EmbedJourneyDialog({
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  const iframeLink = `<div style="position: relative; width: 356px; height: 546px; overflow: hidden;"><iframe src="${
+  const iframeLink = `<div style="position: relative; width: 100%; overflow: hidden; padding-top: 150%;"><iframe src="${
     process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'your.nextstep.is'
   }/embed/${
     journey?.slug as string
