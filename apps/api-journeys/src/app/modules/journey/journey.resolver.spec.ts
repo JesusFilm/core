@@ -890,7 +890,7 @@ describe('JourneyResolver', () => {
   })
 
   describe('journeyTemplate', () => {
-    it('updates template and removes userJourney', async () => {
+    it('updates template', async () => {
       await resolver.journeyTemplate('1', templateUpdate)
       expect(service.update).toHaveBeenCalledWith('1', templateUpdate)
     })
