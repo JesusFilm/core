@@ -33,14 +33,4 @@ export class UserJourneyService extends BaseService {
     `)
     return await res.next()
   }
-
-  @KeyAsId()
-  async getUserJourneysByJourneyId(journeyId: string): Promise<UserJourney[]> {
-    const res = await this.db.query(aql`
-      FOR j in ${this.collection}
-        FILTER j.journeyId == ${journeyId}
-        RETURN j
-    `)
-    return await res.all()
-  }
 }

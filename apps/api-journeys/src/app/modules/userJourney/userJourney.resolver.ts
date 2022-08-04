@@ -126,8 +126,8 @@ export class UserJourneyResolver {
   @Mutation()
   @UseGuards(GqlAuthGuard, RoleGuard('id', { role: Role.publisher }))
   async userJourneyRemoveAll(@Args('id') id: string): Promise<UserJourney[]> {
-    const userJourneys =
-      await this.userJourneyService.getUserJourneysByJourneyId(id)
+    const journey: Journey = await this.journeyService.get(id)
+    const userJourneys = await this.userJourneyService.forJourney(journey)
     const userJourneyIds: string[] = userJourneys.map((user) => user.id)
 
     return await this.userJourneyService.removeAll(userJourneyIds)

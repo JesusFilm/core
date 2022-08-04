@@ -3,12 +3,14 @@ import { omit } from 'lodash'
 import {
   IdType,
   JourneyStatus,
+  Role,
   ThemeMode,
   ThemeName,
   UserJourneyRole
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { JourneyService } from '../journey/journey.service'
+import { UserRoleService } from '../userRole/userRole.service'
 import { UserJourneyResolver } from './userJourney.resolver'
 
 describe('UserJourneyResolver', () => {
@@ -37,6 +39,12 @@ describe('UserJourneyResolver', () => {
 
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
+
+  const userRole = {
+    id: 'userRole.id',
+    userId: 'user.id',
+    roles: [Role.publisher]
+  }
 
   const journey = {
     id: '1',
@@ -78,13 +86,25 @@ describe('UserJourneyResolver', () => {
         if (userId === actorUserJourney.userId) return actorUserJourney
         return userJourney
       }),
-      getUserJourneysByJourneyId: jest.fn(() => [userJourney, userJourney])
+      forJourney: jest.fn(() => [userJourney, userJourney])
+    })
+  }
+
+  const userRoleService = {
+    provide: UserRoleService,
+    useFactory: () => ({
+      getUserRoleById: jest.fn(() => userRole)
     })
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserJourneyResolver, userJourneyService, journeyService]
+      providers: [
+        UserJourneyResolver,
+        userJourneyService,
+        journeyService,
+        userRoleService
+      ]
     }).compile()
     resolver = module.get<UserJourneyResolver>(UserJourneyResolver)
     service = await module.resolve(UserJourneyService)
