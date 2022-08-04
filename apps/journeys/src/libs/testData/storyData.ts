@@ -918,20 +918,7 @@ export const videoBlocks: TreeBlock[] = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              },
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      __typename: 'Translation',
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              }
             },
             endAt: null,
             startAt: null,
@@ -1096,20 +1083,7 @@ export const videoBlocks: TreeBlock[] = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              },
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      __typename: 'Translation',
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              }
             },
             endAt: null,
             startAt: null,
@@ -1178,20 +1152,7 @@ export const videoBlocks: TreeBlock[] = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              },
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      __typename: 'Translation',
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              }
             },
             endAt: null,
             startAt: 10,
@@ -1249,20 +1210,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              },
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      __typename: 'Translation',
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              }
             },
             endAt: null,
             startAt: 5,
@@ -1415,20 +1363,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              },
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      __typename: 'Translation',
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              }
             },
             endAt: null,
             startAt: null,
@@ -1497,20 +1432,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              },
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      __typename: 'Translation',
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              }
             },
             endAt: null,
             startAt: 10,
@@ -1706,20 +1628,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              },
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      __typename: 'Translation',
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              }
             },
             endAt: null,
             startAt: null,
@@ -1788,20 +1697,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              },
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      __typename: 'Translation',
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              }
             },
             endAt: null,
             startAt: 10,
@@ -1911,20 +1807,7 @@ export const videoLoop: TreeBlock[] = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              },
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      __typename: 'Translation',
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              }
             },
             startAt: 10,
             endAt: 30,
@@ -1993,20 +1876,7 @@ export const videoLoop: TreeBlock[] = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              },
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      __typename: 'Translation',
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              }
             },
             startAt: 10,
             endAt: 30,
@@ -2080,20 +1950,7 @@ export const videoLoop: TreeBlock[] = [
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
                 hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              },
-              variantLanguages: [
-                {
-                  __typename: 'Language',
-                  id: '529',
-                  name: [
-                    {
-                      __typename: 'Translation',
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              }
             },
             startAt: 10,
             endAt: 30,
