@@ -13,7 +13,7 @@ const JoruneyCardMenuDemo = {
   title: 'Journeys-Admin/JourneyList/JourneyCard/Menu'
 }
 
-const Template: Story<JourneyCardMenuProps> = ({ ...args }) => (
+const StoryTemplate: Story<JourneyCardMenuProps> = ({ ...args }) => (
   <MockedProvider>
     <SnackbarProvider>
       <ThemeProvider>
@@ -23,7 +23,7 @@ const Template: Story<JourneyCardMenuProps> = ({ ...args }) => (
   </MockedProvider>
 )
 
-export const Draft = Template.bind({})
+export const Draft = StoryTemplate.bind({})
 Draft.args = {
   status: JourneyStatus.draft,
   slug: 'draft-journey',
@@ -38,7 +38,7 @@ Draft.play = async () => {
   })
 }
 
-export const Published = Template.bind({})
+export const Published = StoryTemplate.bind({})
 Published.args = {
   status: JourneyStatus.published,
   slug: 'published-journey',
@@ -53,7 +53,7 @@ Published.play = async () => {
   })
 }
 
-export const Archived = Template.bind({})
+export const Archived = StoryTemplate.bind({})
 Archived.args = {
   status: JourneyStatus.archived,
   slug: 'archived-journey'
@@ -63,7 +63,7 @@ Archived.play = () => {
   userEvent.click(menuButton)
 }
 
-export const Trashed = Template.bind({})
+export const Trashed = StoryTemplate.bind({})
 Trashed.args = {
   status: JourneyStatus.trashed,
   slug: 'trashed-journey'
@@ -73,15 +73,15 @@ Trashed.play = () => {
   userEvent.click(menuButton)
 }
 
-export const TemplateJourney = Template.bind({})
-TemplateJourney.args = {
+export const Template = StoryTemplate.bind({})
+Template.args = {
   status: JourneyStatus.published,
   slug: 'template-journey',
   published: true,
   journeyId: 'template-id',
   template: true
 }
-TemplateJourney.play = () => {
+Template.play = () => {
   const menuButton = screen.getByTestId('MoreVertIcon')
   userEvent.click(menuButton)
 }
