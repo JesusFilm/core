@@ -54,6 +54,7 @@ export function TemplateCard({
         borderRadius: 0,
         borderColor: 'divider',
         borderBottom: 'none',
+        height: '129px',
         display: 'flex',
         '&:last-of-type': {
           borderBottomLeftRadius: { xs: 0, sm: 12 },
