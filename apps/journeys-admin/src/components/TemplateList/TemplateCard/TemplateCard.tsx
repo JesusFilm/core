@@ -110,7 +110,10 @@ export function TemplateCard({
                   {template.title}
                 </Typography>
                 <Typography variant="body2" noWrap sx={{ pb: 4, fontSize: 12 }}>
-                  {`${date} - ${template?.description ?? ''}`}
+                  {date}
+                  {template?.description != null
+                    ? ` - ${template.description}`
+                    : ''}
                 </Typography>
 
                 <Stack direction="row">
