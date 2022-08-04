@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 import {
   IdType,
   Journey,
@@ -10,7 +8,8 @@ import {
   ThemeMode,
   ThemeName,
   UserJourneyRole,
-  JourneysReportType
+  JourneysReportType,
+  Role
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
@@ -48,7 +47,8 @@ describe('JourneyResolver', () => {
   let resolver: JourneyResolver,
     service: JourneyService,
     bService: BlockService,
-    ujService: UserJourneyService
+    ujService: UserJourneyService,
+    urService: UserRoleService
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
@@ -120,6 +120,12 @@ describe('JourneyResolver', () => {
     role: UserJourneyRole.editor
   }
 
+  const userRole = {
+    id: 'userRole.id',
+    userId: 'user.id',
+    roles: [Role.publisher]
+  }
+
   const invitedUserJourney = {
     id: 'invitedUserJourneyId',
     userId: 'invitedUserId',
@@ -175,7 +181,7 @@ describe('JourneyResolver', () => {
             return [journey, draftJourney]
         }
       }),
-      getAllByOwnerEditor: jest.fn(() => [journey, journey]),
+      getAllByRole: jest.fn(() => [journey, journey]),
       getAllByTitle: jest.fn(() => [journey]),
       save: jest.fn((input) => input),
       update: jest.fn(() => journey),
@@ -209,7 +215,9 @@ describe('JourneyResolver', () => {
 
   const userRoleService = {
     provide: UserRoleService,
-    useFactory: () => mockDeep<Database>()
+    useFactory: () => ({
+      getUserRoleById: jest.fn(() => userRole)
+    })
   }
 
   beforeEach(async () => {
@@ -227,6 +235,7 @@ describe('JourneyResolver', () => {
     service = module.get<JourneyService>(JourneyService)
     ujService = module.get<UserJourneyService>(UserJourneyService)
     bService = module.get<BlockService>(BlockService)
+    urService = module.get<UserRoleService>(UserRoleService)
   })
 
   describe('adminJourneysEmbed', () => {
@@ -399,15 +408,18 @@ describe('JourneyResolver', () => {
   describe('adminJourneys', () => {
     it('should get published journeys', async () => {
       expect(
-        await resolver.adminJourneys('userId', [
-          JourneyStatus.draft,
-          JourneyStatus.published
-        ])
+        await resolver.adminJourneys(
+          'userRole.id',
+          [JourneyStatus.draft, JourneyStatus.published],
+          undefined
+        )
       ).toEqual([journey, journey])
-      expect(service.getAllByOwnerEditor).toHaveBeenCalledWith('userId', [
-        JourneyStatus.draft,
-        JourneyStatus.published
-      ])
+      expect(urService.getUserRoleById).toHaveBeenCalledWith('userRole.id')
+      expect(service.getAllByRole).toHaveBeenCalledWith(
+        userRole,
+        [JourneyStatus.draft, JourneyStatus.published],
+        undefined
+      )
     })
   })
 

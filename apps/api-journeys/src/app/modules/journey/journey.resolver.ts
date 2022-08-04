@@ -39,6 +39,7 @@ import {
   Role
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
+import { UserRoleService } from '../userRole/userRole.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { JourneyService } from './journey.service'
 
@@ -49,7 +50,8 @@ export class JourneyResolver {
   constructor(
     private readonly journeyService: JourneyService,
     private readonly blockService: BlockService,
-    private readonly userJourneyService: UserJourneyService
+    private readonly userJourneyService: UserJourneyService,
+    private readonly userRoleService: UserRoleService
   ) {}
 
   @Query()
@@ -100,9 +102,11 @@ export class JourneyResolver {
   @Query()
   async adminJourneys(
     @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[]
+    @Args('status') status: JourneyStatus[],
+    @Args('template') template?: boolean
   ): Promise<Journey[]> {
-    return await this.journeyService.getAllByOwnerEditor(userId, status)
+    const user = await this.userRoleService.getUserRoleById(userId)
+    return await this.journeyService.getAllByRole(user, status, template)
   }
 
   @Query()
