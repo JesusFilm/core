@@ -3,15 +3,15 @@ import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { journeysAdminConfig } from '../../../../libs/storybook'
-import { defaultJourney } from '../../data'
+import { journeysAdminConfig } from '../../libs/storybook'
+import { defaultJourney } from '../JourneyView/data'
 import { JOURNEY_LANGUAGE_UPDATE, GET_LANGUAGES } from './LanguageDialog'
 import { LanguageDialog } from '.'
 
 const LanguageDialogStory = {
   ...journeysAdminConfig,
   component: LanguageDialog,
-  title: 'Journeys-Admin/JourneyView/Menu/LanguageDialog'
+  title: 'Journeys-Admin/LanguageDialog'
 }
 
 const Template: Story = () => {

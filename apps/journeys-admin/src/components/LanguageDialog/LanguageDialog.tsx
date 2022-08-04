@@ -3,10 +3,10 @@ import { useMutation, useQuery, gql } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { JourneyLanguageUpdate } from '../../../../../__generated__/JourneyLanguageUpdate'
-import { Dialog } from '../../../Dialog'
-import { LanguageSelect } from '../../../LanguageSelect'
-import { GetLanguages } from '../../../../../__generated__/GetLanguages'
+import { JourneyLanguageUpdate } from '../../../__generated__/JourneyLanguageUpdate'
+import { Dialog } from '../Dialog'
+import { LanguageSelect } from '../LanguageSelect'
+import { GetLanguages } from '../../../__generated__/GetLanguages'
 
 export const JOURNEY_LANGUAGE_UPDATE = gql`
   mutation JourneyLanguageUpdate($id: ID!, $input: JourneyUpdateInput!) {

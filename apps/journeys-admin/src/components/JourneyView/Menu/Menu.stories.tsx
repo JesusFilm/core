@@ -5,7 +5,7 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { defaultJourney } from '../data'
-import { GET_LANGUAGES } from './LanguageDialog'
+import { GET_LANGUAGES } from '../../LanguageDialog'
 import { Menu, JOURNEY_PUBLISH } from './Menu'
 
 const MenuStory = {
