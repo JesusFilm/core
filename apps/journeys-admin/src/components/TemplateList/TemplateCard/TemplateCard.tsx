@@ -46,6 +46,8 @@ export function TemplateCard({
         })
       : ''
 
+  const contentWidth = admin === true ? '187px' : '129px'
+
   return (
     <Card
       aria-label="template-card"
@@ -103,7 +105,7 @@ export function TemplateCard({
       )}
 
       <Link href={template != null ? `/templates/${template.id}` : ''} passHref>
-        <CardActionArea sx={{ width: 'calc(100% - 129px)' }}>
+        <CardActionArea sx={{ width: `calc(100% - ${contentWidth})` }}>
           <CardContent>
             {template != null ? (
               <>
@@ -174,7 +176,7 @@ export function TemplateCard({
 
       {admin === true &&
         (template != null ? (
-          <CardActions sx={{ alignSelf: 'flex-end' }}>
+          <CardActions sx={{ alignSelf: 'flex-end', width: '58px' }}>
             <JourneyCardMenu
               id={template.id}
               status={template.status}
@@ -184,7 +186,7 @@ export function TemplateCard({
             />
           </CardActions>
         ) : (
-          <CardActions sx={{ alignSelf: 'flex-end' }}>
+          <CardActions sx={{ alignSelf: 'flex-end', width: '58px' }}>
             <IconButton disabled>
               <MoreVertIcon />
             </IconButton>
