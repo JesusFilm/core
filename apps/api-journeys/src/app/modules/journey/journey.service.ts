@@ -3,12 +3,15 @@ import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database/BaseService'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
+import { includes } from 'lodash'
 import { AqlQuery } from 'arangojs/aql'
 import {
   Journey,
   JourneyStatus,
   UserJourneyRole,
-  JourneysFilter
+  JourneysFilter,
+  Role,
+  UserRole
 } from '../../__generated__/graphql'
 
 @Injectable()
@@ -84,18 +87,25 @@ export class JourneyService extends BaseService {
   }
 
   @KeyAsId()
-  async getAllByOwnerEditor(
-    userId: string,
-    status?: JourneyStatus[]
+  async getAllByRole(
+    user: UserRole,
+    status?: JourneyStatus[],
+    template?: boolean
   ): Promise<Journey[]> {
-    const filter =
+    const statusFilter =
       status != null ? aql`&& journey.status IN ${status}` : aql`&& true`
-    const result = await this.db.query(aql`
-    FOR userJourney in userJourneys
-      FOR journey in ${this.collection}
-          FILTER userJourney.journeyId == journey._key && userJourney.userId == ${userId}
-           && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})
-           ${filter}
+
+    const roleFilter =
+      template === true && includes(user.roles, Role.publisher)
+        ? aql`FOR journey in ${this.collection}
+              FILTER journey.template == true`
+        : aql`FOR userJourney in userJourneys
+          FOR journey in ${this.collection}
+            FILTER userJourney.journeyId == journey._key && userJourney.userId == ${user.userId}
+              && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})`
+
+    const result = await this.db.query(aql`${roleFilter}
+        ${statusFilter}
           RETURN journey
     `)
     return await result.all()
