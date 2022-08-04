@@ -198,7 +198,9 @@ export class BlockService extends BaseService {
           duplicateStepIds != null && block[key] != null
             ? duplicateStepIds.get(block[key])
             : null
-      } else if (key.includes('Id')) {
+        // All ids that link to child blocks should include BlockId in the key name.
+        // TODO: startIconId and endIconId should be renamed as IconBlockId's
+      } else if (key.includes('BlockId') || key.includes('IconId')) {
         updatedBlockProps[key] = childIds.get(block[key]) ?? null
       }
       if (key === 'action') {

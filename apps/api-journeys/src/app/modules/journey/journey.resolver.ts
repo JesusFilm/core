@@ -35,9 +35,11 @@ import {
   UserJourney,
   UserJourneyRole,
   JourneysFilter,
-  JourneysReportType
+  JourneysReportType,
+  Role
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
+import { UserRoleService } from '../userRole/userRole.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { JourneyService } from './journey.service'
 
@@ -48,7 +50,8 @@ export class JourneyResolver {
   constructor(
     private readonly journeyService: JourneyService,
     private readonly blockService: BlockService,
-    private readonly userJourneyService: UserJourneyService
+    private readonly userJourneyService: UserJourneyService,
+    private readonly userRoleService: UserRoleService
   ) {}
 
   @Query()
@@ -99,9 +102,11 @@ export class JourneyResolver {
   @Query()
   async adminJourneys(
     @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[]
+    @Args('status') status: JourneyStatus[],
+    @Args('template') template?: boolean
   ): Promise<Journey[]> {
-    return await this.journeyService.getAllByOwnerEditor(userId, status)
+    const user = await this.userRoleService.getUserRoleById(userId)
+    return await this.journeyService.getAllByRole(user, status, template)
   }
 
   @Query()
@@ -216,7 +221,16 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
+  @UseGuards(
+    RoleGuard('id', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      {
+        role: 'public',
+        attributes: { template: true, status: JourneyStatus.published }
+      }
+    ])
+  )
   async journeyDuplicate(
     @Args('id') id: string,
     @CurrentUserId() userId: string
@@ -293,7 +307,13 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
+  @UseGuards(
+    RoleGuard('id', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeyUpdate(
     @Args('id') id: string,
     @Args('input') input: JourneyUpdateInput
@@ -315,7 +335,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('id', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeyPublish(@Args('id') id: string): Promise<Journey> {
     return await this.journeyService.update(id, {
       status: JourneyStatus.published,
@@ -324,7 +349,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('ids', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeysArchive(
     @CurrentUserId() userId: string,
     @Args('ids') ids: string[]
@@ -343,7 +373,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('ids', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeysDelete(
     @CurrentUserId() userId: string,
     @Args('ids') ids: string[]
@@ -361,7 +396,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('ids', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeysTrash(
     @CurrentUserId() userId: string,
     @Args('ids') ids: string[]
@@ -380,7 +420,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('ids', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeysRestore(
     @CurrentUserId() userId: string,
     @Args('ids') ids: string[]

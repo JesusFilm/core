@@ -685,6 +685,31 @@ type StepViewEvent implements Event {
   block: StepBlock
 }
 
+type TemplateLibraryViewEvent implements Event {
+  id: ID!
+  userId: ID!
+}
+
+input TemplateUseEventInput {
+  journeyId: ID!
+}
+
+type TemplateUseEvent implements Event {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+}
+
+input TemplatePreviewEventInput {
+  journeyId: ID!
+}
+
+type TemplatePreviewEvent implements Event {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+}
+
 input VideoStartEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -816,6 +841,7 @@ enum JourneyStatus {
 
 input JourneysFilter {
   featured: Boolean
+  template: Boolean
 }
 
 enum JourneysReportType {
@@ -953,6 +979,9 @@ extend type Mutation {
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
+  templateLibraryViewEventCreate: TemplateLibraryViewEvent!
+  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent!
+  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent!
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
   videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
@@ -997,7 +1026,7 @@ extend type Language @key(fields: "id") {
 }
 
 extend type Query {
-  adminJourneys(status: [JourneyStatus!]): [Journey!]!
+  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
