@@ -22,26 +22,14 @@ Default.args = {
   admin: false
 }
 
-export const Descriptive = Template.bind({})
-Descriptive.args = {
+export const Complete = Template.bind({})
+Complete.args = {
   template: descriptiveTemplate,
-  admin: false
+  admin: true
 }
 
 export const Loading = Template.bind({})
 Loading.args = {
-  template: undefined,
-  admin: false
-}
-
-export const AdminDraft = Template.bind({})
-AdminDraft.args = {
-  template: defaultTemplate,
-  admin: true
-}
-
-export const AdminLoading = Template.bind({})
-AdminLoading.args = {
   template: undefined,
   admin: true
 }
