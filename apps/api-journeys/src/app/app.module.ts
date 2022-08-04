@@ -11,7 +11,6 @@ import { JourneyModule } from './modules/journey/journey.module'
 import { EventModule } from './modules/event/event.module'
 import { UserJourneyModule } from './modules/userJourney/userJourney.module'
 import { UserRoleModule } from './modules/userRole/userRole.module'
-// import { UserJourneyService } from './modules/userJourney/userJourney.service'
 
 @Module({
   imports: [

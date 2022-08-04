@@ -37,6 +37,7 @@ enum JourneyStatus {
 
 input JourneysFilter {
   featured: Boolean
+  template: Boolean
 }
 
 enum JourneysReportType {
@@ -70,7 +71,7 @@ type PowerBiEmbed {
 }
 
 extend type Query {
-  adminJourneys(status: [JourneyStatus!]): [Journey!]!
+  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!

@@ -11,6 +11,8 @@ import {
   IconSize
 } from '../../../__generated__/graphql'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
+import { UserRoleService } from '../../userRole/userRole.service'
+import { JourneyService } from '../../journey/journey.service'
 import { IconBlockResolver } from './icon.resolver'
 
 describe('Icon', () => {
@@ -77,6 +79,8 @@ describe('Icon', () => {
         blockService,
         IconBlockResolver,
         UserJourneyService,
+        UserRoleService,
+        JourneyService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()
