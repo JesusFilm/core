@@ -18,7 +18,9 @@ export class JourneyService extends BaseService {
 
     return aql.join(
       [
-        aql`AND journey.template == ${template === true}`,
+        template === true
+          ? aql`AND journey.template == true`
+          : aql`AND journey.template != true`,
         featured === true && aql`AND journey.featuredAt != null`,
         featured === false && aql`AND journey.featuredAt == null`
       ].filter((x) => x !== false)
