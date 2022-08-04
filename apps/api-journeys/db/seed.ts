@@ -3,6 +3,7 @@ import { nua1 } from './seeds/nua1'
 import { nua2 } from './seeds/nua2'
 import { nua8 } from './seeds/nua8'
 import { nua9 } from './seeds/nua9'
+import { createUserRolesCollection } from './seeds/createUserRolesCollection'
 
 const db = ArangoDB()
 
@@ -25,10 +26,7 @@ async function main(): Promise<void> {
       keyOptions: { type: 'uuid' }
     })
 
-  if (!(await db.collection('userRoles').exists()))
-    await db.createCollection('userRoles', {
-      keyOptions: { type: 'uuid' }
-    })
+  await createUserRolesCollection()
 
   await db.collection('journeys').ensureIndex({
     type: 'persistent',
