@@ -405,6 +405,10 @@ enum JourneyStatus {
   trashed
 }
 
+input JourneyTemplateInput {
+  template: Boolean
+}
+
 input JourneyUpdateInput {
   description: String
   languageId: String
@@ -497,6 +501,9 @@ type Mutation {
 
   """Sets journey status to published"""
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
+
+  """Updates template"""
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
 

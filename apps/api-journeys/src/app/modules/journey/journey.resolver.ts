@@ -35,12 +35,13 @@ import {
   UserJourney,
   UserJourneyRole,
   JourneysFilter,
+  JourneyTemplateInput,
   JourneysReportType,
   Role
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
-import { UserRoleService } from '../userRole/userRole.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
+import { UserRoleService } from '../userRole/userRole.service'
 import { JourneyService } from './journey.service'
 
 const ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED = 1210
@@ -443,6 +444,15 @@ export class JourneyResolver {
     return (await this.journeyService.updateAll(
       results
     )) as unknown as Journey[]
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('ids', { role: Role.publisher }))
+  async journeyTemplate(
+    @Args('id') id: string,
+    @Args('input') input: JourneyTemplateInput
+  ): Promise<Journey> {
+    return await this.journeyService.update(id, input)
   }
 
   @ResolveField()

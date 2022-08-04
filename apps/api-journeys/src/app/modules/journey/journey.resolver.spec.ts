@@ -15,6 +15,7 @@ import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
+import { UserRoleResolver } from '../userRole/userRole.resolver'
 import { JourneyResolver } from './journey.resolver'
 import { JourneyService } from './journey.service'
 
@@ -111,6 +112,10 @@ describe('JourneyResolver', () => {
     slug: 'published-slug',
     seoTitle: 'Social media title',
     seoDescription: 'Social media description'
+  }
+
+  const templateUpdate = {
+    template: true
   }
 
   const userJourney = {
@@ -216,6 +221,7 @@ describe('JourneyResolver', () => {
   const userRoleService = {
     provide: UserRoleService,
     useFactory: () => ({
+      save: jest.fn((userId) => userId),
       getUserRoleById: jest.fn(() => userRole)
     })
   }
@@ -228,6 +234,7 @@ describe('JourneyResolver', () => {
         blockService,
         BlockResolver,
         userJourneyService,
+        UserRoleResolver,
         userRoleService
       ]
     }).compile()
@@ -879,6 +886,13 @@ describe('JourneyResolver', () => {
           status: JourneyStatus.draft
         }
       ])
+    })
+  })
+
+  describe('journeyTemplate', () => {
+    it('updates template', async () => {
+      await resolver.journeyTemplate('1', templateUpdate)
+      expect(service.update).toHaveBeenCalledWith('1', templateUpdate)
     })
   })
 
