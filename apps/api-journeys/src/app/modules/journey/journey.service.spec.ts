@@ -86,28 +86,26 @@ describe('JourneyService', () => {
     it('should return template query', async () => {
       const filter: JourneysFilter = { template: true }
       const response = await service.journeyFilter(filter)
-      expect(response.query).toEqual(aql`AND journey.template == @value0`.query)
+      expect(response.query).toEqual(aql`AND journey.template == true`.query)
     })
     it('should return featured query', async () => {
       const filter: JourneysFilter = { featured: true }
       const response = await service.journeyFilter(filter)
       expect(response.query).toEqual(
-        aql`AND journey.template == @value0 AND journey.featuredAt != null`
-          .query
+        aql`AND journey.template != true AND journey.featuredAt != null`.query
       )
     })
     it('should return not featured query', async () => {
       const filter: JourneysFilter = { featured: false }
       const response = await service.journeyFilter(filter)
       expect(response.query).toEqual(
-        aql`AND journey.template == @value0 AND journey.featuredAt == null`
-          .query
+        aql`AND journey.template != true AND journey.featuredAt == null`.query
       )
     })
     it('should return published query', async () => {
       const filter: JourneysFilter = {}
       const response = await service.journeyFilter(filter)
-      expect(response.query).toEqual(aql`AND journey.template == @value0`.query)
+      expect(response.query).toEqual(aql`AND journey.template != true`.query)
     })
   })
 
@@ -123,13 +121,12 @@ describe('JourneyService', () => {
         expect(query).toEqual(
           aql`FOR journey IN undefined
           FILTER journey.status == @value0
-          AND journey.template == @value1 AND journey.featuredAt != null
+          AND journey.template != true AND journey.featuredAt != null
           RETURN journey
       `.query
         )
         expect(bindVars).toEqual({
-          value0: 'published',
-          value1: false
+          value0: 'published'
         })
         return await mockDbQueryResult(db, [journey])
       })
