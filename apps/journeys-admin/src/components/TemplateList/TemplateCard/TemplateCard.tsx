@@ -172,27 +172,24 @@ export function TemplateCard({
         </CardActionArea>
       </Link>
 
-      {admin === true && (
-        <>
-          {template != null ? (
-            <CardActions sx={{ alignSelf: 'flex-end' }}>
-              <JourneyCardMenu
-                id={template.id}
-                status={template.status}
-                slug={template.slug}
-                published={template.publishedAt != null}
-                template={true}
-              />
-            </CardActions>
-          ) : (
-            <CardActions sx={{ alignSelf: 'flex-end' }}>
-              <IconButton disabled>
-                <MoreVertIcon />
-              </IconButton>
-            </CardActions>
-          )}
-        </>
-      )}
+      {admin === true &&
+        (template != null ? (
+          <CardActions sx={{ alignSelf: 'flex-end' }}>
+            <JourneyCardMenu
+              id={template.id}
+              status={template.status}
+              slug={template.slug}
+              published={template.publishedAt != null}
+              template={true}
+            />
+          </CardActions>
+        ) : (
+          <CardActions sx={{ alignSelf: 'flex-end' }}>
+            <IconButton disabled>
+              <MoreVertIcon />
+            </IconButton>
+          </CardActions>
+        ))}
     </Card>
   )
 }
