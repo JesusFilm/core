@@ -134,7 +134,7 @@ describe('DefaultMenu', () => {
   })
 
   it('should show menu for templates', () => {
-    const { queryByRole, getByRole } = render(
+    const { queryByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <DefaultMenu
@@ -150,11 +150,6 @@ describe('DefaultMenu', () => {
           />
         </SnackbarProvider>
       </MockedProvider>
-    )
-
-    expect(getByRole('menuitem', { name: 'Preview' })).toHaveAttribute(
-      'href',
-      '/api/preview?slug=template-slug'
     )
     expect(queryByRole('menuitem', { name: 'Access' })).not.toBeInTheDocument()
   })

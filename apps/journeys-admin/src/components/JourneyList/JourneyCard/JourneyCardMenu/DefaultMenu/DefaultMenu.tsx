@@ -4,7 +4,7 @@ import PeopleIcon from '@mui/icons-material/People'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import Divider from '@mui/material/Divider'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { ApolloQueryResult } from '@apollo/client'
 import { MenuItem } from '../MenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem.tsx/DuplicateJourneyMenuItem'
@@ -45,23 +45,20 @@ export function DefaultMenu({
 }: DefaultMenuProps): ReactElement {
   return (
     <>
-      {template !== true ? (
-        <Link href={`/journeys/${journeyId}`} passHref>
-          <MenuItem
-            icon={<EditIcon color="secondary" />}
-            text="Edit"
-            options={{ component: 'a' }}
-          />
-        </Link>
-      ) : (
-        <Link href={`/templates/${journeyId}`} passHref>
-          <MenuItem
-            icon={<EditIcon color="secondary" />}
-            text="Edit"
-            options={{ component: 'a' }}
-          />
-        </Link>
-      )}
+      <NextLink
+        href={
+          template === true
+            ? `/templates/${journeyId}`
+            : `/journeys/${journeyId}`
+        }
+        passHref
+      >
+        <MenuItem
+          icon={<EditIcon color="secondary" />}
+          text="Edit"
+          options={{ component: 'a' }}
+        />
+      </NextLink>
 
       {template !== true && (
         <MenuItem
