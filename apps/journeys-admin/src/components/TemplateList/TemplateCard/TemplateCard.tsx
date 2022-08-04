@@ -15,34 +15,32 @@ import Skeleton from '@mui/material/Skeleton'
 import IconButton from '@mui/material/IconButton'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import Link from 'next/link'
-import { GetPublicTemplates_journeys as Template } from '../../../../__generated__/GetPublicTemplates'
+import { GetPublishedTemplates_journeys as Journey } from '../../../../__generated__/GetPublishedTemplates'
 import { JourneyCardMenu } from '../../JourneyList/JourneyCard/JourneyCardMenu'
 import { StatusChip } from '../../JourneyList/JourneyCard/StatusChip'
 
 export interface TemplateCardProps {
-  template?: Template
+  journey?: Journey
   admin?: boolean
 }
 
 export function TemplateCard({
-  template,
+  journey,
   admin
 }: TemplateCardProps): ReactElement {
-  const nativeLanguage = template?.language.name[0].value ?? ''
-  const localLanguage = template?.language.name[1]?.value
+  const nativeLanguage = journey?.language.name[0].value ?? ''
+  const localLanguage = journey?.language.name[1]?.value
   const displayLanguage =
     nativeLanguage === localLanguage || localLanguage == null
       ? nativeLanguage
       : `${nativeLanguage} (${localLanguage})`
 
   const date =
-    template != null
-      ? intlFormat(parseISO(template.createdAt), {
+    journey != null
+      ? intlFormat(parseISO(journey.createdAt), {
           day: 'numeric',
           month: 'long',
-          year: isThisYear(parseISO(template?.createdAt))
-            ? undefined
-            : 'numeric'
+          year: isThisYear(parseISO(journey?.createdAt)) ? undefined : 'numeric'
         })
       : ''
 
@@ -73,12 +71,12 @@ export function TemplateCard({
             : undefined
       }}
     >
-      {template?.primaryImageBlock?.src != null ? (
+      {journey?.primaryImageBlock?.src != null ? (
         <CardMedia
           component="img"
-          image={template.primaryImageBlock.src}
+          image={journey.primaryImageBlock.src}
           height="129px"
-          alt={template.title}
+          alt={journey.title}
           sx={{
             maxWidth: '129px',
             minWidth: '129px'
@@ -104,25 +102,25 @@ export function TemplateCard({
         </CardMedia>
       )}
 
-      <Link href={template != null ? `/templates/${template.id}` : ''} passHref>
+      <Link href={journey != null ? `/templates/${journey.id}` : ''} passHref>
         <CardActionArea sx={{ width: `calc(100% - ${contentWidth})` }}>
           <CardContent>
-            {template != null ? (
+            {journey != null ? (
               <>
                 <Typography variant="subtitle1" noWrap>
-                  {template.title}
+                  {journey.title}
                 </Typography>
                 <Typography variant="body2" noWrap sx={{ pb: 4, fontSize: 12 }}>
                   {date}
-                  {template?.description != null
-                    ? ` - ${template.description}`
+                  {journey?.description != null
+                    ? ` - ${journey.description}`
                     : ''}
                 </Typography>
 
                 <Stack direction="row">
                   {admin === true && (
                     <>
-                      <StatusChip status={template.status} />
+                      <StatusChip status={journey.status} />
                       <Box sx={{ pr: 6 }} />
                     </>
                   )}
@@ -175,13 +173,13 @@ export function TemplateCard({
       </Link>
 
       {admin === true &&
-        (template != null ? (
+        (journey != null ? (
           <CardActions sx={{ alignSelf: 'flex-end', width: '58px' }}>
             <JourneyCardMenu
-              id={template.id}
-              status={template.status}
-              slug={template.slug}
-              published={template.publishedAt != null}
+              id={journey.id}
+              status={journey.status}
+              slug={journey.slug}
+              published={journey.publishedAt != null}
               template={true}
             />
           </CardActions>

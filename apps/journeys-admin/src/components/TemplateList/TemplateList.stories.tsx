@@ -14,7 +14,7 @@ const TemplateListStory = {
 }
 
 const Template: Story = ({ ...args }) => (
-  <TemplateList templates={args.templates} />
+  <TemplateList journeys={args.templates} />
 )
 
 export const Default = Template.bind({})

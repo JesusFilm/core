@@ -12,7 +12,7 @@ const TemplateCardStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <TemplateCard template={args.template} admin={args.admin} />
+    <TemplateCard journey={args.template} admin={args.admin} />
   </MockedProvider>
 )
 

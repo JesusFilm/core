@@ -1,13 +1,13 @@
 import { ReactElement } from 'react'
 import Container from '@mui/material/Container'
-import { GetPublicTemplates_journeys as Template } from '../../../__generated__/GetPublicTemplates'
+import { GetPublishedTemplates_journeys as Journey } from '../../../__generated__/GetPublishedTemplates'
 import { TemplateCard } from './TemplateCard'
 
 interface TemplateListProps {
-  templates?: Template[]
+  journeys?: Journey[]
 }
 
-export function TemplateList({ templates }: TemplateListProps): ReactElement {
+export function TemplateList({ journeys }: TemplateListProps): ReactElement {
   return (
     <Container
       sx={{
@@ -15,10 +15,10 @@ export function TemplateList({ templates }: TemplateListProps): ReactElement {
         px: { xs: 0, sm: 8 }
       }}
     >
-      {templates != null ? (
+      {journeys != null ? (
         <>
-          {templates.map((template) => (
-            <TemplateCard key={template.id} template={template} />
+          {journeys.map((journey) => (
+            <TemplateCard key={journey.id} journey={journey} />
           ))}
         </>
       ) : (

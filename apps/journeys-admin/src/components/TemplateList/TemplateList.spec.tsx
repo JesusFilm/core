@@ -4,7 +4,7 @@ import { TemplateList } from '.'
 
 describe('TemplateList', () => {
   it('should render templates', () => {
-    const { getByText } = render(<TemplateList templates={[defaultTemplate]} />)
+    const { getByText } = render(<TemplateList journeys={[defaultTemplate]} />)
     expect(getByText('Default Template Heading')).toBeInTheDocument()
   })
 })

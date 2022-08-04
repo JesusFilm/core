@@ -6,7 +6,7 @@ import {
   oldTemplate,
   descriptiveTemplate
 } from '../TemplateListData'
-import { GetPublicTemplates_journeys as Template } from '../../../../__generated__/GetPublicTemplates'
+import { GetPublishedTemplates_journeys as Journey } from '../../../../__generated__/GetPublishedTemplates'
 import { TemplateCard } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -16,7 +16,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TemplateCard', () => {
   it('should render', () => {
-    const { getByText } = render(<TemplateCard template={oldTemplate} />)
+    const { getByText } = render(<TemplateCard journey={oldTemplate} />)
     expect(getByText('An Old Template Heading')).toBeInTheDocument()
     expect(
       getByText(
@@ -27,14 +27,12 @@ describe('TemplateCard', () => {
   })
 
   it('should show native and local language', () => {
-    const { getByText } = render(
-      <TemplateCard template={descriptiveTemplate} />
-    )
+    const { getByText } = render(<TemplateCard journey={descriptiveTemplate} />)
     expect(getByText('普通話 (Chinese, Mandarin)')).toBeInTheDocument()
   })
 
   it('should show only native language if its the same as local language', () => {
-    const template: Template = {
+    const template: Journey = {
       ...defaultTemplate,
       language: {
         __typename: 'Language',
@@ -53,12 +51,12 @@ describe('TemplateCard', () => {
         ]
       }
     }
-    const { getByText } = render(<TemplateCard template={template} />)
+    const { getByText } = render(<TemplateCard journey={template} />)
     expect(getByText('English')).toBeInTheDocument()
   })
 
   it('should link to template details', () => {
-    const { getByRole } = render(<TemplateCard template={defaultTemplate} />)
+    const { getByRole } = render(<TemplateCard journey={defaultTemplate} />)
     expect(getByRole('link')).toHaveAttribute('href', '/templates/template-id')
   })
 
@@ -66,7 +64,7 @@ describe('TemplateCard', () => {
     const { getByText, getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <TemplateCard template={defaultTemplate} admin={true} />
+          <TemplateCard journey={defaultTemplate} admin={true} />
         </SnackbarProvider>
       </MockedProvider>
     )

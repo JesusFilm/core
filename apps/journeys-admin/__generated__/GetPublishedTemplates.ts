@@ -6,10 +6,10 @@
 import { ThemeName, ThemeMode, JourneyStatus, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: GetPublicTemplates
+// GraphQL query operation: GetPublishedTemplates
 // ====================================================
 
-export interface GetPublicTemplates_journeys_userJourneys_user {
+export interface GetPublishedTemplates_journeys_userJourneys_user {
   __typename: "User";
   id: string;
   firstName: string;
@@ -17,26 +17,26 @@ export interface GetPublicTemplates_journeys_userJourneys_user {
   imageUrl: string | null;
 }
 
-export interface GetPublicTemplates_journeys_userJourneys {
+export interface GetPublishedTemplates_journeys_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
-  user: GetPublicTemplates_journeys_userJourneys_user | null;
+  user: GetPublishedTemplates_journeys_userJourneys_user | null;
 }
 
-export interface GetPublicTemplates_journeys_language_name {
+export interface GetPublishedTemplates_journeys_language_name {
   __typename: "Translation";
   value: string;
   primary: boolean;
 }
 
-export interface GetPublicTemplates_journeys_language {
+export interface GetPublishedTemplates_journeys_language {
   __typename: "Language";
   id: string;
-  name: GetPublicTemplates_journeys_language_name[];
+  name: GetPublishedTemplates_journeys_language_name[];
 }
 
-export interface GetPublicTemplates_journeys_primaryImageBlock {
+export interface GetPublishedTemplates_journeys_primaryImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -52,7 +52,7 @@ export interface GetPublicTemplates_journeys_primaryImageBlock {
   blurhash: string;
 }
 
-export interface GetPublicTemplates_journeys {
+export interface GetPublishedTemplates_journeys {
   __typename: "Journey";
   id: string;
   title: string;
@@ -66,11 +66,11 @@ export interface GetPublicTemplates_journeys {
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
-  userJourneys: GetPublicTemplates_journeys_userJourneys[] | null;
-  language: GetPublicTemplates_journeys_language;
-  primaryImageBlock: GetPublicTemplates_journeys_primaryImageBlock | null;
+  userJourneys: GetPublishedTemplates_journeys_userJourneys[] | null;
+  language: GetPublishedTemplates_journeys_language;
+  primaryImageBlock: GetPublishedTemplates_journeys_primaryImageBlock | null;
 }
 
-export interface GetPublicTemplates {
-  journeys: GetPublicTemplates_journeys[];
+export interface GetPublishedTemplates {
+  journeys: GetPublishedTemplates_journeys[];
 }

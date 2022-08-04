@@ -12,10 +12,10 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { TemplateList } from '../../src/components/TemplateList'
-import { GetPublicTemplates } from '../../__generated__/GetPublicTemplates'
+import { GetPublishedTemplates } from '../../__generated__/GetPublishedTemplates'
 
-const GET_PUBLIC_TEMPLATES = gql`
-  query GetPublicTemplates {
+const GET_PUBLISHED_TEMPLATES = gql`
+  query GetPublishedTemplates {
     journeys(where: { template: true }) {
       id
       title
@@ -62,7 +62,7 @@ const GET_PUBLIC_TEMPLATES = gql`
 
 function TemplateIndex(): ReactElement {
   const AuthUser = useAuthUser()
-  const { data } = useQuery<GetPublicTemplates>(GET_PUBLIC_TEMPLATES)
+  const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
 
   return (
     <>
@@ -72,7 +72,7 @@ function TemplateIndex(): ReactElement {
         authUser={AuthUser}
         backHref={'/'}
       >
-        <TemplateList templates={data?.journeys} />
+        <TemplateList journeys={data?.journeys} />
       </PageWrapper>
     </>
   )
