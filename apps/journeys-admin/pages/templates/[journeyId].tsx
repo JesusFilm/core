@@ -16,6 +16,7 @@ import { useRouter } from 'next/router'
 import { GetTemplate } from '../../__generated__/GetTemplate'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateView } from '../../src/components/TemplateView'
+import { Menu } from '../../src/components/TemplateView/Menu'
 import i18nConfig from '../../next-i18next.config'
 
 export const GET_TEMPLATE = gql`
@@ -44,7 +45,13 @@ function TemplateDetails(): ReactElement {
       <JourneyProvider
         value={{ journey: data?.template ?? undefined, admin: true }}
       >
-        <PageWrapper title={'Template Details'} authUser={AuthUser}>
+        <PageWrapper
+          title={'Template Details'}
+          showDrawer
+          backHref="/"
+          menu={<Menu />}
+          authUser={AuthUser}
+        >
           {data?.template?.template === true && <TemplateView />}
         </PageWrapper>
       </JourneyProvider>

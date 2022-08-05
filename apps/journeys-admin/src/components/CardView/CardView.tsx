@@ -4,7 +4,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Box from '@mui/material/Box'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
-// import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useRouter } from 'next/router'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { CardPreview } from '../CardPreview'
@@ -22,14 +22,15 @@ export function CardView({
 }: CardViewProps): ReactElement {
   const breakpoints = useBreakpoints()
   const router = useRouter()
-  // const { journey } = useJourney()
+  const { journey } = useJourney()
 
   const handleSelect = (step: { id: string }): void => {
     if (id == null) return
-    // add check: if journey is template don't route
-    void router.push(`/journeys/${id}/edit?stepId=${step.id}`, undefined, {
-      shallow: true
-    })
+    if (journey?.template !== true) {
+      void router.push(`/journeys/${id}/edit?stepId=${step.id}`, undefined, {
+        shallow: true
+      })
+    }
   }
 
   const stepBlockLength =
