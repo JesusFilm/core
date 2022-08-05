@@ -12,7 +12,11 @@ import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
 } from '../../../JourneyList/StatusTabPanel/ArchivedStatusTab/ArchivedStatusTab'
-import { GetArchivedPublisherTemplates } from '../../../../../__generated__/GetArchivedPublisherTemplates'
+import {
+  GetArchivedPublisherTemplates,
+  GetArchivedPublisherTemplates_journeys as Journey
+} from '../../../../../__generated__/GetArchivedPublisherTemplates'
+import { TemplateCard } from '../../../TemplateList/TemplateCard'
 
 export const GET_ARCHIVED_PUBLISHER_TEMPLATES = gql`
   query GetArchivedPublisherTemplates {
@@ -181,8 +185,12 @@ export function ArchivedTemplates({
     <>
       {sortedJourneys != null ? (
         <>
-          {sortedJourneys.map((template) => (
-            <Typography key={template.id}>{template.title}</Typography>
+          {sortedJourneys.map((journey) => (
+            <TemplateCard
+              key={journey.id}
+              journey={journey as Journey}
+              admin={true}
+            />
           ))}
           {sortedJourneys.length > 0 ? (
             <span>
@@ -223,9 +231,9 @@ export function ArchivedTemplates({
         </>
       ) : (
         <>
-          <Typography>Loading...</Typography>
-          <Typography>Loading...</Typography>
-          <Typography>Loading...</Typography>
+          <TemplateCard />
+          <TemplateCard />
+          <TemplateCard />
         </>
       )}
 

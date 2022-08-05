@@ -53,15 +53,14 @@ describe('ActiveTemplates', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    // TODO: wait until templateCard is merged
-    // await waitFor(() =>
-    //   expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-    //     'January 1'
-    //   )
-    // )
-    // expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-    //   'November 19, 2020'
-    // )
+    await waitFor(() =>
+      expect(getAllByLabelText('template-card')[0].textContent).toContain(
+        'January 1'
+      )
+    )
+    expect(getAllByLabelText('template-card')[1].textContent).toContain(
+      'November 19, 2020'
+    )
   })
 
   it('should order templates in alphabetical order', async () => {
@@ -96,35 +95,14 @@ describe('ActiveTemplates', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    // TODO: wait until templateCard is merged
-    // await waitFor(() =>
-    //   expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-    //     'An Old Journey Heading'
-    //   )
-    // )
-    // expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-    //   'a lower case title'
-    // )
-  })
-
-  // TODO: remove?
-  it('should ask users to add a new journey', async () => {
-    const { getByRole, getByText } = render(
-      <MockedProvider mocks={[noTemplatesMock]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActiveTemplates onLoad={noop} event="" />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
+    await waitFor(() =>
+      expect(getAllByLabelText('template-card')[0].textContent).toContain(
+        'An Old Template Heading'
+      )
     )
-    // await waitFor(() =>
-    //   expect(getByText('No journeys to display.')).toBeInTheDocument()
-    // )
-    // expect(
-    //   getByText('Create a journey, then find it here.')
-    // ).toBeInTheDocument()
-    // expect(getByRole('button')).toBeInTheDocument()
+    expect(getAllByLabelText('template-card')[1].textContent).toContain(
+      'a lower case title'
+    )
   })
 
   it('should render loading skeleton', async () => {
@@ -137,10 +115,9 @@ describe('ActiveTemplates', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    // TODO: wait until templateCard is merged
-    // await waitFor(() =>
-    //   expect(getAllByLabelText('journey-card')).toHaveLength(3)
-    // )
+    await waitFor(() =>
+      expect(getAllByLabelText('template-card')).toHaveLength(3)
+    )
   })
 
   it('should call onLoad when query is loaded', async () => {

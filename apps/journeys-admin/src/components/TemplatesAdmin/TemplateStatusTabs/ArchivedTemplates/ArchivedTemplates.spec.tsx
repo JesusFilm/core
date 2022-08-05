@@ -53,15 +53,14 @@ describe('ArchivedTemplates', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    // TODO: wait until templateCard is merged
-    // await waitFor(() =>
-    //   expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-    //     'January 1'
-    //   )
-    // )
-    // expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-    //   'November 19, 2020'
-    // )
+    await waitFor(() =>
+      expect(getAllByLabelText('template-card')[0].textContent).toContain(
+        'January 1'
+      )
+    )
+    expect(getAllByLabelText('template-card')[1].textContent).toContain(
+      'November 19, 2020'
+    )
   })
 
   it('should order templates in alphabetical order', async () => {
@@ -95,15 +94,14 @@ describe('ArchivedTemplates', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    // TODO: wait until templateCard is merged
-    // await waitFor(() =>
-    //   expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-    //     'An Old Journey Heading'
-    //   )
-    // )
-    // expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-    //   'a lower case title'
-    // )
+    await waitFor(() =>
+      expect(getAllByLabelText('template-card')[0].textContent).toContain(
+        'An Old Template Heading'
+      )
+    )
+    expect(getAllByLabelText('template-card')[1].textContent).toContain(
+      'a lower case title'
+    )
   })
 
   it('should render loading skeleton', async () => {
@@ -116,10 +114,9 @@ describe('ArchivedTemplates', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    // TODO: wait until templateCard is merged
-    // await waitFor(() =>
-    //   expect(getAllByLabelText('journey-card')).toHaveLength(3)
-    // )
+    await waitFor(() =>
+      expect(getAllByLabelText('template-card')).toHaveLength(3)
+    )
   })
 
   it('should call onLoad when query is loaded', async () => {

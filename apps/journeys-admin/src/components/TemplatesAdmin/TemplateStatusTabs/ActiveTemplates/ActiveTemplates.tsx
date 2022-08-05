@@ -14,6 +14,7 @@ import {
   GetActivePublisherTemplates,
   GetActivePublisherTemplates_journeys as Journey
 } from '../../../../../__generated__/GetActivePublisherTemplates'
+import { TemplateCard } from '../../../TemplateList/TemplateCard'
 
 export const GET_ACTIVE_PUBLISHER_TEMPLATES = gql`
   query GetActivePublisherTemplates {
@@ -190,15 +191,19 @@ export function ActiveTemplates({
     <>
       {sortedJourneys != null ? (
         <>
-          {sortedJourneys.map((template) => (
-            <Typography key={template.id}>{template.title}</Typography>
+          {sortedJourneys.map((journey) => (
+            <TemplateCard
+              key={journey.id}
+              journey={journey as Journey}
+              admin={true}
+            />
           ))}
         </>
       ) : (
         <>
-          <Typography>Loading...</Typography>
-          <Typography>Loading...</Typography>
-          <Typography>Loading...</Typography>
+          <TemplateCard />
+          <TemplateCard />
+          <TemplateCard />
         </>
       )}
 

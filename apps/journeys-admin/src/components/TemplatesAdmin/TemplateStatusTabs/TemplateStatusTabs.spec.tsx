@@ -48,10 +48,9 @@ describe('TemplateStatusTabs', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    // TODO: wait for template cards to be merged
-    // await waitFor(() =>
-    //   expect(getAllByLabelText('journey-card')).toHaveLength(4)
-    // )
+    await waitFor(() =>
+      expect(getAllByLabelText('template-card')).toHaveLength(4)
+    )
   })
 
   it('should disable tab when waiting for journeys to load', () => {

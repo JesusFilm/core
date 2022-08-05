@@ -15,6 +15,7 @@ import {
   GetTrashedPublisherTemplates,
   GetTrashedPublisherTemplates_journeys as TrashedJourney
 } from '../../../../../__generated__/GetTrashedPublisherTemplates'
+import { TemplateCard } from '../../../TemplateList/TemplateCard'
 
 export const GET_TRASHED_PUBLISHER_TEMPLATES = gql`
   query GetTrashedPublisherTemplates {
@@ -196,8 +197,8 @@ export function TrashedTemplates({
         <>
           {sortedJourneys
             .filter((journey) => new Date(journey.trashedAt) > daysAgo)
-            .map((template) => (
-              <Typography key={template.id}>{template.title}</Typography>
+            .map((journey) => (
+              <TemplateCard key={journey.id} journey={journey} admin={true} />
             ))}
 
           {sortedJourneys.length === 0 && (
@@ -222,9 +223,9 @@ export function TrashedTemplates({
         </>
       ) : (
         <>
-          <Typography>Loading...</Typography>
-          <Typography>Loading...</Typography>
-          <Typography>Loading...</Typography>
+          <TemplateCard />
+          <TemplateCard />
+          <TemplateCard />
         </>
       )}
 
