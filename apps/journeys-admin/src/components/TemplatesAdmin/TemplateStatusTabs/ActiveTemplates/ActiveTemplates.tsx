@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography'
 import { ReactElement, useState, useEffect } from 'react'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { AuthUser } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
 import { SortOrder } from '../../../JourneyList/JourneySort'
@@ -10,77 +10,87 @@ import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
 } from '../../../JourneyList/StatusTabPanel/ActiveStatusTab/ActiveStatusTab'
+import {
+  GetActivePublisherTemplates,
+  GetActivePublisherTemplates_journeys as Journey
+} from '../../../../../__generated__/GetActivePublisherTemplates'
+
+export const GET_ACTIVE_PUBLISHER_TEMPLATES = gql`
+  query GetActivePublisherTemplates {
+    journeys: adminJourneys(status: [draft, published], template: true) {
+      id
+      title
+      createdAt
+      publishedAt
+      description
+      slug
+      themeName
+      themeMode
+      status
+      seoTitle
+      seoDescription
+      template
+      userJourneys {
+        id
+        role
+        user {
+          id
+          firstName
+          lastName
+          imageUrl
+        }
+      }
+      language {
+        id
+        name(primary: true) {
+          value
+          primary
+        }
+      }
+      primaryImageBlock {
+        id
+        parentBlockId
+        parentOrder
+        src
+        alt
+        width
+        height
+        blurhash
+      }
+    }
+  }
+`
 
 interface ActiveTemplatesProps {
+  onLoad: () => void
   event: string | undefined
   sortOrder?: SortOrder
   authUser?: AuthUser
 }
 
-// TODO: replace with query getPublishedJourneys({where: template: true})
-export const activeTemplates = [
-  {
-    id: 'template1.id',
-    title: 'Template 1',
-    userJourneys: [
-      {
-        id: 'userJourney1.id',
-        role: 'owner',
-        user: {
-          id: 'user1.id',
-          firstName: 'John'
-        }
-      }
-    ],
-    trashedAt: new Date()
-  },
-  {
-    id: 'template2.id',
-    title: 'Template 2',
-    userJourneys: [
-      {
-        id: 'userJourney2.id',
-        role: 'owner',
-        user: {
-          id: 'user2.id',
-          firstName: 'Jane'
-        }
-      }
-    ],
-    trashedAt: new Date()
-  },
-  {
-    id: 'template3.id',
-    title: 'Template 3',
-    userJourneys: [
-      {
-        id: 'userJourney3.id',
-        role: 'owner',
-        user: {
-          id: 'user3.id',
-          firstName: 'Steve'
-        }
-      }
-    ],
-    trashedAt: new Date()
-  }
-]
-
 export function ActiveTemplates({
+  onLoad,
   event,
   sortOrder,
   authUser
 }: ActiveTemplatesProps): ReactElement {
-  const [templates, setTemplates] = useState(activeTemplates)
-  // TODO
-  // const [oldTemplates, setOldTemplates] = useState<Journeys[]>()
+  const { data, loading, error, refetch } =
+    useQuery<GetActivePublisherTemplates>(GET_ACTIVE_PUBLISHER_TEMPLATES)
+
+  const [journeys, setJourneys] = useState<Journey[]>()
+  const [oldJourneys, setOldJourneys] = useState<Journey[]>()
   const [openArchiveAll, setOpenArchiveAll] = useState(false)
   const [openTrashAll, setOpenTrashAll] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
+  useEffect(() => {
+    setOldJourneys(journeys)
+    setJourneys(data?.journeys)
+  }, [data, journeys, oldJourneys])
+
   const [archiveActive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     variables: {
-      ids: templates
+      ids: journeys
         ?.filter(
           (journey) =>
             journey.userJourneys?.find(
@@ -94,14 +104,14 @@ export function ActiveTemplates({
         enqueueSnackbar('Journeys Archived', {
           variant: 'success'
         })
-        // void refetch()
+        void refetch()
       }
     }
   })
 
   const [trashActive] = useMutation(TRASH_ACTIVE_JOURNEYS, {
     variables: {
-      ids: templates
+      ids: journeys
         ?.filter(
           (journey) =>
             journey.userJourneys?.find(
@@ -115,7 +125,7 @@ export function ActiveTemplates({
         enqueueSnackbar('Journeys Trashed', {
           variant: 'success'
         })
-        // void refetch()
+        void refetch()
       }
     }
   })
@@ -149,19 +159,12 @@ export function ActiveTemplates({
     }
     handleClose()
   }
-  // TODO
-  //   useEffect(() => {
-  //     setOldJourneys(journeys)
-  //     setJourneys(data?.journeys)
-  //   }, [data, journeys, oldJourneys])
-  //  })
 
-  // TODO
-  // useEffect(() => {
-  //   if (!loading && error == null) {
-  //     onLoad()
-  //   }
-  // }, [onLoad, loading, error])
+  useEffect(() => {
+    if (!loading && error == null) {
+      onLoad()
+    }
+  }, [onLoad, loading, error])
 
   // TODO
   // const duplicatedJourneyId = getDuplicatedJourney(oldJourneys, journeys)
@@ -175,19 +178,25 @@ export function ActiveTemplates({
         setOpenTrashAll(true)
         break
       case 'refetchActive':
-        // void refetch()
+        void refetch()
         break
     }
-  }, [event])
+  }, [event, refetch])
 
-  const sortedTemplates = templates // templates != null ? sortJourneys(templates, sortOrder) : undefined
+  const sortedJourneys =
+    journeys != null ? sortJourneys(journeys, sortOrder) : undefined
 
-  // TODO: loading states
   return (
     <>
-      {sortedTemplates.map((template) => (
-        <Typography key={template.id}>{template.title}</Typography>
-      ))}
+      {sortedJourneys != null ? (
+        <>
+          {sortedJourneys.map((template) => (
+            <Typography key={template.id}>{template.title}</Typography>
+          ))}
+        </>
+      ) : (
+        <></>
+      )}
 
       <Dialog
         open={openArchiveAll ?? false}

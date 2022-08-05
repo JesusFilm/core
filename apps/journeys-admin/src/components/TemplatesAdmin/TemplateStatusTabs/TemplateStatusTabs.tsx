@@ -48,23 +48,32 @@ export function TemplateStatusTabs({
   router,
   authUser
 }: TemplateStatusTabsProps): ReactElement {
-  const [sortOrder, setSortOrder] = useState<SortOrder>()
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const [activeEvent, setActiveEvent] = useState(event)
-  // TODO: loaded events
-  // const [tabsLoaded, setTabsLoaded] = useState(false)
-  // const [activeTabLoaded, setActiveTabLoaded] = useState(false)
-
-  useEffect(() => {
-    setActiveEvent(event)
-  }, [event])
-
   const tabIndex =
     router != null
       ? tabs.find((status) => status.queryParam === router.query?.tab)
           ?.tabIndex ?? 0
       : 0
+
+  const [sortOrder, setSortOrder] = useState<SortOrder>()
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const [activeEvent, setActiveEvent] = useState(event)
+  const [tabsLoaded, setTabsLoaded] = useState(false)
+  const [activeTabLoaded, setActiveTabLoaded] = useState(false)
   const [activeTab, setActiveTab] = useState(tabIndex)
+
+  function activeTabOnLoad(): void {
+    setActiveTabLoaded(true)
+  }
+
+  useEffect(() => {
+    if (activeTabLoaded) {
+      setTabsLoaded(true)
+    }
+  }, [activeTabLoaded])
+
+  useEffect(() => {
+    setActiveEvent(event)
+  }, [event])
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -105,7 +114,11 @@ export function TemplateStatusTabs({
   return (
     <>
       <Box sx={{ my: 4, ml: 6, display: smUp ? 'none' : 'block' }}>
-        <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
+        <JourneySort
+          sortOrder={sortOrder}
+          onChange={setSortOrder}
+          disabled={!tabsLoaded}
+        />
       </Box>
 
       <Card
@@ -129,14 +142,17 @@ export function TemplateStatusTabs({
           <Tab
             label={tabs[0].displayValue}
             {...tabA11yProps('active-status-panel', tabs[0].tabIndex)}
+            disabled={!tabsLoaded}
           />
           <Tab
             label={tabs[1].displayValue}
             {...tabA11yProps('archived-status-panel', tabs[1].tabIndex)}
+            disabled={!tabsLoaded}
           />
           <Tab
             label={tabs[2].displayValue}
             {...tabA11yProps('trashed-status-panel', tabs[2].tabIndex)}
+            disabled={!tabsLoaded}
           />
           <Box
             sx={{
@@ -147,7 +163,11 @@ export function TemplateStatusTabs({
               display: !smUp ? 'none' : 'block'
             }}
           >
-            <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
+            <JourneySort
+              sortOrder={sortOrder}
+              onChange={setSortOrder}
+              disabled={!tabsLoaded}
+            />
           </Box>
         </Tabs>
       </Card>
@@ -159,6 +179,7 @@ export function TemplateStatusTabs({
           index={tabs[0].tabIndex}
         >
           <ActiveTemplates
+            onLoad={activeTabOnLoad}
             event={activeEvent}
             sortOrder={sortOrder}
             authUser={authUser}
@@ -172,6 +193,7 @@ export function TemplateStatusTabs({
           index={tabs[1].tabIndex}
         >
           <ArchivedTemplates
+            onLoad={activeTabOnLoad}
             event={activeEvent}
             sortOrder={sortOrder}
             authUser={authUser}
@@ -185,6 +207,7 @@ export function TemplateStatusTabs({
           index={tabs[2].tabIndex}
         >
           <TrashedTemplates
+            onLoad={activeTabOnLoad}
             event={activeEvent}
             sortOrder={sortOrder}
             authUser={authUser}

@@ -14,12 +14,14 @@ import {
 } from '../../../JourneyList/StatusTabPanel/TrashedStatusTab/TrashedStatusTab'
 
 interface TrashedTemplatesProps {
+  onLoad: () => void
   event: string | undefined
   sortOrder?: SortOrder
   authUser?: AuthUser
 }
 
 export function TrashedTemplates({
+  onLoad,
   event,
   sortOrder,
   authUser

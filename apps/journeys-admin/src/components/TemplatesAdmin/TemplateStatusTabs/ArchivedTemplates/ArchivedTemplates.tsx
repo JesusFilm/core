@@ -15,12 +15,14 @@ import {
 } from '../../../JourneyList/StatusTabPanel/ArchivedStatusTab/ArchivedStatusTab'
 
 interface ArchivedTemplateProps {
+  onLoad: () => void
   event: string | undefined
   sortOrder?: SortOrder
   authUser?: AuthUser
 }
 
 export function ArchivedTemplates({
+  onLoad,
   event,
   sortOrder,
   authUser
