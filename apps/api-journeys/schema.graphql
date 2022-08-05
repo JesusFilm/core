@@ -841,6 +841,7 @@ enum JourneyStatus {
 
 input JourneysFilter {
   featured: Boolean
+  template: Boolean
 }
 
 enum JourneysReportType {
@@ -908,6 +909,10 @@ type UserJourney @key(fields: "id") {
   journeyId: ID!
   role: UserJourneyRole!
   user: User
+}
+
+input JourneyTemplateInput {
+  template: Boolean
 }
 
 enum UserJourneyRole {
@@ -1006,9 +1011,15 @@ extend type Mutation {
 
   """Sets journeys statuses to last active status"""
   journeysRestore(ids: [ID!]!): [Journey]
+
+  """Updates template"""
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
+
+  """Removes all userJourneys associated with a journeyId"""
+  userJourneyRemoveAll(id: ID!): [UserJourney!]!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
 }
 
@@ -1022,7 +1033,7 @@ extend type Language @key(fields: "id") {
 }
 
 extend type Query {
-  adminJourneys(status: [JourneyStatus!]): [Journey!]!
+  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!

@@ -7,6 +7,7 @@ import { BlockService } from '../../block/block.service'
 import { JourneyService } from '../../journey/journey.service'
 import { ActionResolver } from '../action.resolver'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
+import { UserRoleService } from '../../userRole/userRole.service'
 import { NavigateToJourneyActionResolver } from './navigateToJourney.resolver'
 
 describe('NavigateToJourneyActionResolver', () => {
@@ -70,6 +71,7 @@ describe('NavigateToJourneyActionResolver', () => {
         journeyService,
         ActionResolver,
         UserJourneyService,
+        UserRoleService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()

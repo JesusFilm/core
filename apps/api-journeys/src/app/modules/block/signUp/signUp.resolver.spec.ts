@@ -6,7 +6,9 @@ import {
   SignUpBlock,
   SignUpBlockCreateInput
 } from '../../../__generated__/graphql'
+import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
+import { UserRoleService } from '../../userRole/userRole.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { SignUpBlockResolver } from './signUp.resolver'
@@ -78,6 +80,8 @@ describe('SignUpBlockResolver', () => {
         blockService,
         SignUpBlockResolver,
         UserJourneyService,
+        UserRoleService,
+        JourneyService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()

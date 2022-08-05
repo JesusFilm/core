@@ -404,6 +404,7 @@ export class VideoProgressEventCreateInput {
 
 export class JourneysFilter {
     featured?: Nullable<boolean>;
+    template?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {
@@ -426,6 +427,10 @@ export class JourneyUpdateInput {
     slug?: Nullable<string>;
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
+}
+
+export class JourneyTemplateInput {
+    template?: Nullable<boolean>;
 }
 
 export interface Action {
@@ -896,11 +901,15 @@ export abstract class IMutation {
 
     abstract journeysRestore(ids: string[]): Nullable<Nullable<Journey>[]> | Promise<Nullable<Nullable<Journey>[]>>;
 
+    abstract journeyTemplate(id: string, input: JourneyTemplateInput): Journey | Promise<Journey>;
+
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 
     abstract userJourneyPromote(id: string): UserJourney | Promise<UserJourney>;
 
     abstract userJourneyRemove(id: string): UserJourney | Promise<UserJourney>;
+
+    abstract userJourneyRemoveAll(id: string): UserJourney[] | Promise<UserJourney[]>;
 
     abstract userJourneyRequest(journeyId: string, idType?: Nullable<IdType>): UserJourney | Promise<UserJourney>;
 }
@@ -915,7 +924,7 @@ export class Language {
 }
 
 export abstract class IQuery {
-    abstract adminJourneys(status?: Nullable<JourneyStatus[]>): Journey[] | Promise<Journey[]>;
+    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
 
     abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
 

@@ -5,7 +5,9 @@ import { mockDeep } from 'jest-mock-extended'
 import { Action, RadioOptionBlock } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
+import { JourneyService } from '../journey/journey.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
+import { UserRoleService } from '../userRole/userRole.service'
 import { ActionResolver } from './action.resolver'
 
 describe('ActionResolver', () => {
@@ -68,6 +70,8 @@ describe('ActionResolver', () => {
           blockService,
           ActionResolver,
           UserJourneyService,
+          UserRoleService,
+          JourneyService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -131,6 +135,8 @@ describe('ActionResolver', () => {
           BlockResolver,
           blockService,
           UserJourneyService,
+          UserRoleService,
+          JourneyService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -160,6 +166,8 @@ describe('ActionResolver', () => {
           BlockResolver,
           blockService,
           UserJourneyService,
+          UserRoleService,
+          JourneyService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -189,6 +197,8 @@ describe('ActionResolver', () => {
           BlockResolver,
           blockService,
           UserJourneyService,
+          UserRoleService,
+          JourneyService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -218,6 +228,8 @@ describe('ActionResolver', () => {
           BlockResolver,
           blockService,
           UserJourneyService,
+          UserRoleService,
+          JourneyService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
@@ -246,6 +258,8 @@ describe('ActionResolver', () => {
           blockService,
           ActionResolver,
           UserJourneyService,
+          UserRoleService,
+          JourneyService,
           {
             provide: 'DATABASE',
             useFactory: () => mockDeep<Database>()
