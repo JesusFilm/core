@@ -8,6 +8,7 @@ import {
   descriptiveTemplate,
   publishedTemplate
 } from '../../../TemplateList/TemplateListData'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { GET_ARCHIVED_PUBLISHER_TEMPLATES } from './ArchivedTemplates'
 import { ArchivedTemplates } from '.'
 
@@ -19,6 +20,23 @@ const ArchivedTemplatesStory = {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
+}
+
+const defaultArchivedTemplate = {
+  ...defaultTemplate,
+  status: JourneyStatus.archived
+}
+const oldArchivedTemplate = {
+  ...oldTemplate,
+  status: JourneyStatus.archived
+}
+const descriptiveArchivedTemplate = {
+  ...descriptiveTemplate,
+  status: JourneyStatus.archived
+}
+const archivedTemplate = {
+  ...publishedTemplate,
+  status: JourneyStatus.archived
 }
 
 const Template: Story = ({ ...args }) => (
@@ -41,10 +59,10 @@ Default.args = {
       result: {
         data: {
           journeys: [
-            defaultTemplate,
-            oldTemplate,
-            descriptiveTemplate,
-            publishedTemplate
+            defaultArchivedTemplate,
+            oldArchivedTemplate,
+            descriptiveArchivedTemplate,
+            archivedTemplate
           ]
         }
       }

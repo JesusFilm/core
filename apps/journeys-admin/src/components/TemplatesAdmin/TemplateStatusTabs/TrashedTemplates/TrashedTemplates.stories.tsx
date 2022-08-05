@@ -1,6 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { formatISO } from 'date-fns'
 import noop from 'lodash/noop'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import {
   defaultTemplate,
@@ -19,6 +21,27 @@ const TrashedTemplatesStory = {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
+}
+
+const defaultDeletedTemplate = {
+  ...defaultTemplate,
+  trashedAt: formatISO(new Date()),
+  status: JourneyStatus.trashed
+}
+const oldDeletedTemplate = {
+  ...oldTemplate,
+  trashedAt: formatISO(new Date()),
+  status: JourneyStatus.trashed
+}
+const descriptiveDeletedTemplate = {
+  ...descriptiveTemplate,
+  trashedAt: formatISO(new Date()),
+  status: JourneyStatus.trashed
+}
+const publishedDeletedTemplate = {
+  ...publishedTemplate,
+  trashedAt: formatISO(new Date()),
+  status: JourneyStatus.trashed
 }
 
 const Template: Story = ({ ...args }) => (
@@ -41,10 +64,10 @@ Default.args = {
       result: {
         data: {
           journeys: [
-            defaultTemplate,
-            oldTemplate,
-            descriptiveTemplate,
-            publishedTemplate
+            defaultDeletedTemplate,
+            oldDeletedTemplate,
+            descriptiveDeletedTemplate,
+            publishedDeletedTemplate
           ]
         }
       }
