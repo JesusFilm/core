@@ -1,5 +1,5 @@
 import { ReactElement, useState } from 'react'
-import { useMutation, gql } from '@apollo/client'
+import { useMutation, gql, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
@@ -19,17 +19,28 @@ import NextLink from 'next/link'
 import { useSnackbar } from 'notistack'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
+import { GetRole } from '../../../../__generated__/GetRole'
 import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
 import { LanguageDialog } from './LanguageDialog'
+import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
     journeyPublish(id: $id) {
       id
       status
+    }
+  }
+`
+
+export const GET_ROLE = gql`
+  query GetRole {
+    getUserRole {
+      id
+      roles
     }
   }
 `
@@ -41,6 +52,8 @@ interface MenuProps {
 export function Menu({ forceOpen }: MenuProps): ReactElement {
   const { journey } = useJourney()
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
+  const { data } = useQuery<GetRole>(GET_ROLE)
+  const userRole = data?.getUserRole?.roles?.includes(Role.publisher)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
@@ -175,6 +188,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
                 </MenuItem>
               </NextLink>
             )}
+            {userRole === true && <CreateTemplateMenuItem />}
             <Divider />
             <NextLink href={`/journeys/${journey.id}/edit`} passHref>
               <MenuItem>
