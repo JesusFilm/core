@@ -45,7 +45,7 @@ function TemplateDetails(): ReactElement {
         value={{ journey: data?.template ?? undefined, admin: true }}
       >
         <PageWrapper title={'Template Details'} authUser={AuthUser}>
-          {data?.template?.template !== true && <TemplateView />}
+          {data?.template?.template === true && <TemplateView />}
         </PageWrapper>
       </JourneyProvider>
     </>
