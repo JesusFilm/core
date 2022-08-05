@@ -108,7 +108,7 @@ export function JourneyView(): ReactElement {
       </Box>
 
       <>
-        <CardView id={journey?.id} blocks={blocks} />
+        <CardView id={journey?.id} blocks={blocks} showAddButton />
         <NextLink
           href={journey != null ? `/journeys/${journey.id}/edit` : ''}
           passHref

@@ -4,18 +4,18 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: CreateTemplate
+// GraphQL mutation operation: ImportTemplate
 // ====================================================
 
-export interface CreateTemplate_journeyDuplicate {
+export interface ImportTemplate_journeyDuplicate {
   __typename: "Journey";
   id: string;
 }
 
-export interface CreateTemplate {
-  journeyDuplicate: CreateTemplate_journeyDuplicate;
+export interface ImportTemplate {
+  journeyDuplicate: ImportTemplate_journeyDuplicate;
 }
 
-export interface CreateTemplateVariables {
+export interface ImportTemplateVariables {
   id: string;
 }

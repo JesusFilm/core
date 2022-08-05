@@ -6,6 +6,7 @@ import Drawer from '@mui/material/Drawer'
 import Divider from '@mui/material/Divider'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
 import CreateRoundedIcon from '@mui/icons-material/CreateRounded'
@@ -48,11 +49,13 @@ export function Properties({ userRole }: PropertiesProps): ReactElement {
             px: 6
           }}
         >
-          <Typography variant="body2">
-            {journey != null
-              ? journey.language.name.find((primary) => primary)?.value
-              : ''}
-          </Typography>
+          {journey != null ? (
+            <Typography variant="body2">
+              {journey.language.name.find((primary) => primary)?.value}
+            </Typography>
+          ) : (
+            <Skeleton variant="text" width="40%" />
+          )}
           {userRole === true && (
             <IconButton
               size="small"

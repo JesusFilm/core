@@ -6,57 +6,57 @@
 import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
 
 // ====================================================
-// GraphQL fragment: JourneyFields
+// GraphQL query operation: GetTemplate
 // ====================================================
 
-export interface JourneyFields_language_name {
+export interface GetTemplate_template_language_name {
   __typename: "Translation";
   value: string;
   primary: boolean;
 }
 
-export interface JourneyFields_language {
+export interface GetTemplate_template_language {
   __typename: "Language";
   id: string;
-  name: JourneyFields_language_name[];
+  name: GetTemplate_template_language_name[];
 }
 
-export interface JourneyFields_blocks_ButtonBlock_action_NavigateAction {
+export interface GetTemplate_template_blocks_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
 
-export interface JourneyFields_blocks_ButtonBlock_action_NavigateToBlockAction {
+export interface GetTemplate_template_blocks_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface JourneyFields_blocks_ButtonBlock_action_NavigateToJourneyAction_journey {
+export interface GetTemplate_template_blocks_ButtonBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
 }
 
-export interface JourneyFields_blocks_ButtonBlock_action_NavigateToJourneyAction {
+export interface GetTemplate_template_blocks_ButtonBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   parentBlockId: string;
   gtmEventName: string | null;
-  journey: JourneyFields_blocks_ButtonBlock_action_NavigateToJourneyAction_journey | null;
+  journey: GetTemplate_template_blocks_ButtonBlock_action_NavigateToJourneyAction_journey | null;
 }
 
-export interface JourneyFields_blocks_ButtonBlock_action_LinkAction {
+export interface GetTemplate_template_blocks_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export type JourneyFields_blocks_ButtonBlock_action = JourneyFields_blocks_ButtonBlock_action_NavigateAction | JourneyFields_blocks_ButtonBlock_action_NavigateToBlockAction | JourneyFields_blocks_ButtonBlock_action_NavigateToJourneyAction | JourneyFields_blocks_ButtonBlock_action_LinkAction;
+export type GetTemplate_template_blocks_ButtonBlock_action = GetTemplate_template_blocks_ButtonBlock_action_NavigateAction | GetTemplate_template_blocks_ButtonBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_ButtonBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_ButtonBlock_action_LinkAction;
 
-export interface JourneyFields_blocks_ButtonBlock {
+export interface GetTemplate_template_blocks_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
   parentBlockId: string | null;
@@ -67,10 +67,10 @@ export interface JourneyFields_blocks_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
-  action: JourneyFields_blocks_ButtonBlock_action | null;
+  action: GetTemplate_template_blocks_ButtonBlock_action | null;
 }
 
-export interface JourneyFields_blocks_CardBlock {
+export interface GetTemplate_template_blocks_CardBlock {
   __typename: "CardBlock";
   id: string;
   parentBlockId: string | null;
@@ -103,7 +103,7 @@ export interface JourneyFields_blocks_CardBlock {
   fullscreen: boolean;
 }
 
-export interface JourneyFields_blocks_GridContainerBlock {
+export interface GetTemplate_template_blocks_GridContainerBlock {
   __typename: "GridContainerBlock";
   id: string;
   parentBlockId: string | null;
@@ -114,7 +114,7 @@ export interface JourneyFields_blocks_GridContainerBlock {
   alignItems: GridAlignItems;
 }
 
-export interface JourneyFields_blocks_GridItemBlock {
+export interface GetTemplate_template_blocks_GridItemBlock {
   __typename: "GridItemBlock";
   id: string;
   parentBlockId: string | null;
@@ -124,7 +124,7 @@ export interface JourneyFields_blocks_GridItemBlock {
   sm: number;
 }
 
-export interface JourneyFields_blocks_IconBlock {
+export interface GetTemplate_template_blocks_IconBlock {
   __typename: "IconBlock";
   id: string;
   parentBlockId: string | null;
@@ -134,7 +134,7 @@ export interface JourneyFields_blocks_IconBlock {
   iconColor: IconColor | null;
 }
 
-export interface JourneyFields_blocks_ImageBlock {
+export interface GetTemplate_template_blocks_ImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -150,103 +150,103 @@ export interface JourneyFields_blocks_ImageBlock {
   blurhash: string;
 }
 
-export interface JourneyFields_blocks_RadioOptionBlock_action_NavigateAction {
+export interface GetTemplate_template_blocks_RadioOptionBlock_action_NavigateAction {
   __typename: "NavigateAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
 
-export interface JourneyFields_blocks_RadioOptionBlock_action_NavigateToBlockAction {
+export interface GetTemplate_template_blocks_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface JourneyFields_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey {
+export interface GetTemplate_template_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
 }
 
-export interface JourneyFields_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
+export interface GetTemplate_template_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   parentBlockId: string;
   gtmEventName: string | null;
-  journey: JourneyFields_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey | null;
+  journey: GetTemplate_template_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey | null;
 }
 
-export interface JourneyFields_blocks_RadioOptionBlock_action_LinkAction {
+export interface GetTemplate_template_blocks_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export type JourneyFields_blocks_RadioOptionBlock_action = JourneyFields_blocks_RadioOptionBlock_action_NavigateAction | JourneyFields_blocks_RadioOptionBlock_action_NavigateToBlockAction | JourneyFields_blocks_RadioOptionBlock_action_NavigateToJourneyAction | JourneyFields_blocks_RadioOptionBlock_action_LinkAction;
+export type GetTemplate_template_blocks_RadioOptionBlock_action = GetTemplate_template_blocks_RadioOptionBlock_action_NavigateAction | GetTemplate_template_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_RadioOptionBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_RadioOptionBlock_action_LinkAction;
 
-export interface JourneyFields_blocks_RadioOptionBlock {
+export interface GetTemplate_template_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  action: JourneyFields_blocks_RadioOptionBlock_action | null;
+  action: GetTemplate_template_blocks_RadioOptionBlock_action | null;
 }
 
-export interface JourneyFields_blocks_RadioQuestionBlock {
+export interface GetTemplate_template_blocks_RadioQuestionBlock {
   __typename: "RadioQuestionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
 }
 
-export interface JourneyFields_blocks_SignUpBlock_action_NavigateAction {
+export interface GetTemplate_template_blocks_SignUpBlock_action_NavigateAction {
   __typename: "NavigateAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
 
-export interface JourneyFields_blocks_SignUpBlock_action_NavigateToBlockAction {
+export interface GetTemplate_template_blocks_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface JourneyFields_blocks_SignUpBlock_action_NavigateToJourneyAction_journey {
+export interface GetTemplate_template_blocks_SignUpBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
 }
 
-export interface JourneyFields_blocks_SignUpBlock_action_NavigateToJourneyAction {
+export interface GetTemplate_template_blocks_SignUpBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   parentBlockId: string;
   gtmEventName: string | null;
-  journey: JourneyFields_blocks_SignUpBlock_action_NavigateToJourneyAction_journey | null;
+  journey: GetTemplate_template_blocks_SignUpBlock_action_NavigateToJourneyAction_journey | null;
 }
 
-export interface JourneyFields_blocks_SignUpBlock_action_LinkAction {
+export interface GetTemplate_template_blocks_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export type JourneyFields_blocks_SignUpBlock_action = JourneyFields_blocks_SignUpBlock_action_NavigateAction | JourneyFields_blocks_SignUpBlock_action_NavigateToBlockAction | JourneyFields_blocks_SignUpBlock_action_NavigateToJourneyAction | JourneyFields_blocks_SignUpBlock_action_LinkAction;
+export type GetTemplate_template_blocks_SignUpBlock_action = GetTemplate_template_blocks_SignUpBlock_action_NavigateAction | GetTemplate_template_blocks_SignUpBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_SignUpBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_SignUpBlock_action_LinkAction;
 
-export interface JourneyFields_blocks_SignUpBlock {
+export interface GetTemplate_template_blocks_SignUpBlock {
   __typename: "SignUpBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
-  action: JourneyFields_blocks_SignUpBlock_action | null;
+  action: GetTemplate_template_blocks_SignUpBlock_action | null;
 }
 
-export interface JourneyFields_blocks_StepBlock {
+export interface GetTemplate_template_blocks_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -265,7 +265,7 @@ export interface JourneyFields_blocks_StepBlock {
   nextBlockId: string | null;
 }
 
-export interface JourneyFields_blocks_TypographyBlock {
+export interface GetTemplate_template_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
   parentBlockId: string | null;
@@ -276,61 +276,61 @@ export interface JourneyFields_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface JourneyFields_blocks_VideoBlock_video_title {
+export interface GetTemplate_template_blocks_VideoBlock_video_title {
   __typename: "Translation";
   value: string;
 }
 
-export interface JourneyFields_blocks_VideoBlock_video_variant {
+export interface GetTemplate_template_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface JourneyFields_blocks_VideoBlock_video {
+export interface GetTemplate_template_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
-  title: JourneyFields_blocks_VideoBlock_video_title[];
+  title: GetTemplate_template_blocks_VideoBlock_video_title[];
   image: string | null;
-  variant: JourneyFields_blocks_VideoBlock_video_variant | null;
+  variant: GetTemplate_template_blocks_VideoBlock_video_variant | null;
 }
 
-export interface JourneyFields_blocks_VideoBlock_action_NavigateAction {
+export interface GetTemplate_template_blocks_VideoBlock_action_NavigateAction {
   __typename: "NavigateAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
 
-export interface JourneyFields_blocks_VideoBlock_action_NavigateToBlockAction {
+export interface GetTemplate_template_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface JourneyFields_blocks_VideoBlock_action_NavigateToJourneyAction_journey {
+export interface GetTemplate_template_blocks_VideoBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
 }
 
-export interface JourneyFields_blocks_VideoBlock_action_NavigateToJourneyAction {
+export interface GetTemplate_template_blocks_VideoBlock_action_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   parentBlockId: string;
   gtmEventName: string | null;
-  journey: JourneyFields_blocks_VideoBlock_action_NavigateToJourneyAction_journey | null;
+  journey: GetTemplate_template_blocks_VideoBlock_action_NavigateToJourneyAction_journey | null;
 }
 
-export interface JourneyFields_blocks_VideoBlock_action_LinkAction {
+export interface GetTemplate_template_blocks_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export type JourneyFields_blocks_VideoBlock_action = JourneyFields_blocks_VideoBlock_action_NavigateAction | JourneyFields_blocks_VideoBlock_action_NavigateToBlockAction | JourneyFields_blocks_VideoBlock_action_NavigateToJourneyAction | JourneyFields_blocks_VideoBlock_action_LinkAction;
+export type GetTemplate_template_blocks_VideoBlock_action = GetTemplate_template_blocks_VideoBlock_action_NavigateAction | GetTemplate_template_blocks_VideoBlock_action_NavigateToBlockAction | GetTemplate_template_blocks_VideoBlock_action_NavigateToJourneyAction | GetTemplate_template_blocks_VideoBlock_action_LinkAction;
 
-export interface JourneyFields_blocks_VideoBlock {
+export interface GetTemplate_template_blocks_VideoBlock {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -360,49 +360,49 @@ export interface JourneyFields_blocks_VideoBlock {
    * videoId and videoVariantLanguageId both need to be set to select a video
    */
   videoVariantLanguageId: string | null;
-  video: JourneyFields_blocks_VideoBlock_video | null;
+  video: GetTemplate_template_blocks_VideoBlock_video | null;
   /**
    * action that should be performed when the video ends
    */
-  action: JourneyFields_blocks_VideoBlock_action | null;
+  action: GetTemplate_template_blocks_VideoBlock_action | null;
 }
 
-export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateAction {
+export interface GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateAction {
   __typename: "NavigateAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
 
-export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
+export interface GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey {
+export interface GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
 }
 
-export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction {
+export interface GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction {
   __typename: "NavigateToJourneyAction";
   parentBlockId: string;
   gtmEventName: string | null;
-  journey: JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey | null;
+  journey: GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey | null;
 }
 
-export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_LinkAction {
+export interface GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export type JourneyFields_blocks_VideoTriggerBlock_triggerAction = JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_LinkAction;
+export type GetTemplate_template_blocks_VideoTriggerBlock_triggerAction = GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateAction | GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction | GetTemplate_template_blocks_VideoTriggerBlock_triggerAction_LinkAction;
 
-export interface JourneyFields_blocks_VideoTriggerBlock {
+export interface GetTemplate_template_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
   id: string;
   parentBlockId: string | null;
@@ -412,12 +412,12 @@ export interface JourneyFields_blocks_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: JourneyFields_blocks_VideoTriggerBlock_triggerAction;
+  triggerAction: GetTemplate_template_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type JourneyFields_blocks = JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_GridItemBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
+export type GetTemplate_template_blocks = GetTemplate_template_blocks_ButtonBlock | GetTemplate_template_blocks_CardBlock | GetTemplate_template_blocks_GridContainerBlock | GetTemplate_template_blocks_GridItemBlock | GetTemplate_template_blocks_IconBlock | GetTemplate_template_blocks_ImageBlock | GetTemplate_template_blocks_RadioOptionBlock | GetTemplate_template_blocks_RadioQuestionBlock | GetTemplate_template_blocks_SignUpBlock | GetTemplate_template_blocks_StepBlock | GetTemplate_template_blocks_TypographyBlock | GetTemplate_template_blocks_VideoBlock | GetTemplate_template_blocks_VideoTriggerBlock;
 
-export interface JourneyFields_primaryImageBlock {
+export interface GetTemplate_template_primaryImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -433,7 +433,7 @@ export interface JourneyFields_primaryImageBlock {
   blurhash: string;
 }
 
-export interface JourneyFields_userJourneys_user {
+export interface GetTemplate_template_userJourneys_user {
   __typename: "User";
   id: string;
   firstName: string;
@@ -441,20 +441,20 @@ export interface JourneyFields_userJourneys_user {
   imageUrl: string | null;
 }
 
-export interface JourneyFields_userJourneys {
+export interface GetTemplate_template_userJourneys {
   __typename: "UserJourney";
   id: string;
-  user: JourneyFields_userJourneys_user | null;
+  user: GetTemplate_template_userJourneys_user | null;
 }
 
-export interface JourneyFields {
+export interface GetTemplate_template {
   __typename: "Journey";
   id: string;
   slug: string;
   title: string;
   description: string | null;
   status: JourneyStatus;
-  language: JourneyFields_language;
+  language: GetTemplate_template_language;
   createdAt: any;
   publishedAt: any | null;
   themeName: ThemeName;
@@ -462,7 +462,15 @@ export interface JourneyFields {
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
-  blocks: JourneyFields_blocks[] | null;
-  primaryImageBlock: JourneyFields_primaryImageBlock | null;
-  userJourneys: JourneyFields_userJourneys[] | null;
+  blocks: GetTemplate_template_blocks[] | null;
+  primaryImageBlock: GetTemplate_template_primaryImageBlock | null;
+  userJourneys: GetTemplate_template_userJourneys[] | null;
+}
+
+export interface GetTemplate {
+  template: GetTemplate_template | null;
+}
+
+export interface GetTemplateVariables {
+  id: string;
 }

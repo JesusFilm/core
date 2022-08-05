@@ -12,9 +12,14 @@ import { CardPreview } from '../CardPreview'
 export interface CardViewProps {
   id?: string
   blocks?: Array<TreeBlock<StepBlock>>
+  showAddButton?: boolean
 }
 
-export function CardView({ id, blocks }: CardViewProps): ReactElement {
+export function CardView({
+  id,
+  blocks,
+  showAddButton
+}: CardViewProps): ReactElement {
   const breakpoints = useBreakpoints()
   const router = useRouter()
   // const { journey } = useJourney()
@@ -40,7 +45,7 @@ export function CardView({ id, blocks }: CardViewProps): ReactElement {
       <CardPreview
         onSelect={handleSelect}
         steps={blocks}
-        showAddButton
+        showAddButton={showAddButton}
         isDraggable={false}
       />
       <Box sx={{ pt: 2, display: 'flex', justifyContent: 'center' }}>

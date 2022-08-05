@@ -17,18 +17,19 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import ImageIcon from '@mui/icons-material/Image'
 import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
-import { CreateTemplate } from '../../../__generated__/CreateTemplate'
+import { ImportTemplate } from '../../../__generated__/ImportTemplate'
 import { GetUserRole } from '../../../__generated__/GetUserRole'
 import { Role } from '../../../__generated__/globalTypes'
 import { CardView } from '../CardView'
 import { Properties } from './Properties'
 import { TitleDescriptionDialog } from './TitleDescriptionDialog'
 
-export const CREATE_TEMPLATE = gql`
-  mutation CreateTemplate($id: ID!) {
+export const IMPORT_TEMPLATE = gql`
+  mutation ImportTemplate($id: ID!) {
     journeyDuplicate(id: $id) {
       id
     }
@@ -55,15 +56,15 @@ export function TemplateView(): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { data } = useQuery<GetUserRole>(GET_USER_ROLE)
   const userRole = data?.getUserRole?.roles?.includes(Role.publisher)
-  const [createTemplate] = useMutation<CreateTemplate>(CREATE_TEMPLATE)
+  const [importTemplate] = useMutation<ImportTemplate>(IMPORT_TEMPLATE)
 
   const [showTitleDescriptionDialog, setShowTitleDescriptionDialog] =
     useState(false)
 
-  const handleCreateTemplate = async (): Promise<void> => {
+  const handleImportTemplate = async (): Promise<void> => {
     if (journey == null) return
 
-    await createTemplate({
+    const { data } = await importTemplate({
       variables: {
         id: journey.id
       },
@@ -87,6 +88,12 @@ export function TemplateView(): ReactElement {
         }
       }
     })
+
+    if (data?.journeyDuplicate != null) {
+      void router.push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
+        shallow: true
+      })
+    }
   }
 
   const handleUpdateTitleDescription = (): void => {
@@ -104,20 +111,32 @@ export function TemplateView(): ReactElement {
           backgroundColor: 'background.paper'
         }}
       >
-        {journey?.primaryImageBlock?.src != null ? (
-          <Box
-            component="img"
-            src={journey.primaryImageBlock.src}
-            alt={journey.primaryImageBlock.alt}
-            style={{
-              width: 213,
-              height: 167,
-              objectFit: 'cover',
-              borderRadius: 12,
-              marginRight: smUp ? 0 : 'auto',
-              marginLeft: smUp ? 0 : 'auto'
-            }}
-          />
+        {journey != null ? (
+          journey.primaryImageBlock?.src != null ? (
+            <Box
+              component="img"
+              src={journey.primaryImageBlock?.src}
+              alt={journey.primaryImageBlock?.alt}
+              style={{
+                width: 213,
+                height: 167,
+                objectFit: 'cover',
+                borderRadius: 12,
+                marginRight: smUp ? 0 : 'auto',
+                marginLeft: smUp ? 0 : 'auto'
+              }}
+            />
+          ) : (
+            <ImageIcon
+              sx={{
+                width: 273,
+                height: 207,
+                objectFit: 'cover',
+                borderRadius: 12,
+                mx: smUp ? 0 : 'auto'
+              }}
+            />
+          )
         ) : (
           <Skeleton
             variant="rectangular"
@@ -181,14 +200,18 @@ export function TemplateView(): ReactElement {
               ) : (
                 <Skeleton
                   variant="rectangular"
-                  width={smUp ? 300 : 150}
+                  width={smUp ? 500 : 150}
                   height={40}
                   sx={{ borderRadius: 1 }}
                 />
               )}
             </Typography>
             {userRole === true && (
-              <IconButton size="small" onClick={handleUpdateTitleDescription}>
+              <IconButton
+                data-testid="EditTitleDescription"
+                size="small"
+                onClick={handleUpdateTitleDescription}
+              >
                 <CreateRoundedIcon />
               </IconButton>
             )}
@@ -199,7 +222,7 @@ export function TemplateView(): ReactElement {
             ) : (
               <Skeleton
                 variant="rectangular"
-                width={smUp ? 400 : 200}
+                width={smUp ? 600 : 200}
                 height={50}
                 sx={{ borderRadius: 1 }}
               />
@@ -210,14 +233,24 @@ export function TemplateView(): ReactElement {
       <Properties userRole={userRole} />
       <>
         <CardView blocks={blocks} />
-        <NextLink
-          href={
-            journey != null && userRole === true
-              ? `/api/journey/${journey.id}/edit`
-              : ''
-          }
-          passHref
-        >
+        {journey != null && userRole === true ? (
+          <NextLink href={`/journeys/${journey.id}/edit`} passHref>
+            <Fab
+              variant="extended"
+              size="large"
+              sx={{
+                position: 'fixed',
+                bottom: 16,
+                right: { xs: 20, sm: 348 }
+              }}
+              color="primary"
+              disabled={journey == null}
+            >
+              <EditIcon sx={{ mr: 3 }} />
+              Edit
+            </Fab>
+          </NextLink>
+        ) : (
           <Fab
             variant="extended"
             size="large"
@@ -228,21 +261,12 @@ export function TemplateView(): ReactElement {
             }}
             color="primary"
             disabled={journey == null}
-            onClick={userRole === true ? handleCreateTemplate : undefined}
+            onClick={handleImportTemplate}
           >
-            {journey != null && userRole === true ? (
-              <>
-                <EditIcon sx={{ mr: 3 }} />
-                Edit
-              </>
-            ) : (
-              <>
-                <CheckRoundedIcon sx={{ mr: 3 }} />
-                Use Template
-              </>
-            )}
+            <CheckRoundedIcon sx={{ mr: 3 }} />
+            Use Template
           </Fab>
-        </NextLink>
+        )}
       </>
       <TitleDescriptionDialog
         open={showTitleDescriptionDialog}
