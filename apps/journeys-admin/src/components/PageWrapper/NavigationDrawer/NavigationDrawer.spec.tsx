@@ -3,6 +3,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { AuthUser } from 'next-firebase-auth'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { Role } from '../../../../__generated__/globalTypes'
+import { GET_USER_ROLE } from '../../../../pages/templates/admin'
 import { GET_ME } from './NavigationDrawer'
 import { NavigationDrawer } from '.'
 
@@ -111,6 +113,63 @@ describe('NavigationDrawer', () => {
     await waitFor(() => expect(getByText('Amin One')).toBeInTheDocument())
     fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
     await waitFor(() => expect(signOut).toHaveBeenCalled())
+  })
+
+  it('should show templates admin button', async () => {
+    const { getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ME
+            },
+            result: {
+              data: {
+                me: {
+                  id: 'userId',
+                  firstName: 'Amin',
+                  lastName: 'One',
+                  imageUrl: 'https://bit.ly/3Gth4Yf',
+                  email: 'amin@email.com'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: GET_USER_ROLE
+            },
+            result: {
+              data: {
+                getUserRole: {
+                  id: 'userId',
+                  roles: [Role.publisher]
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <FlagsProvider>
+          <NavigationDrawer
+            open={true}
+            onClose={onClose}
+            authUser={
+              {
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as AuthUser
+            }
+            title="Journeys"
+          />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByTestId('ShopTwoRoundedIcon')).toBeInTheDocument()
+    )
   })
 
   it('should close the navigation drawer on chevron left click', () => {

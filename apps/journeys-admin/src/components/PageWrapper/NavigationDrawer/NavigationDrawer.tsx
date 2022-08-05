@@ -16,15 +16,19 @@ import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
-import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
+import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
+import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
 import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
 import { compact } from 'lodash'
 import { gql, useQuery } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import { Role } from '../../../../__generated__/globalTypes'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
+import { GetUserRole } from '../../../../__generated__/GetUserRole'
+import { GET_USER_ROLE } from '../../../../pages/templates/admin'
 import { UserMenu } from './UserMenu'
 
 const DRAWER_WIDTH = '237px'
@@ -122,6 +126,7 @@ export function NavigationDrawer({
   }
 
   const { data } = useQuery<GetMe>(GET_ME)
+  const { data: userRoleData } = useQuery<GetUserRole>(GET_USER_ROLE)
 
   return (
     <StyledNavigationDrawer
@@ -173,7 +178,7 @@ export function NavigationDrawer({
                     : 'secondary.light'
               }}
             >
-              <ViewCarouselRoundedIcon />
+              <ShopRoundedIcon />
             </ListItemIcon>
             <ListItemText
               primary="Templates"
@@ -211,6 +216,34 @@ export function NavigationDrawer({
         {authUser != null && data?.me != null && (
           <>
             <Divider sx={{ m: 6, mt: 0, borderColor: 'secondary.main' }} />
+
+            {userRoleData?.getUserRole?.roles?.includes(Role.publisher) ===
+              true && (
+              <Link href="/templates/admin" passHref>
+                <ListItemButton>
+                  <ListItemIcon
+                    sx={{
+                      color:
+                        title === 'Templates Admin'
+                          ? 'background.paper'
+                          : 'secondary.light'
+                    }}
+                  >
+                    <ShopTwoRoundedIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Templates Admin"
+                    sx={{
+                      color:
+                        title === 'Templates Admin'
+                          ? 'background.paper'
+                          : 'secondary.light'
+                    }}
+                  />
+                </ListItemButton>
+              </Link>
+            )}
+
             <ListItemButton onClick={handleProfileClick}>
               <ListItemIcon>
                 <Avatar
