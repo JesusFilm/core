@@ -88,14 +88,7 @@ export function ArchivedTemplates({
 
   const [restoreArchived] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     variables: {
-      ids: journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
+      ids: journeys?.map((journey) => journey.id)
     },
     update(cache, { data }) {
       if (data?.journeysRestore != null) {
@@ -109,14 +102,7 @@ export function ArchivedTemplates({
 
   const [trashArchived] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
     variables: {
-      ids: journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
+      ids: journeys?.map((journey) => journey.id)
     },
     update(cache, { data }) {
       if (data?.journeysTrash != null) {

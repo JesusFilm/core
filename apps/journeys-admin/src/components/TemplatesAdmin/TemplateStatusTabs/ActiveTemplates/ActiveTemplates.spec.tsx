@@ -176,8 +176,7 @@ describe('ActiveTemplates', () => {
       request: {
         query: ARCHIVE_ACTIVE_JOURNEYS,
         variables: {
-          ids: []
-          // ids: [defaultTemplate.id, oldTemplate.id] // auth issue causing these ids not to be entered?
+          ids: [defaultTemplate.id, oldTemplate.id] // auth issue causing these ids not to be entered?
         }
       },
       result
@@ -254,8 +253,7 @@ describe('ActiveTemplates', () => {
       request: {
         query: TRASH_ACTIVE_JOURNEYS,
         variables: {
-          ids: []
-          // ids: [defaultTemplate.id, oldTemplate.id]
+          ids: [defaultTemplate.id, oldTemplate.id]
         }
       },
       result

@@ -88,14 +88,7 @@ export function TrashedTemplates({
 
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     variables: {
-      ids: journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
+      ids: journeys?.map((journey) => journey.id)
     },
     update(cache, { data }) {
       if (data?.journeysRestore != null) {
@@ -109,14 +102,7 @@ export function TrashedTemplates({
 
   const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
     variables: {
-      ids: journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
+      ids: journeys?.map((journey) => journey.id)
     },
     update(cache, { data }) {
       if (data?.journeysDelete != null) {

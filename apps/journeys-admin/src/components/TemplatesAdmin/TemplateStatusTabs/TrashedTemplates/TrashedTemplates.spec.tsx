@@ -192,8 +192,7 @@ describe('TrashedTemplatesTab', () => {
       request: {
         query: RESTORE_TRASHED_JOURNEYS,
         variables: {
-          ids: []
-          // ids: [defaultTemplate.id, oldTemplate.id]
+          ids: [defaultTemplate.id, oldTemplate.id]
         }
       },
       result
@@ -271,8 +270,7 @@ describe('TrashedTemplatesTab', () => {
       request: {
         query: DELETE_TRASHED_JOURNEYS,
         variables: {
-          ids: []
-          // ids: [defaultTemplate.id, oldTemplate.id]
+          ids: [defaultTemplate.id, oldTemplate.id]
         }
       },
       result

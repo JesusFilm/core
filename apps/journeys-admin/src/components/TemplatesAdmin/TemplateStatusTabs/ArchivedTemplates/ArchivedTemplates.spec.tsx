@@ -142,10 +142,7 @@ describe('ArchivedTemplates', () => {
     const archiveJourneysMock = {
       request: {
         query: RESTORE_ARCHIVED_JOURNEYS,
-        variables: {
-          ids: []
-          // ids: [defaultTemplate.id, oldTemplate.id]
-        }
+        variables: { ids: [defaultTemplate.id, oldTemplate.id] }
       },
       result
     }
@@ -223,8 +220,7 @@ describe('ArchivedTemplates', () => {
       request: {
         query: TRASH_ARCHIVED_JOURNEYS,
         variables: {
-          ids: []
-          // ids: [defaultTemplate.id, oldTemplate.id]
+          ids: [defaultTemplate.id, oldTemplate.id]
         }
       },
       result

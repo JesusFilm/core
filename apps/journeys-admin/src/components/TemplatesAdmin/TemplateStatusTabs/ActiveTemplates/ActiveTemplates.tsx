@@ -95,14 +95,7 @@ export function ActiveTemplates({
 
   const [archiveActive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     variables: {
-      ids: journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
+      ids: journeys?.map((journey) => journey.id)
     },
     update(cache, { data }) {
       if (data?.journeysArchive != null) {
@@ -116,14 +109,7 @@ export function ActiveTemplates({
 
   const [trashActive] = useMutation(TRASH_ACTIVE_JOURNEYS, {
     variables: {
-      ids: journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (authUser?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
+      ids: journeys?.map((journey) => journey.id)
     },
     update(cache, { data }) {
       if (data?.journeysTrash != null) {
