@@ -66,7 +66,6 @@ function TemplateAdmin(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
-  console.log(AuthUser)
   const ldUser = {
     key: AuthUser.id as string,
     firstName: AuthUser.displayName ?? undefined,
