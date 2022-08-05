@@ -80,6 +80,7 @@ describe('Card', () => {
       primaryImageBlock: null,
       userJourneys: [],
       seoTitle: null,
+      template: false,
       seoDescription: null
     }
     it('shows background color from prop', () => {

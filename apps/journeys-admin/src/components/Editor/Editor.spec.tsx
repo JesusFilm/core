@@ -55,6 +55,7 @@ describe('Editor', () => {
     primaryImageBlock: null,
     userJourneys: [],
     seoTitle: null,
+    template: false,
     seoDescription: null
   }
 

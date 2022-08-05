@@ -37,6 +37,7 @@ export const defaultJourney: Journey = {
   primaryImageBlock: null,
   seoTitle: null,
   seoDescription: null,
+  template: false,
   userJourneys: [
     {
       id: 'userJourneyId1',
@@ -80,6 +81,7 @@ export const publishedJourney: Journey = {
   description: 'a published journey',
   publishedAt: '2021-12-19T12:34:56.647Z',
   status: JourneyStatus.published,
+  template: false,
   blocks: [
     {
       id: 'step0.id',

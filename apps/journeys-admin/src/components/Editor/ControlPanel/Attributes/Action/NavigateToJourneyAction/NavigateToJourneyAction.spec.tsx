@@ -44,6 +44,7 @@ describe('NavigateToJourneyAction', () => {
     primaryImageBlock: null,
     userJourneys: [],
     seoTitle: null,
+    template: false,
     seoDescription: null
   }
 
