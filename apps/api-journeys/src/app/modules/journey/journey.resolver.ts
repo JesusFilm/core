@@ -121,16 +121,27 @@ export class JourneyResolver {
         ? await this.journeyService.getBySlug(id)
         : await this.journeyService.get(id)
     if (result == null) return null
-    const ujResult = await this.userJourneyService.forJourneyUser(
-      result.id,
-      userId
-    )
-    if (ujResult == null)
-      throw new ForbiddenError(
-        'User has not received an invitation to edit this journey.'
+    if (result.template !== true) {
+      const ujResult = await this.userJourneyService.forJourneyUser(
+        result.id,
+        userId
       )
-    if (ujResult.role === UserJourneyRole.inviteRequested)
-      throw new ForbiddenError('User invitation pending.')
+      if (ujResult == null)
+        throw new ForbiddenError(
+          'User has not received an invitation to edit this journey.'
+        )
+      if (ujResult.role === UserJourneyRole.inviteRequested)
+        throw new ForbiddenError('User invitation pending.')
+    } else {
+      if (result.status !== JourneyStatus.published) {
+        const urResult = await this.userRoleService.getUserRoleById(userId)
+        const isPublisher = urResult.roles?.includes(Role.publisher)
+        if (isPublisher !== true)
+          throw new ForbiddenError(
+            'You do not have access to unpublished templates'
+          )
+      }
+    }
 
     return result
   }
