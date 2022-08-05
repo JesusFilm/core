@@ -115,6 +115,10 @@ extend type UserJourney {
   journey: Journey
 }
 
+input JourneyTemplateInput {
+  template: Boolean
+}
+
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyDuplicate(id: ID!): Journey!
@@ -139,6 +143,10 @@ extend type Mutation {
   Sets journeys statuses to last active status
   """
   journeysRestore(ids: [ID!]!): [Journey]
+  """
+  Updates template
+  """
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
 }
 
 extend type NavigateToJourneyAction {

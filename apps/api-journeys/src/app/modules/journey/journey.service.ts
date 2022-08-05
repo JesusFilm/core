@@ -3,13 +3,15 @@ import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database/BaseService'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
+import { includes } from 'lodash'
 import { AqlQuery } from 'arangojs/aql'
 import {
   Journey,
   JourneyStatus,
   UserJourneyRole,
   JourneysFilter,
-  Role
+  Role,
+  UserRole
 } from '../../__generated__/graphql'
 
 @Injectable()
@@ -19,7 +21,9 @@ export class JourneyService extends BaseService {
 
     return aql.join(
       [
-        aql`AND journey.template == ${template === true}`,
+        template === true
+          ? aql`AND journey.template == true`
+          : aql`AND journey.template != true`,
         featured === true && aql`AND journey.featuredAt != null`,
         featured === false && aql`AND journey.featuredAt == null`
       ].filter((x) => x !== false)
@@ -84,7 +88,7 @@ export class JourneyService extends BaseService {
 
   @KeyAsId()
   async getAllByRole(
-    userId: string,
+    user: UserRole,
     status?: JourneyStatus[],
     template?: boolean
   ): Promise<Journey[]> {
@@ -92,15 +96,12 @@ export class JourneyService extends BaseService {
       status != null ? aql`&& journey.status IN ${status}` : aql`&& true`
 
     const roleFilter =
-      template === true
-        ? aql`FOR user in userRoles
-          FOR journey in ${this.collection}
-            FILTER user.userId == ${userId} && ${Role.publisher} IN user.roles
-              FILTER journey.template == true
-              LIMIT 1`
+      template === true && includes(user.roles, Role.publisher)
+        ? aql`FOR journey in ${this.collection}
+              FILTER journey.template == true`
         : aql`FOR userJourney in userJourneys
           FOR journey in ${this.collection}
-            FILTER userJourney.journeyId == journey._key && userJourney.userId == ${userId}
+            FILTER userJourney.journeyId == journey._key && userJourney.userId == ${user.userId}
               && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})`
 
     const result = await this.db.query(aql`${roleFilter}

@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
 import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
-import { Database } from 'arangojs'
-import { mockDeep } from 'jest-mock-extended'
 import {
   IdType,
   Journey,
@@ -10,12 +8,14 @@ import {
   ThemeMode,
   ThemeName,
   UserJourneyRole,
-  JourneysReportType
+  JourneysReportType,
+  Role
 } from '../../__generated__/graphql'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService } from '../block/block.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
+import { UserRoleResolver } from '../userRole/userRole.resolver'
 import { JourneyResolver } from './journey.resolver'
 import { JourneyService } from './journey.service'
 
@@ -48,7 +48,8 @@ describe('JourneyResolver', () => {
   let resolver: JourneyResolver,
     service: JourneyService,
     bService: BlockService,
-    ujService: UserJourneyService
+    ujService: UserJourneyService,
+    urService: UserRoleService
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
@@ -89,6 +90,14 @@ describe('JourneyResolver', () => {
     publishedAt: null
   }
 
+  const draftTemplate = {
+    ...journey,
+    id: 'draftTemplate',
+    template: true,
+    slug: 'draft-template-slug',
+    status: JourneyStatus.draft
+  }
+
   const block = {
     id: 'blockId',
     journeyId: 'journeyId',
@@ -113,11 +122,27 @@ describe('JourneyResolver', () => {
     seoDescription: 'Social media description'
   }
 
+  const templateUpdate = {
+    template: true
+  }
+
   const userJourney = {
     id: 'userJourneyId',
     userId: 'userId',
     journeyId: 'journeyId',
     role: UserJourneyRole.editor
+  }
+
+  const userRole = {
+    id: 'userRole.id',
+    userId: 'user.id',
+    roles: [Role.publisher]
+  }
+
+  const noUserRole = {
+    id: 'noUserRole.id',
+    userId: 'noUser.id',
+    roles: []
   }
 
   const invitedUserJourney = {
@@ -157,11 +182,17 @@ describe('JourneyResolver', () => {
             return trashedJourney
           case trashedDraftJourney.id:
             return trashedDraftJourney
+          case draftTemplate.id:
+            return draftTemplate
           default:
             return null
         }
       }),
-      getBySlug: jest.fn((slug) => (slug === journey.slug ? journey : null)),
+      getBySlug: jest.fn((slug) => {
+        if (slug === journey.slug) return journey
+        if (slug === draftTemplate.slug) return draftTemplate
+        return null
+      }),
       getAllPublishedJourneys: jest.fn(() => [journey, journey]),
       getAllByIds: jest.fn((userId, ids) => {
         switch (ids[0]) {
@@ -209,7 +240,13 @@ describe('JourneyResolver', () => {
 
   const userRoleService = {
     provide: UserRoleService,
-    useFactory: () => mockDeep<Database>()
+    useFactory: () => ({
+      save: jest.fn((userId) => userId),
+      getUserRoleById: jest.fn((userId) => {
+        if (userId === userRole.userId) return userRole
+        if (userId === noUserRole.userId) return noUserRole
+      })
+    })
   }
 
   beforeEach(async () => {
@@ -220,6 +257,7 @@ describe('JourneyResolver', () => {
         blockService,
         BlockResolver,
         userJourneyService,
+        UserRoleResolver,
         userRoleService
       ]
     }).compile()
@@ -227,6 +265,7 @@ describe('JourneyResolver', () => {
     service = module.get<JourneyService>(JourneyService)
     ujService = module.get<UserJourneyService>(UserJourneyService)
     bService = module.get<BlockService>(BlockService)
+    urService = module.get<UserRoleService>(UserRoleService)
   })
 
   describe('adminJourneysEmbed', () => {
@@ -400,13 +439,14 @@ describe('JourneyResolver', () => {
     it('should get published journeys', async () => {
       expect(
         await resolver.adminJourneys(
-          'userId',
+          'user.id',
           [JourneyStatus.draft, JourneyStatus.published],
           undefined
         )
       ).toEqual([journey, journey])
+      expect(urService.getUserRoleById).toHaveBeenCalledWith('user.id')
       expect(service.getAllByRole).toHaveBeenCalledWith(
-        'userId',
+        userRole,
         [JourneyStatus.draft, JourneyStatus.published],
         undefined
       )
@@ -484,6 +524,41 @@ describe('JourneyResolver', () => {
           )
       ).rejects.toThrow('User invitation pending.')
       expect(service.get).toHaveBeenCalledWith('journeyId')
+    })
+
+    it('return template by slug', async () => {
+      expect(
+        await resolver.adminJourney(
+          'user.id',
+          'draft-template-slug',
+          IdType.slug
+        )
+      ).toEqual(draftTemplate)
+      expect(service.getBySlug).toHaveBeenCalledWith('draft-template-slug')
+      expect(urService.getUserRoleById).toHaveBeenCalledWith(userRole.userId)
+    })
+
+    it('returns template by id', async () => {
+      expect(
+        await resolver.adminJourney(
+          'user.id',
+          'draftTemplate',
+          IdType.databaseId
+        )
+      ).toEqual(draftTemplate)
+      expect(service.get).toHaveBeenCalledWith('draftTemplate')
+      expect(urService.getUserRoleById).toHaveBeenCalledWith(userRole.userId)
+    })
+
+    it('throws error if user is not a publisher', async () => {
+      await expect(
+        async () =>
+          await resolver.adminJourney(
+            'noUser.id',
+            'draftTemplate',
+            IdType.databaseId
+          )
+      ).rejects.toThrow('You do not have access to unpublished templates')
     })
   })
 
@@ -869,6 +944,13 @@ describe('JourneyResolver', () => {
           status: JourneyStatus.draft
         }
       ])
+    })
+  })
+
+  describe('journeyTemplate', () => {
+    it('updates template', async () => {
+      await resolver.journeyTemplate('1', templateUpdate)
+      expect(service.update).toHaveBeenCalledWith('1', templateUpdate)
     })
   })
 

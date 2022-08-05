@@ -911,6 +911,10 @@ type UserJourney @key(fields: "id") {
   user: User
 }
 
+input JourneyTemplateInput {
+  template: Boolean
+}
+
 enum UserJourneyRole {
   inviteRequested
   editor
@@ -1007,9 +1011,15 @@ extend type Mutation {
 
   """Sets journeys statuses to last active status"""
   journeysRestore(ids: [ID!]!): [Journey]
+
+  """Updates template"""
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
+
+  """Removes all userJourneys associated with a journeyId"""
+  userJourneyRemoveAll(id: ID!): [UserJourney!]!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
 }
 
