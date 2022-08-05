@@ -3,6 +3,7 @@ import { ReactElement, useState, useEffect } from 'react'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { AuthUser } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
+import Card from '@mui/material/Card'
 import { SortOrder } from '../../../JourneyList/JourneySort'
 import { Dialog } from '../../../Dialog'
 import { sortJourneys } from '../../../JourneyList/JourneySort/utils/sortJourneys'
@@ -198,6 +199,25 @@ export function ActiveTemplates({
               admin={true}
             />
           ))}
+          {sortedJourneys.length === 0 && (
+            <Card
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                pt: 20,
+                pb: 16,
+                borderBottomLeftRadius: { xs: 0, sm: 12 },
+                borderBottomRightRadius: { xs: 0, sm: 12 },
+                borderTopLeftRadius: 0,
+                borderTopRightRadius: 0
+              }}
+            >
+              <Typography variant="subtitle1" align="center" gutterBottom>
+                No templates to display.
+              </Typography>
+            </Card>
+          )}
         </>
       ) : (
         <>

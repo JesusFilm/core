@@ -105,6 +105,38 @@ describe('ActiveTemplates', () => {
     )
   })
 
+  it('should display no templates message', async () => {
+    const { getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ACTIVE_PUBLISHER_TEMPLATES
+            },
+            result: {
+              data: {
+                journeys: []
+              }
+            }
+          }
+        ]}
+      >
+        <ThemeProvider>
+          <SnackbarProvider>
+            <ActiveTemplates
+              onLoad={noop}
+              sortOrder={SortOrder.TITLE}
+              event=""
+            />
+          </SnackbarProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByText('No templates to display.')).toBeInTheDocument()
+    )
+  })
+
   it('should render loading skeleton', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[]}>
