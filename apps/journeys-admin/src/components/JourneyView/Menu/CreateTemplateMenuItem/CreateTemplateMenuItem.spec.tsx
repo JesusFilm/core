@@ -3,7 +3,11 @@ import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { NextRouter, useRouter } from 'next/router'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
-import { CreateTemplateMenuItem, DUPLICATE_JOURNEY, CREATE_TEMPLATE } from './CreateTemplateMenuItem'
+import {
+  CreateTemplateMenuItem,
+  DUPLICATE_JOURNEY,
+  CREATE_TEMPLATE
+} from './CreateTemplateMenuItem'
 
 jest.mock('next/router', () => ({
   __esModule: true,
