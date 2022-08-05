@@ -92,11 +92,13 @@ export class JourneyService extends BaseService {
     status?: JourneyStatus[],
     template?: boolean
   ): Promise<Journey[]> {
+    if (template === true && !includes(user.roles, Role.publisher)) return []
+
     const statusFilter =
       status != null ? aql`&& journey.status IN ${status}` : aql`&& true`
 
     const roleFilter =
-      template === true && includes(user.roles, Role.publisher)
+      template === true
         ? aql`FOR journey in ${this.collection}
               FILTER journey.template == true`
         : aql`FOR userJourney in userJourneys
@@ -105,9 +107,9 @@ export class JourneyService extends BaseService {
               && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})`
 
     const result = await this.db.query(aql`${roleFilter}
-        ${statusFilter}
-          RETURN journey
-    `)
+          ${statusFilter}
+            RETURN journey
+      `)
     return await result.all()
   }
 
