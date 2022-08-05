@@ -1,10 +1,9 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState, useEffect, useRef } from 'react'
 import { AuthUser } from 'next-firebase-auth'
 import Typography from '@mui/material/Typography'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import Card from '@mui/material/Card'
-import { activeTemplates as trashedTemplates } from '../ActiveTemplates/ActiveTemplates'
 import { SortOrder } from '../../../JourneyList/JourneySort'
 import { Dialog } from '../../../Dialog'
 import { sortJourneys } from '../../../JourneyList/JourneySort/utils/sortJourneys'
@@ -12,9 +11,60 @@ import {
   RESTORE_TRASHED_JOURNEYS,
   DELETE_TRASHED_JOURNEYS
 } from '../../../JourneyList/StatusTabPanel/TrashedStatusTab/TrashedStatusTab'
+import {
+  GetTrashedPublisherTemplates,
+  GetTrashedPublisherTemplates_journeys as TrashedJourney
+} from '../../../../../__generated__/GetTrashedPublisherTemplates'
+
+export const GET_TRASHED_PUBLISHER_TEMPLATES = gql`
+  query GetTrashedPublisherTemplates {
+    journeys: adminJourneys(status: [trashed], template: true) {
+      id
+      title
+      createdAt
+      publishedAt
+      description
+      slug
+      themeName
+      themeMode
+      status
+      seoTitle
+      seoDescription
+      template
+      trashedAt
+      userJourneys {
+        id
+        role
+        user {
+          id
+          firstName
+          lastName
+          imageUrl
+        }
+      }
+      language {
+        id
+        name(primary: true) {
+          value
+          primary
+        }
+      }
+      primaryImageBlock {
+        id
+        parentBlockId
+        parentOrder
+        src
+        alt
+        width
+        height
+        blurhash
+      }
+    }
+  }
+`
 
 interface TrashedTemplatesProps {
-  onLoad: () => void
+  onLoad: (journeys: string[] | undefined) => void
   event: string | undefined
   sortOrder?: SortOrder
   authUser?: AuthUser
@@ -26,13 +76,18 @@ export function TrashedTemplates({
   sortOrder,
   authUser
 }: TrashedTemplatesProps): ReactElement {
+  const { data, loading, error, refetch } =
+    useQuery<GetTrashedPublisherTemplates>(GET_TRASHED_PUBLISHER_TEMPLATES)
+
   const { enqueueSnackbar } = useSnackbar()
   const [openRestoreAll, setOpenRestoreAll] = useState(false)
   const [openDeleteAll, setOpenDeleteAll] = useState(false)
 
+  const journeys = data?.journeys
+
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     variables: {
-      ids: trashedTemplates
+      ids: journeys
         ?.filter(
           (journey) =>
             journey.userJourneys?.find(
@@ -46,14 +101,14 @@ export function TrashedTemplates({
         enqueueSnackbar('Journeys Restored', {
           variant: 'success'
         })
-        // void refetch()
+        void refetch()
       }
     }
   })
 
   const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
     variables: {
-      ids: trashedTemplates
+      ids: journeys
         ?.filter(
           (journey) =>
             journey.userJourneys?.find(
@@ -67,7 +122,7 @@ export function TrashedTemplates({
         enqueueSnackbar('Journeys Deleted', {
           variant: 'success'
         })
-        // void refetch()
+        void refetch()
       }
     }
   })
@@ -102,16 +157,15 @@ export function TrashedTemplates({
     setOpenDeleteAll(false)
   }
 
-  // TODO
-  // const once = useRef(false)
-  // useEffect(() => {
-  //   if (!once.current) {
-  //     if (!loading && error == null) {
-  //       onLoad(journeys?.map((journey) => journey.id))
-  //       once.current = true
-  //     }
-  //   }
-  // }, [onLoad, loading, error, journeys, once])
+  const once = useRef(false)
+  useEffect(() => {
+    if (!once.current) {
+      if (!loading && error == null) {
+        onLoad(journeys?.map((journey) => journey.id))
+        once.current = true
+      }
+    }
+  }, [onLoad, loading, error, journeys, once])
 
   useEffect(() => {
     switch (event) {
@@ -122,12 +176,15 @@ export function TrashedTemplates({
         setOpenDeleteAll(true)
         break
       case 'refetchTrashed':
-        // void refetch()
+        void refetch()
         break
     }
-  }, [event])
+  }, [event, refetch])
 
-  const sortedTemplates = trashedTemplates // journeys != null ? (sortJourneys(journeys, sortOrder) as TrashedJourney[]) : undefined
+  const sortedJourneys =
+    journeys != null
+      ? (sortJourneys(journeys, sortOrder) as TrashedJourney[])
+      : undefined
 
   // calculate 40 days ago. may later be replaced by cron job
   const daysAgo = new Date()
@@ -135,30 +192,36 @@ export function TrashedTemplates({
 
   return (
     <>
-      {sortedTemplates
-        .filter((journey) => new Date(journey.trashedAt) > daysAgo)
-        .map((template) => (
-          <Typography key={template.id}>{template.title}</Typography>
-        ))}
+      {sortedJourneys != null ? (
+        <>
+          {sortedJourneys
+            .filter((journey) => new Date(journey.trashedAt) > daysAgo)
+            .map((template) => (
+              <Typography key={template.id}>{template.title}</Typography>
+            ))}
 
-      {sortedTemplates.length === 0 && (
-        <Card
-          variant="outlined"
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            pt: 20,
-            pb: 16,
-            borderBottomLeftRadius: { xs: 0, sm: 12 },
-            borderBottomRightRadius: { xs: 0, sm: 12 },
-            borderTopLeftRadius: 0,
-            borderTopRightRadius: 0
-          }}
-        >
-          <Typography variant="subtitle1" align="center" gutterBottom>
-            Your Trashed templates will appear here.
-          </Typography>
-        </Card>
+          {sortedJourneys.length === 0 && (
+            <Card
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                pt: 20,
+                pb: 16,
+                borderBottomLeftRadius: { xs: 0, sm: 12 },
+                borderBottomRightRadius: { xs: 0, sm: 12 },
+                borderTopLeftRadius: 0,
+                borderTopRightRadius: 0
+              }}
+            >
+              <Typography variant="subtitle1" align="center" gutterBottom>
+                Your Trashed templates will appear here.
+              </Typography>
+            </Card>
+          )}
+        </>
+      ) : (
+        <></>
       )}
 
       <Dialog

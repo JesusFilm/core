@@ -1,18 +1,64 @@
 import { ReactElement, useState, useEffect } from 'react'
 import { AuthUser } from 'next-firebase-auth'
 import Typography from '@mui/material/Typography'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import { activeTemplates as archivedTemplates } from '../ActiveTemplates/ActiveTemplates'
-import { SortOrder } from '../../../JourneyList/JourneySort'
 import { Dialog } from '../../../Dialog'
+import { SortOrder } from '../../../JourneyList/JourneySort'
 import { sortJourneys } from '../../../JourneyList/JourneySort/utils/sortJourneys'
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
 } from '../../../JourneyList/StatusTabPanel/ArchivedStatusTab/ArchivedStatusTab'
+import { GetArchivedPublisherTemplates } from '../../../../../__generated__/GetArchivedPublisherTemplates'
+
+export const GET_ARCHIVED_PUBLISHER_TEMPLATES = gql`
+  query GetArchivedPublisherTemplates {
+    journeys: adminJourneys(status: [archived], template: true) {
+      id
+      title
+      createdAt
+      publishedAt
+      description
+      slug
+      themeName
+      themeMode
+      status
+      seoTitle
+      seoDescription
+      template
+      userJourneys {
+        id
+        role
+        user {
+          id
+          firstName
+          lastName
+          imageUrl
+        }
+      }
+      language {
+        id
+        name(primary: true) {
+          value
+          primary
+        }
+      }
+      primaryImageBlock {
+        id
+        parentBlockId
+        parentOrder
+        src
+        alt
+        width
+        height
+        blurhash
+      }
+    }
+  }
+`
 
 interface ArchivedTemplateProps {
   onLoad: () => void
@@ -27,13 +73,18 @@ export function ArchivedTemplates({
   sortOrder,
   authUser
 }: ArchivedTemplateProps): ReactElement {
+  const { data, loading, error, refetch } =
+    useQuery<GetArchivedPublisherTemplates>(GET_ARCHIVED_PUBLISHER_TEMPLATES)
+
   const { enqueueSnackbar } = useSnackbar()
   const [openRestoreAll, setOpenRestoreAll] = useState(false)
   const [openTrashAll, setOpenTrashAll] = useState(false)
 
+  const journeys = data?.journeys
+
   const [restoreArchived] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     variables: {
-      ids: archivedTemplates
+      ids: journeys
         ?.filter(
           (journey) =>
             journey.userJourneys?.find(
@@ -47,14 +98,14 @@ export function ArchivedTemplates({
         enqueueSnackbar('Journeys Restored', {
           variant: 'success'
         })
-        // void refetch()
+        void refetch()
       }
     }
   })
 
   const [trashArchived] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
     variables: {
-      ids: archivedTemplates
+      ids: journeys
         ?.filter(
           (journey) =>
             journey.userJourneys?.find(
@@ -68,7 +119,7 @@ export function ArchivedTemplates({
         enqueueSnackbar('Journeys Trashed', {
           variant: 'success'
         })
-        // void refetch()
+        void refetch()
       }
     }
   })
@@ -103,12 +154,11 @@ export function ArchivedTemplates({
     setOpenTrashAll(false)
   }
 
-  // TODO
-  // useEffect(() => {
-  //   if (!loading && error == null) {
-  //     onLoad()
-  //   }
-  // }, [onLoad, loading, error])
+  useEffect(() => {
+    if (!loading && error == null) {
+      onLoad()
+    }
+  }, [onLoad, loading, error])
 
   useEffect(() => {
     switch (event) {
@@ -119,55 +169,60 @@ export function ArchivedTemplates({
         setOpenTrashAll(true)
         break
       case 'refetchArchived':
-        // void refetch()
+        void refetch()
         break
     }
-  }, [event])
+  }, [event, refetch])
 
-  const sortedTemplates = archivedTemplates // archivedTemplates != null ? sortJourneys(archivedTemplates, sortOrder) : undefined
+  const sortedJourneys =
+    journeys != null ? sortJourneys(journeys, sortOrder) : undefined
 
-  // TODO: loading state
   return (
     <>
-      {sortedTemplates.map((template) => (
-        <Typography key={template.id}>{template.title}</Typography>
-      ))}
-
-      {sortedTemplates.length > 0 ? (
-        <span>
-          <Box width="100%" sx={{ textAlign: 'center' }}>
-            <Typography variant="caption">
-              Archived journeys are hidden from your active templates list for
-              better organization.
-            </Typography>
-          </Box>
-        </span>
-      ) : (
+      {sortedJourneys != null ? (
         <>
-          <Card
-            variant="outlined"
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              pt: 20,
-              pb: 16,
-              borderBottomLeftRadius: { xs: 0, sm: 12 },
-              borderBottomRightRadius: { xs: 0, sm: 12 },
-              borderTopLeftRadius: 0,
-              borderTopRightRadius: 0
-            }}
-          >
-            <Typography variant="subtitle1" align="center" gutterBottom>
-              No archived templates.
-            </Typography>
-          </Card>
-          <Box width="100%" sx={{ textAlign: 'center' }}>
-            <Typography variant="caption">
-              You can archive a Template to hide it from your active Template
-              list for better organization.
-            </Typography>
-          </Box>
+          {sortedJourneys.map((template) => (
+            <Typography key={template.id}>{template.title}</Typography>
+          ))}
+          {sortedJourneys.length > 0 ? (
+            <span>
+              <Box width="100%" sx={{ textAlign: 'center' }}>
+                <Typography variant="caption">
+                  Archived journeys are hidden from your active templates list
+                  for better organization.
+                </Typography>
+              </Box>
+            </span>
+          ) : (
+            <>
+              <Card
+                variant="outlined"
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  pt: 20,
+                  pb: 16,
+                  borderBottomLeftRadius: { xs: 0, sm: 12 },
+                  borderBottomRightRadius: { xs: 0, sm: 12 },
+                  borderTopLeftRadius: 0,
+                  borderTopRightRadius: 0
+                }}
+              >
+                <Typography variant="subtitle1" align="center" gutterBottom>
+                  No archived templates.
+                </Typography>
+              </Card>
+              <Box width="100%" sx={{ textAlign: 'center' }}>
+                <Typography variant="caption">
+                  You can archive a Template to hide it from your active
+                  Template list for better organization.
+                </Typography>
+              </Box>
+            </>
+          )}
         </>
+      ) : (
+        <></>
       )}
 
       <Dialog

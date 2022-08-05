@@ -14,6 +14,8 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import JourneyListMenu from '../../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
 
+// TODO add redirect if user does not have role publiser
+
 function TemplateAdmin(): ReactElement {
   const router = useRouter()
   const AuthUser = useAuthUser()
