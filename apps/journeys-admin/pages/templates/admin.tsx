@@ -1,5 +1,6 @@
 import { NextSeo } from 'next-seo'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
+import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -9,12 +10,21 @@ import {
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { useRouter } from 'next/router'
+import { GetUserRole } from '../../__generated__/GetUserRole'
+import { Role } from '../../__generated__/globalTypes'
 import { TemplatesAdmin } from '../../src/components/TemplatesAdmin'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import JourneyListMenu from '../../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
 
-// TODO add redirect if user does not have role publiser
+export const GET_USER_ROLE = gql`
+  query GetUserRole {
+    getUserRole {
+      id
+      roles
+    }
+  }
+`
 
 function TemplateAdmin(): ReactElement {
   const router = useRouter()
@@ -28,6 +38,17 @@ function TemplateAdmin(): ReactElement {
       setListEvent('')
     }, 1000)
   }
+
+  const { data } = useQuery<GetUserRole>(GET_USER_ROLE)
+  useEffect(() => {
+    if (
+      data != null &&
+      data?.getUserRole?.roles?.includes(Role.publisher) !== true
+    ) {
+      void router.push('/templates')
+    }
+  }, [data, router])
+
   return (
     <>
       <NextSeo title={'Templates Admin'} />
@@ -45,6 +66,7 @@ function TemplateAdmin(): ReactElement {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ AuthUser, locale }) => {
+  console.log(AuthUser)
   const ldUser = {
     key: AuthUser.id as string,
     firstName: AuthUser.displayName ?? undefined,
@@ -54,6 +76,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
+
   return {
     props: {
       flags,

@@ -98,6 +98,10 @@ export enum JourneysReportType {
   singleSummary = "singleSummary",
 }
 
+export enum Role {
+  publisher = "publisher",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",
