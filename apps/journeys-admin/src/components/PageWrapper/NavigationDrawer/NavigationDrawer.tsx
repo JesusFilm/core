@@ -16,7 +16,7 @@ import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
-import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
+import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
 import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
 import { compact } from 'lodash'
@@ -173,7 +173,7 @@ export function NavigationDrawer({
                     : 'secondary.light'
               }}
             >
-              <ViewCarouselRoundedIcon />
+              <ShopRoundedIcon />
             </ListItemIcon>
             <ListItemText
               primary="Templates"
