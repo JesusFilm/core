@@ -237,7 +237,7 @@ export function TrashedTemplates({
         }}
         dialogAction={{
           onSubmit: restoreAll,
-          submitLabel: 'Templates',
+          submitLabel: 'Restore',
           closeLabel: 'Cancel'
         }}
       >
@@ -250,7 +250,7 @@ export function TrashedTemplates({
         open={openDeleteAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: 'Delete Template Forever',
+          title: 'Delete Templates Forever',
           closeButton: true
         }}
         dialogAction={{
