@@ -19,10 +19,7 @@ type Journey @key(fields: "id") {
   status: JourneyStatus!
   seoTitle: String
   seoDescription: String
-  """
-  The journey is a template if not null
-  """
-  template: TemplateStatus
+  template: Boolean
 }
 
 enum IdType {
@@ -40,6 +37,7 @@ enum JourneyStatus {
 
 input JourneysFilter {
   featured: Boolean
+  template: Boolean
 }
 
 enum JourneysReportType {
@@ -72,19 +70,8 @@ type PowerBiEmbed {
   expiration: String!
 }
 
-enum TemplateStatus {
-  """
-  Not in the template library
-  """
-  private
-  """
-  In the template library
-  """
-  public
-}
-
 extend type Query {
-  adminJourneys(status: [JourneyStatus!]): [Journey!]!
+  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
@@ -128,6 +115,10 @@ extend type UserJourney {
   journey: Journey
 }
 
+input JourneyTemplateInput {
+  template: Boolean
+}
+
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!): Journey!
   journeyDuplicate(id: ID!): Journey!
@@ -152,6 +143,10 @@ extend type Mutation {
   Sets journeys statuses to last active status
   """
   journeysRestore(ids: [ID!]!): [Journey]
+  """
+  Updates template
+  """
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
 }
 
 extend type NavigateToJourneyAction {

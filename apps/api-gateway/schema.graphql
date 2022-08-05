@@ -354,9 +354,7 @@ type Journey
   seoTitle: String @join__field(graph: JOURNEYS)
   slug: String! @join__field(graph: JOURNEYS)
   status: JourneyStatus! @join__field(graph: JOURNEYS)
-
-  """The journey is a template if not null"""
-  template: TemplateStatus @join__field(graph: JOURNEYS)
+  template: Boolean @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
   title: String! @join__field(graph: JOURNEYS)
@@ -389,6 +387,7 @@ input JourneyCreateInput {
 
 input JourneysFilter {
   featured: Boolean
+  template: Boolean
 }
 
 enum JourneysReportType {
@@ -404,6 +403,10 @@ enum JourneyStatus {
   draft
   published
   trashed
+}
+
+input JourneyTemplateInput {
+  template: Boolean
 }
 
 input JourneyUpdateInput {
@@ -498,6 +501,9 @@ type Mutation {
 
   """Sets journey status to published"""
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
+
+  """Updates template"""
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
 
@@ -523,11 +529,17 @@ type Mutation {
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
+  templateLibraryViewEventCreate: TemplateLibraryViewEvent! @join__field(graph: JOURNEYS)
+  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @join__field(graph: JOURNEYS)
+  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyPromote(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyRemove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+
+  """Removes all userJourneys associated with a journeyId"""
+  userJourneyRemoveAll(id: ID!): [UserJourney!]! @join__field(graph: JOURNEYS)
   userJourneyRequest(idType: IdType, journeyId: ID!): UserJourney! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!, journeyId: ID!): VideoBlock! @join__field(graph: JOURNEYS)
@@ -595,11 +607,12 @@ type PowerBiEmbed {
 
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
-  adminJourneys(status: [JourneyStatus!]): [Journey!]! @join__field(graph: JOURNEYS)
+  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
+  getUserRole: UserRole @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
@@ -660,6 +673,14 @@ input RadioQuestionSubmissionEventCreateInput {
   """
   id: ID
   radioOptionBlockId: ID!
+}
+
+enum Role {
+  """
+  User can create templates and
+  add them to template library
+  """
+  publisher
 }
 
 type SignUpBlock implements Block {
@@ -752,12 +773,37 @@ input StepViewEventCreateInput {
   id: ID
 }
 
+type TemplateLibraryViewEvent implements Event {
+  id: ID!
+  userId: ID!
+}
+
+type TemplatePreviewEvent implements Event {
+  id: ID!
+  journeyId: ID!
+  userId: ID!
+}
+
+input TemplatePreviewEventInput {
+  journeyId: ID!
+}
+
 enum TemplateStatus {
   """Not in the template library"""
   private
 
   """In the template library"""
   public
+}
+
+type TemplateUseEvent implements Event {
+  id: ID!
+  journeyId: ID!
+  userId: ID!
+}
+
+input TemplateUseEventInput {
+  journeyId: ID!
 }
 
 enum ThemeMode {
@@ -841,7 +887,6 @@ type User
   id: ID! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
-  role: UserRole @join__field(graph: USERS)
 }
 
 type UserJourney
@@ -862,12 +907,13 @@ enum UserJourneyRole {
   owner
 }
 
-enum UserRole {
-  """
-  User can create templates and
-  add them to template library
-  """
-  publisher
+type UserRole
+  @join__owner(graph: JOURNEYS)
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  id: ID! @join__field(graph: JOURNEYS)
+  roles: [Role!] @join__field(graph: JOURNEYS)
+  userId: ID! @join__field(graph: JOURNEYS)
 }
 
 type Video

@@ -90,9 +90,7 @@ type Journey @key(fields: "id") {
   status: JourneyStatus!
   seoTitle: String
   seoDescription: String
-
-  """The journey is a template if not null"""
-  template: TemplateStatus
+  template: Boolean
   userJourneys: [UserJourney!]
 }
 
@@ -687,6 +685,31 @@ type StepViewEvent implements Event {
   block: StepBlock
 }
 
+type TemplateLibraryViewEvent implements Event {
+  id: ID!
+  userId: ID!
+}
+
+input TemplateUseEventInput {
+  journeyId: ID!
+}
+
+type TemplateUseEvent implements Event {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+}
+
+input TemplatePreviewEventInput {
+  journeyId: ID!
+}
+
+type TemplatePreviewEvent implements Event {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+}
+
 input VideoStartEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -818,6 +841,7 @@ enum JourneyStatus {
 
 input JourneysFilter {
   featured: Boolean
+  template: Boolean
 }
 
 enum JourneysReportType {
@@ -842,14 +866,6 @@ type PowerBiEmbed {
 
   """The date and time (UTC) of token expiration"""
   expiration: String!
-}
-
-enum TemplateStatus {
-  """Not in the template library"""
-  private
-
-  """In the template library"""
-  public
 }
 
 input JourneyCreateInput {
@@ -895,10 +911,28 @@ type UserJourney @key(fields: "id") {
   user: User
 }
 
+input JourneyTemplateInput {
+  template: Boolean
+}
+
 enum UserJourneyRole {
   inviteRequested
   editor
   owner
+}
+
+type UserRole @key(fields: "id") {
+  id: ID!
+  userId: ID!
+  roles: [Role!]
+}
+
+enum Role {
+  """
+  User can create templates and
+  add them to template library
+  """
+  publisher
 }
 
 extend type Mutation {
@@ -949,6 +983,9 @@ extend type Mutation {
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
+  templateLibraryViewEventCreate: TemplateLibraryViewEvent!
+  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent!
+  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent!
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
   videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
@@ -974,9 +1011,15 @@ extend type Mutation {
 
   """Sets journeys statuses to last active status"""
   journeysRestore(ids: [ID!]!): [Journey]
+
+  """Updates template"""
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
+
+  """Removes all userJourneys associated with a journeyId"""
+  userJourneyRemoveAll(id: ID!): [UserJourney!]!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
 }
 
@@ -990,11 +1033,12 @@ extend type Language @key(fields: "id") {
 }
 
 extend type Query {
-  adminJourneys(status: [JourneyStatus!]): [Journey!]!
+  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
+  getUserRole: UserRole
 }
 
 extend type User @key(fields: "id") {
