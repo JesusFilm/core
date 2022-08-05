@@ -1,4 +1,5 @@
 import { formatISO, startOfYear } from 'date-fns'
+import { GetPublishedTemplates_journeys as Journey } from '../../../__generated__/GetPublishedTemplates'
 import {
   ThemeName,
   ThemeMode,
@@ -18,7 +19,7 @@ const imageBlock: ImageFields = {
   blurhash: ''
 }
 
-export const defaultTemplate = {
+export const defaultTemplate: Journey = {
   __typename: 'Journey',
   id: 'template-id',
   title: 'Default Template Heading',
@@ -47,7 +48,7 @@ export const defaultTemplate = {
   primaryImageBlock: null
 }
 
-export const oldTemplate = {
+export const oldTemplate: Journey = {
   ...defaultTemplate,
   id: 'old-template-id',
   title: 'An Old Template Heading',
@@ -62,7 +63,7 @@ export const oldTemplate = {
   }
 }
 
-export const publishedTemplate = {
+export const publishedTemplate: Journey = {
   ...defaultTemplate,
   id: 'published-template-id',
   title: 'Published Template Heading',
@@ -75,7 +76,7 @@ export const publishedTemplate = {
   }
 }
 
-export const descriptiveTemplate = {
+export const descriptiveTemplate: Journey = {
   ...defaultTemplate,
   id: 'descriptive-template-id',
   title:

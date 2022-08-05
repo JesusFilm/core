@@ -52,6 +52,11 @@ Default.args = {
   reports: true
 }
 
+export const Templates = Template.bind({})
+Templates.args = {
+  props: { title: 'Journey Templates' }
+}
+
 export const Reports = Template.bind({})
 Reports.args = {
   props: { title: 'Reports' },
