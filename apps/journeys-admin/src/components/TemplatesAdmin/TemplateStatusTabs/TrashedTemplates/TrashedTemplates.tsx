@@ -221,7 +221,11 @@ export function TrashedTemplates({
           )}
         </>
       ) : (
-        <></>
+        <>
+          <Typography>Loading...</Typography>
+          <Typography>Loading...</Typography>
+          <Typography>Loading...</Typography>
+        </>
       )}
 
       <Dialog

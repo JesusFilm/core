@@ -222,7 +222,11 @@ export function ArchivedTemplates({
           )}
         </>
       ) : (
-        <></>
+        <>
+          <Typography>Loading...</Typography>
+          <Typography>Loading...</Typography>
+          <Typography>Loading...</Typography>
+        </>
       )}
 
       <Dialog

@@ -195,7 +195,11 @@ export function ActiveTemplates({
           ))}
         </>
       ) : (
-        <></>
+        <>
+          <Typography>Loading...</Typography>
+          <Typography>Loading...</Typography>
+          <Typography>Loading...</Typography>
+        </>
       )}
 
       <Dialog
