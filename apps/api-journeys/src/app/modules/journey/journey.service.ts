@@ -96,19 +96,24 @@ export class JourneyService extends BaseService {
       status != null ? aql`&& journey.status IN ${status}` : aql`&& true`
 
     const roleFilter =
-      template === true && includes(user.roles, Role.publisher)
-        ? aql`FOR journey in ${this.collection}
+      template === true
+        ? includes(user.roles, Role.publisher) &&
+          aql`FOR journey in ${this.collection}
               FILTER journey.template == true`
         : aql`FOR userJourney in userJourneys
           FOR journey in ${this.collection}
             FILTER userJourney.journeyId == journey._key && userJourney.userId == ${user.userId}
               && (userJourney.role == ${UserJourneyRole.owner} || userJourney.role == ${UserJourneyRole.editor})`
 
-    const result = await this.db.query(aql`${roleFilter}
-        ${statusFilter}
-          RETURN journey
-    `)
-    return await result.all()
+    if (roleFilter !== false) {
+      const result = await this.db.query(aql`${roleFilter}
+          ${statusFilter}
+            RETURN journey
+      `)
+      return await result.all()
+    } else {
+      return []
+    }
   }
 
   collection: DocumentCollection = this.db.collection('journeys')

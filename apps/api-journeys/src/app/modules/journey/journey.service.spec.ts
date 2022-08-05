@@ -167,9 +167,9 @@ describe('JourneyService', () => {
           FOR journey in undefined
             FILTER userJourney.journeyId == journey._key && userJourney.userId == @value0
               && (userJourney.role == @value1 || userJourney.role == @value2)
-        && journey.status IN @value3
-          RETURN journey
-    `.query
+          && journey.status IN @value3
+            RETURN journey
+      `.query
         )
         expect(bindVars).toEqual({
           value0: 'user.id',
@@ -192,9 +192,9 @@ describe('JourneyService', () => {
         expect(query).toEqual(
           aql`FOR journey in undefined
               FILTER journey.template == true
-        && true
-          RETURN journey
-    `.query
+          && true
+            RETURN journey
+      `.query
         )
         return await mockDbQueryResult(db, [journey])
       })
