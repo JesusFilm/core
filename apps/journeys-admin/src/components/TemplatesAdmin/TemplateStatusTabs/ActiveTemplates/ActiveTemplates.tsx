@@ -16,6 +16,7 @@ import {
   GetActivePublisherTemplates_journeys as Journey
 } from '../../../../../__generated__/GetActivePublisherTemplates'
 import { TemplateCard } from '../../../TemplateList/TemplateCard'
+import { getDuplicatedJourney } from '../../../JourneyList/StatusTabPanel/ActiveStatusTab/utils/getDuplicatedJourney'
 
 export const GET_ACTIVE_PUBLISHER_TEMPLATES = gql`
   query GetActivePublisherTemplates {
@@ -89,6 +90,8 @@ export function ActiveTemplates({
     setOldJourneys(journeys)
     setJourneys(data?.journeys)
   }, [data, journeys, oldJourneys])
+
+  const duplicatedJourneyId = getDuplicatedJourney(oldJourneys, journeys)
 
   const [archiveActive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     variables: {
@@ -168,9 +171,6 @@ export function ActiveTemplates({
     }
   }, [onLoad, loading, error])
 
-  // TODO
-  // const duplicatedJourneyId = getDuplicatedJourney(oldJourneys, journeys)
-
   useEffect(() => {
     switch (event) {
       case 'archiveAllActive':
@@ -197,6 +197,8 @@ export function ActiveTemplates({
               key={journey.id}
               journey={journey as Journey}
               admin={true}
+              refetch={refetch}
+              duplicatedJourneyId={duplicatedJourneyId}
             />
           ))}
           {sortedJourneys.length === 0 && (

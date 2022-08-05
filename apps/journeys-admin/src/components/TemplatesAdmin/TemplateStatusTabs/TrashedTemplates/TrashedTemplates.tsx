@@ -198,7 +198,12 @@ export function TrashedTemplates({
           {sortedJourneys
             .filter((journey) => new Date(journey.trashedAt) > daysAgo)
             .map((journey) => (
-              <TemplateCard key={journey.id} journey={journey} admin={true} />
+              <TemplateCard
+                key={journey.id}
+                journey={journey}
+                admin={true}
+                refetch={refetch}
+              />
             ))}
 
           {sortedJourneys.length === 0 && (

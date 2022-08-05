@@ -190,6 +190,7 @@ export function ArchivedTemplates({
               key={journey.id}
               journey={journey as Journey}
               admin={true}
+              refetch={refetch}
             />
           ))}
           {sortedJourneys.length > 0 ? (
