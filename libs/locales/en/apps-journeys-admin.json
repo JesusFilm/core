@@ -12,6 +12,7 @@
   "Edit Journey": "Edit Journey",
   "Journey Report": "Journey Report",
   "Reports": "Reports",
+  "Template": "Template",
   "Sign In": "Sign In",
   "Archive All": "Archive All",
   "Trash All": "Trash All",
@@ -48,5 +49,6 @@
   "Edit URL": "Edit URL",
   "Properties": "Properties",
   "Access Control": "Access Control",
-  "Field update failed. Reload the page or try again.": "Field update failed. Reload the page or try again."
+  "Field update failed. Reload the page or try again.": "Field update failed. Reload the page or try again.",
+  "Details": "Details"
 }
