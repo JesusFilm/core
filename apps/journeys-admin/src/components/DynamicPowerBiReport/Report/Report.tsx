@@ -6,7 +6,6 @@ import { useSnackbar } from 'notistack'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Fade from '@mui/material/Fade'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneysReportType } from '../../../../__generated__/globalTypes'
 import { GetAdminJourneysReport } from '../../../../__generated__/GetAdminJourneysReport'
 
@@ -20,10 +19,10 @@ export const GET_ADMIN_JOURNEYS_REPORT = gql`
 `
 export interface ReportProps {
   reportType: JourneysReportType
+  journeyId?: string // this is required for singleFull and singleSummary reports
 }
 
-export function Report({ reportType }: ReportProps): ReactElement {
-  const { journey } = useJourney()
+export function Report({ reportType, journeyId }: ReportProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
@@ -53,7 +52,7 @@ export function Report({ reportType }: ReportProps): ReactElement {
     },
     filterType: models.FilterType.Basic,
     operator: 'In',
-    values: journey != null ? [journey.id] : [],
+    values: journeyId != null ? [journeyId] : [],
     requireSingleSelection: true
   }
 
