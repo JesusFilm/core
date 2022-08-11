@@ -59,6 +59,7 @@ export default function useFullscreenStatus(
   return [isFullscreen, setFullscreen]
 }
 
+// throw error on webkit and unsupported browsers
 function getBrowserFullscreenElementProp(): string {
   if (typeof document.fullscreenElement !== 'undefined') {
     return 'fullscreenElement'
@@ -66,13 +67,12 @@ function getBrowserFullscreenElementProp(): string {
     return 'mozFullScreenElement'
   } else if (typeof document.msFullscreenElement !== 'undefined') {
     return 'msFullscreenElement'
-  } else if (typeof document.webkitFullscreenElement !== 'undefined') {
-    return 'webkitExitFullscreen'
   } else {
     throw new Error('fullscreenElement is not supported by this browser')
   }
 }
 
+// throw error on webkit and unsupported browsers
 function getBrowserFullscreenExitProp(): string {
   if (typeof document.fullscreenElement !== 'undefined') {
     return 'exitFullscreen'
@@ -80,8 +80,6 @@ function getBrowserFullscreenExitProp(): string {
     return 'mozCancelFullScreen'
   } else if (typeof document.msFullscreenElement !== 'undefined') {
     return 'msExitFullscreen'
-  } else if (typeof document.webkitFullscreenElement !== 'undefined') {
-    return 'webkitFullscreenElement'
   } else {
     throw new Error('fullscreenElement is not supported by this browser')
   }
