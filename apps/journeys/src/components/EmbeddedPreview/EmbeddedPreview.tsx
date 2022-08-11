@@ -39,19 +39,61 @@ export function EmbeddedPreview({
   const maximizableElement = useRef(null)
   const [allowFullscreen, setAllowFullscreen] = useState(true)
   let isFullscreen: boolean, setIsFullscreen
+  const [isFullContainer, setIsFullContainer] = useState(false)
+  let canFullscreen = true
   try {
     ;[isFullscreen, setIsFullscreen] = useFullscreenStatus(maximizableElement)
   } catch {
     isFullscreen = false
+    canFullscreen = false
   }
+  const [previousContainerDimensions, setPreviousContainerDimensions] =
+    useState({
+      width: 0,
+      height: 0
+    })
+
+  const maximizeView = useCallback(
+    (value: boolean) => {
+      if (canFullscreen) {
+        setIsFullscreen(value)
+      } else {
+        setIsFullContainer(value)
+        const iframeContainer = window.parent.document.getElementById(
+          'jfm-iframe-container'
+        )
+        if (iframeContainer != null) {
+          if (value) {
+            setPreviousContainerDimensions({
+              width: iframeContainer.offsetWidth,
+              height: iframeContainer.offsetHeight
+            })
+            iframeContainer.style.height = '100vh'
+            iframeContainer.style.width = '100vw'
+          } else {
+            iframeContainer.style.height =
+              previousContainerDimensions.height.toString() + 'px'
+            iframeContainer.style.width =
+              previousContainerDimensions.width.toString() + 'px'
+          }
+        }
+      }
+    },
+    [
+      canFullscreen,
+      setIsFullscreen,
+      setIsFullContainer,
+      previousContainerDimensions
+    ]
+  )
 
   // use router internally on this component as it does not function properly when passed as prop
   const router = useRouter()
   const once = useRef(false)
 
   const handleClick = useCallback((): void => {
-    if (allowFullscreen) setIsFullscreen(true)
-  }, [allowFullscreen, setIsFullscreen])
+    if (allowFullscreen) maximizeView(true)
+  }, [allowFullscreen, maximizeView])
 
   useEffect(() => {
     if (!once.current) {
@@ -106,7 +148,7 @@ export function EmbeddedPreview({
                 borderRadius: '16px 16px 0 0'
               }}
             />
-            {!isFullscreen && (
+            {!(isFullscreen || isFullContainer) && (
               <BlockRenderer
                 data-testid="embedded-preview-block-renderer"
                 block={blocks?.[0]}
@@ -123,7 +165,7 @@ export function EmbeddedPreview({
               backgroundColor: (theme) => theme.palette.background.default
             }}
           >
-            {isFullscreen && (
+            {(isFullscreen || isFullContainer) && (
               <>
                 <IconButton
                   sx={{
@@ -133,7 +175,7 @@ export function EmbeddedPreview({
                     zIndex: 1000,
                     color: (theme) => theme.palette.text.primary
                   }}
-                  onClick={() => setIsFullscreen(false)}
+                  onClick={() => maximizeView(false)}
                 >
                   <Close />
                 </IconButton>

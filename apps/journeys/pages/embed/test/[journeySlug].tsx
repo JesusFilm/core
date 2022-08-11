@@ -13,6 +13,7 @@ export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
         height: 546,
         overflow: 'hidden'
       }}
+      id="jfm-iframe-container"
     >
       <iframe
         src={`/embed/${journeySlug}`}
@@ -26,6 +27,7 @@ export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
           height: '100%',
           border: 'none'
         }}
+        allowFullScreen
       />
     </div>
   )
