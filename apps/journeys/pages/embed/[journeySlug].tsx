@@ -58,6 +58,11 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
+      <style jsx global>{`
+        body {
+          background: transparent;
+        }
+      `}</style>
       <JourneyProvider value={{ journey }}>
         <ThemeProvider
           themeName={journey.themeName}

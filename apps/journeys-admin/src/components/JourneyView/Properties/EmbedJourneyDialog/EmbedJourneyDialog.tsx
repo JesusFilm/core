@@ -62,7 +62,7 @@ export function EmbedJourneyDialog({
       <Stack
         direction={smUp ? 'row' : 'column'}
         spacing={smUp ? 3 : 5}
-        sx={{ height: 310, pt: 9 }}
+        sx={{ height: 310, pt: 0, mt: 0 }}
       >
         {smUp ? (
           <Box
@@ -76,6 +76,7 @@ export function EmbedJourneyDialog({
           </Box>
         ) : (
           <Accordion
+            variant="outlined"
             sx={{
               borderRadius: '6px',
               p: 0,
@@ -83,7 +84,7 @@ export function EmbedJourneyDialog({
             }}
           >
             <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
+              expandIcon={<ExpandMoreIcon color="secondary" />}
               aria-controls="panel-content"
               sx={{
                 flexDirection: 'row-reverse'
@@ -91,7 +92,7 @@ export function EmbedJourneyDialog({
             >
               <Typography variant="subtitle2">{t('Show Preview')}</Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails sx={{ p: 0, pb: 2, ml: -4 }}>
               <EmbedCardPreview />
             </AccordionDetails>
           </Accordion>
@@ -99,6 +100,7 @@ export function EmbedJourneyDialog({
         <Stack
           direction="column"
           spacing={smUp ? 0 : 4}
+          justifyContent="start"
           sx={{ justifyContent: 'space-between' }}
         >
           <TextField
@@ -106,8 +108,9 @@ export function EmbedJourneyDialog({
             multiline
             maxRows={smUp ? 8 : 3}
             defaultValue={iframeLink}
+            sx={{ backgroundColor: 'rgba(239, 239, 239, 0.4)' }}
           />
-          <Typography variant="caption">
+          <Typography variant="caption" mt="16px">
             {t('By embedding a Journey to your site, you agree to the ')}
             <Link
               href="https://www.cru.org/us/en/about/terms-of-use.html"

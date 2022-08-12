@@ -110,6 +110,16 @@ export function EmbeddedPreview({
 
   return (
     <>
+      <style jsx global>{`
+        body {
+          background: transparent;
+        }
+      `}</style>
+      <style jsx>{`
+        .MuiPaper-elevation {
+          box-shadow: none !important;
+        }
+      `}</style>
       <Div100vh data-testid="embedded-preview">
         <Stack
           sx={{
@@ -134,7 +144,7 @@ export function EmbeddedPreview({
                 mb: '-3.5px',
                 height: 10,
                 width: 'calc(100% - 17.5%)',
-                backgroundColor: '#DCDDE5',
+                backgroundColor: 'rgba(220,222,229,0.5)',
                 borderRadius: '16px 16px 0 0'
               }}
             />
@@ -144,20 +154,29 @@ export function EmbeddedPreview({
                 mb: '-3.5px',
                 height: 10,
                 width: 'calc(100% - 10%)',
-                backgroundColor: '#AAACBB',
+                backgroundColor: 'rgba(170,172,287,0.5)',
                 borderRadius: '16px 16px 0 0'
               }}
             />
-            {!(isFullscreen || isFullContainer) && (
-              <BlockRenderer
-                data-testid="embedded-preview-block-renderer"
-                block={blocks?.[0]}
-                wrappers={{
-                  ImageWrapper: NullWrapper,
-                  VideoWrapper: EmbeddedVideoWrapper
-                }}
-              />
-            )}
+            <Box
+              sx={{
+                height: '100%',
+                width: '100%',
+                borderRadius: '16px',
+                border: '1px solid rgba(186, 186, 187, 0.5)'
+              }}
+            >
+              {!(isFullscreen || isFullContainer) && (
+                <BlockRenderer
+                  data-testid="embedded-preview-block-renderer"
+                  block={blocks?.[0]}
+                  wrappers={{
+                    ImageWrapper: NullWrapper,
+                    VideoWrapper: EmbeddedVideoWrapper
+                  }}
+                />
+              )}
+            </Box>
           </Box>
           <Box
             ref={maximizableElement}

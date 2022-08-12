@@ -13,7 +13,7 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { FramePortal } from '../../../../FramePortal'
 
-const CARD_WIDTH = 380
+const CARD_WIDTH = 340
 
 export function EmbedCardPreview(): ReactElement {
   const { journey } = useJourney()
@@ -23,7 +23,7 @@ export function EmbedCardPreview(): ReactElement {
   return (
     <Box
       sx={{
-        width: 255,
+        width: 195,
         position: 'relative',
         height: 294,
         mb: '-24px',
@@ -57,7 +57,7 @@ export function EmbedCardPreview(): ReactElement {
               borderRadius: '16px 16px 0 0'
             }}
           />
-          <FramePortal width={380} height={520}>
+          <FramePortal width={340} height={520}>
             <ThemeProvider
               themeName={journey?.themeName ?? ThemeName.base}
               themeMode={journey?.themeMode ?? ThemeMode.light}
