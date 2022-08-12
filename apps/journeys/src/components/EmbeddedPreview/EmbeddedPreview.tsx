@@ -15,12 +15,13 @@ import { useRouter } from 'next/router'
 import IconButton from '@mui/material/IconButton'
 import Close from '@mui/icons-material/Close'
 import Paper from '@mui/material/Paper'
-import { useTheme } from '@mui/material/styles'
+import { useTheme, styled } from '@mui/material/styles'
 import { blurImage } from '@core/journeys/ui/blurImage'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import { NextImage } from '@core/shared/ui/NextImage'
-import MuiButton from '@mui/material/Button'
+import MuiButton, { ButtonProps } from '@mui/material/Button'
 import { Icon } from '@core/journeys/ui/Icon'
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
@@ -29,7 +30,8 @@ import { Conductor } from '../Conductor'
 import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
-  GetJourney_journey_blocks_ButtonBlock as ButtonBlock
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
+  GetJourney_journey_blocks_RadioOptionBlock as RadioOptionBlock
 } from '../../../__generated__/GetJourney'
 import { IconFields } from '../../../__generated__/IconFields'
 import { ButtonVariant } from '../../../__generated__/globalTypes'
@@ -178,6 +180,7 @@ export function EmbeddedPreview({
                   wrappers={{
                     ButtonWrapper: ButtonWrapper,
                     ImageWrapper: NullWrapper,
+                    RadioOptionWrapper: RadioOptionWrapper,
                     VideoWrapper: EmbeddedVideoWrapper
                   }}
                 />
@@ -397,5 +400,40 @@ export function ButtonWrapper({
         {block.label}
       </MuiButton>
     </Box>
+  )
+}
+
+export const StyledRadioOption = styled(MuiButton)<ButtonProps>(
+  ({ theme }) => ({
+    fontFamily: theme.typography.body2.fontFamily,
+    fontSize: theme.typography.body2.fontSize,
+    fontWeight: 600,
+    lineHeight: theme.typography.body2.lineHeight,
+    textAlign: 'start',
+    justifyContent: 'flex-start',
+    borderRadius: 'inherit',
+    padding: '14px 10px 14px 14px'
+  })
+)
+
+export function RadioOptionWrapper({
+  block
+}: {
+  block: TreeBlock<RadioOptionBlock>
+}): ReactElement {
+  return (
+    <StyledRadioOption
+      variant="contained"
+      fullWidth
+      disableRipple
+      startIcon={
+        <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
+      }
+      sx={{
+        '&.MuiButtonBase-root': { pointerEvents: 'none' }
+      }}
+    >
+      {block.label}
+    </StyledRadioOption>
   )
 }
