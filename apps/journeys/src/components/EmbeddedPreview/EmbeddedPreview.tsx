@@ -19,6 +19,8 @@ import { useTheme } from '@mui/material/styles'
 import { blurImage } from '@core/journeys/ui/blurImage'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import { NextImage } from '@core/shared/ui/NextImage'
+import MuiButton from '@mui/material/Button'
+import { Icon } from '@core/journeys/ui/Icon'
 
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
@@ -26,8 +28,11 @@ import useFullscreenStatus from '../../libs/useFullscreenStatus/useFullscreenSta
 import { Conductor } from '../Conductor'
 import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey_blocks_ButtonBlock as ButtonBlock
 } from '../../../__generated__/GetJourney'
+import { IconFields } from '../../../__generated__/IconFields'
+import { ButtonVariant } from '../../../__generated__/globalTypes'
 
 export interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
@@ -171,6 +176,7 @@ export function EmbeddedPreview({
                   data-testid="embedded-preview-block-renderer"
                   block={blocks?.[0]}
                   wrappers={{
+                    ButtonWrapper: ButtonWrapper,
                     ImageWrapper: NullWrapper,
                     VideoWrapper: EmbeddedVideoWrapper
                   }}
@@ -344,6 +350,52 @@ export function EmbeddedVideoWrapper({
           />
         </Paper>
       )}
+    </Box>
+  )
+}
+
+export function ButtonWrapper({
+  block
+}: {
+  block: TreeBlock<ButtonBlock>
+}): ReactElement {
+  const startIcon = block.children.find(
+    (child) => child.id === block.startIconId
+  ) as TreeBlock<IconFields> | undefined
+
+  const endIcon = block.children.find(
+    (child) => child.id === block.endIconId
+  ) as TreeBlock<IconFields> | undefined
+
+  return (
+    // Margin added via Box so it's ignored by admin selection border outline
+    <Box
+      sx={{
+        mb: 4,
+        mt:
+          block.size === 'large'
+            ? 6
+            : block.size === 'medium'
+            ? 5
+            : block.size === 'small'
+            ? 4
+            : 5
+      }}
+    >
+      <MuiButton
+        variant={block.buttonVariant ?? ButtonVariant.contained}
+        color={block.buttonColor ?? undefined}
+        size={block.size ?? undefined}
+        startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
+        endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
+        fullWidth
+        disableRipple
+        sx={{
+          '&.MuiButtonBase-root': { pointerEvents: 'none' }
+        }}
+      >
+        {block.label}
+      </MuiButton>
     </Box>
   )
 }
