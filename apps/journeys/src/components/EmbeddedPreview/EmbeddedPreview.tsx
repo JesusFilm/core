@@ -132,8 +132,9 @@ export function EmbeddedPreview({
                 mb: 0,
                 height: 6.5,
                 width: 'calc(100% - 17.5%)',
-                backgroundColor: 'rgba(220,222,229,0.3)',
-                borderRadius: '16px 16px 0 0'
+                backgroundColor: 'rgba(220,222,229)',
+                borderRadius: '16px 16px 0 0',
+                opacity: 0.3
               }}
             />
             <Box
@@ -142,8 +143,9 @@ export function EmbeddedPreview({
                 mb: 0,
                 height: 6.5,
                 width: 'calc(100% - 10%)',
-                backgroundColor: 'rgba(170,172,287,0.3)',
-                borderRadius: '16px 16px 0 0'
+                backgroundColor: 'rgba(170,172,287)',
+                borderRadius: '16px 16px 0 0',
+                opacity: 0.3
               }}
             />
             <Box
