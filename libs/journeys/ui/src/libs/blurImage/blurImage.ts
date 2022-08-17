@@ -4,7 +4,7 @@ export const blurImage = (
   blurhash: string,
   hexBackground: string
 ): string | undefined => {
-  if (blurhash === '') return undefined
+  if (blurhash === '' || typeof document === 'undefined') return undefined
 
   const pixels = decode(blurhash, 32, 32, 1)
 

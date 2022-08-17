@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { defaultJourney } from '../data'
+import { publishedJourney } from '../data'
 import { Properties } from './Properties'
 
 const PropertiesStory = {
@@ -25,7 +25,7 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  journey: defaultJourney
+  journey: publishedJourney
 }
 
 export const Loading = Template.bind({})
