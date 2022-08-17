@@ -10,14 +10,17 @@ import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import EditIcon from '@mui/icons-material/Edit'
+import DeveloperModeRoundedIcon from '@mui/icons-material/DeveloperModeRounded'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyDetails } from './JourneyDetails'
 import { SlugDialog } from './SlugDialog'
+import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 
 export function Properties(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const [showSlugDialog, setShowSlugDialog] = useState(false)
+  const [showEmbedDialog, setShowEmbedDialog] = useState(false)
 
   return (
     <>
@@ -66,7 +69,7 @@ export function Properties(): ReactElement {
                   : undefined
               }
             />
-            <Box sx={{ pt: 2 }}>
+            <Stack direction="row" spacing={6} sx={{ pt: 2 }}>
               <Button
                 onClick={() => setShowSlugDialog(true)}
                 size="small"
@@ -75,7 +78,15 @@ export function Properties(): ReactElement {
               >
                 {t('Edit URL')}
               </Button>
-            </Box>
+              <Button
+                onClick={() => setShowEmbedDialog(true)}
+                size="small"
+                startIcon={<DeveloperModeRoundedIcon />}
+                disabled={journey == null}
+              >
+                {t('Embed Journey')}
+              </Button>
+            </Stack>
           </Box>
         </Stack>
       </Drawer>
@@ -104,6 +115,10 @@ export function Properties(): ReactElement {
       <SlugDialog
         open={showSlugDialog}
         onClose={() => setShowSlugDialog(false)}
+      />
+      <EmbedJourneyDialog
+        open={showEmbedDialog}
+        onClose={() => setShowEmbedDialog(false)}
       />
     </>
   )
