@@ -195,7 +195,7 @@ export function NavigationDrawer({
                 />
               </ListItemIcon>
               <ListItemText
-                primary={'Profile'}
+                primary="Profile"
                 sx={{ color: 'secondary.light' }}
               />
             </ListItemButton>

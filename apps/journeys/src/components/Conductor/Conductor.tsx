@@ -140,9 +140,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             }}
           >
             <Swiper
-              slidesPerView={'auto'}
-              centeredSlides={true}
-              centeredSlidesBounds={true}
+              slidesPerView="auto"
+              centeredSlides
+              centeredSlidesBounds
               onSwiper={(swiper) => setSwiper(swiper)}
               resizeObserver
               onBeforeResize={() => setGapBetween(getResponsiveGap())}
@@ -200,7 +200,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 <IconButton
                   data-testid="conductorPrevButton"
                   onClick={handleNext}
-                  disabled={true}
+                  disabled
                   disableRipple
                   sx={{
                     display: showNavArrows ? 'flex' : 'none',
@@ -215,7 +215,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   }}
                 >
                   <ChevronLeftIcon
-                    fontSize={'large'}
+                    fontSize="large"
                     sx={{
                       display: 'none',
                       [theme.breakpoints.only('xl')]: {
@@ -259,7 +259,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   }}
                 >
                   <ChevronRightIcon
-                    fontSize={'large'}
+                    fontSize="large"
                     sx={{
                       display: 'none',
                       [theme.breakpoints.only('xl')]: {

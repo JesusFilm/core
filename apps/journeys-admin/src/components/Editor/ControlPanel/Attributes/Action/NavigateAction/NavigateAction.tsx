@@ -26,11 +26,11 @@ export function NavigateAction(): ReactElement {
         <CardPreview selected={nextStep} steps={steps} />
       </Box>
       <Stack
-        direction={'row'}
-        alignItems={'center'}
+        direction="row"
+        alignItems="center"
         spacing={3}
         sx={{ pt: 8 }}
-        color={'text.secondary'}
+        color="text.secondary"
       >
         <InfoOutlinedIcon />
         <Typography variant="caption">

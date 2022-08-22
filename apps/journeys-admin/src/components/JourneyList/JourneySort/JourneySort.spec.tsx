@@ -47,7 +47,7 @@ describe('JourneyList/JourneySort', () => {
   })
 
   it('should be disabled', () => {
-    const { getByRole } = render(<JourneySortMock disabled={true} />)
+    const { getByRole } = render(<JourneySortMock disabled />)
     expect(getByRole('button', { name: 'Sort By' })).toHaveAttribute(
       'aria-disabled',
       'true'

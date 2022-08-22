@@ -38,7 +38,7 @@ describe('ArchiveJourney', () => {
         <SnackbarProvider>
           <ArchiveJourney
             status={JourneyStatus.draft}
-            id={'journey-id'}
+            id="journey-id"
             published={false}
             handleClose={handeClose}
           />
@@ -70,7 +70,7 @@ describe('ArchiveJourney', () => {
         <SnackbarProvider>
           <ArchiveJourney
             status={JourneyStatus.draft}
-            id={'journey-id'}
+            id="journey-id"
             published={false}
             handleClose={handeClose}
           />
@@ -112,7 +112,7 @@ describe('ArchiveJourney', () => {
         <SnackbarProvider>
           <ArchiveJourney
             status={JourneyStatus.archived}
-            id={'journey-id'}
+            id="journey-id"
             published={false}
             handleClose={handeClose}
           />
@@ -156,8 +156,8 @@ describe('ArchiveJourney', () => {
         <SnackbarProvider>
           <ArchiveJourney
             status={JourneyStatus.archived}
-            id={'journey-id'}
-            published={true}
+            id="journey-id"
+            published
             handleClose={handeClose}
           />
         </SnackbarProvider>
@@ -188,7 +188,7 @@ describe('ArchiveJourney', () => {
         <SnackbarProvider>
           <ArchiveJourney
             status={JourneyStatus.archived}
-            id={'journey-id'}
+            id="journey-id"
             published={false}
             handleClose={handeClose}
           />

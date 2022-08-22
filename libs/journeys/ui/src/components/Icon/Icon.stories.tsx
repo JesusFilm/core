@@ -41,7 +41,7 @@ const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
           alignItems="center"
         >
           <Icon {...args} iconName={variant as IconName} />
-          <Typography mt={1} variant={'caption'}>{`${variant}`}</Typography>
+          <Typography mt={1} variant="caption">{`${variant}`}</Typography>
         </Grid>
       ))}
     </Grid>

@@ -156,7 +156,7 @@ describe('CardBlock', () => {
     const { queryByText, getByTestId } = render(
       <Card
         {...{ ...block, children: [...block.children, imageBlock] }}
-        fullscreen={true}
+        fullscreen
         coverBlockId="imageBlockId"
       />
     )
