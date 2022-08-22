@@ -142,10 +142,10 @@ describe('DefaultMenu', () => {
             slug="template-slug"
             status={JourneyStatus.published}
             journeyId="template-id"
-            published={true}
+            published
             setOpenAccessDialog={noop}
             handleCloseMenu={noop}
-            template={true}
+            template
             setOpenTrashDialog={noop}
           />
         </SnackbarProvider>

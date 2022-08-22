@@ -64,7 +64,7 @@ describe('TemplateCard', () => {
     const { getByText, getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <TemplateCard journey={defaultTemplate} admin={true} />
+          <TemplateCard journey={defaultTemplate} admin />
         </SnackbarProvider>
       </MockedProvider>
     )

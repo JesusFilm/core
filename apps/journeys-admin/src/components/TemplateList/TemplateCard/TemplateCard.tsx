@@ -180,7 +180,7 @@ export function TemplateCard({
               status={journey.status}
               slug={journey.slug}
               published={journey.publishedAt != null}
-              template={true}
+              template
             />
           </CardActions>
         ) : (
