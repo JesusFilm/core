@@ -31,7 +31,6 @@ describe('NavigationDrawer', () => {
       getByTestId('ChevronLeftRoundedIcon')
     )
     expect(getByText('Discover')).toBeInTheDocument()
-    // expect(getByText('Templates')).toBeInTheDocument()
   })
 
   it('should show templates button', () => {
@@ -46,14 +45,14 @@ describe('NavigationDrawer', () => {
   })
 
   it('should hide templates button', () => {
-    const { getByText } = render(
+    const { queryByText } = render(
       <MockedProvider>
         <FlagsProvider flags={{ templates: false }}>
           <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByText('Templates')).not.toBeInTheDocument()
+    expect(queryByText('Templates')).not.toBeInTheDocument()
   })
 
   it('should select templates button', () => {
@@ -187,7 +186,7 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider>
+        <FlagsProvider flags={{ templates: true }}>
           <NavigationDrawer
             open={true}
             onClose={onClose}
@@ -206,6 +205,74 @@ describe('NavigationDrawer', () => {
     )
     await waitFor(() =>
       expect(getByTestId('ShopTwoRoundedIcon')).toBeInTheDocument()
+    )
+  })
+
+  it('should hide admin templates button', () => {
+    const { queryByText } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ templates: false }}>
+          <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(queryByText('Templates Admin')).not.toBeInTheDocument()
+  })
+
+  it('should select admin templates button', async () => {
+    const { getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ME
+            },
+            result: {
+              data: {
+                me: {
+                  id: 'userId',
+                  firstName: 'Amin',
+                  lastName: 'One',
+                  imageUrl: 'https://bit.ly/3Gth4Yf',
+                  email: 'amin@email.com'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: GET_USER_ROLE
+            },
+            result: {
+              data: {
+                getUserRole: {
+                  id: 'userId',
+                  roles: [Role.publisher]
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <FlagsProvider flags={{ templates: true }}>
+          <NavigationDrawer
+            open={true}
+            onClose={onClose}
+            title="Templates Admin"
+            authUser={
+              {
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as AuthUser
+            }
+          />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByTestId('ShopTwoRoundedIcon')).toHaveStyle(` color: '#fff'`)
     )
   })
 

@@ -220,31 +220,32 @@ export function NavigationDrawer({
             <Divider sx={{ m: 6, mt: 0, borderColor: 'secondary.main' }} />
 
             {userRoleData?.getUserRole?.roles?.includes(Role.publisher) ===
-              true && (
-              <Link href="/templates/admin" passHref>
-                <ListItemButton>
-                  <ListItemIcon
-                    sx={{
-                      color:
-                        title === 'Templates Admin'
-                          ? 'background.paper'
-                          : 'secondary.light'
-                    }}
-                  >
-                    <ShopTwoRoundedIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Templates Admin"
-                    sx={{
-                      color:
-                        title === 'Templates Admin'
-                          ? 'background.paper'
-                          : 'secondary.light'
-                    }}
-                  />
-                </ListItemButton>
-              </Link>
-            )}
+              true &&
+              templates && (
+                <Link href="/templates/admin" passHref>
+                  <ListItemButton>
+                    <ListItemIcon
+                      sx={{
+                        color:
+                          title === 'Templates Admin'
+                            ? 'background.paper'
+                            : 'secondary.light'
+                      }}
+                    >
+                      <ShopTwoRoundedIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Templates Admin"
+                      sx={{
+                        color:
+                          title === 'Templates Admin'
+                            ? 'background.paper'
+                            : 'secondary.light'
+                      }}
+                    />
+                  </ListItemButton>
+                </Link>
+              )}
 
             <ListItemButton onClick={handleProfileClick}>
               <ListItemIcon>
