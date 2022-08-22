@@ -20,8 +20,8 @@ import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/Block
 import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
 import { Properties } from './Properties'
 import { CardView } from './CardView'
-import { SlugDialog } from './Properties/SlugDialog'
-import { EmbedJourneyDialog } from './Properties/EmbedJourneyDialog'
+import { SlugDialog } from './Properties/JourneyURL/SlugDialog'
+import { EmbedJourneyDialog } from './Properties/JourneyURL/EmbedJourneyDialog'
 
 export function JourneyView(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
