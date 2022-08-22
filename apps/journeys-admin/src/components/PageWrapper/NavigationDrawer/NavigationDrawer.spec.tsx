@@ -29,7 +29,6 @@ describe('NavigationDrawer', () => {
       getByTestId('ChevronLeftRoundedIcon')
     )
     expect(getByText('Discover')).toBeInTheDocument()
-    // expect(getByText('Templates')).toBeInTheDocument()
   })
 
   it('should show templates button', () => {
@@ -44,14 +43,14 @@ describe('NavigationDrawer', () => {
   })
 
   it('should hide templates button', () => {
-    const { getByText } = render(
+    const { queryByText } = render(
       <MockedProvider>
         <FlagsProvider flags={{ templates: false }}>
           <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByText('Templates')).not.toBeInTheDocument()
+    expect(queryByText('Templates')).not.toBeInTheDocument()
   })
 
   it('should select templates button', () => {
