@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyDetails } from './JourneyDetails'
 import { AccessControl } from './AccessControl'
-import { JourneyURL } from './JourneyURL'
+import { JourneyLink } from './JourneyLink'
 
 export function Properties(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -42,7 +42,7 @@ export function Properties(): ReactElement {
             <AccessControl />
           </Box>
           <Box sx={{ px: 6 }}>
-            <JourneyURL />
+            <JourneyLink />
           </Box>
         </Stack>
       </Drawer>

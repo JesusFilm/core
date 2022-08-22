@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { SlugDialog } from './SlugDialog'
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 
-export function JourneyURL(): ReactElement {
+export function JourneyLink(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const [showSlugDialog, setShowSlugDialog] = useState(false)
@@ -24,10 +24,9 @@ export function JourneyURL(): ReactElement {
       <CopyTextField
         value={
           journey?.slug != null
-            ? `${
-                process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                'https://your.nextstep.is'
-              }/${journey.slug}`
+            ? `${process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+            'https://your.nextstep.is'
+            }/${journey.slug}`
             : undefined
         }
       />

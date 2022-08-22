@@ -20,8 +20,8 @@ import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/Block
 import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
 import { Properties } from './Properties'
 import { CardView } from './CardView'
-import { SlugDialog } from './Properties/JourneyURL/SlugDialog'
-import { EmbedJourneyDialog } from './Properties/JourneyURL/EmbedJourneyDialog'
+import { SlugDialog } from './Properties/JourneyLink/SlugDialog'
+import { EmbedJourneyDialog } from './Properties/JourneyLink/EmbedJourneyDialog'
 
 export function JourneyView(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -80,20 +80,19 @@ export function JourneyView(): ReactElement {
           <CopyTextField
             value={
               journey?.slug != null
-                ? `${
-                    process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                    'https://your.nextstep.is'
-                  }/${journey.slug}`
+                ? `${process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                'https://your.nextstep.is'
+                }/${journey.slug}`
                 : undefined
             }
             label={t('Journey URL')}
             sx={
               reports
                 ? {
-                    '.MuiFilledInput-root': {
-                      backgroundColor: 'background.paper'
-                    }
+                  '.MuiFilledInput-root': {
+                    backgroundColor: 'background.paper'
                   }
+                }
                 : undefined
             }
           />

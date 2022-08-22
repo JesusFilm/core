@@ -3,20 +3,20 @@ import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { SnackbarProvider } from 'notistack'
 import { defaultJourney } from '../../data'
-import { JourneyURL } from './JourneyURL'
+import { JourneyLink } from './JourneyLink'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-describe('Journey URL', () => {
+describe('JourneyLink', () => {
   it('should handle edit journey slug', async () => {
     const { getAllByRole, getByRole, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-            <JourneyURL />
+            <JourneyLink />
           </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -32,7 +32,7 @@ describe('Journey URL', () => {
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-            <JourneyURL />
+            <JourneyLink />
           </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
