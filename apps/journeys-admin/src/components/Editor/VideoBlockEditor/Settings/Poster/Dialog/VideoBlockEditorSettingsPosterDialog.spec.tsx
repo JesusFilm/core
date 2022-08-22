@@ -173,7 +173,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
               selectedBlock={null}
               parentBlockId={video.id}
               onClose={onClose}
-              open={true}
+              open
             />
           </JourneyProvider>
         </MockedProvider>
@@ -251,7 +251,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
               selectedBlock={existingImageBlock}
               parentBlockId={video.id}
               onClose={onClose}
-              open={true}
+              open
             />
           </JourneyProvider>
         </MockedProvider>
@@ -330,7 +330,7 @@ describe('VideoBlockEditorSettingsPosterDialog', () => {
               selectedBlock={image}
               parentBlockId={video.id}
               onClose={onClose}
-              open={true}
+              open
             />
           </JourneyProvider>
         </MockedProvider>

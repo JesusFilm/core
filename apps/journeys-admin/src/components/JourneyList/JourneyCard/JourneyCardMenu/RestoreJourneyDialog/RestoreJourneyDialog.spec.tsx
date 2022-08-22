@@ -37,9 +37,9 @@ describe('RestoreJourneyDialog', () => {
       >
         <SnackbarProvider>
           <RestoreJourneyDialog
-            id={'journey-id'}
-            published={true}
-            open={true}
+            id="journey-id"
+            published
+            open
             handleClose={handleClose}
           />
         </SnackbarProvider>
@@ -82,9 +82,9 @@ describe('RestoreJourneyDialog', () => {
       >
         <SnackbarProvider>
           <RestoreJourneyDialog
-            id={'journey-id'}
+            id="journey-id"
             published={false}
-            open={true}
+            open
             handleClose={handleClose}
           />
         </SnackbarProvider>
@@ -114,9 +114,9 @@ describe('RestoreJourneyDialog', () => {
       >
         <SnackbarProvider>
           <RestoreJourneyDialog
-            id={'journey-id'}
+            id="journey-id"
             published={false}
-            open={true}
+            open
             handleClose={noop}
           />
         </SnackbarProvider>

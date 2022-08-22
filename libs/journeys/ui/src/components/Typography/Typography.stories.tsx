@@ -97,15 +97,15 @@ const ColorTemplate: Story<TypographyStoryProps> = (props) => (
     }}
   >
     <StoryCard themeMode={ThemeMode.light} themeName={ThemeName.base}>
-      <TypographyColors {...props} variants={[null]} heading={'Default '} />
+      <TypographyColors {...props} variants={[null]} heading="Default " />
       <TypographyColors {...props} variants={props.variants} />
     </StoryCard>
     <StoryCard themeMode={ThemeMode.dark} themeName={ThemeName.base}>
-      <TypographyColors {...props} variants={[null]} heading={'Default'} />
+      <TypographyColors {...props} variants={[null]} heading="Default" />
       <TypographyColors
         {...props}
         variants={props.variants}
-        heading={'Override colors'}
+        heading="Override colors"
       />
     </StoryCard>
   </div>

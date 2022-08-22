@@ -17,7 +17,7 @@ export const Default: Story = () => {
         id="custom-id"
         icon={<PaletteIcon />}
         name="Style"
-        value={'Dark'}
+        value="Dark"
         description="Card Styling"
       />
     </EditorProvider>
@@ -31,7 +31,7 @@ export const Selected: Story = () => {
         id="custom-id"
         icon={<PaletteIcon />}
         name="Style"
-        value={'Dark'}
+        value="Dark"
         description="Card Styling"
       />
     </EditorProvider>

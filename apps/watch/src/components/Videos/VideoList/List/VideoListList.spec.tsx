@@ -9,7 +9,7 @@ describe('VideoListList', () => {
     const { getByText, getAllByTestId } = render(
       <VideoListList
         videos={[]}
-        loading={true}
+        loading
         onLoadMore={onLoadMore}
         isEnd={false}
       />

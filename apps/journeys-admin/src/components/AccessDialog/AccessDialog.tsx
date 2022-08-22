@@ -91,7 +91,7 @@ export function AccessDialog({
         title: 'Invite Other Editors',
         closeButton: true
       }}
-      divider={true}
+      divider
       fullscreen={!smUp}
     >
       <List sx={{ pt: 0 }}>

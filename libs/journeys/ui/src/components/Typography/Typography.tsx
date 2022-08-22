@@ -21,7 +21,7 @@ export function Typography({
       color={color ?? undefined}
       paragraph={variant === 'overline' || variant === 'caption'}
       gutterBottom
-      whiteSpace={'pre-line'}
+      whiteSpace="pre-line"
     >
       {editableContent ?? content}
     </MuiTypography>

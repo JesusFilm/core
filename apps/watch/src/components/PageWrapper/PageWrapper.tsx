@@ -102,7 +102,7 @@ export function PageWrapper(): React.ReactElement {
         </Toolbar>
       </AppBar>
       <SwipeableDrawer
-        anchor={'right'}
+        anchor="right"
         open={state.left}
         onClose={toggleDrawer('left', false)}
         onOpen={toggleDrawer('left', true)}
