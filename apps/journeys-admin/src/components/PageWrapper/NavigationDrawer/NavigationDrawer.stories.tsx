@@ -53,7 +53,9 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <FlagsProvider flags={{ reports: args.reports }}>
+      <FlagsProvider
+        flags={{ reports: args.reports, templates: args.templates }}
+      >
         <NavigationDrawer
           open={open}
           onClose={() => setOpen(!open)}
@@ -74,19 +76,15 @@ const Template: Story = ({ ...args }) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  reports: true,
+  reports: false,
+  templates: false,
   title: 'Active Journeys'
 }
 
-export const Reports = Template.bind({})
-Reports.args = {
+export const FlagsOn = Template.bind({})
+FlagsOn.args = {
   reports: true,
-  title: 'Reports'
-}
-
-export const ReportsOff = Template.bind({})
-ReportsOff.args = {
-  reports: false,
+  templates: true,
   title: 'Journeys'
 }
 

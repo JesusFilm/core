@@ -31,7 +31,44 @@ describe('NavigationDrawer', () => {
       getByTestId('ChevronLeftRoundedIcon')
     )
     expect(getByText('Discover')).toBeInTheDocument()
+    // expect(getByText('Templates')).toBeInTheDocument()
+  })
+
+  it('should show templates button', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ templates: true }}>
+          <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+        </FlagsProvider>
+      </MockedProvider>
+    )
     expect(getByText('Templates')).toBeInTheDocument()
+  })
+
+  it('should hide templates button', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ templates: false }}>
+          <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(getByText('Templates')).not.toBeInTheDocument()
+  })
+
+  it('should select templates button', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ templates: true }}>
+          <NavigationDrawer
+            open={true}
+            onClose={onClose}
+            title="Journey Templates"
+          />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(getByTestId('ShopRoundedIcon')).toHaveStyle(` color: '#fff'`)
   })
 
   it('should show reports button', () => {

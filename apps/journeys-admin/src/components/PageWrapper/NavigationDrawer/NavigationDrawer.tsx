@@ -110,7 +110,7 @@ export function NavigationDrawer({
     title === 'Journey Details' ||
     title === 'Journey Reports'
 
-  const { reports } = useFlags()
+  const { reports, templates } = useFlags()
 
   const profileOpen = Boolean(profileAnchorEl)
   const handleProfileClick = (event): void => {
@@ -168,29 +168,31 @@ export function NavigationDrawer({
           </ListItemButton>
         </Link>
 
-        <Link href="/templates" passHref>
-          <ListItemButton>
-            <ListItemIcon
-              sx={{
-                color:
-                  title === 'Journey Templates'
-                    ? 'background.paper'
-                    : 'secondary.light'
-              }}
-            >
-              <ShopRoundedIcon />
-            </ListItemIcon>
-            <ListItemText
-              primary="Templates"
-              sx={{
-                color:
-                  title === 'Journey Templates'
-                    ? 'background.paper'
-                    : 'secondary.light'
-              }}
-            />
-          </ListItemButton>
-        </Link>
+        {templates && (
+          <Link href="/templates" passHref>
+            <ListItemButton>
+              <ListItemIcon
+                sx={{
+                  color:
+                    title === 'Journey Templates'
+                      ? 'background.paper'
+                      : 'secondary.light'
+                }}
+              >
+                <ShopRoundedIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Templates"
+                sx={{
+                  color:
+                    title === 'Journey Templates'
+                      ? 'background.paper'
+                      : 'secondary.light'
+                }}
+              />
+            </ListItemButton>
+          </Link>
+        )}
 
         {reports && (
           <Link href="/reports" passHref>
