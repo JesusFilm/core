@@ -47,10 +47,10 @@
   "Journey URL": "Journey URL",
   "Edit URL": "Edit URL",
   "Embed Journey": "Embed Journey",
+  "Access Control": "Access Control",
   "Show Preview": "Show Preview",
   "By embedding a Journey to your site, you agree to the ": "By embedding a Journey to your site, you agree to the ",
   "Terms of agreement": "Terms of agreement",
-  "Properties": "Properties",
-  "Access Control": "Access Control",
-  "Field update failed. Reload the page or try again.": "Field update failed. Reload the page or try again."
+  "Field update failed. Reload the page or try again.": "Field update failed. Reload the page or try again.",
+  "Properties": "Properties"
 }

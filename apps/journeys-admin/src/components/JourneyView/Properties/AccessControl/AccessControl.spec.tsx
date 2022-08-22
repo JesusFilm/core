@@ -12,7 +12,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('AccessControl', () => {
   it('should display current access', () => {
-    const { getByText } = render(
+    const { getByText, getAllByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
@@ -22,5 +22,17 @@ describe('AccessControl', () => {
       </SnackbarProvider>
     )
     expect(getByText('Access Control')).toBeInTheDocument()
+    expect(
+      getAllByRole('img').map((element) => element.getAttribute('alt'))
+    ).toEqual([
+      // mobile
+      'Coral Three',
+      'Horace Two',
+      'Amin One',
+      // desktop
+      'Coral Three',
+      'Horace Two',
+      'Amin One'
+    ])
   })
 })

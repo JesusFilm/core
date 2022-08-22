@@ -10,7 +10,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-describe('JourneyView', () => {
+describe('Properties', () => {
   it('should render journey properties', async () => {
     const { getByText } = render(
       <SnackbarProvider>
