@@ -174,7 +174,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog journeyId="journeyId" open={true} onClose={noop} />
+          <AccessDialog journeyId="journeyId" open onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -195,7 +195,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog journeyId="journeyId" open={true} onClose={noop} />
+          <AccessDialog journeyId="journeyId" open onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -217,7 +217,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks} cache={cache}>
-          <AccessDialog journeyId="journeyId" open={true} onClose={noop} />
+          <AccessDialog journeyId="journeyId" open onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -240,7 +240,7 @@ describe('AccessDialog', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks}>
-          <AccessDialog journeyId="journeyId" open={true} onClose={noop} />
+          <AccessDialog journeyId="journeyId" open onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -327,7 +327,7 @@ describe('AccessDialog', () => {
             }
           ]}
         >
-          <AccessDialog journeyId="journeyId" open={true} onClose={noop} />
+          <AccessDialog journeyId="journeyId" open onClose={noop} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -345,7 +345,7 @@ describe('AccessDialog', () => {
         <MockedProvider mocks={mocks}>
           <AccessDialog
             journeyId="journeyId"
-            open={true}
+            open
             onClose={handleClose}
           />
         </MockedProvider>
@@ -375,7 +375,7 @@ describe('AccessDialog', () => {
       const { getByRole, getByText } = render(
         <SnackbarProvider>
           <MockedProvider mocks={mocks}>
-            <AccessDialog journeyId="journeyId" open={true} onClose={noop} />
+            <AccessDialog journeyId="journeyId" open onClose={noop} />
           </MockedProvider>
         </SnackbarProvider>
       )

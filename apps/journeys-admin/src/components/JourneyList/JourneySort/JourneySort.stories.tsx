@@ -9,7 +9,7 @@ const JourneySortMock = ({ ...args }): ReactElement => {
     <JourneySort
       sortOrder={sortOrder}
       onChange={setSortOrder}
-      open={true}
+      open
       {...args}
     />
   )
