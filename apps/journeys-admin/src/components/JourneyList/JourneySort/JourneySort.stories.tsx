@@ -6,12 +6,7 @@ import { JourneySort, SortOrder } from '.'
 const JourneySortMock = ({ ...args }): ReactElement => {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   return (
-    <JourneySort
-      sortOrder={sortOrder}
-      onChange={setSortOrder}
-      open
-      {...args}
-    />
+    <JourneySort sortOrder={sortOrder} onChange={setSortOrder} open {...args} />
   )
 }
 

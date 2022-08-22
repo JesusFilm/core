@@ -343,11 +343,7 @@ describe('AccessDialog', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks}>
-          <AccessDialog
-            journeyId="journeyId"
-            open
-            onClose={handleClose}
-          />
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
         </MockedProvider>
       </SnackbarProvider>
     )

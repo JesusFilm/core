@@ -130,11 +130,7 @@ describe('NavigationDrawer', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <FlagsProvider>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            title="Active Journeys"
-          />
+          <NavigationDrawer open onClose={onClose} title="Active Journeys" />
         </FlagsProvider>
       </MockedProvider>
     )

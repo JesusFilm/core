@@ -36,11 +36,7 @@ describe('TrashJourneyDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <TrashJourneyDialog
-            id="journey-id"
-            open
-            handleClose={handleClose}
-          />
+          <TrashJourneyDialog id="journey-id" open handleClose={handleClose} />
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -67,11 +63,7 @@ describe('TrashJourneyDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <TrashJourneyDialog
-            id="journey-id"
-            open
-            handleClose={noop}
-          />
+          <TrashJourneyDialog id="journey-id" open handleClose={noop} />
         </SnackbarProvider>
       </MockedProvider>
     )
