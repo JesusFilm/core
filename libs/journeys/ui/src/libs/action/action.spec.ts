@@ -65,14 +65,29 @@ describe('action', () => {
       expect(nextActiveBlock).toHaveBeenCalledWith()
     })
 
-    it('should handle LinkAction', () => {
+    it('should handle external LinkAction', () => {
+      window.open = jest.fn()
+
       handleAction(router, {
         __typename: 'LinkAction',
         parentBlockId: 'parent-id',
         gtmEventName: null,
         url: 'http://www.google.com'
       })
-      expect(router.push).toHaveBeenCalledWith('http://www.google.com')
+      expect(window.open).toHaveBeenCalledWith(
+        'http://www.google.com',
+        '_blank'
+      )
+    })
+
+    it('should handle internal LinkAction', () => {
+      handleAction(router, {
+        __typename: 'LinkAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        url: 'fact-or-fiction'
+      })
+      expect(router.push).toHaveBeenCalledWith('fact-or-fiction')
     })
   })
 })

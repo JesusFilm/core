@@ -17,10 +17,19 @@ export const GET_ADMIN_JOURNEYS_REPORT = gql`
     }
   }
 `
-export interface ReportProps {
-  reportType: JourneysReportType
-  journeyId?: string // this is required for singleFull and singleSummary reports
+interface MultipleReportProps {
+  reportType:
+    | JourneysReportType.multipleFull
+    | JourneysReportType.multipleSummary
+  journeyId?: undefined
 }
+
+interface SingleReportProps {
+  reportType: JourneysReportType.singleFull | JourneysReportType.singleSummary
+  journeyId: string
+}
+
+export type ReportProps = SingleReportProps | MultipleReportProps
 
 export function Report({ reportType, journeyId }: ReportProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()

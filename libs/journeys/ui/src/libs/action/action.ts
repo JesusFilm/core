@@ -20,7 +20,11 @@ export function handleAction(
       nextActiveBlock()
       break
     case 'LinkAction':
-      void router.push(action.url)
+      if (action.url.startsWith('http')) {
+        window.open(action.url, '_blank')
+      } else {
+        void router.push(action.url)
+      }
       break
   }
 }
