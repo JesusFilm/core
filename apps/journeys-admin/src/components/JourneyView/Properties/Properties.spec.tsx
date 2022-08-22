@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '../data'
@@ -10,9 +10,9 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-describe('JourneyView/Properties', () => {
-  it('should handle edit journey slug', async () => {
-    const { getAllByRole, getByRole, queryByRole } = render(
+describe('Properties', () => {
+  it('should render journey properties', async () => {
+    const { getByText } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
@@ -21,10 +21,7 @@ describe('JourneyView/Properties', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-
-    fireEvent.click(getAllByRole('button', { name: 'Edit URL' })[0])
-    expect(getByRole('dialog')).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Cancel' }))
-    await waitFor(() => expect(queryByRole('dialog')).not.toBeInTheDocument())
+    expect(getByText('Access Control')).toBeInTheDocument()
+    expect(getByText('Journey URL')).toBeInTheDocument()
   })
 })
