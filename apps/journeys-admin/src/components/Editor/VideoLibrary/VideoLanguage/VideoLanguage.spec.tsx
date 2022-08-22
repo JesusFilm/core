@@ -60,7 +60,7 @@ describe('VideoLanguage', () => {
   it('should call onClose when closed', () => {
     const { getByRole } = render(
       <VideoLanguage
-        open={true}
+        open
         onClose={handleClose}
         onChange={handleChange}
         language={{ id: '529', localName: undefined, nativeName: 'English' }}
@@ -75,7 +75,7 @@ describe('VideoLanguage', () => {
   it('should select language', () => {
     const { getByRole } = render(
       <VideoLanguage
-        open={true}
+        open
         onClose={handleClose}
         onChange={handleChange}
         language={{ id: '529', localName: undefined, nativeName: 'English' }}
@@ -98,7 +98,7 @@ describe('VideoLanguage', () => {
   it('should call onClose when Apply clicked', async () => {
     const { getByRole } = render(
       <VideoLanguage
-        open={true}
+        open
         onClose={handleClose}
         onChange={handleChange}
         language={{ id: '529', localName: undefined, nativeName: 'English' }}

@@ -90,9 +90,9 @@ export function Canvas(): ReactElement {
       }}
     >
       <Swiper
-        slidesPerView={'auto'}
+        slidesPerView="auto"
         spaceBetween={spaceBetween}
-        centeredSlides={true}
+        centeredSlides
         shortSwipes={false}
         slideToClickedSlide={steps != null}
         onSwiper={(swiper) => setSwiper(swiper)}

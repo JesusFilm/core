@@ -100,7 +100,7 @@ export function RadioQuestion({
 
   return (
     <StyledRadioQuestion data-testid={`radioQuestion-${blockId}`}>
-      <ButtonGroup orientation="vertical" variant="contained" fullWidth={true}>
+      <ButtonGroup orientation="vertical" variant="contained" fullWidth>
         {options}
         {addOption}
       </ButtonGroup>

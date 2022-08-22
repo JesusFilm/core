@@ -193,7 +193,7 @@ describe('CardList', () => {
         <CardList
           steps={steps}
           selected={selected}
-          showAddButton={true}
+          showAddButton
           handleClick={handleClick}
         />
       </MockedProvider>
@@ -206,7 +206,7 @@ describe('CardList', () => {
   it('should render without the drag handle', () => {
     const { queryByRole } = render(
       <MockedProvider>
-        <CardList steps={steps} selected={selected} showAddButton={true} />
+        <CardList steps={steps} selected={selected} showAddButton />
       </MockedProvider>
     )
     expect(queryByRole('DragHandleRoundedIcon')).not.toBeInTheDocument()
@@ -219,7 +219,7 @@ describe('CardList', () => {
           <CardList
             steps={steps}
             selected={selected}
-            showAddButton={true}
+            showAddButton
             droppableProvided={droppableProvided}
           />
         </DragDropContext>
