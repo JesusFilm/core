@@ -1,26 +1,20 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
-import EditIcon from '@mui/icons-material/Edit'
-import DeveloperModeRoundedIcon from '@mui/icons-material/DeveloperModeRounded'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyDetails } from './JourneyDetails'
-import { SlugDialog } from './SlugDialog'
-import { EmbedJourneyDialog } from './EmbedJourneyDialog'
+import { AccessControl } from './AccessControl'
+import { JourneyLink } from './JourneyLink'
 
 export function Properties(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const [showSlugDialog, setShowSlugDialog] = useState(false)
-  const [showEmbedDialog, setShowEmbedDialog] = useState(false)
 
   return (
     <>
@@ -45,48 +39,10 @@ export function Properties(): ReactElement {
             <JourneyDetails />
           </Box>
           <Box sx={{ px: 6 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              {t('Access Control')}
-            </Typography>
-            <AccessAvatars
-              journeyId={journey?.id}
-              userJourneys={journey?.userJourneys ?? undefined}
-              size="medium"
-              xsMax={5}
-            />
+            <AccessControl />
           </Box>
           <Box sx={{ px: 6 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              {t('Journey URL')}
-            </Typography>
-            <CopyTextField
-              value={
-                journey?.slug != null
-                  ? `${
-                      process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                      'https://your.nextstep.is'
-                    }/${journey.slug}`
-                  : undefined
-              }
-            />
-            <Stack direction="row" spacing={6} sx={{ pt: 2 }}>
-              <Button
-                onClick={() => setShowSlugDialog(true)}
-                size="small"
-                startIcon={<EditIcon />}
-                disabled={journey == null}
-              >
-                {t('Edit URL')}
-              </Button>
-              <Button
-                onClick={() => setShowEmbedDialog(true)}
-                size="small"
-                startIcon={<DeveloperModeRoundedIcon />}
-                disabled={journey == null}
-              >
-                {t('Embed Journey')}
-              </Button>
-            </Stack>
+            <JourneyLink />
           </Box>
         </Stack>
       </Drawer>
@@ -112,14 +68,6 @@ export function Properties(): ReactElement {
           <JourneyDetails />
         </Box>
       </Stack>
-      <SlugDialog
-        open={showSlugDialog}
-        onClose={() => setShowSlugDialog(false)}
-      />
-      <EmbedJourneyDialog
-        open={showEmbedDialog}
-        onClose={() => setShowEmbedDialog(false)}
-      />
     </>
   )
 }
