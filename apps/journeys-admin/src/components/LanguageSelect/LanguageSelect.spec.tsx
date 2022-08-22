@@ -108,7 +108,7 @@ describe('LanguageSelect', () => {
         onChange={jest.fn()}
         value={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}
-        loading={true}
+        loading
       />
     )
     expect(getByRole('progressbar')).toBeInTheDocument()

@@ -76,7 +76,7 @@ export function Dialog({
       open={open}
       fullScreen={fullscreen}
       maxWidth="sm"
-      fullWidth={true}
+      fullWidth
       onClose={handleClose}
     >
       {dialogTitle != null && (

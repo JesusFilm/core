@@ -67,12 +67,12 @@ export function Conditions(): ReactElement {
         Conditions
       </Typography>
       <ToggleOption
-        heading={'Lock the next step'}
-        description={'Prevent skipping of current card'}
+        heading="Lock the next step"
+        description="Prevent skipping of current card"
         checked={block.locked}
         handleChange={handleChange}
       >
-        <Box display={'flex'} alignItems={'center'} color={'text.secondary'}>
+        <Box display="flex" alignItems="center" color="text.secondary">
           <InfoOutlinedIcon sx={{ mr: 4 }} />
           <Typography variant="caption">
             User can&apos;t skip interaction on the current card, like watching

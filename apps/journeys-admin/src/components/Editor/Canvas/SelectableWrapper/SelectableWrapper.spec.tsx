@@ -140,7 +140,7 @@ describe('SelectableWrapper', () => {
             }}
           >
             <SelectableWrapper block={imageBlock}>
-              <Image {...imageBlock} alt={'imageAlt'} />
+              <Image {...imageBlock} alt="imageAlt" />
             </SelectableWrapper>
             {/* Video */}
             <SelectableWrapper block={typographyBlock}>

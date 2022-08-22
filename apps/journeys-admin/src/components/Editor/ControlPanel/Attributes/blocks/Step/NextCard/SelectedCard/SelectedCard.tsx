@@ -87,7 +87,7 @@ export function SelectedCard(): ReactElement {
     <Stack
       direction="row"
       justifyContent="space-between"
-      alignItems={'center'}
+      alignItems="center"
       sx={{ p: 4, pl: 6 }}
     >
       <Stack direction="row" spacing={4}>

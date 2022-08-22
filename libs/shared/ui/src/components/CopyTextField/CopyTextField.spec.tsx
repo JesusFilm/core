@@ -69,7 +69,7 @@ describe('CopyTextField', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <CopyTextField
-          value={'test'}
+          value="test"
           sx={{
             '.MuiFilledInput-root': {
               backgroundColor: 'rgb (255, 255, 255)'
