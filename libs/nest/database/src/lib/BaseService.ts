@@ -84,6 +84,14 @@ export abstract class BaseService {
     return result.old
   }
 
+  @KeyAsId()
+  async removeAll<T>(keys: string[]): Promise<T[]> {
+    const result = await this.collection.removeAll(keys, {
+      returnOld: true
+    })
+    return result.map((item) => item.old)
+  }
+
   async count(): Promise<number> {
     const result = await this.collection.count()
     return result.count

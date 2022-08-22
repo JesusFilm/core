@@ -405,6 +405,10 @@ enum JourneyStatus {
   trashed
 }
 
+input JourneyTemplateInput {
+  template: Boolean
+}
+
 input JourneyUpdateInput {
   description: String
   languageId: String
@@ -497,6 +501,9 @@ type Mutation {
 
   """Sets journey status to published"""
   journeyPublish(id: ID!): Journey @join__field(graph: JOURNEYS)
+
+  """Updates template"""
+  journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent! @join__field(graph: JOURNEYS)
 
@@ -530,6 +537,9 @@ type Mutation {
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyPromote(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyRemove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
+
+  """Removes all userJourneys associated with a journeyId"""
+  userJourneyRemoveAll(id: ID!): [UserJourney!]! @join__field(graph: JOURNEYS)
   userJourneyRequest(idType: IdType, journeyId: ID!): UserJourney! @join__field(graph: JOURNEYS)
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @join__field(graph: JOURNEYS)
   videoBlockUpdate(id: ID!, input: VideoBlockUpdateInput!, journeyId: ID!): VideoBlock! @join__field(graph: JOURNEYS)
@@ -597,7 +607,7 @@ type PowerBiEmbed {
 
 type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
-  adminJourneys(status: [JourneyStatus!]): [Journey!]! @join__field(graph: JOURNEYS)
+  adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)

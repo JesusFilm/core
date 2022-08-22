@@ -35,10 +35,13 @@ import {
   UserJourney,
   UserJourneyRole,
   JourneysFilter,
-  JourneysReportType
+  JourneyTemplateInput,
+  JourneysReportType,
+  Role
 } from '../../__generated__/graphql'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
+import { UserRoleService } from '../userRole/userRole.service'
 import { JourneyService } from './journey.service'
 
 const ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED = 1210
@@ -48,7 +51,8 @@ export class JourneyResolver {
   constructor(
     private readonly journeyService: JourneyService,
     private readonly blockService: BlockService,
-    private readonly userJourneyService: UserJourneyService
+    private readonly userJourneyService: UserJourneyService,
+    private readonly userRoleService: UserRoleService
   ) {}
 
   @Query()
@@ -99,9 +103,11 @@ export class JourneyResolver {
   @Query()
   async adminJourneys(
     @CurrentUserId() userId: string,
-    @Args('status') status: JourneyStatus[]
+    @Args('status') status: JourneyStatus[],
+    @Args('template') template?: boolean
   ): Promise<Journey[]> {
-    return await this.journeyService.getAllByOwnerEditor(userId, status)
+    const user = await this.userRoleService.getUserRoleById(userId)
+    return await this.journeyService.getAllByRole(user, status, template)
   }
 
   @Query()
@@ -115,16 +121,27 @@ export class JourneyResolver {
         ? await this.journeyService.getBySlug(id)
         : await this.journeyService.get(id)
     if (result == null) return null
-    const ujResult = await this.userJourneyService.forJourneyUser(
-      result.id,
-      userId
-    )
-    if (ujResult == null)
-      throw new ForbiddenError(
-        'User has not received an invitation to edit this journey.'
+    if (result.template !== true) {
+      const ujResult = await this.userJourneyService.forJourneyUser(
+        result.id,
+        userId
       )
-    if (ujResult.role === UserJourneyRole.inviteRequested)
-      throw new ForbiddenError('User invitation pending.')
+      if (ujResult == null)
+        throw new ForbiddenError(
+          'User has not received an invitation to edit this journey.'
+        )
+      if (ujResult.role === UserJourneyRole.inviteRequested)
+        throw new ForbiddenError('User invitation pending.')
+    } else {
+      if (result.status !== JourneyStatus.published) {
+        const urResult = await this.userRoleService.getUserRoleById(userId)
+        const isPublisher = urResult.roles?.includes(Role.publisher)
+        if (isPublisher !== true)
+          throw new ForbiddenError(
+            'You do not have access to unpublished templates'
+          )
+      }
+    }
 
     return result
   }
@@ -216,7 +233,16 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
+  @UseGuards(
+    RoleGuard('id', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      {
+        role: 'public',
+        attributes: { template: true, status: JourneyStatus.published }
+      }
+    ])
+  )
   async journeyDuplicate(
     @Args('id') id: string,
     @CurrentUserId() userId: string
@@ -293,7 +319,13 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', [UserJourneyRole.owner, UserJourneyRole.editor]))
+  @UseGuards(
+    RoleGuard('id', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeyUpdate(
     @Args('id') id: string,
     @Args('input') input: JourneyUpdateInput
@@ -315,7 +347,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('id', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('id', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeyPublish(@Args('id') id: string): Promise<Journey> {
     return await this.journeyService.update(id, {
       status: JourneyStatus.published,
@@ -324,7 +361,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('ids', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeysArchive(
     @CurrentUserId() userId: string,
     @Args('ids') ids: string[]
@@ -343,7 +385,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('ids', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeysDelete(
     @CurrentUserId() userId: string,
     @Args('ids') ids: string[]
@@ -361,7 +408,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('ids', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeysTrash(
     @CurrentUserId() userId: string,
     @Args('ids') ids: string[]
@@ -380,7 +432,12 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('ids', UserJourneyRole.owner))
+  @UseGuards(
+    RoleGuard('ids', [
+      UserJourneyRole.owner,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
+  )
   async journeysRestore(
     @CurrentUserId() userId: string,
     @Args('ids') ids: string[]
@@ -398,6 +455,15 @@ export class JourneyResolver {
     return (await this.journeyService.updateAll(
       results
     )) as unknown as Journey[]
+  }
+
+  @Mutation()
+  @UseGuards(RoleGuard('ids', { role: Role.publisher }))
+  async journeyTemplate(
+    @Args('id') id: string,
+    @Args('input') input: JourneyTemplateInput
+  ): Promise<Journey> {
+    return await this.journeyService.update(id, input)
   }
 
   @ResolveField()
