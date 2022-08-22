@@ -15,8 +15,8 @@ function TemplateDetails(): ReactElement {
   const AuthUser = useAuthUser()
   return (
     <>
-      <NextSeo title={'Template Details'} />
-      <PageWrapper title={'Template Details'} authUser={AuthUser}>
+      <NextSeo title="Template Details" />
+      <PageWrapper title="Template Details" authUser={AuthUser}>
         {/* Template Details */}
       </PageWrapper>
     </>

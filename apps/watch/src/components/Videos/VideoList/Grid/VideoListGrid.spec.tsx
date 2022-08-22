@@ -7,7 +7,7 @@ describe('VideoListGrid', () => {
   const onLoadMore = jest.fn()
   it('should display loading placeholders', async () => {
     const { getByText, getAllByTestId } = render(
-      <VideoListGrid videos={[]} loading={true} onLoadMore={onLoadMore} />
+      <VideoListGrid videos={[]} loading onLoadMore={onLoadMore} />
     )
     expect(getAllByTestId('video-list-grid-placeholder')).toHaveLength(8)
     expect(getByText('Loading...')).toBeInTheDocument()

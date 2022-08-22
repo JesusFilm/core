@@ -134,7 +134,7 @@ const ColorTokens = ({
               sx={{ display: 'flex', justifyContent: 'flex-end' }}
               variant="caption"
             >
-              {`error main`}
+              error main
             </Typography>
           </Box>
         </Box>
