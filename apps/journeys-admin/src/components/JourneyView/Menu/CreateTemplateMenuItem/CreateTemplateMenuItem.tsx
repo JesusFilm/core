@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import MoreVert from '@mui/icons-material/MoreVert'
+import ShopRounded from '@mui/icons-material/ShopRounded'
 import { useMutation, gql } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -120,7 +120,7 @@ export function CreateTemplateMenuItem(): ReactElement {
   return (
     <MenuItem onClick={handleCreateTemplate}>
       <ListItemIcon>
-        <MoreVert />
+        <ShopRounded />
       </ListItemIcon>
       <ListItemText>Create Template</ListItemText>
     </MenuItem>
