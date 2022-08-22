@@ -8,10 +8,19 @@ import { useRouter } from 'next/router'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CreateTemplate } from '../../../../../__generated__/CreateTemplate'
 import { DuplicateJourney } from '../../../../../__generated__/DuplicateJourney'
+import { RemoveUserJourney } from '../../../../../__generated__/RemoveUserJourney'
 
 export const DUPLICATE_JOURNEY = gql`
   mutation DuplicateJourney($id: ID!) {
     journeyDuplicate(id: $id) {
+      id
+    }
+  }
+`
+
+export const REMOVE_USER_JOURNEY = gql`
+  mutation RemoveUserJourney($id: ID!) {
+    userJourneyRemoveAll(id: $id) {
       id
     }
   }
@@ -31,6 +40,8 @@ export function CreateTemplateMenuItem(): ReactElement {
   const router = useRouter()
 
   const [duplicateJourney] = useMutation<DuplicateJourney>(DUPLICATE_JOURNEY)
+  const [removeUserJourney] =
+    useMutation<RemoveUserJourney>(REMOVE_USER_JOURNEY)
   const [createTemplate] = useMutation<CreateTemplate>(CREATE_TEMPLATE)
 
   const handleCreateTemplate = async (): Promise<void> => {
@@ -91,8 +102,14 @@ export function CreateTemplateMenuItem(): ReactElement {
       })
 
       if (templateData?.journeyTemplate != null) {
+        await removeUserJourney({
+          variables: {
+            id: templateData?.journeyTemplate.id
+          }
+        })
+
         void router.push(
-          `/journeys/templates/${templateData.journeyTemplate.id}`,
+          `/templates/${templateData.journeyTemplate.id}`,
           undefined,
           { shallow: true }
         )

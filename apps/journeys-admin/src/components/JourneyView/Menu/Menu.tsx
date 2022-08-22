@@ -53,7 +53,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   const { journey } = useJourney()
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const { data } = useQuery<GetRole>(GET_ROLE)
-  const userRole = data?.getUserRole?.roles?.includes(Role.publisher)
+  const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
@@ -188,7 +188,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
                 </MenuItem>
               </NextLink>
             )}
-            {userRole === true && <CreateTemplateMenuItem />}
+            {isPublisher === true && <CreateTemplateMenuItem />}
             <Divider />
             <NextLink href={`/journeys/${journey.id}/edit`} passHref>
               <MenuItem>

@@ -6,6 +6,7 @@ import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJ
 import {
   CreateTemplateMenuItem,
   DUPLICATE_JOURNEY,
+  REMOVE_USER_JOURNEY,
   CREATE_TEMPLATE
 } from './CreateTemplateMenuItem'
 
@@ -16,7 +17,7 @@ jest.mock('next/router', () => ({
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-describe('Create Template', () => {
+describe('CreateTemplateMenuItem', () => {
   it('should create a template on menu card click', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
@@ -59,6 +60,21 @@ describe('Create Template', () => {
               }
             },
             result
+          },
+          {
+            request: {
+              query: REMOVE_USER_JOURNEY,
+              variables: {
+                id: 'templateId'
+              }
+            },
+            result: {
+              data: {
+                userJourneyRemoveAll: {
+                  id: 'journeyId'
+                }
+              }
+            }
           }
         ]}
       >
@@ -75,11 +91,9 @@ describe('Create Template', () => {
     fireEvent.click(getByRole('menuitem', { name: 'Create Template' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        '/journeys/templates/templateId',
-        undefined,
-        { shallow: true }
-      )
+      expect(push).toHaveBeenCalledWith('/templates/templateId', undefined, {
+        shallow: true
+      })
     })
   })
 })
