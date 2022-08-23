@@ -49,7 +49,8 @@ const journey: Journey = {
   primaryImageBlock: null,
   userJourneys: [],
   seoTitle: null,
-  seoDescription: null
+  seoDescription: null,
+  template: true
 }
 
 const image: ImageBlock = {

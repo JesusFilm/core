@@ -461,6 +461,7 @@ export interface JourneyFields {
   themeMode: ThemeMode;
   seoTitle: string | null;
   seoDescription: string | null;
+  template: boolean | null;
   blocks: JourneyFields_blocks[] | null;
   primaryImageBlock: JourneyFields_primaryImageBlock | null;
   userJourneys: JourneyFields_userJourneys[] | null;

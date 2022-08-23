@@ -80,7 +80,8 @@ describe('Card', () => {
       primaryImageBlock: null,
       userJourneys: [],
       seoTitle: null,
-      seoDescription: null
+      seoDescription: null,
+      template: true
     }
     it('shows background color from prop', () => {
       const { getByRole } = render(

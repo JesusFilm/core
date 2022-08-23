@@ -55,7 +55,8 @@ describe('Editor', () => {
     primaryImageBlock: null,
     userJourneys: [],
     seoTitle: null,
-    seoDescription: null
+    seoDescription: null,
+    template: false
   }
 
   it('should render the element', () => {
