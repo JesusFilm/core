@@ -17,6 +17,9 @@ export class UserRoleService extends BaseService {
         LIMIT 1
         RETURN user
     `)
-    return await response.next()
+
+    return response.hasNext
+      ? await response.next()
+      : await this.save({ userId })
   }
 }

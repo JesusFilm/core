@@ -13,7 +13,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useSnackbar } from 'notistack'
 import { useTranslation } from 'react-i18next'
-import { Dialog } from '../../../Dialog'
+import { Dialog } from '../../../../Dialog'
 import { EmbedCardPreview } from './EmbedCardPreview'
 
 interface EmbedJourneyDialogProps {

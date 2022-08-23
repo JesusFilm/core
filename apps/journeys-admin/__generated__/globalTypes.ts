@@ -98,6 +98,10 @@ export enum JourneysReportType {
   singleSummary = "singleSummary",
 }
 
+export enum Role {
+  publisher = "publisher",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",
@@ -208,6 +212,10 @@ export interface ImageBlockUpdateInput {
   alt?: string | null;
   parentBlockId?: string | null;
   src?: string | null;
+}
+
+export interface JourneyTemplateInput {
+  template?: boolean | null;
 }
 
 export interface JourneyUpdateInput {
