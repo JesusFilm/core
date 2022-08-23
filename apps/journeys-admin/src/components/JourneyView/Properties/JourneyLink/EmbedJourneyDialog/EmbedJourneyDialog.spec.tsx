@@ -65,6 +65,8 @@ describe('embedJourneyDialog', () => {
       fireEvent.click(getByRole('button', { name: 'Copy Code' }))
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(embedCode)
       await waitFor(() => expect(getByText('Code Copied')).toBeInTheDocument())
+
+      process.env = originalEnv
     })
   })
 })
