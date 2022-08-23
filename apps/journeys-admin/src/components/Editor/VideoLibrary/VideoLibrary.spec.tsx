@@ -18,7 +18,7 @@ describe('Video Library', () => {
     it('should render the Video Library on the right', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <VideoLibrary open={true} />
+          <VideoLibrary open />
         </MockedProvider>
       )
       expect(getByText('Video Library')).toBeInTheDocument()
@@ -31,7 +31,7 @@ describe('Video Library', () => {
       const onClose = jest.fn()
       const { getAllByRole, getByTestId } = render(
         <MockedProvider>
-          <VideoLibrary open={true} onClose={onClose} />
+          <VideoLibrary open onClose={onClose} />
         </MockedProvider>
       )
       expect(getAllByRole('button')[0]).toContainElement(
@@ -50,7 +50,7 @@ describe('Video Library', () => {
     it('should render the VideoLibrary from the bottom', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
-          <VideoLibrary open={true} />
+          <VideoLibrary open />
         </MockedProvider>
       )
       expect(getByText('Video Library')).toBeInTheDocument()
@@ -112,7 +112,7 @@ describe('Video Library', () => {
             }
           ]}
         >
-          <VideoLibrary open={true} />
+          <VideoLibrary open />
         </MockedProvider>
       )
       const textBox = getByRole('textbox')

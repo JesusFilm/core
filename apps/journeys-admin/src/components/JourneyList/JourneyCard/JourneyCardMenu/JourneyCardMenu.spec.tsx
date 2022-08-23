@@ -14,8 +14,8 @@ describe('JourneyCardMenu', () => {
             <JourneyCardMenu
               id="journeyId"
               status={JourneyStatus.published}
-              slug={'published-journey'}
-              published={true}
+              slug="published-journey"
+              published
             />
           </ThemeProvider>
         </SnackbarProvider>
@@ -48,7 +48,7 @@ describe('JourneyCardMenu', () => {
             <JourneyCardMenu
               id="journeyId"
               status={JourneyStatus.trashed}
-              slug={'trashed-journey'}
+              slug="trashed-journey"
               published={false}
             />
           </ThemeProvider>
@@ -81,7 +81,7 @@ describe('JourneyCardMenu', () => {
             <JourneyCardMenu
               id="journeyId"
               status={JourneyStatus.draft}
-              slug={'draft-journey'}
+              slug="draft-journey"
               published={false}
             />
           </ThemeProvider>
@@ -106,7 +106,7 @@ describe('JourneyCardMenu', () => {
             <JourneyCardMenu
               id="journeyId"
               status={JourneyStatus.draft}
-              slug={'draft-journey'}
+              slug="draft-journey"
               published={false}
             />
           </ThemeProvider>
@@ -131,7 +131,7 @@ describe('JourneyCardMenu', () => {
             <JourneyCardMenu
               id="journeyId"
               status={JourneyStatus.trashed}
-              slug={'trashed-journey'}
+              slug="trashed-journey"
               published={false}
             />
           </ThemeProvider>
@@ -154,9 +154,9 @@ describe('JourneyCardMenu', () => {
         <SnackbarProvider>
           <ThemeProvider>
             <JourneyCardMenu
-              id={'journeyId'}
+              id="journeyId"
               status={JourneyStatus.trashed}
-              slug={'trashed-journey'}
+              slug="trashed-journey"
               published={false}
             />
           </ThemeProvider>

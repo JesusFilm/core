@@ -42,7 +42,7 @@ export function VideoListList({
               ? `/${video.slug[0]?.value ?? ''}`
               : `/${routePrefix}/${video.slug[0]?.value ?? ''}`
           return (
-            <Link key={index} href={href} passHref={true}>
+            <Link key={index} href={href} passHref>
               <ListItem button component="a">
                 <ListItemText
                   primary={title}

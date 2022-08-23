@@ -65,7 +65,7 @@ describe('DefaultMenu', () => {
             slug="journey-slug"
             status={JourneyStatus.published}
             journeyId="journey-id"
-            published={true}
+            published
             setOpenAccessDialog={noop}
             handleCloseMenu={noop}
             setOpenTrashDialog={noop}

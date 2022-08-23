@@ -214,6 +214,10 @@ export interface ImageBlockUpdateInput {
   src?: string | null;
 }
 
+export interface JourneyTemplateInput {
+  template?: boolean | null;
+}
+
 export interface JourneyUpdateInput {
   description?: string | null;
   languageId?: string | null;

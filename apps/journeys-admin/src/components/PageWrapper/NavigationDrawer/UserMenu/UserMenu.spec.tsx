@@ -18,7 +18,7 @@ describe('UserMenu', () => {
             imageUrl: 'https://bit.ly/3Gth4Yf',
             email: 'amin@email.com'
           }}
-          profileOpen={true}
+          profileOpen
           profileAnchorEl={null}
           handleProfileClose={handleProfileClose}
           authUser={
@@ -49,7 +49,7 @@ describe('UserMenu', () => {
             imageUrl: 'https://bit.ly/3Gth4Yf',
             email: 'amin@email.com'
           }}
-          profileOpen={true}
+          profileOpen
           profileAnchorEl={null}
           handleProfileClose={handleProfileClose}
           authUser={

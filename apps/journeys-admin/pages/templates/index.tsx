@@ -61,17 +61,13 @@ const GET_PUBLISHED_TEMPLATES = gql`
 `
 
 function TemplateIndex(): ReactElement {
-  const AuthUser = useAuthUser()
+  const AuthUser = useAuthUser()""
   const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
 
   return (
     <>
-      <NextSeo title={'Journey Templates'} />
-      <PageWrapper
-        title={'Journey Templates'}
-        authUser={AuthUser}
-        backHref={'/'}
-      >
+      <NextSeo title="Journey Templates" />
+      <PageWrapper title="Journey Templates" authUser={AuthUser} backHref="/">
         <TemplateList journeys={data?.journeys} />
       </PageWrapper>
     </>

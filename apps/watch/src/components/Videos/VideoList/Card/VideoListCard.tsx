@@ -48,7 +48,7 @@ export function VideoListCard({
                 ? `/${video.slug[0]?.value ?? ''}`
                 : `/${routePrefix}/${video.slug[0]?.value ?? ''}`
             }`}
-            passHref={true}
+            passHref
           >
             <CardActionArea>
               <Box sx={{ position: 'relative', alignContent: 'end' }}>
@@ -87,7 +87,7 @@ export function VideoListCard({
           </Link>
         )}
       </Card>
-      <Link href={`/${video?.slug[0]?.value ?? ''}`} passHref={true}>
+      <Link href={`/${video?.slug[0]?.value ?? ''}`} passHref>
         <Typography
           variant="body1"
           sx={{

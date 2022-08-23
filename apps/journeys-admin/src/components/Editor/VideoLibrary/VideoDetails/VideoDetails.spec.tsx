@@ -67,7 +67,7 @@ describe('VideoDetails', () => {
       <MockedProvider mocks={mocks}>
         <VideoDetails
           id="2_Acts7302-0-0"
-          open={true}
+          open
           onClose={jest.fn()}
           onSelect={jest.fn()}
         />
@@ -98,7 +98,7 @@ describe('VideoDetails', () => {
       <MockedProvider>
         <VideoDetails
           id="2_Acts7302-0-0"
-          open={true}
+          open
           onClose={onClose}
           onSelect={jest.fn()}
         />
@@ -113,7 +113,7 @@ describe('VideoDetails', () => {
       <MockedProvider>
         <VideoDetails
           id="2_Acts7302-0-0"
-          open={true}
+          open
           onClose={jest.fn()}
           onSelect={jest.fn()}
         />
@@ -130,7 +130,7 @@ describe('VideoDetails', () => {
       <MockedProvider mocks={mocks}>
         <VideoDetails
           id="2_Acts7302-0-0"
-          open={true}
+          open
           onClose={onClose}
           onSelect={onSelect}
         />
