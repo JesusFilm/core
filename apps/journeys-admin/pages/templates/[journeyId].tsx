@@ -11,13 +11,13 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 
-function LibraryIndex(): ReactElement {
+function TemplateDetailsAdmin(): ReactElement {
   const AuthUser = useAuthUser()
   return (
     <>
-      <NextSeo title="Journey Templates" />
-      <PageWrapper title="Journey Templates" authUser={AuthUser}>
-        {/* Public Template List */}
+      <NextSeo title="Template Details" />
+      <PageWrapper title="Template Details" authUser={AuthUser}>
+        {/* Template Details for publishers */}
       </PageWrapper>
     </>
   )
@@ -49,4 +49,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(LibraryIndex)
+})(TemplateDetailsAdmin)
