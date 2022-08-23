@@ -21,16 +21,21 @@ function JourneyReportsPage(): ReactElement {
   const AuthUser = useAuthUser()
   const router = useRouter()
 
+  const journeyId = router.query.journeyId as string
+
   return (
     <>
       <NextSeo title={t('Journey Report')} />
       <PageWrapper
         title={t('Journey Report')}
         authUser={AuthUser}
-        backHref={`/journeys/${router.query.journeyId as string}`}
+        backHref={`/journeys/${journeyId}`}
       >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
-          <MemoizedDynamicReport reportType={JourneysReportType.singleFull} />
+          <MemoizedDynamicReport
+            reportType={JourneysReportType.singleFull}
+            journeyId={journeyId}
+          />
         </Box>
       </PageWrapper>
     </>
