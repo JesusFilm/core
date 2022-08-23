@@ -37,7 +37,7 @@ describe('NavigationDrawer', () => {
     const { getByText } = render(
       <MockedProvider>
         <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+          <NavigationDrawer open onClose={onClose} title="Journeys" />
         </FlagsProvider>
       </MockedProvider>
     )
@@ -48,7 +48,7 @@ describe('NavigationDrawer', () => {
     const { queryByText } = render(
       <MockedProvider>
         <FlagsProvider flags={{ templates: false }}>
-          <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+          <NavigationDrawer open onClose={onClose} title="Journeys" />
         </FlagsProvider>
       </MockedProvider>
     )
@@ -59,11 +59,7 @@ describe('NavigationDrawer', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer
-            open={true}
-            onClose={onClose}
-            title="Journey Templates"
-          />
+          <NavigationDrawer open onClose={onClose} title="Journey Templates" />
         </FlagsProvider>
       </MockedProvider>
     )
@@ -188,7 +184,7 @@ describe('NavigationDrawer', () => {
       >
         <FlagsProvider flags={{ templates: true }}>
           <NavigationDrawer
-            open={true}
+            open
             onClose={onClose}
             authUser={
               {
@@ -212,7 +208,7 @@ describe('NavigationDrawer', () => {
     const { queryByText } = render(
       <MockedProvider>
         <FlagsProvider flags={{ templates: false }}>
-          <NavigationDrawer open={true} onClose={onClose} title="Journeys" />
+          <NavigationDrawer open onClose={onClose} title="Journeys" />
         </FlagsProvider>
       </MockedProvider>
     )
@@ -256,7 +252,7 @@ describe('NavigationDrawer', () => {
       >
         <FlagsProvider flags={{ templates: true }}>
           <NavigationDrawer
-            open={true}
+            open
             onClose={onClose}
             title="Templates Admin"
             authUser={

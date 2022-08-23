@@ -51,9 +51,9 @@ function TemplateAdmin(): ReactElement {
 
   return (
     <>
-      <NextSeo title={'Templates Admin'} />
+      <NextSeo title="Templates Admin" />
       <PageWrapper
-        title={'Templates Admin'}
+        title="Templates Admin"
         authUser={AuthUser}
         menu={<JourneyListMenu router={router} onClick={handleClick} />}
       >

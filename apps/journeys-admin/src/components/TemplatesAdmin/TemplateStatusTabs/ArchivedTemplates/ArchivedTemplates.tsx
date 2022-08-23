@@ -175,7 +175,7 @@ export function ArchivedTemplates({
             <TemplateCard
               key={journey.id}
               journey={journey as Journey}
-              admin={true}
+              admin
               refetch={refetch}
             />
           ))}

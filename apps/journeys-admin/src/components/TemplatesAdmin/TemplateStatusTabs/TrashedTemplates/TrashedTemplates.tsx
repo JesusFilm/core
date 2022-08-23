@@ -187,7 +187,7 @@ export function TrashedTemplates({
               <TemplateCard
                 key={journey.id}
                 journey={journey}
-                admin={true}
+                admin
                 refetch={refetch}
               />
             ))}
