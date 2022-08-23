@@ -458,7 +458,7 @@ export class JourneyResolver {
   }
 
   @Mutation()
-  @UseGuards(RoleGuard('ids', { role: Role.publisher }))
+  @UseGuards(RoleGuard('id', { role: Role.publisher }))
   async journeyTemplate(
     @Args('id') id: string,
     @Args('input') input: JourneyTemplateInput
