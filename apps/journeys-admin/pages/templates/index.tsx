@@ -64,6 +64,8 @@ function TemplateIndex(): ReactElement {
   const AuthUser = useAuthUser()
   const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
 
+  console.log('Hello World')
+
   return (
     <>
       <NextSeo title="Journey Templates" />
