@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import Container from '@mui/material/Container'
 import { GetPublishedTemplates_journeys as Journey } from '../../../__generated__/GetPublishedTemplates'
-import { TemplateCard } from './TemplateCard'
+import { TemplateCard } from '../TemplateCard'
 
 interface TemplateListProps {
   journeys?: Journey[]
