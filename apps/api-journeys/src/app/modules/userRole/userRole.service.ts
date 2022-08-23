@@ -18,8 +18,6 @@ export class UserRoleService extends BaseService {
         RETURN user
     `)
 
-    console.log('response', response.hasNext)
-
     return response.hasNext
       ? await response.next()
       : await this.save({ userId })
