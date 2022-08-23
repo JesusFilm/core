@@ -17,7 +17,7 @@ function TemplateIndex(): ReactElement {
     <>
       <NextSeo title="Journey Templates" />
       <PageWrapper title="Journey Templates" authUser={AuthUser}>
-        {/* Template List */}
+        {/* Public Template List */}
       </PageWrapper>
     </>
   )

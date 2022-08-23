@@ -17,7 +17,7 @@ function TemplateDetails(): ReactElement {
     <>
       <NextSeo title="Template Details" />
       <PageWrapper title="Template Details" authUser={AuthUser}>
-        {/* Template Details */}
+        {/* Public Template Details */}
       </PageWrapper>
     </>
   )
