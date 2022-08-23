@@ -32,27 +32,26 @@ describe('embedJourneyDialog', () => {
   })
 
   describe('copies embed code', () => {
+    const originalEnv = process.env
     beforeEach(() => {
       Object.assign(navigator, {
         clipboard: {
           writeText: jest.fn()
         }
       })
+      process.env = {
+        ...originalEnv,
+        NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'
+      }
     })
 
     afterEach(() => {
       jest.resetAllMocks()
       Object.assign(navigator, { ...global.navigator })
+      process.env = originalEnv
     })
 
     it('should copy the embed code from the modal', async () => {
-      const originalEnv = process.env
-
-      process.env = {
-        ...originalEnv,
-        NEXT_PUBLIC_JOURNEYS_URL: 'http://localhost:4100'
-      }
-
       const embedCode = `<div style="position: relative; width: 100%; overflow: hidden; padding-top: 150%;" id="jfm-iframe-container"><iframe src="${
         process.env.NEXT_PUBLIC_JOURNEYS_URL as string
       }/embed/undefined" style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; width: 100%; height: 100%; border: none;" allowfullscreen /></div>`
@@ -65,8 +64,6 @@ describe('embedJourneyDialog', () => {
       fireEvent.click(getByRole('button', { name: 'Copy Code' }))
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(embedCode)
       await waitFor(() => expect(getByText('Code Copied')).toBeInTheDocument())
-
-      process.env = originalEnv
     })
   })
 })
