@@ -1,10 +1,12 @@
 import { render } from '@testing-library/react'
 import { defaultTemplate } from './TemplateListData'
-import { TemplateList } from '.'
+import { TemplateLibrary } from '.'
 
-describe('TemplateList', () => {
+describe('TemplateLibrary', () => {
   it('should render templates', () => {
-    const { getByText } = render(<TemplateList journeys={[defaultTemplate]} />)
+    const { getByText } = render(
+      <TemplateLibrary journeys={[defaultTemplate]} />
+    )
     expect(getByText('Default Template Heading')).toBeInTheDocument()
   })
 })

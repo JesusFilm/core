@@ -4,7 +4,7 @@ import { journeysAdminConfig } from '../../libs/storybook'
 import {
   defaultTemplate,
   descriptiveTemplate
-} from '../TemplateList/TemplateListData'
+} from '../TemplateLibrary/TemplateListData'
 import { TemplateCard } from '.'
 
 const TemplateCardStory = {

@@ -5,7 +5,7 @@ import {
   defaultTemplate,
   oldTemplate,
   descriptiveTemplate
-} from '../TemplateList/TemplateListData'
+} from '../TemplateLibrary/TemplateListData'
 import { GetPublishedTemplates_journeys as Journey } from '../../../__generated__/GetPublishedTemplates'
 import { TemplateCard } from '.'
 

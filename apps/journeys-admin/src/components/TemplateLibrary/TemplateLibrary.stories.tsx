@@ -5,16 +5,16 @@ import {
   publishedTemplate,
   descriptiveTemplate
 } from './TemplateListData'
-import { TemplateList } from '.'
+import { TemplateLibrary } from '.'
 
-const TemplateListStory = {
+const TemplateLibraryStory = {
   ...journeysAdminConfig,
-  component: TemplateList,
-  title: 'Journeys-Admin/TemplateList'
+  component: TemplateLibrary,
+  title: 'Journeys-Admin/TemplateLibrary'
 }
 
 const Template: Story = ({ ...args }) => (
-  <TemplateList journeys={args.templates} />
+  <TemplateLibrary journeys={args.templates} />
 )
 
 export const Default = Template.bind({})
@@ -27,4 +27,4 @@ Loading.args = {
   templates: null
 }
 
-export default TemplateListStory as Meta
+export default TemplateLibraryStory as Meta

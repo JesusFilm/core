@@ -11,7 +11,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
-import { TemplateList } from '../../src/components/TemplateList'
+import { TemplateLibrary } from '../../src/components/TemplateLibrary'
 import { GetPublishedTemplates } from '../../__generated__/GetPublishedTemplates'
 
 const GET_PUBLISHED_TEMPLATES = gql`
@@ -68,7 +68,7 @@ function TemplateIndex(): ReactElement {
     <>
       <NextSeo title="Journey Templates" />
       <PageWrapper title="Journey Templates" authUser={AuthUser} backHref="/">
-        <TemplateList journeys={data?.journeys} />
+        <TemplateLibrary journeys={data?.journeys} />
       </PageWrapper>
     </>
   )
