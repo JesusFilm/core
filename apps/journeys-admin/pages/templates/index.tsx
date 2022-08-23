@@ -61,7 +61,7 @@ const GET_PUBLISHED_TEMPLATES = gql`
 `
 
 function TemplateIndex(): ReactElement {
-  const AuthUser = useAuthUser()""
+  const AuthUser = useAuthUser()
   const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
 
   return (
