@@ -12,14 +12,6 @@ export class UserRoleResolver {
   @Query()
   @UseGuards(GqlAuthGuard)
   async getUserRole(@CurrentUserId() userId: string): Promise<UserRole> {
-    const user: UserRole = await this.userRoleService.getUserRoleById(userId)
-
-    if (user != null) {
-      return user
-    } else {
-      return await this.userRoleService.save({
-        userId
-      })
-    }
+    return await this.userRoleService.getUserRoleById(userId)
   }
 }

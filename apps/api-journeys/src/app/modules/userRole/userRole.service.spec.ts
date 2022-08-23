@@ -37,28 +37,34 @@ describe('userRoleService', () => {
     userId: 'userId',
     roles: [Role.publisher]
   }
+
   const userWithId = keyAsId(user)
 
   describe('getUserRoleById', () => {
-    beforeEach(() => {
+    it('should return a user role if exists', async () => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
         mockDbQueryResult(service.db, [user])
       )
-    })
-    it('should return a user', async () => {
       expect(await service.getUserRoleById('1')).toEqual(userWithId)
     })
-  })
 
-  describe('save', () => {
-    beforeEach(() => {
+    it('should return a newly created user role', async () => {
+      const user2 = {
+        _key: '2',
+        userId: 'userId2',
+        roles: []
+      }
+
+      ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
+        mockDbQueryResult(service.db, [])
+      )
       ;(
         service.collection as DeepMockProxy<DocumentCollection>
-      ).save.mockReturnValue(mockCollectionSaveResult(service.collection, user))
-    })
+      ).save.mockReturnValue(
+        mockCollectionSaveResult(service.collection, user2)
+      )
 
-    it('should save a user', async () => {
-      expect(await service.save(user)).toEqual(userWithId)
+      expect(await service.getUserRoleById('2')).toEqual(keyAsId(user2))
     })
   })
 })
