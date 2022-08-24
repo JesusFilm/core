@@ -127,6 +127,12 @@ export enum TypographyVariant {
   subtitle2 = "subtitle2",
 }
 
+export enum UserJourneyRole {
+  editor = "editor",
+  inviteRequested = "inviteRequested",
+  owner = "owner",
+}
+
 export interface ButtonClickEventCreateInput {
   blockId: string;
   id?: string | null;

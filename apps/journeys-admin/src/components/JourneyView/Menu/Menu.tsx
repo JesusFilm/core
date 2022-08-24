@@ -19,7 +19,11 @@ import NextLink from 'next/link'
 import { useSnackbar } from 'notistack'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
+import {
+  JourneyStatus,
+  Role,
+  UserJourneyRole
+} from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { GetRole } from '../../../../__generated__/GetRole'
 import { DescriptionDialog } from './DescriptionDialog'
@@ -40,6 +44,7 @@ export const GET_ROLE = gql`
   query GetRole {
     getUserRole {
       id
+      userId
       roles
     }
   }
@@ -54,6 +59,10 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
+  const isOwner =
+    journey?.userJourneys?.find(
+      (userJourney) => userJourney.user?.id === data?.getUserRole?.userId
+    )?.role === UserJourneyRole.owner
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
@@ -152,7 +161,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
               <ListItemText>Preview</ListItemText>
             </MenuItem>
             <MenuItem
-              disabled={journey.status === JourneyStatus.published}
+              disabled={journey.status === JourneyStatus.published && isOwner}
               onClick={handlePublish}
             >
               <ListItemIcon>

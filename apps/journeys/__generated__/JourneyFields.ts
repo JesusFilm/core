@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: JourneyFields
@@ -444,6 +444,7 @@ export interface JourneyFields_userJourneys_user {
 export interface JourneyFields_userJourneys {
   __typename: "UserJourney";
   id: string;
+  role: UserJourneyRole;
   user: JourneyFields_userJourneys_user | null;
 }
 
