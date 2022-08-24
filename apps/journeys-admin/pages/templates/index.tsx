@@ -15,9 +15,9 @@ function TemplateIndex(): ReactElement {
   const AuthUser = useAuthUser()
   return (
     <>
-      <NextSeo title="Journey Templates" />
-      <PageWrapper title="Journey Templates" authUser={AuthUser}>
-        {/* Template List */}
+      <NextSeo title="Templates Admin" />
+      <PageWrapper title="Templates Admin" authUser={AuthUser}>
+        {/* Template List for publishers */}
       </PageWrapper>
     </>
   )
