@@ -5,6 +5,8 @@ import Skeleton from '@mui/material/Skeleton'
 import IconButton from '@mui/material/IconButton'
 import CreateRoundedIcon from '@mui/icons-material/CreateRounded'
 import Box from '@mui/material/Box'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { Theme } from '@mui/material/styles'
 import { LanguageDialog } from '../../../Menu/LanguageDialog'
 
 interface TemplateLanguageProps {
@@ -16,6 +18,7 @@ export function TemplateLanguage({
 }: TemplateLanguageProps): ReactElement {
   const { journey } = useJourney()
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
     <>
@@ -24,7 +27,7 @@ export function TemplateLanguage({
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: smUp ? 'space-between' : 'center'
         }}
       >
         {journey != null ? (

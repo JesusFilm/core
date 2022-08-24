@@ -66,13 +66,15 @@ export function Properties({ isPublisher }: PropertiesProps): ReactElement {
         }}
         spacing={6}
       >
-        <Divider>
-          <AccessAvatars
-            journeyId={journey?.id}
-            userJourneys={journey?.userJourneys ?? undefined}
-            size="medium"
-          />
-        </Divider>
+        {journey?.template !== true && (
+          <Divider>
+            <AccessAvatars
+              journeyId={journey?.id}
+              userJourneys={journey?.userJourneys ?? undefined}
+              size="medium"
+            />
+          </Divider>
+        )}
         <Box sx={{ px: 6 }}>
           <JourneyDetails isPublisher={isPublisher} />
         </Box>

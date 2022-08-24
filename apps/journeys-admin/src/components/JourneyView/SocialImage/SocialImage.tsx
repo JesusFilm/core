@@ -1,9 +1,12 @@
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { Theme } from '@mui/material/styles'
 
 export function SocialImage(): ReactElement {
   const { journey } = useJourney()
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
     <>
@@ -16,9 +19,9 @@ export function SocialImage(): ReactElement {
             width: 213,
             height: 167,
             objectFit: 'cover',
-            borderRadius: 12
-            // marginRight: smUp ? 0 : 'auto',
-            // marginLeft: smUp ? 0 : 'auto'
+            borderRadius: 12,
+            marginRight: smUp ? 0 : 'auto',
+            marginLeft: smUp ? 0 : 'auto'
           }}
         />
       )}

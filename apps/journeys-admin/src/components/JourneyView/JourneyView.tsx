@@ -59,7 +59,7 @@ export function JourneyView(): ReactElement {
         }}
       >
         <SocialImage />
-        <Stack direction="column" spacing={2} sx={{ width: '100%' }}>
+        <Stack direction="column" spacing={6} sx={{ width: '100%' }}>
           {journey?.template === true && <DatePreview />}
           <TitleDescription isPublisher={isPublisher} />
         </Stack>
@@ -79,18 +79,20 @@ export function JourneyView(): ReactElement {
         </>
       )}
 
-      <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-        <Divider />
-        <Box
-          sx={{
-            p: 6,
-            backgroundColor: !reports ? 'background.paper' : undefined
-          }}
-        >
-          <JourneyLink />
+      {journey?.template !== true && (
+        <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+          <Divider />
+          <Box
+            sx={{
+              p: 6,
+              backgroundColor: !reports ? 'background.paper' : undefined
+            }}
+          >
+            <JourneyLink />
+          </Box>
+          <Divider />
         </Box>
-        <Divider />
-      </Box>
+      )}
 
       <>
         <CardView id={journey?.id} blocks={blocks} />
