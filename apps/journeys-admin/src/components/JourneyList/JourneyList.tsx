@@ -11,8 +11,8 @@ import { AuthUser } from 'next-firebase-auth'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { MultipleSummaryReport } from '../MultipleSummaryReport'
+import { StatusTabPanel } from '../StatusTabPanel'
 import { AddJourneyButton } from './AddJourneyButton'
-import { StatusTabPanel } from './StatusTabPanel'
 
 export interface JourneysListProps {
   journeys?: Journey[]

@@ -8,10 +8,10 @@ import {
   oldJourney,
   descriptiveJourney,
   publishedJourney
-} from '../journeyListData'
-import { ThemeProvider } from '../../ThemeProvider'
+} from '../JourneyList/journeyListData'
+import { ThemeProvider } from '../ThemeProvider'
+import { GET_ACTIVE_JOURNEYS } from '../JourneyList/ActiveJourneyList/ActiveJourneyList'
 import { StatusTabPanel } from './StatusTabPanel'
-import { GET_ACTIVE_JOURNEYS } from './ActiveStatusTab/ActiveStatusTab'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

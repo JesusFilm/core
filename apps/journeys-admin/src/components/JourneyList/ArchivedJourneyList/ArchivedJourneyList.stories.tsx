@@ -8,13 +8,13 @@ import {
   descriptiveJourney,
   publishedJourney
 } from '../../journeyListData'
-import { GET_ACTIVE_JOURNEYS } from './ActiveStatusTab'
-import { ActiveStatusTab } from '.'
+import { GET_ARCHIVED_JOURNEYS } from './ArchivedJourneyList'
+import { ArchivedJourneyList } from '.'
 
-const ActiveStatusTabStory = {
+const ArchivedJourneyListStory = {
   ...journeysAdminConfig,
-  component: ActiveStatusTab,
-  title: 'Journeys-Admin/JourneyList/StatusTabPanel/ActiveStatusTab',
+  component: ArchivedJourneyList,
+  title: 'Journeys-Admin/JourneyList/StatusTabPanel/ArchivedJourneyList',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -23,7 +23,7 @@ const ActiveStatusTabStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
-    <ActiveStatusTab {...args.props} />
+    <ArchivedJourneyList {...args.props} />
   </MockedProvider>
 )
 
@@ -36,7 +36,7 @@ Default.args = {
   mocks: [
     {
       request: {
-        query: GET_ACTIVE_JOURNEYS
+        query: GET_ARCHIVED_JOURNEYS
       },
       result: {
         data: {
@@ -61,7 +61,7 @@ NoJourneys.args = {
   mocks: [
     {
       request: {
-        query: GET_ACTIVE_JOURNEYS
+        query: GET_ARCHIVED_JOURNEYS
       },
       result: {
         data: {
@@ -81,11 +81,11 @@ Loading.args = {
   mocks: []
 }
 
-export const ArchiveAll = Template.bind({})
-ArchiveAll.args = {
+export const UnarchiveAll = Template.bind({})
+UnarchiveAll.args = {
   props: {
     onLoad: noop,
-    event: 'archiveAllActive'
+    event: 'restoreAllArchived'
   },
   mocks: []
 }
@@ -94,9 +94,9 @@ export const TrashAll = Template.bind({})
 TrashAll.args = {
   props: {
     onLoad: noop,
-    event: 'trashAllActive'
+    event: 'trashAllArchived'
   },
   mocks: []
 }
 
-export default ActiveStatusTabStory as Meta
+export default ArchivedJourneyListStory as Meta

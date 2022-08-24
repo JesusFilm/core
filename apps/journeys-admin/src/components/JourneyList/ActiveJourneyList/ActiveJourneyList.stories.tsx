@@ -1,20 +1,20 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import noop from 'lodash/noop'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   defaultJourney,
   oldJourney,
   descriptiveJourney,
   publishedJourney
-} from '../../journeyListData'
-import { GET_ARCHIVED_JOURNEYS } from './ArchivedStatusTab'
-import { ArchivedStatusTab } from '.'
+} from '../journeyListData'
+import { GET_ACTIVE_JOURNEYS } from './ActiveJourneyList'
+import { ActiveJourneyList } from '.'
 
-const ArchivedStatusTabStory = {
+const ActiveJourneyListStory = {
   ...journeysAdminConfig,
-  component: ArchivedStatusTab,
-  title: 'Journeys-Admin/JourneyList/StatusTabPanel/ArchivedStatusTab',
+  component: ActiveJourneyList,
+  title: 'Journeys-Admin/JourneyList/StatusTabPanel/ActiveJourneyList',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -23,7 +23,7 @@ const ArchivedStatusTabStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
-    <ArchivedStatusTab {...args.props} />
+    <ActiveJourneyList {...args.props} />
   </MockedProvider>
 )
 
@@ -36,7 +36,7 @@ Default.args = {
   mocks: [
     {
       request: {
-        query: GET_ARCHIVED_JOURNEYS
+        query: GET_ACTIVE_JOURNEYS
       },
       result: {
         data: {
@@ -61,7 +61,7 @@ NoJourneys.args = {
   mocks: [
     {
       request: {
-        query: GET_ARCHIVED_JOURNEYS
+        query: GET_ACTIVE_JOURNEYS
       },
       result: {
         data: {
@@ -81,11 +81,11 @@ Loading.args = {
   mocks: []
 }
 
-export const UnarchiveAll = Template.bind({})
-UnarchiveAll.args = {
+export const ArchiveAll = Template.bind({})
+ArchiveAll.args = {
   props: {
     onLoad: noop,
-    event: 'restoreAllArchived'
+    event: 'archiveAllActive'
   },
   mocks: []
 }
@@ -94,9 +94,9 @@ export const TrashAll = Template.bind({})
 TrashAll.args = {
   props: {
     onLoad: noop,
-    event: 'trashAllArchived'
+    event: 'trashAllActive'
   },
   mocks: []
 }
 
-export default ArchivedStatusTabStory as Meta
+export default ActiveJourneyListStory as Meta

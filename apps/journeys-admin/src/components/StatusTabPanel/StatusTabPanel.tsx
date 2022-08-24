@@ -9,7 +9,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { NextRouter } from 'next/router'
 import { AuthUser } from 'next-firebase-auth'
 import { JourneySort, SortOrder } from '../JourneySort'
-import { ActiveStatusTab } from './ActiveStatusTab'
+import { ActiveStatusTab } from '../ActiveStatusTab'
 import { ArchivedStatusTab } from './ArchivedStatusTab'
 import { TrashedStatusTab } from './TrashedStatusTab'
 

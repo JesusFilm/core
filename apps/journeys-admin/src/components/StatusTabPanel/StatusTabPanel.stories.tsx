@@ -1,14 +1,14 @@
 import { Story, Meta } from '@storybook/react'
 
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../libs/storybook'
 import {
   defaultJourney,
   oldJourney,
   descriptiveJourney,
   publishedJourney
-} from '../journeyListData'
-import { GET_ACTIVE_JOURNEYS } from './ActiveStatusTab/ActiveStatusTab'
+} from '../JourneyList/journeyListData'
+import { GET_ACTIVE_JOURNEYS } from '../JourneyList/ActiveJourneyList/ActiveJourneyList'
 import { StatusTabPanel } from '.'
 
 const StatusTabPanelStory = {

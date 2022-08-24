@@ -8,13 +8,13 @@ import {
   descriptiveJourney,
   publishedJourney
 } from '../../journeyListData'
-import { GET_TRASHED_JOURNEYS } from './TrashedStatusTab'
-import { TrashedStatusTab } from '.'
+import { GET_TRASHED_JOURNEYS } from './TrashedJourneyList'
+import { TrashedJourneyList } from '.'
 
-const TrashedStatusTabStory = {
+const TrashedJourneyListStory = {
   ...journeysAdminConfig,
-  component: TrashedStatusTab,
-  title: 'Journeys-Admin/JourneyList/StatusTabPanel/TrashedStatusTab',
+  component: TrashedJourneyList,
+  title: 'Journeys-Admin/JourneyList/StatusTabPanel/TrashedJourneyList',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -23,7 +23,7 @@ const TrashedStatusTabStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
-    <TrashedStatusTab {...args.props} />
+    <TrashedJourneyList {...args.props} />
   </MockedProvider>
 )
 
@@ -99,4 +99,4 @@ DeleteAll.args = {
   mocks: []
 }
 
-export default TrashedStatusTabStory as Meta
+export default TrashedJourneyListStory as Meta

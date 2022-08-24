@@ -3,19 +3,20 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
+
 import { defaultJourney, oldJourney } from '../../journeyListData'
 import { ThemeProvider } from '../../../ThemeProvider'
 import { SortOrder } from '../../JourneySort'
 import {
-  ActiveStatusTab,
-  ARCHIVE_ACTIVE_JOURNEYS,
-  GET_ACTIVE_JOURNEYS,
-  TRASH_ACTIVE_JOURNEYS
-} from './ActiveStatusTab'
+  ArchivedJourneyList,
+  GET_ARCHIVED_JOURNEYS,
+  RESTORE_ARCHIVED_JOURNEYS,
+  TRASH_ARCHIVED_JOURNEYS
+} from './ArchivedJourneyList'
 
-const activeJourneysMock = {
+const archivedJourneysMock = {
   request: {
-    query: GET_ACTIVE_JOURNEYS
+    query: GET_ARCHIVED_JOURNEYS
   },
   result: {
     data: {
@@ -26,7 +27,7 @@ const activeJourneysMock = {
 
 const noJourneysMock = {
   request: {
-    query: GET_ACTIVE_JOURNEYS
+    query: GET_ARCHIVED_JOURNEYS
   },
   result: {
     data: {
@@ -37,13 +38,13 @@ const noJourneysMock = {
 
 const authUser = { id: 'user-id1' } as unknown as AuthUser
 
-describe('ActiveStatusTab', () => {
+describe('ArchivedJourneyList', () => {
   it('should render journeys in descending createdAt date by default', async () => {
     const { getAllByLabelText } = render(
-      <MockedProvider mocks={[activeJourneysMock]}>
+      <MockedProvider mocks={[archivedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveStatusTab onLoad={noop} event="" />
+            <ArchivedJourneyList onLoad={noop} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -64,13 +65,12 @@ describe('ActiveStatusTab', () => {
       ...defaultJourney,
       title: 'a lower case title'
     }
-
     const { getAllByLabelText } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: GET_ACTIVE_JOURNEYS
+              query: GET_ARCHIVED_JOURNEYS
             },
             result: {
               data: {
@@ -82,7 +82,7 @@ describe('ActiveStatusTab', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveStatusTab
+            <ArchivedJourneyList
               onLoad={noop}
               sortOrder={SortOrder.TITLE}
               event=""
@@ -102,31 +102,12 @@ describe('ActiveStatusTab', () => {
     )
   })
 
-  it('should ask users to add a new journey', async () => {
-    const { getByRole, getByText } = render(
-      <MockedProvider mocks={[noJourneysMock]}>
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActiveStatusTab onLoad={noop} event="" />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getByText('No journeys to display.')).toBeInTheDocument()
-    )
-    expect(
-      getByText('Create a journey, then find it here.')
-    ).toBeInTheDocument()
-    expect(getByRole('button')).toBeInTheDocument()
-  })
-
   it('should render loading skeleton', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveStatusTab onLoad={noop} event="" />
+            <ArchivedJourneyList onLoad={noop} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -142,7 +123,7 @@ describe('ActiveStatusTab', () => {
       <MockedProvider mocks={[noJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveStatusTab onLoad={onLoad} event="" />
+            <ArchivedJourneyList onLoad={onLoad} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -150,27 +131,13 @@ describe('ActiveStatusTab', () => {
     await waitFor(() => expect(onLoad).toHaveBeenCalled())
   })
 
-  describe('Archive All', () => {
-    it('should display the archive all dialog', () => {
-      const { getByText } = render(
-        <MockedProvider mocks={[activeJourneysMock]}>
-          <ThemeProvider>
-            <SnackbarProvider>
-              <ActiveStatusTab onLoad={noop} event="archiveAllActive" />
-            </SnackbarProvider>
-          </ThemeProvider>
-        </MockedProvider>
-      )
-
-      expect(getByText('Archive Journeys')).toBeInTheDocument()
-    })
-
+  describe('Unarchive All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'archived' }]
+      data: [{ id: defaultJourney.id, status: 'published' }]
     }))
     const archiveJourneysMock = {
       request: {
-        query: ARCHIVE_ACTIVE_JOURNEYS,
+        query: RESTORE_ARCHIVED_JOURNEYS,
         variables: {
           ids: [defaultJourney.id, oldJourney.id]
         }
@@ -179,16 +146,30 @@ describe('ActiveStatusTab', () => {
     }
     const onLoad = jest.fn()
 
-    it('should archive all journeys', async () => {
+    it('should display the unarchive all dialog', () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[archivedJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ArchivedJourneyList onLoad={noop} event="restoreAllArchived" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      expect(getByText('Unarchive Journeys')).toBeInTheDocument()
+    })
+
+    it('should unarchive all journeys', async () => {
       const { getByText } = render(
         <MockedProvider
-          mocks={[activeJourneysMock, archiveJourneysMock, noJourneysMock]}
+          mocks={[archivedJourneysMock, archiveJourneysMock, noJourneysMock]}
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveStatusTab
+              <ArchivedJourneyList
                 onLoad={onLoad}
-                event="archiveAllActive"
+                event="restoreAllArchived"
                 authUser={authUser}
               />
             </SnackbarProvider>
@@ -196,7 +177,7 @@ describe('ActiveStatusTab', () => {
         </MockedProvider>
       )
       await waitFor(() => expect(onLoad).toHaveBeenCalled())
-      fireEvent.click(getByText('Archive'))
+      fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
@@ -204,16 +185,16 @@ describe('ActiveStatusTab', () => {
       const { getByText } = render(
         <MockedProvider
           mocks={[
-            activeJourneysMock,
+            archivedJourneysMock,
             { ...archiveJourneysMock, error: new Error('error') }
           ]}
         >
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ActiveStatusTab
+                <ArchivedJourneyList
                   onLoad={onLoad}
-                  event="archiveAllActive"
+                  event="restoreAllArchived"
                   authUser={authUser}
                 />
               </SnackbarProvider>
@@ -222,18 +203,18 @@ describe('ActiveStatusTab', () => {
         </MockedProvider>
       )
       await waitFor(() => expect(onLoad).toHaveBeenCalled())
-      fireEvent.click(getByText('Archive'))
+      fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
 
   describe('Trash All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'archived' }]
+      data: [{ id: defaultJourney.id, status: 'trashAllArchived' }]
     }))
     const trashJourneysMock = {
       request: {
-        query: TRASH_ACTIVE_JOURNEYS,
+        query: TRASH_ARCHIVED_JOURNEYS,
         variables: {
           ids: [defaultJourney.id, oldJourney.id]
         }
@@ -244,10 +225,10 @@ describe('ActiveStatusTab', () => {
 
     it('should display the trash all dialog', () => {
       const { getByText } = render(
-        <MockedProvider mocks={[activeJourneysMock]}>
+        <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveStatusTab onLoad={noop} event="trashAllActive" />
+              <ArchivedJourneyList onLoad={noop} event="trashAllArchived" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -259,13 +240,13 @@ describe('ActiveStatusTab', () => {
     it('should trash all journeys', async () => {
       const { getByText } = render(
         <MockedProvider
-          mocks={[activeJourneysMock, trashJourneysMock, noJourneysMock]}
+          mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveStatusTab
+              <ArchivedJourneyList
                 onLoad={onLoad}
-                event="trashAllActive"
+                event="trashAllArchived"
                 authUser={authUser}
               />
             </SnackbarProvider>
@@ -281,16 +262,16 @@ describe('ActiveStatusTab', () => {
       const { getByText } = render(
         <MockedProvider
           mocks={[
-            activeJourneysMock,
+            archivedJourneysMock,
             { ...trashJourneysMock, error: new Error('error') }
           ]}
         >
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ActiveStatusTab
+                <ArchivedJourneyList
                   onLoad={onLoad}
-                  event="trashAllActive"
+                  event="trashAllArchived"
                   authUser={authUser}
                 />
               </SnackbarProvider>
