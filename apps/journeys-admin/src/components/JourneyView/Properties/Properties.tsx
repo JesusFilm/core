@@ -8,11 +8,15 @@ import Typography from '@mui/material/Typography'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import { AccessAvatars } from '../../AccessAvatars'
+import { JourneyLink } from '../JourneyLink'
 import { JourneyDetails } from './JourneyDetails'
 import { AccessControl } from './AccessControl'
-import { JourneyLink } from './JourneyLink'
 
-export function Properties(): ReactElement {
+interface PropertiesProps {
+  isPublisher?: boolean
+}
+
+export function Properties({ isPublisher }: PropertiesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
@@ -31,19 +35,24 @@ export function Properties(): ReactElement {
       >
         <Toolbar>
           <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
-            {t('Properties')}
+            {journey?.template === true ? t('Details') : t('Properties')}
           </Typography>
         </Toolbar>
         <Stack sx={{ py: 6 }} spacing={6} divider={<Divider />}>
           <Box sx={{ px: 6 }}>
-            <JourneyDetails />
+            <JourneyDetails isPublisher={isPublisher} />
           </Box>
-          <Box sx={{ px: 6 }}>
-            <AccessControl />
-          </Box>
-          <Box sx={{ px: 6 }}>
-            <JourneyLink />
-          </Box>
+          {journey?.template !== true && (
+            <>
+              <Box sx={{ px: 6 }}>
+                <AccessControl />
+              </Box>
+              <Divider />
+              <Box sx={{ px: 6 }}>
+                <JourneyLink />
+              </Box>
+            </>
+          )}
         </Stack>
       </Drawer>
       <Stack
@@ -65,7 +74,7 @@ export function Properties(): ReactElement {
           />
         </Divider>
         <Box sx={{ px: 6 }}>
-          <JourneyDetails />
+          <JourneyDetails isPublisher={isPublisher} />
         </Box>
       </Stack>
     </>
