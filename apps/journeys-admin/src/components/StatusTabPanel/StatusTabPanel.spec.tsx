@@ -13,7 +13,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('StatusTabPanel', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
-  it('should render tab panels', async () => {
+  it('should render tab panels', () => {
     const { getByText } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -53,7 +53,7 @@ describe('StatusTabPanel', () => {
     expect(getByRole('tab', { name: 'Active' })).toBeDisabled()
   })
 
-  it('should not change tab if clicking a already selected tab', async () => {
+  it('should not change tab if clicking a already selected tab', () => {
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -118,7 +118,7 @@ describe('StatusTabPanel', () => {
       }
     } as unknown as NextRouter
 
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
@@ -139,6 +139,40 @@ describe('StatusTabPanel', () => {
       'aria-selected',
       'true'
     )
+  })
+
+  it('should switch tabs', () => {
+    const router = {
+      query: {
+        tab: 'archived'
+      },
+      push: jest.fn()
+    } as unknown as NextRouter
+
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <StatusTabPanel
+              activeList={<>Active List</>}
+              archivedList={<>Archived List</>}
+              trashedList={<>Trashed List</>}
+              activeTabLoaded
+              setActiveEvent={jest.fn()}
+              setSortOrder={jest.fn()}
+              router={router}
+            />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
     expect(getByText('Archived List')).toBeInTheDocument()
+    fireEvent.click(getByRole('tab', { name: 'Trash' }))
+    expect(getByRole('tab', { name: 'Trash' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+    expect(getByText('Trashed List')).toBeInTheDocument()
   })
 })
