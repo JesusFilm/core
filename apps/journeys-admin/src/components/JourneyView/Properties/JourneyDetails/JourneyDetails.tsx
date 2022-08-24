@@ -11,14 +11,17 @@ import EventRounded from '@mui/icons-material/EventRounded'
 import TranslateRounded from '@mui/icons-material/TranslateRounded'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { JourneyType } from '../../JourneyView'
 import { TemplateLanguage } from './TemplateLanguage'
 
 interface JourneyDetailsProps {
   isPublisher?: boolean
+  journeyType: JourneyType
 }
 
 export function JourneyDetails({
-  isPublisher
+  isPublisher,
+  journeyType
 }: JourneyDetailsProps): ReactElement {
   const { journey } = useJourney()
   const [localLanguage, setLocalLanguage] = useState<string | undefined>()
@@ -61,7 +64,7 @@ export function JourneyDetails({
   }, [journey])
   return (
     <>
-      {journey?.template === true ? (
+      {journeyType === 'Template' ? (
         <TemplateLanguage isPublisher={isPublisher} />
       ) : (
         <>

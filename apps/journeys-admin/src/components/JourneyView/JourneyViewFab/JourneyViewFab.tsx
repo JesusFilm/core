@@ -84,7 +84,7 @@ export function JourneyViewFab({
         </Fab>
       </NextLink>
 
-      {journey?.template === true && (
+      {journey?.template === true && isPublisher === true && (
         <NextLink
           href={journey != null ? `/templates/${journey.id}/edit` : ''}
           passHref

@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import Skeleton from '@mui/material/Skeleton'
 import { useRouter } from 'next/router'
 
 export function DatePreview(): ReactElement {
@@ -13,31 +14,35 @@ export function DatePreview(): ReactElement {
 
   return (
     <Stack direction="row" justifyContent="space-between">
-      {journey != null && (
-        <>
-          <Typography>
-            {/* what date should we be rendering */}
-            {intlFormat(parseISO(journey.createdAt), {
+      <>
+        <Typography>
+          {journey != null ? (
+            intlFormat(parseISO(journey.createdAt), {
               month: 'long',
               day: 'numeric',
               year: isThisYear(parseISO(journey.createdAt))
                 ? undefined
                 : 'numeric'
-            })}
-          </Typography>
-          <Button
-            startIcon={<VisibilityIcon />}
-            variant="outlined"
-            size="small"
-            color="secondary"
-            onClick={async () =>
-              await router.push(`/api/preview?slug=${journey.slug}`)
-            }
-          >
-            Preview
-          </Button>
-        </>
-      )}
+            })
+          ) : (
+            <Skeleton variant="text" width="100px" />
+          )}
+        </Typography>
+        <Button
+          startIcon={<VisibilityIcon />}
+          variant="outlined"
+          size="small"
+          color="secondary"
+          disabled={journey == null}
+          onClick={async () =>
+            await router.push(
+              journey != null ? `/api/preview?slug=${journey.slug}` : ''
+            )
+          }
+        >
+          Preview
+        </Button>
+      </>
     </Stack>
   )
 }

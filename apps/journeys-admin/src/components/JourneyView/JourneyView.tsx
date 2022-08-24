@@ -31,8 +31,12 @@ export const GET_USER_ROLE = gql`
     }
   }
 `
+export type JourneyType = 'Journey' | 'Template'
+interface JourneyViewProps {
+  journeyType: JourneyType
+}
 
-export function JourneyView(): ReactElement {
+export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
   const { journey } = useJourney()
   const { reports } = useFlags()
   const blocks =
@@ -58,13 +62,13 @@ export function JourneyView(): ReactElement {
           backgroundColor: 'background.paper'
         }}
       >
-        <SocialImage />
+        {journeyType === 'Template' && <SocialImage />}
         <Stack direction="column" spacing={6} sx={{ width: '100%' }}>
-          {journey?.template === true && <DatePreview />}
+          {journeyType === 'Template' && <DatePreview />}
           <TitleDescription isPublisher={isPublisher} />
         </Stack>
       </Stack>
-      <Properties isPublisher={isPublisher} />
+      <Properties isPublisher={isPublisher} journeyType={journeyType} />
 
       {reports && journey != null && (
         <>
@@ -80,7 +84,7 @@ export function JourneyView(): ReactElement {
         </>
       )}
 
-      {journey?.template !== true && (
+      {journey?.template !== true && journeyType === 'Journey' && (
         <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
           <Divider />
           <Box
