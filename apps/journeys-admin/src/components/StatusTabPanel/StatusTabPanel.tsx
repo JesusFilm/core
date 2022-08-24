@@ -111,8 +111,6 @@ export function StatusTabPanel({
         { shallow: true }
       )
     }
-
-    console.log('HERE')
   }
 
   return (
