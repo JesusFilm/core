@@ -16,6 +16,7 @@ export function DatePreview(): ReactElement {
       {journey != null && (
         <>
           <Typography>
+            {/* what date should we be rendering */}
             {intlFormat(parseISO(journey.createdAt), {
               month: 'long',
               day: 'numeric',

@@ -9,7 +9,7 @@ import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 const EmbedJourneyDialogStory = {
   ...journeysAdminConfig,
   component: EmbedJourneyDialog,
-  title: 'Journeys-Admin/JourneyView/Properties/EmbedJourneyDialog',
+  title: 'Journeys-Admin/JourneyView/JourneyLink/EmbedJourneyDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
