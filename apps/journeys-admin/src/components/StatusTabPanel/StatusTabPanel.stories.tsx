@@ -23,7 +23,14 @@ const StatusTabPanelStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
-    <StatusTabPanel event="" />
+    <StatusTabPanel
+      activeList={<>Active List</>}
+      archivedList={<>Archived List</>}
+      trashedList={<>Trashed List</>}
+      activeTabLoaded
+      setActiveEvent={jest.fn()}
+      setSortOrder={jest.fn()}
+    />
   </MockedProvider>
 )
 
