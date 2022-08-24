@@ -3,9 +3,9 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
-import { defaultJourney, oldJourney } from '../../journeyListData'
-import { ThemeProvider } from '../../../ThemeProvider'
-import { SortOrder } from '../../JourneySort'
+import { defaultJourney, oldJourney } from '../journeyListData'
+import { ThemeProvider } from '../../ThemeProvider'
+import { SortOrder } from '../JourneySort'
 import {
   TrashedJourneyList,
   GET_TRASHED_JOURNEYS,

@@ -9,11 +9,11 @@ import { AuthUser } from 'next-firebase-auth'
 import {
   GetTrashedJourneys,
   GetTrashedJourneys_journeys as TrashedJourney
-} from '../../../../../__generated__/GetTrashedJourneys'
-import { JourneyCard } from '../../JourneyCard'
-import { SortOrder } from '../../JourneySort'
-import { Dialog } from '../../../Dialog'
-import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
+} from '../../../../__generated__/GetTrashedJourneys'
+import { JourneyCard } from '../JourneyCard'
+import { SortOrder } from '../JourneySort'
+import { Dialog } from '../../Dialog'
+import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 
 export const GET_TRASHED_JOURNEYS = gql`
   query GetTrashedJourneys {

@@ -1,13 +1,13 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import noop from 'lodash/noop'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   defaultJourney,
   oldJourney,
   descriptiveJourney,
   publishedJourney
-} from '../../journeyListData'
+} from '../journeyListData'
 import { GET_ARCHIVED_JOURNEYS } from './ArchivedJourneyList'
 import { ArchivedJourneyList } from '.'
 

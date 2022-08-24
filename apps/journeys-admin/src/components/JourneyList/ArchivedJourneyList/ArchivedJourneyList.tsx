@@ -6,11 +6,11 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
-import { GetArchivedJourneys } from '../../../../../__generated__/GetArchivedJourneys'
-import { JourneyCard } from '../../JourneyCard'
-import { SortOrder } from '../../JourneySort'
-import { Dialog } from '../../../Dialog'
-import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
+import { GetArchivedJourneys } from '../../../../__generated__/GetArchivedJourneys'
+import { JourneyCard } from '../JourneyCard'
+import { SortOrder } from '../JourneySort'
+import { Dialog } from '../../Dialog'
+import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 
 export const GET_ARCHIVED_JOURNEYS = gql`
   query GetArchivedJourneys {
