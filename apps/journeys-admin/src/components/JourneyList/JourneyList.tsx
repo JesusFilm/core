@@ -76,11 +76,11 @@ export function JourneyList({
                 authUser={authUser}
               />
             }
-            router={router}
-            sortOrder={sortOrder}
-            setSortOrder={setSortOrder}
             activeTabLoaded={activeTabLoaded}
             setActiveEvent={setActiveEvent}
+            setSortOrder={setSortOrder}
+            sortOrder={sortOrder}
+            router={router}
           />
         )}
         {journeys != null &&

@@ -20,11 +20,11 @@ export interface StatusTabPanelProps {
   activeList: ReactElement
   archivedList: ReactElement
   trashedList: ReactElement
-  router?: NextRouter
-  sortOrder?: SortOrder
-  setSortOrder: Dispatch<SetStateAction<SortOrder | undefined>>
   activeTabLoaded: boolean
   setActiveEvent: (event: string) => void
+  setSortOrder: Dispatch<SetStateAction<SortOrder | undefined>>
+  sortOrder?: SortOrder
+  router?: NextRouter
 }
 
 interface StatusOptions {
@@ -111,6 +111,8 @@ export function StatusTabPanel({
         { shallow: true }
       )
     }
+
+    console.log('HERE')
   }
 
   return (

@@ -1,16 +1,9 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { NextRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
-import {
-  defaultJourney,
-  oldJourney,
-  descriptiveJourney,
-  publishedJourney
-} from '../JourneyList/journeyListData'
 import { ThemeProvider } from '../ThemeProvider'
-import { GET_ACTIVE_JOURNEYS } from '../JourneyList/ActiveJourneyList/ActiveJourneyList'
 import { StatusTabPanel } from './StatusTabPanel'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -20,37 +13,24 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('StatusTabPanel', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
-  it('should render journey cards', async () => {
-    const { getAllByLabelText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_ACTIVE_JOURNEYS
-            },
-            result: {
-              data: {
-                journeys: [
-                  defaultJourney,
-                  oldJourney,
-                  descriptiveJourney,
-                  publishedJourney
-                ]
-              }
-            }
-          }
-        ]}
-      >
+  it('should render tab panels', async () => {
+    const { getByText } = render(
+      <MockedProvider>
         <ThemeProvider>
           <SnackbarProvider>
-            <StatusTabPanel event="" />
+            <StatusTabPanel
+              activeList={<>Active List</>}
+              archivedList={<>Archived</>}
+              trashedList={<>Trashed</>}
+              activeTabLoaded
+              setActiveEvent={jest.fn()}
+              setSortOrder={jest.fn()}
+            />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
     )
-    await waitFor(() =>
-      expect(getAllByLabelText('journey-card')).toHaveLength(4)
-    )
+    expect(getByText('Active List')).toBeInTheDocument()
   })
 
   it('should disable tab when waiting for journeys to load', () => {
@@ -58,7 +38,14 @@ describe('StatusTabPanel', () => {
       <MockedProvider>
         <ThemeProvider>
           <SnackbarProvider>
-            <StatusTabPanel event="" />
+            <StatusTabPanel
+              activeList={<>Active List</>}
+              archivedList={<>Archived</>}
+              trashedList={<>Trashed</>}
+              activeTabLoaded={false}
+              setActiveEvent={jest.fn()}
+              setSortOrder={jest.fn()}
+            />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -68,23 +55,17 @@ describe('StatusTabPanel', () => {
 
   it('should not change tab if clicking a already selected tab', async () => {
     const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_ACTIVE_JOURNEYS
-            },
-            result: {
-              data: {
-                journeys: [defaultJourney]
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider>
         <ThemeProvider>
           <SnackbarProvider>
-            <StatusTabPanel event="" />
+            <StatusTabPanel
+              activeList={<>Active List</>}
+              archivedList={<>Archived</>}
+              trashedList={<>Trashed</>}
+              activeTabLoaded
+              setActiveEvent={jest.fn()}
+              setSortOrder={jest.fn()}
+            />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -108,23 +89,18 @@ describe('StatusTabPanel', () => {
     } as unknown as NextRouter
 
     const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_ACTIVE_JOURNEYS
-            },
-            result: {
-              data: {
-                journeys: [defaultJourney]
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider>
         <ThemeProvider>
           <SnackbarProvider>
-            <StatusTabPanel router={router} event="" />
+            <StatusTabPanel
+              router={router}
+              activeList={<>Active List</>}
+              archivedList={<>Archived</>}
+              trashedList={<>Trashed</>}
+              activeTabLoaded
+              setActiveEvent={jest.fn()}
+              setSortOrder={jest.fn()}
+            />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -138,35 +114,31 @@ describe('StatusTabPanel', () => {
   it('should set active tab based on url query params', () => {
     const router = {
       query: {
-        tab: 'active'
+        tab: 'archived'
       }
     } as unknown as NextRouter
 
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <SnackbarProvider>
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_ACTIVE_JOURNEYS
-              },
-              result: {
-                data: {
-                  journeys: [defaultJourney]
-                }
-              }
-            }
-          ]}
-        >
+        <MockedProvider>
           <ThemeProvider>
-            <StatusTabPanel router={router} event="" />
+            <StatusTabPanel
+              activeList={<>Active List</>}
+              archivedList={<>Archived List</>}
+              trashedList={<>Trashed List</>}
+              activeTabLoaded
+              setActiveEvent={jest.fn()}
+              setSortOrder={jest.fn()}
+              router={router}
+            />
           </ThemeProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('tab', { name: 'Active' })).toHaveAttribute(
+    expect(getByRole('tab', { name: 'Archived' })).toHaveAttribute(
       'aria-selected',
       'true'
     )
+    expect(getByText('Archived List')).toBeInTheDocument()
   })
 })
