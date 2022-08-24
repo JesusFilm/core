@@ -10,11 +10,7 @@ import { TitleDescription } from './TitleDescription'
 const TitleDescriptionStory = {
   ...simpleComponentConfig,
   component: TitleDescription,
-  title: 'Journeys-Admin/JourneyView/TitleDescription',
-  parameters: {
-    ...simpleComponentConfig.parameters,
-    layout: 'fullscreen'
-  }
+  title: 'Journeys-Admin/JourneyView/TitleDescription'
 }
 
 const Template: Story = ({ ...args }) => (
@@ -43,6 +39,11 @@ TemplateTitleDescription.args = {
     template: true
   },
   isPublisher: true
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  journey: undefined
 }
 
 export default TitleDescriptionStory as Meta
