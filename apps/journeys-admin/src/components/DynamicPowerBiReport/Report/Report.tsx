@@ -17,11 +17,21 @@ export const GET_ADMIN_JOURNEYS_REPORT = gql`
     }
   }
 `
-export interface ReportProps {
-  reportType: JourneysReportType
+interface MultipleReportProps {
+  reportType:
+    | JourneysReportType.multipleFull
+    | JourneysReportType.multipleSummary
+  journeyId?: undefined
 }
 
-export function Report({ reportType }: ReportProps): ReactElement {
+interface SingleReportProps {
+  reportType: JourneysReportType.singleFull | JourneysReportType.singleSummary
+  journeyId: string
+}
+
+export type ReportProps = SingleReportProps | MultipleReportProps
+
+export function Report({ reportType, journeyId }: ReportProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
@@ -43,6 +53,18 @@ export function Report({ reportType }: ReportProps): ReactElement {
     })
   }
 
+  const singleReportFilter: models.IBasicFilter = {
+    $schema: 'http://powerbi.com/product/schema#basic',
+    target: {
+      table: 'prod_journey_ns',
+      column: 'jrny_key'
+    },
+    filterType: models.FilterType.Basic,
+    operator: 'In',
+    values: journeyId != null ? [journeyId] : [],
+    requireSingleSelection: true
+  }
+
   const embedProps: EmbedProps = {
     embedConfig: {
       embedUrl: data?.adminJourneysReport?.embedUrl,
@@ -57,7 +79,12 @@ export function Report({ reportType }: ReportProps): ReactElement {
             visible: false
           }
         }
-      }
+      },
+      filters:
+        reportType === JourneysReportType.singleFull ||
+        reportType === JourneysReportType.singleSummary
+          ? [singleReportFilter]
+          : undefined
     },
     eventHandlers: new Map([
       ['rendered', onLoad],
