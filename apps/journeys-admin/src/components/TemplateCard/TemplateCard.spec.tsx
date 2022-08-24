@@ -57,7 +57,7 @@ describe('TemplateCard', () => {
 
   it('should link to template details', () => {
     const { getByRole } = render(<TemplateCard journey={defaultTemplate} />)
-    expect(getByRole('link')).toHaveAttribute('href', '/templates/template-id')
+    expect(getByRole('link')).toHaveAttribute('href', '/library/template-id')
   })
 
   it('should render in admin mode', () => {
@@ -70,5 +70,6 @@ describe('TemplateCard', () => {
     )
     expect(getByText('Draft')).toBeInTheDocument()
     expect(getByRole('button')).toBeInTheDocument()
+    expect(getByRole('link')).toHaveAttribute('href', '/templates/template-id')
   })
 })

@@ -102,7 +102,14 @@ export function TemplateCard({
         </CardMedia>
       )}
 
-      <Link href={journey != null ? `/templates/${journey.id}` : ''} passHref>
+      <Link
+        href={
+          journey != null
+            ? `/${admin === true ? 'templates' : 'library'}/${journey.id}`
+            : ''
+        }
+        passHref
+      >
         <CardActionArea sx={{ width: `calc(100% - ${contentWidth})` }}>
           <CardContent>
             {journey != null ? (
