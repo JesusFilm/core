@@ -11,14 +11,17 @@ import NextLink from 'next/link'
 import Divider from '@mui/material/Divider'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import Button from '@mui/material/Button'
+import DeveloperModeRoundedIcon from '@mui/icons-material/DeveloperModeRounded'
+import Stack from '@mui/material/Stack'
 import { useTranslation } from 'react-i18next'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
-import { DynamicPowerBiReport } from '../DynamicPowerBiReport'
+import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
 import { Properties } from './Properties'
 import { CardView } from './CardView'
-import { SlugDialog } from './Properties/SlugDialog'
+import { SlugDialog } from './Properties/JourneyLink/SlugDialog'
+import { EmbedJourneyDialog } from './Properties/JourneyLink/EmbedJourneyDialog'
 
 export function JourneyView(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -30,6 +33,7 @@ export function JourneyView(): ReactElement {
       : undefined
 
   const [showSlugDialog, setShowSlugDialog] = useState(false)
+  const [showEmbedDialog, setShowEmbedDialog] = useState(false)
 
   return (
     <Box sx={{ mr: { sm: '328px' }, mb: '80px' }}>
@@ -52,14 +56,15 @@ export function JourneyView(): ReactElement {
 
       <Properties />
 
-      {reports && (
+      {reports && journey != null && (
         <>
           <Box
             sx={{ height: '213px', pb: 6, mx: 6 }}
             data-testid="power-bi-report"
           >
-            <DynamicPowerBiReport
+            <MemoizedDynamicReport
               reportType={JourneysReportType.singleSummary}
+              journeyId={journey.id}
             />
           </Box>
         </>
@@ -93,7 +98,7 @@ export function JourneyView(): ReactElement {
                 : undefined
             }
           />
-          <Box sx={{ pt: 2 }}>
+          <Stack direction="row" spacing={6} sx={{ pt: 2 }}>
             <Button
               onClick={() => setShowSlugDialog(true)}
               size="small"
@@ -102,7 +107,15 @@ export function JourneyView(): ReactElement {
             >
               {t('Edit URL')}
             </Button>
-          </Box>
+            <Button
+              onClick={() => setShowEmbedDialog(true)}
+              size="small"
+              startIcon={<DeveloperModeRoundedIcon />}
+              disabled={journey == null}
+            >
+              {t('Embed Journey')}
+            </Button>
+          </Stack>
         </Box>
         <Divider />
       </Box>
@@ -133,6 +146,10 @@ export function JourneyView(): ReactElement {
       <SlugDialog
         open={showSlugDialog}
         onClose={() => setShowSlugDialog(false)}
+      />
+      <EmbedJourneyDialog
+        open={showEmbedDialog}
+        onClose={() => setShowEmbedDialog(false)}
       />
     </Box>
   )

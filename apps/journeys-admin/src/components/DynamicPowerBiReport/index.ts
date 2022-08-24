@@ -1,1 +1,1 @@
-export { DynamicPowerBiReport } from './DynamicPowerBiReport'
+export { MemoizedDynamicReport } from './DynamicPowerBiReport'

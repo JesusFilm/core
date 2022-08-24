@@ -355,7 +355,7 @@ describe('DeleteBlock', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <DeleteBlock variant={'button'} />
+          <DeleteBlock variant="button" />
         </MockedProvider>
       </SnackbarProvider>
     )

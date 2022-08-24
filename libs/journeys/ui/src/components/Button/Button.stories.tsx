@@ -95,8 +95,8 @@ const IconTemplate: Story<ButtonStoryProps> = ({ ...args }) => {
             id="id"
             key={i}
             label={`${variant} Icon`}
-            startIconId={'start'}
-            endIconId={'end'}
+            startIconId="start"
+            endIconId="end"
             // eslint-disable-next-line react/no-children-prop
             children={
               variant === 'Start'

@@ -12,6 +12,7 @@ import { NextCard } from './NextCard'
 export function Step({
   id,
   nextBlockId,
+  parentOrder,
   locked
 }: TreeBlock<StepBlock>): ReactElement {
   const {
@@ -19,10 +20,17 @@ export function Step({
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
-  const nextBlock = steps?.find(({ id }) => id === nextBlockId)
+
+  let nextStep: TreeBlock<StepBlock> | undefined
+  if (nextBlockId != null) {
+    nextStep = steps?.find((step) => nextBlockId === step.id)
+  } else if (parentOrder != null) {
+    nextStep = steps?.find((step) => parentOrder + 1 === step.parentOrder)
+  }
+
   const heading =
-    nextBlockId != null && nextBlock != null && steps != null
-      ? getStepHeading(nextBlockId, nextBlock.children, steps, t)
+    nextStep != null && steps != null
+      ? getStepHeading(nextStep.id, nextStep.children, steps, t)
       : 'None'
 
   return (

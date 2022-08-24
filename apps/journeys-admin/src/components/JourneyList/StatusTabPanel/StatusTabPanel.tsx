@@ -82,7 +82,6 @@ export function StatusTabPanel({
     newValue: number
   ): void => {
     if (newValue != null && router != null) {
-      // handle change can't be tested until more tabs are added
       setActiveTab(newValue)
       // ensure tab data is refreshed on change
       switch (newValue) {
@@ -102,25 +101,27 @@ export function StatusTabPanel({
       const tabParam =
         journeyStatusTabs.find((status) => status.tabIndex === newValue)
           ?.queryParam ?? journeyStatusTabs[0].queryParam
-      void router.push({
-        href: '/',
-        query: { tab: tabParam }
-      })
+      void router.push(
+        {
+          href: '/',
+          query: { tab: tabParam }
+        },
+        undefined,
+        { shallow: true }
+      )
     }
   }
 
   return (
     <>
       <>
-        {!smUp && (
-          <Box sx={{ my: 4, ml: 6 }}>
-            <JourneySort
-              sortOrder={sortOrder}
-              onChange={setSortOrder}
-              disabled={!tabsLoaded}
-            />
-          </Box>
-        )}
+        <Box sx={{ my: 4, ml: 6, display: smUp ? 'none' : 'block' }}>
+          <JourneySort
+            sortOrder={sortOrder}
+            onChange={setSortOrder}
+            disabled={!tabsLoaded}
+          />
+        </Box>
 
         <Card
           variant="outlined"
@@ -165,22 +166,21 @@ export function StatusTabPanel({
               disabled={!tabsLoaded}
             />
 
-            {smUp && (
-              <Box
-                sx={{
-                  mr: 6,
-                  ml: 'auto',
-                  mt: 3,
-                  mb: 2
-                }}
-              >
-                <JourneySort
-                  sortOrder={sortOrder}
-                  onChange={setSortOrder}
-                  disabled={!tabsLoaded}
-                />
-              </Box>
-            )}
+            <Box
+              sx={{
+                mr: 6,
+                ml: 'auto',
+                mt: 3,
+                mb: 2,
+                display: !smUp ? 'none' : 'block'
+              }}
+            >
+              <JourneySort
+                sortOrder={sortOrder}
+                onChange={setSortOrder}
+                disabled={!tabsLoaded}
+              />
+            </Box>
           </Tabs>
         </Card>
 

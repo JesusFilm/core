@@ -52,7 +52,7 @@ export function Icon({
   }
 
   return iconName === null ? (
-    <div data-testid={'None'} />
+    <div data-testid="None" />
   ) : (
     createElement(icons[iconName], {
       color: iconColor ?? undefined,

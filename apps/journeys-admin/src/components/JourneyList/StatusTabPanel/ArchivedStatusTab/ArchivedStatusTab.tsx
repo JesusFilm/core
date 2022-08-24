@@ -3,7 +3,6 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import Typography from '@mui/material/Typography'
-import { sortBy } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
@@ -11,6 +10,7 @@ import { GetArchivedJourneys } from '../../../../../__generated__/GetArchivedJou
 import { JourneyCard } from '../../JourneyCard'
 import { SortOrder } from '../../JourneySort'
 import { Dialog } from '../../../Dialog'
+import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
 
 export const GET_ARCHIVED_JOURNEYS = gql`
   query GetArchivedJourneys {
@@ -180,17 +180,12 @@ export function ArchivedStatusTab({
     }
   }, [event, refetch])
 
-  // orders of the first characters ascii value
   const sortedJourneys =
-    sortOrder === SortOrder.TITLE
-      ? sortBy(journeys, 'title')
-      : sortBy(journeys, ({ createdAt }) =>
-          new Date(createdAt).getTime()
-        ).reverse()
+    journeys != null ? sortJourneys(journeys, sortOrder) : undefined
 
   return (
     <>
-      {journeys != null ? (
+      {journeys != null && sortedJourneys != null ? (
         <>
           {sortedJourneys.map((journey) => (
             <JourneyCard key={journey.id} journey={journey} refetch={refetch} />

@@ -3,7 +3,9 @@ import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 import { BlockResolver } from '../../block/block.resolver'
 import { BlockService } from '../../block/block.service'
+import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
+import { UserRoleService } from '../../userRole/userRole.service'
 import { ActionResolver } from '../action.resolver'
 import { LinkActionResolver } from './linkAction.resolver'
 
@@ -47,6 +49,8 @@ describe('LinkActionResolver', () => {
         LinkActionResolver,
         ActionResolver,
         UserJourneyService,
+        UserRoleService,
+        JourneyService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()
