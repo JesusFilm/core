@@ -13,7 +13,6 @@ import i18nConfig from '../../next-i18next.config'
 
 function TemplateIndex(): ReactElement {
   const AuthUser = useAuthUser()
-
   return (
     <>
       <NextSeo title="Templates Admin" />
