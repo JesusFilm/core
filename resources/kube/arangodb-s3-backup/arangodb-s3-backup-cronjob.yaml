@@ -8,14 +8,15 @@ spec:
     spec:
       template:
         spec:
+          nodeSelector:
+            type: api
           containers:
             - name: arangodb-s3-backup
               image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-arangodb-s3-backup:latest
               imagePullPolicy: IfNotPresent
               command:
-                - arangobackup create --server.endpoint $DATABSE_URL --server.authentication true --server.database $DATABASE_DB --server.username $DATABASE_USER --server.password $DATABASE_PASS
-                - aws s3 cp . $S3_BUCKET
+                - ./backup.sh
               envFrom:
                 - secretRef:
                     name: doppler-arangodb-s3-backup-secret-prd
-          restartPolicy: OnFailure
+          restartPolicy: Never
