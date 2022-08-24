@@ -164,7 +164,7 @@ export function NavigationDrawer({
         </Link>
 
         {templates && (
-          <Link href="/templates" passHref>
+          <Link href="/library" passHref>
             <ListItemButton>
               <ListItemIcon
                 sx={{

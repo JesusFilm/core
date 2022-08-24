@@ -1,6 +1,5 @@
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -11,64 +10,15 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
-import { TemplateLibrary } from '../../src/components/TemplateLibrary'
-import { GetPublishedTemplates } from '../../__generated__/GetPublishedTemplates'
-
-const GET_PUBLISHED_TEMPLATES = gql`
-  query GetPublishedTemplates {
-    journeys(where: { template: true }) {
-      id
-      title
-      createdAt
-      publishedAt
-      description
-      slug
-      themeName
-      themeMode
-      status
-      seoTitle
-      seoDescription
-      template
-      userJourneys {
-        id
-        role
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
-      primaryImageBlock {
-        id
-        parentBlockId
-        parentOrder
-        src
-        alt
-        width
-        height
-        blurhash
-      }
-    }
-  }
-`
 
 function TemplateIndex(): ReactElement {
   const AuthUser = useAuthUser()
-  const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
 
   return (
     <>
-      <NextSeo title="Journey Templates" />
-      <PageWrapper title="Journey Templates" authUser={AuthUser} backHref="/">
-        <TemplateLibrary journeys={data?.journeys} />
+      <NextSeo title="Templates Admin" />
+      <PageWrapper title="Templates Admin" authUser={AuthUser} backHref="/">
+        {/* Template Admin List */}
       </PageWrapper>
     </>
   )
