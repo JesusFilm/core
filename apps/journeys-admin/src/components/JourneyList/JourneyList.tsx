@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -13,6 +13,10 @@ import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourn
 import { MultipleSummaryReport } from '../MultipleSummaryReport'
 import { StatusTabPanel } from '../StatusTabPanel'
 import { AddJourneyButton } from './AddJourneyButton'
+import { ActiveJourneyList } from './ActiveJourneyList'
+import { ArchivedJourneyList } from './ArchivedJourneyList'
+import { TrashedJourneyList } from './TrashedJourneyList'
+import { SortOrder } from './JourneySort'
 
 export interface JourneysListProps {
   journeys?: Journey[]
@@ -28,6 +32,17 @@ export function JourneyList({
   authUser
 }: JourneysListProps): ReactElement {
   const { reports } = useFlags()
+  const [sortOrder, setSortOrder] = useState<SortOrder>()
+  const [activeTabLoaded, setActiveTabLoaded] = useState(false)
+  const [activeEvent, setActiveEvent] = useState(event)
+
+  useEffect(() => {
+    setActiveEvent(event)
+  }, [event])
+
+  function activeTabOnLoad(): void {
+    setActiveTabLoaded(true)
+  }
 
   return (
     <>
@@ -36,7 +51,37 @@ export function JourneyList({
       )}
       <Container sx={{ px: { xs: 0, sm: 8 } }}>
         {(journeys == null || journeys.length > 0) && (
-          <StatusTabPanel router={router} event={event} authUser={authUser} />
+          <StatusTabPanel
+            activeList={
+              <ActiveJourneyList
+                onLoad={activeTabOnLoad}
+                sortOrder={sortOrder}
+                event={activeEvent}
+                authUser={authUser}
+              />
+            }
+            archivedList={
+              <ArchivedJourneyList
+                onLoad={activeTabOnLoad}
+                sortOrder={sortOrder}
+                event={activeEvent}
+                authUser={authUser}
+              />
+            }
+            trashedList={
+              <TrashedJourneyList
+                onLoad={activeTabOnLoad}
+                sortOrder={sortOrder}
+                event={activeEvent}
+                authUser={authUser}
+              />
+            }
+            router={router}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+            activeTabLoaded={activeTabLoaded}
+            setActiveEvent={setActiveEvent}
+          />
         )}
         {journeys != null &&
           (journeys.length > 0 ? (

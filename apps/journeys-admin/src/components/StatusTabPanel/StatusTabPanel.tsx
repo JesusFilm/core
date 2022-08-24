@@ -1,4 +1,11 @@
-import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  SyntheticEvent,
+  useEffect,
+  useState
+} from 'react'
 import Card from '@mui/material/Card'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { Theme } from '@mui/material/styles'
@@ -7,16 +14,17 @@ import Tabs from '@mui/material/Tabs'
 import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { NextRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
-import { JourneySort, SortOrder } from '../JourneySort'
-import { ActiveStatusTab } from '../ActiveStatusTab'
-import { ArchivedStatusTab } from './ArchivedStatusTab'
-import { TrashedStatusTab } from './TrashedStatusTab'
+import { JourneySort, SortOrder } from '../JourneyList/JourneySort'
 
 export interface StatusTabPanelProps {
+  activeList: ReactElement
+  archivedList: ReactElement
+  trashedList: ReactElement
   router?: NextRouter
-  event: string | undefined
-  authUser?: AuthUser | undefined
+  sortOrder?: SortOrder
+  setSortOrder: Dispatch<SetStateAction<SortOrder | undefined>>
+  activeTabLoaded: boolean
+  setActiveEvent: (event: string) => void
 }
 
 interface StatusOptions {
@@ -26,9 +34,14 @@ interface StatusOptions {
 }
 
 export function StatusTabPanel({
+  activeList,
+  archivedList,
+  trashedList,
   router,
-  event,
-  authUser
+  sortOrder,
+  setSortOrder,
+  activeTabLoaded,
+  setActiveEvent
 }: StatusTabPanelProps): ReactElement {
   const journeyStatusTabs: StatusOptions[] = [
     {
@@ -48,26 +61,14 @@ export function StatusTabPanel({
     }
   ]
 
-  const [sortOrder, setSortOrder] = useState<SortOrder>()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
   const [tabsLoaded, setTabsLoaded] = useState(false)
-  const [activeTabLoaded, setActiveTabLoaded] = useState(false)
-  const [activeEvent, setActiveEvent] = useState(event)
-
-  function activeTabOnLoad(): void {
-    setActiveTabLoaded(true)
-  }
 
   useEffect(() => {
     if (activeTabLoaded) {
       setTabsLoaded(true)
     }
   }, [activeTabLoaded])
-
-  useEffect(() => {
-    setActiveEvent(event)
-  }, [event])
 
   const tabIndex =
     router != null
@@ -190,12 +191,7 @@ export function StatusTabPanel({
             value={activeTab}
             index={journeyStatusTabs[0].tabIndex}
           >
-            <ActiveStatusTab
-              onLoad={activeTabOnLoad}
-              sortOrder={sortOrder}
-              event={activeEvent}
-              authUser={authUser}
-            />
+            {activeList}
           </TabPanel>
         )}
         {activeTab === 1 && (
@@ -204,12 +200,7 @@ export function StatusTabPanel({
             value={activeTab}
             index={journeyStatusTabs[1].tabIndex}
           >
-            <ArchivedStatusTab
-              onLoad={activeTabOnLoad}
-              sortOrder={sortOrder}
-              event={activeEvent}
-              authUser={authUser}
-            />
+            {archivedList}
           </TabPanel>
         )}
         {activeTab === 2 && (
@@ -218,12 +209,7 @@ export function StatusTabPanel({
             value={activeTab}
             index={journeyStatusTabs[2].tabIndex}
           >
-            <TrashedStatusTab
-              onLoad={activeTabOnLoad}
-              sortOrder={sortOrder}
-              event={activeEvent}
-              authUser={authUser}
-            />
+            {trashedList}
           </TabPanel>
         )}
       </>
