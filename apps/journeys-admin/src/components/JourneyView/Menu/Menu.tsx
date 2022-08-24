@@ -161,7 +161,10 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
               <ListItemText>Preview</ListItemText>
             </MenuItem>
             <MenuItem
-              disabled={journey.status === JourneyStatus.published && isOwner}
+              disabled={
+                (journey.status === JourneyStatus.published && isOwner) ||
+                (journey.template === true && isPublisher)
+              }
               onClick={handlePublish}
             >
               <ListItemIcon>

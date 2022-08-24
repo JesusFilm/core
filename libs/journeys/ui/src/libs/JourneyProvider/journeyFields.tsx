@@ -24,6 +24,7 @@ export const JOURNEY_FIELDS = gql`
     themeMode
     seoTitle
     seoDescription
+    template
     blocks {
       ...BlockFields
     }
