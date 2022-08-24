@@ -16,8 +16,8 @@ function TemplateEditPage(): ReactElement {
 
   return (
     <>
-      <NextSeo title="Template Details" />
-      <PageWrapper title="Template Details" authUser={AuthUser}>
+      <NextSeo title="Edit Template" />
+      <PageWrapper title="Edit Template" authUser={AuthUser}>
         {/* Edit templates */}
       </PageWrapper>
     </>
