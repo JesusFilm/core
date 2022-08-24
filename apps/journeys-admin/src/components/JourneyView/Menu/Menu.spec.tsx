@@ -4,7 +4,8 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { defaultJourney, publishedJourney } from '../data'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
+import { GET_ROLE } from './Menu'
 import { Menu, JOURNEY_PUBLISH } from '.'
 
 Object.assign(navigator, {
@@ -78,7 +79,7 @@ describe('JourneyView/Menu', () => {
     )
   })
 
-  it('should publish when clicked', async () => {
+  it('should publish journey when clicked', async () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider
@@ -120,12 +121,110 @@ describe('JourneyView/Menu', () => {
     expect(menu).not.toHaveAttribute('aria-expanded')
   })
 
+  it('should publish template if user is publisher', async () => {
+    const { getByRole, getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: JOURNEY_PUBLISH,
+                variables: {
+                  id: defaultJourney.id
+                }
+              },
+              result: {
+                data: {
+                  journeyPublish: {
+                    id: defaultJourney.id,
+                    __typename: 'Journey',
+                    status: JourneyStatus.published
+                  }
+                }
+              }
+            },
+            {
+              request: {
+                query: GET_ROLE
+              },
+              result: {
+                data: {
+                  getUserRole: {
+                    id: 'userRoleId',
+                    userId: '1',
+                    roles: [Role.publisher]
+                  }
+                }
+              }
+            }
+          ]}
+        >
+          <FlagsProvider>
+            <JourneyProvider
+              value={{
+                journey: { ...defaultJourney, template: true },
+                admin: true
+              }}
+            >
+              <Menu />
+            </JourneyProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const menu = getByRole('button')
+    fireEvent.click(menu)
+    fireEvent.click(getByRole('menuitem', { name: 'Publish' }))
+    await waitFor(() => {
+      expect(getByText('Journey Published')).toBeInTheDocument()
+    })
+    expect(menu).not.toHaveAttribute('aria-expanded')
+  })
+
   it('should not publish if journey is published', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <FlagsProvider>
             <JourneyProvider value={{ journey: publishedJourney, admin: true }}>
+              <Menu />
+            </JourneyProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('menuitem', { name: 'Publish' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
+  })
+
+  it('should not publish if user is not owner', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_ROLE
+              },
+              result: {
+                data: {
+                  getUserRole: {
+                    id: 'userRoleId',
+                    userId: '1',
+                    roles: []
+                  }
+                }
+              }
+            }
+          ]}
+        >
+          <FlagsProvider>
+            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
               <Menu />
             </JourneyProvider>
           </FlagsProvider>
