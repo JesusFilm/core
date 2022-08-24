@@ -17,8 +17,8 @@ function TemplateIndex(): ReactElement {
   return (
     <>
       <NextSeo title="Templates Admin" />
-      <PageWrapper title="Templates Admin" authUser={AuthUser} backHref="/">
-        {/* Template Admin List */}
+      <PageWrapper title="Templates Admin" authUser={AuthUser}>
+        {/* Template List for publishers */}
       </PageWrapper>
     </>
   )
