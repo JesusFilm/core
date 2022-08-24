@@ -62,8 +62,6 @@ export function JourneyViewFab({
     }
   }
 
-  // next link to redirect to /templates/journeyId/edit if its a template
-  // fix logic to support different pages
   return (
     <>
       <NextLink
@@ -85,6 +83,28 @@ export function JourneyViewFab({
           Edit
         </Fab>
       </NextLink>
+
+      {journey?.template === true && (
+        <NextLink
+          href={journey != null ? `/templates/${journey.id}/edit` : ''}
+          passHref
+        >
+          <Fab
+            variant="extended"
+            size="large"
+            sx={{
+              position: 'fixed',
+              bottom: 16,
+              right: { xs: 20, sm: 348 }
+            }}
+            color="primary"
+            disabled={journey == null}
+          >
+            <EditIcon sx={{ mr: 3 }} />
+            Edit
+          </Fab>
+        </NextLink>
+      )}
 
       {journey?.template === true && isPublisher !== true && (
         <Fab
