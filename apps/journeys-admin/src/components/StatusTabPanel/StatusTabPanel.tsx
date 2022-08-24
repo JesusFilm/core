@@ -37,11 +37,11 @@ export function StatusTabPanel({
   activeList,
   archivedList,
   trashedList,
-  router,
-  sortOrder,
-  setSortOrder,
   activeTabLoaded,
-  setActiveEvent
+  setActiveEvent,
+  setSortOrder,
+  sortOrder,
+  router
 }: StatusTabPanelProps): ReactElement {
   const journeyStatusTabs: StatusOptions[] = [
     {
