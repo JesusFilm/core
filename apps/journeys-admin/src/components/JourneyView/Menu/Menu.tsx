@@ -162,8 +162,8 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
             </MenuItem>
             <MenuItem
               disabled={
-                (journey.status === JourneyStatus.published && isOwner) ||
-                (journey.template === true && isPublisher)
+                journey.status === JourneyStatus.published &&
+                (isOwner || (journey.template === true && isPublisher))
               }
               onClick={handlePublish}
             >
