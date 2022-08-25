@@ -70,7 +70,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
       </Stack>
       <Properties isPublisher={isPublisher} journeyType={journeyType} />
 
-      {reports && journey != null && (
+      {reports && journey != null && journeyType === 'Journey' && (
         <>
           <Box
             sx={{ height: '213px', pb: 6, mx: 6 }}
@@ -101,7 +101,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
 
       <>
         <CardView id={journey?.id} blocks={blocks} />
-        <JourneyViewFab isPublisher={isPublisher} />
+        <JourneyViewFab isPublisher={isPublisher} journeyType={journeyType} />
       </>
 
       <SlugDialog

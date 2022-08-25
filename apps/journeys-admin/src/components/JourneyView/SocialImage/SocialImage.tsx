@@ -11,20 +11,22 @@ export function SocialImage(): ReactElement {
 
   return (
     <>
-      {journey?.primaryImageBlock?.src != null ? (
-        <Box
-          component="img"
-          src={journey.primaryImageBlock.src}
-          alt={journey.primaryImageBlock?.alt}
-          style={{
-            width: 213,
-            height: 167,
-            objectFit: 'cover',
-            borderRadius: 12,
-            marginRight: smUp ? 0 : 'auto',
-            marginLeft: smUp ? 0 : 'auto'
-          }}
-        />
+      {journey != null ? (
+        journey.primaryImageBlock?.src != null && (
+          <Box
+            component="img"
+            src={journey.primaryImageBlock.src}
+            alt={journey.primaryImageBlock?.alt}
+            style={{
+              width: 213,
+              height: 167,
+              objectFit: 'cover',
+              borderRadius: 12,
+              marginRight: smUp ? 0 : 'auto',
+              marginLeft: smUp ? 0 : 'auto'
+            }}
+          />
+        )
       ) : (
         <Skeleton
           variant="rectangular"

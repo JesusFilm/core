@@ -65,7 +65,7 @@ describe('JourneyViewFab', () => {
         <FlagsProvider>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, admin: true }}>
-              <JourneyViewFab />
+              <JourneyViewFab journeyType="Journey" />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>
@@ -106,7 +106,7 @@ describe('JourneyViewFab', () => {
         <SnackbarProvider>
           <FlagsProvider>
             <JourneyProvider value={{ journey }}>
-              <JourneyViewFab />
+              <JourneyViewFab journeyType="Template" />
             </JourneyProvider>
           </FlagsProvider>
         </SnackbarProvider>

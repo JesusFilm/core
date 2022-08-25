@@ -7,6 +7,7 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { ConvertTemplate } from '../../../../__generated__/ConvertTemplate'
+import { JourneyType } from '../JourneyView'
 
 export const CONVERT_TEMPLATE = gql`
   mutation ConvertTemplate($id: ID!) {
@@ -18,10 +19,12 @@ export const CONVERT_TEMPLATE = gql`
 
 interface JourneyViewFabProps {
   isPublisher?: boolean
+  journeyType: JourneyType
 }
 
 export function JourneyViewFab({
-  isPublisher
+  isPublisher,
+  journeyType
 }: JourneyViewFabProps): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
@@ -62,51 +65,18 @@ export function JourneyViewFab({
     }
   }
 
+  let editLink
+  if (journey != null) {
+    if (journeyType === 'Template' && isPublisher === true) {
+      editLink = `/templates/${journey.id}/edit`
+    } else {
+      editLink = `/journeys/${journey.id}/edit`
+    }
+  }
+
   return (
     <>
-      <NextLink
-        href={journey != null ? `/journeys/${journey.id}/edit` : ''}
-        passHref
-      >
-        <Fab
-          variant="extended"
-          size="large"
-          sx={{
-            position: 'fixed',
-            bottom: 16,
-            right: { xs: 20, sm: 348 }
-          }}
-          color="primary"
-          disabled={journey == null}
-        >
-          <EditIcon sx={{ mr: 3 }} />
-          Edit
-        </Fab>
-      </NextLink>
-
-      {journey?.template === true && isPublisher === true && (
-        <NextLink
-          href={journey != null ? `/templates/${journey.id}/edit` : ''}
-          passHref
-        >
-          <Fab
-            variant="extended"
-            size="large"
-            sx={{
-              position: 'fixed',
-              bottom: 16,
-              right: { xs: 20, sm: 348 }
-            }}
-            color="primary"
-            disabled={journey == null}
-          >
-            <EditIcon sx={{ mr: 3 }} />
-            Edit
-          </Fab>
-        </NextLink>
-      )}
-
-      {journey?.template === true && isPublisher !== true && (
+      {journeyType === 'Template' && isPublisher !== true ? (
         <Fab
           variant="extended"
           size="large"
@@ -122,6 +92,23 @@ export function JourneyViewFab({
           <CheckRoundedIcon sx={{ mr: 3 }} />
           Use Template
         </Fab>
+      ) : (
+        <NextLink href={editLink != null ? editLink : ''} passHref>
+          <Fab
+            variant="extended"
+            size="large"
+            sx={{
+              position: 'fixed',
+              bottom: 16,
+              right: { xs: 20, sm: 348 }
+            }}
+            color="primary"
+            disabled={journey == null}
+          >
+            <EditIcon sx={{ mr: 3 }} />
+            Edit
+          </Fab>
+        </NextLink>
       )}
     </>
   )
