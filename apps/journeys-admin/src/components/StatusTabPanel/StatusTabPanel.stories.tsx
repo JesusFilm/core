@@ -27,8 +27,8 @@ Default.args = {
   archivedList: <>Archived List</>,
   trashedList: <>Trashed List</>,
   activeTabLoaded: true,
-  setActiveEvent: { noop },
-  setSortOrder: { noop }
+  setActiveEvent: noop,
+  setSortOrder: noop
 }
 
 export default StatusTabPanelStory as Meta
