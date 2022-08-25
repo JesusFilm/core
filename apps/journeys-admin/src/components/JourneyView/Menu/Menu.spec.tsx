@@ -121,7 +121,8 @@ describe('JourneyView/Menu', () => {
     expect(menu).not.toHaveAttribute('aria-expanded')
   })
 
-  it('should publish template if user is publisher', async () => {
+  // TODO: Add when template list displayed
+  it.skip('should publish template if user is publisher', async () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider
@@ -177,7 +178,7 @@ describe('JourneyView/Menu', () => {
     fireEvent.click(menu)
     fireEvent.click(getByRole('menuitem', { name: 'Publish' }))
     await waitFor(() => {
-      expect(getByText('Journey Published')).toBeInTheDocument()
+      expect(getByText('Template Published')).toBeInTheDocument()
     })
     expect(menu).not.toHaveAttribute('aria-expanded')
   })

@@ -142,16 +142,12 @@ export function Menu(): ReactElement {
               'aria-labelledby': 'journey-actions'
             }}
           >
-            <NextLink
-              href={`/api/preview?slug=${journey.slug}`}
-              target="_blank"
-              rel="noopener"
-              passHref
-            >
+            <NextLink href={`/api/preview?slug=${journey.slug}`} passHref>
               <MenuItem
                 label="Preview"
                 icon={<VisibilityIcon />}
                 disabled={journey.status === JourneyStatus.draft}
+                openInNew
                 onClick={handleCloseMenu}
               />
             </NextLink>

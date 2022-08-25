@@ -36,16 +36,12 @@ export function Menu(): ReactElement {
   function BlockMenu(): ReactElement {
     return (
       <>
-        <NextLink
-          href={`/api/preview?slug=${journey?.slug ?? ''}`}
-          target="_blank"
-          rel="noopener"
-          passHref
-        >
+        <NextLink href={`/api/preview?slug=${journey?.slug ?? ''}`} passHref>
           <MenuItem
             label="Preview"
             icon={<VisibilityIcon />}
             disabled={journey?.status === JourneyStatus.draft}
+            openInNew
             onClick={handleCloseMenu}
           />
         </NextLink>
@@ -66,16 +62,12 @@ export function Menu(): ReactElement {
   function CardMenu(): ReactElement {
     return (
       <>
-        <NextLink
-          href={`/api/preview?slug=${journey?.slug ?? ''}`}
-          target="_blank"
-          rel="noopener"
-          passHref
-        >
+        <NextLink href={`/api/preview?slug=${journey?.slug ?? ''}`} passHref>
           <MenuItem
             label="Preview"
             icon={<VisibilityIcon />}
             disabled={journey?.status === JourneyStatus.draft}
+            openInNew
             onClick={handleCloseMenu}
           />
         </NextLink>

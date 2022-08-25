@@ -55,16 +55,12 @@ export function DefaultMenu({
           handleCloseMenu()
         }}
       />
-      <NextLink
-        href={`/api/preview?slug=${slug}`}
-        target="_blank"
-        rel="noopener"
-        passHref
-      >
+      <NextLink href={`/api/preview?slug=${slug}`} passHref>
         <MenuItem
           label="Preview"
           icon={<VisibilityIcon color="secondary" />}
           disabled={!published}
+          openInNew
         />
       </NextLink>
 
