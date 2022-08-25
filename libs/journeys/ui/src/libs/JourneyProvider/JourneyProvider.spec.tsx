@@ -51,6 +51,7 @@ const journey: Journey = {
   ] as TreeBlock[],
   primaryImageBlock: null,
   userJourneys: [],
+  template: null,
   seoTitle: null,
   seoDescription: null
 }
