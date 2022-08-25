@@ -52,7 +52,7 @@ export function JourneyView(): ReactElement {
       <TitleDescription isPublisher={isPublisher} />
       <Properties />
 
-      {reports && (
+      {reports && journey != null && (
         <>
           <Box
             sx={{ height: '213px', pb: 6, mx: 6 }}
@@ -60,6 +60,7 @@ export function JourneyView(): ReactElement {
           >
             <MemoizedDynamicReport
               reportType={JourneysReportType.singleSummary}
+              journeyId={journey.id}
             />
           </Box>
         </>

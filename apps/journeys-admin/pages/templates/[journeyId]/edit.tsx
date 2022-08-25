@@ -1,4 +1,3 @@
-import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import {
   AuthAction,
@@ -6,18 +5,20 @@ import {
   withAuthUser,
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
+import { NextSeo } from 'next-seo'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { PageWrapper } from '../../src/components/PageWrapper'
-import i18nConfig from '../../next-i18next.config'
+import { PageWrapper } from '../../../src/components/PageWrapper'
+import i18nConfig from '../../../next-i18next.config'
 
-function TemplateDetailsAdmin(): ReactElement {
+function TemplateEditPage(): ReactElement {
   const AuthUser = useAuthUser()
+
   return (
     <>
-      <NextSeo title="Template Details" />
-      <PageWrapper title="Template Details" authUser={AuthUser}>
-        {/* Template Details for publishers */}
+      <NextSeo title="Edit Template" />
+      <PageWrapper title="Edit Template" authUser={AuthUser}>
+        {/* Edit templates */}
       </PageWrapper>
     </>
   )
@@ -49,4 +50,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateDetailsAdmin)
+})(TemplateEditPage)
