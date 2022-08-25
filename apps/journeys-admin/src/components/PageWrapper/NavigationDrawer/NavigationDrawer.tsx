@@ -21,7 +21,6 @@ import { gql, useQuery } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
-import PersonRoundedIcon from '@mui/icons-material/PersonRounded'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
@@ -188,22 +187,12 @@ export function NavigationDrawer({
           <>
             <Divider sx={{ m: 6, mt: 0, borderColor: 'secondary.main' }} />
             <ListItemButton onClick={handleProfileClick}>
-              <ListItemIcon
-                sx={{
-                  color: 'secondary.light'
-                }}
-              >
-                {data.me.imageUrl != null ? (
-                  <Avatar
-                    alt={compact([data.me.firstName, data.me.lastName]).join(
-                      ' '
-                    )}
-                    src={data.me.imageUrl ?? undefined}
-                    sx={{ width: 24, height: 24 }}
-                  />
-                ) : (
-                  <PersonRoundedIcon />
-                )}
+              <ListItemIcon>
+                <Avatar
+                  alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
+                  src={data.me.imageUrl ?? undefined}
+                  sx={{ width: 24, height: 24 }}
+                />
               </ListItemIcon>
               <ListItemText
                 primary="Profile"
