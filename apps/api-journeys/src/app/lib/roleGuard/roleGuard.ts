@@ -91,7 +91,6 @@ export const RoleGuard = (
     }
 
     userRole(permission: Permission, userRole: UserRole): boolean {
-      // const roles = userRole.roles == null ? [] : userRole.roles
       return includes(userRole.roles, permission) ?? false
     }
 
