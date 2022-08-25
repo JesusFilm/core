@@ -49,8 +49,7 @@ const journey: Journey = {
   userJourneys: [],
   template: null,
   seoTitle: null,
-  seoDescription: null,
-  template: false
+  seoDescription: null
 }
 
 const Template: Story = ({ ...args }) => {

@@ -50,8 +50,7 @@ const journey: Journey = {
   userJourneys: [],
   template: null,
   seoTitle: null,
-  seoDescription: null,
-  template: true
+  seoDescription: null
 }
 
 const image: ImageBlock = {

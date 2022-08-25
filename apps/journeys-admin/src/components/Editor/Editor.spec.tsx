@@ -56,8 +56,7 @@ describe('Editor', () => {
     userJourneys: [],
     template: null,
     seoTitle: null,
-    seoDescription: null,
-    template: false
+    seoDescription: null
   }
 
   it('should render the element', () => {

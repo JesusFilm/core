@@ -50,8 +50,7 @@ const journey: Journey = {
   template: null,
   userJourneys: [],
   seoTitle: null,
-  seoDescription: null,
-  template: true
+  seoDescription: null
 }
 
 const video: TreeBlock<VideoBlock> = {

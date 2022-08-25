@@ -51,7 +51,6 @@ describe('JourneyView', () => {
     themeMode: ThemeMode.light,
     seoTitle: null,
     seoDescription: null,
-    template: true,
     primaryImageBlock: null,
     userJourneys: [],
     template: null

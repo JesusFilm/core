@@ -45,8 +45,7 @@ describe('NavigateToJourneyAction', () => {
     userJourneys: [],
     template: null,
     seoTitle: null,
-    seoDescription: null,
-    template: false
+    seoDescription: null
   }
 
   it('shows no journey selected by default', () => {

@@ -87,8 +87,7 @@ const journey: Journey = {
   template: null,
   userJourneys: [],
   seoTitle: null,
-  seoDescription: null,
-  template: false
+  seoDescription: null
 }
 
 const response = [{ ...image, parentOrder: 0 }]

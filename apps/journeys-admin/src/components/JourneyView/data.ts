@@ -39,7 +39,6 @@ export const defaultJourney: Journey = {
   template: null,
   seoTitle: null,
   seoDescription: null,
-  template: false,
   userJourneys: [
     {
       id: 'userJourneyId1',
