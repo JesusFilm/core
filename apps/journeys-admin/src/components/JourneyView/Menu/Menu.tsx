@@ -51,7 +51,7 @@ export const GET_ROLE = gql`
 export function Menu(): ReactElement {
   const { journey } = useJourney()
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
-  const { data, loading } = useQuery<GetRole>(GET_ROLE)
+  const { data } = useQuery<GetRole>(GET_ROLE)
   // getUserRole hasn't fetched yet by the time we set isPublisher in tests
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
   const isOwner =
