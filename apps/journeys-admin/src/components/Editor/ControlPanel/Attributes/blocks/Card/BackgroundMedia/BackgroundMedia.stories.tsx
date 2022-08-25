@@ -57,9 +57,9 @@ const journey: Journey = {
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
   userJourneys: [],
+  template: null,
   seoTitle: null,
-  seoDescription: null,
-  template: true
+  seoDescription: null
 }
 
 const card: TreeBlock<CardBlock> = {

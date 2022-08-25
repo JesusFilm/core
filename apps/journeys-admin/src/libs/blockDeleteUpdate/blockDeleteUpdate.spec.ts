@@ -84,10 +84,10 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
+  template: null,
   userJourneys: [],
   seoTitle: null,
-  seoDescription: null,
-  template: false
+  seoDescription: null
 }
 
 const response = [{ ...image, parentOrder: 0 }]

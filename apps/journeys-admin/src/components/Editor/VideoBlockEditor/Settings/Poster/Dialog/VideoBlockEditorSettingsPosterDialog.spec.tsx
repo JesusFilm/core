@@ -47,10 +47,10 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
+  template: null,
   userJourneys: [],
   seoTitle: null,
-  seoDescription: null,
-  template: true
+  seoDescription: null
 }
 
 const video: TreeBlock<VideoBlock> = {

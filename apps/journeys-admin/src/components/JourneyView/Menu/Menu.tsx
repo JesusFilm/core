@@ -40,6 +40,7 @@ export const GET_ROLE = gql`
   query GetRole {
     getUserRole {
       id
+      userId
       roles
     }
   }
