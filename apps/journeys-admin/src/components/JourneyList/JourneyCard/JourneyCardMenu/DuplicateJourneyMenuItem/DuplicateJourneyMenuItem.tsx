@@ -1,12 +1,9 @@
 import { ReactElement } from 'react'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
-import Typography from '@mui/material/Typography'
 import { gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { JourneyDuplicate } from '../../../../../../__generated__/JourneyDuplicate'
+import { MenuItem } from '../../../../MenuItem'
 
 interface DuplicateJourneyMenuItemProps {
   id?: string
@@ -64,17 +61,9 @@ export function DuplicateJourneyMenuItem({
 
   return (
     <MenuItem
+      label="Duplicate"
+      icon={<ContentCopyRounded color="secondary" />}
       onClick={handleDuplicateJourney}
-      sx={{ pl: 7, pr: 17, pt: 4, pb: 4 }}
-    >
-      <ListItemIcon>
-        <ContentCopyRounded color="secondary" />
-      </ListItemIcon>
-      <ListItemText>
-        <Typography variant="body1" sx={{ pl: 2 }}>
-          Duplicate
-        </Typography>
-      </ListItemText>
-    </MenuItem>
+    />
   )
 }

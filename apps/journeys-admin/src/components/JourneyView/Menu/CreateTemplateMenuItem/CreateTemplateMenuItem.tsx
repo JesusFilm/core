@@ -6,7 +6,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CreateTemplate } from '../../../../../__generated__/CreateTemplate'
 import { DuplicateJourney } from '../../../../../__generated__/DuplicateJourney'
 import { RemoveUserJourney } from '../../../../../__generated__/RemoveUserJourney'
-import { MenuItem } from '../MenuItem/MenuItem'
+import { MenuItem } from '../../../MenuItem'
 
 export const DUPLICATE_JOURNEY = gql`
   mutation DuplicateJourney($id: ID!) {

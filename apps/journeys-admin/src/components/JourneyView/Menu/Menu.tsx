@@ -23,11 +23,11 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { GetRole } from '../../../../__generated__/GetRole'
+import { MenuItem } from '../../MenuItem'
 import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
 import { LanguageDialog } from './LanguageDialog'
 import { CreateTemplateMenuItem } from './CreateTemplateMenuItem'
-import { MenuItem } from './MenuItem/MenuItem'
 
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
