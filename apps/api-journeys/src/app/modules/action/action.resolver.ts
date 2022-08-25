@@ -3,7 +3,12 @@ import { UseGuards } from '@nestjs/common'
 import { get, includes } from 'lodash'
 import { UserInputError } from 'apollo-server-errors'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
-import { Action, Block, UserJourneyRole } from '../../__generated__/graphql'
+import {
+  Action,
+  Block,
+  Role,
+  UserJourneyRole
+} from '../../__generated__/graphql'
 import { BlockService } from '../block/block.service'
 
 @Resolver('Action')
@@ -20,7 +25,11 @@ export class ActionResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async blockDeleteAction(
     @Args('id') id: string,
