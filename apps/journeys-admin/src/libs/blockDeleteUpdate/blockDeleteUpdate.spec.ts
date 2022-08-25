@@ -84,6 +84,7 @@ const journey: Journey = {
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
+  template: null,
   userJourneys: [],
   seoTitle: null,
   seoDescription: null,

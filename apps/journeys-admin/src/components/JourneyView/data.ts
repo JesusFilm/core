@@ -8,7 +8,8 @@ import {
   IconSize,
   TypographyVariant,
   ThemeName,
-  ThemeMode
+  ThemeMode,
+  UserJourneyRole
 } from '../../../__generated__/globalTypes'
 
 export const defaultJourney: Journey = {
@@ -35,6 +36,7 @@ export const defaultJourney: Journey = {
   themeMode: ThemeMode.light,
   blocks: null,
   primaryImageBlock: null,
+  template: null,
   seoTitle: null,
   seoDescription: null,
   template: false,
@@ -42,6 +44,7 @@ export const defaultJourney: Journey = {
     {
       id: 'userJourneyId1',
       __typename: 'UserJourney',
+      role: UserJourneyRole.owner,
       user: {
         id: '1',
         __typename: 'User',
@@ -53,6 +56,7 @@ export const defaultJourney: Journey = {
     {
       id: 'userJourneyId2',
       __typename: 'UserJourney',
+      role: UserJourneyRole.editor,
       user: {
         id: '2',
         __typename: 'User',
@@ -64,6 +68,7 @@ export const defaultJourney: Journey = {
     {
       id: 'userJourneyId3',
       __typename: 'UserJourney',
+      role: UserJourneyRole.editor,
       user: {
         id: '3',
         __typename: 'User',

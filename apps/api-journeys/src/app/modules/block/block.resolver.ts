@@ -2,7 +2,7 @@
 
 import { Args, Query, ResolveField, Resolver, Mutation } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
-import { Block, UserJourneyRole } from '../../__generated__/graphql'
+import { Block, Role, UserJourneyRole } from '../../__generated__/graphql'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { BlockService } from './block.service'
 
@@ -29,7 +29,11 @@ export class BlockResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async blockOrderUpdate(
     @Args('id') id: string,
@@ -41,7 +45,11 @@ export class BlockResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async blockDuplicate(
     @Args('id') id: string,
@@ -53,7 +61,11 @@ export class BlockResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async blockDelete(
     @Args('id') id: string,

@@ -33,6 +33,7 @@ export const JOURNEY_FIELDS = gql`
     }
     userJourneys {
       id
+      role
       user {
         id
         firstName

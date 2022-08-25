@@ -54,6 +54,7 @@ describe('Editor', () => {
     ] as TreeBlock[],
     primaryImageBlock: null,
     userJourneys: [],
+    template: null,
     seoTitle: null,
     seoDescription: null,
     template: false
