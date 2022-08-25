@@ -66,8 +66,8 @@ Default.args = {
   title: 'Active Journeys'
 }
 
-export const FlagsOn = Template.bind({})
-FlagsOn.args = {
+export const Complete = Template.bind({})
+Complete.args = {
   reports: true,
   templates: true,
   title: 'Journeys'
