@@ -25,9 +25,9 @@ export function TemplateLibrary({
         </>
       ) : (
         <>
-          <TemplateCard />
-          <TemplateCard />
-          <TemplateCard />
+          {[1, 2, 3].map((index) => (
+            <TemplateCard key={`templateCard${index}`} />
+          ))}
         </>
       )}
     </Container>
