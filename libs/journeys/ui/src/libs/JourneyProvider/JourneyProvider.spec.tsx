@@ -86,6 +86,7 @@ describe('JourneyContext', () => {
       },
       description: 'my cool journey',
       status: JourneyStatus.draft,
+      template: null,
       createdAt: '2021-11-19T12:34:56.647Z',
       publishedAt: null,
       blocks: [
