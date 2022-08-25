@@ -128,6 +128,7 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
         <MenuItem
           label={`Duplicate ${blockLabel}`}
           icon={<ContentCopyRounded color="inherit" />}
+          disabled={selectedBlock == null}
           onClick={handleDuplicateBlock}
         />
       )}
