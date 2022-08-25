@@ -20,7 +20,7 @@ import { compact } from 'lodash'
 import { gql, useQuery } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
-import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded'
+import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
@@ -172,7 +172,7 @@ export function NavigationDrawer({
                     title === 'Reports' ? 'background.paper' : 'secondary.light'
                 }}
               >
-                <BarChartRoundedIcon />
+                <LeaderboardRoundedIcon />
               </ListItemIcon>
               <ListItemText
                 primary="Reports"

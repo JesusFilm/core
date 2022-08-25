@@ -61,7 +61,7 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByTestId('BarChartRoundedIcon')).toHaveStyle(` color: '#fff'`)
+    expect(getByTestId('LeaderboardRoundedIcon')).toHaveStyle(` color: '#fff'`)
   })
 
   it('should have avatar menu', async () => {
