@@ -4,6 +4,7 @@ import {
   CardBlock,
   CardBlockCreateInput,
   CardBlockUpdateInput,
+  Role,
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { BlockService } from '../block.service'
@@ -16,7 +17,8 @@ export class CardBlockResolver {
   @UseGuards(
     RoleGuard('input.journeyId', [
       UserJourneyRole.owner,
-      UserJourneyRole.editor
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
     ])
   )
   async cardBlockCreate(
@@ -35,7 +37,11 @@ export class CardBlockResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async cardBlockUpdate(
     @Args('id') id: string,
