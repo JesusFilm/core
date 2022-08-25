@@ -179,9 +179,9 @@ export function TemplateCard({
         </CardActionArea>
       </Link>
 
-      {admin === true &&
-        (journey != null ? (
-          <CardActions sx={{ alignSelf: 'flex-end', width: '58px' }}>
+      {admin === true && (
+        <CardActions sx={{ alignSelf: 'flex-end', width: '58px' }}>
+          {journey != null ? (
             <JourneyCardMenu
               id={journey.id}
               status={journey.status}
@@ -189,14 +189,15 @@ export function TemplateCard({
               published={journey.publishedAt != null}
               template
             />
-          </CardActions>
-        ) : (
-          <CardActions sx={{ alignSelf: 'flex-end', width: '58px' }}>
-            <IconButton disabled>
-              <MoreVertIcon />
-            </IconButton>
-          </CardActions>
-        ))}
+          ) : (
+            <>
+              <IconButton disabled>
+                <MoreVertIcon />
+              </IconButton>
+            </>
+          )}
+        </CardActions>
+      )}
     </Card>
   )
 }
