@@ -4,7 +4,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 
-interface NavigationMenuItemProps {
+export interface NavigationMenuItemProps {
   icon: ReactElement
   text: string
   color: string
