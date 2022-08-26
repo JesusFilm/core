@@ -27,7 +27,7 @@ export function TitleDescription({
     <>
       <Stack direction="column" spacing={4}>
         <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-          <Typography variant="h4">
+          <Typography variant="h1">
             {journey != null ? (
               journey.title
             ) : (
@@ -44,7 +44,7 @@ export function TitleDescription({
             </IconButton>
           )}
         </Stack>
-        <Typography variant="body1">
+        <Typography variant="body2">
           {journey != null ? (
             journey.description
           ) : (

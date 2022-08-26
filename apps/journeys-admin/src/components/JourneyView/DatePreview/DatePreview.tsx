@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { isThisYear, parseISO, intlFormat } from 'date-fns'
+import { parseISO, intlFormat } from 'date-fns'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -11,18 +11,17 @@ import { useRouter } from 'next/router'
 export function DatePreview(): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
+  console.log(journey)
 
   return (
     <Stack direction="row" justifyContent="space-between">
       <>
-        <Typography>
+        <Typography variant="overline" sx={{ color: 'secondary.light' }}>
           {journey != null ? (
             intlFormat(parseISO(journey.createdAt), {
               month: 'long',
               day: 'numeric',
-              year: isThisYear(parseISO(journey.createdAt))
-                ? undefined
-                : 'numeric'
+              year: 'numeric'
             })
           ) : (
             <Skeleton variant="text" width="100px" />
@@ -34,6 +33,7 @@ export function DatePreview(): ReactElement {
           size="small"
           color="secondary"
           disabled={journey == null}
+          style={{ borderRadius: 8 }}
           onClick={async () =>
             await router.push(
               journey != null ? `/api/preview?slug=${journey.slug}` : ''

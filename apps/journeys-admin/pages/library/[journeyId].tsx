@@ -45,7 +45,7 @@ function TemplateDetails(): ReactElement {
         value={{ journey: data?.template ?? undefined, admin: true }}
       >
         <PageWrapper
-          title={t('Journey Tempalte')}
+          title={t('Journey Template')}
           authUser={AuthUser}
           showDrawer
           backHref="/"
