@@ -31,29 +31,17 @@ describe('NavigationDrawer', () => {
     expect(getByText('Discover')).toBeInTheDocument()
   })
 
-  it('should render all the menu items', () => {})
-
-  // it('should show templates button', () => {
-  //   const { getByText } = render(
-  //     <MockedProvider>
-  //       <FlagsProvider flags={{ templates: true }}>
-  //         <NavigationDrawer open onClose={onClose} title="Journeys" />
-  //       </FlagsProvider>
-  //     </MockedProvider>
-  //   )
-  //   expect(getByText('Templates')).toBeInTheDocument()
-  // })
-
-  // it('should hide templates button', () => {
-  //   const { queryByText } = render(
-  //     <MockedProvider>
-  //       <FlagsProvider flags={{ templates: false }}>
-  //         <NavigationDrawer open onClose={onClose} title="Journeys" />
-  //       </FlagsProvider>
-  //     </MockedProvider>
-  //   )
-  //   expect(queryByText('Templates')).not.toBeInTheDocument()
-  // })
+  it('should render all the menu items', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ templates: true, reports: true }}>
+          <NavigationDrawer open onClose={onClose} title="Journeys" />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(getByText('Templates')).toBeInTheDocument()
+    expect(getByText('Reports')).toBeInTheDocument()
+  })
 
   it('should select templates button', () => {
     const { getByTestId } = render(
@@ -65,28 +53,6 @@ describe('NavigationDrawer', () => {
     )
     expect(getByTestId('ShopRoundedIcon')).toHaveStyle(` color: '#fff'`)
   })
-
-  // it('should show reports button', () => {
-  //   const { getByText } = render(
-  //     <MockedProvider>
-  //       <FlagsProvider flags={{ reports: true }}>
-  //         <NavigationDrawer open onClose={onClose} title="Journeys" />
-  //       </FlagsProvider>
-  //     </MockedProvider>
-  //   )
-  //   expect(getByText('Reports')).toBeInTheDocument()
-  // })
-
-  // it('should hide reports button', () => {
-  //   const { queryByText } = render(
-  //     <MockedProvider>
-  //       <FlagsProvider flags={{ reports: false }}>
-  //         <NavigationDrawer open onClose={onClose} title="Journeys" />
-  //       </FlagsProvider>
-  //     </MockedProvider>
-  //   )
-  //   expect(queryByText('Reports')).not.toBeInTheDocument()
-  // })
 
   it('should select the reports button', () => {
     const { getByTestId } = render(
