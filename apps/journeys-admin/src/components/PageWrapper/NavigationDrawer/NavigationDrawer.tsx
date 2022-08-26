@@ -188,7 +188,6 @@ export function NavigationDrawer({
               }
               text="Profile"
               color="secondary.light"
-              link="/reports"
               handleClick={handleProfileClick}
             />
             <UserMenu

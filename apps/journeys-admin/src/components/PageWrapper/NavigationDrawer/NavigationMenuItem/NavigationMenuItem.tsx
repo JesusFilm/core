@@ -8,7 +8,7 @@ interface NavigationMenuItemProps {
   icon: ReactElement
   text: string
   color: string
-  link: string
+  link?: string
   handleClick?: (e?) => void
 }
 
@@ -20,22 +20,44 @@ export function NavigationMenuItem({
   handleClick
 }: NavigationMenuItemProps): ReactElement {
   return (
-    <Link href={link} passHref>
-      <ListItemButton onClick={handleClick}>
-        <ListItemIcon
-          sx={{
-            color
-          }}
-        >
-          {icon}
-        </ListItemIcon>
-        <ListItemText
-          primary={text}
-          sx={{
-            color
-          }}
-        />
-      </ListItemButton>
-    </Link>
+    <>
+      <LinkWrapper
+        wrapper={(children) => (
+          <Link href={link as string} passHref>
+            {children}
+          </Link>
+        )}
+        condition={link}
+      >
+        <ListItemButton onClick={handleClick}>
+          <ListItemIcon
+            sx={{
+              color
+            }}
+          >
+            {icon}
+          </ListItemIcon>
+          <ListItemText
+            primary={text}
+            sx={{
+              color
+            }}
+          />
+        </ListItemButton>
+      </LinkWrapper>
+    </>
   )
 }
+
+interface LinkWrapperProps {
+  wrapper: (children: ReactElement) => ReactElement
+  children: ReactElement
+  condition?: string
+}
+
+const LinkWrapper = ({
+  wrapper,
+  children,
+  condition
+}: LinkWrapperProps): ReactElement =>
+  condition != null ? wrapper(children) : children
