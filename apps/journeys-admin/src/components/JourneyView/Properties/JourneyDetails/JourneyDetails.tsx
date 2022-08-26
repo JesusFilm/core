@@ -65,7 +65,11 @@ export function JourneyDetails({
   return (
     <>
       {journeyType === 'Template' ? (
-        <TemplateLanguage isPublisher={isPublisher} />
+        <TemplateLanguage
+          isPublisher={isPublisher}
+          localLanguage={localLanguage}
+          nativeLanguage={nativeLanguage}
+        />
       ) : (
         <>
           <Box sx={{ display: 'flex', flexDirection: 'row' }}>

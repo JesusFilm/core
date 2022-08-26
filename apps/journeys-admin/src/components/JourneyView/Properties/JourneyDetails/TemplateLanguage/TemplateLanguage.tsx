@@ -11,10 +11,14 @@ import { LanguageDialog } from '../../../Menu/LanguageDialog'
 
 interface TemplateLanguageProps {
   isPublisher?: boolean
+  localLanguage?: string
+  nativeLanguage?: string
 }
 
 export function TemplateLanguage({
-  isPublisher
+  isPublisher,
+  localLanguage,
+  nativeLanguage
 }: TemplateLanguageProps): ReactElement {
   const { journey } = useJourney()
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
@@ -32,7 +36,12 @@ export function TemplateLanguage({
       >
         {journey != null ? (
           <Typography variant="body2">
-            {journey.language.name.find((primary) => primary)?.value}
+            <span>
+              {nativeLanguage ?? localLanguage}
+              {localLanguage != null &&
+                localLanguage !== nativeLanguage &&
+                nativeLanguage && <span>&nbsp;({localLanguage})</span>}
+            </span>
           </Typography>
         ) : (
           <Skeleton variant="text" width="40%" />

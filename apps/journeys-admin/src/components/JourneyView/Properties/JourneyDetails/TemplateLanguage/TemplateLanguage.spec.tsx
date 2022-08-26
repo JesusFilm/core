@@ -16,12 +16,16 @@ describe('TemplateLanguage', () => {
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-            <TemplateLanguage />
+            <TemplateLanguage
+              localLanguage="Belorussian"
+              nativeLanguage="Беларуская мова"
+            />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByText('English')).toBeInTheDocument()
+    expect(getByText('Беларуская мова')).toBeInTheDocument()
+    expect(getByText('(Belorussian)')).toBeInTheDocument()
     expect(queryByRole('button')).not.toBeInTheDocument()
   })
 
@@ -30,12 +34,17 @@ describe('TemplateLanguage', () => {
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-            <TemplateLanguage isPublisher />
+            <TemplateLanguage
+              isPublisher
+              localLanguage="Belorussian"
+              nativeLanguage="Беларуская мова"
+            />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByText('English')).toBeInTheDocument()
+    expect(getByText('Беларуская мова')).toBeInTheDocument()
+    expect(getByText('(Belorussian)')).toBeInTheDocument()
     fireEvent.click(getByRole('button'))
     expect(getByText('Edit Language')).toBeInTheDocument()
   })

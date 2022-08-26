@@ -59,7 +59,7 @@ describe('JourneyViewFab', () => {
     userJourneys: []
   }
 
-  it('should have edit button', () => {
+  it('should redirect to journey editor on edit button click', () => {
     const { getByRole } = render(
       <MockedProvider>
         <FlagsProvider>
@@ -74,6 +74,24 @@ describe('JourneyViewFab', () => {
     expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
       'href',
       '/journeys/journeyId/edit'
+    )
+  })
+
+  it('should redirect to template editor on edit button click', () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <FlagsProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey, admin: true }}>
+              <JourneyViewFab isPublisher journeyType="Template" />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
+      'href',
+      '/templates/journeyId/edit'
     )
   })
 

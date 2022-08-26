@@ -36,5 +36,9 @@ describe('SocialImage', () => {
       'alt',
       'random image from unsplash'
     )
+    expect(getByRole('img')).toHaveAttribute(
+      'src',
+      'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
+    )
   })
 })
