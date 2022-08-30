@@ -48,3 +48,6 @@ Thumbs.db
 
 # nx generated files
 migrations.json
+
+# terraform providers
+/.terraform
