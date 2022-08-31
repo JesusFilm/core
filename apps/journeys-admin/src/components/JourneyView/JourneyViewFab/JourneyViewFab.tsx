@@ -7,7 +7,6 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { ConvertTemplate } from '../../../../__generated__/ConvertTemplate'
-import { JourneyType } from '../JourneyView'
 
 export const CONVERT_TEMPLATE = gql`
   mutation ConvertTemplate($id: ID!) {
@@ -19,12 +18,10 @@ export const CONVERT_TEMPLATE = gql`
 
 interface JourneyViewFabProps {
   isPublisher?: boolean
-  journeyType: JourneyType
 }
 
 export function JourneyViewFab({
-  isPublisher,
-  journeyType
+  isPublisher
 }: JourneyViewFabProps): ReactElement {
   const { journey } = useJourney()
   const router = useRouter()
@@ -67,7 +64,7 @@ export function JourneyViewFab({
 
   let editLink
   if (journey != null) {
-    if (journeyType === 'Template' && isPublisher === true) {
+    if (journey.template === true && isPublisher === true) {
       editLink = `/templates/${journey.id}/edit`
     } else {
       editLink = `/journeys/${journey.id}/edit`
@@ -76,7 +73,7 @@ export function JourneyViewFab({
 
   return (
     <>
-      {journeyType === 'Template' && isPublisher !== true ? (
+      {journey?.template === true && isPublisher !== true ? (
         <Fab
           variant="extended"
           size="large"
