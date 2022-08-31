@@ -1,10 +1,10 @@
 {
-  "root": "apps/api-videos",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-videos/src",
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:build",
+      "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api-videos",
@@ -41,7 +41,7 @@
       }
     },
     "serve-nowatch": {
-      "executor": "@nrwl/node:execute",
+      "executor": "@nrwl/node:node",
       "options": {
         "buildTarget": "api-videos:build"
       }
@@ -71,7 +71,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/api-videos"],
       "options": {
-        "jestConfig": "apps/api-videos/jest.config.js",
+        "jestConfig": "apps/api-videos/jest.config.ts",
         "passWithNoTests": true
       }
     },

@@ -1,5 +1,6 @@
-module.exports = {
-  displayName: 'api-videos',
+/* eslint-disable */
+export default {
+  displayName: 'api-users',
   preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {
@@ -11,5 +12,5 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/api-videos'
+  coverageDirectory: '../../coverage/apps/api-users'
 }

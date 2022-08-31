@@ -1,5 +1,5 @@
 {
-  "root": "libs/apollo/logging",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/apollo/logging/src",
   "projectType": "library",
   "targets": {
@@ -14,7 +14,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/apollo/logging"],
       "options": {
-        "jestConfig": "libs/apollo/logging/jest.config.js",
+        "jestConfig": "libs/apollo/logging/jest.config.ts",
         "passWithNoTests": true
       }
     }

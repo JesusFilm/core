@@ -42,7 +42,7 @@ const authUser = { id: 'user-id1' } as unknown as AuthUser
 
 describe('TrashedStatusTab', () => {
   beforeAll(() => {
-    jest.useFakeTimers('modern')
+    jest.useFakeTimers()
     jest.setSystemTime(new Date('2021-12-11'))
   })
 

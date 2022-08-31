@@ -1,10 +1,10 @@
 {
-  "root": "apps/api-users",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-users/src",
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:build",
+      "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api-users",
@@ -41,7 +41,7 @@
       }
     },
     "serve-nowatch": {
-      "executor": "@nrwl/node:execute",
+      "executor": "@nrwl/node:node",
       "options": {
         "buildTarget": "api-users:build"
       }
@@ -71,7 +71,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/api-users"],
       "options": {
-        "jestConfig": "apps/api-users/jest.config.js",
+        "jestConfig": "apps/api-users/jest.config.ts",
         "passWithNoTests": true
       }
     },

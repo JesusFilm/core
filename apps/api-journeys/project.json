@@ -1,10 +1,10 @@
 {
-  "root": "apps/api-journeys",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-journeys/src",
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:build",
+      "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api-journeys",
@@ -41,7 +41,7 @@
       }
     },
     "serve-nowatch": {
-      "executor": "@nrwl/node:execute",
+      "executor": "@nrwl/node:node",
       "options": {
         "buildTarget": "api-journeys:build"
       }
@@ -71,7 +71,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/api-journeys"],
       "options": {
-        "jestConfig": "apps/api-journeys/jest.config.js",
+        "jestConfig": "apps/api-journeys/jest.config.ts",
         "passWithNoTests": true,
         "fileReplacements": [
           {

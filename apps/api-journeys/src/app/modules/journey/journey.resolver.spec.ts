@@ -37,7 +37,7 @@ const mockGetPowerBiEmbed = getPowerBiEmbed as jest.MockedFunction<
 
 describe('JourneyResolver', () => {
   beforeAll(() => {
-    jest.useFakeTimers('modern')
+    jest.useFakeTimers()
     jest.setSystemTime(new Date('2021-02-18'))
   })
 
@@ -856,7 +856,7 @@ describe('JourneyResolver', () => {
   describe('journeyPublish', () => {
     it('publishes a Journey', async () => {
       const date = '2021-12-07T03:22:41.135Z'
-      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      jest.useFakeTimers()
       await resolver.journeyPublish('1')
       expect(service.update).toHaveBeenCalledWith('1', {
         status: JourneyStatus.published,
@@ -868,7 +868,7 @@ describe('JourneyResolver', () => {
   describe('journeysArchive', () => {
     it('archives an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
-      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      jest.useFakeTimers()
       await resolver.journeysArchive('1', [journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
@@ -888,7 +888,7 @@ describe('JourneyResolver', () => {
   describe('journeysTrash', () => {
     it('trashes an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
-      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      jest.useFakeTimers()
       await resolver.journeysTrash('1', [journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
@@ -908,7 +908,7 @@ describe('JourneyResolver', () => {
   describe('journeysDelete', () => {
     it('deletes an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
-      jest.useFakeTimers().setSystemTime(new Date(date).getTime())
+      jest.useFakeTimers()
       await resolver.journeysDelete('1', [journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {

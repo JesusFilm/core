@@ -1,5 +1,6 @@
-module.exports = {
-  displayName: 'api-users',
+/* eslint-disable */
+export default {
+  displayName: 'api-journeys',
   preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {
@@ -11,5 +12,5 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/api-users'
+  coverageDirectory: '../../coverage/apps/api-journeys'
 }

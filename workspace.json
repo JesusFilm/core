@@ -29,5 +29,6 @@
     "watch-admin": "apps/watch-admin",
     "watch-admin-e2e": "apps/watch-admin-e2e",
     "watch-e2e": "apps/watch-e2e"
-  }
+  },
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json"
 }

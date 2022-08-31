@@ -1,5 +1,5 @@
 {
-  "root": "apps/watch",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/watch",
   "projectType": "application",
   "targets": {
@@ -11,8 +11,12 @@
         "outputPath": "dist/apps/watch"
       },
       "configurations": {
-        "production": {}
-      }
+        "production": {},
+        "development": {
+          "outputPath": "apps/watch"
+        }
+      },
+      "defaultConfiguration": "production"
     },
     "serve": {
       "executor": "@nrwl/next:server",
@@ -26,8 +30,13 @@
         "production": {
           "buildTarget": "watch:build:production",
           "dev": false
+        },
+        "development": {
+          "buildTarget": "watch:build:development",
+          "dev": true
         }
-      }
+      },
+      "defaultConfiguration": "development"
     },
     "serve-all": {
       "executor": "@nrwl/workspace:run-commands",
@@ -53,7 +62,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/watch"],
       "options": {
-        "jestConfig": "apps/watch/jest.config.js",
+        "jestConfig": "apps/watch/jest.config.ts",
         "passWithNoTests": true
       }
     },

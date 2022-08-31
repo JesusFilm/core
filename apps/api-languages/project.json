@@ -1,10 +1,10 @@
 {
-  "root": "apps/api-languages",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-languages/src",
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:build",
+      "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api-languages",
@@ -41,7 +41,7 @@
       }
     },
     "serve-nowatch": {
-      "executor": "@nrwl/node:execute",
+      "executor": "@nrwl/node:node",
       "options": {
         "buildTarget": "api-languages:build"
       }
@@ -71,7 +71,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/api-languages"],
       "options": {
-        "jestConfig": "apps/api-languages/jest.config.js",
+        "jestConfig": "apps/api-languages/jest.config.ts",
         "passWithNoTests": true
       }
     },

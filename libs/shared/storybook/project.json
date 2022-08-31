@@ -1,5 +1,5 @@
 {
-  "root": "libs/shared/storybook",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/shared/storybook/src",
   "projectType": "library",
   "targets": {

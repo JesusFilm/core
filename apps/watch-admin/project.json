@@ -1,5 +1,5 @@
 {
-  "root": "apps/watch-admin",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/watch-admin",
   "projectType": "application",
   "targets": {
@@ -12,7 +12,10 @@
         "outputPath": "dist/apps/watch-admin"
       },
       "configurations": {
-        "production": {}
+        "production": {},
+        "development": {
+          "outputPath": "apps/watch-admin"
+        }
       }
     },
     "serve": {
@@ -27,8 +30,13 @@
         "production": {
           "buildTarget": "watch-admin:build:production",
           "dev": false
+        },
+        "development": {
+          "buildTarget": "watch-admin:build:development",
+          "dev": true
         }
-      }
+      },
+      "defaultConfiguration": "development"
     },
     "serve-all": {
       "executor": "@nrwl/workspace:run-commands",
@@ -54,7 +62,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/watch-admin"],
       "options": {
-        "jestConfig": "apps/watch-admin/jest.config.js",
+        "jestConfig": "apps/watch-admin/jest.config.ts",
         "passWithNoTests": true
       }
     },
