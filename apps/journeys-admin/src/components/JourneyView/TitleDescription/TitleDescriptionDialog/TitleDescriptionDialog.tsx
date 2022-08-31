@@ -5,14 +5,11 @@ import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TemplateTitleDescriptionUpdate } from '../../../../../__generated__/TemplateTitleDescriptionUpdate'
+import { TitleDescriptionUpdate } from '../../../../../__generated__/TitleDescriptionUpdate'
 import { Dialog } from '../../../Dialog'
 
-export const TEMPLATE_TITLE_DESCRIPTION_UPDATE = gql`
-  mutation TemplateTitleDescriptionUpdate(
-    $id: ID!
-    $input: JourneyUpdateInput!
-  ) {
+export const TITLE_DESCRIPTION_UPDATE = gql`
+  mutation TitleDescriptionUpdate($id: ID!, $input: JourneyUpdateInput!) {
     journeyUpdate(id: $id, input: $input) {
       id
       title
@@ -29,17 +26,19 @@ export function TitleDescriptionDialog({
   open,
   onClose
 }: TitleDescriptionDialogProps): ReactElement {
-  const [templateUpdate] = useMutation<TemplateTitleDescriptionUpdate>(
-    TEMPLATE_TITLE_DESCRIPTION_UPDATE
+  const [titleDescriptionUpdate] = useMutation<TitleDescriptionUpdate>(
+    TITLE_DESCRIPTION_UPDATE
   )
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
-  const handleUpdateTitle = async (values: FormikValues): Promise<void> => {
+  const handleUpdateTitleDescription = async (
+    values: FormikValues
+  ): Promise<void> => {
     if (journey == null) return
 
     try {
-      await templateUpdate({
+      await titleDescriptionUpdate({
         variables: {
           id: journey.id,
           input: { title: values.title, description: values.description }
@@ -94,7 +93,7 @@ export function TitleDescriptionDialog({
             title: journey.title ?? '',
             description: journey?.description ?? ''
           }}
-          onSubmit={handleUpdateTitle}
+          onSubmit={handleUpdateTitleDescription}
         >
           {({ values, handleChange, handleSubmit, resetForm }) => (
             <Dialog
