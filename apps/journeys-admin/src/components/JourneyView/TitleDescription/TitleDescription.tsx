@@ -27,7 +27,13 @@ export function TitleDescription({
   return (
     <>
       <Box sx={{ p: { xs: 6, sm: 8 }, backgroundColor: 'background.paper' }}>
-        <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: 'space-between',
+            display: journey != null ? 'flex' : 'block'
+          }}
+        >
           <Typography variant="h4">
             {journey != null ? (
               journey.title
