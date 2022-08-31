@@ -5,11 +5,11 @@ import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TemplateTitleDescriptionUpdate } from '../../../../../__generated__/TemplateTitleDescriptionUpdate'
+import { TitleDescriptionUpdate } from '../../../../../__generated__/TitleDescriptionUpdate'
 import { Dialog } from '../../../Dialog'
 
-export const TEMPLATE_TITLE_DESCRIPTION_UPDATE = gql`
-  mutation TemplateTitleDescriptionUpdate(
+export const TITLE_DESCRIPTION_UPDATE = gql`
+  mutation TitleDescriptionUpdate(
     $id: ID!
     $input: JourneyUpdateInput!
   ) {
@@ -29,8 +29,8 @@ export function TitleDescriptionDialog({
   open,
   onClose
 }: TitleDescriptionDialogProps): ReactElement {
-  const [templateUpdate] = useMutation<TemplateTitleDescriptionUpdate>(
-    TEMPLATE_TITLE_DESCRIPTION_UPDATE
+  const [templateUpdate] = useMutation<TitleDescriptionUpdate>(
+    TITLE_DESCRIPTION_UPDATE
   )
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()

@@ -5,7 +5,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '../../data'
 import {
   TitleDescriptionDialog,
-  TEMPLATE_TITLE_DESCRIPTION_UPDATE
+  TITLE_DESCRIPTION_UPDATE
 } from './TitleDescriptionDialog'
 
 const onClose = jest.fn()
@@ -32,7 +32,7 @@ describe('TitleDescriptionDialog', () => {
         mocks={[
           {
             request: {
-              query: TEMPLATE_TITLE_DESCRIPTION_UPDATE,
+              query: TITLE_DESCRIPTION_UPDATE,
               variables: {
                 id: defaultJourney.id,
                 input: updatedJourney
@@ -63,13 +63,13 @@ describe('TitleDescriptionDialog', () => {
     })
   })
 
-  it('shows notistack error alert when description fails to update', async () => {
+  it('shows error alert when either field fails to update', async () => {
     const { getByRole, getByText, getAllByRole } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: TEMPLATE_TITLE_DESCRIPTION_UPDATE,
+              query: TITLE_DESCRIPTION_UPDATE,
               variables: {
                 id: defaultJourney.id,
                 input: {

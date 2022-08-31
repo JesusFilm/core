@@ -6,21 +6,21 @@
 import { JourneyUpdateInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: TemplateTitleDescriptionUpdate
+// GraphQL mutation operation: TitleDescriptionUpdate
 // ====================================================
 
-export interface TemplateTitleDescriptionUpdate_journeyUpdate {
+export interface TitleDescriptionUpdate_journeyUpdate {
   __typename: "Journey";
   id: string;
   title: string;
   description: string | null;
 }
 
-export interface TemplateTitleDescriptionUpdate {
-  journeyUpdate: TemplateTitleDescriptionUpdate_journeyUpdate;
+export interface TitleDescriptionUpdate {
+  journeyUpdate: TitleDescriptionUpdate_journeyUpdate;
 }
 
-export interface TemplateTitleDescriptionUpdateVariables {
+export interface TitleDescriptionUpdateVariables {
   id: string;
   input: JourneyUpdateInput;
 }
