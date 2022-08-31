@@ -65,7 +65,6 @@ export function Menu(): ReactElement {
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const [applyTemplate] = useMutation<ApplyTemplate>(APPLY_TEMPLATE)
   const { data } = useQuery<GetRole>(GET_ROLE)
-  // getUserRole hasn't fetched yet by the time we set isPublisher in tests
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
   const isOwner =
     journey?.userJourneys?.find(
@@ -214,7 +213,7 @@ export function Menu(): ReactElement {
                 onClick={handlePublish}
               />
             )}
-            {journey.template === true && (
+            {journey.template === true && isPublisher !== true && (
               <MenuItem
                 label="Use Template"
                 icon={<CheckRounded />}
@@ -236,21 +235,29 @@ export function Menu(): ReactElement {
                 />
               </>
             )}
-            <MenuItem
-              label="Language"
-              icon={<TranslateIcon />}
-              onClick={handleUpdateLanguage}
-            />
+            {(journey.template !== true || isPublisher) && (
+              <MenuItem
+                label="Language"
+                icon={<TranslateIcon />}
+                onClick={handleUpdateLanguage}
+              />
+            )}
             {reports && (
               <NextLink href={`/journeys/${journey.id}/reports`} passHref>
                 <MenuItem label="Report" icon={<AssessmentRoundedIcon />} />
               </NextLink>
             )}
-            {isPublisher === true && <CreateTemplateMenuItem />}
-            <Divider />
-            <NextLink href={`/journeys/${journey.id}/edit`} passHref>
-              <MenuItem label="Edit Cards" icon={<ViewCarouselIcon />} />
-            </NextLink>
+            {journey.template !== true && isPublisher === true && (
+              <CreateTemplateMenuItem />
+            )}
+            {(journey.template !== true || isPublisher) && (
+              <>
+                <Divider />
+                <NextLink href={`/journeys/${journey.id}/edit`} passHref>
+                  <MenuItem label="Edit Cards" icon={<ViewCarouselIcon />} />
+                </NextLink>
+              </>
+            )}
             {journey.template !== true && (
               <>
                 <Divider />

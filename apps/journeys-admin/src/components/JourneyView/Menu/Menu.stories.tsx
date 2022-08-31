@@ -124,9 +124,17 @@ Reports.args = {
   forceOpen: true
 }
 
-// Add Template
 export const TemplateMenu = Template.bind({})
 TemplateMenu.args = {
+  journey: {
+    ...defaultJourney,
+    userJourneys: null,
+    template: true
+  }
+}
+
+export const PublisherMenu = Template.bind({})
+PublisherMenu.args = {
   journey: {
     ...defaultJourney,
     userJourneys: null,
@@ -139,9 +147,13 @@ TemplateMenu.args = {
         query: GET_ROLE
       },
       result: {
-        id: 'userJourneyId1',
-        userId: '1',
-        roles: [Role.publisher]
+        data: {
+          getUserRole: {
+            id: 'userRoleId',
+            userId: '1',
+            roles: [Role.publisher]
+          }
+        }
       }
     }
   ]
