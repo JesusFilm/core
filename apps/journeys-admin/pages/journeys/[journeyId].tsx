@@ -55,7 +55,7 @@ function JourneyIdPage(): ReactElement {
               menu={<Menu />}
               authUser={AuthUser}
             >
-              <JourneyView journeyType="Journey" />
+              <JourneyView />
             </PageWrapper>
           </JourneyProvider>
         </>

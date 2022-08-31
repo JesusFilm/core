@@ -31,7 +31,7 @@ export function TitleDescription({
             {journey != null ? (
               journey.title
             ) : (
-              <Skeleton variant="text" width="230px" />
+              <Skeleton variant="text" width="60%" />
             )}
           </Typography>
           {isPublisher === true && journey?.template === true && (

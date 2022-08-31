@@ -31,12 +31,8 @@ export const GET_USER_ROLE = gql`
     }
   }
 `
-export type JourneyType = 'Journey' | 'Template'
-interface JourneyViewProps {
-  journeyType: JourneyType
-}
 
-export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
+export function JourneyView(): ReactElement {
   const { journey } = useJourney()
   const { reports } = useFlags()
   const blocks =
@@ -62,15 +58,15 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
           backgroundColor: 'background.paper'
         }}
       >
-        {journeyType === 'Template' && <SocialImage />}
+        <SocialImage />
         <Stack direction="column" spacing={6} sx={{ width: '100%' }}>
-          {journeyType === 'Template' && <DatePreview />}
+          {journey?.template === true && <DatePreview />}
           <TitleDescription isPublisher={isPublisher} />
         </Stack>
       </Stack>
-      <Properties isPublisher={isPublisher} journeyType={journeyType} />
+      <Properties isPublisher={isPublisher} />
 
-      {reports && journey != null && journeyType === 'Journey' && (
+      {reports && journey != null && journey.template !== true && (
         <>
           <Box
             sx={{ height: '213px', pb: 6, mx: 6 }}
@@ -84,7 +80,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
         </>
       )}
 
-      {journey?.template !== true && journeyType === 'Journey' && (
+      {journey?.template !== true && (
         <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
           <Divider />
           <Box
@@ -101,7 +97,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
 
       <>
         <CardView id={journey?.id} blocks={blocks} />
-        <JourneyViewFab isPublisher={isPublisher} journeyType={journeyType} />
+        <JourneyViewFab isPublisher={isPublisher} />
       </>
 
       <SlugDialog

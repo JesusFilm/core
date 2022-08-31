@@ -9,19 +9,14 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyLink } from '../JourneyLink'
-import { JourneyType } from '../JourneyView'
 import { JourneyDetails } from './JourneyDetails'
 import { AccessControl } from './AccessControl'
 
 interface PropertiesProps {
   isPublisher?: boolean
-  journeyType: JourneyType
 }
 
-export function Properties({
-  isPublisher,
-  journeyType
-}: PropertiesProps): ReactElement {
+export function Properties({ isPublisher }: PropertiesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
@@ -40,17 +35,14 @@ export function Properties({
       >
         <Toolbar>
           <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
-            {journeyType === 'Template' ? t('Details') : t('Properties')}
+            {journey?.template === true ? t('Details') : t('Properties')}
           </Typography>
         </Toolbar>
         <Stack sx={{ py: 6 }} spacing={6} divider={<Divider />}>
           <Box sx={{ px: 6 }}>
-            <JourneyDetails
-              isPublisher={isPublisher}
-              journeyType={journeyType}
-            />
+            <JourneyDetails isPublisher={isPublisher} />
           </Box>
-          {journeyType === 'Journey' && (
+          {journey?.template !== true && (
             <>
               <Box sx={{ px: 6 }}>
                 <AccessControl />
@@ -74,7 +66,7 @@ export function Properties({
         }}
         spacing={6}
       >
-        {journeyType === 'Journey' && (
+        {journey?.template !== true && (
           <Divider>
             <AccessAvatars
               journeyId={journey?.id}
@@ -84,7 +76,7 @@ export function Properties({
           </Divider>
         )}
         <Box sx={{ px: 6 }}>
-          <JourneyDetails isPublisher={isPublisher} journeyType={journeyType} />
+          <JourneyDetails isPublisher={isPublisher} />
         </Box>
       </Stack>
     </>
