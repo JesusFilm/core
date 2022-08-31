@@ -28,8 +28,11 @@ export function TemplateCard({
   journey,
   admin
 }: TemplateCardProps): ReactElement {
-  const nativeLanguage = journey?.language.name[0].value ?? ''
-  const localLanguage = journey?.language.name[1]?.value
+  const nativeLanguage =
+    journey?.language.name.find(({ primary }) => primary)?.value ?? ''
+  const localLanguage = journey?.language.name.find(
+    ({ primary }) => !primary
+  )?.value
   const displayLanguage =
     nativeLanguage === localLanguage || localLanguage == null
       ? nativeLanguage
