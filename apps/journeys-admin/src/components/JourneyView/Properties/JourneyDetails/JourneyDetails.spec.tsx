@@ -37,7 +37,7 @@ describe('journeyDetails', () => {
             } as unknown as Journey
           }}
         >
-          <JourneyDetails journeyType="Journey" />
+          <JourneyDetails />
         </JourneyProvider>
       )
       expect(getByText('English')).toBeInTheDocument()
@@ -63,7 +63,7 @@ describe('journeyDetails', () => {
             } as unknown as Journey
           }}
         >
-          <JourneyDetails journeyType="Journey" />
+          <JourneyDetails />
         </JourneyProvider>
       )
       expect(getByText('English')).toBeInTheDocument()
@@ -85,7 +85,7 @@ describe('journeyDetails', () => {
             } as unknown as Journey
           }}
         >
-          <JourneyDetails journeyType="Journey" />
+          <JourneyDetails />
         </JourneyProvider>
       )
       expect(getByText('English')).toBeInTheDocument()
@@ -116,7 +116,7 @@ describe('journeyDetails', () => {
             } as unknown as Journey
           }}
         >
-          <JourneyDetails journeyType="Journey" />
+          <JourneyDetails />
         </JourneyProvider>
       )
       expect(getByText('(English)')).toBeInTheDocument()
@@ -147,7 +147,7 @@ describe('journeyDetails', () => {
             } as unknown as Journey
           }}
         >
-          <JourneyDetails journeyType="Journey" />
+          <JourneyDetails />
         </JourneyProvider>
       )
       expect(queryByText('(English)')).toBeNull()
@@ -182,7 +182,7 @@ describe('journeyDetails', () => {
                 } as unknown as Journey
               }}
             >
-              <JourneyDetails journeyType="Template" />
+              <JourneyDetails />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>

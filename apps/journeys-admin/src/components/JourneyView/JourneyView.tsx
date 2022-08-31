@@ -58,7 +58,7 @@ export function JourneyView(): ReactElement {
           backgroundColor: 'background.paper'
         }}
       >
-        <SocialImage />
+        {journey?.template === true && <SocialImage />}
         <Stack direction="column" spacing={6} sx={{ width: '100%' }}>
           {journey?.template === true && <DatePreview />}
           <TitleDescription isPublisher={isPublisher} />

@@ -61,7 +61,7 @@ export function JourneyDetails({
   }, [journey])
   return (
     <>
-      {journeyType === 'Template' ? (
+      {journey?.template === true ? (
         <TemplateLanguage
           isPublisher={isPublisher}
           localLanguage={localLanguage}

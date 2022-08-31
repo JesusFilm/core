@@ -64,8 +64,10 @@ describe('JourneyViewFab', () => {
       <MockedProvider>
         <FlagsProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey, admin: true }}>
-              <JourneyViewFab journeyType="Journey" />
+            <JourneyProvider
+              value={{ journey: { ...journey, template: false }, admin: true }}
+            >
+              <JourneyViewFab />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>
@@ -83,7 +85,7 @@ describe('JourneyViewFab', () => {
         <FlagsProvider>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, admin: true }}>
-              <JourneyViewFab isPublisher journeyType="Template" />
+              <JourneyViewFab isPublisher />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>
@@ -124,7 +126,7 @@ describe('JourneyViewFab', () => {
         <SnackbarProvider>
           <FlagsProvider>
             <JourneyProvider value={{ journey }}>
-              <JourneyViewFab journeyType="Template" />
+              <JourneyViewFab />
             </JourneyProvider>
           </FlagsProvider>
         </SnackbarProvider>
