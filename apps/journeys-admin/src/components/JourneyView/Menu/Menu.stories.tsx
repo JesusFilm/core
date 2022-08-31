@@ -3,10 +3,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import { defaultJourney } from '../data'
 import { GET_LANGUAGES } from './LanguageDialog'
-import { Menu, JOURNEY_PUBLISH } from './Menu'
+import { Menu, JOURNEY_PUBLISH, GET_ROLE } from './Menu'
 
 const MenuStory = {
   ...simpleComponentConfig,
@@ -14,83 +14,83 @@ const MenuStory = {
   title: 'Journeys-Admin/JourneyView/Menu'
 }
 
-const Template: Story = ({ ...args }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: GET_LANGUAGES,
-          variables: {
-            languageId: '529'
-          }
-        },
-        result: {
-          data: {
-            languages: [
+const journeyMocks = [
+  {
+    request: {
+      query: GET_LANGUAGES,
+      variables: {
+        languageId: '529'
+      }
+    },
+    result: {
+      data: {
+        languages: [
+          {
+            __typename: 'Language',
+            id: '529',
+            name: [
               {
-                __typename: 'Language',
-                id: '529',
-                name: [
-                  {
-                    value: 'English',
-                    primary: true,
-                    __typename: 'Translation'
-                  }
-                ]
+                value: 'English',
+                primary: true,
+                __typename: 'Translation'
+              }
+            ]
+          },
+          {
+            id: '496',
+            __typename: 'Language',
+            name: [
+              {
+                value: 'Français',
+                primary: true,
+                __typename: 'Translation'
               },
               {
-                id: '496',
-                __typename: 'Language',
-                name: [
-                  {
-                    value: 'Français',
-                    primary: true,
-                    __typename: 'Translation'
-                  },
-                  {
-                    value: 'French',
-                    primary: false,
-                    __typename: 'Translation'
-                  }
-                ]
+                value: 'French',
+                primary: false,
+                __typename: 'Translation'
+              }
+            ]
+          },
+          {
+            id: '1106',
+            __typename: 'Language',
+            name: [
+              {
+                value: 'Deutsch',
+                primary: true,
+                __typename: 'Translation'
               },
               {
-                id: '1106',
-                __typename: 'Language',
-                name: [
-                  {
-                    value: 'Deutsch',
-                    primary: true,
-                    __typename: 'Translation'
-                  },
-                  {
-                    value: 'German, Standard',
-                    primary: false,
-                    __typename: 'Translation'
-                  }
-                ]
+                value: 'German, Standard',
+                primary: false,
+                __typename: 'Translation'
               }
             ]
           }
-        }
-      },
-      {
-        request: {
-          query: JOURNEY_PUBLISH,
-          variables: { id: defaultJourney.id }
-        },
-        result: {
-          data: {
-            journeyPublish: {
-              id: defaultJourney.id,
-              __typename: 'Journey',
-              status: JourneyStatus.published
-            }
-          }
+        ]
+      }
+    }
+  },
+  {
+    request: {
+      query: JOURNEY_PUBLISH,
+      variables: { id: defaultJourney.id }
+    },
+    result: {
+      data: {
+        journeyPublish: {
+          id: defaultJourney.id,
+          __typename: 'Journey',
+          status: JourneyStatus.published
         }
       }
-    ]}
-  >
+    }
+  }
+]
+
+const Template: Story = ({ ...args }) => (
+  <MockedProvider mocks={args.mocks}>
     <FlagsProvider flags={{ reports: args.reports }}>
       <JourneyProvider value={{ journey: args.journey, admin: true }}>
         <Menu {...args} />
@@ -102,7 +102,7 @@ const Template: Story = ({ ...args }) => (
 // No more need for forceOpen - refactor to use play
 
 export const Draft = Template.bind({})
-Draft.args = { journey: defaultJourney, forceOpen: true }
+Draft.args = { journey: defaultJourney, forceOpen: true, mocks: journeyMocks }
 
 export const Published = Template.bind({})
 Published.args = {
@@ -111,6 +111,7 @@ Published.args = {
     publishedAt: '2021-11-19T12:34:56.647Z',
     status: JourneyStatus.published
   },
+  mocks: journeyMocks,
   forceOpen: true
 }
 
@@ -119,10 +120,32 @@ export const Reports = Template.bind({})
 Reports.args = {
   journey: defaultJourney,
   reports: true,
+  mocks: journeyMocks,
   forceOpen: true
 }
 
 // Add Template
+export const TemplateMenu = Template.bind({})
+TemplateMenu.args = {
+  journey: {
+    ...defaultJourney,
+    userJourneys: null,
+    template: true
+  },
+  mocks: [
+    ...journeyMocks,
+    {
+      request: {
+        query: GET_ROLE
+      },
+      result: {
+        id: 'userJourneyId1',
+        userId: '1',
+        roles: [Role.publisher]
+      }
+    }
+  ]
+}
 
 export const Loading = Template.bind({})
 Loading.args = { journey: undefined }

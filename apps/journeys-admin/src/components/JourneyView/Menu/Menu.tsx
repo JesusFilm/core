@@ -12,10 +12,12 @@ import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
 import TranslateIcon from '@mui/icons-material/Translate'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel'
+import CheckRounded from '@mui/icons-material/CheckRounded'
 import NextLink from 'next/link'
 import { useSnackbar } from 'notistack'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import { useRouter } from 'next/router'
 import {
   JourneyStatus,
   Role,
@@ -23,6 +25,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { GetRole } from '../../../../__generated__/GetRole'
+import { ApplyTemplate } from '../../../../__generated__/ApplyTemplate'
 import { MenuItem } from '../../MenuItem'
 import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
@@ -48,9 +51,19 @@ export const GET_ROLE = gql`
   }
 `
 
+export const APPLY_TEMPLATE = gql`
+  mutation ApplyTemplate($id: ID!) {
+    journeyDuplicate(id: $id) {
+      id
+    }
+  }
+`
+
 export function Menu(): ReactElement {
   const { journey } = useJourney()
+  const router = useRouter()
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
+  const [applyTemplate] = useMutation<ApplyTemplate>(APPLY_TEMPLATE)
   const { data } = useQuery<GetRole>(GET_ROLE)
   // getUserRole hasn't fetched yet by the time we set isPublisher in tests
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
@@ -87,10 +100,49 @@ export function Menu(): ReactElement {
       }
     })
     setAnchorEl(null)
-    enqueueSnackbar('Journey Published', {
-      variant: 'success',
-      preventDuplicate: true
+    journey.template === true
+      ? enqueueSnackbar('Template Published', {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      : enqueueSnackbar('Journey Published', {
+          variant: 'success',
+          preventDuplicate: true
+        })
+  }
+  const handleTemplate = async (): Promise<void> => {
+    if (journey == null) return
+
+    const { data } = await applyTemplate({
+      variables: {
+        id: journey.id
+      },
+      update(cache, { data }) {
+        if (data?.journeyDuplicate != null) {
+          cache.modify({
+            fields: {
+              adminJourneys(existingAdminJourneyRefs = []) {
+                const duplicatedJourneyRef = cache.writeFragment({
+                  data: data.journeyDuplicate,
+                  fragment: gql`
+                    fragment DuplicatedJourney on Journey {
+                      id
+                    }
+                  `
+                })
+                return [...existingAdminJourneyRefs, duplicatedJourneyRef]
+              }
+            }
+          })
+        }
+      }
     })
+
+    if (data?.journeyDuplicate != null) {
+      void router.push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
+        shallow: true
+      })
+    }
   }
   const handleUpdateTitle = (): void => {
     setShowTitleDialog(true)
@@ -162,16 +214,28 @@ export function Menu(): ReactElement {
                 onClick={handlePublish}
               />
             )}
-            <MenuItem
-              label="Title"
-              icon={<EditIcon />}
-              onClick={handleUpdateTitle}
-            />
-            <MenuItem
-              label="Description"
-              icon={<DescriptionIcon />}
-              onClick={handleUpdateDescription}
-            />
+            {journey.template === true && (
+              <MenuItem
+                label="Use Template"
+                icon={<CheckRounded />}
+                onClick={handleTemplate}
+              />
+            )}
+            {/* TODO: add TitleDescription menu item */}
+            {journey.template !== true && (
+              <>
+                <MenuItem
+                  label="Title"
+                  icon={<EditIcon />}
+                  onClick={handleUpdateTitle}
+                />
+                <MenuItem
+                  label="Description"
+                  icon={<DescriptionIcon />}
+                  onClick={handleUpdateDescription}
+                />
+              </>
+            )}
             <MenuItem
               label="Language"
               icon={<TranslateIcon />}
@@ -187,12 +251,16 @@ export function Menu(): ReactElement {
             <NextLink href={`/journeys/${journey.id}/edit`} passHref>
               <MenuItem label="Edit Cards" icon={<ViewCarouselIcon />} />
             </NextLink>
-            <Divider />
-            <MenuItem
-              label="Copy Link"
-              icon={<ContentCopyIcon />}
-              onClick={handleCopyLink}
-            />
+            {journey.template !== true && (
+              <>
+                <Divider />
+                <MenuItem
+                  label="Copy Link"
+                  icon={<ContentCopyIcon />}
+                  onClick={handleCopyLink}
+                />
+              </>
+            )}
           </MuiMenu>
           <TitleDialog
             open={showTitleDialog}
