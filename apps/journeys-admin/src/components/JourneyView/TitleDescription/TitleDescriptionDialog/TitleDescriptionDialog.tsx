@@ -9,10 +9,7 @@ import { TitleDescriptionUpdate } from '../../../../../__generated__/TitleDescri
 import { Dialog } from '../../../Dialog'
 
 export const TITLE_DESCRIPTION_UPDATE = gql`
-  mutation TitleDescriptionUpdate(
-    $id: ID!
-    $input: JourneyUpdateInput!
-  ) {
+  mutation TitleDescriptionUpdate($id: ID!, $input: JourneyUpdateInput!) {
     journeyUpdate(id: $id, input: $input) {
       id
       title
@@ -29,17 +26,19 @@ export function TitleDescriptionDialog({
   open,
   onClose
 }: TitleDescriptionDialogProps): ReactElement {
-  const [templateUpdate] = useMutation<TitleDescriptionUpdate>(
+  const [titleDescriptionUpdate] = useMutation<TitleDescriptionUpdate>(
     TITLE_DESCRIPTION_UPDATE
   )
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
 
-  const handleUpdateTitle = async (values: FormikValues): Promise<void> => {
+  const handleUpdateTitleDescription = async (
+    values: FormikValues
+  ): Promise<void> => {
     if (journey == null) return
 
     try {
-      await templateUpdate({
+      await titleDescriptionUpdate({
         variables: {
           id: journey.id,
           input: { title: values.title, description: values.description }
@@ -94,7 +93,7 @@ export function TitleDescriptionDialog({
             title: journey.title ?? '',
             description: journey?.description ?? ''
           }}
-          onSubmit={handleUpdateTitle}
+          onSubmit={handleUpdateTitleDescription}
         >
           {({ values, handleChange, handleSubmit, resetForm }) => (
             <Dialog
