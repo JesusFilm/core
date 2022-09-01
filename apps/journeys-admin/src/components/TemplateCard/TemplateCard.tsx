@@ -21,7 +21,7 @@ import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
 
 export interface TemplateCardProps {
   journey?: Journey
-  admin?: boolean
+  admin?: boolean // activates publisher version of template cards
 }
 
 export function TemplateCard({
