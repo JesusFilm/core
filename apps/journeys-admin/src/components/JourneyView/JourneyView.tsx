@@ -23,6 +23,7 @@ import { CardView } from './CardView'
 import { SlugDialog } from './Properties/JourneyLink/SlugDialog'
 import { EmbedJourneyDialog } from './Properties/JourneyLink/EmbedJourneyDialog'
 import { TitleDescription } from './TitleDescription'
+import { SocialImage } from './SocialImage'
 
 export const GET_USER_ROLE = gql`
   query GetUserRole {
@@ -49,7 +50,12 @@ export function JourneyView(): ReactElement {
 
   return (
     <Box sx={{ mr: { sm: '328px' }, mb: '80px' }}>
-      <TitleDescription isPublisher={isPublisher} />
+      <Stack direction="row" spacing={10}>
+        {journey?.template === true && <SocialImage />}
+        <Box sx={{ width: '100%' }}>
+          <TitleDescription isPublisher={isPublisher} />
+        </Box>
+      </Stack>
       <Properties />
 
       {reports && journey != null && (
