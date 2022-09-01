@@ -50,4 +50,4 @@ Thumbs.db
 migrations.json
 
 # terraform providers
-/.terraform
+.terraform
