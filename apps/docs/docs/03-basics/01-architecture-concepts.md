@@ -1,8 +1,6 @@
----
-sidebar_position: 1
----
+# Architecture Concepts
 
-# Monorepo
+## Monorepo
 
 Core is a single monorepo that aims to implement our unified product suite - it's made up of many projects. When you initially consider contributing to Core, you might be unsure about which of these projects implements the functionality you want to change or report a bug for. This section should help you with that.
 

@@ -32,3 +32,7 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
   border-radius: 5px;
   margin-bottom: 10px;
 }
+
+.header-logo {
+  border-radius: 5px;
+}

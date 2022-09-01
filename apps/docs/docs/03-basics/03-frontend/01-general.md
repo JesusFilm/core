@@ -1,8 +1,4 @@
----
-sidebar_position: 3
----
-
-# Front-end Architecture
+# General
 
 Jesus Film uses [React](https://reactjs.org/) as our primary library to build out front-end user interfaces. These are built on top of the [Apollo Client](https://www.apollographql.com/apollo-client) to manage state and back-end interactions. We leverage the [Next.js](https://nextjs.org/) Framework to ship web based apps quickly and regularly on the [Vercel](https://vercel.com/) platform.
 

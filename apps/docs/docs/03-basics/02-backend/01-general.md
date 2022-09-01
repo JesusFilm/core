@@ -1,8 +1,4 @@
----
-sidebar_position: 2
----
-
-# Back-end Architecture
+# General
 
 Jesus Film exposes a [single data graph](https://graphql.jesusfilm.org/) that provides a unified interface for querying any combination of our back-end services. We make extensive use of [Apollo Federation](https://www.apollographql.com/docs/federation/) to divide our graph's implementation across multiple back-end services (called subgraphs).
 

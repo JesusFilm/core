@@ -15,7 +15,6 @@ const config = {
   favicon: 'img/favicon.png',
   organizationName: 'jesusfilm',
   projectName: 'core',
-
   presets: [
     [
       'classic',
@@ -40,15 +39,16 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
+        title: 'Jesus Film Project',
         logo: {
           alt: 'Jesus Film Logo',
-          src: 'img/logo.svg'
+          src: 'img/square.png',
+          className: 'logo'
         },
         items: [
-          { to: '/', label: 'Home', position: 'left' },
           {
             type: 'doc',
-            docId: 'intro',
+            docId: 'welcome',
             position: 'left',
             label: 'Docs'
           },
