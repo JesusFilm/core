@@ -30,7 +30,7 @@ describe('NavigationDrawer', () => {
     expect(getAllByRole('button')[0]).toContainElement(
       getByTestId('ChevronLeftRoundedIcon')
     )
-    expect(getByText('Discover')).toBeInTheDocument()
+    expect(getByText('Journeys')).toBeInTheDocument()
   })
 
   it('should show templates button', () => {
@@ -96,7 +96,7 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByTestId('AssessmentRoundedIcon')).toHaveStyle(` color: '#fff'`)
+    expect(getByTestId('LeaderboardRoundedIcon')).toHaveStyle(` color: '#fff'`)
   })
 
   it('should have avatar menu', async () => {
@@ -294,7 +294,7 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByTestId('ExploreRoundedIcon').parentElement).toHaveStyle(
+    expect(getByTestId('ViewCarouselRoundedIcon').parentElement).toHaveStyle(
       'color: #FFFFFF'
     )
   })
