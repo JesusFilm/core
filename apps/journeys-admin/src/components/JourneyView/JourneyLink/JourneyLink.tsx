@@ -7,8 +7,8 @@ import EditIcon from '@mui/icons-material/Edit'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'react-i18next'
-import { SlugDialog } from './SlugDialog'
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
+import { SlugDialog } from './SlugDialog'
 
 export function JourneyLink(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
