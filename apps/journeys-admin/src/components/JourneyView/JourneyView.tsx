@@ -1,12 +1,11 @@
 import { ReactElement, useState } from 'react'
+import { gql, useQuery } from '@apollo/client'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import EditIcon from '@mui/icons-material/Edit'
 import Fab from '@mui/material/Fab'
-import Skeleton from '@mui/material/Skeleton'
 import NextLink from 'next/link'
 import Divider from '@mui/material/Divider'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
@@ -15,13 +14,24 @@ import DeveloperModeRoundedIcon from '@mui/icons-material/DeveloperModeRounded'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'react-i18next'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { JourneysReportType } from '../../../__generated__/globalTypes'
+import { JourneysReportType, Role } from '../../../__generated__/globalTypes'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
+import { GetUserRole } from '../../../__generated__/GetUserRole'
 import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
 import { Properties } from './Properties'
 import { CardView } from './CardView'
 import { SlugDialog } from './Properties/JourneyLink/SlugDialog'
 import { EmbedJourneyDialog } from './Properties/JourneyLink/EmbedJourneyDialog'
+import { TitleDescription } from './TitleDescription'
+
+export const GET_USER_ROLE = gql`
+  query GetUserRole {
+    getUserRole {
+      id
+      roles
+    }
+  }
+`
 
 export function JourneyView(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -31,29 +41,15 @@ export function JourneyView(): ReactElement {
     journey?.blocks != null
       ? (transformer(journey.blocks) as Array<TreeBlock<StepBlock>>)
       : undefined
+  const { data } = useQuery<GetUserRole>(GET_USER_ROLE)
+  const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
 
   const [showSlugDialog, setShowSlugDialog] = useState(false)
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
 
   return (
     <Box sx={{ mr: { sm: '328px' }, mb: '80px' }}>
-      <Box sx={{ p: { xs: 6, sm: 8 }, backgroundColor: 'background.paper' }}>
-        <Typography variant="h4">
-          {journey != null ? (
-            journey.title
-          ) : (
-            <Skeleton variant="text" width="60%" />
-          )}
-        </Typography>
-        <Typography variant="body1">
-          {journey != null ? (
-            journey.description
-          ) : (
-            <Skeleton variant="text" width="80%" />
-          )}
-        </Typography>
-      </Box>
-
+      <TitleDescription isPublisher={isPublisher} />
       <Properties />
 
       {reports && journey != null && (
