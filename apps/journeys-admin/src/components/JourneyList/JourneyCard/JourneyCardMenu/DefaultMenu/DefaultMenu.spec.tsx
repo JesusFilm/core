@@ -132,25 +132,4 @@ describe('DefaultMenu', () => {
     expect(setOpenTrashDialog).toHaveBeenCalled()
     expect(handleCloseMenu).toHaveBeenCalled()
   })
-
-  it('should show menu for templates', () => {
-    const { queryByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <DefaultMenu
-            id="template-id"
-            slug="template-slug"
-            status={JourneyStatus.published}
-            journeyId="template-id"
-            published
-            setOpenAccessDialog={noop}
-            handleCloseMenu={noop}
-            template
-            setOpenTrashDialog={noop}
-          />
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    expect(queryByRole('menuitem', { name: 'Access' })).not.toBeInTheDocument()
-  })
 })
