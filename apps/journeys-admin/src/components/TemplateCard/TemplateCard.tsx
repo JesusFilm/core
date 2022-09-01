@@ -47,8 +47,6 @@ export function TemplateCard({
         })
       : ''
 
-  const contentWidth = admin === true ? '187px' : '129px'
-
   return (
     <Card
       aria-label="template-card"
@@ -92,7 +90,6 @@ export function TemplateCard({
             height: '129px',
             width: '129px',
             display: 'flex',
-            position: 'relative',
             justifyContent: 'center',
             alignItems: 'center',
             maxWidth: '129px',
@@ -113,7 +110,7 @@ export function TemplateCard({
         }
         passHref
       >
-        <CardActionArea sx={{ width: `calc(100% - ${contentWidth})` }}>
+        <CardActionArea sx={{ flexGrow: 1, width: '42%' }}>
           <CardContent>
             {journey != null ? (
               <>
