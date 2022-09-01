@@ -19,7 +19,7 @@ export interface DialogProps {
 }
 
 interface DialogAction {
-  onSubmit: () => void
+  onSubmit: (() => void) | (() => Promise<void>)
   submitLabel?: string
   closeLabel?: string
 }

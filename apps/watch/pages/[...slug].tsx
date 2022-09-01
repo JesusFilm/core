@@ -204,7 +204,7 @@ export default function SeoFriendly(): ReactElement {
 
   function playVideo(): void {
     setIsPlaying(true)
-    videoRef?.current?.play()
+    void videoRef?.current?.play()
   }
 
   function pauseVideo(): void {
