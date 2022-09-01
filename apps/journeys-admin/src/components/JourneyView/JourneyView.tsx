@@ -5,8 +5,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import Box from '@mui/material/Box'
 import EditIcon from '@mui/icons-material/Edit'
-import Fab from '@mui/material/Fab'
-import NextLink from 'next/link'
 import Divider from '@mui/material/Divider'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import Button from '@mui/material/Button'
@@ -23,6 +21,7 @@ import { CardView } from './CardView'
 import { SlugDialog } from './Properties/JourneyLink/SlugDialog'
 import { EmbedJourneyDialog } from './Properties/JourneyLink/EmbedJourneyDialog'
 import { TitleDescription } from './TitleDescription'
+import { JourneyViewFab } from './JourneyViewFab'
 
 export const GET_USER_ROLE = gql`
   query GetUserRole {
@@ -118,25 +117,7 @@ export function JourneyView(): ReactElement {
 
       <>
         <CardView id={journey?.id} blocks={blocks} />
-        <NextLink
-          href={journey != null ? `/journeys/${journey.id}/edit` : ''}
-          passHref
-        >
-          <Fab
-            variant="extended"
-            size="large"
-            sx={{
-              position: 'fixed',
-              bottom: 16,
-              right: { xs: 20, sm: 348 }
-            }}
-            color="primary"
-            disabled={journey == null}
-          >
-            <EditIcon sx={{ mr: 3 }} />
-            Edit
-          </Fab>
-        </NextLink>
+        <JourneyViewFab isPublisher={isPublisher} />
       </>
 
       <SlugDialog
