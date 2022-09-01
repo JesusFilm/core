@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
@@ -20,32 +20,19 @@ export function NavigationMenuItem({
   handleClick
 }: NavigationMenuItemProps): ReactElement {
   return (
-    <>
-      <LinkWrapper
-        wrapper={(children) => (
-          <Link href={link as string} passHref>
-            {children}
-          </Link>
-        )}
-        condition={link}
-      >
-        <ListItemButton onClick={handleClick}>
-          <ListItemIcon
-            sx={{
-              color
-            }}
-          >
-            {icon}
-          </ListItemIcon>
-          <ListItemText
-            primary={text}
-            sx={{
-              color
-            }}
-          />
-        </ListItemButton>
-      </LinkWrapper>
-    </>
+    <LinkWrapper
+      wrapper={(children) => (
+        <NextLink href={link as string} passHref>
+          {children}
+        </NextLink>
+      )}
+      condition={link}
+    >
+      <ListItemButton onClick={handleClick}>
+        <ListItemIcon sx={{ color }}>{icon}</ListItemIcon>
+        <ListItemText primary={text} sx={{ color }} />
+      </ListItemButton>
+    </LinkWrapper>
   )
 }
 
