@@ -200,7 +200,6 @@ export function NavigationDrawer({
           </>
         )}
       </StyledList>
-
       <Box sx={{ flexGrow: 1 }} />
       <StyledList>
         <ListItem>
