@@ -10,7 +10,7 @@ import { SlugDialog, JOURNEY_SLUG_UPDATE } from './SlugDialog'
 const SlugDialogStory = {
   ...journeysAdminConfig,
   component: SlugDialog,
-  title: 'Journeys-Admin/JourneyView/Properties/SlugDialog',
+  title: 'Journeys-Admin/JourneyView/JourneyLink/SlugDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
