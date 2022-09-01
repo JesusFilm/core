@@ -32,7 +32,7 @@ describe('NavigationMenuItem', () => {
 
   it('calls onClick', () => {
     const onClick = jest.fn()
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <NavigationMenuItem
         icon={<AbcRoundedIcon />}
         text="menu item"
@@ -40,7 +40,7 @@ describe('NavigationMenuItem', () => {
         handleClick={onClick}
       />
     )
-    fireEvent.click(getByTestId('AbcRoundedIcon'))
+    fireEvent.click(getByRole('button', { name: 'menu item' }))
     expect(onClick).toHaveBeenCalled()
   })
 })
