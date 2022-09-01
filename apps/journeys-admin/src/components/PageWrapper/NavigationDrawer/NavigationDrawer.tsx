@@ -8,10 +8,8 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
-import Link from 'next/link'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
@@ -30,6 +28,7 @@ import { GetMe } from '../../../../__generated__/GetMe'
 import { GetUserRole } from '../../../../__generated__/GetUserRole'
 import { GET_USER_ROLE } from '../../../../pages/templates/admin'
 import { UserMenu } from './UserMenu'
+import { NavigationListItem } from './NavigationListItem'
 
 const DRAWER_WIDTH = '237px'
 
@@ -103,6 +102,7 @@ export function NavigationDrawer({
 }: NavigationDrawerProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
+
   const journeysSelected =
     title === 'Active Journeys' ||
     title === 'Archived Journeys' ||
@@ -150,70 +150,34 @@ export function NavigationDrawer({
             {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
           </ListItemIcon>
         </ListItemButton>
-        <Link href="/" passHref>
-          <ListItemButton>
-            <ListItemIcon
-              sx={{
-                color: journeysSelected ? 'background.paper' : 'secondary.light'
-              }}
-            >
-              <ViewCarouselRoundedIcon />
-            </ListItemIcon>
-            <ListItemText
-              primary="Journeys"
-              sx={{
-                color: journeysSelected ? 'background.paper' : 'secondary.light'
-              }}
-            />
-          </ListItemButton>
-        </Link>
+
+        <NavigationListItem
+          icon={<ExploreRoundedIcon />}
+          text="Discover"
+          color={journeysSelected ? 'background.paper' : 'secondary.light'}
+          link="/"
+        />
 
         {templates && (
-          <Link href="/templates" passHref>
-            <ListItemButton>
-              <ListItemIcon
-                sx={{
-                  color:
-                    title === 'Journey Templates'
-                      ? 'background.paper'
-                      : 'secondary.light'
-                }}
-              >
-                <ShopRoundedIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="Templates"
-                sx={{
-                  color:
-                    title === 'Journey Templates'
-                      ? 'background.paper'
-                      : 'secondary.light'
-                }}
-              />
-            </ListItemButton>
-          </Link>
+          <NavigationListItem
+            icon={<ShopRoundedIcon />}
+            text="Templates"
+            color={
+              title === 'Journey Templates'
+                ? 'background.paper'
+                : 'secondary.light'
+            }
+            link="/library"
+          />
         )}
 
         {reports && (
-          <Link href="/reports" passHref>
-            <ListItemButton>
-              <ListItemIcon
-                sx={{
-                  color:
-                    title === 'Reports' ? 'background.paper' : 'secondary.light'
-                }}
-              >
-                <LeaderboardRoundedIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="Reports"
-                sx={{
-                  color:
-                    title === 'Reports' ? 'background.paper' : 'secondary.light'
-                }}
-              />
-            </ListItemButton>
-          </Link>
+          <NavigationListItem
+            icon={<AssessmentRoundedIcon />}
+            text="Reports"
+            color={title === 'Reports' ? 'background.paper' : 'secondary.light'}
+            link="/reports"
+          />
         )}
         {authUser != null && data?.me != null && (
           <>
@@ -247,19 +211,18 @@ export function NavigationDrawer({
                 </Link>
               )}
 
-            <ListItemButton onClick={handleProfileClick}>
-              <ListItemIcon>
+            <NavigationListItem
+              icon={
                 <Avatar
                   alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
                   src={data.me.imageUrl ?? undefined}
                   sx={{ width: 24, height: 24 }}
                 />
-              </ListItemIcon>
-              <ListItemText
-                primary="Profile"
-                sx={{ color: 'secondary.light' }}
-              />
-            </ListItemButton>
+              }
+              text="Profile"
+              color="secondary.light"
+              handleClick={handleProfileClick}
+            />
             <UserMenu
               user={data.me}
               profileOpen={profileOpen}

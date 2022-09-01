@@ -1,13 +1,15 @@
 import { ReactElement } from 'react'
 import Container from '@mui/material/Container'
 import { GetPublishedTemplates_journeys as Journey } from '../../../__generated__/GetPublishedTemplates'
-import { TemplateCard } from './TemplateCard'
+import { TemplateCard } from '../TemplateCard'
 
-interface TemplateListProps {
+interface TemplateLibraryProps {
   journeys?: Journey[]
 }
 
-export function TemplateList({ journeys }: TemplateListProps): ReactElement {
+export function TemplateLibrary({
+  journeys
+}: TemplateLibraryProps): ReactElement {
   return (
     <Container
       sx={{
@@ -23,9 +25,9 @@ export function TemplateList({ journeys }: TemplateListProps): ReactElement {
         </>
       ) : (
         <>
-          <TemplateCard />
-          <TemplateCard />
-          <TemplateCard />
+          {[1, 2, 3].map((index) => (
+            <TemplateCard key={`templateCard${index}`} />
+          ))}
         </>
       )}
     </Container>

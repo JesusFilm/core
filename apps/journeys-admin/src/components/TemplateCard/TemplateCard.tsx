@@ -53,8 +53,11 @@ export function TemplateCard({
     }
   }, [duplicatedJourneyId, journey])
 
-  const nativeLanguage = journey?.language.name[0].value ?? ''
-  const localLanguage = journey?.language.name[1]?.value
+  const nativeLanguage =
+    journey?.language.name.find(({ primary }) => primary)?.value ?? ''
+  const localLanguage = journey?.language.name.find(
+    ({ primary }) => !primary
+  )?.value
   const displayLanguage =
     nativeLanguage === localLanguage || localLanguage == null
       ? nativeLanguage
@@ -68,8 +71,6 @@ export function TemplateCard({
           year: isThisYear(parseISO(journey?.createdAt)) ? undefined : 'numeric'
         })
       : ''
-
-  const contentWidth = admin === true ? '187px' : '129px'
 
   return (
     <Card
@@ -117,7 +118,6 @@ export function TemplateCard({
             height: '129px',
             width: '129px',
             display: 'flex',
-            position: 'relative',
             justifyContent: 'center',
             alignItems: 'center',
             maxWidth: '129px',
@@ -130,8 +130,15 @@ export function TemplateCard({
         </CardMedia>
       )}
 
-      <Link href={journey != null ? `/templates/${journey.id}` : ''} passHref>
-        <CardActionArea sx={{ width: `calc(100% - ${contentWidth})` }}>
+      <Link
+        href={
+          journey != null
+            ? `/${admin === true ? 'templates' : 'library'}/${journey.id}`
+            : ''
+        }
+        passHref
+      >
+        <CardActionArea sx={{ flexGrow: 1, width: '42%' }}>
           <CardContent>
             {journey != null ? (
               <>
@@ -159,6 +166,7 @@ export function TemplateCard({
                       display: 'flex',
                       alignItems: 'center'
                     }}
+                    noWrap
                   >
                     <TranslateRoundedIcon sx={{ fontSize: '14px', mr: 1 }} />
                     {displayLanguage}
@@ -200,9 +208,9 @@ export function TemplateCard({
         </CardActionArea>
       </Link>
 
-      {admin === true &&
-        (journey != null ? (
-          <CardActions sx={{ alignSelf: 'flex-end', width: '58px' }}>
+      {admin === true && (
+        <CardActions sx={{ alignSelf: 'flex-end', width: '58px' }}>
+          {journey != null ? (
             <JourneyCardMenu
               id={journey.id}
               status={journey.status}
@@ -211,14 +219,15 @@ export function TemplateCard({
               template
               refetch={refetch}
             />
-          </CardActions>
-        ) : (
-          <CardActions sx={{ alignSelf: 'flex-end', width: '58px' }}>
-            <IconButton disabled>
-              <MoreVertIcon />
-            </IconButton>
-          </CardActions>
-        ))}
+          ) : (
+            <>
+              <IconButton disabled>
+                <MoreVertIcon />
+              </IconButton>
+            </>
+          )}
+        </CardActions>
+      )}
     </Card>
   )
 }
