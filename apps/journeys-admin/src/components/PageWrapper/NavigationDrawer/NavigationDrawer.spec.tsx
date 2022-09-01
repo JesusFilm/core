@@ -33,39 +33,6 @@ describe('NavigationDrawer', () => {
     expect(getByText('Journeys')).toBeInTheDocument()
   })
 
-  it('should show templates button', () => {
-    const { getByText } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer open onClose={onClose} title="Journeys" />
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(getByText('Templates')).toBeInTheDocument()
-  })
-
-  it('should hide templates button', () => {
-    const { queryByText } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ templates: false }}>
-          <NavigationDrawer open onClose={onClose} title="Journeys" />
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(queryByText('Templates')).not.toBeInTheDocument()
-  })
-
-  it('should select templates button', () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer open onClose={onClose} title="Journey Templates" />
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(getByTestId('ShopRoundedIcon')).toHaveStyle(` color: '#fff'`)
-  })
-
   it('should show reports button', () => {
     const { getByText } = render(
       <MockedProvider>
