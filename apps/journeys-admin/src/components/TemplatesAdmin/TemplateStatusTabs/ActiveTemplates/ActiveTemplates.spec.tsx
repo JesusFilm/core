@@ -6,7 +6,7 @@ import { AuthUser } from 'next-firebase-auth'
 import {
   defaultTemplate,
   oldTemplate
-} from '../../../TemplateList/TemplateListData'
+} from '../../../TemplateLibrary/TemplateListData'
 import { ThemeProvider } from '../../../ThemeProvider'
 import { SortOrder } from '../../../JourneyList/JourneySort'
 import {

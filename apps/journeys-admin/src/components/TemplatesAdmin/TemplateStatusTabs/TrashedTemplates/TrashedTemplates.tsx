@@ -15,7 +15,7 @@ import {
   GetTrashedPublisherTemplates,
   GetTrashedPublisherTemplates_journeys as TrashedJourney
 } from '../../../../../__generated__/GetTrashedPublisherTemplates'
-import { TemplateCard } from '../../../TemplateList/TemplateCard'
+import { TemplateCard } from '../../../TemplateCard'
 
 export const GET_TRASHED_PUBLISHER_TEMPLATES = gql`
   query GetTrashedPublisherTemplates {

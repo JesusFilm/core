@@ -16,7 +16,7 @@ import {
   GetArchivedPublisherTemplates,
   GetArchivedPublisherTemplates_journeys as Journey
 } from '../../../../../__generated__/GetArchivedPublisherTemplates'
-import { TemplateCard } from '../../../TemplateList/TemplateCard'
+import { TemplateCard } from '../../../TemplateCard'
 
 export const GET_ARCHIVED_PUBLISHER_TEMPLATES = gql`
   query GetArchivedPublisherTemplates {

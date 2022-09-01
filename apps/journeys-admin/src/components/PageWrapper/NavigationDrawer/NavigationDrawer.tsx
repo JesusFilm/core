@@ -152,7 +152,7 @@ export function NavigationDrawer({
         </ListItemButton>
 
         <NavigationListItem
-          icon={<ExploreRoundedIcon />}
+          icon={<ViewCarouselRoundedIcon />}
           text="Discover"
           color={journeysSelected ? 'background.paper' : 'secondary.light'}
           link="/"
@@ -173,7 +173,7 @@ export function NavigationDrawer({
 
         {reports && (
           <NavigationListItem
-            icon={<AssessmentRoundedIcon />}
+            icon={<LeaderboardRoundedIcon />}
             text="Reports"
             color={title === 'Reports' ? 'background.paper' : 'secondary.light'}
             link="/reports"
@@ -186,29 +186,16 @@ export function NavigationDrawer({
             {userRoleData?.getUserRole?.roles?.includes(Role.publisher) ===
               true &&
               templates && (
-                <Link href="/templates/admin" passHref>
-                  <ListItemButton>
-                    <ListItemIcon
-                      sx={{
-                        color:
-                          title === 'Templates Admin'
-                            ? 'background.paper'
-                            : 'secondary.light'
-                      }}
-                    >
-                      <ShopTwoRoundedIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Templates Admin"
-                      sx={{
-                        color:
-                          title === 'Templates Admin'
-                            ? 'background.paper'
-                            : 'secondary.light'
-                      }}
-                    />
-                  </ListItemButton>
-                </Link>
+                <NavigationListItem
+                  icon={<ShopTwoRoundedIcon />}
+                  text="Templates Admin"
+                  color={
+                    title === 'Templates Admin'
+                      ? 'background.paper'
+                      : 'secondary.light'
+                  }
+                  link="/templates/admin" // TODO: update when path is decided
+                />
               )}
 
             <NavigationListItem

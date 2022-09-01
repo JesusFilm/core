@@ -9,7 +9,7 @@ import {
   oldTemplate,
   descriptiveTemplate,
   publishedTemplate
-} from '../../../TemplateList/TemplateListData'
+} from '../../../TemplateLibrary/TemplateListData'
 import { GET_TRASHED_PUBLISHER_TEMPLATES } from './TrashedTemplates'
 import { TrashedTemplates } from '.'
 

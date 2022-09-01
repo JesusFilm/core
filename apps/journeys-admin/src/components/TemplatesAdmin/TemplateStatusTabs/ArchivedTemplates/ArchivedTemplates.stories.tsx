@@ -7,7 +7,7 @@ import {
   oldTemplate,
   descriptiveTemplate,
   publishedTemplate
-} from '../../../TemplateList/TemplateListData'
+} from '../../../TemplateLibrary/TemplateListData'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { GET_ARCHIVED_PUBLISHER_TEMPLATES } from './ArchivedTemplates'
 import { ArchivedTemplates } from '.'

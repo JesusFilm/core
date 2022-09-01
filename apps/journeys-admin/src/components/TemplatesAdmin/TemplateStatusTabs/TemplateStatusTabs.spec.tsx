@@ -8,7 +8,7 @@ import {
   oldTemplate,
   descriptiveTemplate,
   publishedTemplate
-} from '../../TemplateList/TemplateListData'
+} from '../../TemplateLibrary/TemplateListData'
 import { ThemeProvider } from '../../ThemeProvider'
 import { TemplateStatusTabs } from './TemplateStatusTabs'
 import { GET_ACTIVE_PUBLISHER_TEMPLATES } from './ActiveTemplates/ActiveTemplates'

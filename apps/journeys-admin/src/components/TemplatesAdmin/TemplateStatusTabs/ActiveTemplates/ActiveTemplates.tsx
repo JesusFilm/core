@@ -15,7 +15,7 @@ import {
   GetActivePublisherTemplates,
   GetActivePublisherTemplates_journeys as Journey
 } from '../../../../../__generated__/GetActivePublisherTemplates'
-import { TemplateCard } from '../../../TemplateList/TemplateCard'
+import { TemplateCard } from '../../../TemplateCard'
 import { getDuplicatedJourney } from '../../../JourneyList/StatusTabPanel/ActiveStatusTab/utils/getDuplicatedJourney'
 
 export const GET_ACTIVE_PUBLISHER_TEMPLATES = gql`

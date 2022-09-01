@@ -68,7 +68,7 @@ describe('NavigationDrawer', () => {
   })
 
   it('should have avatar menu', async () => {
-    const { getByRole, getByText } = render(
+    const { getByTestId } = render(
       <MockedProvider
         mocks={[
           {
