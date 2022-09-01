@@ -1,4 +1,5 @@
 import { ReactElement, useState } from 'react'
+import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
@@ -25,16 +26,15 @@ export function TitleDescription({
 
   return (
     <>
-      <Stack direction="column" spacing={4}>
+      <Box sx={{ p: { xs: 6, sm: 8 }, backgroundColor: 'background.paper' }}>
         <Stack
           direction="row"
-          spacing={2}
           sx={{
             justifyContent: 'space-between',
             display: journey != null ? 'flex' : 'block'
           }}
         >
-          <Typography variant={journey?.template === true ? 'h1' : 'h4'}>
+          <Typography variant="h4">
             {journey != null ? (
               journey.title
             ) : (
@@ -51,14 +51,14 @@ export function TitleDescription({
             </IconButton>
           )}
         </Stack>
-        <Typography variant={journey?.template === true ? 'body2' : 'body1'}>
+        <Typography variant="body1">
           {journey != null ? (
             journey.description
           ) : (
             <Skeleton variant="text" width="80%" />
           )}
         </Typography>
-      </Stack>
+      </Box>
       <TitleDescriptionDialog
         open={showTitleDescriptionDialog}
         onClose={() => setShowTitleDescriptionDialog(false)}
