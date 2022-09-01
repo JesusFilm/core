@@ -1,11 +1,11 @@
 import { fireEvent, render } from '@testing-library/react'
 import AbcRoundedIcon from '@mui/icons-material/AbcRounded'
-import { NavigationMenuItem } from './NavigationMenuItem'
+import { NavigationListItem } from './NavigationListItem'
 
-describe('NavigationMenuItem', () => {
+describe('NavigationListItem', () => {
   it('renders menu item', () => {
     const { getByText, getByTestId } = render(
-      <NavigationMenuItem
+      <NavigationListItem
         icon={<AbcRoundedIcon />}
         text="menu item"
         color="#fff"
@@ -18,7 +18,7 @@ describe('NavigationMenuItem', () => {
 
   it('renders menuitem with link', () => {
     const { getByTestId } = render(
-      <NavigationMenuItem
+      <NavigationListItem
         icon={<AbcRoundedIcon />}
         text="menu item"
         color="#fff"
@@ -33,7 +33,7 @@ describe('NavigationMenuItem', () => {
   it('calls onClick', () => {
     const onClick = jest.fn()
     const { getByRole } = render(
-      <NavigationMenuItem
+      <NavigationListItem
         icon={<AbcRoundedIcon />}
         text="menu item"
         color="#fff"

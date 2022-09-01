@@ -24,7 +24,7 @@ import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
 import { UserMenu } from './UserMenu'
-import { NavigationMenuItem } from './NavigationMenuItem'
+import { NavigationListItem } from './NavigationListItem'
 
 const DRAWER_WIDTH = '237px'
 
@@ -146,7 +146,7 @@ export function NavigationDrawer({
           </ListItemIcon>
         </ListItemButton>
 
-        <NavigationMenuItem
+        <NavigationListItem
           icon={<ExploreRoundedIcon />}
           text="Discover"
           color={journeysSelected ? 'background.paper' : 'secondary.light'}
@@ -154,7 +154,7 @@ export function NavigationDrawer({
         />
 
         {templates && (
-          <NavigationMenuItem
+          <NavigationListItem
             icon={<ShopRoundedIcon />}
             text="Templates"
             color={
@@ -167,7 +167,7 @@ export function NavigationDrawer({
         )}
 
         {reports && (
-          <NavigationMenuItem
+          <NavigationListItem
             icon={<AssessmentRoundedIcon />}
             text="Reports"
             color={title === 'Reports' ? 'background.paper' : 'secondary.light'}
@@ -178,7 +178,7 @@ export function NavigationDrawer({
         {authUser != null && data?.me != null && (
           <>
             <Divider sx={{ m: 6, mt: 0, borderColor: 'secondary.main' }} />
-            <NavigationMenuItem
+            <NavigationListItem
               icon={
                 <Avatar
                   alt={compact([data.me.firstName, data.me.lastName]).join(' ')}

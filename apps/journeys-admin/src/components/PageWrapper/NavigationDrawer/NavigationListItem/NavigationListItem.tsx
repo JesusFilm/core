@@ -4,7 +4,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 
-export interface NavigationMenuItemProps {
+export interface NavigationListItemProps {
   icon: ReactElement
   text: string
   color: string
@@ -12,13 +12,13 @@ export interface NavigationMenuItemProps {
   handleClick?: (e?) => void
 }
 
-export function NavigationMenuItem({
+export function NavigationListItem({
   icon,
   text,
   color,
   link,
   handleClick
-}: NavigationMenuItemProps): ReactElement {
+}: NavigationListItemProps): ReactElement {
   return (
     <LinkWrapper
       wrapper={(children) => (
