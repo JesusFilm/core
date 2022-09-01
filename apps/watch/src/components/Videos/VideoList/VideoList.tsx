@@ -63,7 +63,7 @@ export function VideoList({
     variables: {
       where: filter,
       offset: 0,
-      limit: limit,
+      limit,
       languageId: languageContext?.id ?? '529'
     }
   })

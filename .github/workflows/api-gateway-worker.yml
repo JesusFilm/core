@@ -51,10 +51,10 @@ jobs:
           restore-keys: node-modules-
 
       - name: NPM Install
-        run: npm install --silent
+        run: npm install
 
       - name: nx Install
-        run: npm install -g nx --silent
+        run: npm install -g nx
 
       - name: rover Install
         run: npm install -g @apollo/rover@0.2.1

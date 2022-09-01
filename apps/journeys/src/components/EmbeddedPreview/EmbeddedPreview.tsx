@@ -161,10 +161,10 @@ export function EmbeddedPreview({
                   data-testid="embedded-preview-block-renderer"
                   block={blocks?.[0]}
                   wrappers={{
-                    ButtonWrapper: ButtonWrapper,
+                    ButtonWrapper,
                     ImageWrapper: NullWrapper,
-                    RadioOptionWrapper: RadioOptionWrapper,
-                    VideoWrapper: VideoWrapper
+                    RadioOptionWrapper,
+                    VideoWrapper
                   }}
                 />
               )}

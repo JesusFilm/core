@@ -855,7 +855,6 @@ describe('JourneyResolver', () => {
 
   describe('journeyPublish', () => {
     it('publishes a Journey', async () => {
-      const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers()
       await resolver.journeyPublish('1')
       expect(service.update).toHaveBeenCalledWith('1', {

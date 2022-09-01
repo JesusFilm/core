@@ -62,10 +62,10 @@ jobs:
           restore-keys: node-modules-
 
       - name: NPM Install
-        run: npm install --silent
+        run: npm install
 
       - name: nx Install
-        run: npm install -g nx --silent
+        run: npm install -g nx
 
       - name: Get affected apps
         run: echo "::set-output name=apps::$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)"

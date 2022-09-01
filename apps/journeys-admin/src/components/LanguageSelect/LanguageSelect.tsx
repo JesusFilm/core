@@ -32,7 +32,7 @@ export function LanguageSelect({
         const nativeLanguageName = name.find(({ primary }) => primary)?.value
 
         return {
-          id: id,
+          id,
           localName: localLanguageName,
           nativeName: nativeLanguageName
         }

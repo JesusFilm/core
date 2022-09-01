@@ -84,7 +84,7 @@ const Template: Story = ({ ...args }) => {
 }
 
 export const Default = Template.bind({})
-Default.args = { journey: journey }
+Default.args = { journey }
 
 export const Filled = Template.bind({})
 Filled.args = {
@@ -114,7 +114,7 @@ export const Loading = Template.bind({})
 Loading.args = { journey: null }
 
 export const NoImageDialog = Template.bind({})
-NoImageDialog.args = { journey: journey }
+NoImageDialog.args = { journey }
 NoImageDialog.play = () => {
   userEvent.click(screen.getByRole('button', { name: 'Change' }))
 }

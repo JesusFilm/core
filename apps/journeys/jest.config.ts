@@ -1,5 +1,4 @@
-/* eslint-disable */
-export default {
+const jestConfig = {
   displayName: 'journeys',
   preset: '../../jest.preset.js',
   transform: {
@@ -10,3 +9,5 @@ export default {
   coverageDirectory: '../../coverage/apps/journeys',
   setupFilesAfterEnv: ['<rootDir>setupTests.ts']
 }
+
+export default jestConfig

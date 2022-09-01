@@ -1,5 +1,4 @@
-/* eslint-disable */
-export default {
+const jestConfig = {
   displayName: 'journeys-admin',
   preset: '../../jest.preset.js',
   transform: {
@@ -10,3 +9,5 @@ export default {
   coverageDirectory: '../../coverage/apps/journeys-admin',
   setupFilesAfterEnv: ['<rootDir>setupTests.tsx']
 }
+
+export default jestConfig

@@ -38,7 +38,7 @@ describe('VideoList', () => {
               },
               result: {
                 data: {
-                  videos: videos
+                  videos
                 }
               }
             }
@@ -86,7 +86,7 @@ describe('VideoList', () => {
               },
               result: {
                 data: {
-                  videos: videos
+                  videos
                 }
               }
             }
@@ -134,7 +134,7 @@ describe('VideoList', () => {
               },
               result: {
                 data: {
-                  videos: videos
+                  videos
                 }
               }
             }

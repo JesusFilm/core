@@ -37,7 +37,7 @@ export function JourneyInvite({
 
   const handleClick = async (): Promise<void> => {
     await userJourneyRequest({
-      variables: { journeyId: journeyId }
+      variables: { journeyId }
     })
     setRequestReceived(true)
   }

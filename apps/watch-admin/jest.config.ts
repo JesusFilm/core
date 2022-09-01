@@ -1,5 +1,4 @@
-/* eslint-disable */
-export default {
+const jestConfig = {
   displayName: 'watch-admin',
   preset: '../../jest.preset.js',
   transform: {
@@ -10,3 +9,5 @@ export default {
   coverageDirectory: '../../coverage/apps/watch-admin',
   setupFilesAfterEnv: ['<rootDir>setupTests.tsx']
 }
+
+export default jestConfig
