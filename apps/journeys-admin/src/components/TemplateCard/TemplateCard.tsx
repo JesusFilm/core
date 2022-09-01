@@ -138,6 +138,7 @@ export function TemplateCard({
                       display: 'flex',
                       alignItems: 'center'
                     }}
+                    noWrap
                   >
                     <TranslateRoundedIcon sx={{ fontSize: '14px', mr: 1 }} />
                     {displayLanguage}
