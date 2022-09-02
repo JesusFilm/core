@@ -18,18 +18,18 @@ describe('PageWrapper', () => {
       const { getByText } = render(
         <MockedProvider>
           <FlagsProvider>
-            <PageWrapper title="Journeys" />
+            <PageWrapper title="Page title" />
           </FlagsProvider>
         </MockedProvider>
       )
-      expect(getByText('Journeys')).toBeInTheDocument()
+      expect(getByText('Page title')).toBeInTheDocument()
     })
 
     it('should show back button', () => {
       const { getByRole } = render(
         <MockedProvider>
           <FlagsProvider>
-            <PageWrapper title="Journeys" backHref="/" />
+            <PageWrapper title="Page title" backHref="/" />
           </FlagsProvider>
         </MockedProvider>
       )
@@ -40,7 +40,7 @@ describe('PageWrapper', () => {
       const { getByText } = render(
         <MockedProvider>
           <FlagsProvider>
-            <PageWrapper title="Journeys" menu={<>Custom Content</>} />
+            <PageWrapper title="Page title" menu={<>Custom Content</>} />
           </FlagsProvider>
         </MockedProvider>
       )
@@ -51,7 +51,7 @@ describe('PageWrapper', () => {
       const { getByTestId } = render(
         <MockedProvider>
           <FlagsProvider>
-            <PageWrapper title="Journeys">
+            <PageWrapper title="Page title">
               <div data-testid="test">Hello</div>
             </PageWrapper>
           </FlagsProvider>
@@ -64,7 +64,7 @@ describe('PageWrapper', () => {
       const { getAllByRole, getByTestId, getByText } = render(
         <MockedProvider>
           <FlagsProvider>
-            <PageWrapper title="Journeys" />
+            <PageWrapper title="Page title" />
           </FlagsProvider>
         </MockedProvider>
       )
@@ -72,7 +72,7 @@ describe('PageWrapper', () => {
         getByTestId('ChevronRightRoundedIcon')
       )
       fireEvent.click(getAllByRole('button')[0])
-      expect(getByText('Discover')).toBeInTheDocument()
+      expect(getByText('Journeys')).toBeInTheDocument()
     })
   })
 
@@ -93,7 +93,7 @@ describe('PageWrapper', () => {
       const button = getAllByRole('button')[0]
       expect(button).toContainElement(getByTestId('MenuIcon'))
       fireEvent.click(button)
-      expect(getByText('Discover')).toBeInTheDocument()
+      expect(getByText('Journeys')).toBeInTheDocument()
     })
 
     it('should not show the drawer on mobile view', () => {
