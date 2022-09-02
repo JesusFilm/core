@@ -1,0 +1,26 @@
+{
+  "extends": ["plugin:@nrwl/nx/react-typescript", "../../.eslintrc.json"],
+  "ignorePatterns": ["!**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": ["apps/docs/tsconfig.*?.json"]
+      },
+      "rules": {
+        "no-void": ["error", { "allowAsStatement": true }]
+      }
+    },
+    {
+      "files": ["*.js", "*.jsx"],
+      "rules": {}
+    },
+    {
+      "files": ["*.tsx", "*.jsx"],
+      "rules": {}
+    }
+  ],
+  "env": {
+    "jest": true
+  }
+}
