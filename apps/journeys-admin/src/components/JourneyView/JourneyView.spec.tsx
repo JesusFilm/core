@@ -55,23 +55,6 @@ describe('JourneyView', () => {
     userJourneys: [],
     template: null
   }
-  it('should have edit button', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ reports: true }}>
-          <SnackbarProvider>
-            <JourneyProvider value={{ journey, admin: true }}>
-              <JourneyView />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
-      'href',
-      '/journeys/journeyId/edit'
-    )
-  })
   it('should show reports', async () => {
     const { getByTestId } = render(
       <MockedProvider>
