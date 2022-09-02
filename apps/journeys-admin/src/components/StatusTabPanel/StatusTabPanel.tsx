@@ -6,7 +6,7 @@ import {
   useEffect,
   useState
 } from 'react'
-import Card from '@mui/material/Card'
+import Paper from '@mui/material/Paper'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
@@ -124,7 +124,7 @@ export function StatusTabPanel({
           />
         </Box>
 
-        <Card
+        <Paper
           variant="outlined"
           sx={{
             mt: { xs: 0, sm: 6 },
@@ -183,7 +183,7 @@ export function StatusTabPanel({
               />
             </Box>
           </Tabs>
-        </Card>
+        </Paper>
 
         {activeTab === 0 && (
           <TabPanel
