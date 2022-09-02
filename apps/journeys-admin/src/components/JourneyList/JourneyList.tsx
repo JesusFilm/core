@@ -44,6 +44,13 @@ export function JourneyList({
     setActiveTabLoaded(true)
   }
 
+  const journeyListProps = {
+    onLoad: activeTabOnLoad,
+    sortOrder: sortOrder,
+    event: activeEvent,
+    authUser: authUser
+  }
+
   return (
     <>
       {journeys != null && journeys.length > 0 && reports && (
@@ -52,30 +59,9 @@ export function JourneyList({
       <Container sx={{ px: { xs: 0, sm: 8 } }}>
         {(journeys == null || journeys.length > 0) && (
           <StatusTabPanel
-            activeList={
-              <ActiveJourneyList
-                onLoad={activeTabOnLoad}
-                sortOrder={sortOrder}
-                event={activeEvent}
-                authUser={authUser}
-              />
-            }
-            archivedList={
-              <ArchivedJourneyList
-                onLoad={activeTabOnLoad}
-                sortOrder={sortOrder}
-                event={activeEvent}
-                authUser={authUser}
-              />
-            }
-            trashedList={
-              <TrashedJourneyList
-                onLoad={activeTabOnLoad}
-                sortOrder={sortOrder}
-                event={activeEvent}
-                authUser={authUser}
-              />
-            }
+            activeList={<ActiveJourneyList {...journeyListProps} />}
+            archivedList={<ArchivedJourneyList {...journeyListProps} />}
+            trashedList={<TrashedJourneyList {...journeyListProps} />}
             activeTabLoaded={activeTabLoaded}
             setActiveEvent={setActiveEvent}
             setSortOrder={setSortOrder}
