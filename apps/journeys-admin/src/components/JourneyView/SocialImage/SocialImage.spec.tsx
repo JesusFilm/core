@@ -3,11 +3,6 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { publishedJourney } from '../data'
 import { SocialImage } from './SocialImage'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
-
 describe('SocialImage', () => {
   it('renders the primary image of a journey', () => {
     const { getByRole } = render(

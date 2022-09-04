@@ -50,7 +50,11 @@ export function JourneyView(): ReactElement {
 
   return (
     <Box sx={{ mr: { sm: '328px' }, mb: '80px' }}>
-      <Stack direction="row" spacing={10}>
+      <Stack
+        direction="row"
+        spacing={10}
+        sx={{ backgroundColor: 'background.paper' }}
+      >
         {journey?.template === true && <SocialImage />}
         <Box sx={{ width: '100%' }}>
           <TitleDescription isPublisher={isPublisher} />

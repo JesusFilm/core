@@ -1,20 +1,27 @@
 import { Story, Meta } from '@storybook/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
 import { simpleComponentConfig } from '../../../libs/storybook'
-import { publishedJourney } from '../data'
+import { defaultJourney } from '../data'
 import { SocialImage } from './SocialImage'
 
 const SocialImageStory = {
   ...simpleComponentConfig,
   component: SocialImage,
-  title: 'Journeys-Admin/JourneyView/SocialImage'
+  title: 'Journeys-Admin/JourneyView/SocialImage',
+  parameters: {
+    ...simpleComponentConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
     <JourneyProvider value={{ journey: args.journey }}>
-      <SocialImage />
+      <Box sx={{ p: 5, backgroundColor: 'background.paper' }}>
+        <SocialImage />
+      </Box>
     </JourneyProvider>
   </MockedProvider>
 )
@@ -22,7 +29,7 @@ const Template: Story = ({ ...args }) => (
 export const Default = Template.bind({})
 Default.args = {
   journey: {
-    ...publishedJourney,
+    ...defaultJourney,
     primaryImageBlock: {
       id: 'image1.id',
       __typename: 'ImageBlock',
@@ -35,6 +42,16 @@ Default.args = {
       blurhash: ''
     }
   }
+}
+
+export const NoImageSource = Template.bind({})
+NoImageSource.args = {
+  journey: defaultJourney
+}
+
+export const Loading = Template.bind({})
+Loading.args = {
+  journey: null
 }
 
 export default SocialImageStory as Meta

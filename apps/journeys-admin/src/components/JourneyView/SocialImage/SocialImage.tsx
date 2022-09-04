@@ -1,17 +1,20 @@
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import ImageIcon from '@mui/icons-material/Image'
-import { Theme } from '@mui/material/styles'
 import Skeleton from '@mui/material/Skeleton'
 
 export function SocialImage(): ReactElement {
   const { journey } = useJourney()
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   return (
-    <>
+    <Box
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+    >
       {journey != null ? (
         journey.primaryImageBlock?.src != null ? (
           <Box
@@ -22,12 +25,10 @@ export function SocialImage(): ReactElement {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
+              borderRadius: 12,
               width: 213,
               height: 167,
-              objectFit: 'cover',
-              borderRadius: 12,
-              marginRight: smUp ? 0 : 'auto',
-              marginLeft: smUp ? 0 : 'auto'
+              objectFit: 'cover'
             }}
           />
         ) : (
@@ -39,9 +40,7 @@ export function SocialImage(): ReactElement {
               borderRadius: 12,
               width: 213,
               height: 167,
-              backgroundColor: '#EFEFEF',
-              marginRight: smUp ? 0 : 'auto',
-              marginLeft: smUp ? 0 : 'auto'
+              backgroundColor: '#EFEFEF'
             }}
           >
             <ImageIcon fontSize="large" />
@@ -54,12 +53,10 @@ export function SocialImage(): ReactElement {
             width: 213,
             height: 167,
             objectFit: 'cover',
-            borderRadius: 12,
-            marginRight: smUp ? 0 : 'auto',
-            marginLeft: smUp ? 0 : 'auto'
+            borderRadius: 12
           }}
         />
       )}
-    </>
+    </Box>
   )
 }
