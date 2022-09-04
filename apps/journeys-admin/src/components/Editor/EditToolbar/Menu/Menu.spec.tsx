@@ -140,7 +140,7 @@ describe('EditToolbar Menu', () => {
       fireEvent.click(getByRole('button'))
       expect(
         getByRole('menuitem', { name: 'Journey Settings' })
-      ).toHaveAttribute('href', '/journeys/my-journey')
+      ).toHaveAttribute('href', '/journeys/journeyId')
     })
   })
 
