@@ -5,3 +5,5 @@
 schema.graphql
 **/__generated__/**
 /libs/locales/**/*.json
+.prettierignore
+.docusaurus/
