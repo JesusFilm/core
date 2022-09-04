@@ -209,9 +209,9 @@ export function ActiveTemplates({
         </>
       ) : (
         <>
-          <TemplateCard />
-          <TemplateCard />
-          <TemplateCard />
+          <TemplateCard admin />
+          <TemplateCard admin />
+          <TemplateCard admin />
         </>
       )}
 

@@ -214,9 +214,9 @@ export function TrashedTemplates({
         </>
       ) : (
         <>
-          <TemplateCard />
-          <TemplateCard />
-          <TemplateCard />
+          <TemplateCard admin />
+          <TemplateCard admin />
+          <TemplateCard admin />
         </>
       )}
 

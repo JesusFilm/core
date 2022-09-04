@@ -218,9 +218,9 @@ export function ArchivedTemplates({
         </>
       ) : (
         <>
-          <TemplateCard />
-          <TemplateCard />
-          <TemplateCard />
+          <TemplateCard admin />
+          <TemplateCard admin />
+          <TemplateCard admin />
         </>
       )}
 
