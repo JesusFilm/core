@@ -9,7 +9,7 @@ import {
   descriptiveTemplate,
   publishedTemplate
 } from '../TemplateLibrary/TemplateListData'
-import { GET_ACTIVE_PUBLISHER_TEMPLATES } from './TemplateStatusTabs/ActiveTemplates/ActiveTemplates'
+import { GET_ACTIVE_PUBLISHER_TEMPLATES } from './ActiveTemplates/ActiveTemplates'
 import { TemplateList } from '.'
 
 const TemplateListStory = {
@@ -21,6 +21,8 @@ const TemplateListStory = {
     layout: 'fullscreen'
   }
 }
+
+// TODO
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider
