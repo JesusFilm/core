@@ -8,11 +8,9 @@ import {
 } from 'react'
 import Paper from '@mui/material/Paper'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Box from '@mui/material/Box'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { NextRouter } from 'next/router'
 import { JourneySort, SortOrder } from '../JourneyList/JourneySort'
 
@@ -61,7 +59,6 @@ export function StatusTabPanel({
     }
   ]
 
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [tabsLoaded, setTabsLoaded] = useState(false)
 
   useEffect(() => {
@@ -116,7 +113,7 @@ export function StatusTabPanel({
   return (
     <>
       <>
-        <Box sx={{ my: 4, ml: 6, display: smUp ? 'none' : 'block' }}>
+        <Box sx={{ my: 4, ml: 6, display: { xs: 'block', sm: 'none' } }}>
           <JourneySort
             sortOrder={sortOrder}
             onChange={setSortOrder}
@@ -173,7 +170,7 @@ export function StatusTabPanel({
                 ml: 'auto',
                 mt: 3,
                 mb: 2,
-                display: !smUp ? 'none' : 'block'
+                display: { xs: 'none', sm: 'block' }
               }}
             >
               <JourneySort
