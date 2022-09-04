@@ -26,7 +26,7 @@ import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
 import { GetUserRole } from '../../../../__generated__/GetUserRole'
-import { GET_USER_ROLE } from '../../../../pages/templates/admin'
+import { GET_USER_ROLE } from '../../../../pages/templates'
 import { UserMenu } from './UserMenu'
 import { NavigationListItem } from './NavigationListItem'
 
@@ -194,7 +194,7 @@ export function NavigationDrawer({
                       ? 'background.paper'
                       : 'secondary.light'
                   }
-                  link="/templates/admin" // TODO: update when path is decided
+                  link="/templates" // TODO: update when path is decided
                 />
               )}
 

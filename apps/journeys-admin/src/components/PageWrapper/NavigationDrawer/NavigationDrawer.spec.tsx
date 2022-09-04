@@ -4,7 +4,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { AuthUser } from 'next-firebase-auth'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { Role } from '../../../../__generated__/globalTypes'
-import { GET_USER_ROLE } from '../../../../pages/templates/admin'
+import { GET_USER_ROLE } from '../../../../pages/templates'
 import { GET_ME } from './NavigationDrawer'
 import { NavigationDrawer } from '.'
 
