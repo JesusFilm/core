@@ -12,7 +12,7 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { useRouter } from 'next/router'
 import { GetUserRole } from '../../__generated__/GetUserRole'
 import { Role } from '../../__generated__/globalTypes'
-import { TemplatesAdmin } from '../../src/components/TemplatesAdmin'
+import { TemplateList } from '../../src/components/TemplateList'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import JourneyListMenu from '../../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
@@ -57,7 +57,7 @@ function TemplateAdmin(): ReactElement {
         authUser={AuthUser}
         menu={<JourneyListMenu router={router} onClick={handleClick} />}
       >
-        <TemplatesAdmin router={router} event={listEvent} authUser={AuthUser} />
+        <TemplateList router={router} event={listEvent} authUser={AuthUser} />
       </PageWrapper>
     </>
   )

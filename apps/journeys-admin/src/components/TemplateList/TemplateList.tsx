@@ -4,17 +4,17 @@ import Container from '@mui/material/Container'
 import { AuthUser } from 'next-firebase-auth'
 import { TemplateStatusTabs } from './TemplateStatusTabs'
 
-interface TemplatesAdminProps {
+interface TemplateListProps {
   event: string | undefined
   router?: NextRouter
   authUser?: AuthUser
 }
 
-export function TemplatesAdmin({
+export function TemplateList({
   event,
   router,
   authUser
-}: TemplatesAdminProps): ReactElement {
+}: TemplateListProps): ReactElement {
   return (
     <Container sx={{ px: { xs: 0, sm: 8 } }}>
       <TemplateStatusTabs event={event} router={router} authUser={authUser} />

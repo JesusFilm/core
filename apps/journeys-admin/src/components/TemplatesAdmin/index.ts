@@ -1,1 +1,0 @@
-export { TemplatesAdmin } from './TemplatesAdmin'

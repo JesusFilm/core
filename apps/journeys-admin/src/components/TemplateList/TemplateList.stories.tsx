@@ -10,12 +10,12 @@ import {
   publishedTemplate
 } from '../TemplateLibrary/TemplateListData'
 import { GET_ACTIVE_PUBLISHER_TEMPLATES } from './TemplateStatusTabs/ActiveTemplates/ActiveTemplates'
-import { TemplatesAdmin } from '.'
+import { TemplateList } from '.'
 
-const TemplatesAdminStory = {
+const TemplateListStory = {
   ...journeysAdminConfig,
-  component: TemplatesAdmin,
-  title: 'Journeys-Admin/TemplatesAdmin',
+  component: TemplateList,
+  title: 'Journeys-Admin/TemplateList',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -44,7 +44,7 @@ const Template: Story = ({ ...args }) => (
   >
     <FlagsProvider flags={{ reports: true }}>
       <PageWrapper title="Templates Admin">
-        <TemplatesAdmin {...args.props} />
+        <TemplateList {...args.props} />
       </PageWrapper>
     </FlagsProvider>
   </MockedProvider>
@@ -57,4 +57,4 @@ Default.args = {
   }
 }
 
-export default TemplatesAdminStory as Meta
+export default TemplateListStory as Meta
