@@ -93,7 +93,7 @@ export function Menu(): ReactElement {
         )}
         <Divider />
         <NextLink
-          href={journey != null ? `/journeys/${journey.slug}` : ''}
+          href={journey != null ? `/journeys/${journey.id}` : ''}
           passHref
         >
           <MenuItem>
