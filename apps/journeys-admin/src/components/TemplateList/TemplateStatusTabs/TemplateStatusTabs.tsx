@@ -9,9 +9,9 @@ import Card from '@mui/material/Card'
 import Box from '@mui/material/Box'
 import { AuthUser } from 'next-firebase-auth'
 import { JourneySort, SortOrder } from '../../JourneyList/JourneySort'
-import { ActiveTemplates } from './ActiveTemplates'
-import { ArchivedTemplates } from './ArchivedTemplates'
-import { TrashedTemplates } from './TrashedTemplates'
+import { TrashedTemplates } from '../TrashedTemplates'
+import { ActiveTemplates } from '../ActiveTemplates'
+import { ArchivedTemplates } from '../ArchivedTemplates'
 
 interface TemplateStatusTabsProps {
   event: string | undefined

@@ -6,35 +6,32 @@ import { AuthUser } from 'next-firebase-auth'
 import {
   defaultTemplate,
   oldTemplate
-} from '../../../TemplateLibrary/TemplateListData'
-import { ThemeProvider } from '../../../ThemeProvider'
-import { SortOrder } from '../../../JourneyList/JourneySort'
+} from '../../TemplateLibrary/TemplateListData'
+import { ThemeProvider } from '../../ThemeProvider'
+import { SortOrder } from '../../JourneyList/JourneySort'
 import {
-  RESTORE_TRASHED_JOURNEYS,
-  DELETE_TRASHED_JOURNEYS
-} from '../../../JourneyList/StatusTabPanel/TrashedStatusTab/TrashedStatusTab'
+  ARCHIVE_ACTIVE_JOURNEYS,
+  TRASH_ACTIVE_JOURNEYS
+} from '../../JourneyList/StatusTabPanel/ActiveStatusTab/ActiveStatusTab'
 import {
-  TrashedTemplates,
-  GET_TRASHED_PUBLISHER_TEMPLATES
-} from './TrashedTemplates'
+  ActiveTemplates,
+  GET_ACTIVE_PUBLISHER_TEMPLATES
+} from './ActiveTemplates'
 
-const trashedJourneysMock = {
+const activeTemplatesMock = {
   request: {
-    query: GET_TRASHED_PUBLISHER_TEMPLATES
+    query: GET_ACTIVE_PUBLISHER_TEMPLATES
   },
   result: {
     data: {
-      journeys: [
-        { ...defaultTemplate, trashedAt: '2021-12-07T03:22:41.135Z' },
-        { ...oldTemplate, trashedAt: '2021-12-07T03:22:41.135Z' }
-      ]
+      journeys: [defaultTemplate, oldTemplate]
     }
   }
 }
 
-const noJourneysMock = {
+const noTemplatesMock = {
   request: {
-    query: GET_TRASHED_PUBLISHER_TEMPLATES
+    query: GET_ACTIVE_PUBLISHER_TEMPLATES
   },
   result: {
     data: {
@@ -45,18 +42,13 @@ const noJourneysMock = {
 
 const authUser = { id: 'user-id1' } as unknown as AuthUser
 
-describe('TrashedTemplatesTab', () => {
-  beforeAll(() => {
-    jest.useFakeTimers('modern')
-    jest.setSystemTime(new Date('2021-12-11'))
-  })
-
+describe('ActiveTemplates', () => {
   it('should render templates in descending createdAt date by default', async () => {
     const { getAllByLabelText } = render(
-      <MockedProvider mocks={[trashedJourneysMock]}>
+      <MockedProvider mocks={[activeTemplatesMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedTemplates onLoad={noop} event="" />
+            <ActiveTemplates onLoad={noop} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -72,25 +64,21 @@ describe('TrashedTemplatesTab', () => {
   })
 
   it('should order templates in alphabetical order', async () => {
-    const trashedLowerCaseJourneyTitle = {
+    const lowerCaseJourneyTitle = {
       ...defaultTemplate,
-      title: 'a lower case title',
-      trashedAt: '2021-12-07T03:22:41.135Z'
+      title: 'a lower case title'
     }
-    const trashedOldJourney = {
-      ...oldTemplate,
-      trashedAt: '2021-12-07T03:22:41.135Z'
-    }
+
     const { getAllByLabelText } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: GET_TRASHED_PUBLISHER_TEMPLATES
+              query: GET_ACTIVE_PUBLISHER_TEMPLATES
             },
             result: {
               data: {
-                journeys: [trashedLowerCaseJourneyTitle, trashedOldJourney]
+                journeys: [lowerCaseJourneyTitle, oldTemplate]
               }
             }
           }
@@ -98,7 +86,7 @@ describe('TrashedTemplatesTab', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedTemplates
+            <ActiveTemplates
               onLoad={noop}
               sortOrder={SortOrder.TITLE}
               event=""
@@ -117,20 +105,17 @@ describe('TrashedTemplatesTab', () => {
     )
   })
 
-  it('should exclude templates older than 40 days', async () => {
-    const { getAllByLabelText } = render(
+  it('should display no templates message', async () => {
+    const { getByText } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: GET_TRASHED_PUBLISHER_TEMPLATES
+              query: GET_ACTIVE_PUBLISHER_TEMPLATES
             },
             result: {
               data: {
-                journeys: [
-                  { ...defaultTemplate, trashedAt: '2021-12-07T03:22:41.135Z' },
-                  { ...oldTemplate, trashedAt: '2021-10-31T03:22:41.135Z' }
-                ]
+                journeys: []
               }
             }
           }
@@ -138,7 +123,7 @@ describe('TrashedTemplatesTab', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedTemplates
+            <ActiveTemplates
               onLoad={noop}
               sortOrder={SortOrder.TITLE}
               event=""
@@ -148,11 +133,8 @@ describe('TrashedTemplatesTab', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'Default Template Heading'
-      )
+      expect(getByText('No templates to display.')).toBeInTheDocument()
     )
-    expect(getAllByLabelText('template-card')[1]).toBeUndefined()
   })
 
   it('should render loading skeleton', async () => {
@@ -160,7 +142,7 @@ describe('TrashedTemplatesTab', () => {
       <MockedProvider mocks={[]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedTemplates onLoad={noop} event="" />
+            <ActiveTemplates onLoad={noop} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -173,10 +155,10 @@ describe('TrashedTemplatesTab', () => {
   it('should call onLoad when query is loaded', async () => {
     const onLoad = jest.fn()
     render(
-      <MockedProvider mocks={[noJourneysMock]}>
+      <MockedProvider mocks={[noTemplatesMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <TrashedTemplates onLoad={onLoad} event="" />
+            <ActiveTemplates onLoad={onLoad} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -184,45 +166,45 @@ describe('TrashedTemplatesTab', () => {
     await waitFor(() => expect(onLoad).toHaveBeenCalled())
   })
 
-  describe('Restore All', () => {
+  describe('Archive All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultTemplate.id, status: 'published' }]
+      data: {
+        journeysArchive: [{ id: defaultTemplate.id, status: 'archived' }]
+      }
     }))
-    const restoreJourneysMock = {
+    const archiveJourneysMock = {
       request: {
-        query: RESTORE_TRASHED_JOURNEYS,
+        query: ARCHIVE_ACTIVE_JOURNEYS,
         variables: {
-          ids: [defaultTemplate.id, oldTemplate.id]
+          ids: [defaultTemplate.id, oldTemplate.id] // auth issue causing these ids not to be entered?
         }
       },
       result
     }
     const onLoad = jest.fn()
 
-    it('should display the restore all dialog', () => {
+    it('should display the archive all dialog', () => {
       const { getByText } = render(
-        <MockedProvider mocks={[trashedJourneysMock]}>
+        <MockedProvider mocks={[activeTemplatesMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedTemplates onLoad={noop} event="restoreAllTrashed" />
+              <ActiveTemplates onLoad={noop} event="archiveAllActive" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
-      expect(getByText('Restore Templates')).toBeInTheDocument()
+      expect(getByText('Archive Templates')).toBeInTheDocument()
     })
 
-    it('should restore all journeys', async () => {
+    it('should archive all journeys', async () => {
       const { getByText } = render(
-        <MockedProvider
-          mocks={[trashedJourneysMock, restoreJourneysMock, noJourneysMock]}
-        >
+        <MockedProvider mocks={[activeTemplatesMock, archiveJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedTemplates
+              <ActiveTemplates
                 onLoad={onLoad}
-                event="restoreAllTrashed"
+                event="archiveAllActive"
                 authUser={authUser}
               />
             </SnackbarProvider>
@@ -230,25 +212,24 @@ describe('TrashedTemplatesTab', () => {
         </MockedProvider>
       )
       await waitFor(() => expect(onLoad).toHaveBeenCalled())
-      fireEvent.click(getByText('Restore'))
+      fireEvent.click(getByText('Archive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
-    // test intermittently fails due to snackbar and dom timeout
-    xit('should show error', async () => {
+    it('should show error', async () => {
       const { getByText } = render(
         <MockedProvider
           mocks={[
-            trashedJourneysMock,
-            { ...restoreJourneysMock, error: new Error('error') }
+            activeTemplatesMock,
+            { ...archiveJourneysMock, error: new Error('error') }
           ]}
         >
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <TrashedTemplates
+                <ActiveTemplates
                   onLoad={onLoad}
-                  event="restoreAllTrashed"
+                  event="archiveAllActive"
                   authUser={authUser}
                 />
               </SnackbarProvider>
@@ -257,18 +238,20 @@ describe('TrashedTemplatesTab', () => {
         </MockedProvider>
       )
       await waitFor(() => expect(onLoad).toHaveBeenCalled())
-      fireEvent.click(getByText('Restore'))
+      fireEvent.click(getByText('Archive'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
 
-  describe('Delete All', () => {
+  describe('Trash All', () => {
     const result = jest.fn(() => ({
-      data: { journeysDelete: [{ id: defaultTemplate.id, status: 'deleted' }] }
+      data: {
+        journeysTrash: [{ id: defaultTemplate.id, status: 'archived' }]
+      }
     }))
-    const deleteJourneysMock = {
+    const trashTemplatesMock = {
       request: {
-        query: DELETE_TRASHED_JOURNEYS,
+        query: TRASH_ACTIVE_JOURNEYS,
         variables: {
           ids: [defaultTemplate.id, oldTemplate.id]
         }
@@ -277,30 +260,30 @@ describe('TrashedTemplatesTab', () => {
     }
     const onLoad = jest.fn()
 
-    it('should display the delete all dialog', () => {
+    it('should display the trash all dialog', () => {
       const { getByText } = render(
-        <MockedProvider mocks={[trashedJourneysMock]}>
+        <MockedProvider mocks={[activeTemplatesMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedTemplates onLoad={noop} event="deleteAllTrashed" />
+              <ActiveTemplates onLoad={noop} event="trashAllActive" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
-      expect(getByText('Delete Templates Forever')).toBeInTheDocument()
+      expect(getByText('Trash Templates')).toBeInTheDocument()
     })
 
-    it('should trash all templates', async () => {
+    it('should trash all journeys', async () => {
       const { getByText } = render(
         <MockedProvider
-          mocks={[trashedJourneysMock, deleteJourneysMock, noJourneysMock]}
+          mocks={[activeTemplatesMock, trashTemplatesMock, noTemplatesMock]}
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <TrashedTemplates
+              <ActiveTemplates
                 onLoad={onLoad}
-                event="deleteAllTrashed"
+                event="trashAllActive"
                 authUser={authUser}
               />
             </SnackbarProvider>
@@ -308,25 +291,24 @@ describe('TrashedTemplatesTab', () => {
         </MockedProvider>
       )
       await waitFor(() => expect(onLoad).toHaveBeenCalled())
-      fireEvent.click(getByText('Delete Forever'))
+      fireEvent.click(getByText('Trash'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
-    // test intermittently fails due to snackbar and dom timeout
-    xit('should show error', async () => {
+    it('should show error', async () => {
       const { getByText } = render(
         <MockedProvider
           mocks={[
-            trashedJourneysMock,
-            { ...deleteJourneysMock, error: new Error('error') }
+            activeTemplatesMock,
+            { ...trashTemplatesMock, error: new Error('error') }
           ]}
         >
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <TrashedTemplates
+                <ActiveTemplates
                   onLoad={onLoad}
-                  event="deleteAllTrashed"
+                  event="trashAllActive"
                   authUser={authUser}
                 />
               </SnackbarProvider>
@@ -335,10 +317,8 @@ describe('TrashedTemplatesTab', () => {
         </MockedProvider>
       )
       await waitFor(() => expect(onLoad).toHaveBeenCalled())
-      fireEvent.click(getByText('Delete Forever'))
-      await waitFor(() => expect(getByText('error')).toBeInTheDocument(), {
-        timeout: 1500
-      })
+      fireEvent.click(getByText('Trash'))
+      await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
 })

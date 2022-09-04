@@ -10,8 +10,8 @@ import {
   publishedTemplate
 } from '../../TemplateLibrary/TemplateListData'
 import { ThemeProvider } from '../../ThemeProvider'
+import { GET_ACTIVE_PUBLISHER_TEMPLATES } from '../ActiveTemplates/ActiveTemplates'
 import { TemplateStatusTabs } from './TemplateStatusTabs'
-import { GET_ACTIVE_PUBLISHER_TEMPLATES } from './ActiveTemplates/ActiveTemplates'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

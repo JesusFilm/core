@@ -4,18 +4,18 @@ import Typography from '@mui/material/Typography'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import Card from '@mui/material/Card'
-import { SortOrder } from '../../../JourneyList/JourneySort'
-import { Dialog } from '../../../Dialog'
-import { sortJourneys } from '../../../JourneyList/JourneySort/utils/sortJourneys'
+import { SortOrder } from '../../JourneyList/JourneySort'
+import { Dialog } from '../../Dialog'
+import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import {
   RESTORE_TRASHED_JOURNEYS,
   DELETE_TRASHED_JOURNEYS
-} from '../../../JourneyList/StatusTabPanel/TrashedStatusTab/TrashedStatusTab'
+} from '../../JourneyList/StatusTabPanel/TrashedStatusTab/TrashedStatusTab'
 import {
   GetTrashedPublisherTemplates,
   GetTrashedPublisherTemplates_journeys as TrashedJourney
-} from '../../../../../__generated__/GetTrashedPublisherTemplates'
-import { TemplateCard } from '../../../TemplateCard'
+} from '../../../../__generated__/GetTrashedPublisherTemplates'
+import { TemplateCard } from '../../TemplateCard'
 
 export const GET_TRASHED_PUBLISHER_TEMPLATES = gql`
   query GetTrashedPublisherTemplates {

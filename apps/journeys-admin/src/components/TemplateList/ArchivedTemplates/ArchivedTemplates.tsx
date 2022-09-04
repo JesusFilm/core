@@ -5,18 +5,18 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import { Dialog } from '../../../Dialog'
-import { SortOrder } from '../../../JourneyList/JourneySort'
-import { sortJourneys } from '../../../JourneyList/JourneySort/utils/sortJourneys'
+import { Dialog } from '../../Dialog'
+import { SortOrder } from '../../JourneyList/JourneySort'
+import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
-} from '../../../JourneyList/StatusTabPanel/ArchivedStatusTab/ArchivedStatusTab'
+} from '../../JourneyList/StatusTabPanel/ArchivedStatusTab/ArchivedStatusTab'
 import {
   GetArchivedPublisherTemplates,
   GetArchivedPublisherTemplates_journeys as Journey
-} from '../../../../../__generated__/GetArchivedPublisherTemplates'
-import { TemplateCard } from '../../../TemplateCard'
+} from '../../../../__generated__/GetArchivedPublisherTemplates'
+import { TemplateCard } from '../../TemplateCard'
 
 export const GET_ARCHIVED_PUBLISHER_TEMPLATES = gql`
   query GetArchivedPublisherTemplates {

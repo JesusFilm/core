@@ -9,7 +9,7 @@ import {
   publishedTemplate
 } from '../../TemplateLibrary/TemplateListData'
 
-import { GET_ACTIVE_PUBLISHER_TEMPLATES } from './ActiveTemplates/ActiveTemplates'
+import { GET_ACTIVE_PUBLISHER_TEMPLATES } from '../ActiveTemplates/ActiveTemplates'
 import { TemplateStatusTabs } from '.'
 
 const TemplateStatusTabsStory = {

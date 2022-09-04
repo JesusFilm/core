@@ -4,19 +4,19 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { AuthUser } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
 import Card from '@mui/material/Card'
-import { SortOrder } from '../../../JourneyList/JourneySort'
-import { Dialog } from '../../../Dialog'
-import { sortJourneys } from '../../../JourneyList/JourneySort/utils/sortJourneys'
+import { SortOrder } from '../../JourneyList/JourneySort'
+import { Dialog } from '../../Dialog'
+import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
-} from '../../../JourneyList/StatusTabPanel/ActiveStatusTab/ActiveStatusTab'
+} from '../../JourneyList/StatusTabPanel/ActiveStatusTab/ActiveStatusTab'
 import {
   GetActivePublisherTemplates,
   GetActivePublisherTemplates_journeys as Journey
-} from '../../../../../__generated__/GetActivePublisherTemplates'
-import { TemplateCard } from '../../../TemplateCard'
-import { getDuplicatedJourney } from '../../../JourneyList/StatusTabPanel/ActiveStatusTab/utils/getDuplicatedJourney'
+} from '../../../../__generated__/GetActivePublisherTemplates'
+import { TemplateCard } from '../../TemplateCard'
+import { getDuplicatedJourney } from '../../JourneyList/StatusTabPanel/ActiveStatusTab/utils/getDuplicatedJourney'
 
 export const GET_ACTIVE_PUBLISHER_TEMPLATES = gql`
   query GetActivePublisherTemplates {

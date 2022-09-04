@@ -6,21 +6,21 @@ import { AuthUser } from 'next-firebase-auth'
 import {
   defaultTemplate,
   oldTemplate
-} from '../../../TemplateLibrary/TemplateListData'
-import { ThemeProvider } from '../../../ThemeProvider'
-import { SortOrder } from '../../../JourneyList/JourneySort'
+} from '../../TemplateLibrary/TemplateListData'
+import { ThemeProvider } from '../../ThemeProvider'
+import { SortOrder } from '../../JourneyList/JourneySort'
 import {
-  ARCHIVE_ACTIVE_JOURNEYS,
-  TRASH_ACTIVE_JOURNEYS
-} from '../../../JourneyList/StatusTabPanel/ActiveStatusTab/ActiveStatusTab'
+  RESTORE_ARCHIVED_JOURNEYS,
+  TRASH_ARCHIVED_JOURNEYS
+} from '../../JourneyList/StatusTabPanel/ArchivedStatusTab/ArchivedStatusTab'
 import {
-  ActiveTemplates,
-  GET_ACTIVE_PUBLISHER_TEMPLATES
-} from './ActiveTemplates'
+  ArchivedTemplates,
+  GET_ARCHIVED_PUBLISHER_TEMPLATES
+} from './ArchivedTemplates'
 
-const activeTemplatesMock = {
+const archivedJourneysMock = {
   request: {
-    query: GET_ACTIVE_PUBLISHER_TEMPLATES
+    query: GET_ARCHIVED_PUBLISHER_TEMPLATES
   },
   result: {
     data: {
@@ -29,9 +29,9 @@ const activeTemplatesMock = {
   }
 }
 
-const noTemplatesMock = {
+const noJourneysMock = {
   request: {
-    query: GET_ACTIVE_PUBLISHER_TEMPLATES
+    query: GET_ARCHIVED_PUBLISHER_TEMPLATES
   },
   result: {
     data: {
@@ -42,13 +42,13 @@ const noTemplatesMock = {
 
 const authUser = { id: 'user-id1' } as unknown as AuthUser
 
-describe('ActiveTemplates', () => {
+describe('ArchivedTemplates', () => {
   it('should render templates in descending createdAt date by default', async () => {
     const { getAllByLabelText } = render(
-      <MockedProvider mocks={[activeTemplatesMock]}>
+      <MockedProvider mocks={[archivedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveTemplates onLoad={noop} event="" />
+            <ArchivedTemplates onLoad={noop} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -68,13 +68,12 @@ describe('ActiveTemplates', () => {
       ...defaultTemplate,
       title: 'a lower case title'
     }
-
     const { getAllByLabelText } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: GET_ACTIVE_PUBLISHER_TEMPLATES
+              query: GET_ARCHIVED_PUBLISHER_TEMPLATES
             },
             result: {
               data: {
@@ -86,7 +85,7 @@ describe('ActiveTemplates', () => {
       >
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveTemplates
+            <ArchivedTemplates
               onLoad={noop}
               sortOrder={SortOrder.TITLE}
               event=""
@@ -105,44 +104,12 @@ describe('ActiveTemplates', () => {
     )
   })
 
-  it('should display no templates message', async () => {
-    const { getByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_ACTIVE_PUBLISHER_TEMPLATES
-            },
-            result: {
-              data: {
-                journeys: []
-              }
-            }
-          }
-        ]}
-      >
-        <ThemeProvider>
-          <SnackbarProvider>
-            <ActiveTemplates
-              onLoad={noop}
-              sortOrder={SortOrder.TITLE}
-              event=""
-            />
-          </SnackbarProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getByText('No templates to display.')).toBeInTheDocument()
-    )
-  })
-
   it('should render loading skeleton', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveTemplates onLoad={noop} event="" />
+            <ArchivedTemplates onLoad={noop} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -155,10 +122,10 @@ describe('ActiveTemplates', () => {
   it('should call onLoad when query is loaded', async () => {
     const onLoad = jest.fn()
     render(
-      <MockedProvider mocks={[noTemplatesMock]}>
+      <MockedProvider mocks={[noJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
-            <ActiveTemplates onLoad={onLoad} event="" />
+            <ArchivedTemplates onLoad={onLoad} event="" />
           </SnackbarProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -166,45 +133,45 @@ describe('ActiveTemplates', () => {
     await waitFor(() => expect(onLoad).toHaveBeenCalled())
   })
 
-  describe('Archive All', () => {
+  describe('Unarchive All', () => {
     const result = jest.fn(() => ({
       data: {
-        journeysArchive: [{ id: defaultTemplate.id, status: 'archived' }]
+        journeysRestore: [{ id: defaultTemplate.id, status: 'published' }]
       }
     }))
     const archiveJourneysMock = {
       request: {
-        query: ARCHIVE_ACTIVE_JOURNEYS,
-        variables: {
-          ids: [defaultTemplate.id, oldTemplate.id] // auth issue causing these ids not to be entered?
-        }
+        query: RESTORE_ARCHIVED_JOURNEYS,
+        variables: { ids: [defaultTemplate.id, oldTemplate.id] }
       },
       result
     }
     const onLoad = jest.fn()
 
-    it('should display the archive all dialog', () => {
+    it('should display the unarchive all dialog', () => {
       const { getByText } = render(
-        <MockedProvider mocks={[activeTemplatesMock]}>
+        <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveTemplates onLoad={noop} event="archiveAllActive" />
+              <ArchivedTemplates onLoad={noop} event="restoreAllArchived" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
       )
 
-      expect(getByText('Archive Templates')).toBeInTheDocument()
+      expect(getByText('Unarchive Templates')).toBeInTheDocument()
     })
 
-    it('should archive all journeys', async () => {
+    it('should unarchive all templates', async () => {
       const { getByText } = render(
-        <MockedProvider mocks={[activeTemplatesMock, archiveJourneysMock]}>
+        <MockedProvider
+          mocks={[archivedJourneysMock, archiveJourneysMock, noJourneysMock]}
+        >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveTemplates
+              <ArchivedTemplates
                 onLoad={onLoad}
-                event="archiveAllActive"
+                event="restoreAllArchived"
                 authUser={authUser}
               />
             </SnackbarProvider>
@@ -212,7 +179,7 @@ describe('ActiveTemplates', () => {
         </MockedProvider>
       )
       await waitFor(() => expect(onLoad).toHaveBeenCalled())
-      fireEvent.click(getByText('Archive'))
+      fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
@@ -220,16 +187,16 @@ describe('ActiveTemplates', () => {
       const { getByText } = render(
         <MockedProvider
           mocks={[
-            activeTemplatesMock,
+            archivedJourneysMock,
             { ...archiveJourneysMock, error: new Error('error') }
           ]}
         >
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ActiveTemplates
+                <ArchivedTemplates
                   onLoad={onLoad}
-                  event="archiveAllActive"
+                  event="restoreAllArchived"
                   authUser={authUser}
                 />
               </SnackbarProvider>
@@ -238,7 +205,7 @@ describe('ActiveTemplates', () => {
         </MockedProvider>
       )
       await waitFor(() => expect(onLoad).toHaveBeenCalled())
-      fireEvent.click(getByText('Archive'))
+      fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
   })
@@ -246,12 +213,12 @@ describe('ActiveTemplates', () => {
   describe('Trash All', () => {
     const result = jest.fn(() => ({
       data: {
-        journeysTrash: [{ id: defaultTemplate.id, status: 'archived' }]
+        journeysTrash: [{ id: defaultTemplate.id, status: 'trashAllArchived' }]
       }
     }))
-    const trashTemplatesMock = {
+    const trashJourneysMock = {
       request: {
-        query: TRASH_ACTIVE_JOURNEYS,
+        query: TRASH_ARCHIVED_JOURNEYS,
         variables: {
           ids: [defaultTemplate.id, oldTemplate.id]
         }
@@ -262,10 +229,10 @@ describe('ActiveTemplates', () => {
 
     it('should display the trash all dialog', () => {
       const { getByText } = render(
-        <MockedProvider mocks={[activeTemplatesMock]}>
+        <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveTemplates onLoad={noop} event="trashAllActive" />
+              <ArchivedTemplates onLoad={noop} event="trashAllArchived" />
             </SnackbarProvider>
           </ThemeProvider>
         </MockedProvider>
@@ -274,16 +241,16 @@ describe('ActiveTemplates', () => {
       expect(getByText('Trash Templates')).toBeInTheDocument()
     })
 
-    it('should trash all journeys', async () => {
+    it('should trash all templates', async () => {
       const { getByText } = render(
         <MockedProvider
-          mocks={[activeTemplatesMock, trashTemplatesMock, noTemplatesMock]}
+          mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
         >
           <ThemeProvider>
             <SnackbarProvider>
-              <ActiveTemplates
+              <ArchivedTemplates
                 onLoad={onLoad}
-                event="trashAllActive"
+                event="trashAllArchived"
                 authUser={authUser}
               />
             </SnackbarProvider>
@@ -299,16 +266,16 @@ describe('ActiveTemplates', () => {
       const { getByText } = render(
         <MockedProvider
           mocks={[
-            activeTemplatesMock,
-            { ...trashTemplatesMock, error: new Error('error') }
+            archivedJourneysMock,
+            { ...trashJourneysMock, error: new Error('error') }
           ]}
         >
           <SnackbarProvider>
             <ThemeProvider>
               <SnackbarProvider>
-                <ActiveTemplates
+                <ArchivedTemplates
                   onLoad={onLoad}
-                  event="trashAllActive"
+                  event="trashAllArchived"
                   authUser={authUser}
                 />
               </SnackbarProvider>

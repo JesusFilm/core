@@ -2,14 +2,14 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { formatISO } from 'date-fns'
 import noop from 'lodash/noop'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   defaultTemplate,
   oldTemplate,
   descriptiveTemplate,
   publishedTemplate
-} from '../../../TemplateLibrary/TemplateListData'
+} from '../../TemplateLibrary/TemplateListData'
 import { GET_TRASHED_PUBLISHER_TEMPLATES } from './TrashedTemplates'
 import { TrashedTemplates } from '.'
 
