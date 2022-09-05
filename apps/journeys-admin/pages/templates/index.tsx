@@ -1,6 +1,6 @@
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState, useEffect } from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -16,15 +16,7 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
 import i18nConfig from '../../next-i18next.config'
 import JourneyListMenu from '../../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
-
-export const GET_USER_ROLE = gql`
-  query GetUserRole {
-    getUserRole {
-      id
-      roles
-    }
-  }
-`
+import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
 
 function TemplateIndex(): ReactElement {
   const AuthUser = useAuthUser()

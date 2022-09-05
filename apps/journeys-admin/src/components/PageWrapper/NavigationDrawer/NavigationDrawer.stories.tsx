@@ -6,7 +6,7 @@ import { AuthUser } from 'next-firebase-auth'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { Role } from '../../../../__generated__/globalTypes'
-import { GET_USER_ROLE } from '../../../../pages/templates'
+import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { GET_ME } from './NavigationDrawer'
 import { NavigationDrawer } from '.'
 
