@@ -1,5 +1,4 @@
 import { ReactElement, useEffect, useState } from 'react'
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
 import { getApp } from 'firebase/app'
 import {
   getAuth,
@@ -11,6 +10,7 @@ import Image from 'next/image'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import logo from '../../../public/logo.svg'
+import { StyledFirebaseAuth } from './StyledFirebaseAuth'
 
 export function SignIn(): ReactElement {
   // Do not SSR FirebaseUI, because it is not supported.
