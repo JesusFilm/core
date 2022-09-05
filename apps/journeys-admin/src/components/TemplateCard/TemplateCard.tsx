@@ -25,7 +25,7 @@ import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
 
 export interface TemplateCardProps {
   journey?: Journey
-  admin?: boolean
+  admin?: boolean // activates publisher version of template cards
   duplicatedJourneyId?: string
   refetch?: () => Promise<
     ApolloQueryResult<
@@ -51,7 +51,6 @@ export function TemplateCard({
       })
     }
   }, [duplicatedJourneyId, journey])
-
   const nativeLanguage =
     journey?.language.name.find(({ primary }) => primary)?.value ?? ''
   const localLanguage = journey?.language.name.find(
@@ -132,7 +131,7 @@ export function TemplateCard({
       <Link
         href={
           journey != null
-            ? `/${admin === true ? 'templates' : 'library'}/${journey.id}`
+            ? `/${admin === true ? 'publisher' : 'templates'}/${journey.id}`
             : ''
         }
         passHref

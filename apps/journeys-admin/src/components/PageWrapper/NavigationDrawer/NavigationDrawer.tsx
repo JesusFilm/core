@@ -179,6 +179,7 @@ export function NavigationDrawer({
             link="/reports"
           />
         )}
+
         {authUser != null && data?.me != null && (
           <>
             <Divider sx={{ m: 6, mt: 0, borderColor: 'secondary.main' }} />
