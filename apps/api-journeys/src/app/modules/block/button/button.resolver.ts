@@ -6,6 +6,7 @@ import {
   ButtonBlock,
   ButtonBlockCreateInput,
   ButtonBlockUpdateInput,
+  Role,
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { BlockService } from '../block.service'
@@ -29,7 +30,8 @@ export class ButtonBlockResolver {
   @UseGuards(
     RoleGuard('input.journeyId', [
       UserJourneyRole.owner,
-      UserJourneyRole.editor
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
     ])
   )
   async buttonBlockCreate(
@@ -48,7 +50,11 @@ export class ButtonBlockResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async buttonBlockUpdate(
     @Args('id') id: string,

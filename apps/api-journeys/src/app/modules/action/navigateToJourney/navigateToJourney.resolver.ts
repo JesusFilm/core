@@ -10,6 +10,7 @@ import {
   Journey,
   NavigateToJourneyAction,
   NavigateToJourneyActionInput,
+  Role,
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { JourneyService } from '../../journey/journey.service'
@@ -29,7 +30,11 @@ export class NavigateToJourneyActionResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async blockUpdateNavigateToJourneyAction(
     @Args('id') id: string,
