@@ -28,13 +28,7 @@ export const GET_USER_ROLE = gql`
   }
 `
 
-export type JourneyType = 'Journey' | 'Template'
-
-interface JourneyViewProps {
-  journeyType?: JourneyType
-}
-
-export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
+export function JourneyView(): ReactElement {
   const { journey } = useJourney()
   const { reports } = useFlags()
   const theme = useTheme()
