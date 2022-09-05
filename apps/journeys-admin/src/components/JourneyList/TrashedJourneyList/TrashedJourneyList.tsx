@@ -221,7 +221,7 @@ export function TrashedJourneyList({
                 }}
               >
                 <Typography variant="subtitle1" align="center" gutterBottom>
-                  {t('Your Trashed journeys will appear here.')}
+                  {t('Your trashed journeys will appear here.')}
                 </Typography>
               </Card>
             </>
@@ -229,7 +229,7 @@ export function TrashedJourneyList({
           <span>
             <Box width="100%" sx={{ textAlign: 'center' }}>
               <Typography variant="caption">
-                {t('Trashed Journeys are moved here for up to 40 days.')}
+                {t('Trashed journeys are moved here for up to 40 days.')}
               </Typography>
             </Box>
           </span>
