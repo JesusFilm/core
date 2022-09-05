@@ -105,7 +105,7 @@ export function TemplateCard({
       <Link
         href={
           journey != null
-            ? `/${admin === true ? 'templates' : 'library'}/${journey.id}`
+            ? `/${admin === true ? 'publisher' : 'templates'}/${journey.id}`
             : ''
         }
         passHref
