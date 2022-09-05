@@ -1,8 +1,9 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { SnackbarProvider } from 'notistack'
-import { defaultJourney } from '../../data'
+import { defaultJourney } from '../data'
 import { JourneyLink } from './JourneyLink'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -15,9 +16,11 @@ describe('JourneyLink', () => {
     const { getAllByRole, getByRole, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-            <JourneyLink />
-          </JourneyProvider>
+          <FlagsProvider>
+            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+              <JourneyLink />
+            </JourneyProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -31,9 +34,11 @@ describe('JourneyLink', () => {
     const { getAllByRole, getByRole, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-            <JourneyLink />
-          </JourneyProvider>
+          <FlagsProvider>
+            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+              <JourneyLink />
+            </JourneyProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
