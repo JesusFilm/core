@@ -167,7 +167,7 @@ export function NavigationDrawer({
                 ? 'background.paper'
                 : 'secondary.light'
             }
-            link="/library"
+            link="/templates"
           />
         )}
 

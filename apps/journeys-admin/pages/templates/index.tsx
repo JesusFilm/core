@@ -1,6 +1,6 @@
 import { NextSeo } from 'next-seo'
-import { ReactElement, useState, useEffect } from 'react'
-import { useQuery } from '@apollo/client'
+import { ReactElement } from 'react'
+import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -9,47 +9,66 @@ import {
 } from 'next-firebase-auth'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import { useRouter } from 'next/router'
-import { Role } from '../../__generated__/globalTypes'
-import { GetUserRole } from '../../__generated__/GetUserRole'
 import { PageWrapper } from '../../src/components/PageWrapper'
-import { TemplateList } from '../../src/components/TemplateList'
 import i18nConfig from '../../next-i18next.config'
-import JourneyListMenu from '../../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
-import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
+import { GetPublishedTemplates } from '../../__generated__/GetPublishedTemplates'
+import { TemplateLibrary } from '../../src/components/TemplateLibrary'
 
-function TemplateIndex(): ReactElement {
-  const AuthUser = useAuthUser()
-  const router = useRouter()
-  const [listEvent, setListEvent] = useState('')
-
-  const handleClick = (event: string): void => {
-    setListEvent(event)
-    // remove event after component lifecycle
-    setTimeout(() => {
-      setListEvent('')
-    }, 1000)
-  }
-
-  const { data } = useQuery<GetUserRole>(GET_USER_ROLE)
-  useEffect(() => {
-    if (
-      data != null &&
-      data?.getUserRole?.roles?.includes(Role.publisher) !== true
-    ) {
-      void router.push('/templates')
+const GET_PUBLISHED_TEMPLATES = gql`
+  query GetPublishedTemplates {
+    journeys(where: { template: true }) {
+      id
+      title
+      createdAt
+      publishedAt
+      description
+      slug
+      themeName
+      themeMode
+      status
+      seoTitle
+      seoDescription
+      template
+      userJourneys {
+        id
+        role
+        user {
+          id
+          firstName
+          lastName
+          imageUrl
+        }
+      }
+      language {
+        id
+        name(primary: true) {
+          value
+          primary
+        }
+      }
+      primaryImageBlock {
+        id
+        parentBlockId
+        parentOrder
+        src
+        alt
+        width
+        height
+        blurhash
+      }
     }
-  }, [data, router])
+  }
+`
+
+function LibraryIndex(): ReactElement {
+  const AuthUser = useAuthUser()
+  const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
 
   return (
     <>
-      <NextSeo title="Templates Admin" />
-      <PageWrapper
-        title="Templates Admin"
-        authUser={AuthUser}
-        menu={<JourneyListMenu router={router} onClick={handleClick} />}
-      >
-        <TemplateList router={router} event={listEvent} authUser={AuthUser} />
+      <NextSeo title="Journey Templates" />
+      <PageWrapper title="Journey Templates" authUser={AuthUser}>
+        <TemplateLibrary journeys={data?.journeys} />
       </PageWrapper>
     </>
   )
@@ -81,4 +100,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateIndex)
+})(LibraryIndex)
