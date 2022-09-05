@@ -82,6 +82,8 @@ export function TrashedJourneyList({
   event,
   authUser
 }: TrashedJourneyListProps): ReactElement {
+  console.log('pls deploy')
+
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { data, loading, error, refetch } =
