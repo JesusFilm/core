@@ -41,8 +41,6 @@ export function JourneyView(): ReactElement {
   const [showSlugDialog, setShowSlugDialog] = useState(false)
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
 
-  const showReports = reports && journey != null && journey?.template !== true
-
   return (
     <Box sx={{ mr: { sm: '328px' }, mb: '80px' }}>
       <Box
@@ -66,7 +64,7 @@ export function JourneyView(): ReactElement {
       </Box>
       <Properties />
 
-      {showReports && (
+      {reports && journey != null && journey.template !== true && (
         <>
           <Box
             sx={{ height: '213px', pb: 6, mx: 6 }}
