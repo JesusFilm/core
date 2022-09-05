@@ -79,6 +79,7 @@ describe('Card', () => {
       blocks: [] as TreeBlock[],
       primaryImageBlock: null,
       userJourneys: [],
+      template: null,
       seoTitle: null,
       seoDescription: null
     }

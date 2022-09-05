@@ -11,54 +11,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
-import { GetPublishedTemplates } from '../../__generated__/GetPublishedTemplates'
-import { TemplateLibrary } from '../../src/components/TemplateLibrary'
-
-const GET_PUBLISHED_TEMPLATES = gql`
-  query GetPublishedTemplates {
-    journeys(where: { template: true }) {
-      id
-      title
-      createdAt
-      publishedAt
-      description
-      slug
-      themeName
-      themeMode
-      status
-      seoTitle
-      seoDescription
-      template
-      userJourneys {
-        id
-        role
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
-      primaryImageBlock {
-        id
-        parentBlockId
-        parentOrder
-        src
-        alt
-        width
-        height
-        blurhash
-      }
-    }
-  }
-`
 
 function LibraryIndex(): ReactElement {
   const AuthUser = useAuthUser()
@@ -100,4 +52,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(LibraryIndex)
+})(TemplateIndex)
