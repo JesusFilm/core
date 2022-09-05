@@ -182,7 +182,7 @@ export function ActiveTemplates({
             <TemplateCard
               key={journey.id}
               journey={journey as Journey}
-              admin
+              isPublisher
               refetch={refetch}
               duplicatedJourneyId={duplicatedJourneyId}
             />
@@ -209,9 +209,9 @@ export function ActiveTemplates({
         </>
       ) : (
         <>
-          <TemplateCard admin />
-          <TemplateCard admin />
-          <TemplateCard admin />
+          <TemplateCard isPublisher />
+          <TemplateCard isPublisher />
+          <TemplateCard isPublisher />
         </>
       )}
 

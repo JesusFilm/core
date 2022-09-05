@@ -15,26 +15,26 @@ const TemplateCardStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <TemplateCard journey={args.template} admin={args.admin} />
+    <TemplateCard journey={args.template} isPublisher={args.isPublisher} />
   </MockedProvider>
 )
 
 export const Default = Template.bind({})
 Default.args = {
   template: defaultTemplate,
-  admin: false
+  isPublisher: false
 }
 
 export const Complete = Template.bind({})
 Complete.args = {
   template: descriptiveTemplate,
-  admin: true
+  isPublisher: true
 }
 
 export const Loading = Template.bind({})
 Loading.args = {
   template: undefined,
-  admin: true
+  isPublisher: true
 }
 
 export default TemplateCardStory as Meta

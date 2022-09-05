@@ -25,7 +25,7 @@ import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
 
 export interface TemplateCardProps {
   journey?: Journey
-  admin?: boolean // TODO: Change to isPublisher
+  isPublisher?: boolean // TODO: Change to isPublisher
   duplicatedJourneyId?: string
   refetch?: () => Promise<
     ApolloQueryResult<
@@ -38,7 +38,7 @@ export interface TemplateCardProps {
 
 export function TemplateCard({
   journey,
-  admin,
+  isPublisher,
   duplicatedJourneyId,
   refetch
 }: TemplateCardProps): ReactElement {
@@ -90,7 +90,7 @@ export function TemplateCard({
           borderColor: 'divider'
         },
         '&:first-of-type':
-          admin !== true
+          isPublisher !== true
             ? {
                 borderTopLeftRadius: { xs: 0, sm: 12 },
                 borderTopRightRadius: { xs: 0, sm: 12 }
@@ -131,7 +131,9 @@ export function TemplateCard({
       <Link
         href={
           journey != null
-            ? `/${admin === true ? 'publisher' : 'templates'}/${journey.id}`
+            ? `/${isPublisher === true ? 'publisher' : 'templates'}/${
+                journey.id
+              }`
             : ''
         }
         passHref
@@ -151,7 +153,7 @@ export function TemplateCard({
                 </Typography>
 
                 <Stack direction="row">
-                  {admin === true && (
+                  {isPublisher === true && (
                     <>
                       <StatusChip status={journey.status} />
                       <Box sx={{ pr: 6 }} />
@@ -191,7 +193,7 @@ export function TemplateCard({
                     alignItems: 'center'
                   }}
                 >
-                  {admin === true && (
+                  {isPublisher === true && (
                     <>
                       <EditIcon sx={{ fontSize: '14px' }} />
                       <Skeleton variant="text" width={50} />
@@ -206,7 +208,7 @@ export function TemplateCard({
         </CardActionArea>
       </Link>
 
-      {admin === true && (
+      {isPublisher === true && (
         <CardActions sx={{ alignSelf: 'flex-end', width: '58px' }}>
           {journey != null ? (
             <JourneyCardMenu
