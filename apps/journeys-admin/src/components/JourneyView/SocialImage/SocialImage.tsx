@@ -21,11 +21,11 @@ export function SocialImage(): ReactElement {
             component="img"
             src={journey.primaryImageBlock.src}
             alt={journey.primaryImageBlock?.alt}
-            style={{
+            sx={{
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              borderRadius: 12,
+              borderRadius: 3,
               width: 213,
               height: 167,
               objectFit: 'cover'
@@ -33,14 +33,14 @@ export function SocialImage(): ReactElement {
           />
         ) : (
           <Box
-            style={{
+            sx={{
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              borderRadius: 12,
+              borderRadius: 3,
               width: 213,
               height: 167,
-              backgroundColor: '#EFEFEF'
+              backgroundColor: 'background.default'
             }}
           >
             <ImageIcon fontSize="large" />
@@ -49,11 +49,11 @@ export function SocialImage(): ReactElement {
       ) : (
         <Skeleton
           variant="rectangular"
-          style={{
+          sx={{
             width: 213,
             height: 167,
             objectFit: 'cover',
-            borderRadius: 12
+            borderRadius: 3
           }}
         />
       )}
