@@ -106,6 +106,9 @@ export function NavigationDrawer({
     title === 'Journey Details' ||
     title === 'Journey Reports'
 
+  const templatesSelected =
+    title === 'Journey Templates' || title === 'Journey Template'
+
   const { reports, templates } = useFlags()
 
   const profileOpen = Boolean(profileAnchorEl)
@@ -157,11 +160,7 @@ export function NavigationDrawer({
           <NavigationListItem
             icon={<ShopRoundedIcon />}
             text="Templates"
-            color={
-              title === 'Journey Templates'
-                ? 'background.paper'
-                : 'secondary.light'
-            }
+            color={templatesSelected ? 'background.paper' : 'secondary.light'}
             link="/templates"
           />
         )}
