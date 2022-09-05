@@ -12,7 +12,7 @@ import { SortOrder } from '../../JourneyList/JourneySort'
 import {
   RESTORE_TRASHED_JOURNEYS,
   DELETE_TRASHED_JOURNEYS
-} from '../../JourneyList/StatusTabPanel/TrashedStatusTab/TrashedStatusTab'
+} from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
 import {
   TrashedTemplates,
   GET_TRASHED_PUBLISHER_TEMPLATES

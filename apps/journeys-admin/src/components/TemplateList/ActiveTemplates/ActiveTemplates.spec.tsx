@@ -12,7 +12,7 @@ import { SortOrder } from '../../JourneyList/JourneySort'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
-} from '../../JourneyList/StatusTabPanel/ActiveStatusTab/ActiveStatusTab'
+} from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
 import {
   ActiveTemplates,
   GET_ACTIVE_PUBLISHER_TEMPLATES

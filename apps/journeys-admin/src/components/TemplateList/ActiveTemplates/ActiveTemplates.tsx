@@ -10,13 +10,13 @@ import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
-} from '../../JourneyList/StatusTabPanel/ActiveStatusTab/ActiveStatusTab'
+} from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
 import {
   GetActivePublisherTemplates,
   GetActivePublisherTemplates_journeys as Journey
 } from '../../../../__generated__/GetActivePublisherTemplates'
 import { TemplateCard } from '../../TemplateCard'
-import { getDuplicatedJourney } from '../../JourneyList/StatusTabPanel/ActiveStatusTab/utils/getDuplicatedJourney'
+import { getDuplicatedJourney } from '../../JourneyList/ActiveJourneyList/utils/getDuplicatedJourney'
 
 export const GET_ACTIVE_PUBLISHER_TEMPLATES = gql`
   query GetActivePublisherTemplates {

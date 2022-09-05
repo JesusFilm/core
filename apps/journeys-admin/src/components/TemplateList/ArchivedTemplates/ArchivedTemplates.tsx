@@ -11,7 +11,7 @@ import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
-} from '../../JourneyList/StatusTabPanel/ArchivedStatusTab/ArchivedStatusTab'
+} from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
 import {
   GetArchivedPublisherTemplates,
   GetArchivedPublisherTemplates_journeys as Journey

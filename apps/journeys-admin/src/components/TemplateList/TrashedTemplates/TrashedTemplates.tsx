@@ -10,7 +10,7 @@ import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import {
   RESTORE_TRASHED_JOURNEYS,
   DELETE_TRASHED_JOURNEYS
-} from '../../JourneyList/StatusTabPanel/TrashedStatusTab/TrashedStatusTab'
+} from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
 import {
   GetTrashedPublisherTemplates,
   GetTrashedPublisherTemplates_journeys as TrashedJourney

@@ -12,7 +12,7 @@ import { SortOrder } from '../../JourneyList/JourneySort'
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
-} from '../../JourneyList/StatusTabPanel/ArchivedStatusTab/ArchivedStatusTab'
+} from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
 import {
   ArchivedTemplates,
   GET_ARCHIVED_PUBLISHER_TEMPLATES

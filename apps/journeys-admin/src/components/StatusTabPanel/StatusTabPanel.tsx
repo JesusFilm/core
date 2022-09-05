@@ -1,22 +1,28 @@
-import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
-import Card from '@mui/material/Card'
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  SyntheticEvent,
+  useEffect,
+  useState
+} from 'react'
+import Paper from '@mui/material/Paper'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Box from '@mui/material/Box'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { NextRouter } from 'next/router'
-import { AuthUser } from 'next-firebase-auth'
-import { JourneySort, SortOrder } from '../JourneySort'
-import { ActiveStatusTab } from './ActiveStatusTab'
-import { ArchivedStatusTab } from './ArchivedStatusTab'
-import { TrashedStatusTab } from './TrashedStatusTab'
+import { JourneySort, SortOrder } from '../JourneyList/JourneySort'
 
 export interface StatusTabPanelProps {
+  activeList: ReactElement
+  archivedList: ReactElement
+  trashedList: ReactElement
+  activeTabLoaded: boolean
+  setActiveEvent: (event: string) => void
+  setSortOrder: Dispatch<SetStateAction<SortOrder | undefined>>
+  sortOrder?: SortOrder
   router?: NextRouter
-  event: string | undefined
-  authUser?: AuthUser | undefined
 }
 
 interface StatusOptions {
@@ -26,9 +32,14 @@ interface StatusOptions {
 }
 
 export function StatusTabPanel({
-  router,
-  event,
-  authUser
+  activeList,
+  archivedList,
+  trashedList,
+  activeTabLoaded,
+  setActiveEvent,
+  setSortOrder,
+  sortOrder,
+  router
 }: StatusTabPanelProps): ReactElement {
   const journeyStatusTabs: StatusOptions[] = [
     {
@@ -48,26 +59,13 @@ export function StatusTabPanel({
     }
   ]
 
-  const [sortOrder, setSortOrder] = useState<SortOrder>()
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
   const [tabsLoaded, setTabsLoaded] = useState(false)
-  const [activeTabLoaded, setActiveTabLoaded] = useState(false)
-  const [activeEvent, setActiveEvent] = useState(event)
-
-  function activeTabOnLoad(): void {
-    setActiveTabLoaded(true)
-  }
 
   useEffect(() => {
     if (activeTabLoaded) {
       setTabsLoaded(true)
     }
   }, [activeTabLoaded])
-
-  useEffect(() => {
-    setActiveEvent(event)
-  }, [event])
 
   const tabIndex =
     router != null
@@ -115,7 +113,7 @@ export function StatusTabPanel({
   return (
     <>
       <>
-        <Box sx={{ my: 4, ml: 6, display: smUp ? 'none' : 'block' }}>
+        <Box sx={{ my: 4, ml: 6, display: { xs: 'block', sm: 'none' } }}>
           <JourneySort
             sortOrder={sortOrder}
             onChange={setSortOrder}
@@ -123,7 +121,7 @@ export function StatusTabPanel({
           />
         </Box>
 
-        <Card
+        <Paper
           variant="outlined"
           sx={{
             mt: { xs: 0, sm: 6 },
@@ -172,7 +170,7 @@ export function StatusTabPanel({
                 ml: 'auto',
                 mt: 3,
                 mb: 2,
-                display: !smUp ? 'none' : 'block'
+                display: { xs: 'none', sm: 'block' }
               }}
             >
               <JourneySort
@@ -182,7 +180,7 @@ export function StatusTabPanel({
               />
             </Box>
           </Tabs>
-        </Card>
+        </Paper>
 
         {activeTab === 0 && (
           <TabPanel
@@ -190,12 +188,7 @@ export function StatusTabPanel({
             value={activeTab}
             index={journeyStatusTabs[0].tabIndex}
           >
-            <ActiveStatusTab
-              onLoad={activeTabOnLoad}
-              sortOrder={sortOrder}
-              event={activeEvent}
-              authUser={authUser}
-            />
+            {activeList}
           </TabPanel>
         )}
         {activeTab === 1 && (
@@ -204,12 +197,7 @@ export function StatusTabPanel({
             value={activeTab}
             index={journeyStatusTabs[1].tabIndex}
           >
-            <ArchivedStatusTab
-              onLoad={activeTabOnLoad}
-              sortOrder={sortOrder}
-              event={activeEvent}
-              authUser={authUser}
-            />
+            {archivedList}
           </TabPanel>
         )}
         {activeTab === 2 && (
@@ -218,12 +206,7 @@ export function StatusTabPanel({
             value={activeTab}
             index={journeyStatusTabs[2].tabIndex}
           >
-            <TrashedStatusTab
-              onLoad={activeTabOnLoad}
-              sortOrder={sortOrder}
-              event={activeEvent}
-              authUser={authUser}
-            />
+            {trashedList}
           </TabPanel>
         )}
       </>
