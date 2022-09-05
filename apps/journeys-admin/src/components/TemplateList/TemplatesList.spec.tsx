@@ -5,8 +5,6 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '../ThemeProvider'
 import { TemplateList } from '.'
 
-// TODO
-
 describe('JourneyList', () => {
   it('should render tab panel', () => {
     const { getByRole } = render(
