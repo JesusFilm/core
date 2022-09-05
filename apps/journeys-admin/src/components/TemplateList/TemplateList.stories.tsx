@@ -2,7 +2,6 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { PageWrapper } from '../PageWrapper'
 import {
   defaultTemplate,
   oldTemplate,
@@ -15,14 +14,12 @@ import { TemplateList } from '.'
 const TemplateListStory = {
   ...journeysAdminConfig,
   component: TemplateList,
-  title: 'Journeys-Admin/TemplateList',
+  title: 'Journeys-Admin/TemplatesList',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }
-
-// TODO
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider
@@ -44,10 +41,8 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <FlagsProvider flags={{ reports: true }}>
-      <PageWrapper title="Templates Admin">
-        <TemplateList {...args.props} />
-      </PageWrapper>
+    <FlagsProvider flags={{ reports: true, templates: true }}>
+      <TemplateList {...args.props} />
     </FlagsProvider>
   </MockedProvider>
 )

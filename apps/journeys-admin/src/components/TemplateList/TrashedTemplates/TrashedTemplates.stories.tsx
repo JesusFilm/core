@@ -16,7 +16,7 @@ import { TrashedTemplates } from '.'
 const TrashedTemplatesStory = {
   ...journeysAdminConfig,
   component: TrashedTemplates,
-  title: 'Journeys-Admin/TemplatesAdmin/TemplateStatusTabs/TrashedTemplates',
+  title: 'Journeys-Admin/TemplatesList/TrashedTemplates',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'

@@ -25,7 +25,7 @@ import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
 
 export interface TemplateCardProps {
   journey?: Journey
-  admin?: boolean // activates publisher version of template cards
+  admin?: boolean // TODO: Change to isPublisher
   duplicatedJourneyId?: string
   refetch?: () => Promise<
     ApolloQueryResult<

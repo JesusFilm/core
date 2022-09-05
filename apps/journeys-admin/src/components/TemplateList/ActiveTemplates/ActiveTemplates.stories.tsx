@@ -14,7 +14,7 @@ import { ActiveTemplates } from '.'
 const ActiveTemplatesStory = {
   ...journeysAdminConfig,
   component: ActiveTemplates,
-  title: 'Journeys-Admin/TemplatesAdmin/TemplateStatusTabs/ActiveTemplates',
+  title: 'Journeys-Admin/TemplatesList/ActiveTemplates',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
