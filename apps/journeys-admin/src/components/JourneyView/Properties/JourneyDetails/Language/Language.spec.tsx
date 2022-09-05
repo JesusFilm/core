@@ -6,11 +6,6 @@ import { GetJourney_journey as Journey } from '../../../../../../__generated__/G
 import { defaultJourney } from '../../../data'
 import { Language } from './Language'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
-
 describe('Language', () => {
   it('renders local language', () => {
     const { getByText } = render(

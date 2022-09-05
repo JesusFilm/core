@@ -5,8 +5,7 @@ import Skeleton from '@mui/material/Skeleton'
 import IconButton from '@mui/material/IconButton'
 import CreateRoundedIcon from '@mui/icons-material/CreateRounded'
 import Box from '@mui/material/Box'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { Theme } from '@mui/material/styles'
+import { useTheme } from '@mui/material/styles'
 import { LanguageDialog } from '../../../Menu/LanguageDialog'
 
 interface LanguageProps {
@@ -15,10 +14,10 @@ interface LanguageProps {
 
 export function Language({ isPublisher }: LanguageProps): ReactElement {
   const { journey } = useJourney()
+  const theme = useTheme()
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const [localLanguage, setLocalLanguage] = useState<string | undefined>()
   const [nativeLanguage, setNativeLanguage] = useState<string | undefined>()
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   useEffect(() => {
     setLocalLanguage(
@@ -36,7 +35,12 @@ export function Language({ isPublisher }: LanguageProps): ReactElement {
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: smUp ? 'space-between' : 'center'
+          [theme.breakpoints.up('sm')]: {
+            justifyContent: 'space-between'
+          },
+          [theme.breakpoints.down('sm')]: {
+            justifyContent: 'center'
+          }
         }}
       >
         {journey != null ? (

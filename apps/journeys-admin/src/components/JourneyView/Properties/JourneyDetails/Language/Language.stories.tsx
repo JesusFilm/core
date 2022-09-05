@@ -27,36 +27,10 @@ Default.args = {
   journey: defaultJourney
 }
 
-const language = {
-  __typename: 'Language',
-  id: '529',
-  name: [
-    {
-      value: 'Беларуская мова',
-      primary: true,
-      __typename: 'Translation'
-    },
-    {
-      value: 'Belorussian',
-      primary: false,
-      __typename: 'Translation'
-    }
-  ]
-}
-
-export const NativeLanguage = Template.bind({})
-NativeLanguage.args = {
-  journey: {
-    ...defaultJourney,
-    language: language
-  }
-}
-
 export const Publisher = Template.bind({})
 Publisher.args = {
   journey: {
     ...defaultJourney,
-    language: language,
     template: true
   },
   isPublisher: true
