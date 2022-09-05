@@ -8,9 +8,9 @@ import Typography from '@mui/material/Typography'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import { AccessAvatars } from '../../AccessAvatars'
+import { JourneyLink } from '../JourneyLink'
 import { JourneyDetails } from './JourneyDetails'
 import { AccessControl } from './AccessControl'
-import { JourneyLink } from './JourneyLink'
 
 export function Properties(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

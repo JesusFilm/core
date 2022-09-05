@@ -44,13 +44,13 @@
   "Delete Journeys Forever": "Delete Journeys Forever",
   "Delete Forever": "Delete Forever",
   "Are you sure you would like to permanently delete all trashed journeys immediately?": "Are you sure you would like to permanently delete all trashed journeys immediately?",
-  "Journey URL": "Journey URL",
-  "Edit URL": "Edit URL",
-  "Embed Journey": "Embed Journey",
-  "Access Control": "Access Control",
   "Show Preview": "Show Preview",
   "By embedding a Journey to your site, you agree to the ": "By embedding a Journey to your site, you agree to the ",
   "Terms of agreement": "Terms of agreement",
+  "Journey URL": "Journey URL",
+  "Edit URL": "Edit URL",
+  "Embed Journey": "Embed Journey",
   "Field update failed. Reload the page or try again.": "Field update failed. Reload the page or try again.",
+  "Access Control": "Access Control",
   "Properties": "Properties"
 }

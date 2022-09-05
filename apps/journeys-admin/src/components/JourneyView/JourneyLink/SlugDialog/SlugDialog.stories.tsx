@@ -3,14 +3,14 @@ import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { journeysAdminConfig } from '../../../../../libs/storybook'
-import { defaultJourney } from '../../../data'
+import { journeysAdminConfig } from '../../../../libs/storybook'
+import { defaultJourney } from '../../data'
 import { SlugDialog, JOURNEY_SLUG_UPDATE } from './SlugDialog'
 
 const SlugDialogStory = {
   ...journeysAdminConfig,
   component: SlugDialog,
-  title: 'Journeys-Admin/JourneyView/Properties/SlugDialog',
+  title: 'Journeys-Admin/JourneyView/JourneyLink/SlugDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
