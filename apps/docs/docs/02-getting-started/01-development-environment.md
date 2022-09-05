@@ -4,7 +4,9 @@ title: 1. Development Environment
 
 # Setup Development Environment
 
-We recommend using [Visual Studio Code](https://code.visualstudio.com/) with the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension which lets you use a [Docker container](https://docker.com/) as a full-featured development environment. Our docs are designed around developers using our container. A devcontainer.json file in Core tells VS Code how to access (or create) a development container with a well-defined tool and runtime stack. To get started try the following:
+We use [Visual Studio Code](https://code.visualstudio.com/) with the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension. This lets you use a [Docker container](https://docker.com/) as a full-featured development environment. A devcontainer.json file in Core tells VS Code how to access (or create) a development container with a well-defined tool and runtime stack.
+
+To get started try the following:
 
 1. Install [Visual Studio Code](https://code.visualstudio.com/)
 1. Install [Docker Desktop](https://www.docker.com/get-started)

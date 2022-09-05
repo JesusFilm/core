@@ -1,6 +1,6 @@
 # Core Unified Product Suite
 
-Core is Jesus Film Project's modern, developer-friendly solution that makes building large, feature-rich javascript projects painless. It contains all the tools you need to start building modern react applications ontop of robust GraphQL APIs, using battle-tested front-end and back-end development tools and practices.
+Core is Jesus Film Project's modern, developer-friendly solution that makes building large, feature-rich javascript projects painless. It contains all the tools you need to start building modern react applications ontop of a robust GraphQL Supergraph, using battle-tested front-end and back-end development tools and practices.
 
 Read the [docs](https://docs.core.jesusfilm.org) or find out more about us at [jesusfilm.org](https://jesusfilm.org).
 
