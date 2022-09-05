@@ -39,7 +39,7 @@ Default.args = {
       alt: 'image.jpg',
       width: 1920,
       height: 1080,
-      blurhash: ''
+      blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
     }
   }
 }
@@ -47,11 +47,6 @@ Default.args = {
 export const NoImageSource = Template.bind({})
 NoImageSource.args = {
   journey: defaultJourney
-}
-
-export const Loading = Template.bind({})
-Loading.args = {
-  journey: null
 }
 
 export default SocialImageStory as Meta
