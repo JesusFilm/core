@@ -28,7 +28,7 @@ describe('NavigationDrawer', () => {
     expect(getAllByRole('button')[0]).toContainElement(
       getByTestId('ChevronLeftRoundedIcon')
     )
-    expect(getByText('Journeys')).toBeInTheDocument()
+    expect(getByText('Discover')).toBeInTheDocument()
   })
 
   it('should render all the menu items', () => {

@@ -1,6 +1,5 @@
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -12,15 +11,13 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 
-function LibraryIndex(): ReactElement {
+function TemplateIndex(): ReactElement {
   const AuthUser = useAuthUser()
-  const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
-
   return (
     <>
-      <NextSeo title="Journey Templates" />
-      <PageWrapper title="Journey Templates" authUser={AuthUser}>
-        <TemplateLibrary journeys={data?.journeys} />
+      <NextSeo title="Templates Admin" />
+      <PageWrapper title="Templates Admin" authUser={AuthUser}>
+        {/* Template List for publishers */}
       </PageWrapper>
     </>
   )

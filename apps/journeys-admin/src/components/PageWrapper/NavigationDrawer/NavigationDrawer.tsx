@@ -10,10 +10,8 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
-import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
-import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
 import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
 import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
@@ -149,7 +147,7 @@ export function NavigationDrawer({
         </ListItemButton>
 
         <NavigationListItem
-          icon={<ExploreRoundedIcon />}
+          icon={<ViewCarouselRoundedIcon />}
           text="Discover"
           color={journeysSelected ? 'background.paper' : 'secondary.light'}
           link="/"
@@ -164,13 +162,13 @@ export function NavigationDrawer({
                 ? 'background.paper'
                 : 'secondary.light'
             }
-            link="/library"
+            link="/templates"
           />
         )}
 
         {reports && (
           <NavigationListItem
-            icon={<AssessmentRoundedIcon />}
+            icon={<LeaderboardRoundedIcon />}
             text="Reports"
             color={title === 'Reports' ? 'background.paper' : 'secondary.light'}
             link="/reports"
