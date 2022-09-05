@@ -2,14 +2,14 @@ import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../../../libs/storybook'
-import { publishedJourney } from '../../../data'
+import { journeysAdminConfig } from '../../../../libs/storybook'
+import { publishedJourney } from '../../data'
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 
 const EmbedJourneyDialogStory = {
   ...journeysAdminConfig,
   component: EmbedJourneyDialog,
-  title: 'Journeys-Admin/JourneyView/Properties/EmbedJourneyDialog',
+  title: 'Journeys-Admin/JourneyView/JourneyLink/EmbedJourneyDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'

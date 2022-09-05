@@ -14,9 +14,10 @@ import { GetUserRole } from '../../../__generated__/GetUserRole'
 import { MemoizedDynamicReport } from '../DynamicPowerBiReport'
 import { Properties } from './Properties'
 import { CardView } from './CardView'
-import { SlugDialog } from './Properties/JourneyLink/SlugDialog'
-import { EmbedJourneyDialog } from './Properties/JourneyLink/EmbedJourneyDialog'
+import { SlugDialog } from './JourneyLink/SlugDialog'
+import { EmbedJourneyDialog } from './JourneyLink/EmbedJourneyDialog'
 import { TitleDescription } from './TitleDescription'
+import { JourneyLink } from './JourneyLink'
 
 export const GET_USER_ROLE = gql`
   query GetUserRole {
@@ -87,7 +88,7 @@ export function JourneyView(): ReactElement {
               backgroundColor: !reports ? 'background.paper' : undefined
             }}
           >
-            {/* JourneyLink */}
+            <JourneyLink />
           </Box>
           <Divider />
         </Box>
