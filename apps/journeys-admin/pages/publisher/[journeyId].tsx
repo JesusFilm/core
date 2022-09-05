@@ -49,7 +49,7 @@ function TemplateDetailsAdmin(): ReactElement {
           showDrawer
           backHref="/"
         >
-          <JourneyView journeyType="Template" />
+          <JourneyView />
         </PageWrapper>
       </JourneyProvider>
     </>
