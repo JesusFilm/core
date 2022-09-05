@@ -26,7 +26,7 @@ export function TitleDescription({
 
   return (
     <>
-      <Box sx={{ p: { xs: 6, sm: 8 }, backgroundColor: 'background.paper' }}>
+      <Box sx={{ backgroundColor: 'background.paper' }}>
         <Stack
           direction="row"
           sx={{
