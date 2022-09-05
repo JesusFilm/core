@@ -1,1 +1,0 @@
-export { TemplateStatusTabs } from './TemplateStatusTabs'
