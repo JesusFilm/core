@@ -4,11 +4,10 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import Box from '@mui/material/Box'
-import EditIcon from '@mui/icons-material/Edit'
-import Fab from '@mui/material/Fab'
-import NextLink from 'next/link'
 import Divider from '@mui/material/Divider'
+import Stack from '@mui/material/Stack'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import { useTheme } from '@mui/material/styles'
 import { JourneysReportType, Role } from '../../../__generated__/globalTypes'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetUserRole } from '../../../__generated__/GetUserRole'
@@ -32,6 +31,7 @@ export const GET_USER_ROLE = gql`
 export function JourneyView(): ReactElement {
   const { journey } = useJourney()
   const { reports } = useFlags()
+  const theme = useTheme()
   const blocks =
     journey?.blocks != null
       ? (transformer(journey.blocks) as Array<TreeBlock<StepBlock>>)
@@ -44,10 +44,28 @@ export function JourneyView(): ReactElement {
 
   return (
     <Box sx={{ mr: { sm: '328px' }, mb: '80px' }}>
-      <TitleDescription isPublisher={isPublisher} />
+      <Box
+        sx={{
+          p: { xs: 6, sm: 8 },
+          display: 'flex',
+          backgroundColor: 'background.paper',
+          [theme.breakpoints.up('sm')]: {
+            flexDirection: 'row'
+          },
+          [theme.breakpoints.down('sm')]: {
+            flexDirection: 'column-reverse'
+          }
+        }}
+      >
+        {/* if template: SocialImage */}
+        <Stack direction="column" spacing={6} sx={{ width: '100%' }}>
+          {/* if template: DatePreview */}
+          <TitleDescription isPublisher={isPublisher} />
+        </Stack>
+      </Box>
       <Properties />
 
-      {reports && journey != null && (
+      {reports && journey != null && journey.template !== true && (
         <>
           <Box
             sx={{ height: '213px', pb: 6, mx: 6 }}
@@ -61,40 +79,24 @@ export function JourneyView(): ReactElement {
         </>
       )}
 
-      <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-        <Divider />
-        <Box
-          sx={{
-            p: 6,
-            backgroundColor: !reports ? 'background.paper' : undefined
-          }}
-        >
-          <JourneyLink />
+      {journey?.template !== true && (
+        <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+          <Divider />
+          <Box
+            sx={{
+              p: 6,
+              backgroundColor: !reports ? 'background.paper' : undefined
+            }}
+          >
+            <JourneyLink />
+          </Box>
+          <Divider />
         </Box>
-        <Divider />
-      </Box>
+      )}
 
       <>
         <CardView id={journey?.id} blocks={blocks} />
-        <NextLink
-          href={journey != null ? `/journeys/${journey.id}/edit` : ''}
-          passHref
-        >
-          <Fab
-            variant="extended"
-            size="large"
-            sx={{
-              position: 'fixed',
-              bottom: 16,
-              right: { xs: 20, sm: 348 }
-            }}
-            color="primary"
-            disabled={journey == null}
-          >
-            <EditIcon sx={{ mr: 3 }} />
-            Edit
-          </Fab>
-        </NextLink>
+        {/* JourneyViewFab */}
       </>
 
       <SlugDialog
