@@ -4,7 +4,7 @@ import PeopleIcon from '@mui/icons-material/People'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import Divider from '@mui/material/Divider'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { ApolloQueryResult } from '@apollo/client'
 import { MenuItem } from '../MenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem.tsx/DuplicateJourneyMenuItem'
@@ -23,6 +23,7 @@ interface DefaultMenuProps {
   setOpenAccessDialog: () => void
   handleCloseMenu: () => void
   setOpenTrashDialog: () => void
+  template?: boolean
   refetch?: () => Promise<
     ApolloQueryResult<
       GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
@@ -39,26 +40,36 @@ export function DefaultMenu({
   setOpenAccessDialog,
   handleCloseMenu,
   setOpenTrashDialog,
+  template,
   refetch
 }: DefaultMenuProps): ReactElement {
   return (
     <>
-      <Link href={`/journeys/${journeyId}`} passHref>
+      <NextLink
+        href={
+          template === true
+            ? `/templates/${journeyId}`
+            : `/journeys/${journeyId}`
+        }
+        passHref
+      >
         <MenuItem
           icon={<EditIcon color="secondary" />}
           text="Edit"
           options={{ component: 'a' }}
         />
-      </Link>
+      </NextLink>
 
-      <MenuItem
-        icon={<PeopleIcon color="secondary" />}
-        text="Access"
-        handleClick={() => {
-          setOpenAccessDialog()
-          handleCloseMenu()
-        }}
-      />
+      {template !== true && (
+        <MenuItem
+          icon={<PeopleIcon color="secondary" />}
+          text="Access"
+          handleClick={() => {
+            setOpenAccessDialog()
+            handleCloseMenu()
+          }}
+        />
+      )}
 
       <MenuItem
         icon={<VisibilityIcon color="secondary" />}

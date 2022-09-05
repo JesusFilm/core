@@ -55,7 +55,8 @@ describe('JourneyView', () => {
     userJourneys: [],
     template: null
   }
-  it('should have edit button', () => {
+
+  it.skip('should have edit button', () => {
     const { getByRole } = render(
       <MockedProvider>
         <FlagsProvider flags={{ reports: true }}>
