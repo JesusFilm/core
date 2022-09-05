@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { defaultJourney } from '../data'
 import { Properties } from '.'
 
@@ -15,9 +16,11 @@ describe('Properties', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-            <Properties />
-          </JourneyProvider>
+          <FlagsProvider>
+            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+              <Properties />
+            </JourneyProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
