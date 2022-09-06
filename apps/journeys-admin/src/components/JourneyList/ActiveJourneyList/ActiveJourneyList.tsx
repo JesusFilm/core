@@ -8,12 +8,12 @@ import { useSnackbar } from 'notistack'
 import {
   GetActiveJourneys,
   GetActiveJourneys_journeys as Journeys
-} from '../../../../../__generated__/GetActiveJourneys'
-import { JourneyCard } from '../../JourneyCard'
-import { AddJourneyButton } from '../../AddJourneyButton'
-import { SortOrder } from '../../JourneySort'
-import { Dialog } from '../../../Dialog'
-import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
+} from '../../../../__generated__/GetActiveJourneys'
+import { JourneyCard } from '../JourneyCard'
+import { AddJourneyButton } from '../AddJourneyButton'
+import { SortOrder } from '../JourneySort'
+import { Dialog } from '../../Dialog'
+import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { getDuplicatedJourney } from './utils/getDuplicatedJourney'
 
 export const GET_ACTIVE_JOURNEYS = gql`
@@ -69,19 +69,19 @@ export const TRASH_ACTIVE_JOURNEYS = gql`
   }
 `
 
-interface ActiveStatusTabProps {
+interface ActiveJourneyListProps {
   onLoad: () => void
   sortOrder?: SortOrder
   event: string | undefined
   authUser?: AuthUser
 }
 
-export function ActiveStatusTab({
+export function ActiveJourneyList({
   onLoad,
   sortOrder,
   event,
   authUser
-}: ActiveStatusTabProps): ReactElement {
+}: ActiveJourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { data, loading, error, refetch } =
