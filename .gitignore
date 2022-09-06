@@ -49,5 +49,9 @@ Thumbs.db
 # nx generated files
 migrations.json
 
+# Generated Docusaurus files
+.docusaurus/
+.cache-loader/
+
 # terraform providers
 .terraform

@@ -3,7 +3,7 @@ import { useMutation, gql, ApolloQueryResult } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded'
 import UnarchiveRoundedIcon from '@mui/icons-material/UnarchiveRounded'
-import { MenuItem } from '../../MenuItem'
+import { MenuItem } from '../../../../../MenuItem'
 import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { JourneyArchive } from '../../../../../../../__generated__/JourneyArchive'
 import { JourneyUnarchive } from '../../../../../../../__generated__/JourneyUnarchive'
@@ -111,15 +111,15 @@ export function ArchiveJourney({
     <>
       {status !== JourneyStatus.archived ? (
         <MenuItem
+          label="Archive"
           icon={<ArchiveRoundedIcon color="secondary" />}
-          text="Archive"
-          handleClick={handleClick}
+          onClick={handleClick}
         />
       ) : (
         <MenuItem
+          label="Unarchive"
           icon={<UnarchiveRoundedIcon color="secondary" />}
-          text="Unarchive"
-          handleClick={handleClick}
+          onClick={handleClick}
         />
       )}
     </>

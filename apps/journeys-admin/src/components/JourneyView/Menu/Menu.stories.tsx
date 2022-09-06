@@ -99,6 +99,8 @@ const Template: Story = ({ ...args }) => (
   </MockedProvider>
 )
 
+// No more need for forceOpen - refactor to use play
+
 export const Draft = Template.bind({})
 Draft.args = { journey: defaultJourney, forceOpen: true }
 
@@ -112,12 +114,15 @@ Published.args = {
   forceOpen: true
 }
 
+// Remove and add LibraryTemplate
 export const Reports = Template.bind({})
 Reports.args = {
   journey: defaultJourney,
   reports: true,
   forceOpen: true
 }
+
+// Add Template
 
 export const Loading = Template.bind({})
 Loading.args = { journey: undefined }

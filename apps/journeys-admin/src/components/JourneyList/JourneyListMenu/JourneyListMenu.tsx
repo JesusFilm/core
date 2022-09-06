@@ -8,10 +8,8 @@ import CheckCircle from '@mui/icons-material/CheckCircle'
 import Unarchive from '@mui/icons-material/Unarchive'
 import DeleteOutline from '@mui/icons-material/DeleteOutline'
 import MuiMenu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
 import IconButton from '@mui/material/IconButton'
+import { MenuItem } from '../../MenuItem'
 
 interface JourneyListMenuProps {
   router: NextRouter
@@ -37,7 +35,6 @@ export default function JourneyListMenu({
 
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
-    // onClick('')
   }
   return (
     <>
@@ -63,50 +60,44 @@ export default function JourneyListMenu({
           >
             {activeTab === 'active' && (
               <>
-                <MenuItem onClick={() => handleEvent('archiveAllActive')}>
-                  <ListItemIcon>
-                    <Archive />
-                  </ListItemIcon>
-                  <ListItemText>{t('Archive All')}</ListItemText>
-                </MenuItem>
-                <MenuItem onClick={() => handleEvent('trashAllActive')}>
-                  <ListItemIcon>
-                    <DeleteOutline />
-                  </ListItemIcon>
-                  <ListItemText>{t('Trash All')}</ListItemText>
-                </MenuItem>
+                <MenuItem
+                  label={t('Archive All')}
+                  icon={<Archive />}
+                  onClick={() => handleEvent('archiveAllActive')}
+                />
+                <MenuItem
+                  label={t('Trash All')}
+                  icon={<DeleteOutline />}
+                  onClick={() => handleEvent('trashAllActive')}
+                />
               </>
             )}
             {activeTab === 'archived' && (
               <>
-                <MenuItem onClick={() => handleEvent('restoreAllArchived')}>
-                  <ListItemIcon>
-                    <Unarchive />
-                  </ListItemIcon>
-                  <ListItemText>{t('Unarchive All')}</ListItemText>
-                </MenuItem>
-                <MenuItem onClick={() => handleEvent('trashAllArchived')}>
-                  <ListItemIcon>
-                    <DeleteOutline />
-                  </ListItemIcon>
-                  <ListItemText>{t('Trash All')}</ListItemText>
-                </MenuItem>
+                <MenuItem
+                  label={t('Unarchive All')}
+                  icon={<Unarchive />}
+                  onClick={() => handleEvent('restoreAllArchived')}
+                />
+                <MenuItem
+                  label={t('Trash All')}
+                  icon={<DeleteOutline />}
+                  onClick={() => handleEvent('trashAllArchived')}
+                />
               </>
             )}
             {activeTab === 'trashed' && (
               <>
-                <MenuItem onClick={() => handleEvent('restoreAllTrashed')}>
-                  <ListItemIcon>
-                    <CheckCircle />
-                  </ListItemIcon>
-                  <ListItemText>{t('Restore All')}</ListItemText>
-                </MenuItem>
-                <MenuItem onClick={() => handleEvent('deleteAllTrashed')}>
-                  <ListItemIcon>
-                    <DeleteForever />
-                  </ListItemIcon>
-                  <ListItemText>{t('Delete All Forever')}</ListItemText>
-                </MenuItem>
+                <MenuItem
+                  label={t('Restore All')}
+                  icon={<CheckCircle />}
+                  onClick={() => handleEvent('restoreAllTrashed')}
+                />
+                <MenuItem
+                  label={t('Delete All Forever')}
+                  icon={<DeleteForever />}
+                  onClick={() => handleEvent('deleteAllTrashed')}
+                />
               </>
             )}
           </MuiMenu>
