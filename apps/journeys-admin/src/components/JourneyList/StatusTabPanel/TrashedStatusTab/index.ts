@@ -1,1 +1,0 @@
-export { TrashedStatusTab } from './TrashedStatusTab'

@@ -1,20 +1,20 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import noop from 'lodash/noop'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   defaultJourney,
   oldJourney,
   descriptiveJourney,
   publishedJourney
-} from '../../journeyListData'
-import { GET_ACTIVE_JOURNEYS } from './ActiveStatusTab'
-import { ActiveStatusTab } from '.'
+} from '../journeyListData'
+import { GET_ACTIVE_JOURNEYS } from './ActiveJourneyList'
+import { ActiveJourneyList } from '.'
 
-const ActiveStatusTabStory = {
+const ActiveJourneyListStory = {
   ...journeysAdminConfig,
-  component: ActiveStatusTab,
-  title: 'Journeys-Admin/JourneyList/StatusTabPanel/ActiveStatusTab',
+  component: ActiveJourneyList,
+  title: 'Journeys-Admin/JourneyList/StatusTabPanel/ActiveJourneyList',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -23,7 +23,7 @@ const ActiveStatusTabStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
-    <ActiveStatusTab {...args.props} />
+    <ActiveJourneyList {...args.props} />
   </MockedProvider>
 )
 
@@ -99,4 +99,4 @@ TrashAll.args = {
   mocks: []
 }
 
-export default ActiveStatusTabStory as Meta
+export default ActiveJourneyListStory as Meta

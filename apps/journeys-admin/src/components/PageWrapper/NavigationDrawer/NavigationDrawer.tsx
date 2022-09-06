@@ -153,16 +153,16 @@ export function NavigationDrawer({
 
         <NavigationListItem
           icon={<ViewCarouselRoundedIcon />}
-          text="Discover"
-          color={journeysSelected ? 'background.paper' : 'secondary.light'}
+          label="Discover"
+          selected={journeysSelected}
           link="/"
         />
 
         {templates && (
           <NavigationListItem
             icon={<ShopRoundedIcon />}
-            text="Templates"
-            color={templatesSelected ? 'background.paper' : 'secondary.light'}
+            label="Templates"
+            selected={templatesSelected}
             link="/templates"
           />
         )}
@@ -170,8 +170,8 @@ export function NavigationDrawer({
         {reports && (
           <NavigationListItem
             icon={<LeaderboardRoundedIcon />}
-            text="Reports"
-            color={title === 'Reports' ? 'background.paper' : 'secondary.light'}
+            label="Reports"
+            selected={title === 'Reports'}
             link="/reports"
           />
         )}
@@ -187,8 +187,8 @@ export function NavigationDrawer({
                   sx={{ width: 24, height: 24 }}
                 />
               }
-              text="Profile"
-              color="secondary.light"
+              label="Profile"
+              selected={false}
               handleClick={handleProfileClick}
             />
             <UserMenu

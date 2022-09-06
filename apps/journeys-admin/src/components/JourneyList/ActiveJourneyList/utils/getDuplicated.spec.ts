@@ -4,7 +4,7 @@ import {
   ThemeMode,
   JourneyStatus,
   UserJourneyRole
-} from '../../../../../../__generated__/globalTypes'
+} from '../../../../../__generated__/globalTypes'
 import { getDuplicatedJourney } from './getDuplicatedJourney'
 
 describe('getDuplicatedJourney', () => {
