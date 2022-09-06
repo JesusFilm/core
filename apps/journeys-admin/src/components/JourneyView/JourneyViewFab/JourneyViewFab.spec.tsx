@@ -52,7 +52,7 @@ describe('JourneyViewFab', () => {
     )
     expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
       'href',
-      '/templates/journey-id/edit'
+      '/publisher/journey-id/edit'
     )
   })
 

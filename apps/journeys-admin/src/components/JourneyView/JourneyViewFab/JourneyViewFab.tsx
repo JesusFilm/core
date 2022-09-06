@@ -65,7 +65,7 @@ export function JourneyViewFab({
   let editLink
   if (journey != null) {
     if (journey.template === true && isPublisher === true) {
-      editLink = `/templates/${journey.id}/edit`
+      editLink = `/publisher/${journey.id}/edit`
     } else {
       editLink = `/journeys/${journey.id}/edit`
     }
