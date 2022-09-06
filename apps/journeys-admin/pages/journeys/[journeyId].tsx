@@ -55,18 +55,18 @@ function JourneyIdPage(): ReactElement {
               menu={<Menu />}
               authUser={AuthUser}
             >
-              <JourneyView />
+              <JourneyView journeyType='Journey' />
             </PageWrapper>
           </JourneyProvider>
         </>
       )}
       {error?.graphQLErrors[0].message ===
         'User has not received an invitation to edit this journey.' && (
-        <>
-          <NextSeo title={t('Access Denied')} />
-          <JourneyInvite journeyId={router.query.journeyId as string} />
-        </>
-      )}
+          <>
+            <NextSeo title={t('Access Denied')} />
+            <JourneyInvite journeyId={router.query.journeyId as string} />
+          </>
+        )}
       {error?.graphQLErrors[0].message === 'User invitation pending.' && (
         <>
           <NextSeo title={t('Access Denied')} />
