@@ -7,7 +7,7 @@ import ListItemText from '@mui/material/ListItemText'
 export interface NavigationListItemProps {
   icon: ReactElement
   text: string
-  color: string
+  selected: boolean
   link?: string
   handleClick?: (e?) => void
 }
@@ -15,10 +15,11 @@ export interface NavigationListItemProps {
 export function NavigationListItem({
   icon,
   text,
-  color,
+  selected,
   link,
   handleClick
 }: NavigationListItemProps): ReactElement {
+  const color = selected ? 'background.paper' : 'secondary.light'
   return (
     <LinkWrapper
       wrapper={(children) => (

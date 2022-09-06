@@ -18,7 +18,7 @@ export const Default = Template.bind({})
 Default.args = {
   icon: <ExploreRoundedIcon />,
   text: 'Discover',
-  color: 'secondary.main'
+  selected: true
 }
 
 export default NavigationListItemStory as Meta
