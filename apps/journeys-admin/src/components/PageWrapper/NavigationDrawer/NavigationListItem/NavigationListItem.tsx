@@ -6,7 +6,7 @@ import ListItemText from '@mui/material/ListItemText'
 
 export interface NavigationListItemProps {
   icon: ReactElement
-  text: string
+  label: string
   selected: boolean
   link?: string
   handleClick?: (e?) => void
@@ -14,7 +14,7 @@ export interface NavigationListItemProps {
 
 export function NavigationListItem({
   icon,
-  text,
+  label,
   selected,
   link,
   handleClick
@@ -31,7 +31,7 @@ export function NavigationListItem({
     >
       <ListItemButton onClick={handleClick}>
         <ListItemIcon sx={{ color }}>{icon}</ListItemIcon>
-        <ListItemText primary={text} sx={{ color }} />
+        <ListItemText primary={label} sx={{ color }} />
       </ListItemButton>
     </LinkWrapper>
   )

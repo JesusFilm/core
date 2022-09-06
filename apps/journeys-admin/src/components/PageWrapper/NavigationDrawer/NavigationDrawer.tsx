@@ -148,7 +148,7 @@ export function NavigationDrawer({
 
         <NavigationListItem
           icon={<ViewCarouselRoundedIcon />}
-          text="Discover"
+          label="Discover"
           selected={journeysSelected}
           link="/"
         />
@@ -156,7 +156,7 @@ export function NavigationDrawer({
         {templates && (
           <NavigationListItem
             icon={<ShopRoundedIcon />}
-            text="Templates"
+            label="Templates"
             selected={title === 'Journey Templates'}
             link="/templates"
           />
@@ -165,7 +165,7 @@ export function NavigationDrawer({
         {reports && (
           <NavigationListItem
             icon={<LeaderboardRoundedIcon />}
-            text="Reports"
+            label="Reports"
             selected={title === 'Reports'}
             link="/reports"
           />
@@ -182,7 +182,7 @@ export function NavigationDrawer({
                   sx={{ width: 24, height: 24 }}
                 />
               }
-              text="Profile"
+              label="Profile"
               selected={false}
               handleClick={handleProfileClick}
             />

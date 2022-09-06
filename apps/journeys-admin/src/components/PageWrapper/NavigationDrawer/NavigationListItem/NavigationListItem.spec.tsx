@@ -5,7 +5,11 @@ import { NavigationListItem } from './NavigationListItem'
 describe('NavigationListItem', () => {
   it('renders menu item', () => {
     const { getByText, getByTestId } = render(
-      <NavigationListItem icon={<AbcRoundedIcon />} text="menu item" selected />
+      <NavigationListItem
+        icon={<AbcRoundedIcon />}
+        label="menu item"
+        selected
+      />
     )
     expect(getByTestId('AbcRoundedIcon')).toBeInTheDocument()
     expect(getByTestId('AbcRoundedIcon')).toHaveStyle(`color: "#fff"`)
@@ -16,7 +20,7 @@ describe('NavigationListItem', () => {
     const { getByTestId } = render(
       <NavigationListItem
         icon={<AbcRoundedIcon />}
-        text="menu item"
+        label="menu item"
         selected
         link="/"
       />
@@ -31,7 +35,7 @@ describe('NavigationListItem', () => {
     const { getByRole } = render(
       <NavigationListItem
         icon={<AbcRoundedIcon />}
-        text="menu item"
+        label="menu item"
         selected
         handleClick={onClick}
       />
