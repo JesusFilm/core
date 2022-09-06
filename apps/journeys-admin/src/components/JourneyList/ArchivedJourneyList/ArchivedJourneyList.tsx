@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import { gql, useMutation, useQuery } from '@apollo/client'
@@ -6,23 +6,19 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
-import {
-  GetTrashedJourneys,
-  GetTrashedJourneys_journeys as TrashedJourney
-} from '../../../../../__generated__/GetTrashedJourneys'
-import { JourneyCard } from '../../JourneyCard'
-import { SortOrder } from '../../JourneySort'
-import { Dialog } from '../../../Dialog'
-import { sortJourneys } from '../../JourneySort/utils/sortJourneys'
+import { GetArchivedJourneys } from '../../../../__generated__/GetArchivedJourneys'
+import { JourneyCard } from '../JourneyCard'
+import { SortOrder } from '../JourneySort'
+import { Dialog } from '../../Dialog'
+import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 
-export const GET_TRASHED_JOURNEYS = gql`
-  query GetTrashedJourneys {
-    journeys: adminJourneys(status: [trashed]) {
+export const GET_ARCHIVED_JOURNEYS = gql`
+  query GetArchivedJourneys {
+    journeys: adminJourneys(status: [archived]) {
       id
       title
       createdAt
       publishedAt
-      trashedAt
       description
       slug
       themeName
@@ -51,8 +47,8 @@ export const GET_TRASHED_JOURNEYS = gql`
   }
 `
 
-export const RESTORE_TRASHED_JOURNEYS = gql`
-  mutation RestoreTrashedJourneys($ids: [ID!]!) {
+export const RESTORE_ARCHIVED_JOURNEYS = gql`
+  mutation RestoreArchivedJourneys($ids: [ID!]!) {
     journeysRestore(ids: $ids) {
       id
       status
@@ -60,35 +56,36 @@ export const RESTORE_TRASHED_JOURNEYS = gql`
   }
 `
 
-export const DELETE_TRASHED_JOURNEYS = gql`
-  mutation DeleteTrashedJourneys($ids: [ID!]!) {
-    journeysDelete(ids: $ids) {
+export const TRASH_ARCHIVED_JOURNEYS = gql`
+  mutation TrashArchivedJourneys($ids: [ID!]!) {
+    journeysTrash(ids: $ids) {
       id
       status
     }
   }
 `
 
-interface TrashedStatusTabProps {
-  onLoad: (journeys: string[] | undefined) => void
+interface ArchivedJourneyListProps {
+  onLoad: () => void
   sortOrder?: SortOrder
   event: string | undefined
   authUser?: AuthUser
 }
 
-export function TrashedStatusTab({
+export function ArchivedJourneyList({
   onLoad,
   sortOrder,
   event,
   authUser
-}: TrashedStatusTabProps): ReactElement {
+}: ArchivedJourneyListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, loading, error, refetch } =
-    useQuery<GetTrashedJourneys>(GET_TRASHED_JOURNEYS)
+  const { data, loading, error, refetch } = useQuery<GetArchivedJourneys>(
+    GET_ARCHIVED_JOURNEYS
+  )
   const journeys = data?.journeys
 
-  const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
+  const [restoreArchived] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     variables: {
       ids: journeys
         ?.filter(
@@ -109,7 +106,7 @@ export function TrashedStatusTab({
     }
   })
 
-  const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
+  const [trashArchived] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
     variables: {
       ids: journeys
         ?.filter(
@@ -121,8 +118,8 @@ export function TrashedStatusTab({
         .map((journey) => journey.id)
     },
     update(cache, { data }) {
-      if (data?.journeysDelete != null) {
-        enqueueSnackbar(t('Journeys Deleted'), {
+      if (data?.journeysTrash != null) {
+        enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
         })
         void refetch()
@@ -131,7 +128,7 @@ export function TrashedStatusTab({
   })
 
   const [openRestoreAll, setOpenRestoreAll] = useState(false)
-  const [openDeleteAll, setOpenDeleteAll] = useState(false)
+  const [openTrashAll, setOpenTrashAll] = useState(false)
 
   const snackbarError = (error: Error): void => {
     enqueueSnackbar(error.message, {
@@ -142,16 +139,16 @@ export function TrashedStatusTab({
 
   const restoreAll = async (): Promise<void> => {
     try {
-      await restoreTrashed()
+      await restoreArchived()
     } catch (error) {
       snackbarError(error)
     }
     handleClose()
   }
 
-  const deleteAll = async (): Promise<void> => {
+  const trashAll = async (): Promise<void> => {
     try {
-      await deleteTrashed()
+      await trashArchived()
     } catch (error) {
       snackbarError(error)
     }
@@ -160,56 +157,50 @@ export function TrashedStatusTab({
 
   const handleClose = (): void => {
     setOpenRestoreAll(false)
-    setOpenDeleteAll(false)
+    setOpenTrashAll(false)
   }
 
-  const once = useRef(false)
   useEffect(() => {
-    if (!once.current) {
-      if (!loading && error == null) {
-        onLoad(journeys?.map((journey) => journey.id))
-        once.current = true
-      }
+    if (!loading && error == null) {
+      onLoad()
     }
-  }, [onLoad, loading, error, journeys, once])
+  }, [onLoad, loading, error])
 
   useEffect(() => {
     switch (event) {
-      case 'restoreAllTrashed':
+      case 'restoreAllArchived':
         setOpenRestoreAll(true)
         break
-      case 'deleteAllTrashed':
-        setOpenDeleteAll(true)
+      case 'trashAllArchived':
+        setOpenTrashAll(true)
         break
-      case 'refetchTrashed':
+      case 'refetchArchived':
         void refetch()
         break
     }
   }, [event, refetch])
 
   const sortedJourneys =
-    journeys != null
-      ? (sortJourneys(journeys, sortOrder) as TrashedJourney[])
-      : undefined
-
-  // calculate 40 days ago. may later be replaced by cron job
-  const daysAgo = new Date()
-  daysAgo.setDate(new Date().getDate() - 40)
+    journeys != null ? sortJourneys(journeys, sortOrder) : undefined
 
   return (
     <>
       {journeys != null && sortedJourneys != null ? (
         <>
-          {sortedJourneys
-            .filter((journey) => new Date(journey.trashedAt) > daysAgo)
-            .map((journey) => (
-              <JourneyCard
-                key={journey.id}
-                journey={journey}
-                refetch={refetch}
-              />
-            ))}
-          {journeys.length === 0 && (
+          {sortedJourneys.map((journey) => (
+            <JourneyCard key={journey.id} journey={journey} refetch={refetch} />
+          ))}
+          {journeys.length > 0 ? (
+            <span>
+              <Box width="100%" sx={{ textAlign: 'center' }}>
+                <Typography variant="caption">
+                  {t(
+                    'Archived journeys are hidden from your active journey list for better organization.'
+                  )}
+                </Typography>
+              </Box>
+            </span>
+          ) : (
             <>
               <Card
                 variant="outlined"
@@ -225,18 +216,18 @@ export function TrashedStatusTab({
                 }}
               >
                 <Typography variant="subtitle1" align="center" gutterBottom>
-                  {t('Your Trashed journeys will appear here.')}
+                  {t('No archived journeys.')}
                 </Typography>
               </Card>
+              <Box width="100%" sx={{ textAlign: 'center' }}>
+                <Typography variant="caption">
+                  {t(
+                    'You can archive a Journey to hide it from your active Journey list for better organization.'
+                  )}
+                </Typography>
+              </Box>
             </>
           )}
-          <span>
-            <Box width="100%" sx={{ textAlign: 'center' }}>
-              <Typography variant="caption">
-                {t('Trashed Journeys are moved here for up to 40 days.')}
-              </Typography>
-            </Box>
-          </span>
         </>
       ) : (
         <>
@@ -249,37 +240,37 @@ export function TrashedStatusTab({
         open={openRestoreAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: t('Restore Journeys'),
+          title: t('Unarchive Journeys'),
           closeButton: true
         }}
         dialogAction={{
           onSubmit: restoreAll,
-          submitLabel: t('Restore'),
+          submitLabel: t('Unarchive'),
           closeLabel: t('Cancel')
         }}
       >
         <Typography>
           {t(
-            'Are you sure you would like to restore all trashed journeys immediately?'
+            'Are you sure you would like to unarchive all archived journeys immediately?'
           )}
         </Typography>
       </Dialog>
       <Dialog
-        open={openDeleteAll ?? false}
+        open={openTrashAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: t('Delete Journeys Forever'),
+          title: t('Trash Journeys'),
           closeButton: true
         }}
         dialogAction={{
-          onSubmit: deleteAll,
-          submitLabel: t('Delete Forever'),
+          onSubmit: trashAll,
+          submitLabel: t('Trash'),
           closeLabel: t('Cancel')
         }}
       >
         <Typography>
           {t(
-            'Are you sure you would like to permanently delete all trashed journeys immediately?'
+            'Are you sure you would like to trash all archived journeys immediately?'
           )}
         </Typography>
       </Dialog>
