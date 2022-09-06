@@ -188,12 +188,8 @@ export function NavigationDrawer({
               templates && (
                 <NavigationListItem
                   icon={<ShopTwoRoundedIcon />}
-                  text="Publisher"
-                  color={
-                    title === 'Templates Admin'
-                      ? 'background.paper'
-                      : 'secondary.light'
-                  }
+                  label="Publisher"
+                  selected={title === 'Templates Admin'}
                   link="/publisher"
                 />
               )}
