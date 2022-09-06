@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 import { useRouter } from 'next/router'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { CardPreview } from '../../CardPreview'
 
@@ -14,6 +15,7 @@ export interface CardViewProps {
 }
 
 export function CardView({ id, blocks }: CardViewProps): ReactElement {
+  const { journey } = useJourney()
   const breakpoints = useBreakpoints()
   const router = useRouter()
 
@@ -38,7 +40,7 @@ export function CardView({ id, blocks }: CardViewProps): ReactElement {
       <CardPreview
         onSelect={handleSelect}
         steps={blocks}
-        showAddButton
+        showAddButton={journey?.template !== true}
         isDraggable={false}
       />
       <Box sx={{ pt: 2, display: 'flex', justifyContent: 'center' }}>
