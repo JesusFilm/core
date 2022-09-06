@@ -18,6 +18,13 @@ export const Default = Template.bind({})
 Default.args = {
   icon: <ExploreRoundedIcon />,
   text: 'Discover',
+  selected: false
+}
+
+export const Selected = Template.bind({})
+Selected.args = {
+  icon: <ExploreRoundedIcon />,
+  text: 'Discover',
   selected: true
 }
 
