@@ -62,7 +62,7 @@ describe('JourneyView', () => {
         <FlagsProvider flags={{ reports: true }}>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, admin: true }}>
-              <JourneyView journeyType='Journey' />
+              <JourneyView journeyType="Journey" />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>
@@ -79,7 +79,7 @@ describe('JourneyView', () => {
         <FlagsProvider flags={{ reports: true }}>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, admin: true }}>
-              <JourneyView journeyType='Journey' />
+              <JourneyView journeyType="Journey" />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>
@@ -96,7 +96,7 @@ describe('JourneyView', () => {
         <FlagsProvider flags={{ reports: false }}>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, admin: true }}>
-              <JourneyView journeyType='Journey' />
+              <JourneyView journeyType="Journey" />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>
