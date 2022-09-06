@@ -173,6 +173,7 @@ export function TrashedTemplates({
       ? (sortJourneys(journeys, sortOrder) as TrashedJourney[])
       : undefined
 
+  // TODO: Update
   // calculate 40 days ago. may later be replaced by cron job
   const daysAgo = new Date()
   daysAgo.setDate(new Date().getDate() - 40)
