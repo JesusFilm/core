@@ -56,7 +56,7 @@ describe('DefaultMenu', () => {
     expect(handleCloseMenu).toHaveBeenCalled()
   })
 
-  it('should handle preview', () => {
+  it('should redirect to preview', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
