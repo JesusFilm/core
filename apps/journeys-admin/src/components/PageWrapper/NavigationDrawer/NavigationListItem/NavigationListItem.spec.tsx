@@ -7,8 +7,8 @@ describe('NavigationListItem', () => {
     const { getByText, getByTestId } = render(
       <NavigationListItem
         icon={<AbcRoundedIcon />}
-        text="menu item"
-        color="#fff"
+        label="menu item"
+        selected
       />
     )
     expect(getByTestId('AbcRoundedIcon')).toBeInTheDocument()
@@ -20,8 +20,8 @@ describe('NavigationListItem', () => {
     const { getByTestId } = render(
       <NavigationListItem
         icon={<AbcRoundedIcon />}
-        text="menu item"
-        color="#fff"
+        label="menu item"
+        selected
         link="/"
       />
     )
@@ -35,8 +35,8 @@ describe('NavigationListItem', () => {
     const { getByRole } = render(
       <NavigationListItem
         icon={<AbcRoundedIcon />}
-        text="menu item"
-        color="#fff"
+        label="menu item"
+        selected
         handleClick={onClick}
       />
     )
