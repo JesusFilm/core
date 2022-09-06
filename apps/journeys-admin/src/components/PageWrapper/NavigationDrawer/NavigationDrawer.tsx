@@ -108,6 +108,7 @@ export function NavigationDrawer({
 
   const templatesSelected =
     title === 'Journey Templates' ||
+    title === 'Journey Template' ||
     title === 'Template Details' ||
     title === 'Edit Template'
 
