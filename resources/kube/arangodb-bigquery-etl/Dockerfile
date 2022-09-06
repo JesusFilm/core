@@ -13,4 +13,4 @@ ENV ARANGO_NO_AUTH=1
 
 COPY resources/kube/arangodb-bigquery-etl/bqexport.sh .
 RUN chmod 775 /bqexport.sh
-COPY resources/kube/arangodb-bigquery-etl/bqexport.sh /etc/periodic/daily/
+RUN chmod u+x /bqexport.sh

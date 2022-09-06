@@ -4,10 +4,10 @@ import PeopleIcon from '@mui/icons-material/People'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import Divider from '@mui/material/Divider'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { ApolloQueryResult } from '@apollo/client'
-import { MenuItem } from '../MenuItem'
-import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem.tsx/DuplicateJourneyMenuItem'
+import { MenuItem } from '../../../../MenuItem'
+import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { GetActiveJourneys } from '../../../../../../__generated__/GetActiveJourneys'
 import { GetArchivedJourneys } from '../../../../../../__generated__/GetArchivedJourneys'
@@ -43,34 +43,26 @@ export function DefaultMenu({
 }: DefaultMenuProps): ReactElement {
   return (
     <>
-      <Link href={`/journeys/${journeyId}`} passHref>
-        <MenuItem
-          icon={<EditIcon color="secondary" />}
-          text="Edit"
-          options={{ component: 'a' }}
-        />
-      </Link>
+      <NextLink href={`/journeys/${journeyId}`} passHref>
+        <MenuItem label="Edit" icon={<EditIcon color="secondary" />} />
+      </NextLink>
 
       <MenuItem
+        label="Access"
         icon={<PeopleIcon color="secondary" />}
-        text="Access"
-        handleClick={() => {
+        onClick={() => {
           setOpenAccessDialog()
           handleCloseMenu()
         }}
       />
-
-      <MenuItem
-        icon={<VisibilityIcon color="secondary" />}
-        text="Preview"
-        options={{
-          disabled: !published,
-          component: 'a',
-          href: `/api/preview?slug=${slug}`,
-          target: '_blank',
-          rel: 'noopener'
-        }}
-      />
+      <NextLink href={`/api/preview?slug=${slug}`} passHref>
+        <MenuItem
+          label="Preview"
+          icon={<VisibilityIcon color="secondary" />}
+          disabled={!published}
+          openInNew
+        />
+      </NextLink>
 
       <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
 
@@ -85,9 +77,9 @@ export function DefaultMenu({
       />
 
       <MenuItem
+        label="Trash"
         icon={<DeleteOutlineRoundedIcon color="secondary" />}
-        text="Trash"
-        handleClick={() => {
+        onClick={() => {
           setOpenTrashDialog()
           handleCloseMenu()
         }}

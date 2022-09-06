@@ -52,8 +52,8 @@ describe('JourneyView', () => {
     seoTitle: null,
     seoDescription: null,
     primaryImageBlock: null,
-    userJourneys: [],
-    template: null
+    template: null,
+    userJourneys: []
   }
   it('should have edit button', () => {
     const { getByRole } = render(

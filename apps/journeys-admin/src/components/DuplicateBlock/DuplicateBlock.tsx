@@ -1,9 +1,6 @@
 import { ReactElement } from 'react'
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded'
 import IconButton from '@mui/material/IconButton'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import MenuItem from '@mui/material/MenuItem'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
@@ -11,6 +8,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useSnackbar } from 'notistack'
 import { gql, useMutation } from '@apollo/client'
 import last from 'lodash/last'
+import { MenuItem } from '../MenuItem'
 import { BlockDuplicate } from '../../../__generated__/BlockDuplicate'
 import {
   BlockFields,
@@ -127,12 +125,12 @@ export function DuplicateBlock({ variant }: DuplicateBlockProps): ReactElement {
           <ContentCopyRounded />
         </IconButton>
       ) : (
-        <MenuItem onClick={handleDuplicateBlock}>
-          <ListItemIcon>
-            <ContentCopyRounded color="inherit" />
-          </ListItemIcon>
-          <ListItemText>Duplicate {blockLabel}</ListItemText>
-        </MenuItem>
+        <MenuItem
+          label={`Duplicate ${blockLabel}`}
+          icon={<ContentCopyRounded color="inherit" />}
+          disabled={selectedBlock == null}
+          onClick={handleDuplicateBlock}
+        />
       )}
     </>
   )
