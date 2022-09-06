@@ -37,7 +37,26 @@ We use [Doppler](https://www.doppler.com/) as our team's central source of truth
 doppler login
 ```
 
-3. Fetch environment variables using `fetch-secrets`
+2. Type `n<enter>` when asked to open authorization page in a browser
+
+```shell
+Open the authorization page in your browser? (Y/n) n
+```
+
+3. Open the [authorization page](https://dashboard.doppler.com/workplace/auth/cli) to complete authorization. This will require you to login to Doppler, copy your auth code from your terminal, and give your newly minted token a name. On completion you terminal should look like the following:
+
+```shell
+? Open the authorization page in your browser? No
+Complete authorization at https://dashboard.doppler.com/workplace/auth/cli
+Your auth code is:
+north_zoom_ant_harmonica_eagle
+
+Waiting...
+
+Welcome, Brian
+```
+
+4. Fetch environment variables using `fetch-secrets`
 
 ```shell
 DOPPLER_CONFIG=dev nx run-many --all --target=fetch-secrets
