@@ -52,6 +52,7 @@ describe('JourneyView', () => {
     seoTitle: null,
     seoDescription: null,
     primaryImageBlock: null,
+    template: null,
     userJourneys: []
   }
   it('should have edit button', () => {

@@ -3,9 +3,6 @@ import { useMutation, gql, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
 import MoreVert from '@mui/icons-material/MoreVert'
 import BeenHereRoundedIcon from '@mui/icons-material/BeenhereRounded'
 import VisibilityIcon from '@mui/icons-material/Visibility'
@@ -19,9 +16,14 @@ import NextLink from 'next/link'
 import { useSnackbar } from 'notistack'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
+import {
+  JourneyStatus,
+  Role,
+  UserJourneyRole
+} from '../../../../__generated__/globalTypes'
 import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { GetRole } from '../../../../__generated__/GetRole'
+import { MenuItem } from '../../MenuItem'
 import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
 import { LanguageDialog } from './LanguageDialog'
@@ -40,20 +42,22 @@ export const GET_ROLE = gql`
   query GetRole {
     getUserRole {
       id
+      userId
       roles
     }
   }
 `
 
-interface MenuProps {
-  forceOpen?: boolean
-}
-
-export function Menu({ forceOpen }: MenuProps): ReactElement {
+export function Menu(): ReactElement {
   const { journey } = useJourney()
   const [journeyPublish] = useMutation<JourneyPublish>(JOURNEY_PUBLISH)
   const { data } = useQuery<GetRole>(GET_ROLE)
+  // getUserRole hasn't fetched yet by the time we set isPublisher in tests
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
+  const isOwner =
+    journey?.userJourneys?.find(
+      (userJourney) => userJourney.user?.id === data?.getUserRole?.userId
+    )?.role === UserJourneyRole.owner
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
@@ -61,7 +65,7 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const { reports } = useFlags()
 
-  const openMenu = forceOpen ?? Boolean(anchorEl)
+  const openMenu = Boolean(anchorEl)
 
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -138,73 +142,57 @@ export function Menu({ forceOpen }: MenuProps): ReactElement {
               'aria-labelledby': 'journey-actions'
             }}
           >
+            <NextLink href={`/api/preview?slug=${journey.slug}`} passHref>
+              <MenuItem
+                label="Preview"
+                icon={<VisibilityIcon />}
+                disabled={journey.status === JourneyStatus.draft}
+                openInNew
+                onClick={handleCloseMenu}
+              />
+            </NextLink>
+            {(journey.template !== true || isPublisher) && (
+              <MenuItem
+                label="Publish"
+                icon={<BeenHereRoundedIcon />}
+                disabled={
+                  journey.status === JourneyStatus.published ||
+                  (journey.template !== true && !isOwner)
+                }
+                onClick={handlePublish}
+              />
+            )}
             <MenuItem
-              disabled={journey.status === JourneyStatus.draft}
-              component="a"
-              href={`/api/preview?slug=${journey.slug}`}
-              target="_blank"
-              rel="noopener"
-              onClick={handleCloseMenu}
-            >
-              <ListItemIcon>
-                <VisibilityIcon />
-              </ListItemIcon>
-              <ListItemText>Preview</ListItemText>
-            </MenuItem>
+              label="Title"
+              icon={<EditIcon />}
+              onClick={handleUpdateTitle}
+            />
             <MenuItem
-              disabled={journey.status === JourneyStatus.published}
-              onClick={handlePublish}
-            >
-              <ListItemIcon>
-                <BeenHereRoundedIcon />
-              </ListItemIcon>
-              <ListItemText>Publish</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={handleUpdateTitle}>
-              <ListItemIcon>
-                <EditIcon />
-              </ListItemIcon>
-              <ListItemText>Title</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={handleUpdateDescription}>
-              <ListItemIcon>
-                <DescriptionIcon />
-              </ListItemIcon>
-              <ListItemText>Description</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={handleUpdateLanguage}>
-              <ListItemIcon>
-                <TranslateIcon />
-              </ListItemIcon>
-              <ListItemText>Language</ListItemText>
-            </MenuItem>
+              label="Description"
+              icon={<DescriptionIcon />}
+              onClick={handleUpdateDescription}
+            />
+            <MenuItem
+              label="Language"
+              icon={<TranslateIcon />}
+              onClick={handleUpdateLanguage}
+            />
             {reports && (
               <NextLink href={`/journeys/${journey.id}/reports`} passHref>
-                <MenuItem>
-                  <ListItemIcon>
-                    <AssessmentRoundedIcon />
-                  </ListItemIcon>
-                  <ListItemText>Report</ListItemText>
-                </MenuItem>
+                <MenuItem label="Report" icon={<AssessmentRoundedIcon />} />
               </NextLink>
             )}
             {isPublisher === true && <CreateTemplateMenuItem />}
             <Divider />
             <NextLink href={`/journeys/${journey.id}/edit`} passHref>
-              <MenuItem>
-                <ListItemIcon>
-                  <ViewCarouselIcon />
-                </ListItemIcon>
-                <ListItemText>Edit Cards</ListItemText>
-              </MenuItem>
+              <MenuItem label="Edit Cards" icon={<ViewCarouselIcon />} />
             </NextLink>
             <Divider />
-            <MenuItem onClick={handleCopyLink}>
-              <ListItemIcon>
-                <ContentCopyIcon />
-              </ListItemIcon>
-              <ListItemText>Copy Link</ListItemText>
-            </MenuItem>
+            <MenuItem
+              label="Copy Link"
+              icon={<ContentCopyIcon />}
+              onClick={handleCopyLink}
+            />
           </MuiMenu>
           <TitleDialog
             open={showTitleDialog}

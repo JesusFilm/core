@@ -2,9 +2,6 @@ import { ReactElement, useState } from 'react'
 import IconButton from '@mui/material/IconButton'
 import MoreVert from '@mui/icons-material/MoreVert'
 import MuiMenu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Divider from '@mui/material/Divider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -15,6 +12,7 @@ import NextLink from 'next/link'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
 import { DeleteBlock } from '../DeleteBlock'
+import { MenuItem } from '../../../MenuItem'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { DuplicateBlock } from '../../../DuplicateBlock'
 
@@ -38,28 +36,24 @@ export function Menu(): ReactElement {
   function BlockMenu(): ReactElement {
     return (
       <>
-        <MenuItem
-          disabled={journey?.status === JourneyStatus.draft}
-          component="a"
-          href={`/api/preview?slug=${journey?.slug ?? ''}`}
-          target="_blank"
-          rel="noopener"
-          onClick={handleCloseMenu}
-        >
-          <ListItemIcon>
-            <VisibilityIcon />
-          </ListItemIcon>
-          <ListItemText>Preview</ListItemText>
-        </MenuItem>
+        <NextLink href={`/api/preview?slug=${journey?.slug ?? ''}`} passHref>
+          <MenuItem
+            label="Preview"
+            icon={<VisibilityIcon />}
+            disabled={journey?.status === JourneyStatus.draft}
+            openInNew
+            onClick={handleCloseMenu}
+          />
+        </NextLink>
+
         <DuplicateBlock variant="list-item" />
         <DeleteBlock variant="list-item" />
         {!smUp && (
-          <MenuItem onClick={handleOpenSocial}>
-            <ListItemIcon>
-              <ShareRoundedIcon />
-            </ListItemIcon>
-            <ListItemText>Social Settings</ListItemText>
-          </MenuItem>
+          <MenuItem
+            label="Social Settings"
+            icon={<ShareRoundedIcon />}
+            onClick={handleOpenSocial}
+          />
         )}
       </>
     )
@@ -68,40 +62,30 @@ export function Menu(): ReactElement {
   function CardMenu(): ReactElement {
     return (
       <>
-        <MenuItem
-          disabled={journey?.status === JourneyStatus.draft}
-          component="a"
-          href={`/api/preview?slug=${journey?.slug ?? ''}`}
-          target="_blank"
-          rel="noopener"
-          onClick={handleCloseMenu}
-        >
-          <ListItemIcon>
-            <VisibilityIcon />
-          </ListItemIcon>
-          <ListItemText>Preview</ListItemText>
-        </MenuItem>
+        <NextLink href={`/api/preview?slug=${journey?.slug ?? ''}`} passHref>
+          <MenuItem
+            label="Preview"
+            icon={<VisibilityIcon />}
+            disabled={journey?.status === JourneyStatus.draft}
+            openInNew
+            onClick={handleCloseMenu}
+          />
+        </NextLink>
         <DuplicateBlock variant="list-item" />
         <DeleteBlock variant="list-item" closeMenu={handleCloseMenu} />
         {!smUp && (
-          <MenuItem onClick={handleOpenSocial}>
-            <ListItemIcon>
-              <ShareRoundedIcon />
-            </ListItemIcon>
-            <ListItemText>Social Settings</ListItemText>
-          </MenuItem>
+          <MenuItem
+            label="Social Settings"
+            icon={<ShareRoundedIcon />}
+            onClick={handleOpenSocial}
+          />
         )}
         <Divider />
         <NextLink
-          href={journey != null ? `/journeys/${journey.slug}` : ''}
+          href={journey != null ? `/journeys/${journey.id}` : ''}
           passHref
         >
-          <MenuItem>
-            <ListItemIcon>
-              <SettingsIcon />
-            </ListItemIcon>
-            <ListItemText>Journey Settings</ListItemText>
-          </MenuItem>
+          <MenuItem label="Journey Settings" icon={<SettingsIcon />} />
         </NextLink>
       </>
     )

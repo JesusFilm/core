@@ -1,9 +1,7 @@
 import { ReactElement } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
+import { MenuItem } from '../../MenuItem'
 import { UserJourneyApprove } from '../../../../__generated__/UserJourneyApprove'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 
@@ -41,11 +39,10 @@ export function ApproveUser({ id, onClick }: ApproveUserProps): ReactElement {
   }
 
   return (
-    <MenuItem onClick={handleClick}>
-      <ListItemIcon>
-        <BeenhereRoundedIcon />
-      </ListItemIcon>
-      <ListItemText>Approve</ListItemText>
-    </MenuItem>
+    <MenuItem
+      label="Approve"
+      icon={<BeenhereRoundedIcon />}
+      onClick={handleClick}
+    />
   )
 }
