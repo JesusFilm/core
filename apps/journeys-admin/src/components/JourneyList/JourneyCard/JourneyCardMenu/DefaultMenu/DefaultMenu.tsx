@@ -53,11 +53,7 @@ export function DefaultMenu({
         }
         passHref
       >
-        <MenuItem
-          icon={<EditIcon color="secondary" />}
-          text="Edit"
-          options={{ component: 'a' }}
-        />
+        <MenuItem label="Edit" icon={<EditIcon color="secondary" />} />
       </NextLink>
 
       {template !== true && (
