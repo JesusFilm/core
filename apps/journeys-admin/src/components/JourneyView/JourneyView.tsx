@@ -66,7 +66,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
       >
         {/* if template: SocialImage */}
         <Stack direction="column" spacing={6} sx={{ width: '100%' }}>
-          {journey?.template === true && <DatePreview />}
+          {journeyType === 'Template' && <DatePreview />}
           <TitleDescription isPublisher={isPublisher} />
         </Stack>
       </Box>
