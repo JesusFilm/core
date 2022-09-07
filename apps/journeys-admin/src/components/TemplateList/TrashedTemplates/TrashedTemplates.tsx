@@ -214,9 +214,9 @@ export function TrashedTemplates({
         </>
       ) : (
         <>
-          <TemplateCard isPublisher />
-          <TemplateCard isPublisher />
-          <TemplateCard isPublisher />
+          {[0, 1, 2].map((index) => (
+            <TemplateCard key={`templateCard${index}`} isPublisher />
+          ))}
         </>
       )}
 
