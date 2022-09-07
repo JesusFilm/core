@@ -18,6 +18,7 @@ import { SlugDialog } from './JourneyLink/SlugDialog'
 import { EmbedJourneyDialog } from './JourneyLink/EmbedJourneyDialog'
 import { TitleDescription } from './TitleDescription'
 import { SocialImage } from './SocialImage'
+import { DatePreview } from './DatePreview'
 import { JourneyLink } from './JourneyLink'
 
 export const GET_USER_ROLE = gql`
@@ -66,7 +67,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
       >
         {journey?.template === true && <SocialImage />}
         <Stack direction="column" spacing={6} sx={{ width: '100%' }}>
-          {/* if template: DatePreview */}
+          {journeyType === 'Template' && <DatePreview />}
           <TitleDescription isPublisher={isPublisher} />
         </Stack>
       </Box>
