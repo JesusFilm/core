@@ -134,7 +134,7 @@ describe('DefaultMenu', () => {
   })
 
   it('should show menu for templates', () => {
-    const { queryByRole } = render(
+    const { queryByRole, getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <DefaultMenu
@@ -151,6 +151,10 @@ describe('DefaultMenu', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
+    expect(getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Access' })).not.toBeInTheDocument()
   })
 })

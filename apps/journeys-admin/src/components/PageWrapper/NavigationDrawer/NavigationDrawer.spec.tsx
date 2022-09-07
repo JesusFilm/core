@@ -67,64 +67,7 @@ describe('NavigationDrawer', () => {
     expect(getByTestId('LeaderboardRoundedIcon')).toHaveStyle(` color: '#fff'`)
   })
 
-  it('should have avatar menu', async () => {
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_ME
-            },
-            result: {
-              data: {
-                me: {
-                  id: 'userId',
-                  firstName: 'Amin',
-                  lastName: 'One',
-                  imageUrl: 'https://bit.ly/3Gth4Yf',
-                  email: 'amin@email.com'
-                }
-              }
-            }
-          },
-          {
-            request: {
-              query: GET_USER_ROLE
-            },
-            result: {
-              data: {
-                getUserRole: {
-                  id: 'userId',
-                  roles: [Role.publisher]
-                }
-              }
-            }
-          }
-        ]}
-      >
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            title="Templates Admin"
-            authUser={
-              {
-                displayName: 'Amin One',
-                photoURL: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com',
-                signOut
-              } as unknown as AuthUser
-            }
-          />
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getByTestId('ShopTwoRoundedIcon')).toHaveStyle(` color: '#fff'`)
-    )
-  })
-
-  it('should show templates admin button', async () => {
+  it('should show publisher button', async () => {
     const { getByTestId } = render(
       <MockedProvider
         mocks={[
@@ -181,18 +124,64 @@ describe('NavigationDrawer', () => {
     )
   })
 
-  it('should hide admin templates button', () => {
-    const { queryByText } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ templates: false }}>
-          <NavigationDrawer open onClose={onClose} title="Journeys" />
+  it('should select publisher button', async () => {
+    const { getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ME
+            },
+            result: {
+              data: {
+                me: {
+                  id: 'userId',
+                  firstName: 'Amin',
+                  lastName: 'One',
+                  imageUrl: 'https://bit.ly/3Gth4Yf',
+                  email: 'amin@email.com'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: GET_USER_ROLE
+            },
+            result: {
+              data: {
+                getUserRole: {
+                  id: 'userId',
+                  roles: [Role.publisher]
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <FlagsProvider flags={{ templates: true }}>
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            title="Templates Admin"
+            authUser={
+              {
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as AuthUser
+            }
+          />
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(queryByText('Templates Admin')).not.toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByTestId('ShopTwoRoundedIcon')).toHaveStyle(` color: '#fff'`)
+    )
   })
 
-  it('should select admin templates button', async () => {
+  it('should have avatar menu', async () => {
     const { getByTestId } = render(
       <MockedProvider
         mocks={[
