@@ -27,6 +27,7 @@ import { JourneyPublish } from '../../../../__generated__/JourneyPublish'
 import { GetRole } from '../../../../__generated__/GetRole'
 import { ApplyTemplate } from '../../../../__generated__/ApplyTemplate'
 import { MenuItem } from '../../MenuItem'
+import { TitleDescriptionDialog } from '../TitleDescription/TitleDescriptionDialog'
 import { DescriptionDialog } from './DescriptionDialog'
 import { TitleDialog } from './TitleDialog'
 import { LanguageDialog } from './LanguageDialog'
@@ -71,6 +72,8 @@ export function Menu(): ReactElement {
       (userJourney) => userJourney.user?.id === data?.getUserRole?.userId
     )?.role === UserJourneyRole.owner
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [showTitleDescriptionDialog, setShowTitleDescriptionDialog] =
+    useState(false)
   const [showTitleDialog, setShowTitleDialog] = useState(false)
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
@@ -142,6 +145,10 @@ export function Menu(): ReactElement {
         shallow: true
       })
     }
+  }
+  const handleUpdateTitleDescription = (): void => {
+    setShowTitleDescriptionDialog(true)
+    setAnchorEl(null)
   }
   const handleUpdateTitle = (): void => {
     setShowTitleDialog(true)
@@ -220,7 +227,13 @@ export function Menu(): ReactElement {
                 onClick={handleTemplate}
               />
             )}
-            {/* TODO: add TitleDescription menu item */}
+            {journey.template === true && isPublisher && (
+              <MenuItem
+                label="Title Description"
+                icon={<EditIcon />}
+                onClick={handleUpdateTitleDescription}
+              />
+            )}
             {journey.template !== true && (
               <>
                 <MenuItem
@@ -269,6 +282,10 @@ export function Menu(): ReactElement {
               </>
             )}
           </MuiMenu>
+          <TitleDescriptionDialog
+            open={showTitleDescriptionDialog}
+            onClose={() => setShowTitleDescriptionDialog(false)}
+          />
           <TitleDialog
             open={showTitleDialog}
             onClose={() => setShowTitleDialog(false)}

@@ -1,4 +1,5 @@
 import { Story, Meta } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
@@ -99,10 +100,12 @@ const Template: Story = ({ ...args }) => (
   </MockedProvider>
 )
 
-// No more need for forceOpen - refactor to use play
-
 export const Draft = Template.bind({})
 Draft.args = { journey: defaultJourney, forceOpen: true, mocks: journeyMocks }
+Draft.play = () => {
+  const button = screen.getByRole('button')
+  userEvent.click(button)
+}
 
 export const Published = Template.bind({})
 Published.args = {
@@ -114,14 +117,21 @@ Published.args = {
   mocks: journeyMocks,
   forceOpen: true
 }
+Published.play = () => {
+  const button = screen.getByRole('button')
+  userEvent.click(button)
+}
 
-// Remove and add LibraryTemplate
 export const Reports = Template.bind({})
 Reports.args = {
   journey: defaultJourney,
   reports: true,
   mocks: journeyMocks,
   forceOpen: true
+}
+Reports.play = () => {
+  const button = screen.getByRole('button')
+  userEvent.click(button)
 }
 
 export const TemplateMenu = Template.bind({})
@@ -131,6 +141,10 @@ TemplateMenu.args = {
     userJourneys: null,
     template: true
   }
+}
+TemplateMenu.play = () => {
+  const button = screen.getByRole('button')
+  userEvent.click(button)
 }
 
 export const PublisherMenu = Template.bind({})
@@ -157,6 +171,10 @@ PublisherMenu.args = {
       }
     }
   ]
+}
+PublisherMenu.play = () => {
+  const button = screen.getByRole('button')
+  userEvent.click(button)
 }
 
 export const Loading = Template.bind({})

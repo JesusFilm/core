@@ -301,6 +301,50 @@ describe('JourneyView/Menu', () => {
     })
   })
 
+  it('should handle edit journey title and description if user is publisher', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_ROLE
+              },
+              result: {
+                data: {
+                  getUserRole: {
+                    id: 'userRoleId',
+                    userId: '1',
+                    roles: [Role.publisher]
+                  }
+                }
+              }
+            }
+          ]}
+        >
+          <FlagsProvider>
+            <JourneyProvider
+              value={{
+                journey: { ...defaultJourney, template: true },
+                admin: true
+              }}
+            >
+              <Menu />
+            </JourneyProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const menu = getByRole('button')
+    fireEvent.click(menu)
+    await waitFor(() => {
+      fireEvent.click(getByRole('menuitem', { name: 'Title Description' }))
+    })
+    expect(getByRole('dialog')).toBeInTheDocument()
+    expect(menu).not.toHaveAttribute('aria-expanded')
+  })
+
   it('should handle edit journey title', () => {
     const { getByRole } = render(
       <SnackbarProvider>
