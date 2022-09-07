@@ -8,17 +8,50 @@ import {
 } from 'next-firebase-auth'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+import { gql, useQuery } from '@apollo/client'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { useTranslation } from 'react-i18next'
+import { useRouter } from 'next/router'
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+import { JourneyView } from '../../src/components/JourneyView'
+import { GetTemplate } from '../../__generated__/GetTemplate'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 
+export const GET_TEMPLATE = gql`
+  ${JOURNEY_FIELDS}
+  query GetTemplate($id: ID!) {
+    template: adminJourney(id: $id, idType: databaseId) {
+      ...JourneyFields
+    }
+  }
+`
+
 function TemplateDetails(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
   const AuthUser = useAuthUser()
+  const { data } = useQuery<GetTemplate>(GET_TEMPLATE, {
+    variables: { id: router.query.journeyId }
+  })
   return (
     <>
-      <NextSeo title="Template Details" />
-      <PageWrapper title="Template Details" authUser={AuthUser}>
-        {/* Template Details */}
-      </PageWrapper>
+      <NextSeo
+        title={data?.template?.title ?? t('Journey Template')}
+        description={data?.template?.description ?? undefined}
+      />
+      <JourneyProvider
+        value={{ journey: data?.template ?? undefined, admin: true }}
+      >
+        <PageWrapper
+          title={t('Journey Template')}
+          authUser={AuthUser}
+          showDrawer
+          backHref="/"
+        >
+          <JourneyView journeyType="Template" />
+        </PageWrapper>
+      </JourneyProvider>
     </>
   )
 }

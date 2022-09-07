@@ -367,11 +367,8 @@ export class JourneyResolver {
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
-  async journeysArchive(
-    @CurrentUserId() userId: string,
-    @Args('ids') ids: string[]
-  ): Promise<Journey[]> {
-    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+  async journeysArchive(@Args('ids') ids: string[]): Promise<Journey[]> {
+    const results = (await this.journeyService.getAllByIds(ids)).map(
       (journey) => ({
         _key: journey.id,
         status: JourneyStatus.archived,
@@ -391,11 +388,8 @@ export class JourneyResolver {
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
-  async journeysDelete(
-    @CurrentUserId() userId: string,
-    @Args('ids') ids: string[]
-  ): Promise<Journey[]> {
-    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+  async journeysDelete(@Args('ids') ids: string[]): Promise<Journey[]> {
+    const results = (await this.journeyService.getAllByIds(ids)).map(
       (journey) => ({
         _key: journey.id,
         status: JourneyStatus.deleted,
@@ -414,11 +408,8 @@ export class JourneyResolver {
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
-  async journeysTrash(
-    @CurrentUserId() userId: string,
-    @Args('ids') ids: string[]
-  ): Promise<Journey[]> {
-    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+  async journeysTrash(@Args('ids') ids: string[]): Promise<Journey[]> {
+    const results = (await this.journeyService.getAllByIds(ids)).map(
       (journey) => ({
         _key: journey.id,
         status: JourneyStatus.trashed,
@@ -438,11 +429,8 @@ export class JourneyResolver {
       { role: Role.publisher, attributes: { template: true } }
     ])
   )
-  async journeysRestore(
-    @CurrentUserId() userId: string,
-    @Args('ids') ids: string[]
-  ): Promise<Journey[]> {
-    const results = (await this.journeyService.getAllByIds(userId, ids)).map(
+  async journeysRestore(@Args('ids') ids: string[]): Promise<Journey[]> {
+    const results = (await this.journeyService.getAllByIds(ids)).map(
       (journey) => ({
         _key: journey.id,
         status:

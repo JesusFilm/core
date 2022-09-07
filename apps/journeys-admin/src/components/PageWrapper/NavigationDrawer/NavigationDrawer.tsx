@@ -8,23 +8,23 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
-import Link from 'next/link'
-import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
-import ExploreRoundedIcon from '@mui/icons-material/ExploreRounded'
+import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
 import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
 import { compact } from 'lodash'
 import { gql, useQuery } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
+import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
 import { UserMenu } from './UserMenu'
+import { NavigationListItem } from './NavigationListItem'
 
 const DRAWER_WIDTH = '237px'
 
@@ -98,6 +98,7 @@ export function NavigationDrawer({
 }: NavigationDrawerProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
+
   const journeysSelected =
     title === 'Active Journeys' ||
     title === 'Archived Journeys' ||
@@ -105,7 +106,13 @@ export function NavigationDrawer({
     title === 'Journey Details' ||
     title === 'Journey Reports'
 
-  const { reports } = useFlags()
+  const templatesSelected =
+    title === 'Journey Templates' ||
+    title === 'Journey Template' ||
+    title === 'Template Details' ||
+    title === 'Edit Template'
+
+  const { reports, templates } = useFlags()
 
   const profileOpen = Boolean(profileAnchorEl)
   const handleProfileClick = (event): void => {
@@ -144,61 +151,47 @@ export function NavigationDrawer({
             {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
           </ListItemIcon>
         </ListItemButton>
-        <Link href="/" passHref>
-          <ListItemButton>
-            <ListItemIcon
-              sx={{
-                color: journeysSelected ? 'background.paper' : 'secondary.light'
-              }}
-            >
-              <ExploreRoundedIcon />
-            </ListItemIcon>
-            <ListItemText
-              primary="Discover"
-              sx={{
-                color: journeysSelected ? 'background.paper' : 'secondary.light'
-              }}
-            />
-          </ListItemButton>
-        </Link>
+
+        <NavigationListItem
+          icon={<ViewCarouselRoundedIcon />}
+          label="Discover"
+          selected={journeysSelected}
+          link="/"
+        />
+
+        {templates && (
+          <NavigationListItem
+            icon={<ShopRoundedIcon />}
+            label="Templates"
+            selected={templatesSelected}
+            link="/templates"
+          />
+        )}
 
         {reports && (
-          <Link href="/reports" passHref>
-            <ListItemButton>
-              <ListItemIcon
-                sx={{
-                  color:
-                    title === 'Reports' ? 'background.paper' : 'secondary.light'
-                }}
-              >
-                <AssessmentRoundedIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="Reports"
-                sx={{
-                  color:
-                    title === 'Reports' ? 'background.paper' : 'secondary.light'
-                }}
-              />
-            </ListItemButton>
-          </Link>
+          <NavigationListItem
+            icon={<LeaderboardRoundedIcon />}
+            label="Reports"
+            selected={title === 'Reports'}
+            link="/reports"
+          />
         )}
+
         {authUser != null && data?.me != null && (
           <>
             <Divider sx={{ m: 6, mt: 0, borderColor: 'secondary.main' }} />
-            <ListItemButton onClick={handleProfileClick}>
-              <ListItemIcon>
+            <NavigationListItem
+              icon={
                 <Avatar
                   alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
                   src={data.me.imageUrl ?? undefined}
                   sx={{ width: 24, height: 24 }}
                 />
-              </ListItemIcon>
-              <ListItemText
-                primary="Profile"
-                sx={{ color: 'secondary.light' }}
-              />
-            </ListItemButton>
+              }
+              label="Profile"
+              selected={false}
+              handleClick={handleProfileClick}
+            />
             <UserMenu
               user={data.me}
               profileOpen={profileOpen}

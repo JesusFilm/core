@@ -17,7 +17,7 @@ describe('NavigationDrawer', () => {
   const onClose = jest.fn()
   const signOut = jest.fn()
 
-  it('should render the drawer', () => {
+  it('should render the default menu items', () => {
     const { getByText, getAllByRole, getByTestId } = render(
       <MockedProvider>
         <FlagsProvider>
@@ -31,26 +31,27 @@ describe('NavigationDrawer', () => {
     expect(getByText('Discover')).toBeInTheDocument()
   })
 
-  it('should show reports button', () => {
+  it('should render all the menu items', () => {
     const { getByText } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ reports: true }}>
+        <FlagsProvider flags={{ templates: true, reports: true }}>
           <NavigationDrawer open onClose={onClose} title="Journeys" />
         </FlagsProvider>
       </MockedProvider>
     )
+    expect(getByText('Templates')).toBeInTheDocument()
     expect(getByText('Reports')).toBeInTheDocument()
   })
 
-  it('should hide reports button', () => {
-    const { queryByText } = render(
+  it('should select templates button', () => {
+    const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ reports: false }}>
-          <NavigationDrawer open onClose={onClose} title="Journeys" />
+        <FlagsProvider flags={{ templates: true }}>
+          <NavigationDrawer open onClose={onClose} title="Journey Templates" />
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(queryByText('Reports')).not.toBeInTheDocument()
+    expect(getByTestId('ShopRoundedIcon')).toHaveStyle(` color: '#fff'`)
   })
 
   it('should select the reports button', () => {
@@ -61,7 +62,7 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByTestId('AssessmentRoundedIcon')).toHaveStyle(` color: '#fff'`)
+    expect(getByTestId('LeaderboardRoundedIcon')).toHaveStyle(` color: '#fff'`)
   })
 
   it('should have avatar menu', async () => {
@@ -134,7 +135,7 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByTestId('ExploreRoundedIcon').parentElement).toHaveStyle(
+    expect(getByTestId('ViewCarouselRoundedIcon').parentElement).toHaveStyle(
       'color: #FFFFFF'
     )
   })
