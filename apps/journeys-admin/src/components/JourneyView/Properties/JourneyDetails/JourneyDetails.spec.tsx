@@ -33,7 +33,7 @@ describe('journeyDetails', () => {
               } as unknown as Journey
             }}
           >
-            <JourneyDetails />
+            <JourneyDetails journeyType="Journey" />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
