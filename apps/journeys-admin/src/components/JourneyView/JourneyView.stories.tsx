@@ -30,7 +30,7 @@ const Template: Story = ({ ...args }) => (
           backHref="/"
           menu={<Menu />}
         >
-          <JourneyView />
+          <JourneyView journeyType="Journey" />
         </PageWrapper>
       </JourneyProvider>
     </FlagsProvider>
@@ -64,7 +64,7 @@ const JourneyTemplate: Story = ({ ...args }) => (
             backHref="/"
             menu={<Menu />}
           >
-            <JourneyView />
+            <JourneyView journeyType="Template" />
           </PageWrapper>
         </JourneyProvider>
       </FlagsProvider>

@@ -1,20 +1,20 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import noop from 'lodash/noop'
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   defaultJourney,
   oldJourney,
   descriptiveJourney,
   publishedJourney
-} from '../../journeyListData'
-import { GET_ARCHIVED_JOURNEYS } from './ArchivedStatusTab'
-import { ArchivedStatusTab } from '.'
+} from '../journeyListData'
+import { GET_TRASHED_JOURNEYS } from './TrashedJourneyList'
+import { TrashedJourneyList } from '.'
 
-const ArchivedStatusTabStory = {
+const TrashedJourneyListStory = {
   ...journeysAdminConfig,
-  component: ArchivedStatusTab,
-  title: 'Journeys-Admin/JourneyList/StatusTabPanel/ArchivedStatusTab',
+  component: TrashedJourneyList,
+  title: 'Journeys-Admin/JourneyList/StatusTabPanel/TrashedJourneyList',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -23,7 +23,7 @@ const ArchivedStatusTabStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
-    <ArchivedStatusTab {...args.props} />
+    <TrashedJourneyList {...args.props} />
   </MockedProvider>
 )
 
@@ -36,7 +36,7 @@ Default.args = {
   mocks: [
     {
       request: {
-        query: GET_ARCHIVED_JOURNEYS
+        query: GET_TRASHED_JOURNEYS
       },
       result: {
         data: {
@@ -61,7 +61,7 @@ NoJourneys.args = {
   mocks: [
     {
       request: {
-        query: GET_ARCHIVED_JOURNEYS
+        query: GET_TRASHED_JOURNEYS
       },
       result: {
         data: {
@@ -81,22 +81,22 @@ Loading.args = {
   mocks: []
 }
 
-export const UnarchiveAll = Template.bind({})
-UnarchiveAll.args = {
+export const RestoreAll = Template.bind({})
+RestoreAll.args = {
   props: {
     onLoad: noop,
-    event: 'restoreAllArchived'
+    event: 'restoreAllTrashed'
   },
   mocks: []
 }
 
-export const TrashAll = Template.bind({})
-TrashAll.args = {
+export const DeleteAll = Template.bind({})
+DeleteAll.args = {
   props: {
     onLoad: noop,
-    event: 'trashAllArchived'
+    event: 'deleteAllTrashed'
   },
   mocks: []
 }
 
-export default ArchivedStatusTabStory as Meta
+export default TrashedJourneyListStory as Meta

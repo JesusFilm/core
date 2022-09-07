@@ -40,7 +40,9 @@ export function PageWrapper({
     title === 'Journey Details' ||
     title === 'Journey Report' ||
     title === 'Reports' ||
-    title === 'Journey Templates'
+    title === 'Journey Templates' ||
+    title === 'Journey Template' ||
+    title === 'Template Details'
 
   return (
     <>
