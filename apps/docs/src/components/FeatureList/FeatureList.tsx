@@ -10,29 +10,29 @@ type Item = {
 
 const features: Item[] = [
   {
-    title: 'Easy to Use',
+    title: 'Deploy Quickly',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Our Continuous Integration &amp; Continuous Delivery pipeline lets you
+        deliver code changes more frequently and reliably.
       </>
     )
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Common Environment',
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        We run on Docker. This means every developer shares the same environment
+        that closely mimics production making collaboration simple.
       </>
     )
   },
   {
-    title: 'Powered by React',
+    title: 'Powered by Typescript',
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        TypeScript is a strongly typed programming language that builds on
+        JavaScript, giving you better tooling at any scale.
       </>
     )
   }
