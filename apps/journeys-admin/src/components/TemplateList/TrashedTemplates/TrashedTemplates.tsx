@@ -168,30 +168,29 @@ export function TrashedTemplates({
     }
   }, [event, refetch])
 
-  const sortedJourneys =
-    journeys != null
-      ? (sortJourneys(journeys, sortOrder) as TrashedJourney[])
-      : undefined
-
-  // TODO: Update
   // calculate 40 days ago. may later be replaced by cron job
   const daysAgo = new Date()
   daysAgo.setDate(new Date().getDate() - 40)
+
+  const sortedJourneys =
+    journeys != null
+      ? (sortJourneys(journeys, sortOrder) as TrashedJourney[]).filter(
+          (journey) => new Date(journey.trashedAt) > daysAgo
+        )
+      : undefined
 
   return (
     <>
       {sortedJourneys != null ? (
         <>
-          {sortedJourneys
-            .filter((journey) => new Date(journey.trashedAt) > daysAgo)
-            .map((journey) => (
-              <TemplateCard
-                key={journey.id}
-                journey={journey}
-                isPublisher
-                refetch={refetch}
-              />
-            ))}
+          {sortedJourneys.map((journey) => (
+            <TemplateCard
+              key={journey.id}
+              journey={journey}
+              isPublisher
+              refetch={refetch}
+            />
+          ))}
 
           {sortedJourneys.length === 0 && (
             <Card
