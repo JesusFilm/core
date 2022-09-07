@@ -194,7 +194,7 @@ describe('JourneyResolver', () => {
         return null
       }),
       getAllPublishedJourneys: jest.fn(() => [journey, journey]),
-      getAllByIds: jest.fn((userId, ids) => {
+      getAllByIds: jest.fn((ids) => {
         switch (ids[0]) {
           case archivedJourney.id:
             return [archivedJourney]
@@ -869,7 +869,7 @@ describe('JourneyResolver', () => {
     it('archives an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeysArchive('1', [journey.id, draftJourney.id])
+      await resolver.journeysArchive([journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
           _key: journey.id,
@@ -889,7 +889,7 @@ describe('JourneyResolver', () => {
     it('trashes an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeysTrash('1', [journey.id, draftJourney.id])
+      await resolver.journeysTrash([journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
           _key: journey.id,
@@ -909,7 +909,7 @@ describe('JourneyResolver', () => {
     it('deletes an array of Journeys', async () => {
       const date = '2021-12-07T03:22:41.135Z'
       jest.useFakeTimers().setSystemTime(new Date(date).getTime())
-      await resolver.journeysDelete('1', [journey.id, draftJourney.id])
+      await resolver.journeysDelete([journey.id, draftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
           _key: journey.id,
@@ -927,7 +927,7 @@ describe('JourneyResolver', () => {
 
   describe('journeysRestore', () => {
     it('resores a published Journey', async () => {
-      await resolver.journeysRestore('1', [trashedJourney.id])
+      await resolver.journeysRestore([trashedJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
           _key: trashedJourney.id,
@@ -937,7 +937,7 @@ describe('JourneyResolver', () => {
     })
 
     it('restores an draft Journey', async () => {
-      await resolver.journeysRestore('1', [trashedDraftJourney.id])
+      await resolver.journeysRestore([trashedDraftJourney.id])
       expect(service.updateAll).toHaveBeenCalledWith([
         {
           _key: trashedDraftJourney.id,
