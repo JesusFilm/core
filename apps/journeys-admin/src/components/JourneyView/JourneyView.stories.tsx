@@ -116,4 +116,9 @@ PublisherTemplate.args = {
   ]
 }
 
+export const LoadingTemplate = JourneyTemplate.bind({})
+LoadingTemplate.args = {
+  journey: null
+}
+
 export default JourneyViewStory as Meta
