@@ -60,16 +60,14 @@ describe('TemplateCard', () => {
     expect(getByRole('link')).toHaveAttribute('href', '/templates/template-id')
   })
 
-  it('should render in admin mode', () => {
-    const { getByText, getByRole } = render(
+  it('should link to publisher template details', () => {
+    const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <TemplateCard journey={defaultTemplate} isPublisher />
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByText('Draft')).toBeInTheDocument()
-    expect(getByRole('button')).toBeInTheDocument()
     expect(getByRole('link')).toHaveAttribute('href', '/publisher/template-id')
   })
 })
