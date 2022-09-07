@@ -16,6 +16,7 @@ import i18nConfig from '../../../next-i18next.config'
 import { GetPublisherTemplate } from '../../../__generated__/GetPublisherTemplate'
 import { Editor } from '../../../src/components/Editor'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
+import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
 import { GET_PUBLISHER_TEMPLATE } from '../[journeyId]'
 
 function TemplateEditPage(): ReactElement {
@@ -45,6 +46,7 @@ function TemplateEditPage(): ReactElement {
           showDrawer
           backHref={`/templates/${router.query.journeyId as string}`}
           authUser={AuthUser}
+          menu={<EditToolbar />}
         >
           <JourneyEdit />
         </PageWrapper>

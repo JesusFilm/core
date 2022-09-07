@@ -177,6 +177,15 @@ export function Menu(): ReactElement {
     })
   }
 
+  let editLink
+  if (journey != null) {
+    if (journey.template === true && isPublisher === true) {
+      editLink = `/publisher/${journey.id}/edit`
+    } else {
+      editLink = `/journeys/${journey.id}/edit`
+    }
+  }
+
   return (
     <>
       {journey != null ? (
@@ -255,7 +264,7 @@ export function Menu(): ReactElement {
                 onClick={handleUpdateLanguage}
               />
             )}
-            {reports && (
+            {journey.template !== true && reports && (
               <NextLink href={`/journeys/${journey.id}/reports`} passHref>
                 <MenuItem label="Report" icon={<AssessmentRoundedIcon />} />
               </NextLink>
@@ -266,7 +275,7 @@ export function Menu(): ReactElement {
             {(journey.template !== true || isPublisher) && (
               <>
                 <Divider />
-                <NextLink href={`/journeys/${journey.id}/edit`} passHref>
+                <NextLink href={editLink != null ? editLink : ''} passHref>
                   <MenuItem label="Edit Cards" icon={<ViewCarouselIcon />} />
                 </NextLink>
               </>

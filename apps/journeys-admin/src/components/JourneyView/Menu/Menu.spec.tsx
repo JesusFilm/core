@@ -406,7 +406,7 @@ describe('JourneyView/Menu', () => {
     expect(menu).not.toHaveAttribute('aria-expanded')
   })
 
-  it('should handle edit cards', () => {
+  it('should handle edit cards for journey', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
@@ -425,6 +425,51 @@ describe('JourneyView/Menu', () => {
       'href',
       '/journeys/journey-id/edit'
     )
+  })
+
+  it('should handle edit cards for template', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_ROLE
+              },
+              result: {
+                data: {
+                  getUserRole: {
+                    id: 'userRoleId',
+                    userId: '1',
+                    roles: [Role.publisher]
+                  }
+                }
+              }
+            }
+          ]}
+        >
+          <FlagsProvider>
+            <JourneyProvider
+              value={{
+                journey: { ...defaultJourney, template: true },
+                admin: true
+              }}
+            >
+              <Menu />
+            </JourneyProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const menu = getByRole('button')
+    fireEvent.click(menu)
+    await waitFor(() => {
+      expect(getByRole('menuitem', { name: 'Edit Cards' })).toHaveAttribute(
+        'href',
+        '/publisher/journey-id/edit'
+      )
+    })
   })
 
   it('should handle copy url in development', async () => {
