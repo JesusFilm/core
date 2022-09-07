@@ -25,7 +25,7 @@ import { StatusChip } from '../JourneyList/JourneyCard/StatusChip'
 
 export interface TemplateCardProps {
   journey?: Journey
-  isPublisher?: boolean // TODO: Change to isPublisher
+  isPublisher?: boolean
   duplicatedJourneyId?: string
   refetch?: () => Promise<
     ApolloQueryResult<

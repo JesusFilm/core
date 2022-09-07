@@ -208,7 +208,7 @@ export function TrashedTemplates({
               }}
             >
               <Typography variant="subtitle1" align="center" gutterBottom>
-                Your Trashed templates will appear here.
+                Your trashed templates will appear here.
               </Typography>
             </Card>
           )}

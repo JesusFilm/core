@@ -209,7 +209,7 @@ export function ArchivedTemplates({
               </Card>
               <Box width="100%" sx={{ textAlign: 'center' }}>
                 <Typography variant="caption">
-                  You can archive a Template to hide it from your active
+                  You can archive a template to hide it from your active
                   Template list for better organization.
                 </Typography>
               </Box>

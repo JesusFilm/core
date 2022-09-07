@@ -176,7 +176,7 @@ describe('ActiveTemplates', () => {
       request: {
         query: ARCHIVE_ACTIVE_JOURNEYS,
         variables: {
-          ids: [defaultTemplate.id, oldTemplate.id] // auth issue causing these ids not to be entered?
+          ids: [defaultTemplate.id, oldTemplate.id]
         }
       },
       result
