@@ -67,63 +67,6 @@ describe('NavigationDrawer', () => {
     expect(getByTestId('LeaderboardRoundedIcon')).toHaveStyle(` color: '#fff'`)
   })
 
-  it('should show publisher button', async () => {
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_ME
-            },
-            result: {
-              data: {
-                me: {
-                  id: 'userId',
-                  firstName: 'Amin',
-                  lastName: 'One',
-                  imageUrl: 'https://bit.ly/3Gth4Yf',
-                  email: 'amin@email.com'
-                }
-              }
-            }
-          },
-          {
-            request: {
-              query: GET_USER_ROLE
-            },
-            result: {
-              data: {
-                getUserRole: {
-                  id: 'userId',
-                  roles: [Role.publisher]
-                }
-              }
-            }
-          }
-        ]}
-      >
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer
-            open
-            onClose={onClose}
-            authUser={
-              {
-                displayName: 'Amin One',
-                photoURL: 'https://bit.ly/3Gth4Yf',
-                email: 'amin@email.com',
-                signOut
-              } as unknown as AuthUser
-            }
-            title="Journeys"
-          />
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getByTestId('ShopTwoRoundedIcon')).toBeInTheDocument()
-    )
-  })
-
   it('should select publisher button', async () => {
     const { getByTestId } = render(
       <MockedProvider
