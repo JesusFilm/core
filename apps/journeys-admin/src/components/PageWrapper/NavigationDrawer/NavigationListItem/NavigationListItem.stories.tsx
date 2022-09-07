@@ -17,8 +17,15 @@ const Template: Story = ({ ...args }: NavigationListItemProps) => (
 export const Default = Template.bind({})
 Default.args = {
   icon: <ExploreRoundedIcon />,
-  text: 'Discover',
-  color: 'secondary.main'
+  label: 'Discover',
+  selected: false
+}
+
+export const Selected = Template.bind({})
+Selected.args = {
+  icon: <ExploreRoundedIcon />,
+  label: 'Discover',
+  selected: true
 }
 
 export default NavigationListItemStory as Meta
