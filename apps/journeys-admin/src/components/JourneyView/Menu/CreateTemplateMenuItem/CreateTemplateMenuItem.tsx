@@ -1,7 +1,4 @@
 import { ReactElement } from 'react'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
 import ShopRounded from '@mui/icons-material/ShopRounded'
 import { useMutation, gql } from '@apollo/client'
 import { useRouter } from 'next/router'
@@ -9,6 +6,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CreateTemplate } from '../../../../../__generated__/CreateTemplate'
 import { DuplicateJourney } from '../../../../../__generated__/DuplicateJourney'
 import { RemoveUserJourney } from '../../../../../__generated__/RemoveUserJourney'
+import { MenuItem } from '../../../MenuItem'
 
 export const DUPLICATE_JOURNEY = gql`
   mutation DuplicateJourney($id: ID!) {
@@ -109,7 +107,7 @@ export function CreateTemplateMenuItem(): ReactElement {
         })
 
         void router.push(
-          `/templates/${templateData.journeyTemplate.id}`,
+          `/publisher/${templateData.journeyTemplate.id}`,
           undefined,
           { shallow: true }
         )
@@ -118,11 +116,10 @@ export function CreateTemplateMenuItem(): ReactElement {
   }
 
   return (
-    <MenuItem onClick={handleCreateTemplate}>
-      <ListItemIcon>
-        <ShopRounded />
-      </ListItemIcon>
-      <ListItemText>Create Template</ListItemText>
-    </MenuItem>
+    <MenuItem
+      label="Create Template"
+      icon={<ShopRounded />}
+      onClick={handleCreateTemplate}
+    />
   )
 }

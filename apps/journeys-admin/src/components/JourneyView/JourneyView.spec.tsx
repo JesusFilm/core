@@ -52,8 +52,8 @@ describe('JourneyView', () => {
     seoTitle: null,
     seoDescription: null,
     primaryImageBlock: null,
-    userJourneys: [],
-    template: null
+    template: null,
+    userJourneys: []
   }
 
   it.skip('should have edit button', () => {
@@ -62,7 +62,7 @@ describe('JourneyView', () => {
         <FlagsProvider flags={{ reports: true }}>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, admin: true }}>
-              <JourneyView />
+              <JourneyView journeyType="Journey" />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>
@@ -79,7 +79,7 @@ describe('JourneyView', () => {
         <FlagsProvider flags={{ reports: true }}>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, admin: true }}>
-              <JourneyView />
+              <JourneyView journeyType="Journey" />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>
@@ -96,7 +96,7 @@ describe('JourneyView', () => {
         <FlagsProvider flags={{ reports: false }}>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, admin: true }}>
-              <JourneyView />
+              <JourneyView journeyType="Journey" />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>

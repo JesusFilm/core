@@ -17,6 +17,7 @@ import { CardView } from './CardView'
 import { SlugDialog } from './JourneyLink/SlugDialog'
 import { EmbedJourneyDialog } from './JourneyLink/EmbedJourneyDialog'
 import { TitleDescription } from './TitleDescription'
+import { DatePreview } from './DatePreview'
 import { JourneyViewFab } from './JourneyViewFab'
 import { JourneyLink } from './JourneyLink'
 
@@ -29,7 +30,13 @@ export const GET_USER_ROLE = gql`
   }
 `
 
-export function JourneyView(): ReactElement {
+export type JourneyType = 'Journey' | 'Template'
+
+interface JourneyViewProps {
+  journeyType: JourneyType
+}
+
+export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
   const { journey } = useJourney()
   const { reports } = useFlags()
   const theme = useTheme()
@@ -60,7 +67,7 @@ export function JourneyView(): ReactElement {
       >
         {/* if template: SocialImage */}
         <Stack direction="column" spacing={6} sx={{ width: '100%' }}>
-          {/* if template: DatePreview */}
+          {journeyType === 'Template' && <DatePreview />}
           <TitleDescription isPublisher={isPublisher} />
         </Stack>
       </Box>
