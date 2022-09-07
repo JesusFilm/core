@@ -9,14 +9,19 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyLink } from '../JourneyLink'
+import { JourneyType } from '../JourneyView'
 import { JourneyDetails } from './JourneyDetails'
 import { AccessControl } from './AccessControl'
 
 interface PropertiesProps {
+  journeyType: JourneyType
   isPublisher?: boolean
 }
 
-export function Properties({ isPublisher }: PropertiesProps): ReactElement {
+export function Properties({
+  journeyType,
+  isPublisher
+}: PropertiesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
@@ -35,14 +40,17 @@ export function Properties({ isPublisher }: PropertiesProps): ReactElement {
       >
         <Toolbar>
           <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
-            {journey?.template === true ? t('Details') : t('Properties')}
+            {journeyType === 'Template' ? t('Details') : t('Properties')}
           </Typography>
         </Toolbar>
         <Stack sx={{ py: 6 }} spacing={6} divider={<Divider />}>
           <Box sx={{ px: 6 }}>
-            <JourneyDetails isPublisher={isPublisher} />
+            <JourneyDetails
+              journeyType={journeyType}
+              isPublisher={isPublisher}
+            />
           </Box>
-          {journey?.template !== true && (
+          {journeyType !== 'Template' && (
             <>
               <Box sx={{ px: 6 }}>
                 <AccessControl />
@@ -66,7 +74,7 @@ export function Properties({ isPublisher }: PropertiesProps): ReactElement {
         }}
         spacing={6}
       >
-        {journey?.template !== true && (
+        {journeyType !== 'Template' && (
           <Divider>
             <AccessAvatars
               journeyId={journey?.id}
@@ -76,7 +84,7 @@ export function Properties({ isPublisher }: PropertiesProps): ReactElement {
           </Divider>
         )}
         <Box sx={{ px: 6 }}>
-          <JourneyDetails isPublisher={isPublisher} />
+          <JourneyDetails journeyType={journeyType} isPublisher={isPublisher} />
         </Box>
       </Stack>
     </>

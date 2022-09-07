@@ -53,7 +53,7 @@ export function Language({ isPublisher }: LanguageProps): ReactElement {
             </span>
           </Typography>
         ) : (
-          <Skeleton variant="text" width="40%" />
+          <Skeleton variant="text" width="40px" sx={{ ml: 2 }} />
         )}
         {isPublisher === true && (
           <IconButton size="small" onClick={() => setShowLanguageDialog(true)}>
