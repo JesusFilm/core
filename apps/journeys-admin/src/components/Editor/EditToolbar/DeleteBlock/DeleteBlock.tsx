@@ -4,13 +4,11 @@ import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
 import { gql, useMutation } from '@apollo/client'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
 import { useSnackbar } from 'notistack'
 import Typography from '@mui/material/Typography'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { MenuItem } from '../../../MenuItem'
 import { Dialog } from '../../../Dialog'
 import getSelected from './utils/getSelected'
 
@@ -122,14 +120,11 @@ export function DeleteBlock({
         </IconButton>
       ) : (
         <MenuItem
+          label={`Delete ${label}`}
+          icon={<DeleteOutlineRounded />}
           disabled={selectedBlock == null}
           onClick={label === 'Card' ? handleOpenDialog : handleDeleteBlock}
-        >
-          <ListItemIcon>
-            <DeleteOutlineRounded />
-          </ListItemIcon>
-          <ListItemText>Delete {label}</ListItemText>
-        </MenuItem>
+        />
       )}
     </>
   )

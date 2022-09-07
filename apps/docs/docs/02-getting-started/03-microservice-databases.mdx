@@ -1,0 +1,35 @@
+---
+title: 3. Microservice Databases
+---
+
+# Setup Microservice Databases
+
+<div
+  style={{
+    position: 'relative',
+    paddingBottom: '64.63195691202873%',
+    marginBottom: '20px',
+    height: 0
+  }}
+>
+  <iframe
+    src="https://www.loom.com/embed/887d917e881a4c14a9abd12e052faf0a"
+    frameborder="0"
+    allowFullScreen="true"
+    webkitallowfullscreen="true"
+    mozallowfullscreen="true"
+    style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%'
+    }}
+  />
+</div>
+
+Microservices typically make use of a variety of database stores. The following command will create the required databases, migrate them to the latest state, and fill them with relevant data.
+
+```shell
+nx run-many --all --target=seed
+```
