@@ -52,8 +52,8 @@ describe('JourneyView', () => {
     seoTitle: null,
     seoDescription: null,
     primaryImageBlock: null,
-    userJourneys: [],
-    template: null
+    template: null,
+    userJourneys: []
   }
 
   it.skip('should have edit button', () => {

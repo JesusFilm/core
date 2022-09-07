@@ -1,9 +1,7 @@
 import { ReactElement } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
+import { MenuItem } from '../../MenuItem'
 import { UserJourneyPromote } from '../../../../__generated__/UserJourneyPromote'
 
 interface PromoteUserProps {
@@ -39,11 +37,10 @@ export function PromoteUser({ id, onClick }: PromoteUserProps): ReactElement {
   }
 
   return (
-    <MenuItem onClick={handleClick}>
-      <ListItemIcon>
-        <NewReleasesRoundedIcon />
-      </ListItemIcon>
-      <ListItemText>Promote</ListItemText>
-    </MenuItem>
+    <MenuItem
+      label="Promote"
+      icon={<NewReleasesRoundedIcon />}
+      onClick={handleClick}
+    />
   )
 }

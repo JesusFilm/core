@@ -2,16 +2,14 @@ import { ReactElement } from 'react'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { AuthUser } from 'next-firebase-auth'
 import { compact } from 'lodash'
 import { GetMe_me as User } from '../../../../../__generated__/GetMe'
+import { MenuItem } from '../../../MenuItem'
 
 export interface UserMenuProps {
   user: User
@@ -67,16 +65,13 @@ export function UserMenu({
       </Stack>
       <Divider />
       <MenuItem
+        label="Logout"
+        icon={<LogoutRoundedIcon fontSize="small" />}
         onClick={async () => {
           handleProfileClose()
           await authUser.signOut()
         }}
-      >
-        <ListItemIcon>
-          <LogoutRoundedIcon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText>Logout</ListItemText>
-      </MenuItem>
+      />
     </Menu>
   )
 }
