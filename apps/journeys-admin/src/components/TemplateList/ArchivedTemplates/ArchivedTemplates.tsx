@@ -3,6 +3,7 @@ import { AuthUser } from 'next-firebase-auth'
 import Typography from '@mui/material/Typography'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { useSnackbar } from 'notistack'
+import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import { Dialog } from '../../Dialog'
@@ -77,6 +78,8 @@ export function ArchivedTemplates({
   sortOrder,
   authUser
 }: ArchivedTemplateProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   const { data, loading, error, refetch } =
     useQuery<GetArchivedPublisherTemplates>(GET_ARCHIVED_PUBLISHER_TEMPLATES)
 
@@ -92,7 +95,7 @@ export function ArchivedTemplates({
     },
     update(cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar('Journeys Restored', {
+        enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
         void refetch()
@@ -106,7 +109,7 @@ export function ArchivedTemplates({
     },
     update(cache, { data }) {
       if (data?.journeysTrash != null) {
-        enqueueSnackbar('Journeys Trashed', {
+        enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
         })
         void refetch()
@@ -183,8 +186,9 @@ export function ArchivedTemplates({
             <span>
               <Box width="100%" sx={{ textAlign: 'center' }}>
                 <Typography variant="caption">
-                  Archived journeys are hidden from your active templates list
-                  for better organization.
+                  {t(
+                    'Archived journeys are hidden from your active templates list for better organization.'
+                  )}
                 </Typography>
               </Box>
             </span>
@@ -204,13 +208,14 @@ export function ArchivedTemplates({
                 }}
               >
                 <Typography variant="subtitle1" align="center" gutterBottom>
-                  No archived templates.
+                  {t('No archived templates.')}
                 </Typography>
               </Card>
               <Box width="100%" sx={{ textAlign: 'center' }}>
                 <Typography variant="caption">
-                  You can archive a template to hide it from your active
-                  Template list for better organization.
+                  {t(
+                    'You can archive a template to hide it from your active Template list for better organization.'
+                  )}
                 </Typography>
               </Box>
             </>
@@ -228,36 +233,38 @@ export function ArchivedTemplates({
         open={openRestoreAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: 'Unarchive Templates',
+          title: t('Unarchive Templates'),
           closeButton: true
         }}
         dialogAction={{
           onSubmit: restoreAll,
-          submitLabel: 'Unarchive',
-          closeLabel: 'Cancel'
+          submitLabel: t('Unarchive'),
+          closeLabel: t('Cancel')
         }}
       >
         <Typography>
-          Are you sure you would like to unarchive all archived templates
-          immediately?
+          {t(
+            'Are you sure you would like to unarchive all archived templates immediately?'
+          )}
         </Typography>
       </Dialog>
       <Dialog
         open={openTrashAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: 'Trash Templates',
+          title: t('Trash Templates'),
           closeButton: true
         }}
         dialogAction={{
           onSubmit: trashAll,
-          submitLabel: 'Trash',
-          closeLabel: 'Cancel'
+          submitLabel: t('Trash'),
+          closeLabel: t('Cancel')
         }}
       >
         <Typography>
-          Are you sure you would like to trash all archived templates
-          immediately?
+          {t(
+            'Are you sure you would like to trash all archived templates immediately?'
+          )}
         </Typography>
       </Dialog>
     </>

@@ -4,6 +4,7 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { AuthUser } from 'next-firebase-auth'
 import { useSnackbar } from 'notistack'
 import Card from '@mui/material/Card'
+import { useTranslation } from 'react-i18next'
 import { SortOrder } from '../../JourneyList/JourneySort'
 import { Dialog } from '../../Dialog'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
@@ -77,6 +78,8 @@ export function ActiveTemplates({
   sortOrder,
   authUser
 }: ActiveTemplatesProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   const { data, loading, error, refetch } =
     useQuery<GetActivePublisherTemplates>(GET_ACTIVE_PUBLISHER_TEMPLATES)
 
@@ -99,7 +102,7 @@ export function ActiveTemplates({
     },
     update(cache, { data }) {
       if (data?.journeysArchive != null) {
-        enqueueSnackbar('Journeys Archived', {
+        enqueueSnackbar(t('Journeys Archived'), {
           variant: 'success'
         })
         void refetch()
@@ -113,7 +116,7 @@ export function ActiveTemplates({
     },
     update(cache, { data }) {
       if (data?.journeysTrash != null) {
-        enqueueSnackbar('Journeys Trashed', {
+        enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
         })
         void refetch()
@@ -202,7 +205,7 @@ export function ActiveTemplates({
               }}
             >
               <Typography variant="subtitle1" align="center" gutterBottom>
-                No templates to display.
+                {t('No templates to display.')}
               </Typography>
             </Card>
           )}
@@ -229,25 +232,28 @@ export function ActiveTemplates({
         }}
       >
         <Typography>
-          Are you sure you would like to archive all active templates
-          immediately?
+          {t(
+            'Are you sure you would like to archive all active templates immediately?'
+          )}
         </Typography>
       </Dialog>
       <Dialog
         open={openTrashAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: 'Trash Templates',
+          title: t('Trash Templates'),
           closeButton: true
         }}
         dialogAction={{
           onSubmit: trashAll,
-          submitLabel: 'Trash',
-          closeLabel: 'Cancel'
+          submitLabel: t('Trash'),
+          closeLabel: t('Cancel')
         }}
       >
         <Typography>
-          Are you sure you would like to trash all active templates immediately?
+          {t(
+            'Are you sure you would like to trash all active templates immediately?'
+          )}
         </Typography>
       </Dialog>
     </>

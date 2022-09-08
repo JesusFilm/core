@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import Card from '@mui/material/Card'
+import { useTranslation } from 'react-i18next'
 import { SortOrder } from '../../JourneyList/JourneySort'
 import { Dialog } from '../../Dialog'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
@@ -77,6 +78,8 @@ export function TrashedTemplates({
   sortOrder,
   authUser
 }: TrashedTemplatesProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   const { data, loading, error, refetch } =
     useQuery<GetTrashedPublisherTemplates>(GET_TRASHED_PUBLISHER_TEMPLATES)
 
@@ -92,7 +95,7 @@ export function TrashedTemplates({
     },
     update(cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar('Journeys Restored', {
+        enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
         void refetch()
@@ -106,7 +109,7 @@ export function TrashedTemplates({
     },
     update(cache, { data }) {
       if (data?.journeysDelete != null) {
-        enqueueSnackbar('Journeys Deleted', {
+        enqueueSnackbar(t('Journeys Deleted'), {
           variant: 'success'
         })
         void refetch()
@@ -207,7 +210,7 @@ export function TrashedTemplates({
               }}
             >
               <Typography variant="subtitle1" align="center" gutterBottom>
-                Your trashed templates will appear here.
+                {t('Your trashed templates will appear here.')}
               </Typography>
             </Card>
           )}
@@ -224,36 +227,38 @@ export function TrashedTemplates({
         open={openRestoreAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: 'Restore Templates',
+          title: t('Restore Templates'),
           closeButton: true
         }}
         dialogAction={{
           onSubmit: restoreAll,
-          submitLabel: 'Restore',
-          closeLabel: 'Cancel'
+          submitLabel: t('Restore'),
+          closeLabel: t('Cancel')
         }}
       >
         <Typography>
-          Are you sure you would like to restore all trashed templates
-          immediately?
+          {t(
+            'Are you sure you would like to restore all trashed templates immediately?'
+          )}
         </Typography>
       </Dialog>
       <Dialog
         open={openDeleteAll ?? false}
         handleClose={handleClose}
         dialogTitle={{
-          title: 'Delete Templates Forever',
+          title: t('Delete Templates Forever'),
           closeButton: true
         }}
         dialogAction={{
           onSubmit: deleteAll,
-          submitLabel: 'Delete Forever',
-          closeLabel: 'Cancel'
+          submitLabel: t('Delete Forever'),
+          closeLabel: t('Cancel')
         }}
       >
         <Typography>
-          Are you sure you would like to permanently delete all trashed
-          templates immediately?
+          {t(
+            'Are you sure you would like to permanently delete all trashed templates immediately?'
+          )}
         </Typography>
       </Dialog>
     </>

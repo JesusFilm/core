@@ -8,6 +8,7 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { useRouter } from 'next/router'
 import { Role } from '../../__generated__/globalTypes'
@@ -19,6 +20,7 @@ import JourneyListMenu from '../../src/components/JourneyList/JourneyListMenu/Jo
 import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
 
 function TemplateIndex(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const router = useRouter()
   const [listEvent, setListEvent] = useState('')
@@ -43,9 +45,9 @@ function TemplateIndex(): ReactElement {
 
   return (
     <>
-      <NextSeo title="Templates Admin" />
+      <NextSeo title={t('Templates Admin')} />
       <PageWrapper
-        title="Templates Admin"
+        title={t('Templates Admin')}
         authUser={AuthUser}
         menu={<JourneyListMenu router={router} onClick={handleClick} />}
       >
