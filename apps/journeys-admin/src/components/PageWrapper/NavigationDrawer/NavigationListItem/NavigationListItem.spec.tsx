@@ -4,16 +4,17 @@ import { NavigationListItem } from './NavigationListItem'
 
 describe('NavigationListItem', () => {
   it('renders menu item', () => {
-    const { getByText, getByTestId } = render(
+    const { getByRole } = render(
       <NavigationListItem
         icon={<AbcRoundedIcon />}
         label="menu item"
-        selected
+        selected={false}
       />
     )
-    expect(getByTestId('AbcRoundedIcon')).toBeInTheDocument()
-    expect(getByTestId('AbcRoundedIcon')).toHaveStyle(`color: "#fff"`)
-    expect(getByText('menu item')).toBeInTheDocument()
+    expect(getByRole('button', { name: 'menu item' })).toHaveAttribute(
+      'aria-selected',
+      'false'
+    )
   })
 
   it('renders menuitem with link', () => {
@@ -42,5 +43,16 @@ describe('NavigationListItem', () => {
     )
     fireEvent.click(getByRole('button', { name: 'menu item' }))
     expect(onClick).toHaveBeenCalled()
+  })
+
+  it('should be selected', () => {
+    const { getByRole } = render(
+      <NavigationListItem
+        icon={<AbcRoundedIcon />}
+        label="menu item"
+        selected
+      />
+    )
+    expect(getByRole('button')).toHaveAttribute('aria-selected', 'true')
   })
 })

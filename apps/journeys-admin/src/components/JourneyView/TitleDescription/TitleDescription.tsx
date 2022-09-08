@@ -25,7 +25,7 @@ export function TitleDescription({
 
   return (
     <>
-      <Stack direction="column" spacing={4}>
+      <Stack direction="column" spacing={journey?.template === true ? 2 : 0}>
         <Stack
           direction="row"
           sx={{

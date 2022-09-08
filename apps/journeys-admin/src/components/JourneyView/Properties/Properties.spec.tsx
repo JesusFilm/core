@@ -18,7 +18,7 @@ describe('Properties', () => {
         <MockedProvider mocks={[]}>
           <FlagsProvider>
             <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Properties />
+              <Properties journeyType="Journey" />
             </JourneyProvider>
           </FlagsProvider>
         </MockedProvider>

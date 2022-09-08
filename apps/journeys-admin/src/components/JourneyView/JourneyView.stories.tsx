@@ -87,7 +87,7 @@ const template = {
     alt: 'image.jpg',
     width: 1920,
     height: 1080,
-    blurhash: ''
+    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
   }
 }
 

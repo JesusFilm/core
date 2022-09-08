@@ -1,5 +1,5 @@
 import { isThisYear, parseISO, intlFormat } from 'date-fns'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
@@ -11,11 +11,19 @@ import EventRounded from '@mui/icons-material/EventRounded'
 import TranslateRounded from '@mui/icons-material/TranslateRounded'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { JourneyType } from '../../JourneyView'
+import { Language } from './Language'
 
-export function JourneyDetails(): ReactElement {
+interface JourneyDetailsProps {
+  journeyType: JourneyType
+  isPublisher?: boolean
+}
+
+export function JourneyDetails({
+  journeyType,
+  isPublisher
+}: JourneyDetailsProps): ReactElement {
   const { journey } = useJourney()
-  const [localLanguage, setLocalLanguage] = useState<string | undefined>()
-  const [nativeLanguage, setNativeLanguage] = useState<string | undefined>()
 
   const options = [
     {
@@ -44,66 +52,59 @@ export function JourneyDetails(): ReactElement {
     (option) => option.journeyStatus === journey?.status
   )
 
-  useEffect(() => {
-    setLocalLanguage(
-      journey?.language.name.find(({ primary }) => !primary)?.value
-    )
-    setNativeLanguage(
-      journey?.language.name.find(({ primary }) => primary)?.value
-    )
-  }, [journey])
   return (
     <>
-      <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-        {journey != null && currentStatus != null ? (
-          <>{currentStatus.icon}</>
-        ) : (
-          <EditIcon fontSize="small" />
-        )}
+      {journeyType === 'Template' ? (
+        <Language isPublisher={isPublisher} />
+      ) : (
+        <>
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+            {journey != null && currentStatus != null ? (
+              <>{currentStatus.icon}</>
+            ) : (
+              <EditIcon fontSize="small" />
+            )}
 
-        <Typography variant="body2" data-testid="status" sx={{ ml: 2 }}>
-          {journey != null && currentStatus != null ? (
-            currentStatus.text
-          ) : (
-            <Skeleton variant="text" width={30} />
-          )}
-        </Typography>
-      </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2 }}>
-        <EventRounded fontSize="small" />
-        <Typography
-          variant="body2"
-          data-testid="created-at-date"
-          sx={{ ml: 2 }}
-        >
-          {journey != null ? (
-            intlFormat(parseISO(journey.createdAt), {
-              day: 'numeric',
-              month: 'long',
-              year: isThisYear(parseISO(journey.createdAt))
-                ? undefined
-                : 'numeric'
-            })
-          ) : (
-            <Skeleton variant="text" width={120} />
-          )}
-        </Typography>
-      </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2 }}>
-        <TranslateRounded fontSize="small" />
-        <Typography variant="body2" sx={{ ml: 2 }}>
-          {journey != null ? (
-            <span>
-              {localLanguage ?? nativeLanguage}
-              {localLanguage != null &&
-                localLanguage !== nativeLanguage &&
-                nativeLanguage && <span>&nbsp;({nativeLanguage})</span>}
-            </span>
-          ) : (
-            <Skeleton variant="text" width={40} />
-          )}
-        </Typography>
-      </Box>
+            <Typography variant="body2" data-testid="status" sx={{ ml: 2 }}>
+              {journey != null && currentStatus != null ? (
+                currentStatus.text
+              ) : (
+                <Skeleton variant="text" width={30} />
+              )}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'row', mt: 2 }}>
+            <EventRounded fontSize="small" />
+            <Typography
+              variant="body2"
+              data-testid="created-at-date"
+              sx={{ ml: 2 }}
+            >
+              {journey != null ? (
+                intlFormat(parseISO(journey.createdAt), {
+                  day: 'numeric',
+                  month: 'long',
+                  year: isThisYear(parseISO(journey.createdAt))
+                    ? undefined
+                    : 'numeric'
+                })
+              ) : (
+                <Skeleton variant="text" width={120} />
+              )}
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              mt: 2
+            }}
+          >
+            <TranslateRounded fontSize="small" />
+            <Language />
+          </Box>
+        </>
+      )}
     </>
   )
 }
