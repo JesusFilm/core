@@ -9,8 +9,8 @@ import {
 import Image from 'next/image'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { StyledFirebaseAuth } from '@core/shared/ui/StyledFirebaseAuth'
 import logo from '../../../public/logo.svg'
-import { StyledFirebaseAuth } from './StyledFirebaseAuth'
 
 export function SignIn(): ReactElement {
   // Do not SSR FirebaseUI, because it is not supported.
