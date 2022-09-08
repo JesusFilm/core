@@ -4,17 +4,17 @@ import { NavigationListItem } from './NavigationListItem'
 
 describe('NavigationListItem', () => {
   it('renders menu item', () => {
-    const { getByText, getByTestId } = render(
+    const { getByRole } = render(
       <NavigationListItem
         icon={<AbcRoundedIcon />}
         label="menu item"
         selected={false}
       />
     )
-    expect(
-      getByTestId('AbcRoundedIcon').parentElement?.parentElement
-    ).toHaveAttribute('aria-selected', 'false')
-    expect(getByText('menu item')).toBeInTheDocument()
+    expect(getByRole('button', { name: 'menu item' })).toHaveAttribute(
+      'aria-selected',
+      'false'
+    )
   })
 
   it('renders menuitem with link', () => {
