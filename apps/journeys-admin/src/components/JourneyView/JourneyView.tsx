@@ -17,6 +17,7 @@ import { CardView } from './CardView'
 import { SlugDialog } from './JourneyLink/SlugDialog'
 import { EmbedJourneyDialog } from './JourneyLink/EmbedJourneyDialog'
 import { TitleDescription } from './TitleDescription'
+import { SocialImage } from './SocialImage'
 import { DatePreview } from './DatePreview'
 import { JourneyViewFab } from './JourneyViewFab'
 import { JourneyLink } from './JourneyLink'
@@ -57,16 +58,29 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
           p: { xs: 6, sm: 8 },
           display: 'flex',
           backgroundColor: 'background.paper',
-          [theme.breakpoints.up('sm')]: {
+          [theme.breakpoints.up('md')]: {
             flexDirection: 'row'
           },
-          [theme.breakpoints.down('sm')]: {
+          [theme.breakpoints.down('md')]: {
             flexDirection: 'column-reverse'
-          }
+          },
+          alignItems: { md: 'flex-start', lg: 'flex-start' }
         }}
       >
-        {/* if template: SocialImage */}
-        <Stack direction="column" spacing={6} sx={{ width: '100%' }}>
+        {journey?.template === true && <SocialImage />}
+        <Stack
+          direction="column"
+          spacing={6}
+          sx={{
+            [theme.breakpoints.up('md')]: {
+              ml: journeyType === 'Template' ? 10 : 0
+            },
+            [theme.breakpoints.down('md')]: {
+              mb: 10
+            },
+            width: '100%'
+          }}
+        >
           {journeyType === 'Template' && <DatePreview />}
           <TitleDescription isPublisher={isPublisher} />
         </Stack>
