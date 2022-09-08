@@ -33,42 +33,8 @@ describe('NavigationDrawer', () => {
     expect(getByText('Discover')).toBeInTheDocument()
   })
 
-  it('should render all the menu items', () => {
+  it('should render all the menu items', async () => {
     const { getByText } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ templates: true, reports: true }}>
-          <NavigationDrawer open onClose={onClose} title="Journeys" />
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(getByText('Templates')).toBeInTheDocument()
-    expect(getByText('Reports')).toBeInTheDocument()
-  })
-
-  it('should select templates button', () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer open onClose={onClose} title="Journey Templates" />
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(getByTestId('ShopRoundedIcon')).toHaveStyle(` color: '#fff'`)
-  })
-
-  it('should select the reports button', () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ reports: true }}>
-          <NavigationDrawer open onClose={onClose} title="Reports" />
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(getByTestId('LeaderboardRoundedIcon')).toHaveStyle(` color: '#fff'`)
-  })
-
-  it('should select publisher button', async () => {
-    const { getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -102,11 +68,11 @@ describe('NavigationDrawer', () => {
           }
         ]}
       >
-        <FlagsProvider flags={{ templates: true }}>
+        <FlagsProvider flags={{ templates: true, reports: true }}>
           <NavigationDrawer
             open
             onClose={onClose}
-            title="Templates Admin"
+            title="Journeys"
             authUser={
               {
                 displayName: 'Amin One',
@@ -119,9 +85,31 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    await waitFor(() =>
-      expect(getByTestId('ShopTwoRoundedIcon')).toHaveStyle(` color: '#fff'`)
+    expect(getByText('Templates')).toBeInTheDocument()
+    expect(getByText('Reports')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Publisher')).toBeInTheDocument())
+  })
+
+  it('should select templates button', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ templates: true }}>
+          <NavigationDrawer open onClose={onClose} title="Journey Templates" />
+        </FlagsProvider>
+      </MockedProvider>
     )
+    expect(getByTestId('ShopRoundedIcon')).toHaveStyle(` color: '#fff'`)
+  })
+
+  it('should select the reports button', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <FlagsProvider flags={{ reports: true }}>
+          <NavigationDrawer open onClose={onClose} title="Reports" />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    expect(getByTestId('LeaderboardRoundedIcon')).toHaveStyle(` color: '#fff'`)
   })
 
   it('should have avatar menu', async () => {
