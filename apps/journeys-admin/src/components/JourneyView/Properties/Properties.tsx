@@ -9,7 +9,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyLink } from '../JourneyLink'
-import { JourneyType } from '../JourneyView'
+import type { JourneyType } from '../JourneyView'
 import { JourneyDetails } from './JourneyDetails'
 import { AccessControl } from './AccessControl'
 
