@@ -179,7 +179,7 @@ describe('NavigationDrawer', () => {
   })
 
   it('should have avatar menu', async () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByRole, getByText } = render(
       <MockedProvider
         mocks={[
           {
@@ -231,8 +231,16 @@ describe('NavigationDrawer', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByTestId('ShopTwoRoundedIcon')).toHaveStyle(` color: '#fff'`)
+      expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     )
+    expect(getByTestId('Profile-list-item')).toHaveAttribute(
+      'aria-selected',
+      'false'
+    )
+    fireEvent.click(getByRole('img', { name: 'Amin One' }))
+    await waitFor(() => expect(getByText('Amin One')).toBeInTheDocument())
+    fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
+    await waitFor(() => expect(signOut).toHaveBeenCalled())
   })
 
   it('should close the navigation drawer on chevron left click', () => {
