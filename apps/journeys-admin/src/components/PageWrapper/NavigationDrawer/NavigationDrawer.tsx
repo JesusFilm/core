@@ -111,7 +111,10 @@ export function NavigationDrawer({
     title === 'Journey Reports'
 
   const templatesSelected =
-    title === 'Journey Templates' || title === 'Journey Template'
+    title === 'Journey Templates' ||
+    title === 'Journey Template' ||
+    title === 'Template Details' ||
+    title === 'Edit Template'
 
   const { reports, templates } = useFlags()
 

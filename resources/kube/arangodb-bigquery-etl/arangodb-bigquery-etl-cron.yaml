@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: arangodb-bigquery-etl
+spec:
+  schedule: '0 * * * *'
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          nodeSelector:
+            type: api
+          containers:
+            - name: arangodb-bigquery-etl
+              image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-arangodb-bigquery-etl:latest
+              imagePullPolicy: IfNotPresent
+              command:
+                - ./bqexport.sh
+              envFrom:
+                - secretRef:
+                    name: doppler-arangodb-bigquery-etl-secret-prd
+              volumeMounts:
+                - name: secrets
+                  mountPath: '/etc/secrets'
+                  readOnly: true
+          volumes:
+            - name: secrets
+              secret:
+                secretName: doppler-arangodb-bigquery-etl-secret-prd
+                optional: false
+          restartPolicy: Never
