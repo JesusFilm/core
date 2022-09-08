@@ -43,28 +43,6 @@ describe('NavigationDrawer', () => {
     expect(getByText('Reports')).toBeInTheDocument()
   })
 
-  it('should select templates button', () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer open onClose={onClose} title="Journey Templates" />
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(getByTestId('ShopRoundedIcon')).toHaveStyle(` color: '#fff'`)
-  })
-
-  it('should select the reports button', () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ reports: true }}>
-          <NavigationDrawer open onClose={onClose} title="Reports" />
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(getByTestId('LeaderboardRoundedIcon')).toHaveStyle(` color: '#fff'`)
-  })
-
   it('should have avatar menu', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider

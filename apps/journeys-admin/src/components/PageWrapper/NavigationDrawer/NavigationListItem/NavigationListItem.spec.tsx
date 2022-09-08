@@ -8,11 +8,12 @@ describe('NavigationListItem', () => {
       <NavigationListItem
         icon={<AbcRoundedIcon />}
         label="menu item"
-        selected
+        selected={false}
       />
     )
-    expect(getByTestId('AbcRoundedIcon')).toBeInTheDocument()
-    expect(getByTestId('AbcRoundedIcon')).toHaveStyle(`color: "#fff"`)
+    expect(
+      getByTestId('AbcRoundedIcon').parentElement?.parentElement
+    ).toHaveAttribute('aria-selected', 'false')
     expect(getByText('menu item')).toBeInTheDocument()
   })
 
@@ -42,5 +43,16 @@ describe('NavigationListItem', () => {
     )
     fireEvent.click(getByRole('button', { name: 'menu item' }))
     expect(onClick).toHaveBeenCalled()
+  })
+
+  it('should be selected', () => {
+    const { getByRole } = render(
+      <NavigationListItem
+        icon={<AbcRoundedIcon />}
+        label="menu item"
+        selected
+      />
+    )
+    expect(getByRole('button')).toHaveAttribute('aria-selected', 'true')
   })
 })
