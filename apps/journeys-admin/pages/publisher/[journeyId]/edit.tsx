@@ -43,7 +43,7 @@ function TemplateEditPage(): ReactElement {
         <PageWrapper
           title={data?.publisherTemplate?.title ?? t('Edit Template')}
           showDrawer
-          backHref={`/templates/${router.query.journeyId as string}`}
+          backHref={`/publisher/${router.query.journeyId as string}`}
           authUser={AuthUser}
         >
           <JourneyEdit />
