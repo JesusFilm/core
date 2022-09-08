@@ -85,7 +85,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
           <TitleDescription isPublisher={isPublisher} />
         </Stack>
       </Box>
-      <Properties />
+      <Properties journeyType={journeyType} isPublisher={isPublisher} />
 
       {reports && journey != null && journey.template !== true && (
         <>
@@ -101,7 +101,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
         </>
       )}
 
-      {journey?.template !== true && (
+      {journeyType === 'Journey' && (
         <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
           <Divider />
           <Box

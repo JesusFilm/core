@@ -9,10 +9,19 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import { AccessAvatars } from '../../AccessAvatars'
 import { JourneyLink } from '../JourneyLink'
+import type { JourneyType } from '../JourneyView'
 import { JourneyDetails } from './JourneyDetails'
 import { AccessControl } from './AccessControl'
 
-export function Properties(): ReactElement {
+interface PropertiesProps {
+  journeyType: JourneyType
+  isPublisher?: boolean
+}
+
+export function Properties({
+  journeyType,
+  isPublisher
+}: PropertiesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
@@ -31,19 +40,27 @@ export function Properties(): ReactElement {
       >
         <Toolbar>
           <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
-            {t('Properties')}
+            {journeyType === 'Template' ? t('Details') : t('Properties')}
           </Typography>
         </Toolbar>
         <Stack sx={{ py: 6 }} spacing={6} divider={<Divider />}>
           <Box sx={{ px: 6 }}>
-            <JourneyDetails />
+            <JourneyDetails
+              journeyType={journeyType}
+              isPublisher={isPublisher}
+            />
           </Box>
-          <Box sx={{ px: 6 }}>
-            <AccessControl />
-          </Box>
-          <Box sx={{ px: 6 }}>
-            <JourneyLink />
-          </Box>
+          {journeyType !== 'Template' && (
+            <>
+              <Box sx={{ px: 6 }}>
+                <AccessControl />
+              </Box>
+              <Divider />
+              <Box sx={{ px: 6 }}>
+                <JourneyLink />
+              </Box>
+            </>
+          )}
         </Stack>
       </Drawer>
       <Stack
@@ -57,15 +74,17 @@ export function Properties(): ReactElement {
         }}
         spacing={6}
       >
-        <Divider>
-          <AccessAvatars
-            journeyId={journey?.id}
-            userJourneys={journey?.userJourneys ?? undefined}
-            size="medium"
-          />
-        </Divider>
+        {journeyType !== 'Template' && (
+          <Divider>
+            <AccessAvatars
+              journeyId={journey?.id}
+              userJourneys={journey?.userJourneys ?? undefined}
+              size="medium"
+            />
+          </Divider>
+        )}
         <Box sx={{ px: 6 }}>
-          <JourneyDetails />
+          <JourneyDetails journeyType={journeyType} isPublisher={isPublisher} />
         </Box>
       </Stack>
     </>
