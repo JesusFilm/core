@@ -9,7 +9,7 @@ import { CONVERT_TEMPLATE, JourneyViewFab } from './JourneyViewFab'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: () => true
 }))
 
 jest.mock('next/router', () => ({
