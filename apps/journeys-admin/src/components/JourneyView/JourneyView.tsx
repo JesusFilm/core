@@ -19,6 +19,7 @@ import { EmbedJourneyDialog } from './JourneyLink/EmbedJourneyDialog'
 import { TitleDescription } from './TitleDescription'
 import { SocialImage } from './SocialImage'
 import { DatePreview } from './DatePreview'
+import { JourneyViewFab } from './JourneyViewFab'
 import { JourneyLink } from './JourneyLink'
 
 export const GET_USER_ROLE = gql`
@@ -117,7 +118,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
 
       <>
         <CardView id={journey?.id} blocks={blocks} />
-        {/* JourneyViewFab */}
+        <JourneyViewFab isPublisher={isPublisher} />
       </>
 
       <SlugDialog
