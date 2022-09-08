@@ -29,7 +29,12 @@ export function NavigationListItem({
       )}
       condition={link}
     >
-      <ListItemButton onClick={handleClick} aria-selected={selected}>
+      <ListItemButton
+        onClick={handleClick}
+        aria-selected={selected}
+        aria-label={label}
+        data-testId={`${label}-list-item`}
+      >
         <ListItemIcon sx={{ color }}>{icon}</ListItemIcon>
         <ListItemText primary={label} sx={{ color }} />
       </ListItemButton>

@@ -51,9 +51,10 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(
-      getByTestId('ShopRoundedIcon').parentElement?.parentElement
-    ).toHaveAttribute('aria-selected', 'true')
+    expect(getByTestId('Templates-list-item')).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 
   it('should select the reports button', () => {
@@ -64,9 +65,10 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(
-      getByTestId('LeaderboardRoundedIcon').parentElement?.parentElement
-    ).toHaveAttribute('aria-selected', 'true')
+    expect(getByTestId('Reports-list-item')).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 
   it('should have avatar menu', async () => {
