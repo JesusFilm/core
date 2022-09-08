@@ -62,7 +62,8 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
           },
           [theme.breakpoints.down('md')]: {
             flexDirection: 'column-reverse'
-          }
+          },
+          alignItems: { md: 'flex-start', lg: 'flex-start' }
         }}
       >
         {journey?.template === true && <SocialImage />}
