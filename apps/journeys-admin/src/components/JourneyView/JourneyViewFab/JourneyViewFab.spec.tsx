@@ -7,11 +7,6 @@ import { SnackbarProvider } from 'notistack'
 import { defaultJourney } from '../data'
 import { CONVERT_TEMPLATE, JourneyViewFab } from './JourneyViewFab'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
-
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
@@ -73,7 +68,7 @@ describe('JourneyViewFab', () => {
         }
       }
     })
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
           {
@@ -98,7 +93,8 @@ describe('JourneyViewFab', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Use Template' }))
+    expect(getByText('Use Template')).toBeInTheDocument()
+    fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(

@@ -4,10 +4,9 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Fab from '@mui/material/Fab'
 import EditIcon from '@mui/icons-material/Edit'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
+import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { Theme } from '@mui/material/styles'
 import { ConvertTemplate } from '../../../../__generated__/ConvertTemplate'
 
 export const CONVERT_TEMPLATE = gql`
@@ -28,8 +27,6 @@ export function JourneyViewFab({
   const { journey } = useJourney()
   const router = useRouter()
   const [ConvertTemplate] = useMutation<ConvertTemplate>(CONVERT_TEMPLATE)
-
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const handleConvertTemplate = async (): Promise<void> => {
     if (journey == null) return
@@ -91,7 +88,18 @@ export function JourneyViewFab({
           onClick={handleConvertTemplate}
         >
           <CheckRoundedIcon sx={{ mr: 3 }} />
-          {smUp ? 'Use Template' : 'Use It'}
+          <Typography
+            variant="subtitle2"
+            sx={{ display: { xs: 'none', sm: 'flex' } }}
+          >
+            Use Template
+          </Typography>
+          <Typography
+            variant="subtitle2"
+            sx={{ display: { xs: 'flex', sm: 'none' } }}
+          >
+            Use It
+          </Typography>
         </Fab>
       ) : (
         <NextLink href={editLink != null ? editLink : ''} passHref>
