@@ -7,6 +7,11 @@ import { SnackbarProvider } from 'notistack'
 import { defaultJourney } from '../data'
 import { CONVERT_TEMPLATE, JourneyViewFab } from './JourneyViewFab'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
