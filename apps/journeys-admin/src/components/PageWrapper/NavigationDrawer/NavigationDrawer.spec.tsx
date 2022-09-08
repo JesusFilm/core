@@ -98,7 +98,10 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByTestId('ShopRoundedIcon')).toHaveStyle(` color: '#fff'`)
+    expect(getByTestId('Templates-list-item')).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 
   it('should select the reports button', () => {
@@ -109,7 +112,10 @@ describe('NavigationDrawer', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByTestId('LeaderboardRoundedIcon')).toHaveStyle(` color: '#fff'`)
+    expect(getByTestId('Reports-list-item')).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 
   it('should have avatar menu', async () => {
