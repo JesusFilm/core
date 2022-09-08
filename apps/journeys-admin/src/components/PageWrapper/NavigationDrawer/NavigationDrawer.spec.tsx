@@ -118,6 +118,66 @@ describe('NavigationDrawer', () => {
     )
   })
 
+  it('should select publisher button', async () => {
+    const { getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ME
+            },
+            result: {
+              data: {
+                me: {
+                  id: 'userId',
+                  firstName: 'Amin',
+                  lastName: 'One',
+                  imageUrl: 'https://bit.ly/3Gth4Yf',
+                  email: 'amin@email.com'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: GET_USER_ROLE
+            },
+            result: {
+              data: {
+                getUserRole: {
+                  id: 'userId',
+                  roles: [Role.publisher]
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <FlagsProvider flags={{ templates: true }}>
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            title="Templates Admin"
+            authUser={
+              {
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as AuthUser
+            }
+          />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByTestId('Publisher-list-item')).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    )
+  })
+
   it('should have avatar menu', async () => {
     const { getByTestId } = render(
       <MockedProvider
