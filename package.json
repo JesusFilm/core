@@ -17,7 +17,7 @@
     "affected:test": "nx affected:test",
     "affected:lint": "nx affected:lint",
     "affected:dep-graph": "nx affected:dep-graph",
-    "build-storybook": "nx build-storybook shared-storybook",
+    "build-storybook": "nx build-storybook shared-storybook --webpack-stats-json",
     "affected": "nx affected",
     "format": "nx format:write",
     "format:write": "nx format:write",

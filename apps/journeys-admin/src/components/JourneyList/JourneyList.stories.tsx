@@ -9,7 +9,7 @@ import {
   descriptiveJourney,
   publishedJourney
 } from './journeyListData'
-import { GET_ACTIVE_JOURNEYS } from './StatusTabPanel/ActiveStatusTab/ActiveStatusTab'
+import { GET_ACTIVE_JOURNEYS } from './ActiveJourneyList/ActiveJourneyList'
 import { JourneyList } from '.'
 
 const JourneyListStory = {
