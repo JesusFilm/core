@@ -20,6 +20,7 @@ import i18nConfig from '../../next-i18next.config'
 import { JourneyView } from '../../src/components/JourneyView'
 import { Role } from '../../__generated__/globalTypes'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
+import { Menu } from '../../src/components/JourneyView/Menu'
 
 export const GET_PUBLISHER_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -70,6 +71,7 @@ function TemplateDetailsAdmin(): ReactElement {
               authUser={AuthUser}
               showDrawer
               backHref="/"
+              menu={<Menu />}
             >
               <JourneyView journeyType="Template" />
             </PageWrapper>
