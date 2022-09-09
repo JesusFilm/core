@@ -43,7 +43,7 @@ export function JourneyInvite({
       )}
       {requestReceived && (
         <AccessDenied
-          title="Request Sent"
+          title="Request sent"
           description="The owner wil let you know when the journey has been shared with you."
         />
       )}
