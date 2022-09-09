@@ -42,8 +42,8 @@ function TemplateEditPage(): ReactElement {
             title={
               data?.publisherTemplate?.title != null
                 ? t('Edit {{title}}', {
-                  title: data.publisherTemplate.template
-                })
+                    title: data.publisherTemplate.template
+                  })
                 : t('Edit Template')
             }
             description={data?.publisherTemplate?.description ?? undefined}
