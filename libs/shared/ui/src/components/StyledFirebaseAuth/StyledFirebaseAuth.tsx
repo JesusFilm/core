@@ -57,10 +57,8 @@ export const StyledFirebaseAuth = ({
     // Trigger the callback if any was set.
     if (uiCallback != null) uiCallback(firebaseUiWidget)
 
-    // Render the firebaseUi Widget.
-    if (elementRef.current != null) {
-      firebaseUiWidget.start(elementRef.current, uiConfig)
-    }
+    // @ts-expect-error: Render the firebaseUi Widget
+    firebaseUiWidget.start(elementRef.current, uiConfig)
 
     return () => {
       unregisterAuthObserver()
