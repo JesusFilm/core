@@ -127,11 +127,11 @@ resource "kubernetes_manifest" "deployment_kube_system_alb_ingress_controller" {
               ]
               "env" = [
                 {
-                  "name" = data.doppler_secrets.prd.core.PRIVATE_AWS_ACCESS_KEY_ID
+                  "name" = data.doppler_secrets.prd.terraform.AWS_ACCESS_KEY_ID
                   "value" = "KEYVALUE"
                 },
                 {
-                  "name" = data.doppler_secrets.prd.core.PRIVATE_AWS_SECRET_ACCESS_KEY
+                  "name" = data.doppler_secrets.prd.terraform.AWS_SECRET_ACCESS_KEY
                   "value" = "SECRETVALUE"
                 },
               ]
