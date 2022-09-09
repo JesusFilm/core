@@ -339,7 +339,7 @@ describe('JourneyView/Menu', () => {
     const menu = getByRole('button')
     fireEvent.click(menu)
     await waitFor(() => {
-      fireEvent.click(getByRole('menuitem', { name: 'Title Description' }))
+      fireEvent.click(getByRole('menuitem', { name: 'Description' }))
     })
     expect(getByRole('dialog')).toBeInTheDocument()
     expect(menu).not.toHaveAttribute('aria-expanded')

@@ -238,7 +238,7 @@ export function Menu(): ReactElement {
             )}
             {journey.template === true && isPublisher && (
               <MenuItem
-                label="Title Description"
+                label="Description"
                 icon={<EditIcon />}
                 onClick={handleUpdateTitleDescription}
               />
