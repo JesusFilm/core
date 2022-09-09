@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { AccessDenied } from '../AccessDenied'
 
 export function PublisherInvite(): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <AccessDenied
