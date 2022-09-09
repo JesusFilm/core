@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useRef, useState } from 'react'
-import { onAuthStateChanged } from 'firebase/auth'
+import { Auth, onAuthStateChanged } from 'firebase/auth'
 import 'firebaseui/dist/firebaseui.css'
 import { auth } from 'firebaseui'
 
@@ -12,7 +12,7 @@ interface StyledFirebaseAuthProps {
   // disableAutoSignIn().
   uiCallback?: (ui: auth.AuthUI) => void
   // The Firebase App auth instance to use.
-  firebaseAuth: any // As firebaseui-web
+  firebaseAuth: Auth // As firebaseui-web
   className?: string
 }
 
@@ -31,6 +31,7 @@ export const StyledFirebaseAuth = ({
   useEffect(() => {
     // Firebase UI only works on the Client. So we're loading the package only after
     // the component has mounted, so that this works when doing server-side rendering.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     setFirebaseui(require('firebaseui'))
   }, [])
 
@@ -45,8 +46,12 @@ export const StyledFirebaseAuth = ({
 
     // We track the auth state to reset firebaseUi if the user signs out.
     const unregisterAuthObserver = onAuthStateChanged(firebaseAuth, (user) => {
-      if (!user && userSignedIn) firebaseUiWidget.reset()
-      setUserSignedIn(!!user)
+      if (user != null && userSignedIn) firebaseUiWidget.reset()
+      if (user == null) {
+        setUserSignedIn(false)
+      } else {
+        setUserSignedIn(true)
+      }
     })
 
     // Trigger the callback if any was set.
