@@ -1,7 +1,6 @@
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useRouter } from 'next/router'
@@ -96,6 +95,63 @@ export function EmbeddedPreview({
     }
   }, [setAllowFullscreen, handleClick, router?.query])
 
+  const ClickableCard = (): ReactElement => (
+    <Box
+      sx={{
+        p: 8,
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        cursor: allowFullscreen ? 'pointer' : 'default',
+        zindex: 10,
+        height: '100%'
+      }}
+      onClick={() => handleClick()}
+    >
+      <Box
+        sx={{
+          mx: 'auto',
+          mb: 0,
+          height: 6.5,
+          width: '82.5%',
+          backgroundColor: 'rgba(220,222,229)',
+          borderRadius: '16px 16px 0 0',
+          opacity: 0.3
+        }}
+      />
+      <Box
+        sx={{
+          mx: 'auto',
+          mb: 0,
+          height: 6.5,
+          width: '90%',
+          backgroundColor: 'rgba(170,172,287)',
+          borderRadius: '16px 16px 0 0',
+          opacity: 0.3
+        }}
+      />
+      <Box
+        sx={{
+          height: '100%',
+          width: '100%',
+          borderRadius: '16px',
+          border: '1px solid rgba(186, 186, 187, 0.5)'
+        }}
+      >
+        <BlockRenderer
+          data-testid="embedded-preview-block-renderer"
+          block={blocks?.[0]}
+          wrappers={{
+            ButtonWrapper: ButtonWrapper,
+            ImageWrapper: NullWrapper,
+            RadioOptionWrapper: RadioOptionWrapper,
+            VideoWrapper: VideoWrapper
+          }}
+        />
+      </Box>
+    </Box>
+  )
+
   return (
     <>
       <style jsx global>{`
@@ -109,94 +165,34 @@ export function EmbeddedPreview({
         }
       `}</style>
       <Div100vh data-testid="embedded-preview">
-        <Stack
+        {!(isFullscreen || isFullContainer) && <ClickableCard />}
+        <Box
+          ref={maximizableElement}
           sx={{
-            justifyContent: 'center',
-            height: '100%'
+            backgroundColor: 'background.default',
+            overflow: 'hidden'
           }}
         >
-          <Box
-            sx={{
-              p: 8,
-              flexGrow: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              cursor: allowFullscreen ? 'pointer' : 'default',
-              zindex: 10
-            }}
-            onClick={() => handleClick()}
-          >
-            <Box
-              sx={{
-                mx: 'auto',
-                mb: 0,
-                height: 6.5,
-                width: 'calc(100% - 17.5%)',
-                backgroundColor: 'rgba(220,222,229)',
-                borderRadius: '16px 16px 0 0',
-                opacity: 0.3
-              }}
-            />
-            <Box
-              sx={{
-                mx: 'auto',
-                mb: 0,
-                height: 6.5,
-                width: 'calc(100% - 10%)',
-                backgroundColor: 'rgba(170,172,287)',
-                borderRadius: '16px 16px 0 0',
-                opacity: 0.3
-              }}
-            />
-            <Box
-              sx={{
-                height: '100%',
-                width: '100%',
-                borderRadius: '16px',
-                border: '1px solid rgba(186, 186, 187, 0.5)'
-              }}
-            >
-              {!(isFullscreen || isFullContainer) && (
-                <BlockRenderer
-                  data-testid="embedded-preview-block-renderer"
-                  block={blocks?.[0]}
-                  wrappers={{
-                    ButtonWrapper: ButtonWrapper,
-                    ImageWrapper: NullWrapper,
-                    RadioOptionWrapper: RadioOptionWrapper,
-                    VideoWrapper: VideoWrapper
-                  }}
-                />
-              )}
-            </Box>
-          </Box>
-          <Box
-            ref={maximizableElement}
-            sx={{
-              backgroundColor: (theme) => theme.palette.background.default
-            }}
-          >
-            {(isFullscreen || isFullContainer) && (
-              <>
-                <IconButton
-                  sx={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    zIndex: 1000,
-                    color: (theme) => theme.palette.text.primary
-                  }}
-                  onClick={() => maximizeView(false)}
-                >
-                  <Close />
-                </IconButton>
-                <Box sx={{ paddingTop: '12px' }}>
-                  <Conductor blocks={blocks} />
-                </Box>
-              </>
-            )}
-          </Box>
-        </Stack>
+          {(isFullscreen || isFullContainer) && (
+            <>
+              <IconButton
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  zIndex: 1000,
+                  color: (theme) => theme.palette.text.primary
+                }}
+                onClick={() => {
+                  maximizeView(false)
+                }}
+              >
+                <Close />
+              </IconButton>
+              <Conductor blocks={blocks} />
+            </>
+          )}
+        </Box>
       </Div100vh>
     </>
   )
