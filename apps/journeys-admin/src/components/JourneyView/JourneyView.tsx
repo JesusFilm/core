@@ -117,7 +117,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
       )}
 
       <>
-        <CardView id={journey?.id} blocks={blocks} />
+        <CardView id={journey?.id} blocks={blocks} isPublisher={isPublisher} />
         <JourneyViewFab isPublisher={isPublisher} />
       </>
 

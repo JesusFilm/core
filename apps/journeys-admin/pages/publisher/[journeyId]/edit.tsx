@@ -42,8 +42,8 @@ function TemplateEditPage(): ReactElement {
             title={
               data?.publisherTemplate?.title != null
                 ? t('Edit {{title}}', {
-                    title: data.publisherTemplate.template
-                  })
+                  title: data.publisherTemplate.template
+                })
                 : t('Edit Template')
             }
             description={data?.publisherTemplate?.description ?? undefined}
@@ -55,7 +55,7 @@ function TemplateEditPage(): ReactElement {
             <PageWrapper
               title={data?.publisherTemplate?.title ?? t('Edit Template')}
               showDrawer
-              backHref={`/templates/${router.query.journeyId as string}`}
+              backHref={`/publisher/${router.query.journeyId as string}`}
               authUser={AuthUser}
               menu={<EditToolbar />}
             >
