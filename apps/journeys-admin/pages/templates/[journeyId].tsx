@@ -17,6 +17,7 @@ import { JourneyView } from '../../src/components/JourneyView'
 import { GetTemplate } from '../../__generated__/GetTemplate'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
+import { Menu } from '../../src/components/JourneyView/Menu'
 
 export const GET_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
@@ -48,6 +49,7 @@ function TemplateDetails(): ReactElement {
           authUser={AuthUser}
           showDrawer
           backHref="/"
+          menu={<Menu />}
         >
           <JourneyView journeyType="Template" />
         </PageWrapper>
