@@ -17,7 +17,10 @@ import { GetPublisherTemplate } from '../../../__generated__/GetPublisherTemplat
 import { Editor } from '../../../src/components/Editor'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
 import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
-import { GET_PUBLISHER_TEMPLATE } from '../[journeyId]'
+import { GetPublisher } from '../../../__generated__/GetPublisher'
+import { PublisherInvite } from '../../../src/components/PublisherInvite'
+import { Role } from '../../../__generated__/globalTypes'
+import { GET_PUBLISHER, GET_PUBLISHER_TEMPLATE } from '../[journeyId]'
 
 function TemplateEditPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -26,31 +29,47 @@ function TemplateEditPage(): ReactElement {
   const { data } = useQuery<GetPublisherTemplate>(GET_PUBLISHER_TEMPLATE, {
     variables: { id: router.query.journeyId }
   })
+  const { data: publisherData } = useQuery<GetPublisher>(GET_PUBLISHER)
+  const isPublisher = publisherData?.getUserRole?.roles?.includes(
+    Role.publisher
+  )
 
   return (
     <>
-      <NextSeo
-        title={
-          data?.publisherTemplate?.title != null
-            ? t('Edit {{title}}', { title: data.publisherTemplate.template })
-            : t('Edit Template')
-        }
-        description={data?.publisherTemplate?.description ?? undefined}
-      />
-      <Editor
-        journey={data?.publisherTemplate ?? undefined}
-        selectedStepId={router.query.stepId as string | undefined}
-      >
-        <PageWrapper
-          title={data?.publisherTemplate?.title ?? t('Edit Template')}
-          showDrawer
-          backHref={`/publisher/${router.query.journeyId as string}`}
-          authUser={AuthUser}
-          menu={<EditToolbar />}
-        >
-          <JourneyEdit />
-        </PageWrapper>
-      </Editor>
+      {isPublisher === true && (
+        <>
+          <NextSeo
+            title={
+              data?.publisherTemplate?.title != null
+                ? t('Edit {{title}}', {
+                    title: data.publisherTemplate.template
+                  })
+                : t('Edit Template')
+            }
+            description={data?.publisherTemplate?.description ?? undefined}
+          />
+          <Editor
+            journey={data?.publisherTemplate ?? undefined}
+            selectedStepId={router.query.stepId as string | undefined}
+          >
+            <PageWrapper
+              title={data?.publisherTemplate?.title ?? t('Edit Template')}
+              showDrawer
+              backHref={`/publisher/${router.query.journeyId as string}`}
+              authUser={AuthUser}
+              menu={<EditToolbar />}
+            >
+              <JourneyEdit />
+            </PageWrapper>
+          </Editor>
+        </>
+      )}
+      {isPublisher !== true && (
+        <>
+          <NextSeo title={t('Access Denied')} />
+          <PublisherInvite />
+        </>
+      )}
     </>
   )
 }
