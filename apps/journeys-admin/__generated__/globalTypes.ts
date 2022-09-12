@@ -335,6 +335,7 @@ export interface VideoBlockCreateInput {
   posterBlockId?: string | null;
   startAt?: number | null;
   videoId?: string | null;
+  videoUrl?: string | null;
   videoVariantLanguageId?: string | null;
 }
 
@@ -346,6 +347,7 @@ export interface VideoBlockUpdateInput {
   posterBlockId?: string | null;
   startAt?: number | null;
   videoId?: string | null;
+  videoUrl?: string | null;
   videoVariantLanguageId?: string | null;
 }
 

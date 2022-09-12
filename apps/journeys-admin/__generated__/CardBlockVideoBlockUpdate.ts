@@ -86,13 +86,19 @@ export interface CardBlockVideoBlockUpdate_videoBlockUpdate {
   posterBlockId: string | null;
   fullsize: boolean | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video
+   * videoId and videoVariantLanguageId both need to be set to select a video.
+   * Relates to videos from the Jesus Film Project video library.
    */
   videoId: string | null;
   /**
    * videoId and videoVariantLanguageId both need to be set to select a video
+   * Relates to videos from the Jesus Film Project video library.
    */
   videoVariantLanguageId: string | null;
+  /**
+   * video is only populated when videoID and videoVariant LanguageId are present.
+   * Relates to videos from the Jesus Film Project video library.
+   */
   video: CardBlockVideoBlockUpdate_videoBlockUpdate_video | null;
   /**
    * action that should be performed when the video ends
