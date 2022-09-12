@@ -94,12 +94,13 @@ export function ContainedCover({
         }}
       >
         {/* testing out videojs youtube */}
+        {/* TODO: find a way to reconcile videojs-youtube options with videojs options */}
         {videoBlock?.videoUrl != null && (
           <video
-            className="video-js vjs-default-skin"
-            controls
+            className="video-js"
             autoPlay
-            data-setup={`{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": ${videoBlock?.videoUrl}}] }`}
+            // controls
+            data-setup='{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=F7k5pqBVinA"}], "youtube": { "ytControls": 2 } }'
           />
         )}
         {videoBlock?.video?.variant?.hls != null && (

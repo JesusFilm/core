@@ -49,6 +49,7 @@ const video: TreeBlock<VideoBlock> = {
   action: null,
   videoId: '5_0-NUA0201-0-0',
   videoVariantLanguageId: '529',
+  videoUrl: null,
   video: {
     __typename: 'Video',
     id: '5_0-NUA0201-0-0',

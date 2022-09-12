@@ -34,6 +34,7 @@ describe('CardWrapper', () => {
           muted: true,
           videoId: '2_0-FallingPlates',
           videoVariantLanguageId: '529',
+          videoUrl: null,
           video: {
             __typename: 'Video',
             id: '2_0-FallingPlates',
@@ -109,6 +110,7 @@ describe('CardWrapper', () => {
             parentOrder: 0,
             posterBlockId: 'image5.id',
             startAt: null,
+            videoUrl: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -167,6 +169,7 @@ describe('CardWrapper', () => {
           muted: true,
           videoId: '2_0-FallingPlates',
           videoVariantLanguageId: '529',
+          videoUrl: null,
           video: null,
           startAt: null,
           endAt: null,
@@ -226,6 +229,7 @@ describe('CardWrapper', () => {
             parentOrder: 0,
             posterBlockId: 'image5.id',
             startAt: null,
+            videoUrl: null,
             video: null,
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529'
@@ -268,6 +272,7 @@ describe('CardWrapper', () => {
           muted: true,
           videoId: '2_0-FallingPlates',
           videoVariantLanguageId: '529',
+          videoUrl: null,
           video: {
             __typename: 'Video',
             id: '2_0-FallingPlates',
@@ -339,6 +344,7 @@ describe('CardWrapper', () => {
             parentOrder: 0,
             posterBlockId: 'image5.id',
             startAt: null,
+            videoUrl: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',

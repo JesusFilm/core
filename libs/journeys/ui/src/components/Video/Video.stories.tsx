@@ -29,6 +29,7 @@ const videoBlock: TreeBlock<VideoFields> = {
   muted: false,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
+  videoUrl: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
