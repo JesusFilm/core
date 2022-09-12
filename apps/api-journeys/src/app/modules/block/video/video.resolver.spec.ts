@@ -49,16 +49,6 @@ describe('VideoBlockResolver', () => {
     videoVariantLanguageId: 'videoVariantLanguageId'
   }
 
-  const createdBlock: VideoBlock = {
-    id: 'abc',
-    __typename: 'VideoBlock',
-    parentOrder: 0,
-    journeyId: 'journeyId',
-    parentBlockId: 'parentBlockId',
-    videoId: 'videoId',
-    videoVariantLanguageId: 'videoVariantLanguageId'
-  }
-
   const navigateAction = {
     parentBlockId: 'abc',
     gtmEventName: 'NavigateAction',
@@ -66,6 +56,23 @@ describe('VideoBlockResolver', () => {
     journeyId: null,
     url: null,
     target: null
+  }
+
+  const createdBlock: VideoBlock = {
+    id: 'abc',
+    __typename: 'VideoBlock',
+    parentOrder: 0,
+    journeyId: 'journeyId',
+    parentBlockId: 'parentBlockId',
+    videoId: 'videoId',
+    videoVariantLanguageId: 'videoVariantLanguageId',
+    posterBlockId: 'posterBlockId',
+    startAt: 5,
+    endAt: 10,
+    muted: true,
+    autoplay: true,
+    fullsize: true,
+    action: navigateAction
   }
 
   const parentBlock: CardBlock = {
@@ -112,8 +119,8 @@ describe('VideoBlockResolver', () => {
           id === createdBlock.id ? createdBlock : parentBlock
         ),
         removeBlockAndChildren: jest.fn((input) => input),
-        save: jest.fn((input) => createdBlock),
-        update: jest.fn((id, input) => updatedBlock),
+        save: jest.fn((input) => ({ ...createdBlock, ...input })),
+        update: jest.fn((id, input) => ({ ...updatedBlock, ...input })),
         getSiblings: jest.fn(() => [])
       })
     }
@@ -138,23 +145,25 @@ describe('VideoBlockResolver', () => {
 
   describe('videoBlockCreate', () => {
     it('creates a VideoBlock', async () => {
-      await resolver.videoBlockCreate(blockCreate)
+      expect(await resolver.videoBlockCreate(blockCreate)).toEqual(createdBlock)
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockCreate.journeyId,
         blockCreate.parentBlockId
       )
-      expect(service.save).toHaveBeenCalledWith(createdBlock)
-      expect(service.update).toHaveBeenCalledWith(createdBlock.id, {
-        ...createdBlock,
-        action: navigateAction
+      expect(service.save).toHaveBeenCalledWith({
+        ...blockCreate,
+        __typename: 'VideoBlock',
+        parentOrder: 0
       })
+      expect(service.update).toHaveBeenCalledWith(createdBlock.id, createdBlock)
     })
 
     it('creates a cover VideoBlock', async () => {
       await resolver.videoBlockCreate({ ...blockCreate, isCover: true })
 
       expect(service.save).toHaveBeenCalledWith({
-        ...createdBlock,
+        ...blockCreate,
+        __typename: 'VideoBlock',
         isCover: true,
         parentOrder: null
       })
@@ -166,6 +175,41 @@ describe('VideoBlockResolver', () => {
         coverBlockId: createdBlock.id
       })
     })
+
+    it('throws validation when invalid URL', async () => {
+      await expect(
+        async () =>
+          await resolver.videoBlockCreate({
+            journeyId: 'journeyId',
+            parentBlockId: 'parentBlockId',
+            videoUrl: 'test'
+          })
+      ).rejects.toThrow('videoUrl must be a valid YouTube URL')
+    })
+
+    it('throws validation when URL not from YouTube', async () => {
+      await expect(
+        async () =>
+          await resolver.videoBlockCreate({
+            journeyId: 'journeyId',
+            parentBlockId: 'parentBlockId',
+            videoUrl: 'https://google.com'
+          })
+      ).rejects.toThrow('videoUrl must be a valid YouTube URL')
+    })
+
+    it('creates a VideoBlock when URL from YouTube', async () => {
+      expect(
+        await resolver.videoBlockCreate({
+          journeyId: 'journeyId',
+          parentBlockId: 'parentBlockId',
+          videoUrl: 'https://www.youtube.com/watch?v=ak06MSETeo4'
+        })
+      ).toEqual({
+        ...createdBlock,
+        videoUrl: 'https://www.youtube.com/watch?v=ak06MSETeo4'
+      })
+    })
   })
 
   describe('videoBlockUpdate', () => {
@@ -173,6 +217,35 @@ describe('VideoBlockResolver', () => {
       expect(
         await resolver.videoBlockUpdate('blockId', 'journeyId', blockUpdate)
       ).toEqual(updatedBlock)
+    })
+
+    it('throws validation when invalid URL', async () => {
+      await expect(
+        async () =>
+          await resolver.videoBlockUpdate('blockId', 'journeyId', {
+            videoUrl: 'test'
+          })
+      ).rejects.toThrow('videoUrl must be a valid YouTube URL')
+    })
+
+    it('throws validation when URL not from YouTube', async () => {
+      await expect(
+        async () =>
+          await resolver.videoBlockUpdate('blockId', 'journeyId', {
+            videoUrl: 'https://google.com'
+          })
+      ).rejects.toThrow('videoUrl must be a valid YouTube URL')
+    })
+
+    it('updates a VideoBlock when URL from YouTube', async () => {
+      expect(
+        await resolver.videoBlockUpdate('blockId', 'journeyId', {
+          videoUrl: 'https://www.youtube.com/watch?v=ak06MSETeo4'
+        })
+      ).toEqual({
+        ...updatedBlock,
+        videoUrl: 'https://www.youtube.com/watch?v=ak06MSETeo4'
+      })
     })
   })
 
