@@ -15,6 +15,7 @@ export const VIDEO_FIELDS = gql`
     fullsize
     videoId
     videoVariantLanguageId
+    videoUrl
     video {
       id
       title(primary: true) {

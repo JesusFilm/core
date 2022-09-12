@@ -96,6 +96,11 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    */
   videoVariantLanguageId: string | null;
   /**
+   * videoUrl is used when embedding a video from a third-party provider.
+   * e.g YouTube, Vimeo etc.
+   */
+  videoUrl: string | null;
+  /**
    * video is only populated when videoID and videoVariant LanguageId are present.
    * Relates to videos from the Jesus Film Project video library.
    */
