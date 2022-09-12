@@ -6,30 +6,32 @@ interface IFrameTestProps {
 
 export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        paddingTop: '150%',
-        overflow: 'hidden',
-        backgroundColor: 'transparent'
-      }}
-      id="jfm-iframe-container"
-    >
-      <iframe
-        src={`/embed/${journeySlug}`}
+    <div style={{ width: '600px', height: '100%' }}>
+      <div
         style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
+          position: 'relative',
           width: '100%',
-          height: '100%',
-          border: 'none'
+          paddingTop: '150%',
+          overflow: 'hidden',
+          backgroundColor: 'transparent'
         }}
-        allowFullScreen
-      />
+      >
+        <iframe
+          id="jfm-iframe"
+          src={`/embed/${journeySlug}`}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            width: '100%',
+            height: '100%',
+            border: 'none'
+          }}
+          allowFullScreen
+        />
+      </div>
     </div>
   )
 }

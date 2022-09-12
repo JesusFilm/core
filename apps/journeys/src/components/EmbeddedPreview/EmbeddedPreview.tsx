@@ -26,19 +26,16 @@ export function EmbeddedPreview({
   const maximizableElement = useRef(null)
   const [allowFullscreen, setAllowFullscreen] = useState(true)
   let isFullscreen: boolean, setIsFullscreen
+  // Safari / iPhone fullscreen check
   const [isFullContainer, setIsFullContainer] = useState(false)
   let canFullscreen = true
   try {
+    // Chrome / Firefox fullscreen check
     ;[isFullscreen, setIsFullscreen] = useFullscreenStatus(maximizableElement)
   } catch {
     isFullscreen = false
     canFullscreen = false
   }
-  const [previousContainerDimensions, setPreviousContainerDimensions] =
-    useState({
-      width: 0,
-      height: 0
-    })
 
   const maximizeView = useCallback(
     (value: boolean) => {
@@ -46,32 +43,13 @@ export function EmbeddedPreview({
         setIsFullscreen(value)
       } else {
         setIsFullContainer(value)
-        const iframeContainer = window.parent.document.getElementById(
-          'jfm-iframe-container'
-        )
-        if (iframeContainer != null) {
-          if (value) {
-            setPreviousContainerDimensions({
-              width: iframeContainer.offsetWidth,
-              height: iframeContainer.offsetHeight
-            })
-            iframeContainer.style.height = '100vh'
-            iframeContainer.style.width = '100vw'
-          } else {
-            iframeContainer.style.height =
-              previousContainerDimensions.height.toString() + 'px'
-            iframeContainer.style.width =
-              previousContainerDimensions.width.toString() + 'px'
-          }
+        const iframe = window.parent.document.getElementById('jfm-iframe')
+        if (iframe != null) {
+          iframe.style.position = value ? 'fixed' : 'absolute'
         }
       }
     },
-    [
-      canFullscreen,
-      setIsFullscreen,
-      setIsFullContainer,
-      previousContainerDimensions
-    ]
+    [canFullscreen, setIsFullscreen, setIsFullContainer]
   )
 
   // use router internally on this component as it does not function properly when passed as prop
@@ -181,7 +159,7 @@ export function EmbeddedPreview({
                   top: 0,
                   right: 0,
                   zIndex: 1000,
-                  color: (theme) => theme.palette.text.primary
+                  color: 'text.primary'
                 }}
                 onClick={() => {
                   maximizeView(false)
