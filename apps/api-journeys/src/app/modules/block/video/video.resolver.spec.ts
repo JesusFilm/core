@@ -166,12 +166,70 @@ describe('VideoBlockResolver', () => {
         coverBlockId: createdBlock.id
       })
     })
+
+    it('throws validation when invalid URL', async () => {
+      await expect(
+        async () =>
+          await resolver.videoBlockCreate({
+            journeyId: 'journeyId',
+            parentBlockId: 'parentBlockId',
+            videoUrl: 'test'
+          })
+      ).rejects.toThrow('videoUrl must be a valid YouTube URL')
+    })
+
+    it('throws validation when URL not from YouTube', async () => {
+      await expect(
+        async () =>
+          await resolver.videoBlockCreate({
+            journeyId: 'journeyId',
+            parentBlockId: 'parentBlockId',
+            videoUrl: 'https://google.com'
+          })
+      ).rejects.toThrow('videoUrl must be a valid YouTube URL')
+    })
+
+    it('updates a VideoBlock when URL from YouTube', async () => {
+      expect(
+        await resolver.videoBlockCreate({
+          journeyId: 'journeyId',
+          parentBlockId: 'parentBlockId',
+          videoUrl: 'https://www.youtube.com/watch?v=ak06MSETeo4'
+        })
+      ).toEqual(updatedBlock)
+    })
   })
 
   describe('videoBlockUpdate', () => {
     it('updates a VideoBlock', async () => {
       expect(
         await resolver.videoBlockUpdate('blockId', 'journeyId', blockUpdate)
+      ).toEqual(updatedBlock)
+    })
+
+    it('throws validation when invalid URL', async () => {
+      await expect(
+        async () =>
+          await resolver.videoBlockUpdate('blockId', 'journeyId', {
+            videoUrl: 'test'
+          })
+      ).rejects.toThrow('videoUrl must be a valid YouTube URL')
+    })
+
+    it('throws validation when URL not from YouTube', async () => {
+      await expect(
+        async () =>
+          await resolver.videoBlockUpdate('blockId', 'journeyId', {
+            videoUrl: 'https://google.com'
+          })
+      ).rejects.toThrow('videoUrl must be a valid YouTube URL')
+    })
+
+    it('updates a VideoBlock when URL from YouTube', async () => {
+      expect(
+        await resolver.videoBlockUpdate('blockId', 'journeyId', {
+          videoUrl: 'https://www.youtube.com/watch?v=ak06MSETeo4'
+        })
       ).toEqual(updatedBlock)
     })
   })

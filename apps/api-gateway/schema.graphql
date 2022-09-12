@@ -788,14 +788,6 @@ input TemplatePreviewEventInput {
   journeyId: ID!
 }
 
-enum TemplateStatus {
-  """Not in the template library"""
-  private
-
-  """In the template library"""
-  public
-}
-
 type TemplateUseEvent implements Event {
   id: ID!
   journeyId: ID!
@@ -968,15 +960,28 @@ type VideoBlock implements Block {
 
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
+
+  """
+  video is only populated when videoID and videoVariant LanguageId are present.
+  Relates to videos from the Jesus Film Project video library.
+  """
   video: Video
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video
+  videoId and videoVariantLanguageId both need to be set to select a video.
+  Relates to videos from the Jesus Film Project video library.
   """
   videoId: ID
 
   """
+  videoUrl is used when embedding a video from a third-party provider.
+  e.g YouTube, Vimeo etc.
+  """
+  videoUrl: String
+
+  """
   videoId and videoVariantLanguageId both need to be set to select a video
+  Relates to videos from the Jesus Film Project video library.
   """
   videoVariantLanguageId: ID
 }
@@ -1009,12 +1014,20 @@ input VideoBlockCreateInput {
   startAt: Int
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video
+  videoId and videoVariantLanguageId both need to be set to select a video.
+  Relates to videos from the Jesus Film Project video library.
   """
   videoId: ID
 
   """
+  videoUrl is used when embedding a video from a third-party provider.
+  e.g YouTube, Vimeo etc.
+  """
+  videoUrl: String
+
+  """
   videoId and videoVariantLanguageId both need to be set to select a video
+  Relates to videos from the Jesus Film Project video library.
   """
   videoVariantLanguageId: ID
 }
@@ -1036,7 +1049,23 @@ input VideoBlockUpdateInput {
 
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video.
+  Relates to videos from the Jesus Film Project video library.
+  """
   videoId: ID
+
+  """
+  videoUrl is used when embedding a video from a third-party provider.
+  e.g YouTube, Vimeo etc.
+  """
+  videoUrl: String
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  Relates to videos from the Jesus Film Project video library.
+  """
   videoVariantLanguageId: ID
 }
 
