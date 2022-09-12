@@ -10,6 +10,7 @@ import { useEditor } from '../../libs/EditorProvider'
 import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoTrigger } from '../VideoTrigger'
+import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
 import { VideoEvents } from '../VideoEvents'
 import { VideoFields } from './__generated__/VideoFields'
@@ -20,6 +21,7 @@ const VIDEO_FOREGROUND_COLOR = '#FFF'
 export function Video({
   id: blockId,
   video,
+  videoUrl,
   autoplay,
   startAt,
   endAt,
@@ -175,6 +177,13 @@ export function Video({
           videoId={video.id}
           startAt={startAt}
           endAt={endAt}
+        />
+      )}
+      {videoUrl != null && (
+        <video
+          className="video-js"
+          autoPlay
+          data-setup={`{ "techOrder": ["youtube"], "muted": "true", "sources": [{ "type": "video/youtube", "src": "${videoUrl}"}], "youtube": { "ytControls": 2 } }`}
         />
       )}
       {video?.variant?.hls != null ? (
