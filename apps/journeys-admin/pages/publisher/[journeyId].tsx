@@ -15,14 +15,27 @@ import { useRouter } from 'next/router'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
+import { GetPublisher } from '../../__generated__/GetPublisher'
 import i18nConfig from '../../next-i18next.config'
 import { JourneyView } from '../../src/components/JourneyView'
+import { Role } from '../../__generated__/globalTypes'
+import { PublisherInvite } from '../../src/components/PublisherInvite'
+import { Menu } from '../../src/components/JourneyView/Menu'
 
 export const GET_PUBLISHER_TEMPLATE = gql`
   ${JOURNEY_FIELDS}
   query GetPublisherTemplate($id: ID!) {
     publisherTemplate: adminJourney(id: $id, idType: databaseId) {
       ...JourneyFields
+    }
+  }
+`
+
+export const GET_PUBLISHER = gql`
+  query GetPublisher {
+    getUserRole {
+      id
+      roles
     }
   }
 `
@@ -34,24 +47,43 @@ function TemplateDetailsAdmin(): ReactElement {
   const { data } = useQuery<GetPublisherTemplate>(GET_PUBLISHER_TEMPLATE, {
     variables: { id: router.query.journeyId }
   })
+  const { data: publisherData } = useQuery<GetPublisher>(GET_PUBLISHER)
+  const isPublisher = publisherData?.getUserRole?.roles?.includes(
+    Role.publisher
+  )
+
   return (
     <>
-      <NextSeo
-        title={data?.publisherTemplate?.title ?? t('Template Details')}
-        description={data?.publisherTemplate?.description ?? undefined}
-      />
-      <JourneyProvider
-        value={{ journey: data?.publisherTemplate ?? undefined, admin: true }}
-      >
-        <PageWrapper
-          title={t('Template Details')}
-          authUser={AuthUser}
-          showDrawer
-          backHref="/"
-        >
-          <JourneyView journeyType="Template" />
-        </PageWrapper>
-      </JourneyProvider>
+      {isPublisher === true && (
+        <>
+          <NextSeo
+            title={data?.publisherTemplate?.title ?? t('Template Details')}
+            description={data?.publisherTemplate?.description ?? undefined}
+          />
+          <JourneyProvider
+            value={{
+              journey: data?.publisherTemplate ?? undefined,
+              admin: true
+            }}
+          >
+            <PageWrapper
+              title={t('Template Details')}
+              authUser={AuthUser}
+              showDrawer
+              backHref="/"
+              menu={<Menu />}
+            >
+              <JourneyView journeyType="Template" />
+            </PageWrapper>
+          </JourneyProvider>
+        </>
+      )}
+      {isPublisher !== true && (
+        <>
+          <NextSeo title={t('Access Denied')} />
+          <PublisherInvite />
+        </>
+      )}
     </>
   )
 }
