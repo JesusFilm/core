@@ -99,8 +99,7 @@ export function ContainedCover({
           <video
             className="video-js"
             autoPlay
-            // controls
-            data-setup='{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=F7k5pqBVinA"}], "youtube": { "ytControls": 2 } }'
+            data-setup={`{ "techOrder": ["youtube"], "muted": "true", "sources": [{ "type": "video/youtube", "src": "${videoBlock?.videoUrl}"}] }`}
           />
         )}
         {videoBlock?.video?.variant?.hls != null && (
