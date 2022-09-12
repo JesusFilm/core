@@ -76,15 +76,22 @@ export function JourneyInvite({
           </>
         )}
         {requestReceived && (
-          <CardContent>
-            <Typography variant="h3" component="h1" gutterBottom>
-              Request sent
-            </Typography>
-            <Typography>
-              The owner will let you know when the journey has been shared with
-              you.
-            </Typography>
-          </CardContent>
+          <>
+            <CardContent>
+              <Typography variant="h3" component="h1" gutterBottom>
+                Request sent
+              </Typography>
+              <Typography>
+                The owner will let you know when the journey has been shared
+                with you.
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Link href="/" passHref>
+                <Button>Back to the Admin Panel</Button>
+              </Link>
+            </CardActions>
+          </>
         )}
       </Card>
     </Container>

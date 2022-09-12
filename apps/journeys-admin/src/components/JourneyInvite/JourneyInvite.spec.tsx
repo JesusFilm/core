@@ -35,7 +35,7 @@ describe('JourneyInvite', () => {
   })
 
   it('should render invite request received', () => {
-    const { getByText, queryByRole } = render(
+    const { getByText, queryByRole, getByRole } = render(
       <MockedProvider mocks={[]}>
         <JourneyInvite journeyId="journeyId" requestReceived />
       </MockedProvider>
@@ -44,5 +44,8 @@ describe('JourneyInvite', () => {
       queryByRole('button', { name: 'Request Access' })
     ).not.toBeInTheDocument()
     expect(getByText('Request sent')).toBeInTheDocument()
+    expect(
+      getByRole('link', { name: 'Back to the Admin Panel' })
+    ).toHaveAttribute('href', '/')
   })
 })
