@@ -128,7 +128,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           sx={{
             display: 'flex',
             flexGrow: 1,
-            py: { sm: 0, xs: 6 },
+            pt: { sm: 0, xs: 6 },
             my: 'auto',
             [theme.breakpoints.only('sm')]: {
               maxHeight: '460px'

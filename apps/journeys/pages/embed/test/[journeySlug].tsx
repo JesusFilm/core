@@ -16,15 +16,10 @@ export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
       }}
       id="jfm-iframe-container"
     >
-      {/* <style jsx global>{`
-        body {
-          background: #26262d;
-        }
-      `}</style> */}
       <iframe
         src={`/embed/${journeySlug}`}
         style={{
-          position: 'fixed',
+          position: 'absolute',
           top: 0,
           left: 0,
           bottom: 0,
