@@ -8,6 +8,7 @@ import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { ContentOverlay } from './ContentOverlay'
 
+import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
 
 interface ContainedCoverProps {
@@ -92,6 +93,15 @@ export function ContainedCover({
           }
         }}
       >
+        {/* testing out videojs youtube */}
+        {videoBlock?.videoUrl != null && (
+          <video
+            className="video-js vjs-default-skin"
+            controls
+            autoPlay
+            data-setup={`{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": ${videoBlock?.videoUrl}}] }`}
+          />
+        )}
         {videoBlock?.video?.variant?.hls != null && (
           <video ref={videoRef} className="video-js" playsInline>
             <source

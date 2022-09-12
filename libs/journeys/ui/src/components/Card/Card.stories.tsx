@@ -122,6 +122,7 @@ const video: TreeBlock<VideoFields> = {
   posterBlockId: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
+  videoUrl: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -199,6 +200,23 @@ VideoCoverPoster.args = {
       ...video,
       posterBlockId: image.id,
       children: [image]
+    }
+  ]
+}
+
+// Contained - youtube
+export const VideoYoutubeDefault: Story<TreeBlock<CardFields>> = Template.bind(
+  {}
+)
+VideoYoutubeDefault.args = {
+  coverBlockId: video.id,
+  children: [
+    ...content,
+    {
+      ...video,
+      videoId: null,
+      videoVariantLanguageId: null,
+      videoUrl: 'https://www.youtube.com/watch?v=F7k5pqBVinA'
     }
   ]
 }
