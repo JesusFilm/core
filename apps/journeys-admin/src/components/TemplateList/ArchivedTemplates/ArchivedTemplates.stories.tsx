@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import noop from 'lodash/noop'
+import { SnackbarProvider } from 'notistack'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   defaultTemplate,
@@ -9,17 +10,28 @@ import {
   publishedTemplate
 } from '../../TemplateLibrary/TemplateListData'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { ThemeProvider } from '../../ThemeProvider'
 import { GET_ARCHIVED_PUBLISHER_TEMPLATES } from './ArchivedTemplates'
 import { ArchivedTemplates } from '.'
 
 const ArchivedTemplatesStory = {
-  ...journeysAdminConfig,
   component: ArchivedTemplates,
   title: 'Journeys-Admin/TemplatesList/ArchivedTemplates',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
-  }
+  },
+  decorators: [
+    (Story: Story) => (
+      <SnackbarProvider>
+        <ThemeProvider>
+          <div style={{ height: '900px' }}>
+            <Story />
+          </div>
+        </ThemeProvider>
+      </SnackbarProvider>
+    )
+  ]
 }
 
 const defaultArchivedTemplate = {

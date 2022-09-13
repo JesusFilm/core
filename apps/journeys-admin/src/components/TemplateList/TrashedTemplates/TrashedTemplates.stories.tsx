@@ -2,6 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { formatISO } from 'date-fns'
 import noop from 'lodash/noop'
+import { SnackbarProvider } from 'notistack'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
@@ -10,17 +11,28 @@ import {
   descriptiveTemplate,
   publishedTemplate
 } from '../../TemplateLibrary/TemplateListData'
+import { ThemeProvider } from '../../ThemeProvider'
 import { GET_TRASHED_PUBLISHER_TEMPLATES } from './TrashedTemplates'
 import { TrashedTemplates } from '.'
 
 const TrashedTemplatesStory = {
-  ...journeysAdminConfig,
   component: TrashedTemplates,
   title: 'Journeys-Admin/TemplatesList/TrashedTemplates',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
-  }
+  },
+  decorators: [
+    (Story: Story) => (
+      <SnackbarProvider>
+        <ThemeProvider>
+          <div style={{ height: '900px' }}>
+            <Story />
+          </div>
+        </ThemeProvider>
+      </SnackbarProvider>
+    )
+  ]
 }
 
 const defaultDeletedTemplate = {

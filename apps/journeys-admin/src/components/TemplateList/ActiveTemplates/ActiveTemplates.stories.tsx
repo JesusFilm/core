@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import noop from 'lodash/noop'
+import { SnackbarProvider } from 'notistack'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   defaultTemplate,
@@ -8,17 +9,28 @@ import {
   descriptiveTemplate,
   publishedTemplate
 } from '../../TemplateLibrary/TemplateListData'
+import { ThemeProvider } from '../../ThemeProvider'
 import { GET_ACTIVE_PUBLISHER_TEMPLATES } from './ActiveTemplates'
 import { ActiveTemplates } from '.'
 
 const ActiveTemplatesStory = {
-  ...journeysAdminConfig,
   component: ActiveTemplates,
   title: 'Journeys-Admin/TemplatesList/ActiveTemplates',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
-  }
+  },
+  decorators: [
+    (Story: Story) => (
+      <SnackbarProvider>
+        <ThemeProvider>
+          <div style={{ height: '900px' }}>
+            <Story />
+          </div>
+        </ThemeProvider>
+      </SnackbarProvider>
+    )
+  ]
 }
 
 const Template: Story = ({ ...args }) => (
