@@ -10,7 +10,6 @@ import CardMedia from '@mui/material/CardMedia'
 import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import EditIcon from '@mui/icons-material/Edit'
-import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import IconButton from '@mui/material/IconButton'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
@@ -140,38 +139,39 @@ export function TemplateCard({
         passHref
       >
         <CardActionArea sx={{ flexGrow: 1, width: '42%' }}>
-          <CardContent sx={{ pr: 0 }}>
+          <CardContent sx={{ pr: isPublisher === true ? 0 : 3 }}>
             {journey != null ? (
               <>
                 <Typography variant="subtitle1" noWrap>
                   {journey.title}
                 </Typography>
-                <Typography variant="body2" noWrap sx={{ pb: 4, fontSize: 12 }}>
+                <Typography variant="body2" noWrap sx={{ mb: 7, fontSize: 12 }}>
                   {date}
                   {journey?.description != null
                     ? ` - ${journey.description}`
                     : ''}
                 </Typography>
 
-                <Stack direction="row">
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  spacing={4}
+                  flexGrow={1}
+                >
                   {isPublisher === true && (
-                    <>
-                      <StatusChip status={journey.status} />
-                      <Box sx={{ pr: 4 }} />
-                    </>
+                    <StatusChip status={journey.status} />
                   )}
-
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}
-                    noWrap
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={1.5}
+                    sx={{ width: isPublisher === true ? '48%' : '100%' }}
                   >
-                    <TranslateRoundedIcon sx={{ fontSize: '14px', mr: 1 }} />
-                    {displayLanguage}
-                  </Typography>
+                    <TranslateRoundedIcon sx={{ fontSize: 13 }} />
+                    <Typography variant="body2" noWrap>
+                      {displayLanguage}
+                    </Typography>
+                  </Stack>
                 </Stack>
               </>
             ) : (
@@ -183,7 +183,7 @@ export function TemplateCard({
                     display: 'flex',
                     justifySelf: 'flex-end',
                     mr: '20%',
-                    mb: 4
+                    mb: 6
                   }}
                 />
                 <Stack
