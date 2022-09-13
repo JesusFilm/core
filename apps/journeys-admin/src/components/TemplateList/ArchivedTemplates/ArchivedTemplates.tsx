@@ -187,7 +187,7 @@ export function ArchivedTemplates({
               <Box width="100%" sx={{ textAlign: 'center' }}>
                 <Typography variant="caption">
                   {t(
-                    'Archived journeys are hidden from your active templates list for better organization.'
+                    'Archived templates are delisted from the Template Library.'
                   )}
                 </Typography>
               </Box>
@@ -214,7 +214,7 @@ export function ArchivedTemplates({
               <Box width="100%" sx={{ textAlign: 'center' }}>
                 <Typography variant="caption">
                   {t(
-                    'You can archive a template to hide it from your active Template list for better organization.'
+                    'You can archive a template to to delist it from the Template Library.'
                   )}
                 </Typography>
               </Box>
