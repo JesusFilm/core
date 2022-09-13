@@ -121,7 +121,8 @@ export function TemplateCard({
             maxWidth: '129px',
             minWidth: '129px',
             borderRight: '1px solid',
-            borderColor: 'divider'
+            borderColor: 'divider',
+            backgroundColor: 'background.default'
           }}
         >
           <InsertPhotoRoundedIcon />
@@ -139,7 +140,7 @@ export function TemplateCard({
         passHref
       >
         <CardActionArea sx={{ flexGrow: 1, width: '42%' }}>
-          <CardContent>
+          <CardContent sx={{ pr: 0 }}>
             {journey != null ? (
               <>
                 <Typography variant="subtitle1" noWrap>
@@ -156,7 +157,7 @@ export function TemplateCard({
                   {isPublisher === true && (
                     <>
                       <StatusChip status={journey.status} />
-                      <Box sx={{ pr: 6 }} />
+                      <Box sx={{ pr: 4 }} />
                     </>
                   )}
 
