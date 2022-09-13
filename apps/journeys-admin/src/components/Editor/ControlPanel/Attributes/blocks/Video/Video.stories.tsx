@@ -26,6 +26,7 @@ export const Default: Story = () => {
     action: null,
     videoId: null,
     videoVariantLanguageId: null,
+    videoUrl: null,
     video: null,
     posterBlockId: null,
     children: []
@@ -59,6 +60,7 @@ export const Filled: Story = () => {
     action: null,
     videoId: '2_0-FallingPlates',
     videoVariantLanguageId: '529',
+    videoUrl: null,
     video: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
