@@ -1,10 +1,10 @@
 import { ReactElement } from 'react'
-import Grid from '@mui/material/Grid'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded'
 import EditIcon from '@mui/icons-material/Edit'
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
 import Typography from '@mui/material/Typography'
+import Stack from '@mui/material/Stack'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 export interface StatusChipProps {
@@ -39,29 +39,21 @@ export function StatusChip({ status }: StatusChipProps): ReactElement {
     (option) => option.journeyStatus === status
   )
 
-  return (
-    <>
-      {currentStatus != null ? (
-        <>
-          <Grid item sx={{ py: 2 }}>
-            {currentStatus.icon}
-          </Grid>
-          <Grid item sx={{ py: 2 }}>
-            <Typography
-              color={
-                currentStatus.journeyStatus === JourneyStatus.trashed
-                  ? 'error'
-                  : undefined
-              }
-              variant="caption"
-            >
-              {currentStatus.text}
-            </Typography>
-          </Grid>
-        </>
-      ) : (
-        <></>
-      )}
-    </>
+  return currentStatus != null ? (
+    <Stack direction="row" alignItems="center" spacing={1.5}>
+      {currentStatus.icon}
+      <Typography
+        color={
+          currentStatus.journeyStatus === JourneyStatus.trashed
+            ? 'error'
+            : undefined
+        }
+        variant="caption"
+      >
+        {currentStatus.text}
+      </Typography>
+    </Stack>
+  ) : (
+    <></>
   )
 }
