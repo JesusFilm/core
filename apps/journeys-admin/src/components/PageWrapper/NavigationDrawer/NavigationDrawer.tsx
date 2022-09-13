@@ -184,7 +184,7 @@ export function NavigationDrawer({
 
         {authUser != null && data?.me != null && (
           <>
-            <Divider sx={{ mx: 6, borderColor: 'secondary.main' }} />
+            <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
 
             {userRoleData?.getUserRole?.roles?.includes(Role.publisher) ===
               true &&
