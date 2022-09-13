@@ -2,9 +2,6 @@ locals {
   identifier  = "api-gateway"
   env         = "main"
   environment = "production"
-  port        = "4000"
-  public_url  = "graphql.jesusfilm.org"
-  private_url = "api-gateway-main"
 
   tags = {
     Name         = "${local.identifier}-${local.env}"
