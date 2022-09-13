@@ -139,6 +139,14 @@ Poster.parameters = {
   chromatic: { disableSnapshot: false }
 }
 
+export const Youtube = Template.bind({})
+Youtube.args = {
+  ...videoBlock,
+  video: null,
+  autoplay: true,
+  videoUrl: 'https://www.youtube.com/watch?v=F7k5pqBVinA'
+}
+
 export const NoVideoSource = Template.bind({})
 NoVideoSource.args = {
   __typename: 'VideoBlock',

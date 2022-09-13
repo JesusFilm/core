@@ -31,10 +31,13 @@ export function ContainedCover({
   const theme = useTheme()
   const [loading, setLoading] = useState(true)
 
+  const videoLink =
+    videoBlock?.video?.variant?.hls != null || videoBlock?.videoUrl != null
+
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
-        autoplay: 'muted',
+        autoplay: true,
         controls: false,
         preload: 'metadata',
         userActions: {
@@ -47,6 +50,8 @@ export function ContainedCover({
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
+        // plays URL based videos at the start time
+        if (videoBlock?.videoUrl != null) playerRef.current?.play()
       })
       // Video jumps to new time and finishes loading
       playerRef.current.on('seeked', () => {
@@ -93,21 +98,17 @@ export function ContainedCover({
           }
         }}
       >
-        {/* testing out videojs youtube */}
-        {/* TODO: find a way to reconcile videojs-youtube options with videojs options */}
-        {videoBlock?.videoUrl != null && (
-          <video
-            className="video-js"
-            autoPlay
-            data-setup={`{ "techOrder": ["youtube"], "muted": "true", "sources": [{ "type": "video/youtube", "src": "${videoBlock?.videoUrl}"}] }`}
-          />
-        )}
-        {videoBlock?.video?.variant?.hls != null && (
+        {videoLink && (
           <video ref={videoRef} className="video-js" playsInline>
-            <source
-              src={videoBlock?.video.variant.hls}
-              type="application/x-mpegURL"
-            />
+            {videoBlock?.video?.variant?.hls != null && (
+              <source
+                src={videoBlock?.video.variant.hls}
+                type="application/x-mpegURL"
+              />
+            )}
+            {videoBlock?.videoUrl != null && (
+              <source src={videoBlock?.videoUrl} type="video/youtube" />
+            )}
           </video>
         )}
         {loading && imageBlock != null && backgroundBlur != null && (

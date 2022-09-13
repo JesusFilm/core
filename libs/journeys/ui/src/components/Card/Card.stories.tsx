@@ -214,8 +214,7 @@ VideoYoutubeDefault.args = {
     ...content,
     {
       ...video,
-      videoId: null,
-      videoVariantLanguageId: null,
+      video: null,
       videoUrl: 'https://www.youtube.com/watch?v=F7k5pqBVinA'
     }
   ]

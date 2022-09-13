@@ -48,11 +48,13 @@ export function Video({
       : undefined
   }, [posterBlock, theme])
 
+  const videoLink = video?.variant?.hls != null || videoUrl != null
+
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay === true,
-        controls: true,
+        controls: videoUrl == null,
         nativeControlsForTouch: true,
         userActions: {
           hotkeys: true,
@@ -78,6 +80,8 @@ export function Video({
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
+        // plays URL based videos at the start time
+        if (videoUrl != null && autoplay === true) playerRef.current?.play()
       })
 
       if (selectedBlock === undefined) {
@@ -114,7 +118,9 @@ export function Video({
     blockId,
     posterBlock,
     selectedBlock,
-    blurBackground
+    blurBackground,
+    videoLink,
+    videoUrl
   ])
 
   useEffect(() => {
@@ -179,21 +185,18 @@ export function Video({
           endAt={endAt}
         />
       )}
-      {videoUrl != null && (
-        <video
-          className="video-js"
-          autoPlay
-          data-setup={`{ "techOrder": ["youtube"], "muted": "true", "sources": [{ "type": "video/youtube", "src": "${videoUrl}"}], "youtube": { "ytControls": 2 } }`}
-        />
-      )}
-      {video?.variant?.hls != null ? (
+      {videoLink ? (
         <>
           <video
             ref={videoRef}
             className="video-js vjs-big-play-centered"
             playsInline
+            data-setup='{ "youtube": { "ytControls": 2 } }'
           >
-            <source src={video.variant.hls} type="application/x-mpegURL" />
+            {video?.variant?.hls != null && (
+              <source src={video.variant.hls} type="application/x-mpegURL" />
+            )}
+            {videoUrl != null && <source src={videoUrl} type="video/youtube" />}
           </video>
           {children?.map(
             (option) =>
