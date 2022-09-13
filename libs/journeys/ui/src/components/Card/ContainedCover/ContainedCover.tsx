@@ -31,6 +31,8 @@ export function ContainedCover({
   const theme = useTheme()
   const [loading, setLoading] = useState(true)
 
+  // new upcoming field: source
+  // update logic with new field
   const videoLink =
     videoBlock?.video?.variant?.hls != null || videoBlock?.videoUrl != null
 
@@ -98,8 +100,15 @@ export function ContainedCover({
           }
         }}
       >
+        {/* New upcoming field: source: Internal | Youtube */}
+        {/* Update logic check to use source */}
         {videoLink && (
-          <video ref={videoRef} className="video-js" playsInline>
+          <video
+            ref={videoRef}
+            className="video-js"
+            playsInline
+            style={{ pointerEvents: 'none' }}
+          >
             {videoBlock?.video?.variant?.hls != null && (
               <source
                 src={videoBlock?.video.variant.hls}
