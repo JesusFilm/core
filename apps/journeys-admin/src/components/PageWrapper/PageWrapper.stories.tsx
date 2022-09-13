@@ -5,6 +5,8 @@ import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
+import { Role } from '../../../__generated__/globalTypes'
+import { GET_USER_ROLE } from '../JourneyView/JourneyView'
 import { PageWrapperProps } from './PageWrapper'
 import { GET_ME } from './NavigationDrawer/NavigationDrawer'
 import { PageWrapper } from '.'
@@ -34,6 +36,19 @@ const Template: Story = ({ ...args }) => (
               lastName: 'User',
               imageUrl: 'https://bit.ly/3Gth4Yf',
               email: 'amin@email.com'
+            }
+          }
+        }
+      },
+      {
+        request: {
+          query: GET_USER_ROLE
+        },
+        result: {
+          data: {
+            getUserRole: {
+              id: 'userId',
+              roles: [Role.publisher]
             }
           }
         }
