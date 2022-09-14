@@ -3,7 +3,7 @@ type TextFieldBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  label: String
+  label: String!
   content: String
   hint: String
   action: Action

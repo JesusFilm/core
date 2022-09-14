@@ -625,7 +625,7 @@ export class TextFieldBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    label?: Nullable<string>;
+    label: string;
     content?: Nullable<string>;
     hint?: Nullable<string>;
     action?: Nullable<Action>;
