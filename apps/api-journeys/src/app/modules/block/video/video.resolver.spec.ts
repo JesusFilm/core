@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
+import fetch, { Response } from 'node-fetch'
 import {
   CardBlock,
   VideoBlock,
@@ -14,6 +15,16 @@ import { UserRoleService } from '../../userRole/userRole.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
 import { VideoBlockResolver } from './video.resolver'
+
+jest.mock('node-fetch', () => {
+  const originalModule = jest.requireActual('node-fetch')
+  return {
+    __esModule: true,
+    ...originalModule,
+    default: jest.fn()
+  }
+})
+const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 describe('VideoBlockResolver', () => {
   let resolver: VideoBlockResolver, service: BlockService
@@ -59,9 +70,9 @@ describe('VideoBlockResolver', () => {
     target: null
   }
 
-  const createdBlock: VideoBlock = {
+  const createdBlock = {
     id: 'abc',
-    __typename: 'VideoBlock',
+    __typename: 'VideoBlock' as const,
     parentOrder: 0,
     journeyId: 'journeyId',
     parentBlockId: 'parentBlockId',
@@ -73,8 +84,7 @@ describe('VideoBlockResolver', () => {
     muted: true,
     autoplay: true,
     fullsize: true,
-    action: navigateAction,
-    source: VideoBlockSource.internal
+    action: navigateAction
   }
 
   const parentBlock: CardBlock = {
@@ -98,9 +108,9 @@ describe('VideoBlockResolver', () => {
     fullsize: true
   }
 
-  const updatedBlock: VideoBlock = {
+  const updatedBlock = {
     id: 'abc',
-    __typename: 'VideoBlock',
+    __typename: 'VideoBlock' as const,
     parentOrder: 0,
     journeyId: 'journeyId',
     videoId: 'videoId',
@@ -110,11 +120,11 @@ describe('VideoBlockResolver', () => {
     muted: true,
     autoplay: true,
     posterBlockId: 'posterBlockId',
-    fullsize: true,
-    source: VideoBlockSource.internal
+    fullsize: true
   }
 
   beforeEach(async () => {
+    mockFetch.mockClear()
     const blockService = {
       provide: BlockService,
       useFactory: () => ({
@@ -235,7 +245,50 @@ describe('VideoBlockResolver', () => {
         ).rejects.toThrow('videoId must be a valid YouTube videoId')
       })
 
+      it('throws error when videoId is not on YouTube', async () => {
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () =>
+            await Promise.resolve({
+              items: []
+            })
+        } as unknown as Response)
+        await expect(
+          async () =>
+            await resolver.videoBlockCreate({
+              journeyId: 'journeyId',
+              parentBlockId: 'parentBlockId',
+              videoId: 'ak06MSETeo4',
+              source: VideoBlockSource.youTube
+            })
+        ).rejects.toThrow('videoId cannot be found on YouTube')
+      })
+
       it('creates a VideoBlock', async () => {
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () =>
+            await Promise.resolve({
+              items: [
+                {
+                  id: 'ak06MSETeo4',
+                  snippet: {
+                    title: 'What is the Bible?',
+                    description:
+                      'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+                    thumbnails: {
+                      default: {
+                        url: 'https://i.ytimg.com/vi/7RoqnGcEjcs/hqdefault.jpg'
+                      }
+                    }
+                  },
+                  contentDetails: {
+                    duration: 'PT19M27S'
+                  }
+                }
+              ]
+            })
+        } as unknown as Response)
         expect(
           await resolver.videoBlockCreate({
             journeyId: 'journeyId',
@@ -246,17 +299,22 @@ describe('VideoBlockResolver', () => {
         ).toEqual({
           ...createdBlock,
           videoId: 'ak06MSETeo4',
-          source: VideoBlockSource.youTube
+          source: VideoBlockSource.youTube,
+          description:
+            'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+          duration: 1167,
+          image: 'https://i.ytimg.com/vi/7RoqnGcEjcs/hqdefault.jpg',
+          title: 'What is the Bible?'
         })
       })
     })
   })
 
   describe('videoBlockUpdate', () => {
-    it('updates a VideoBlock', async () => {
+    it('updates a VideoBlock with no source', async () => {
       expect(
         await resolver.videoBlockUpdate('blockId', 'journeyId', blockUpdate)
-      ).toEqual(updatedBlock)
+      ).toEqual({ ...updatedBlock, source: undefined })
     })
 
     describe('Internal Source', () => {
@@ -307,7 +365,48 @@ describe('VideoBlockResolver', () => {
         ).rejects.toThrow('videoId must be a valid YouTube videoId')
       })
 
+      it('throws error when videoId is not on YouTube', async () => {
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () =>
+            await Promise.resolve({
+              items: []
+            })
+        } as unknown as Response)
+        await expect(
+          async () =>
+            await resolver.videoBlockUpdate('blockId', 'journeyId', {
+              videoId: 'ak06MSETeo4',
+              source: VideoBlockSource.youTube
+            })
+        ).rejects.toThrow('videoId cannot be found on YouTube')
+      })
+
       it('updates a VideoBlock', async () => {
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () =>
+            await Promise.resolve({
+              items: [
+                {
+                  id: 'ak06MSETeo4',
+                  snippet: {
+                    title: 'What is the Bible?',
+                    description:
+                      'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+                    thumbnails: {
+                      default: {
+                        url: 'https://i.ytimg.com/vi/7RoqnGcEjcs/hqdefault.jpg'
+                      }
+                    }
+                  },
+                  contentDetails: {
+                    duration: 'PT19M27S'
+                  }
+                }
+              ]
+            })
+        } as unknown as Response)
         expect(
           await resolver.videoBlockUpdate('blockId', 'journeyId', {
             videoId: 'ak06MSETeo4',
@@ -316,7 +415,12 @@ describe('VideoBlockResolver', () => {
         ).toEqual({
           ...updatedBlock,
           videoId: 'ak06MSETeo4',
-          source: VideoBlockSource.youTube
+          source: VideoBlockSource.youTube,
+          description:
+            'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+          duration: 1167,
+          image: 'https://i.ytimg.com/vi/7RoqnGcEjcs/hqdefault.jpg',
+          title: 'What is the Bible?'
         })
       })
     })
@@ -332,7 +436,12 @@ describe('VideoBlockResolver', () => {
 
   describe('video', () => {
     it('returns video for external resolution', async () => {
-      expect(await resolver.video(createdBlock)).toEqual({
+      expect(
+        await resolver.video({
+          ...createdBlock,
+          source: VideoBlockSource.internal
+        })
+      ).toEqual({
         __typename: 'Video',
         id: 'videoId',
         primaryLanguageId: 'videoVariantLanguageId'
@@ -341,7 +450,11 @@ describe('VideoBlockResolver', () => {
 
     it('returns null if videoId is not set', async () => {
       expect(
-        await resolver.video({ ...createdBlock, videoId: undefined })
+        await resolver.video({
+          ...createdBlock,
+          videoId: undefined,
+          source: VideoBlockSource.internal
+        })
       ).toEqual(null)
     })
 
@@ -349,7 +462,17 @@ describe('VideoBlockResolver', () => {
       expect(
         await resolver.video({
           ...createdBlock,
-          videoVariantLanguageId: undefined
+          videoVariantLanguageId: undefined,
+          source: VideoBlockSource.internal
+        })
+      ).toEqual(null)
+    })
+
+    it('returns null if source is not internal', async () => {
+      expect(
+        await resolver.video({
+          ...createdBlock,
+          source: VideoBlockSource.youTube
         })
       ).toEqual(null)
     })

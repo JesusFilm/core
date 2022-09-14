@@ -654,6 +654,7 @@ export class VideoBlock implements Block {
     source: VideoBlockSource;
     title?: Nullable<string>;
     description?: Nullable<string>;
+    image?: Nullable<string>;
     duration?: Nullable<number>;
     action?: Nullable<Action>;
 }

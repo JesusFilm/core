@@ -68,6 +68,12 @@ type VideoBlock implements Block {
   internal source videos: this field is not populated and instead only present
   in the video field
   For other sources this is automatically populated.
+  """
+  image: String
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
   duration in seconds.
   """
   duration: Int
