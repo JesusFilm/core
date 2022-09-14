@@ -179,30 +179,75 @@ describe('VideoBlockResolver', () => {
       })
     })
 
-    it('throws error when invalid YouTube videoId', async () => {
-      await expect(
-        async () =>
+    describe('Internal Source', () => {
+      it('throws error when no videoVariantLanguageId', async () => {
+        await expect(
+          async () =>
+            await resolver.videoBlockCreate({
+              journeyId: 'journeyId',
+              parentBlockId: 'parentBlockId',
+              videoId: 'videoId',
+              source: VideoBlockSource.internal
+            })
+        ).rejects.toThrow('videoVariantLanguageId is a required field')
+      })
+
+      it('throws error when no videoId', async () => {
+        await expect(
+          async () =>
+            await resolver.videoBlockCreate({
+              journeyId: 'journeyId',
+              parentBlockId: 'parentBlockId',
+              videoVariantLanguageId: 'videoVariantLanguageId',
+              source: VideoBlockSource.internal
+            })
+        ).rejects.toThrow('videoId is a required field')
+      })
+
+      it('creates a VideoBlock', async () => {
+        expect(
           await resolver.videoBlockCreate({
             journeyId: 'journeyId',
             parentBlockId: 'parentBlockId',
-            videoId: 'test',
-            source: VideoBlockSource.youTube
+            videoId: 'videoId',
+            videoVariantLanguageId: 'videoVariantLanguageId',
+            source: VideoBlockSource.internal
           })
-      ).rejects.toThrow('videoId must be a valid YouTube videoId')
+        ).toEqual({
+          ...createdBlock,
+          videoId: 'videoId',
+          videoVariantLanguageId: 'videoVariantLanguageId',
+          source: VideoBlockSource.internal
+        })
+      })
     })
 
-    it('creates a VideoBlock when videoId from YouTube', async () => {
-      expect(
-        await resolver.videoBlockCreate({
-          journeyId: 'journeyId',
-          parentBlockId: 'parentBlockId',
+    describe('YouTube Source', () => {
+      it('throws error when invalid videoId', async () => {
+        await expect(
+          async () =>
+            await resolver.videoBlockCreate({
+              journeyId: 'journeyId',
+              parentBlockId: 'parentBlockId',
+              videoId: 'test',
+              source: VideoBlockSource.youTube
+            })
+        ).rejects.toThrow('videoId must be a valid YouTube videoId')
+      })
+
+      it('creates a VideoBlock', async () => {
+        expect(
+          await resolver.videoBlockCreate({
+            journeyId: 'journeyId',
+            parentBlockId: 'parentBlockId',
+            videoId: 'ak06MSETeo4',
+            source: VideoBlockSource.youTube
+          })
+        ).toEqual({
+          ...createdBlock,
           videoId: 'ak06MSETeo4',
           source: VideoBlockSource.youTube
         })
-      ).toEqual({
-        ...createdBlock,
-        videoId: 'ak06MSETeo4',
-        source: VideoBlockSource.youTube
       })
     })
   })
@@ -214,26 +259,65 @@ describe('VideoBlockResolver', () => {
       ).toEqual(updatedBlock)
     })
 
-    it('throws error when invalid YouTube videoId', async () => {
-      await expect(
-        async () =>
+    describe('Internal Source', () => {
+      it('throws error when no videoVariantLanguageId', async () => {
+        await expect(
+          async () =>
+            await resolver.videoBlockUpdate('blockId', 'journeyId', {
+              videoId: 'videoId',
+              source: VideoBlockSource.internal
+            })
+        ).rejects.toThrow('videoVariantLanguageId is a required field')
+      })
+
+      it('throws error when no videoId', async () => {
+        await expect(
+          async () =>
+            await resolver.videoBlockUpdate('blockId', 'journeyId', {
+              videoVariantLanguageId: 'videoVariantLanguageId',
+              source: VideoBlockSource.internal
+            })
+        ).rejects.toThrow('videoId is a required field')
+      })
+
+      it('updates a VideoBlock', async () => {
+        expect(
           await resolver.videoBlockUpdate('blockId', 'journeyId', {
-            videoId: 'test',
-            source: VideoBlockSource.youTube
+            videoId: 'videoId',
+            videoVariantLanguageId: 'videoVariantLanguageId',
+            source: VideoBlockSource.internal
           })
-      ).rejects.toThrow('videoId must be a valid YouTube videoId')
+        ).toEqual({
+          ...updatedBlock,
+          videoId: 'videoId',
+          videoVariantLanguageId: 'videoVariantLanguageId',
+          source: VideoBlockSource.internal
+        })
+      })
     })
 
-    it('updates a VideoBlock when videoId from YouTube', async () => {
-      expect(
-        await resolver.videoBlockUpdate('blockId', 'journeyId', {
+    describe('YouTube Source', () => {
+      it('throws error when invalid videoId', async () => {
+        await expect(
+          async () =>
+            await resolver.videoBlockUpdate('blockId', 'journeyId', {
+              videoId: 'test',
+              source: VideoBlockSource.youTube
+            })
+        ).rejects.toThrow('videoId must be a valid YouTube videoId')
+      })
+
+      it('updates a VideoBlock', async () => {
+        expect(
+          await resolver.videoBlockUpdate('blockId', 'journeyId', {
+            videoId: 'ak06MSETeo4',
+            source: VideoBlockSource.youTube
+          })
+        ).toEqual({
+          ...updatedBlock,
           videoId: 'ak06MSETeo4',
           source: VideoBlockSource.youTube
         })
-      ).toEqual({
-        ...updatedBlock,
-        videoId: 'ak06MSETeo4',
-        source: VideoBlockSource.youTube
       })
     })
   })
