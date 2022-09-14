@@ -448,6 +448,23 @@ type TextFieldBlock implements Block {
   submitLabel: String
 }
 
+input TextFieldBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+  submitLabel: String!
+}
+
+input TextFieldBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+  content: String
+  hint: String
+  submitIconId: ID
+  submitLabel: String
+}
+
 enum TypographyVariant {
   h1
   h2
@@ -1024,6 +1041,8 @@ extend type Mutation {
   signUpBlockUpdate(id: ID!, journeyId: ID!, input: SignUpBlockUpdateInput!): SignUpBlock
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock!
+  textFieldBlockCreate(input: TextFieldBlockCreateInput!): TextFieldBlock!
+  textFieldBlockUpdate(id: ID!, journeyId: ID!, input: TextFieldBlockUpdateInput!): TextFieldBlock
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
