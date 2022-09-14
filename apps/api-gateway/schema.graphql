@@ -798,6 +798,19 @@ input TemplateUseEventInput {
   journeyId: ID!
 }
 
+type TextFieldBlock implements Block {
+  action: Action
+  content: String
+  hint: String
+  id: ID!
+  journeyId: ID!
+  label: String!
+  parentBlockId: ID
+  parentOrder: Int
+  submitIconId: ID
+  submitLabel: String
+}
+
 enum ThemeMode {
   dark
   light
