@@ -961,6 +961,13 @@ type VideoBlock implements Block {
   endAt: Int
   fullsize: Boolean
   id: ID!
+
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  """
+  image: String
   journeyId: ID!
   muted: Boolean
   parentBlockId: ID
