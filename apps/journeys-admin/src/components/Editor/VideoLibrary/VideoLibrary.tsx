@@ -1,17 +1,19 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, SyntheticEvent, useState } from 'react'
 import Drawer from '@mui/material/Drawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import Close from '@mui/icons-material/Close'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
-import { VideoSearch } from './VideoSearch'
-import { VideoList } from './VideoList'
+import { VideoFromYouTube } from './VideoFromYouTube'
+import { VideoFromLocal } from './VideoFromLocal'
 
 export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
@@ -26,7 +28,14 @@ export function VideoLibrary({
   onSelect: handleSelect
 }: VideoLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const [title, setTitle] = useState<string>()
+  const [activeTab, setActiveTab] = useState(0)
+
+  const handleChange = (
+    _event: SyntheticEvent<Element, Event>,
+    newValue: number
+  ): void => {
+    setActiveTab(newValue)
+  }
 
   const onSelect = (block: VideoBlockUpdateInput): void => {
     if (handleSelect != null) handleSelect(block)
@@ -68,17 +77,37 @@ export function VideoLibrary({
           </IconButton>
         </Toolbar>
       </AppBar>
-      <VideoSearch value={title} onChange={setTitle} />
-      {/* language */}
-      {/* currentLanguageIds value is temporary */}
-      <Divider />
-      <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
-        <VideoList
-          onSelect={onSelect}
-          currentLanguageIds={['529']}
-          title={title}
-        />
+
+      <Box
+        sx={{
+          borderBottom: 1,
+          borderColor: 'divider',
+          backgroundColor: (theme) => theme.palette.background.paper
+        }}
+      >
+        <Tabs
+          value={activeTab}
+          onChange={handleChange}
+          aria-label="video library tabs"
+        >
+          <Tab
+            label="Library"
+            {...tabA11yProps('video-library-panel', 0)}
+            sx={{ flexGrow: 1 }}
+          />
+          <Tab
+            label="YouTube"
+            {...tabA11yProps('video-library-panel', 1)}
+            sx={{ flexGrow: 1 }}
+          />
+        </Tabs>
       </Box>
+      <TabPanel name="video-library-panel" value={activeTab} index={0}>
+        <VideoFromLocal onSelect={onSelect} />
+      </TabPanel>
+      <TabPanel name="video-library-panel" value={activeTab} index={1}>
+        <VideoFromYouTube onSelect={onSelect} />
+      </TabPanel>
     </Drawer>
   )
 }

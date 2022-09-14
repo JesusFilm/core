@@ -1,9 +1,9 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../../libs/storybook'
-import { GetVideo_video_variantLanguages as Language } from '../../../../../__generated__/GetVideo'
-import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
+import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { GetVideo_video_variantLanguages as Language } from '../../../../../../__generated__/GetVideo'
+import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
 import { GET_VIDEO } from './VideoDetails'
 import { VideoDetails } from '.'
 

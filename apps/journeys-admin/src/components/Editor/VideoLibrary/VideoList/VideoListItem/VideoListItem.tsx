@@ -4,15 +4,22 @@ import Box from '@mui/material/Box'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
 import { VideoBlockUpdateInput } from '../../../../../../__generated__/globalTypes'
-import { VideoDetails } from '../../VideoDetails'
 
-interface VideoListItemProps {
+export interface VideoDetailsProps {
+  open: boolean
+  id: string
+  onClose: () => void
+  onSelect: (block: VideoBlockUpdateInput) => void
+}
+
+export interface VideoListItemProps {
   id: string
   title?: string
   description?: string
   image?: string
   duration?: number
   onSelect: (block: VideoBlockUpdateInput) => void
+  VideoDetails: (props: VideoDetailsProps) => ReactElement
 }
 
 export function VideoListItem({
@@ -21,7 +28,8 @@ export function VideoListItem({
   description,
   image,
   duration: time = 0,
-  onSelect: handleSelect
+  onSelect: handleSelect,
+  VideoDetails
 }: VideoListItemProps): ReactElement {
   const [open, setOpen] = useState(false)
 

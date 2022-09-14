@@ -82,17 +82,20 @@ export function VideoBlockEditor({
       <Box sx={{ px: 6, pt: 4 }}>
         <ImageBlockHeader
           selectedBlock={
-            selectedBlock?.video?.image != null
+            selectedBlock?.video?.image != null || selectedBlock?.image != null
               ? {
-                  src: selectedBlock.video.image,
-                  alt: selectedBlock?.video?.title?.[0]?.value
+                  src: selectedBlock?.video?.image ?? selectedBlock.image,
+                  alt:
+                    selectedBlock?.video?.title?.[0]?.value ??
+                    selectedBlock?.title
                 }
               : null
           }
           header={
-            selectedBlock?.video?.title?.[0]?.value == null
+            selectedBlock?.video?.title?.[0]?.value == null &&
+            selectedBlock?.title == null
               ? 'Select Video File'
-              : selectedBlock.video.title[0].value
+              : selectedBlock?.video?.title?.[0]?.value ?? selectedBlock?.title
           }
           caption={language}
           showDelete={showDelete && selectedBlock?.video != null}

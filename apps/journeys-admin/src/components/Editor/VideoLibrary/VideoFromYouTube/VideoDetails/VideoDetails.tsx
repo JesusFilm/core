@@ -10,54 +10,30 @@ import { Theme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
-import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
 import Check from '@mui/icons-material/Check'
 import Close from '@mui/icons-material/Close'
-import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
-import { gql, useLazyQuery } from '@apollo/client'
-import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
-import { GetVideo } from '../../../../../__generated__/GetVideo'
-import { VideoLanguage } from '../VideoLanguage'
 import 'video.js/dist/video-js.css'
-import { LanguageSelectOption } from '../../../LanguageSelect'
-
-export const GET_VIDEO = gql`
-  query GetVideo($id: ID!, $languageId: ID!) {
-    video(id: $id) {
-      id
-      image
-      primaryLanguageId
-      title {
-        primary
-        value
-      }
-      description {
-        primary
-        value
-      }
-      variant {
-        id
-        duration
-        hls
-      }
-      variantLanguages {
-        id
-        name(languageId: $languageId, primary: true) {
-          value
-          primary
-        }
-      }
-    }
-  }
-`
+import useSWR from 'swr'
+import { VideoDetailsProps } from '../../VideoList/VideoListItem/VideoListItem'
+import { parseISO8601Duration, YoutubeVideosData } from '../VideoFromYouTube'
+import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 
 export const DRAWER_WIDTH = 328
-interface VideoDetailsProps {
-  open: boolean
+
+const fetcher = async (
   id: string
-  onClose: () => void
-  onSelect: (block: VideoBlockUpdateInput) => void
+): Promise<YoutubeVideosData['items'][number]> => {
+  console.log(id)
+  const videosQuery = new URLSearchParams({
+    part: 'snippet,contentDetails',
+    key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '',
+    id
+  }).toString()
+  const videosData: YoutubeVideosData = await (
+    await fetch(`https://www.googleapis.com/youtube/v3/videos?${videosQuery}`)
+  ).json()
+  return videosData.items[0]
 }
 
 export function VideoDetails({
@@ -70,43 +46,33 @@ export function VideoDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [playing, setPlaying] = useState(false)
-  const [openLanguage, setOpenLanguage] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] =
-    useState<LanguageSelectOption>({
-      id: '529',
-      localName: undefined,
-      nativeName: 'English'
-    })
-  const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
-    variables: { id, languageId: '529' }
-  })
-
-  const handleChange = (selectedLanguage: LanguageSelectOption): void => {
-    setSelectedLanguage(selectedLanguage)
-  }
+  const { data, error } = useSWR<YoutubeVideosData['items'][number]>(
+    () => (open ? id : null),
+    fetcher
+  )
 
   const handleVideoSelect = (): void => {
     handleSelect({
       videoId: id,
-      videoVariantLanguageId: selectedLanguage.id,
+      source: VideoBlockSource.youTube,
       startAt: 0,
       endAt: time
     })
     handleClose()
   }
 
-  const time = data?.video.variant?.duration ?? 0
+  const time =
+    data != null ? parseISO8601Duration(data.contentDetails.duration) : 0
   const duration =
     time < 3600
       ? new Date(time * 1000).toISOString().substring(14, 19)
       : new Date(time * 1000).toISOString().substring(11, 19)
 
   useEffect(() => {
-    if (videoRef.current != null && data != null) {
+    if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         fluid: true,
-        controls: true,
-        poster: data.video.image ?? undefined
+        controls: true
       })
       playerRef.current.on('playing', () => {
         setPlaying(true)
@@ -114,11 +80,7 @@ export function VideoDetails({
     }
   }, [data])
 
-  useEffect(() => {
-    if (open) {
-      void loadVideo()
-    }
-  }, [open, loadVideo])
+  const loading = data == null && error != null
 
   return (
     <>
@@ -186,14 +148,9 @@ export function VideoDetails({
               >
                 <video
                   ref={videoRef}
-                  className="video-js vjs-big-play-centered"
-                  playsInline
-                >
-                  <source
-                    src={data?.video.variant?.hls ?? ''}
-                    type="application/x-mpegURL"
-                  />
-                </video>
+                  className="video-js"
+                  data-setup={`{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=${id}"}] }`}
+                />
                 {!playing && (
                   <Typography
                     component="div"
@@ -215,13 +172,10 @@ export function VideoDetails({
               </Box>
               <Box>
                 <Typography variant="subtitle1">
-                  {data?.video?.title?.find(({ primary }) => primary)?.value}
+                  {data?.snippet.title}
                 </Typography>
-                <Typography variant="caption">
-                  {
-                    data?.video?.description?.find(({ primary }) => primary)
-                      ?.value
-                  }
+                <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap' }}>
+                  {data?.snippet.description}
                 </Typography>
               </Box>
             </>
@@ -231,12 +185,6 @@ export function VideoDetails({
             spacing={2}
             sx={{ justifyContent: 'space-between' }}
           >
-            <Chip
-              label="Other Languages"
-              onClick={() => setOpenLanguage(true)}
-              avatar={<ArrowDropDown />}
-              disabled={loading}
-            />
             <Button
               variant="contained"
               startIcon={<Check />}
@@ -249,14 +197,6 @@ export function VideoDetails({
           </Stack>
         </Stack>
       </Drawer>
-      <VideoLanguage
-        open={openLanguage}
-        onClose={() => setOpenLanguage(false)}
-        onChange={handleChange}
-        language={selectedLanguage}
-        languages={data?.video.variantLanguages}
-        loading={loading}
-      />
     </>
   )
 }
