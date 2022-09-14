@@ -9,6 +9,13 @@ import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, GridDirec
 // GraphQL fragment: BlockFields
 // ====================================================
 
+export interface BlockFields_TextFieldBlock {
+  __typename: "TextFieldBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+}
+
 export interface BlockFields_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
   parentBlockId: string;
@@ -341,13 +348,19 @@ export interface BlockFields_VideoBlock {
   posterBlockId: string | null;
   fullsize: boolean | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video
+   * videoId and videoVariantLanguageId both need to be set to select a video.
+   * Relates to videos from the Jesus Film Project video library.
    */
   videoId: string | null;
   /**
    * videoId and videoVariantLanguageId both need to be set to select a video
+   * Relates to videos from the Jesus Film Project video library.
    */
   videoVariantLanguageId: string | null;
+  /**
+   * video is only populated when videoID and videoVariant LanguageId are present.
+   * Relates to videos from the Jesus Film Project video library.
+   */
   video: BlockFields_VideoBlock_video | null;
   /**
    * action that should be performed when the video ends
@@ -403,4 +416,4 @@ export interface BlockFields_VideoTriggerBlock {
   triggerAction: BlockFields_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockFields = BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
+export type BlockFields = BlockFields_TextFieldBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;

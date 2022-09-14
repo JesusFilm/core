@@ -1,5 +1,6 @@
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
+import { object, string } from 'yup'
 import { BlockService } from '../block.service'
 import {
   Action,
@@ -10,6 +11,13 @@ import {
   VideoBlockUpdateInput
 } from '../../../__generated__/graphql'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
+
+const videoBlockSchema = object().shape({
+  videoUrl: string().matches(
+    /^(?:https?:)?\/\/[^/]*(?:youtube(?:-nocookie)?.com|youtu.be).*[=/]([-\w]{11})(?:\\?|=|&|$)/,
+    'videoUrl must be a valid YouTube URL'
+  )
+})
 
 @Resolver('VideoBlock')
 export class VideoBlockResolver {
@@ -79,6 +87,7 @@ export class VideoBlockResolver {
       target: null
     }
 
+    await videoBlockSchema.validate(input)
     return await this.blockService.update(block.id, { ...block, action })
   }
 
@@ -91,6 +100,7 @@ export class VideoBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: VideoBlockUpdateInput
   ): Promise<VideoBlock> {
+    await videoBlockSchema.validate(input)
     return await this.blockService.update(id, input)
   }
 

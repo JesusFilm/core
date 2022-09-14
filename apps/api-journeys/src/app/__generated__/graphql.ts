@@ -307,6 +307,7 @@ export class VideoBlockCreateInput {
     autoplay?: Nullable<boolean>;
     videoId?: Nullable<string>;
     videoVariantLanguageId?: Nullable<string>;
+    videoUrl?: Nullable<string>;
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
     isCover?: Nullable<boolean>;
@@ -319,6 +320,7 @@ export class VideoBlockUpdateInput {
     autoplay?: Nullable<boolean>;
     videoId?: Nullable<string>;
     videoVariantLanguageId?: Nullable<string>;
+    videoUrl?: Nullable<string>;
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
 }
@@ -617,6 +619,20 @@ export class StepBlock implements Block {
     parentOrder?: Nullable<number>;
 }
 
+export class TextFieldBlock implements Block {
+    __typename?: 'TextFieldBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    label: string;
+    content?: Nullable<string>;
+    hint?: Nullable<string>;
+    action?: Nullable<Action>;
+    submitIconId?: Nullable<string>;
+    submitLabel?: Nullable<string>;
+}
+
 export class TypographyBlock implements Block {
     __typename?: 'TypographyBlock';
     id: string;
@@ -644,6 +660,7 @@ export class VideoBlock implements Block {
     video?: Nullable<Video>;
     videoId?: Nullable<string>;
     videoVariantLanguageId?: Nullable<string>;
+    videoUrl?: Nullable<string>;
     action?: Nullable<Action>;
 }
 

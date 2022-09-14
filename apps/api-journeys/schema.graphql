@@ -435,6 +435,19 @@ input StepBlockUpdateInput {
   locked: Boolean
 }
 
+type TextFieldBlock implements Block {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String!
+  content: String
+  hint: String
+  action: Action
+  submitIconId: ID
+  submitLabel: String
+}
+
 enum TypographyVariant {
   h1
   h2
@@ -512,17 +525,30 @@ type VideoBlock implements Block {
   """
   posterBlockId: ID
   fullsize: Boolean
+
+  """
+  video is only populated when videoID and videoVariant LanguageId are present.
+  Relates to videos from the Jesus Film Project video library.
+  """
   video: Video
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video
+  videoId and videoVariantLanguageId both need to be set to select a video.
+  Relates to videos from the Jesus Film Project video library.
   """
   videoId: ID
 
   """
   videoId and videoVariantLanguageId both need to be set to select a video
+  Relates to videos from the Jesus Film Project video library.
   """
   videoVariantLanguageId: ID
+
+  """
+  videoUrl is used when embedding a video from a third-party provider.
+  e.g YouTube, Vimeo etc.
+  """
+  videoUrl: String
 
   """action that should be performed when the video ends"""
   action: Action
@@ -543,14 +569,22 @@ input VideoBlockCreateInput {
   autoplay: Boolean
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video
+  videoId and videoVariantLanguageId both need to be set to select a video.
+  Relates to videos from the Jesus Film Project video library.
   """
   videoId: ID
 
   """
   videoId and videoVariantLanguageId both need to be set to select a video
+  Relates to videos from the Jesus Film Project video library.
   """
   videoVariantLanguageId: ID
+
+  """
+  videoUrl is used when embedding a video from a third-party provider.
+  e.g YouTube, Vimeo etc.
+  """
+  videoUrl: String
 
   """
   posterBlockId is present if a child block should be used as a poster.
@@ -574,8 +608,24 @@ input VideoBlockUpdateInput {
   endAt: Int
   muted: Boolean
   autoplay: Boolean
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video.
+  Relates to videos from the Jesus Film Project video library.
+  """
   videoId: ID
+
+  """
+  videoId and videoVariantLanguageId both need to be set to select a video
+  Relates to videos from the Jesus Film Project video library.
+  """
   videoVariantLanguageId: ID
+
+  """
+  videoUrl is used when embedding a video from a third-party provider.
+  e.g YouTube, Vimeo etc.
+  """
+  videoUrl: String
 
   """
   posterBlockId is present if a child block should be used as a poster.
