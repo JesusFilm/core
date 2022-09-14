@@ -8,15 +8,20 @@ import {
   UserJourneyRole,
   VideoBlock,
   VideoBlockCreateInput,
+  VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../__generated__/graphql'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
-const videoBlockSchema = object().shape({
-  videoUrl: string().matches(
-    /^(?:https?:)?\/\/[^/]*(?:youtube(?:-nocookie)?.com|youtu.be).*[=/]([-\w]{11})(?:\\?|=|&|$)/,
-    'videoUrl must be a valid YouTube URL'
+const videoBlockYouTubeSchema = object().shape({
+  videoId: string().matches(
+    /^[-\w]{11}$/,
+    'videoId must be a valid YouTube videoId'
   )
+})
+const videoBlockInternalSchema = object().shape({
+  videoId: string().required(),
+  videoVariantLanguageId: string().required()
 })
 
 @Resolver('VideoBlock')
@@ -43,6 +48,15 @@ export class VideoBlockResolver {
   async videoBlockCreate(
     @Args('input') input: VideoBlockCreateInput
   ): Promise<VideoBlock> {
+    switch (input.source) {
+      case VideoBlockSource.youTube:
+        await videoBlockYouTubeSchema.validate(input)
+        break
+      case VideoBlockSource.internal:
+        await videoBlockInternalSchema.validate(input)
+        break
+    }
+
     if (input.isCover === true) {
       const coverBlock: VideoBlock = await this.blockService.save({
         ...input,
@@ -87,7 +101,6 @@ export class VideoBlockResolver {
       target: null
     }
 
-    await videoBlockSchema.validate(input)
     return await this.blockService.update(block.id, { ...block, action })
   }
 
@@ -100,7 +113,15 @@ export class VideoBlockResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: VideoBlockUpdateInput
   ): Promise<VideoBlock> {
-    await videoBlockSchema.validate(input)
+    const block = await this.blockService.get<VideoBlock>(id)
+    switch (input.source ?? block.source) {
+      case VideoBlockSource.youTube:
+        await videoBlockYouTubeSchema.validate({ ...block, ...input })
+        break
+      case VideoBlockSource.internal:
+        await videoBlockInternalSchema.validate({ ...block, ...input })
+        break
+    }
     return await this.blockService.update(id, input)
   }
 
@@ -113,7 +134,11 @@ export class VideoBlockResolver {
     id: string
     primaryLanguageId?: string | null
   } | null {
-    if (block.videoId == null || block.videoVariantLanguageId == null)
+    if (
+      block.videoId == null ||
+      block.videoVariantLanguageId == null ||
+      (block.source != null && block.source !== VideoBlockSource.internal)
+    )
       return null
 
     return {
@@ -121,5 +146,13 @@ export class VideoBlockResolver {
       id: block.videoId,
       primaryLanguageId: block.videoVariantLanguageId
     }
+  }
+
+  @ResolveField('source')
+  source(
+    @Parent()
+    block: VideoBlock
+  ): VideoBlockSource {
+    return block.source ?? VideoBlockSource.internal
   }
 }

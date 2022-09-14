@@ -491,6 +491,11 @@ input TypographyBlockUpdateInput {
   align: TypographyAlign
 }
 
+enum VideoBlockSource {
+  internal
+  youTube
+}
+
 type VideoBlock implements Block {
   id: ID!
   journeyId: ID!
@@ -514,28 +519,52 @@ type VideoBlock implements Block {
   fullsize: Boolean
 
   """
-  video is only populated when videoID and videoVariant LanguageId are present.
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: video is only populated when videoID and
+  videoVariantLanguageId are present
   """
   video: Video
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video.
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoId: ID
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoVariantLanguageId: ID
 
   """
-  videoUrl is used when embedding a video from a third-party provider.
-  e.g YouTube, Vimeo etc.
+  internal source: videoId, videoVariantLanguageId, and video present
+  youTube source: videoId, title, description, and duration present
   """
-  videoUrl: String
+  source: VideoBlockSource!
+
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field.
+  For other sources this is automatically populated.
+  """
+  title: String
+
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  """
+  description: String
+
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  duration in seconds.
+  """
+  duration: Int
 
   """action that should be performed when the video ends"""
   action: Action
@@ -556,22 +585,24 @@ input VideoBlockCreateInput {
   autoplay: Boolean
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video.
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoId: ID
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoVariantLanguageId: ID
 
   """
-  videoUrl is used when embedding a video from a third-party provider.
-  e.g YouTube, Vimeo etc.
+  internal source: videoId and videoVariantLanguageId required
+  youTube source: videoId required
   """
-  videoUrl: String
+  source: VideoBlockSource
 
   """
   posterBlockId is present if a child block should be used as a poster.
@@ -597,22 +628,24 @@ input VideoBlockUpdateInput {
   autoplay: Boolean
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video.
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoId: ID
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoVariantLanguageId: ID
 
   """
-  videoUrl is used when embedding a video from a third-party provider.
-  e.g YouTube, Vimeo etc.
+  internal source: videoId and videoVariantLanguageId required
+  youTube source: videoId required
   """
-  videoUrl: String
+  source: VideoBlockSource
 
   """
   posterBlockId is present if a child block should be used as a poster.

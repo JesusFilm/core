@@ -5,6 +5,7 @@ import {
   CardBlock,
   VideoBlock,
   VideoBlockCreateInput,
+  VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../__generated__/graphql'
 import { JourneyService } from '../../journey/journey.service'
@@ -72,7 +73,8 @@ describe('VideoBlockResolver', () => {
     muted: true,
     autoplay: true,
     fullsize: true,
-    action: navigateAction
+    action: navigateAction,
+    source: VideoBlockSource.internal
   }
 
   const parentBlock: CardBlock = {
@@ -108,7 +110,8 @@ describe('VideoBlockResolver', () => {
     muted: true,
     autoplay: true,
     posterBlockId: 'posterBlockId',
-    fullsize: true
+    fullsize: true,
+    source: VideoBlockSource.internal
   }
 
   beforeEach(async () => {
@@ -176,38 +179,30 @@ describe('VideoBlockResolver', () => {
       })
     })
 
-    it('throws validation when invalid URL', async () => {
+    it('throws error when invalid YouTube videoId', async () => {
       await expect(
         async () =>
           await resolver.videoBlockCreate({
             journeyId: 'journeyId',
             parentBlockId: 'parentBlockId',
-            videoUrl: 'test'
+            videoId: 'test',
+            source: VideoBlockSource.youTube
           })
-      ).rejects.toThrow('videoUrl must be a valid YouTube URL')
+      ).rejects.toThrow('videoId must be a valid YouTube videoId')
     })
 
-    it('throws validation when URL not from YouTube', async () => {
-      await expect(
-        async () =>
-          await resolver.videoBlockCreate({
-            journeyId: 'journeyId',
-            parentBlockId: 'parentBlockId',
-            videoUrl: 'https://google.com'
-          })
-      ).rejects.toThrow('videoUrl must be a valid YouTube URL')
-    })
-
-    it('creates a VideoBlock when URL from YouTube', async () => {
+    it('creates a VideoBlock when videoId from YouTube', async () => {
       expect(
         await resolver.videoBlockCreate({
           journeyId: 'journeyId',
           parentBlockId: 'parentBlockId',
-          videoUrl: 'https://www.youtube.com/watch?v=ak06MSETeo4'
+          videoId: 'ak06MSETeo4',
+          source: VideoBlockSource.youTube
         })
       ).toEqual({
         ...createdBlock,
-        videoUrl: 'https://www.youtube.com/watch?v=ak06MSETeo4'
+        videoId: 'ak06MSETeo4',
+        source: VideoBlockSource.youTube
       })
     })
   })
@@ -219,32 +214,26 @@ describe('VideoBlockResolver', () => {
       ).toEqual(updatedBlock)
     })
 
-    it('throws validation when invalid URL', async () => {
+    it('throws error when invalid YouTube videoId', async () => {
       await expect(
         async () =>
           await resolver.videoBlockUpdate('blockId', 'journeyId', {
-            videoUrl: 'test'
+            videoId: 'test',
+            source: VideoBlockSource.youTube
           })
-      ).rejects.toThrow('videoUrl must be a valid YouTube URL')
+      ).rejects.toThrow('videoId must be a valid YouTube videoId')
     })
 
-    it('throws validation when URL not from YouTube', async () => {
-      await expect(
-        async () =>
-          await resolver.videoBlockUpdate('blockId', 'journeyId', {
-            videoUrl: 'https://google.com'
-          })
-      ).rejects.toThrow('videoUrl must be a valid YouTube URL')
-    })
-
-    it('updates a VideoBlock when URL from YouTube', async () => {
+    it('updates a VideoBlock when videoId from YouTube', async () => {
       expect(
         await resolver.videoBlockUpdate('blockId', 'journeyId', {
-          videoUrl: 'https://www.youtube.com/watch?v=ak06MSETeo4'
+          videoId: 'ak06MSETeo4',
+          source: VideoBlockSource.youTube
         })
       ).toEqual({
         ...updatedBlock,
-        videoUrl: 'https://www.youtube.com/watch?v=ak06MSETeo4'
+        videoId: 'ak06MSETeo4',
+        source: VideoBlockSource.youTube
       })
     })
   })

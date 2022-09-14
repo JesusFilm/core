@@ -116,6 +116,11 @@ export enum TypographyAlign {
     right = "right"
 }
 
+export enum VideoBlockSource {
+    internal = "internal",
+    youTube = "youTube"
+}
+
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"
@@ -307,7 +312,7 @@ export class VideoBlockCreateInput {
     autoplay?: Nullable<boolean>;
     videoId?: Nullable<string>;
     videoVariantLanguageId?: Nullable<string>;
-    videoUrl?: Nullable<string>;
+    source?: Nullable<VideoBlockSource>;
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
     isCover?: Nullable<boolean>;
@@ -320,7 +325,7 @@ export class VideoBlockUpdateInput {
     autoplay?: Nullable<boolean>;
     videoId?: Nullable<string>;
     videoVariantLanguageId?: Nullable<string>;
-    videoUrl?: Nullable<string>;
+    source?: Nullable<VideoBlockSource>;
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
 }
@@ -646,7 +651,10 @@ export class VideoBlock implements Block {
     video?: Nullable<Video>;
     videoId?: Nullable<string>;
     videoVariantLanguageId?: Nullable<string>;
-    videoUrl?: Nullable<string>;
+    source: VideoBlockSource;
+    title?: Nullable<string>;
+    description?: Nullable<string>;
+    duration?: Nullable<number>;
     action?: Nullable<Action>;
 }
 
