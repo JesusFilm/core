@@ -18,6 +18,7 @@ import { GET_JOURNEY } from '../[journeyId]'
 import { JourneyEdit } from '../../../src/components/Editor/JourneyEdit'
 import { EditToolbar } from '../../../src/components/Editor/EditToolbar'
 import { JourneyInvite } from '../../../src/components/JourneyInvite/JourneyInvite'
+import { createApolloClient } from '../../../src/libs/apolloClient'
 import i18nConfig from '../../../next-i18next.config'
 
 function JourneyEditPage(): ReactElement {
@@ -58,11 +59,11 @@ function JourneyEditPage(): ReactElement {
       )}
       {error?.graphQLErrors[0].message ===
         'User has not received an invitation to edit this journey.' && (
-        <>
-          <NextSeo title={t('Access Denied')} />
-          <JourneyInvite journeyId={router.query.journeyId as string} />
-        </>
-      )}
+          <>
+            <NextSeo title={t('Access Denied')} />
+            <JourneyInvite journeyId={router.query.journeyId as string} />
+          </>
+        )}
       {error?.graphQLErrors[0].message === 'User invitation pending.' && (
         <>
           <NextSeo title={t('Access Denied')} />
@@ -78,7 +79,7 @@ function JourneyEditPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser, locale }) => {
+})(async ({ AuthUser, locale, query }) => {
   const ldUser = {
     key: AuthUser.id as string,
     firstName: AuthUser.displayName ?? undefined,
@@ -88,6 +89,26 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
   }
+
+  const token = await AuthUser.getIdToken()
+  const apolloClient = createApolloClient(token != null ? token : '')
+
+  const { data } = await apolloClient.query<GetJourney>({
+    query: GET_JOURNEY,
+    variables: {
+      id: query?.journeyId
+    }
+  })
+
+  if (data?.journey?.template === true) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/publisher/${data?.journey?.id}/edit`
+      }
+    }
+  }
+
   return {
     props: {
       flags,
