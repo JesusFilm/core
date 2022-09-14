@@ -128,107 +128,101 @@ export function TemplateCard({
         </CardMedia>
       )}
 
-      <Link
-        href={
-          journey != null
-            ? `/${isPublisher === true ? 'publisher' : 'templates'}/${
-                journey.id
-              }`
-            : ''
-        }
-        passHref
+      <Stack
+        direction="column"
+        sx={{
+          width: '60%',
+          display: 'flex',
+          flexGrow: 1
+        }}
       >
-        <CardActionArea sx={{ flexGrow: 1, width: '42%' }}>
-          <CardContent sx={{ pr: isPublisher === true ? 0 : 3 }}>
+        <Link
+          href={
+            journey != null
+              ? `/${isPublisher === true ? 'publisher' : 'templates'}/${
+                  journey.id
+                }`
+              : ''
+          }
+          passHref
+        >
+          <CardActionArea>
+            <CardContent>
+              {journey != null ? (
+                <>
+                  <Typography variant="subtitle1" noWrap>
+                    {journey.title}
+                  </Typography>
+                  <Typography variant="body2" noWrap sx={{ fontSize: 12 }}>
+                    {date}
+                    {journey?.description != null
+                      ? ` - ${journey.description}`
+                      : ''}
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <Skeleton variant="text" width={120} />
+                  <Skeleton variant="text" width={150} />
+                </>
+              )}
+            </CardContent>
+          </CardActionArea>
+        </Link>
+
+        <CardActions sx={{ py: 0, px: 4 }}>
+          {isPublisher === true &&
+            (journey != null ? (
+              <StatusChip status={journey.status} />
+            ) : (
+              <Stack direction="row" alignItems="center" spacing={1.5}>
+                <EditIcon sx={{ fontSize: '14px' }} />
+                <Skeleton variant="text" width={50} />
+              </Stack>
+            ))}
+
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1.5}
+            flexGrow={1}
+            sx={{
+              pl: isPublisher === true ? 3 : 0,
+              pt: isPublisher !== true ? 2 : 0
+            }}
+          >
             {journey != null ? (
               <>
-                <Typography variant="subtitle1" noWrap>
-                  {journey.title}
-                </Typography>
-                <Typography variant="body2" noWrap sx={{ mb: 7, fontSize: 12 }}>
-                  {date}
-                  {journey?.description != null
-                    ? ` - ${journey.description}`
-                    : ''}
-                </Typography>
-
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  spacing={4}
-                  flexGrow={1}
-                >
-                  {isPublisher === true && (
-                    <StatusChip status={journey.status} />
-                  )}
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    spacing={1.5}
-                    sx={{ width: isPublisher === true ? '48%' : '100%' }}
-                  >
-                    <TranslateRoundedIcon sx={{ fontSize: 13 }} />
-                    <Typography variant="body2" noWrap>
-                      {displayLanguage}
-                    </Typography>
-                  </Stack>
-                </Stack>
+                <TranslateRoundedIcon sx={{ fontSize: 13 }} />
+                <Typography variant="body2">{displayLanguage}</Typography>
               </>
             ) : (
               <>
-                <Skeleton variant="text" width={120} />
-                <Skeleton
-                  variant="text"
-                  sx={{
-                    display: 'flex',
-                    justifySelf: 'flex-end',
-                    mr: '20%',
-                    mb: 6
-                  }}
-                />
-                <Stack
-                  direction="row"
-                  spacing={4}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
-                >
-                  {isPublisher === true && (
-                    <>
-                      <EditIcon sx={{ fontSize: '14px' }} />
-                      <Skeleton variant="text" width={50} />
-                    </>
-                  )}
-                  <TranslateRoundedIcon sx={{ fontSize: '14px' }} />
-                  <Skeleton variant="text" width={50} />
-                </Stack>
+                <TranslateRoundedIcon sx={{ fontSize: '14px' }} />
+                <Skeleton variant="text" width={50} />
               </>
             )}
-          </CardContent>
-        </CardActionArea>
-      </Link>
+          </Stack>
 
-      {isPublisher === true && (
-        <CardActions sx={{ alignSelf: 'flex-end', width: '58px' }}>
-          {journey != null ? (
-            <JourneyCardMenu
-              id={journey.id}
-              status={journey.status}
-              slug={journey.slug}
-              published={journey.publishedAt != null}
-              template
-              refetch={refetch}
-            />
-          ) : (
-            <>
-              <IconButton disabled>
-                <MoreVertIcon />
-              </IconButton>
-            </>
-          )}
+          {isPublisher === true &&
+            (journey != null ? (
+              <JourneyCardMenu
+                id={journey.id}
+                status={journey.status}
+                slug={journey.slug}
+                published={journey.publishedAt != null}
+                template
+                refetch={refetch}
+              />
+            ) : (
+              <>
+                <IconButton disabled>
+                  <MoreVertIcon />
+                </IconButton>
+              </>
+            ))}
         </CardActions>
-      )}
+      </Stack>
     </Card>
   )
 }
