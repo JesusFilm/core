@@ -1,15 +1,13 @@
 locals {
-  identifier = "ecs"
-  env        = "prod"
-  name       = "${local.identifier}-${local.env}"
+  identifier  = "applications-alb"
+  env         = "stage"
+  environment = "staging"
 
   tags = {
-    Name       = local.name
+    name       = local.identifier
     env        = local.env
     managed_by = "terraform"
     # owner      = "devops-engineering-team@cru.org"
     terraform  = replace(abspath(path.root), "/^.*/(core|default)/", "")
   }
-
-  # datadog_tags = [for k, v in local.tags : "${k}:${v}"]
 }

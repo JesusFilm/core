@@ -4,15 +4,15 @@ terraform {
     bucket         = "jfp-terraform-state"
     dynamodb_table = "jfp-terraform-state-lock"
     region         = "us-east-2"
-    key            = "aws/acm/jesusfilm_org/terraform.tfstate"
+    key            = "aws/ec2/applications-alb/internal/main/terraform.tfstate"
   }
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.16"
+      version = "~> 4.25"
     }
   }
-  required_version = ">= 0.14.3"
+  required_version = ">= 1.1.7"
 }
 
 provider "aws" {

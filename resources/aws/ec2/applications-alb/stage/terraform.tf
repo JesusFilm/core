@@ -4,16 +4,12 @@ terraform {
     bucket         = "jfp-terraform-state"
     dynamodb_table = "jfp-terraform-state-lock"
     region         = "us-east-2"
-    key            = "aws/ecs/prod/terraform.tfstate"
+    key            = "aws/ec2/applications-alb/stage/terraform.tfstate"
   }
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.15"
-    }
-    datadog = {
-      source  = "DataDog/datadog"
-      version = "~> 3.12"
+      version = "~> 4.22"
     }
   }
   required_version = ">= 1.1.7"
@@ -21,7 +17,4 @@ terraform {
 
 provider "aws" {
   region = "us-east-2"
-  default_tags {
-    tags = local.tags
-  }
 }

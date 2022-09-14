@@ -11,3 +11,5 @@ resource "aws_ecr_repository" "main" {
   name                 = "jfp-${local.identifier}"
   tags                 = local.tags
 }
+
+# TODO: Add ecr_lifecycle_policy

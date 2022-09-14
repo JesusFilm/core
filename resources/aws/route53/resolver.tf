@@ -47,12 +47,12 @@ resource "aws_route53_resolver_endpoint" "inbound" {
   security_group_ids = [aws_security_group.dns_resolver.id]
 
   ip_address {
-    subnet_id = data.aws_subnet.prod_apps_1a.id
+    subnet_id = data.aws_subnet.prod_apps_2a.id
     ip        = "10.16.2.23"
   }
 
   ip_address {
-    subnet_id = data.aws_subnet.prod_apps_1b.id
+    subnet_id = data.aws_subnet.prod_apps_2b.id
     ip        = "10.16.3.23"
   }
 
@@ -78,11 +78,11 @@ resource "aws_route53_resolver_endpoint" "outbound" {
   security_group_ids = [aws_security_group.dns_resolver.id]
 
   ip_address {
-    subnet_id = data.aws_subnet.prod_apps_1a.id
+    subnet_id = data.aws_subnet.prod_apps_2a.id
   }
 
   ip_address {
-    subnet_id = data.aws_subnet.prod_apps_1b.id
+    subnet_id = data.aws_subnet.prod_apps_2b.id
   }
 
   tags = merge(local.tags, {

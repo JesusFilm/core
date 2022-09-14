@@ -2,7 +2,7 @@ data "aws_route53_zone" "jesusfilm_org" {
   name = "jesusfilm.org"
 }
 
-data "aws_acm_certificate" "jesusfilm_org" {
+data "aws_acm_certificate" "central_jesusfilm_org" {
   domain      = "jesusfilm.org"
   most_recent = true
 }
@@ -56,7 +56,7 @@ data "aws_subnets" "prod_public" {
     values = [data.aws_vpc.main.id]
   }
   tags = {
-    env  = "prod"
+    env  = "main"
     type = "public"
   }
 }
@@ -160,7 +160,7 @@ resource "aws_lb_listener" "https" {
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = data.aws_acm_certificate.jesusfilm_org.arn
+  # certificate_arn   = data.aws_acm_certificate.central_jesusfilm_org.arn
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.target_group.arn

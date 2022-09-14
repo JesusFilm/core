@@ -1,10 +1,8 @@
 locals {
-  identifier = "route53"
-  name       = "${local.identifier}-main"
+  domain_name = "central.jesusfilm.org"
+
   tags = {
-    Name       = local.name
-    function   = "util"
-    type       = local.identifier
+    Name       = local.domain_name
     managed_by = "terraform"
     # owner      = "devops-engineering-team@cru.org"
     terraform  = replace(abspath(path.root), "/^.*/(core|default)/", "")

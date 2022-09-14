@@ -1,12 +1,11 @@
 locals {
-  identifier = "route53"
-  name       = "${local.identifier}-main"
+  identifier = "jfp-alb-logs"
+
   tags = {
-    Name       = local.name
-    function   = "util"
-    type       = local.identifier
+    Name       = local.identifier,
     managed_by = "terraform"
     # owner      = "devops-engineering-team@cru.org"
+    comment    = "ALB/ELB logs by hostname prefix"
     terraform  = replace(abspath(path.root), "/^.*/(core|default)/", "")
   }
 }

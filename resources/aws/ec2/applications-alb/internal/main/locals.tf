@@ -1,10 +1,11 @@
 locals {
-  identifier = "route53"
-  name       = "${local.identifier}-main"
+  identifier  = "applications-internal-alb"
+  env         = "main"
+  environment = "production"
+
   tags = {
-    Name       = local.name
-    function   = "util"
-    type       = local.identifier
+    name       = local.identifier
+    env        = local.env
     managed_by = "terraform"
     # owner      = "devops-engineering-team@cru.org"
     terraform  = replace(abspath(path.root), "/^.*/(core|default)/", "")
