@@ -10,3 +10,27 @@ type TextFieldBlock implements Block {
   submitIconId: ID
   submitLabel: String
 }
+
+input TextFieldBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+  submitLabel: String!
+}
+input TextFieldBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+  content: String
+  hint: String
+  submitIconId: ID
+  submitLabel: String
+}
+extend type Mutation {
+  textFieldBlockCreate(input: TextFieldBlockCreateInput!): TextFieldBlock!
+  textFieldBlockUpdate(
+    id: ID!
+    journeyId: ID!
+    input: TextFieldBlockUpdateInput!
+  ): TextFieldBlock
+}
