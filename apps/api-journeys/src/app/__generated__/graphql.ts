@@ -619,6 +619,20 @@ export class StepBlock implements Block {
     parentOrder?: Nullable<number>;
 }
 
+export class TextFieldBlock implements Block {
+    __typename?: 'TextFieldBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    label?: Nullable<string>;
+    content?: Nullable<string>;
+    hint?: Nullable<string>;
+    action?: Nullable<Action>;
+    submitIconId?: Nullable<string>;
+    submitLabel?: Nullable<string>;
+}
+
 export class TypographyBlock implements Block {
     __typename?: 'TypographyBlock';
     id: string;

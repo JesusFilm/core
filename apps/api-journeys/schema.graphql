@@ -435,6 +435,19 @@ input StepBlockUpdateInput {
   locked: Boolean
 }
 
+type TextFieldBlock implements Block {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String
+  content: String
+  hint: String
+  action: Action
+  submitIconId: ID
+  submitLabel: String
+}
+
 enum TypographyVariant {
   h1
   h2
