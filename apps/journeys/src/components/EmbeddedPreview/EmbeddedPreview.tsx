@@ -41,12 +41,10 @@ export function EmbeddedPreview({
     (value: boolean) => {
       if (canFullscreen) {
         setIsFullscreen(value)
+        // TODO: Remove this check once allow="fullscreen" works with Safari 16+
       } else {
         setIsFullContainer(value)
-        const iframe = window.parent.document.getElementById('jfm-iframe')
-        if (iframe != null) {
-          iframe.style.position = value ? 'fixed' : 'absolute'
-        }
+        window.parent.postMessage(value, '*')
       }
     },
     [canFullscreen, setIsFullscreen, setIsFullContainer]

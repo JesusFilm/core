@@ -1,10 +1,32 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 interface IFrameTestProps {
   journeySlug: string
 }
 
 export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
+  // TODO: Remove this check once allow="fullscreen" works with Safari 16+
+  useEffect(() => {
+    const makeIframeFullscreenOnSafari = (event: MessageEvent): void => {
+      if (event.origin === 'http://localhost:4100') {
+        const iframe = document.getElementById('jfm-iframe')
+        if (iframe != null) {
+          if (event.data === true) {
+            iframe.style.position = 'fixed'
+            iframe.style.zIndex = '999999999999999999999'
+          } else {
+            iframe.style.position = 'absolute'
+            iframe.style.zIndex = 'auto'
+          }
+        }
+      }
+    }
+    window.addEventListener('message', makeIframeFullscreenOnSafari)
+    return () => {
+      window.removeEventListener('message', makeIframeFullscreenOnSafari)
+    }
+  }, [])
+
   return (
     <div style={{ width: '600px', height: '100%' }}>
       <div
