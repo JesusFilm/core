@@ -13,6 +13,7 @@ import Box from '@mui/material/Box'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
+import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
 import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
 import { compact } from 'lodash'
@@ -20,9 +21,12 @@ import { gql, useQuery } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
+import { Role } from '../../../../__generated__/globalTypes'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
+import { GetUserRole } from '../../../../__generated__/GetUserRole'
+import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { UserMenu } from './UserMenu'
 import { NavigationListItem } from './NavigationListItem'
 
@@ -128,6 +132,7 @@ export function NavigationDrawer({
   }
 
   const { data } = useQuery<GetMe>(GET_ME)
+  const { data: userRoleData } = useQuery<GetUserRole>(GET_USER_ROLE)
 
   return (
     <StyledNavigationDrawer
@@ -179,7 +184,19 @@ export function NavigationDrawer({
 
         {authUser != null && data?.me != null && (
           <>
-            <Divider sx={{ m: 6, mt: 0, borderColor: 'secondary.main' }} />
+            <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
+
+            {userRoleData?.getUserRole?.roles?.includes(Role.publisher) ===
+              true &&
+              templates && (
+                <NavigationListItem
+                  icon={<ShopTwoRoundedIcon />}
+                  label="Publisher"
+                  selected={title === 'Templates Admin'}
+                  link="/publisher"
+                />
+              )}
+
             <NavigationListItem
               icon={
                 <Avatar

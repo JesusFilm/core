@@ -1,5 +1,6 @@
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
+import { useQuery } from '@apollo/client'
 import {
   AuthAction,
   useAuthUser,
@@ -7,17 +8,50 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+import { useRouter } from 'next/router'
+import { Role } from '../../__generated__/globalTypes'
+import { GetUserRole } from '../../__generated__/GetUserRole'
 import { PageWrapper } from '../../src/components/PageWrapper'
+import { TemplateList } from '../../src/components/TemplateList'
 import i18nConfig from '../../next-i18next.config'
+import JourneyListMenu from '../../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
+import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
 
 function TemplateIndex(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
+  const router = useRouter()
+  const [listEvent, setListEvent] = useState('')
+
+  const handleClick = (event: string): void => {
+    setListEvent(event)
+    // remove event after component lifecycle
+    setTimeout(() => {
+      setListEvent('')
+    }, 1000)
+  }
+
+  const { data } = useQuery<GetUserRole>(GET_USER_ROLE)
+  useEffect(() => {
+    if (
+      data != null &&
+      data?.getUserRole?.roles?.includes(Role.publisher) !== true
+    ) {
+      void router.push('/templates')
+    }
+  }, [data, router])
+
   return (
     <>
-      <NextSeo title="Templates Admin" />
-      <PageWrapper title="Templates Admin" authUser={AuthUser}>
-        {/* Template List for publishers */}
+      <NextSeo title={t('Templates Admin')} />
+      <PageWrapper
+        title={t('Templates Admin')}
+        authUser={AuthUser}
+        menu={<JourneyListMenu router={router} onClick={handleClick} />}
+      >
+        <TemplateList router={router} event={listEvent} authUser={AuthUser} />
       </PageWrapper>
     </>
   )

@@ -9,7 +9,7 @@ import { ImageFields } from '../../../__generated__/ImageFields'
 
 const imageBlock: ImageFields = {
   __typename: 'ImageBlock',
-  id: 'primaryImage.id',
+  id: 'primaryImage.id1',
   parentBlockId: null,
   parentOrder: null,
   src: 'https://images.unsplash.com/photo-1659470160215-2c8916402ff0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1035&q=80',
@@ -72,6 +72,7 @@ export const publishedTemplate: Journey = {
   status: JourneyStatus.published,
   primaryImageBlock: {
     ...imageBlock,
+    id: 'primaryImage.id2',
     src: 'https://images.unsplash.com/photo-1659424766377-70ec767c9d39?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80'
   }
 }
@@ -101,6 +102,7 @@ export const descriptiveTemplate: Journey = {
   },
   primaryImageBlock: {
     ...imageBlock,
+    id: 'primaryImage.id3',
     src: 'https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80'
   }
 }
@@ -113,6 +115,7 @@ export const archivedTemplate = {
   status: JourneyStatus.archived,
   primaryImageBlock: {
     ...imageBlock,
+    id: 'primaryImage.id4',
     src: 'https://images.unsplash.com/photo-1659456194848-a61987e81510?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2071&q=80'
   }
 }
@@ -125,6 +128,7 @@ export const trashedTemplate = {
   status: JourneyStatus.trashed,
   primaryImageBlock: {
     ...imageBlock,
+    id: 'primaryImage.id5',
     src: 'https://images.unsplash.com/photo-1517917822086-6988b4ca9b31?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80'
   }
 }

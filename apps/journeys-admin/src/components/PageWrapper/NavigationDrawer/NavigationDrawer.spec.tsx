@@ -3,6 +3,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { AuthUser } from 'next-firebase-auth'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { Role } from '../../../../__generated__/globalTypes'
+import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { GET_ME } from './NavigationDrawer'
 import { NavigationDrawer } from '.'
 
@@ -31,16 +33,61 @@ describe('NavigationDrawer', () => {
     expect(getByText('Discover')).toBeInTheDocument()
   })
 
-  it('should render all the menu items', () => {
+  it('should render all the menu items', async () => {
     const { getByText } = render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ME
+            },
+            result: {
+              data: {
+                me: {
+                  id: 'userId',
+                  firstName: 'Amin',
+                  lastName: 'One',
+                  imageUrl: 'https://bit.ly/3Gth4Yf',
+                  email: 'amin@email.com'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: GET_USER_ROLE
+            },
+            result: {
+              data: {
+                getUserRole: {
+                  id: 'userId',
+                  roles: [Role.publisher]
+                }
+              }
+            }
+          }
+        ]}
+      >
         <FlagsProvider flags={{ templates: true, reports: true }}>
-          <NavigationDrawer open onClose={onClose} title="Journeys" />
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            title="Journeys"
+            authUser={
+              {
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as AuthUser
+            }
+          />
         </FlagsProvider>
       </MockedProvider>
     )
     expect(getByText('Templates')).toBeInTheDocument()
     expect(getByText('Reports')).toBeInTheDocument()
+    await waitFor(() => expect(getByText('Publisher')).toBeInTheDocument())
   })
 
   it('should select templates button', () => {
@@ -71,8 +118,8 @@ describe('NavigationDrawer', () => {
     )
   })
 
-  it('should have avatar menu', async () => {
-    const { getByRole, getByText } = render(
+  it('should select publisher button', async () => {
+    const { getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -90,13 +137,27 @@ describe('NavigationDrawer', () => {
                 }
               }
             }
+          },
+          {
+            request: {
+              query: GET_USER_ROLE
+            },
+            result: {
+              data: {
+                getUserRole: {
+                  id: 'userId',
+                  roles: [Role.publisher]
+                }
+              }
+            }
           }
         ]}
       >
-        <FlagsProvider>
+        <FlagsProvider flags={{ templates: true }}>
           <NavigationDrawer
             open
             onClose={onClose}
+            title="Templates Admin"
             authUser={
               {
                 displayName: 'Amin One',
@@ -105,13 +166,76 @@ describe('NavigationDrawer', () => {
                 signOut
               } as unknown as AuthUser
             }
-            title="Journeys"
+          />
+        </FlagsProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByTestId('Publisher-list-item')).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    )
+  })
+
+  it('should show profile menu onClick', async () => {
+    const { getByTestId, getByRole, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_ME
+            },
+            result: {
+              data: {
+                me: {
+                  id: 'userId',
+                  firstName: 'Amin',
+                  lastName: 'One',
+                  imageUrl: 'https://bit.ly/3Gth4Yf',
+                  email: 'amin@email.com'
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: GET_USER_ROLE
+            },
+            result: {
+              data: {
+                getUserRole: {
+                  id: 'userId',
+                  roles: [Role.publisher]
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <FlagsProvider flags={{ templates: true }}>
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            title="Templates Admin"
+            authUser={
+              {
+                displayName: 'Amin One',
+                photoURL: 'https://bit.ly/3Gth4Yf',
+                email: 'amin@email.com',
+                signOut
+              } as unknown as AuthUser
+            }
           />
         </FlagsProvider>
       </MockedProvider>
     )
     await waitFor(() =>
       expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
+    )
+    expect(getByTestId('Profile-list-item')).toHaveAttribute(
+      'aria-selected',
+      'false'
     )
     fireEvent.click(getByRole('img', { name: 'Amin One' }))
     await waitFor(() => expect(getByText('Amin One')).toBeInTheDocument())

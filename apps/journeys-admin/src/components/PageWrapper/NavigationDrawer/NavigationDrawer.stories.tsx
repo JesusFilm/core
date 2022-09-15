@@ -5,6 +5,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { AuthUser } from 'next-firebase-auth'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../../libs/storybook'
+import { Role } from '../../../../__generated__/globalTypes'
+import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { GET_ME } from './NavigationDrawer'
 import { NavigationDrawer } from '.'
 
@@ -32,6 +34,19 @@ const Template: Story = ({ ...args }) => {
                 lastName: 'One',
                 imageUrl: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com'
+              }
+            }
+          }
+        },
+        {
+          request: {
+            query: GET_USER_ROLE
+          },
+          result: {
+            data: {
+              getUserRole: {
+                id: 'userId',
+                roles: [Role.publisher]
               }
             }
           }
