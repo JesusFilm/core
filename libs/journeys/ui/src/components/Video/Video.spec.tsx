@@ -73,10 +73,10 @@ describe('Video', () => {
     expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
   })
 
-  it('should render an image if video is null', () => {
+  it('should render an image if videoId is null', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <Video {...block} video={null} />
+        <Video {...block} videoId={null} />
       </MockedProvider>
     )
     expect(getByTestId('VideocamRoundedIcon')).toHaveClass('MuiSvgIcon-root')
