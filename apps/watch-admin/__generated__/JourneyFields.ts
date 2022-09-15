@@ -21,6 +21,13 @@ export interface JourneyFields_language {
   name: JourneyFields_language_name[];
 }
 
+export interface JourneyFields_blocks_TextFieldBlock {
+  __typename: "TextFieldBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+}
+
 export interface JourneyFields_blocks_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
   parentBlockId: string;
@@ -353,18 +360,20 @@ export interface JourneyFields_blocks_VideoBlock {
   posterBlockId: string | null;
   fullsize: boolean | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video.
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
    */
   videoId: string | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
    */
   videoVariantLanguageId: string | null;
   /**
-   * video is only populated when videoID and videoVariant LanguageId are present.
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: video is only populated when videoID and
+   * videoVariantLanguageId are present
    */
   video: JourneyFields_blocks_VideoBlock_video | null;
   /**
@@ -421,7 +430,7 @@ export interface JourneyFields_blocks_VideoTriggerBlock {
   triggerAction: JourneyFields_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type JourneyFields_blocks = JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_GridItemBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
+export type JourneyFields_blocks = JourneyFields_blocks_TextFieldBlock | JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_GridItemBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
 
 export interface JourneyFields_primaryImageBlock {
   __typename: "ImageBlock";
