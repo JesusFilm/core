@@ -283,6 +283,23 @@ export class StepBlockUpdateInput {
     locked?: Nullable<boolean>;
 }
 
+export class TextFieldBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+    label: string;
+    submitLabel: string;
+}
+
+export class TextFieldBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    label?: Nullable<string>;
+    content?: Nullable<string>;
+    hint?: Nullable<string>;
+    submitIconId?: Nullable<string>;
+    submitLabel?: Nullable<string>;
+}
+
 export class TypographyBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -624,6 +641,20 @@ export class StepBlock implements Block {
     parentOrder?: Nullable<number>;
 }
 
+export class TextFieldBlock implements Block {
+    __typename?: 'TextFieldBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    label: string;
+    content?: Nullable<string>;
+    hint?: Nullable<string>;
+    action?: Nullable<Action>;
+    submitIconId?: Nullable<string>;
+    submitLabel?: Nullable<string>;
+}
+
 export class TypographyBlock implements Block {
     __typename?: 'TypographyBlock';
     id: string;
@@ -858,6 +889,10 @@ export abstract class IMutation {
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
     abstract stepBlockUpdate(id: string, journeyId: string, input: StepBlockUpdateInput): StepBlock | Promise<StepBlock>;
+
+    abstract textFieldBlockCreate(input: TextFieldBlockCreateInput): TextFieldBlock | Promise<TextFieldBlock>;
+
+    abstract textFieldBlockUpdate(id: string, journeyId: string, input: TextFieldBlockUpdateInput): Nullable<TextFieldBlock> | Promise<Nullable<TextFieldBlock>>;
 
     abstract typographyBlockCreate(input: TypographyBlockCreateInput): TypographyBlock | Promise<TypographyBlock>;
 
