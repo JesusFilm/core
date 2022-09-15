@@ -21,6 +21,13 @@ export interface GetPublisherTemplate_publisherTemplate_language {
   name: GetPublisherTemplate_publisherTemplate_language_name[];
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_TextFieldBlock {
+  __typename: "TextFieldBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
   parentBlockId: string;
@@ -353,18 +360,20 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
   posterBlockId: string | null;
   fullsize: boolean | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video.
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
    */
   videoId: string | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
    */
   videoVariantLanguageId: string | null;
   /**
-   * video is only populated when videoID and videoVariant LanguageId are present.
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: video is only populated when videoID and
+   * videoVariantLanguageId are present
    */
   video: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video | null;
   /**
@@ -421,7 +430,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   triggerAction: GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock | GetPublisherTemplate_publisherTemplate_blocks_GridItemBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
+export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_TextFieldBlock | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock | GetPublisherTemplate_publisherTemplate_blocks_GridItemBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
 
 export interface GetPublisherTemplate_publisherTemplate_primaryImageBlock {
   __typename: "ImageBlock";

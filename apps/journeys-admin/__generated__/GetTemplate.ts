@@ -21,6 +21,13 @@ export interface GetTemplate_template_language {
   name: GetTemplate_template_language_name[];
 }
 
+export interface GetTemplate_template_blocks_TextFieldBlock {
+  __typename: "TextFieldBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+}
+
 export interface GetTemplate_template_blocks_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
   parentBlockId: string;
@@ -353,18 +360,20 @@ export interface GetTemplate_template_blocks_VideoBlock {
   posterBlockId: string | null;
   fullsize: boolean | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video.
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
    */
   videoId: string | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
    */
   videoVariantLanguageId: string | null;
   /**
-   * video is only populated when videoID and videoVariant LanguageId are present.
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: video is only populated when videoID and
+   * videoVariantLanguageId are present
    */
   video: GetTemplate_template_blocks_VideoBlock_video | null;
   /**
@@ -421,7 +430,7 @@ export interface GetTemplate_template_blocks_VideoTriggerBlock {
   triggerAction: GetTemplate_template_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetTemplate_template_blocks = GetTemplate_template_blocks_ButtonBlock | GetTemplate_template_blocks_CardBlock | GetTemplate_template_blocks_GridContainerBlock | GetTemplate_template_blocks_GridItemBlock | GetTemplate_template_blocks_IconBlock | GetTemplate_template_blocks_ImageBlock | GetTemplate_template_blocks_RadioOptionBlock | GetTemplate_template_blocks_RadioQuestionBlock | GetTemplate_template_blocks_SignUpBlock | GetTemplate_template_blocks_StepBlock | GetTemplate_template_blocks_TypographyBlock | GetTemplate_template_blocks_VideoBlock | GetTemplate_template_blocks_VideoTriggerBlock;
+export type GetTemplate_template_blocks = GetTemplate_template_blocks_TextFieldBlock | GetTemplate_template_blocks_ButtonBlock | GetTemplate_template_blocks_CardBlock | GetTemplate_template_blocks_GridContainerBlock | GetTemplate_template_blocks_GridItemBlock | GetTemplate_template_blocks_IconBlock | GetTemplate_template_blocks_ImageBlock | GetTemplate_template_blocks_RadioOptionBlock | GetTemplate_template_blocks_RadioQuestionBlock | GetTemplate_template_blocks_SignUpBlock | GetTemplate_template_blocks_StepBlock | GetTemplate_template_blocks_TypographyBlock | GetTemplate_template_blocks_VideoBlock | GetTemplate_template_blocks_VideoTriggerBlock;
 
 export interface GetTemplate_template_primaryImageBlock {
   __typename: "ImageBlock";
