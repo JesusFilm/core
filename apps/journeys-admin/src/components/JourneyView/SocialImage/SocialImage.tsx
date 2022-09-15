@@ -40,7 +40,7 @@ export function SocialImage(): ReactElement {
             backgroundColor: 'background.default'
           }}
         >
-          <ImageIcon fontSize="large" />
+          {journey != null ? <ImageIcon fontSize="large" /> : <></>}
         </Box>
       )}
     </Box>

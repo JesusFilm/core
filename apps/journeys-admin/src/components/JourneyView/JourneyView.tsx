@@ -67,7 +67,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
           alignItems: { md: 'flex-start', lg: 'flex-start' }
         }}
       >
-        {journey?.template === true && <SocialImage />}
+        {journeyType === 'Template' && <SocialImage />}
         <Stack
           direction="column"
           spacing={6}
