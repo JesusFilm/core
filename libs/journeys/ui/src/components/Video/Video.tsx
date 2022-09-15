@@ -194,7 +194,12 @@ export function Video({
             {video?.variant?.hls != null && (
               <source src={video.variant.hls} type="application/x-mpegURL" />
             )}
-            {source === 'youTube' && <source src={`https://www.youtube.com/watch?v=${videoId}`} type="video/youtube" />}
+            {source === 'youTube' && (
+              <source
+                src={`https://www.youtube.com/watch?v=${videoId}`}
+                type="video/youtube"
+              />
+            )}
           </video>
           {children?.map(
             (option) =>

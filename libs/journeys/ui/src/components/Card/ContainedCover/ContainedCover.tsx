@@ -111,7 +111,10 @@ export function ContainedCover({
               />
             )}
             {videoBlock?.source === 'youTube' && (
-              <source src={`https://www.youtube.com/watch?v=${videoBlock?.videoId}`} type="video/youtube" />
+              <source
+                src={`https://www.youtube.com/watch?v=${videoBlock?.videoId}`}
+                type="video/youtube"
+              />
             )}
           </video>
         )}
