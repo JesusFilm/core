@@ -2,6 +2,7 @@ import { ReactElement, useRef, useEffect } from 'react'
 import { parseISO, isThisYear, intlFormat } from 'date-fns'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
@@ -50,6 +51,7 @@ export function TemplateCard({
       })
     }
   }, [duplicatedJourneyId, journey])
+
   const nativeLanguage =
     journey?.language.name.find(({ primary }) => primary)?.value ?? ''
   const localLanguage = journey?.language.name.find(
@@ -131,9 +133,8 @@ export function TemplateCard({
       <Stack
         direction="column"
         sx={{
-          width: '60%',
-          display: 'flex',
-          flexGrow: 1
+          width: `calc(100% - 129px)`,
+          display: 'flex'
         }}
       >
         <Link
@@ -161,66 +162,80 @@ export function TemplateCard({
                   </Typography>
                 </>
               ) : (
-                <>
+                <Box sx={{ height: '44px' }}>
                   <Skeleton variant="text" width={120} />
                   <Skeleton variant="text" width={150} />
-                </>
+                </Box>
               )}
             </CardContent>
           </CardActionArea>
         </Link>
 
-        <CardActions sx={{ py: 0, px: 4 }}>
-          {isPublisher === true &&
-            (journey != null ? (
-              <StatusChip status={journey.status} />
-            ) : (
-              <Stack direction="row" alignItems="center" spacing={1.5}>
-                <EditIcon sx={{ fontSize: '14px' }} />
-                <Skeleton variant="text" width={50} />
-              </Stack>
-            ))}
-
+        <CardActions>
           <Stack
             direction="row"
             alignItems="center"
-            spacing={1.5}
-            flexGrow={1}
             sx={{
-              pl: isPublisher === true ? 3 : 0,
-              pt: isPublisher !== true ? 2 : 0
+              mt: isPublisher !== true ? 2 : 0,
+              mx: 2,
+              display: 'flex',
+              justifyContent: 'flex-start',
+              width: '100%'
             }}
           >
+            {isPublisher === true && (
+              <Box sx={{ pr: 3, display: 'flex' }}>
+                {journey != null ? (
+                  <StatusChip status={journey.status} />
+                ) : (
+                  <Stack direction="row" alignItems="center" spacing={1.5}>
+                    <EditIcon sx={{ fontSize: '14px' }} />
+                    <Skeleton variant="text" width={50} />
+                  </Stack>
+                )}
+              </Box>
+            )}
+
             {journey != null ? (
               <>
-                <TranslateRoundedIcon sx={{ fontSize: 13 }} />
-                <Typography variant="body2">{displayLanguage}</Typography>
+                <TranslateRoundedIcon sx={{ fontSize: 13, pl: 0 }} />
+                <Typography variant="body2" noWrap sx={{ ml: 1 }}>
+                  {displayLanguage}
+                </Typography>
               </>
             ) : (
               <>
-                <TranslateRoundedIcon sx={{ fontSize: '14px' }} />
-                <Skeleton variant="text" width={50} />
+                <TranslateRoundedIcon sx={{ fontSize: 13 }} />
+                <Skeleton
+                  variant="text"
+                  width={50}
+                  height={20}
+                  sx={{ ml: 1 }}
+                />
               </>
             )}
-          </Stack>
 
-          {isPublisher === true &&
-            (journey != null ? (
-              <JourneyCardMenu
-                id={journey.id}
-                status={journey.status}
-                slug={journey.slug}
-                published={journey.publishedAt != null}
-                template
-                refetch={refetch}
-              />
-            ) : (
-              <>
-                <IconButton disabled>
-                  <MoreVertIcon />
-                </IconButton>
-              </>
-            ))}
+            {isPublisher === true && (
+              <Box sx={{ display: 'flex', ml: 'auto' }}>
+                {journey != null ? (
+                  <JourneyCardMenu
+                    id={journey.id}
+                    status={journey.status}
+                    slug={journey.slug}
+                    published={journey.publishedAt != null}
+                    template
+                    refetch={refetch}
+                  />
+                ) : (
+                  <>
+                    <IconButton disabled>
+                      <MoreVertIcon />
+                    </IconButton>
+                  </>
+                )}
+              </Box>
+            )}
+          </Stack>
         </CardActions>
       </Stack>
     </Card>

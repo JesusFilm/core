@@ -25,14 +25,20 @@ Default.args = {
   isPublisher: false
 }
 
+export const Loading = Template.bind({})
+Loading.args = {
+  template: undefined,
+  isPublisher: false
+}
+
 export const Complete = Template.bind({})
 Complete.args = {
   template: descriptiveTemplate,
   isPublisher: true
 }
 
-export const Loading = Template.bind({})
-Loading.args = {
+export const CompleteLoading = Template.bind({})
+CompleteLoading.args = {
   template: undefined,
   isPublisher: true
 }
