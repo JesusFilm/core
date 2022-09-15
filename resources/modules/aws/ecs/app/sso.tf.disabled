@@ -1,0 +1,52 @@
+locals {
+  sso_task_name    = element(var.task_names, 0)
+  sso_service_name = "${local.name}-${local.sso_task_name}-${random_string.suffix[local.sso_task_name].result}"
+  sso_name         = length(local.name) > 32 ? "${substr(var.identifier, 0, length(var.identifier) - (length(local.name) - 32))}-${var.env}" : local.name
+}
+
+module "sso" {
+  source = "../../sso/permissions"
+
+  name         = local.sso_name
+  description  = "${var.identifier} (${var.env}) application"
+  landing_page = "https://us-east-1.console.aws.amazon.com/ecs/v2/clusters/${data.aws_ecs_cluster.cluster.cluster_name}/services/${local.sso_service_name}/health?region=us-east-1"
+  tags         = local.tags
+
+  iam_policy_arns          = var.sso_iam_policy_arns
+  iam_policy_document_json = data.aws_iam_policy_document.sso.json
+
+  okta_users  = var.developers
+  okta_groups = var.grant_devops_access ? ["devops-engineering-team"] : []
+}
+
+data "aws_iam_policy_document" "sso" {
+  // Start with task_policy and add additional permissions to make using AWS Console easier.
+  override_policy_documents = [data.aws_iam_policy_document.task_policy_document.json]
+
+  statement {
+    // IAM supports limiting Read to specific clusters/services but console does not, so we grant Read all here.
+    sid = "UserCanReadECS"
+    actions = [
+      "ecs:Describe*",
+      "ecs:List*",
+      "application-autoscaling:Describe*",
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid = "UserCanViewECSHealthWidgets"
+    actions = [
+      "cloudwatch:GetMetricData",
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid = "UserCanViewEC2"
+    actions = [
+      "ec2:DescribeSubnets",
+      "ec2:DescribeInstances",
+      "elasticloadbalancing:Describe*",
+    ]
+    resources = ["*"]
+  }
+}

@@ -1,0 +1,45 @@
+locals {
+  redis_env = var.env == "prod" ? "prod" : "stage"
+
+  maintenance_redis_parameters = {
+    MAINTENANCE_REDIS_HOST     = { value = data.terraform_remote_state.elasticache.outputs["redis_${local.redis_env}_no_eviction_address"] }
+    MAINTENANCE_REDIS_PORT     = { value = "6379" }
+    MAINTENANCE_REDIS_DB_INDEX = { value = tostring(var.maintenance_db_index) }
+  }
+
+  redis_parameters = {
+    SESSION_REDIS_HOST     = { value = data.terraform_remote_state.elasticache.outputs["redis_${local.redis_env}_lru_eviction_address"] }
+    SESSION_REDIS_PORT     = { value = "6379" }
+    SESSION_REDIS_DB_INDEX = { value = tostring(var.redis_db_index) }
+
+    STORAGE_REDIS_HOST     = { value = data.terraform_remote_state.elasticache.outputs["redis_${local.redis_env}_no_eviction_address"] }
+    STORAGE_REDIS_PORT     = { value = "6379" }
+    STORAGE_REDIS_DB_INDEX = { value = tostring(var.redis_db_index) }
+  }
+
+  parameters = merge(
+    var.maintenance_db_index >= 0 ? local.maintenance_redis_parameters : {},
+    var.redis_db_index >= 0 ? local.redis_parameters : {},
+    var.parameters # variable parameters will override built-in parameters
+  )
+}
+
+resource "aws_ssm_parameter" "parameters" {
+  for_each = local.parameters
+
+  name = "/ecs/${var.identifier}/${var.env}/${each.key}"
+  type = "SecureString"
+  value = tostring(try(
+    tostring(each.value), # will error if each.value is an object
+    each.value.value
+  ))
+  overwrite = true
+  tags = merge(
+    local.tags,
+    {
+      param_type   = try(lookup(each.value, "type", "RUNTIME"), "RUNTIME")
+      owner        = try(lookup(each.value, "owner", var.contact_email), var.contact_email),
+      project_name = var.identifier
+    }
+  )
+}

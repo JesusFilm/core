@@ -16,3 +16,15 @@ terraform {
 		}
   }
 }
+
+
+data "terraform_remote_state" "main_alb" {
+  backend = "s3"
+  config = {
+    encrypt        = true
+    bucket         = "jfp-terraform-state"
+    dynamodb_table = "jfp-terraform-state-lock"
+    region         = "us-east-2"
+    key            = "aws/ec2/applications-alb/main/terraform.tfstate"
+  }
+}

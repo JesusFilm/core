@@ -1,9 +1,9 @@
-data "aws_route53_zone" "jesusfilm_org" {
-  name = "jesusfilm.org"
+data "aws_route53_zone" "central_jesusfilm_org" {
+  name = "central.jesusfilm.org"
 }
 
 data "aws_acm_certificate" "central_jesusfilm_org" {
-  domain      = "jesusfilm.org"
+  domain      = "*.central.jesusfilm.org"
   most_recent = true
 }
 
@@ -11,37 +11,91 @@ data "aws_ecr_repository" "main" {
   name = "jfp-${local.identifier}"
 }
 
-resource "aws_ecs_task_definition" "main" {
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = 256
-  memory                   = 512
-  family                   = "graphql"
-  # execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-  # task_role_arn            = aws_iam_role.ecs_task_role.arn
-  container_definitions = jsonencode([{
-   name        = "${local.identifier}-${local.env}"
-   image       = "${data.aws_ecr_repository.main.name}:${local.env}"
-   essential   = true
-   environment = local.environment
-   portMappings = [{
-     protocol      = "tcp"
-     containerPort = "443"
-     hostPort      = local.port
-   }]
-}])
+module "api_gateway" {
+  source = "../../../resources/modules/aws/ecs/app"
+
+  identifier           = local.identifier
+  env                  = local.env
+  contact_email        = local.tags.owner
+  zone_id              = data.aws_route53_zone.central_jesusfilm_org.zone_id
+  extra_tags           = local.tags
+  # developers           = local.developers
+  load_balancer_arn    = data.terraform_remote_state.main_alb.outputs.load_balancer_arn
+  create_target_group  = false
+  create_listener_rule = false
+  # target_group_arn     = aws_lb_target_group.atlantis.arn
+  maintenance_db_index = -1
+
+  # task_policy_override_json   = data.aws_iam_policy_document.atlantis_write_access.json
+  # additional_task_policy_arns = ["arn:aws:iam::aws:policy/ReadOnlyAccess"]
+
+  task_names = ["app"]
+  services = [{
+    name               = "app"
+    launch_type        = "FARGATE"
+    desired_count      = "1"
+    log_dd_source      = "node"
+    memory             = "256"
+    memory_reservation = "512"
+    cpu                = "256"
+    container_port     = "443"
+    host_port          = "4000"
+    network_mode       = "awsvpc"
+    network_configuration = jsonencode({
+      subnets         = data.aws_subnets.main_public.ids
+      # security_groups = [module.atlantis_sg.security_group_id]
+    })
+  }]
 }
+
+# resource "aws_ecs_task_definition" "main" {
+#   network_mode             = "awsvpc"
+#   requires_compatibilities = ["FARGATE"]
+#   cpu                      = 256
+#   memory                   = 512
+#   family                   = "graphql"
+#   execution_role_arn       = aws_iam_role.task_execution_role.arn
+#   task_role_arn            = aws_iam_role.task_role.arn
+#   container_definitions = jsonencode([{
+#    name        = "${local.identifier}-${local.env}"
+#    image       = "${data.aws_ecr_repository.main.repository_url}/${data.aws_ecr_repository.main.name}:${local.env}"
+#    essential   = true
+#    environment = [{
+#     name = "environment"
+#     value= local.environment
+#    }]
+#    portMappings = [{
+#      protocol      = "tcp"
+#      containerPort = local.port
+#      hostPort      = local.port
+#    }]
+# }])
+# }
+
+# resource "aws_iam_role" "task_execution_role" {
+#   name               = "${local.name}-TaskExecutionRole"
+#   description        = "Task Execution Role for ${var.identifier} (${var.env})."
+#   assume_role_policy = data.aws_iam_policy_document.assume_task_execution_document.json
+#   tags               = local.tags
+# }
+
+# resource "aws_iam_role" "task_role" {
+#   name               = "${local.name}-TaskRole"
+#   description        = "Task Role for ${var.identifier} (${var.env})."
+#   assume_role_policy = data.aws_iam_policy_document.assume_task_document.json
+#   tags               = local.tags
+# }
 
 resource "aws_lb" "network_load_balancer" {
   name                             = "${local.identifier}-${local.environment}-nlb"
   load_balancer_type               = "network"
-  subnets                          = data.aws_subnets.prod_public.ids
+  subnets                          = data.aws_subnets.main_public.ids
   enable_cross_zone_load_balancing = true
-  # access_logs {
-  #   bucket  = "cru-alb-logs"
-  #   prefix  = "${local.identifier}/${local.env}"
-  #   enabled = true
-  # }
+  access_logs {
+    bucket  = "jfp-alb-logs"
+    prefix  = "${local.identifier}/${local.env}"
+    enabled = true
+  }
   tags = local.tags
 }
 
@@ -50,7 +104,7 @@ data "aws_vpc" "main" {
   tags = { Name = "Main VPC" }
 }
 
-data "aws_subnets" "prod_public" {
+data "aws_subnets" "main_public" {
   filter {
     name   = "vpc-id"
     values = [data.aws_vpc.main.id]
@@ -115,15 +169,16 @@ resource "aws_lb" "application_load_balancer" {
     data.aws_security_group.default_load_balancer.id,
     aws_security_group.load_balancer.id,
   ]
-  subnets = data.aws_subnets.prod_public.ids
-  # access_logs {
-  #   bucket  = "cru-alb-logs"
-  #   prefix  = "${local.identifier}/${local.environment}"
-  #   enabled = "true"
-  # }
+  subnets = data.aws_subnets.main_public.ids
+  access_logs {
+    bucket  = "jfp-alb-logs"
+    prefix  = "${local.identifier}/${local.environment}"
+    enabled = "true"
+  }
   tags = local.tags
 }
 
+# TODO: Health check?
 resource "aws_lb_target_group" "target_group" {
   name     = "${local.identifier}-${local.environment}"
   port     = 80
@@ -160,7 +215,7 @@ resource "aws_lb_listener" "https" {
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  # certificate_arn   = data.aws_acm_certificate.central_jesusfilm_org.arn
+  certificate_arn   = data.aws_acm_certificate.central_jesusfilm_org.arn
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.target_group.arn
@@ -171,6 +226,6 @@ resource "aws_route53_record" "api" {
   name    = local.public_url
   type    = "CNAME"
   ttl     = 300
-  zone_id = data.aws_route53_zone.jesusfilm_org.zone_id
+  zone_id = data.aws_route53_zone.central_jesusfilm_org.zone_id
   records = [aws_lb.application_load_balancer.dns_name]
 }
