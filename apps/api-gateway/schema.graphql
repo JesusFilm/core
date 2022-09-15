@@ -532,6 +532,8 @@ type Mutation {
   templateLibraryViewEventCreate: TemplateLibraryViewEvent! @join__field(graph: JOURNEYS)
   templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @join__field(graph: JOURNEYS)
   templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @join__field(graph: JOURNEYS)
+  textFieldBlockCreate(input: TextFieldBlockCreateInput!): TextFieldBlock! @join__field(graph: JOURNEYS)
+  textFieldBlockUpdate(id: ID!, input: TextFieldBlockUpdateInput!, journeyId: ID!): TextFieldBlock @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
@@ -798,6 +800,36 @@ input TemplateUseEventInput {
   journeyId: ID!
 }
 
+type TextFieldBlock implements Block {
+  action: Action
+  content: String
+  hint: String
+  id: ID!
+  journeyId: ID!
+  label: String!
+  parentBlockId: ID
+  parentOrder: Int
+  submitIconId: ID
+  submitLabel: String
+}
+
+input TextFieldBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  label: String!
+  parentBlockId: ID!
+  submitLabel: String!
+}
+
+input TextFieldBlockUpdateInput {
+  content: String
+  hint: String
+  label: String
+  parentBlockId: ID
+  submitIconId: ID
+  submitLabel: String
+}
+
 enum ThemeMode {
   dark
   light
@@ -942,10 +974,32 @@ type VideoBlock implements Block {
   action: Action
   autoplay: Boolean
 
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  """
+  description: String
+
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  duration in seconds.
+  """
+  duration: Int
+
   """endAt dictates at which point of time the video should end"""
   endAt: Int
   fullsize: Boolean
   id: ID!
+
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  """
+  image: String
   journeyId: ID!
   muted: Boolean
   parentBlockId: ID
@@ -958,30 +1012,39 @@ type VideoBlock implements Block {
   """
   posterBlockId: ID
 
+  """
+  internal source: videoId, videoVariantLanguageId, and video present
+  youTube source: videoId, title, description, and duration present
+  """
+  source: VideoBlockSource!
+
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
 
   """
-  video is only populated when videoID and videoVariant LanguageId are present.
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: this field is not populated and instead only present
+  in the video field.
+  For other sources this is automatically populated.
+  """
+  title: String
+
+  """
+  internal source videos: video is only populated when videoID and
+  videoVariantLanguageId are present
   """
   video: Video
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video.
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoId: ID
 
   """
-  videoUrl is used when embedding a video from a third-party provider.
-  e.g YouTube, Vimeo etc.
-  """
-  videoUrl: String
-
-  """
-  videoId and videoVariantLanguageId both need to be set to select a video
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoVariantLanguageId: ID
 }
@@ -1010,26 +1073,33 @@ input VideoBlockCreateInput {
   """
   posterBlockId: ID
 
+  """
+  internal source: videoId and videoVariantLanguageId required
+  youTube source: videoId required
+  """
+  source: VideoBlockSource
+
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video.
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoId: ID
 
   """
-  videoUrl is used when embedding a video from a third-party provider.
-  e.g YouTube, Vimeo etc.
-  """
-  videoUrl: String
-
-  """
-  videoId and videoVariantLanguageId both need to be set to select a video
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoVariantLanguageId: ID
+}
+
+enum VideoBlockSource {
+  internal
+  youTube
 }
 
 input VideoBlockUpdateInput {
@@ -1047,24 +1117,26 @@ input VideoBlockUpdateInput {
   """
   posterBlockId: ID
 
+  """
+  internal source: videoId and videoVariantLanguageId required
+  youTube source: videoId required
+  """
+  source: VideoBlockSource
+
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video.
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoId: ID
 
   """
-  videoUrl is used when embedding a video from a third-party provider.
-  e.g YouTube, Vimeo etc.
-  """
-  videoUrl: String
-
-  """
-  videoId and videoVariantLanguageId both need to be set to select a video
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoVariantLanguageId: ID
 }
