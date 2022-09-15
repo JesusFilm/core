@@ -47,7 +47,7 @@ export function ContainedCover({
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
-        // plays URL based videos at the start time
+        // plays youTube videos at the start time
         if (videoBlock?.source === 'youTube') playerRef.current?.play()
       })
       // Video jumps to new time and finishes loading
@@ -95,8 +95,6 @@ export function ContainedCover({
           }
         }}
       >
-        {/* New upcoming field: source: Internal | Youtube */}
-        {/* Update logic check to use source */}
         {videoBlock?.videoId != null && (
           <video
             ref={videoRef}

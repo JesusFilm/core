@@ -53,7 +53,7 @@ export function Video({
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay === true,
-        controls: source !== 'youTube',
+        controls: true,
         nativeControlsForTouch: true,
         userActions: {
           hotkeys: true,
@@ -79,7 +79,7 @@ export function Video({
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
-        // plays URL based videos at the start time
+        // plays youTube videos at the start time
         if (source === 'youTube' && autoplay === true) playerRef.current?.play()
       })
 
@@ -189,7 +189,6 @@ export function Video({
             ref={videoRef}
             className="video-js vjs-big-play-centered"
             playsInline
-            data-setup='{ "youtube": { "ytControls": 2 } }'
           >
             {video?.variant?.hls != null && (
               <source src={video.variant.hls} type="application/x-mpegURL" />
