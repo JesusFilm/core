@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack'
 
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 import { Video } from './Video'
 
 const VideoStory = {
@@ -26,7 +27,11 @@ export const Default: Story = () => {
     action: null,
     videoId: null,
     videoVariantLanguageId: null,
-    videoUrl: null,
+    source: VideoBlockSource.internal,
+    title: null,
+    description: null,
+    duration: null,
+    image: null,
     video: null,
     posterBlockId: null,
     children: []
@@ -60,7 +65,11 @@ export const Filled: Story = () => {
     action: null,
     videoId: '2_0-FallingPlates',
     videoVariantLanguageId: '529',
-    videoUrl: null,
+    source: VideoBlockSource.internal,
+    title: null,
+    description: null,
+    duration: null,
+    image: null,
     video: {
       __typename: 'Video',
       id: '2_0-FallingPlates',

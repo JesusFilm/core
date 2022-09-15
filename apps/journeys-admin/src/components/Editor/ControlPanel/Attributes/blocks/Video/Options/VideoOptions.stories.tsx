@@ -5,6 +5,7 @@ import MuiDrawer from '@mui/material/Drawer'
 import { MockedProvider } from '@apollo/client/testing'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoList/VideoList'
@@ -37,7 +38,11 @@ const video: TreeBlock<VideoBlock> = {
   action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
-  videoUrl: null,
+  source: VideoBlockSource.internal,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',

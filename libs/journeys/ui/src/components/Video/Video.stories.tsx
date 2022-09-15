@@ -29,7 +29,11 @@ const videoBlock: TreeBlock<VideoFields> = {
   muted: false,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
-  videoUrl: null,
+  source: null,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -144,7 +148,8 @@ Youtube.args = {
   ...videoBlock,
   video: null,
   autoplay: true,
-  videoUrl: 'https://www.youtube.com/watch?v=F7k5pqBVinA'
+  source: 'Youtube',
+  videoId: 'F7k5pqBVinA'
 }
 
 export const NoVideoSource = Template.bind({})

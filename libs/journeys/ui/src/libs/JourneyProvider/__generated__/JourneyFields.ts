@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, UserJourneyRole } from "./../../../../__generated__/globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, UserJourneyRole } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: JourneyFields
@@ -19,6 +19,13 @@ export interface JourneyFields_language {
   __typename: "Language";
   id: string;
   name: JourneyFields_language_name[];
+}
+
+export interface JourneyFields_blocks_TextFieldBlock {
+  __typename: "TextFieldBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
 }
 
 export interface JourneyFields_blocks_ButtonBlock_action_NavigateAction {
@@ -353,23 +360,50 @@ export interface JourneyFields_blocks_VideoBlock {
   posterBlockId: string | null;
   fullsize: boolean | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video.
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
    */
   videoId: string | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
    */
   videoVariantLanguageId: string | null;
   /**
-   * videoUrl is used when embedding a video from a third-party provider.
-   * e.g YouTube, Vimeo etc.
+   * internal source: videoId, videoVariantLanguageId, and video present
+   * youTube source: videoId, title, description, and duration present
    */
-  videoUrl: string | null;
+  source: VideoBlockSource;
   /**
-   * video is only populated when videoID and videoVariant LanguageId are present.
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: this field is not populated and instead only present
+   * in the video field.
+   * For other sources this is automatically populated.
+   */
+  title: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  description: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  image: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   * duration in seconds.
+   */
+  duration: number | null;
+  /**
+   * internal source videos: video is only populated when videoID and
+   * videoVariantLanguageId are present
    */
   video: JourneyFields_blocks_VideoBlock_video | null;
   /**
@@ -426,7 +460,7 @@ export interface JourneyFields_blocks_VideoTriggerBlock {
   triggerAction: JourneyFields_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type JourneyFields_blocks = JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_GridItemBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
+export type JourneyFields_blocks = JourneyFields_blocks_TextFieldBlock | JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_GridItemBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
 
 export interface JourneyFields_primaryImageBlock {
   __typename: "ImageBlock";

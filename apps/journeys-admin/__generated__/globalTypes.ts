@@ -144,6 +144,11 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
+export enum VideoBlockSource {
+  internal = "internal",
+  youTube = "youTube",
+}
+
 export enum VideoType {
   episode = "episode",
   playlist = "playlist",
@@ -333,9 +338,9 @@ export interface VideoBlockCreateInput {
   muted?: boolean | null;
   parentBlockId: string;
   posterBlockId?: string | null;
+  source?: VideoBlockSource | null;
   startAt?: number | null;
   videoId?: string | null;
-  videoUrl?: string | null;
   videoVariantLanguageId?: string | null;
 }
 
@@ -345,9 +350,9 @@ export interface VideoBlockUpdateInput {
   fullsize?: boolean | null;
   muted?: boolean | null;
   posterBlockId?: string | null;
+  source?: VideoBlockSource | null;
   startAt?: number | null;
   videoId?: string | null;
-  videoUrl?: string | null;
   videoVariantLanguageId?: string | null;
 }
 

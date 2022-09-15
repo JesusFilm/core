@@ -5,7 +5,11 @@ import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../__generated__/GetJourney'
-import { ThemeName, ThemeMode } from '../../../../../__generated__/globalTypes'
+import {
+  ThemeName,
+  ThemeMode,
+  VideoBlockSource
+} from '../../../../../__generated__/globalTypes'
 import { Attributes } from '.'
 
 describe('Attributes', () => {
@@ -72,7 +76,11 @@ describe('Attributes', () => {
     posterBlockId: 'posterBlockId',
     videoId: '2_0-FallingPlates',
     videoVariantLanguageId: '529',
-    videoUrl: null,
+    source: VideoBlockSource.internal,
+    title: null,
+    description: null,
+    duration: null,
+    image: null,
     video: {
       __typename: 'Video',
       id: '2_0-FallingPlates',

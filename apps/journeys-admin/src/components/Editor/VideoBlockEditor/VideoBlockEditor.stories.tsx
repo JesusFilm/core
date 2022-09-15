@@ -11,7 +11,10 @@ import {
 } from '../../../../__generated__/GetJourney'
 import { GetVideoVariantLanguages_video } from '../../../../__generated__/GetVideoVariantLanguages'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { ThemeMode } from '../../../../__generated__/globalTypes'
+import {
+  ThemeMode,
+  VideoBlockSource
+} from '../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../ThemeProvider'
 import { videos } from '../VideoLibrary/VideoList/VideoListData'
 import { GET_VIDEOS } from '../VideoLibrary/VideoList/VideoList'
@@ -56,7 +59,11 @@ const video: TreeBlock<VideoBlock> = {
   action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
-  videoUrl: null,
+  source: VideoBlockSource.internal,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',

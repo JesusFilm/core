@@ -116,6 +116,11 @@ export enum TypographyAlign {
     right = "right"
 }
 
+export enum VideoBlockSource {
+    internal = "internal",
+    youTube = "youTube"
+}
+
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"
@@ -278,6 +283,23 @@ export class StepBlockUpdateInput {
     locked?: Nullable<boolean>;
 }
 
+export class TextFieldBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+    label: string;
+    submitLabel: string;
+}
+
+export class TextFieldBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    label?: Nullable<string>;
+    content?: Nullable<string>;
+    hint?: Nullable<string>;
+    submitIconId?: Nullable<string>;
+    submitLabel?: Nullable<string>;
+}
+
 export class TypographyBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -307,7 +329,7 @@ export class VideoBlockCreateInput {
     autoplay?: Nullable<boolean>;
     videoId?: Nullable<string>;
     videoVariantLanguageId?: Nullable<string>;
-    videoUrl?: Nullable<string>;
+    source?: Nullable<VideoBlockSource>;
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
     isCover?: Nullable<boolean>;
@@ -320,7 +342,7 @@ export class VideoBlockUpdateInput {
     autoplay?: Nullable<boolean>;
     videoId?: Nullable<string>;
     videoVariantLanguageId?: Nullable<string>;
-    videoUrl?: Nullable<string>;
+    source?: Nullable<VideoBlockSource>;
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
 }
@@ -619,6 +641,20 @@ export class StepBlock implements Block {
     parentOrder?: Nullable<number>;
 }
 
+export class TextFieldBlock implements Block {
+    __typename?: 'TextFieldBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    label: string;
+    content?: Nullable<string>;
+    hint?: Nullable<string>;
+    action?: Nullable<Action>;
+    submitIconId?: Nullable<string>;
+    submitLabel?: Nullable<string>;
+}
+
 export class TypographyBlock implements Block {
     __typename?: 'TypographyBlock';
     id: string;
@@ -646,7 +682,11 @@ export class VideoBlock implements Block {
     video?: Nullable<Video>;
     videoId?: Nullable<string>;
     videoVariantLanguageId?: Nullable<string>;
-    videoUrl?: Nullable<string>;
+    source: VideoBlockSource;
+    title?: Nullable<string>;
+    description?: Nullable<string>;
+    image?: Nullable<string>;
+    duration?: Nullable<number>;
     action?: Nullable<Action>;
 }
 
@@ -849,6 +889,10 @@ export abstract class IMutation {
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
     abstract stepBlockUpdate(id: string, journeyId: string, input: StepBlockUpdateInput): StepBlock | Promise<StepBlock>;
+
+    abstract textFieldBlockCreate(input: TextFieldBlockCreateInput): TextFieldBlock | Promise<TextFieldBlock>;
+
+    abstract textFieldBlockUpdate(id: string, journeyId: string, input: TextFieldBlockUpdateInput): Nullable<TextFieldBlock> | Promise<Nullable<TextFieldBlock>>;
 
     abstract typographyBlockCreate(input: TypographyBlockCreateInput): TypographyBlock | Promise<TypographyBlock>;
 

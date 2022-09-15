@@ -7,6 +7,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../ThemeProvider'
 import { VideoBlockEditorSettingsPoster } from './VideoBlockEditorSettingsPoster'
 import { POSTER_IMAGE_BLOCK_UPDATE } from './Dialog/VideoBlockEditorSettingsPosterDialog'
@@ -24,7 +25,11 @@ const video: VideoBlock = {
   action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
-  videoUrl: null,
+  source: VideoBlockSource.internal,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',

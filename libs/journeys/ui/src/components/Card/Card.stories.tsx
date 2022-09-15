@@ -122,7 +122,11 @@ const video: TreeBlock<VideoFields> = {
   posterBlockId: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
-  videoUrl: null,
+  source: null,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -215,7 +219,8 @@ VideoYoutubeDefault.args = {
     {
       ...video,
       video: null,
-      videoUrl: 'https://www.youtube.com/watch?v=F7k5pqBVinA'
+      videoId: 'F7k5pqBVinA',
+      source: 'Youtube'
     }
   ]
 }

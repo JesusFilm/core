@@ -3,11 +3,18 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant } from "./../../../../__generated__/globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: BlockFields
 // ====================================================
+
+export interface BlockFields_TextFieldBlock {
+  __typename: "TextFieldBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+}
 
 export interface BlockFields_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
@@ -341,23 +348,50 @@ export interface BlockFields_VideoBlock {
   posterBlockId: string | null;
   fullsize: boolean | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video.
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
    */
   videoId: string | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
    */
   videoVariantLanguageId: string | null;
   /**
-   * videoUrl is used when embedding a video from a third-party provider.
-   * e.g YouTube, Vimeo etc.
+   * internal source: videoId, videoVariantLanguageId, and video present
+   * youTube source: videoId, title, description, and duration present
    */
-  videoUrl: string | null;
+  source: VideoBlockSource;
   /**
-   * video is only populated when videoID and videoVariant LanguageId are present.
-   * Relates to videos from the Jesus Film Project video library.
+   * internal source videos: this field is not populated and instead only present
+   * in the video field.
+   * For other sources this is automatically populated.
+   */
+  title: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  description: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  image: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   * duration in seconds.
+   */
+  duration: number | null;
+  /**
+   * internal source videos: video is only populated when videoID and
+   * videoVariantLanguageId are present
    */
   video: BlockFields_VideoBlock_video | null;
   /**
@@ -414,4 +448,4 @@ export interface BlockFields_VideoTriggerBlock {
   triggerAction: BlockFields_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockFields = BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
+export type BlockFields = BlockFields_TextFieldBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
