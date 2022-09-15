@@ -1,6 +1,7 @@
+import Box, { BoxProps } from '@mui/material/Box'
 import { ReactElement, ReactNode } from 'react'
 
-interface TabPanelProps {
+interface TabPanelProps extends BoxProps {
   name: string
   children?: ReactNode
   value: number
@@ -14,7 +15,7 @@ export function TabPanel({
   ...other
 }: TabPanelProps): ReactElement {
   return (
-    <div
+    <Box
       role="tabpanel"
       hidden={value !== index}
       id={`${name}-tabpanel-${index}`}
@@ -22,7 +23,7 @@ export function TabPanel({
       {...other}
     >
       {children}
-    </div>
+    </Box>
   )
 }
 

@@ -11,6 +11,8 @@ import Toolbar from '@mui/material/Toolbar'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
+import VideocamIcon from '@mui/icons-material/Videocam'
+import YouTubeIcon from '@mui/icons-material/YouTube'
 import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
 import { VideoFromYouTube } from './VideoFromYouTube'
 import { VideoFromLocal } from './VideoFromLocal'
@@ -54,7 +56,8 @@ export function VideoLibrary({
         '& .MuiDrawer-paper': {
           boxSizing: 'border-box',
           width: smUp ? DRAWER_WIDTH : '100%',
-          height: '100%'
+          height: '100%',
+          display: 'flex'
         }
       }}
     >
@@ -77,7 +80,6 @@ export function VideoLibrary({
           </IconButton>
         </Toolbar>
       </AppBar>
-
       <Box
         sx={{
           borderBottom: 1,
@@ -91,21 +93,33 @@ export function VideoLibrary({
           aria-label="video library tabs"
         >
           <Tab
+            icon={<VideocamIcon />}
             label="Library"
             {...tabA11yProps('video-library-panel', 0)}
             sx={{ flexGrow: 1 }}
           />
           <Tab
+            icon={<YouTubeIcon />}
             label="YouTube"
             {...tabA11yProps('video-library-panel', 1)}
             sx={{ flexGrow: 1 }}
           />
         </Tabs>
       </Box>
-      <TabPanel name="video-library-panel" value={activeTab} index={0}>
+      <TabPanel
+        name="video-library-panel"
+        value={activeTab}
+        index={0}
+        sx={{ flexGrow: 1, overflow: 'scroll' }}
+      >
         <VideoFromLocal onSelect={onSelect} />
       </TabPanel>
-      <TabPanel name="video-library-panel" value={activeTab} index={1}>
+      <TabPanel
+        name="video-library-panel"
+        value={activeTab}
+        index={1}
+        sx={{ flexGrow: 1, overflow: 'scroll' }}
+      >
         <VideoFromYouTube onSelect={onSelect} />
       </TabPanel>
     </Drawer>
