@@ -532,6 +532,8 @@ type Mutation {
   templateLibraryViewEventCreate: TemplateLibraryViewEvent! @join__field(graph: JOURNEYS)
   templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @join__field(graph: JOURNEYS)
   templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @join__field(graph: JOURNEYS)
+  textFieldBlockCreate(input: TextFieldBlockCreateInput!): TextFieldBlock! @join__field(graph: JOURNEYS)
+  textFieldBlockUpdate(id: ID!, input: TextFieldBlockUpdateInput!, journeyId: ID!): TextFieldBlock @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
@@ -796,6 +798,36 @@ type TemplateUseEvent implements Event {
 
 input TemplateUseEventInput {
   journeyId: ID!
+}
+
+type TextFieldBlock implements Block {
+  action: Action
+  content: String
+  hint: String
+  id: ID!
+  journeyId: ID!
+  label: String!
+  parentBlockId: ID
+  parentOrder: Int
+  submitIconId: ID
+  submitLabel: String
+}
+
+input TextFieldBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  label: String!
+  parentBlockId: ID!
+  submitLabel: String!
+}
+
+input TextFieldBlockUpdateInput {
+  content: String
+  hint: String
+  label: String
+  parentBlockId: ID
+  submitIconId: ID
+  submitLabel: String
 }
 
 enum ThemeMode {
