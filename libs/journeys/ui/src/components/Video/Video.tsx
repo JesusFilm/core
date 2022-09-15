@@ -10,6 +10,7 @@ import { useEditor } from '../../libs/EditorProvider'
 import { blurImage } from '../../libs/blurImage'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoTrigger } from '../VideoTrigger'
+import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
 import { VideoEvents } from '../VideoEvents'
 import { VideoFields } from './__generated__/VideoFields'
@@ -20,6 +21,8 @@ const VIDEO_FOREGROUND_COLOR = '#FFF'
 export function Video({
   id: blockId,
   video,
+  source,
+  videoId,
   autoplay,
   startAt,
   endAt,
@@ -50,7 +53,7 @@ export function Video({
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay === true,
-        controls: true,
+        controls: source !== 'youTube',
         nativeControlsForTouch: true,
         userActions: {
           hotkeys: true,
@@ -76,6 +79,8 @@ export function Video({
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
+        // plays URL based videos at the start time
+        if (source === 'youTube' && autoplay === true) playerRef.current?.play()
       })
 
       if (selectedBlock === undefined) {
@@ -112,7 +117,8 @@ export function Video({
     blockId,
     posterBlock,
     selectedBlock,
-    blurBackground
+    blurBackground,
+    source
   ])
 
   useEffect(() => {
@@ -177,14 +183,18 @@ export function Video({
           endAt={endAt}
         />
       )}
-      {video?.variant?.hls != null ? (
+      {videoId != null ? (
         <>
           <video
             ref={videoRef}
             className="video-js vjs-big-play-centered"
             playsInline
+            data-setup='{ "youtube": { "ytControls": 2 } }'
           >
-            <source src={video.variant.hls} type="application/x-mpegURL" />
+            {video?.variant?.hls != null && (
+              <source src={video.variant.hls} type="application/x-mpegURL" />
+            )}
+            {source === 'youTube' && <source src={`https://www.youtube.com/watch?v=${videoId}`} type="video/youtube" />}
           </video>
           {children?.map(
             (option) =>

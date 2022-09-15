@@ -19,6 +19,11 @@ const block: TreeBlock<VideoFields> = {
   action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
+  source: null,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',

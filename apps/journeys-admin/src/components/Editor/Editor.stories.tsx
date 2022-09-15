@@ -11,7 +11,8 @@ import {
   JourneyStatus,
   ThemeMode,
   ThemeName,
-  TypographyVariant
+  TypographyVariant,
+  VideoBlockSource
 } from '../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks } from '../../../__generated__/GetJourney'
 import { PageWrapper } from '../PageWrapper'
@@ -109,6 +110,11 @@ const blocks: GetJourney_journey_blocks[] = [
     muted: true,
     videoId: '2_0-FallingPlates',
     videoVariantLanguageId: '529',
+    source: VideoBlockSource.internal,
+    title: null,
+    description: null,
+    duration: null,
+    image: null,
     video: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
@@ -409,6 +415,11 @@ const blocks: GetJourney_journey_blocks[] = [
     muted: true,
     videoId: '2_0-FallingPlates',
     videoVariantLanguageId: '529',
+    source: VideoBlockSource.internal,
+    title: null,
+    description: null,
+    duration: null,
+    image: null,
     video: {
       __typename: 'Video',
       id: '2_0-FallingPlates',

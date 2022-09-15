@@ -2,6 +2,7 @@ import { render } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 import { Video } from './Video'
 
 describe('Video', () => {
@@ -19,6 +20,11 @@ describe('Video', () => {
       action: null,
       videoId: '2_0-FallingPlates',
       videoVariantLanguageId: '529',
+      source: VideoBlockSource.internal,
+      title: null,
+      description: null,
+      duration: null,
+      image: null,
       video: {
         __typename: 'Video',
         id: '2_0-FallingPlates',

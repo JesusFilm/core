@@ -4,6 +4,7 @@ import { MockedProvider } from '@apollo/client/testing'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { GetVideoVariantLanguages_video } from '../../../../__generated__/GetVideoVariantLanguages'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../ThemeProvider'
 import { GET_VIDEO_VARIANT_LANGUAGES } from './VideoBlockEditor'
 import { VideoBlockEditor } from '.'
@@ -21,6 +22,11 @@ const video: TreeBlock<VideoBlock> = {
   action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
+  source: VideoBlockSource.internal,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
