@@ -171,13 +171,12 @@ export function TemplateCard({
           </CardActionArea>
         </Link>
 
-        <CardActions>
+        <CardActions sx={{ px: 4, py: 2 }}>
           <Stack
             direction="row"
             alignItems="center"
             sx={{
               mt: isPublisher !== true ? 2 : 0,
-              mx: 2,
               display: 'flex',
               justifyContent: 'flex-start',
               width: '100%'
@@ -190,7 +189,7 @@ export function TemplateCard({
                 ) : (
                   <Stack direction="row" alignItems="center" spacing={1.5}>
                     <EditIcon sx={{ fontSize: '14px' }} />
-                    <Skeleton variant="text" width={50} />
+                    <Skeleton variant="text" width={50} height={20} />
                   </Stack>
                 )}
               </Box>
@@ -205,12 +204,12 @@ export function TemplateCard({
               </>
             ) : (
               <>
-                <TranslateRoundedIcon sx={{ fontSize: 13 }} />
+                <TranslateRoundedIcon sx={{ fontSize: 13, p: 0 }} />
                 <Skeleton
                   variant="text"
                   width={50}
                   height={20}
-                  sx={{ ml: 1 }}
+                  sx={{ ml: 1, p: 0 }}
                 />
               </>
             )}
