@@ -51,7 +51,7 @@ export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
             height: '100%',
             border: 'none'
           }}
-          allowFullScreen
+          allow="fullscreen"
         />
       </div>
     </div>
