@@ -10,7 +10,8 @@ import {
   ButtonColor,
   ButtonSize,
   IconName,
-  IconSize
+  IconSize,
+  VideoBlockSource
 } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
@@ -122,7 +123,7 @@ const video: TreeBlock<VideoFields> = {
   posterBlockId: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
-  source: null,
+  source: VideoBlockSource.internal,
   title: null,
   description: null,
   duration: null,
@@ -220,7 +221,7 @@ VideoYoutubeDefault.args = {
       ...video,
       video: null,
       videoId: 'F7k5pqBVinA',
-      source: 'youTube'
+      source: VideoBlockSource.youTube
     }
   ]
 }

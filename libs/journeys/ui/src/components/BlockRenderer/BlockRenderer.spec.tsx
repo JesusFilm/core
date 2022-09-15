@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../RadioQuestion/__generated__/RadioQuestionFields'
@@ -529,7 +530,7 @@ describe('BlockRenderer', () => {
       id: 'main',
       videoId: '2_0-FallingPlates',
       videoVariantLanguageId: '529',
-      source: 'interal',
+      source: VideoBlockSource.internal,
       title: null,
       description: null,
       duration: null,
@@ -576,7 +577,7 @@ describe('BlockRenderer', () => {
       id: 'main',
       videoId: '2_0-FallingPlates',
       videoVariantLanguageId: '529',
-      source: 'internal',
+      source: VideoBlockSource.internal,
       title: null,
       description: null,
       duration: null,
