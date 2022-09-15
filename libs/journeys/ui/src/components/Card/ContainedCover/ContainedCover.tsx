@@ -31,11 +31,6 @@ export function ContainedCover({
   const theme = useTheme()
   const [loading, setLoading] = useState(true)
 
-  // new upcoming field: source
-  // update logic with new field
-  const videoLink =
-    videoBlock?.video?.variant?.hls != null || videoBlock?.videoUrl != null
-
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
@@ -53,7 +48,7 @@ export function ContainedCover({
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
         // plays URL based videos at the start time
-        if (videoBlock?.videoUrl != null) playerRef.current?.play()
+        if (videoBlock?.source === 'youTube') playerRef.current?.play()
       })
       // Video jumps to new time and finishes loading
       playerRef.current.on('seeked', () => {
@@ -102,7 +97,7 @@ export function ContainedCover({
       >
         {/* New upcoming field: source: Internal | Youtube */}
         {/* Update logic check to use source */}
-        {videoLink && (
+        {videoBlock?.videoId != null && (
           <video
             ref={videoRef}
             className="video-js"
@@ -115,8 +110,8 @@ export function ContainedCover({
                 type="application/x-mpegURL"
               />
             )}
-            {videoBlock?.videoUrl != null && (
-              <source src={videoBlock?.videoUrl} type="video/youtube" />
+            {videoBlock?.source === 'youTube' && (
+              <source src={`https://www.youtube.com/watch?v=${videoBlock?.videoId}`} type="video/youtube" />
             )}
           </video>
         )}

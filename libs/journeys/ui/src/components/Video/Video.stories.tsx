@@ -148,7 +148,7 @@ Youtube.args = {
   ...videoBlock,
   video: null,
   autoplay: true,
-  source: 'Youtube',
+  source: 'youTube',
   videoId: 'F7k5pqBVinA'
 }
 

@@ -21,7 +21,8 @@ const VIDEO_FOREGROUND_COLOR = '#FFF'
 export function Video({
   id: blockId,
   video,
-  videoUrl,
+  source,
+  videoId,
   autoplay,
   startAt,
   endAt,
@@ -48,13 +49,11 @@ export function Video({
       : undefined
   }, [posterBlock, theme])
 
-  const videoLink = video?.variant?.hls != null || videoUrl != null
-
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay === true,
-        controls: videoUrl == null,
+        controls: source !== 'youTube',
         nativeControlsForTouch: true,
         userActions: {
           hotkeys: true,
@@ -81,7 +80,7 @@ export function Video({
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
         // plays URL based videos at the start time
-        if (videoUrl != null && autoplay === true) playerRef.current?.play()
+        if (source === 'youTube' && autoplay === true) playerRef.current?.play()
       })
 
       if (selectedBlock === undefined) {
@@ -119,8 +118,7 @@ export function Video({
     posterBlock,
     selectedBlock,
     blurBackground,
-    videoLink,
-    videoUrl
+    source
   ])
 
   useEffect(() => {
@@ -185,7 +183,7 @@ export function Video({
           endAt={endAt}
         />
       )}
-      {videoLink ? (
+      {videoId != null ? (
         <>
           <video
             ref={videoRef}
@@ -196,7 +194,7 @@ export function Video({
             {video?.variant?.hls != null && (
               <source src={video.variant.hls} type="application/x-mpegURL" />
             )}
-            {videoUrl != null && <source src={videoUrl} type="video/youtube" />}
+            {source === 'youTube' && <source src={`https://www.youtube.com/watch?v=${videoId}`} type="video/youtube" />}
           </video>
           {children?.map(
             (option) =>

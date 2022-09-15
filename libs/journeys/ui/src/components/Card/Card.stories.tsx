@@ -220,7 +220,7 @@ VideoYoutubeDefault.args = {
       ...video,
       video: null,
       videoId: 'F7k5pqBVinA',
-      source: 'Youtube'
+      source: 'youTube'
     }
   ]
 }
