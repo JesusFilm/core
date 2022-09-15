@@ -1,6 +1,6 @@
 import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
+import Typography from '@mui/material/Typography'
 import { gql, useQuery } from '@apollo/client'
 import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
 import { VideoSearch } from '../VideoSearch'
@@ -37,7 +37,7 @@ interface VideoFromLocalProps {
 export function VideoFromLocal({
   onSelect
 }: VideoFromLocalProps): ReactElement {
-  const [searchQuery, setSearchQuery] = useState<string>()
+  const [searchQuery, setSearchQuery] = useState<string>('')
   const [videos, setVideos] = useState<VideoListProps['videos']>()
   const { loading, data, fetchMore } = useQuery<GetVideos>(GET_VIDEOS, {
     notifyOnNetworkStatusChange: true,
@@ -74,8 +74,15 @@ export function VideoFromLocal({
   return (
     <>
       <VideoSearch value={searchQuery} onChange={setSearchQuery} />
-      <Divider />
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+        {searchQuery === '' && (
+          <Box sx={{ pb: 4, px: 6 }}>
+            <Typography variant="overline" color="primary">
+              Jesus Film Library
+            </Typography>
+            <Typography variant="h6">Featured Videos</Typography>
+          </Box>
+        )}
         <VideoList
           onSelect={onSelect}
           loading={loading}

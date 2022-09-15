@@ -24,7 +24,6 @@ export const DRAWER_WIDTH = 328
 const fetcher = async (
   id: string
 ): Promise<YoutubeVideosData['items'][number]> => {
-  console.log(id)
   const videosQuery = new URLSearchParams({
     part: 'snippet,contentDetails',
     key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '',

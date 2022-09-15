@@ -50,8 +50,7 @@ export function VideoListItem({
     <>
       <ListItemButton
         onClick={handleOpen}
-        sx={{ alignItems: 'flex-start', p: 3 }}
-        divider
+        sx={{ alignItems: 'flex-start', py: 4, px: 6 }}
       >
         <ListItemText
           primary={title}

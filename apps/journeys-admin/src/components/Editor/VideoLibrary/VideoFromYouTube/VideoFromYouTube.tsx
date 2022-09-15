@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import useSWRInfinite from 'swr/infinite'
 import { reduce } from 'lodash'
+import Typography from '@mui/material/Typography'
 import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
 import { VideoSearch } from '../VideoSearch'
 import { VideoList } from '../VideoList'
@@ -98,11 +99,23 @@ export function VideoFromYouTube({
     (result, request) => [...result, ...request.items],
     [] as Required<VideoListProps>['videos']
   )
+
   return (
     <>
-      <VideoSearch value={url} onChange={setUrl} />
-      <Divider />
+      <VideoSearch
+        value={url}
+        onChange={setUrl}
+        label="Paste any YouTube Link"
+      />
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+        {videos.length > 1 && (
+          <Box sx={{ pb: 4, px: 6 }}>
+            <Typography variant="overline" color="primary">
+              YouTube
+            </Typography>
+            <Typography variant="h6">Featured Videos</Typography>
+          </Box>
+        )}
         <VideoList
           onSelect={onSelect}
           loading={loading}
