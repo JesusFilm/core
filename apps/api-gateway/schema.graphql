@@ -974,10 +974,32 @@ type VideoBlock implements Block {
   action: Action
   autoplay: Boolean
 
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  """
+  description: String
+
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  duration in seconds.
+  """
+  duration: Int
+
   """endAt dictates at which point of time the video should end"""
   endAt: Int
   fullsize: Boolean
   id: ID!
+
+  """
+  internal source videos: this field is not populated and instead only present
+  in the video field
+  For other sources this is automatically populated.
+  """
+  image: String
   journeyId: ID!
   muted: Boolean
   parentBlockId: ID
@@ -990,30 +1012,39 @@ type VideoBlock implements Block {
   """
   posterBlockId: ID
 
+  """
+  internal source: videoId, videoVariantLanguageId, and video present
+  youTube source: videoId, title, description, and duration present
+  """
+  source: VideoBlockSource!
+
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
 
   """
-  video is only populated when videoID and videoVariant LanguageId are present.
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: this field is not populated and instead only present
+  in the video field.
+  For other sources this is automatically populated.
+  """
+  title: String
+
+  """
+  internal source videos: video is only populated when videoID and
+  videoVariantLanguageId are present
   """
   video: Video
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video.
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoId: ID
 
   """
-  videoUrl is used when embedding a video from a third-party provider.
-  e.g YouTube, Vimeo etc.
-  """
-  videoUrl: String
-
-  """
-  videoId and videoVariantLanguageId both need to be set to select a video
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoVariantLanguageId: ID
 }
@@ -1042,26 +1073,33 @@ input VideoBlockCreateInput {
   """
   posterBlockId: ID
 
+  """
+  internal source: videoId and videoVariantLanguageId required
+  youTube source: videoId required
+  """
+  source: VideoBlockSource
+
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video.
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoId: ID
 
   """
-  videoUrl is used when embedding a video from a third-party provider.
-  e.g YouTube, Vimeo etc.
-  """
-  videoUrl: String
-
-  """
-  videoId and videoVariantLanguageId both need to be set to select a video
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoVariantLanguageId: ID
+}
+
+enum VideoBlockSource {
+  internal
+  youTube
 }
 
 input VideoBlockUpdateInput {
@@ -1079,24 +1117,26 @@ input VideoBlockUpdateInput {
   """
   posterBlockId: ID
 
+  """
+  internal source: videoId and videoVariantLanguageId required
+  youTube source: videoId required
+  """
+  source: VideoBlockSource
+
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int
 
   """
-  videoId and videoVariantLanguageId both need to be set to select a video.
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoId: ID
 
   """
-  videoUrl is used when embedding a video from a third-party provider.
-  e.g YouTube, Vimeo etc.
-  """
-  videoUrl: String
-
-  """
-  videoId and videoVariantLanguageId both need to be set to select a video
-  Relates to videos from the Jesus Film Project video library.
+  internal source videos: videoId and videoVariantLanguageId both need to be set
+  to select a video.
+  For other sources only videoId needs to be set.
   """
   videoVariantLanguageId: ID
 }
