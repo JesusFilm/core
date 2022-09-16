@@ -104,12 +104,13 @@ export function ContainedCover({
             playsInline
             style={{ pointerEvents: 'none' }}
           >
-            {videoBlock?.video?.variant?.hls != null && (
-              <source
-                src={videoBlock?.video.variant.hls}
-                type="application/x-mpegURL"
-              />
-            )}
+            {videoBlock?.source === VideoBlockSource.internal &&
+              videoBlock?.video?.variant?.hls != null && (
+                <source
+                  src={videoBlock?.video.variant.hls}
+                  type="application/x-mpegURL"
+                />
+              )}
             {videoBlock?.source === VideoBlockSource.youTube && (
               <source
                 src={`https://www.youtube.com/watch?v=${videoBlock?.videoId}`}

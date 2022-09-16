@@ -198,9 +198,10 @@ export function Video({
             className="video-js vjs-big-play-centered"
             playsInline
           >
-            {video?.variant?.hls != null && (
-              <source src={video.variant.hls} type="application/x-mpegURL" />
-            )}
+            {source === VideoBlockSource.internal &&
+              video?.variant?.hls != null && (
+                <source src={video.variant.hls} type="application/x-mpegURL" />
+              )}
             {source === VideoBlockSource.youTube && (
               <source
                 src={`https://www.youtube.com/watch?v=${videoId}`}
