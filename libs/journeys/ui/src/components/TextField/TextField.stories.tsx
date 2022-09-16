@@ -58,19 +58,18 @@ const TextareaTemplate: Story<TextFieldProps> = () => {
     {
       name: 'singleLine',
       label: 'Single Line',
-      value: 'This is a short response.'
+      value: 'Ok.'
     },
     {
       name: 'fewLines',
       label: 'Few Lines',
-      value:
-        "This is a mid sized text response, perfect for a joke - though I won't tell you one.\n\nThis can also handle new lines."
+      value: 'Why waste time say lot word when few word do trick?\n\n- Kevin'
     },
     {
       name: 'manyLines',
       label: 'Many Lines',
       value:
-        "This is a really long story about how I became a Christian. Buckle down because you're in for an adventure!\n\nIt started a long long time ago when God knew me before I was conceived. Don't ask me how that works - but somehow he worked all things together, my parents met and had me.\n\nGoodness, you're still here? Why are you reading this story - you've got work to do! Who wants to read the ramblings of a developer who's having too much fun on a Friday afternoon?\n\nThis should cut off at some point due to the card scroll. Please don't make me write anymore."
+        "This is a really long story about how I became a Christian. Buckle down because you're in for an adventure!\n\nIt started a long long time ago when God knew me before I was conceived. Don't ask me how that works - but somehow he worked all things together, my parents met and had me.\n\nGoodness, you're still here? Why are you reading this story - you've got work to do! Storybook max height for portals is 900px. I'm including multiple components in one story to more widely test our most core components. I don't expect this to be the norm for all our stories.\n\nThis should cut off at some point due to the card scroll. Please don't make me write anymore.\n\nOh no, it's still going! Help! I've got nothing more to write!"
     }
   ]
 

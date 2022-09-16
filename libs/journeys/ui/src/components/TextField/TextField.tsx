@@ -34,11 +34,9 @@ export function TextField({
     <MuiTextField
       {...muiFieldProps}
       {...formikFieldProps}
-      sx={{
-        marginBottom: '16px'
-      }}
       fullWidth
       name={name}
+      // TODO: Switch to filled & clarify styling in cooldown
       variant="outlined"
       error={hasError}
       helperText={hasError ? meta.error : helperText}
