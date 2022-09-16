@@ -8,6 +8,7 @@ import { NewImageButton } from './NewImageButton'
 import { NewRadioQuestionButton } from './NewRadioQuestionButton'
 import { NewSignUpButton } from './NewSignUpButton'
 import { NewButtonButton } from './NewButtonButton'
+import { NewTextResponseButton } from './NewTextResponseButton'
 
 export function BlocksTab(): ReactElement {
   return (
@@ -27,6 +28,7 @@ export function BlocksTab(): ReactElement {
         <NewRadioQuestionButton />
         <NewSignUpButton />
         <NewButtonButton />
+        <NewTextResponseButton />
       </Stack>
       <Box
         sx={{
