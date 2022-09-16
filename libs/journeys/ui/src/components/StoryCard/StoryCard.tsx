@@ -18,6 +18,8 @@ export const StoryCard = ({
     <Paper
       sx={{
         p: 7,
+        maxHeight: '600px',
+        overflow: 'auto',
         borderRadius: (theme) => theme.spacing(4),
         '& > *': {
           '&:first-child': { mt: 0 },

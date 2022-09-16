@@ -14,21 +14,24 @@ export interface TextFieldProps
     | 'focused'
     | 'disabled'
     | 'value'
+    | 'helperText'
+    | 'multiline'
     | 'onBlur'
     | 'onChange'
   > {}
 
+// Use as subcomponent of form blocks (eg SignUp, TextResponse)
 export function TextField({
   name = '',
+  helperText,
   ...muiFieldProps
 }: TextFieldProps): ReactElement {
   const [formikFieldProps, meta] = useField(name)
 
-  const Field = MuiTextField
   const hasError = meta.error !== undefined && meta.touched
 
   return (
-    <Field
+    <MuiTextField
       {...muiFieldProps}
       {...formikFieldProps}
       sx={{
@@ -38,7 +41,7 @@ export function TextField({
       name={name}
       variant="outlined"
       error={hasError}
-      helperText={hasError ? meta.error : ' '}
+      helperText={hasError ? meta.error : helperText}
     />
   )
 }
