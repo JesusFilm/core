@@ -24,7 +24,7 @@ export function TextResponse(
       id={`${id}-text-field-options`}
       icon={<LinkRoundedIcon />} // change this when we find out icon
       name="Text Field"
-      value={block?.id} // use block.label when the compoent is created
+      value="text-field-label" // use block.label when the compoent is created
       description="Label and Hint text"
       onClick={openDrawer}
     />
