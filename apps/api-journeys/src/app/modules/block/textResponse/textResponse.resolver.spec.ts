@@ -3,18 +3,18 @@ import { Database } from 'arangojs'
 import { mockDeep } from 'jest-mock-extended'
 
 import {
-  TextFieldBlock,
-  TextFieldBlockCreateInput
+  TextResponseBlock,
+  TextResponseBlockCreateInput
 } from '../../../__generated__/graphql'
 import { JourneyService } from '../../journey/journey.service'
 import { UserJourneyService } from '../../userJourney/userJourney.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { BlockResolver } from '../block.resolver'
 import { BlockService } from '../block.service'
-import { TextFieldBlockResolver } from './textField.resolver'
+import { TextResponseBlockResolver } from './textResponse.resolver'
 
-describe('TextFieldBlockResolver', () => {
-  let resolver: TextFieldBlockResolver,
+describe('TextResponseBlockResolver', () => {
+  let resolver: TextResponseBlockResolver,
     blockResolver: BlockResolver,
     service: BlockService
 
@@ -22,7 +22,7 @@ describe('TextFieldBlockResolver', () => {
     id: '1',
     journeyId: '2',
     parentBlockId: '0',
-    __typename: 'TextFieldBlock',
+    __typename: 'TextResponseBlock',
     parentOrder: 1,
     action: {
       gtmEventName: 'gtmEventName',
@@ -37,7 +37,7 @@ describe('TextFieldBlockResolver', () => {
     parentBlockId: block.id
   }
 
-  const input: TextFieldBlockCreateInput & { __typename: string } = {
+  const input: TextResponseBlockCreateInput & { __typename: string } = {
     id: '1',
     journeyId: '2',
     parentBlockId: '',
@@ -46,9 +46,9 @@ describe('TextFieldBlockResolver', () => {
     submitLabel: 'Submit'
   }
 
-  const textFieldBlockResponse = {
+  const textResponseBlockResponse = {
     ...input,
-    __typename: 'TextFieldBlock',
+    __typename: 'TextResponseBlock',
     parentOrder: 2
   }
 
@@ -78,7 +78,7 @@ describe('TextFieldBlockResolver', () => {
       providers: [
         BlockResolver,
         blockService,
-        TextFieldBlockResolver,
+        TextResponseBlockResolver,
         UserJourneyService,
         UserRoleService,
         JourneyService,
@@ -89,40 +89,40 @@ describe('TextFieldBlockResolver', () => {
       ]
     }).compile()
     blockResolver = module.get<BlockResolver>(BlockResolver)
-    resolver = module.get<TextFieldBlockResolver>(TextFieldBlockResolver)
+    resolver = module.get<TextResponseBlockResolver>(TextResponseBlockResolver)
     service = await module.resolve(BlockService)
   })
 
-  describe('TextFieldBlock', () => {
-    it('returns TextFieldBlock', async () => {
+  describe('TextResponseBlock', () => {
+    it('returns TextResponseBlock', async () => {
       expect(await blockResolver.block('1')).toEqual(block)
       expect(await blockResolver.blocks()).toEqual([block, block])
     })
   })
 
   describe('action', () => {
-    it('returns TextFieldBlock action with parentBlockId', async () => {
-      expect(await resolver.action(block as unknown as TextFieldBlock)).toEqual(
-        actionResponse
-      )
+    it('returns TextResponseBlock action with parentBlockId', async () => {
+      expect(
+        await resolver.action(block as unknown as TextResponseBlock)
+      ).toEqual(actionResponse)
     })
   })
 
-  describe('TextFieldBlockCreate', () => {
-    it('creates a TextFieldBlock', async () => {
-      await resolver.textFieldBlockCreate(input)
-      expect(service.save).toHaveBeenCalledWith(textFieldBlockResponse)
+  describe('TextResponseBlockCreate', () => {
+    it('creates a TextResponseBlock', async () => {
+      await resolver.textResponseBlockCreate(input)
+      expect(service.save).toHaveBeenCalledWith(textResponseBlockResponse)
     })
   })
 
-  describe('TextFieldBlockUpdate', () => {
-    it('updates a TextFieldBlock', async () => {
+  describe('TextResponseBlockUpdate', () => {
+    it('updates a TextResponseBlock', async () => {
       const mockValidate = service.validateBlock as jest.MockedFunction<
         typeof service.validateBlock
       >
       mockValidate.mockResolvedValueOnce(true)
 
-      await resolver.textFieldBlockUpdate(
+      await resolver.textResponseBlockUpdate(
         block.id,
         block.journeyId,
         blockUpdate
@@ -137,7 +137,7 @@ describe('TextFieldBlockResolver', () => {
       mockValidate.mockResolvedValueOnce(false)
 
       await resolver
-        .textFieldBlockUpdate(block.id, block.journeyId, {
+        .textResponseBlockUpdate(block.id, block.journeyId, {
           ...blockUpdate,
           submitIconId: 'wrong!'
         })
