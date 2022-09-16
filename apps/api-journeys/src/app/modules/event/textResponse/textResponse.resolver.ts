@@ -5,23 +5,23 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
-  TextFieldSubmissionEvent,
-  TextFieldSubmissionEventCreateInput
+  TextResponseSubmissionEvent,
+  TextResponseSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
-@Resolver('TextFieldSubmissionEvent')
-export class TextFieldSubmissionEventResolver {
+@Resolver('TextResponseSubmissionEvent')
+export class TextResponseSubmissionEventResolver {
   constructor(private readonly eventService: EventService) {}
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  async textFieldSubmissionEventCreate(
+  async textResponseSubmissionEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: TextFieldSubmissionEventCreateInput
-  ): Promise<TextFieldSubmissionEvent> {
+    @Args('input') input: TextResponseSubmissionEventCreateInput
+  ): Promise<TextResponseSubmissionEvent> {
     return await this.eventService.save({
       ...input,
-      __typename: 'TextFieldSubmissionEvent',
+      __typename: 'TextResponseSubmissionEvent',
       userId
     })
   }
