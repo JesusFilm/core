@@ -39,7 +39,7 @@ export function TextField({
       // TODO: Switch to filled & clarify styling in cooldown
       variant="outlined"
       error={hasError}
-      helperText={hasError ? meta.error : helperText}
+      helperText={hasError ? meta.error : helperText ?? ' '}
     />
   )
 }

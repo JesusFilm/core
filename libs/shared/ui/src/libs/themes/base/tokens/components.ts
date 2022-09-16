@@ -70,7 +70,7 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
       styleOverrides: {
         root: {
           '&.MuiTextField-root': {
-            marginBottom: spacingThemeToken.spacing(4)
+            marginBottom: spacingThemeToken.spacing(2)
           }
         }
       }
