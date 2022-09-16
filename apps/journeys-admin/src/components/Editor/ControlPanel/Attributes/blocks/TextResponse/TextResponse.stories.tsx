@@ -1,5 +1,5 @@
 import { Story, Meta } from '@storybook/react'
-import { MockedProvider } from '@apollo/client/testing'
+import Stack from '@mui/material/Stack'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../__generated__/GetJourney'
@@ -21,9 +21,17 @@ const defaultBlock: TreeBlock<TextResponseBlock> = {
 
 const Template: Story = ({ ...args }) => {
   return (
-    <MockedProvider>
+    <Stack
+      direction="row"
+      spacing={4}
+      sx={{
+        overflowX: 'auto',
+        py: 5,
+        px: 6
+      }}
+    >
       <TextResponse {...args.block} />
-    </MockedProvider>
+    </Stack>
   )
 }
 

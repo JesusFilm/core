@@ -4,6 +4,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
+import { TextField } from './TextField'
 
 export function TextResponse(
   block: TreeBlock<TextResponseBlock>
@@ -17,14 +18,14 @@ export function TextResponse(
       type: 'SetDrawerPropsAction',
       title: 'Text Field Properties',
       mobileOpen: true,
-      children: <></> // Add drawer compoent
+      children: <TextField />
     })
   return (
     <Attribute
       id={`${id}-text-field-options`}
-      icon={<LinkRoundedIcon />} // change this when we find out icon
+      icon={<LinkRoundedIcon />} // change this when we find out correct icon
       name="Text Field"
-      value="text-field-label" // use block.label when the compoent is created
+      value="text-field-label" // use block.label when the component is created
       description="Label and Hint text"
       onClick={openDrawer}
     />
