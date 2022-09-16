@@ -383,6 +383,12 @@ export class TemplatePreviewEventInput {
     journeyId: string;
 }
 
+export class TextFieldSubmissionEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    field: string;
+}
+
 export class VideoStartEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -758,6 +764,14 @@ export class TemplatePreviewEvent implements Event {
     journeyId: string;
 }
 
+export class TextFieldSubmissionEvent implements Event {
+    __typename?: 'TextFieldSubmissionEvent';
+    id: string;
+    userId: string;
+    field: string;
+    block?: Nullable<TextFieldBlock>;
+}
+
 export class VideoStartEvent implements Event {
     __typename?: 'VideoStartEvent';
     id: string;
@@ -917,6 +931,8 @@ export abstract class IMutation {
     abstract templateUseEventCreate(input: TemplateUseEventInput): TemplateUseEvent | Promise<TemplateUseEvent>;
 
     abstract templatePreviewEventCreate(input: TemplatePreviewEventInput): TemplatePreviewEvent | Promise<TemplatePreviewEvent>;
+
+    abstract textFieldSubmissionEventCreate(input: TextFieldSubmissionEventCreateInput): TextFieldSubmissionEvent | Promise<TextFieldSubmissionEvent>;
 
     abstract videoStartEventCreate(input: VideoStartEventCreateInput): VideoStartEvent | Promise<VideoStartEvent>;
 

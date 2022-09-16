@@ -534,6 +534,7 @@ type Mutation {
   templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @join__field(graph: JOURNEYS)
   textFieldBlockCreate(input: TextFieldBlockCreateInput!): TextFieldBlock! @join__field(graph: JOURNEYS)
   textFieldBlockUpdate(id: ID!, input: TextFieldBlockUpdateInput!, journeyId: ID!): TextFieldBlock @join__field(graph: JOURNEYS)
+  textFieldSubmissionEventCreate(input: TextFieldSubmissionEventCreateInput!): TextFieldSubmissionEvent! @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
@@ -828,6 +829,23 @@ input TextFieldBlockUpdateInput {
   parentBlockId: ID
   submitIconId: ID
   submitLabel: String
+}
+
+type TextFieldSubmissionEvent implements Event {
+  block: TextFieldBlock
+  field: String!
+  id: ID!
+  userId: ID!
+}
+
+input TextFieldSubmissionEventCreateInput {
+  blockId: ID!
+  field: String!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
 }
 
 enum ThemeMode {
