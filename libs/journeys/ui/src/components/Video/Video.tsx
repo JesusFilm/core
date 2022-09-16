@@ -23,6 +23,7 @@ export function Video({
   video,
   source,
   videoId,
+  title,
   autoplay,
   startAt,
   endAt,
@@ -127,6 +128,9 @@ export function Video({
     }
   }, [selectedBlock])
 
+  const eventVideoTitle = video?.title[0].value ?? title
+  const eventVideoId = video?.id ?? videoId
+
   return (
     <Box
       data-testid={`video-${blockId}`}
@@ -173,16 +177,18 @@ export function Video({
         }
       }}
     >
-      {playerRef.current != null && video != null && (
-        <VideoEvents
-          player={playerRef.current}
-          blockId={blockId}
-          videoTitle={video.title[0].value}
-          videoId={video.id}
-          startAt={startAt}
-          endAt={endAt}
-        />
-      )}
+      {playerRef.current != null &&
+        eventVideoTitle != null &&
+        eventVideoId != null && (
+          <VideoEvents
+            player={playerRef.current}
+            blockId={blockId}
+            videoTitle={eventVideoTitle}
+            videoId={eventVideoId}
+            startAt={startAt}
+            endAt={endAt}
+          />
+        )}
       {videoId != null ? (
         <>
           <video
