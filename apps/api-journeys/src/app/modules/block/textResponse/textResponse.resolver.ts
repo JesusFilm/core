@@ -4,20 +4,20 @@ import { Args, Mutation, Resolver, ResolveField, Parent } from '@nestjs/graphql'
 
 import {
   Action,
-  TextFieldBlock,
-  TextFieldBlockCreateInput,
-  TextFieldBlockUpdateInput,
+  TextResponseBlock,
+  TextResponseBlockCreateInput,
+  TextResponseBlockUpdateInput,
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { BlockService } from '../block.service'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
-@Resolver('TextFieldBlock')
-export class TextFieldBlockResolver {
+@Resolver('TextResponseBlock')
+export class TextResponseBlockResolver {
   constructor(private readonly blockService: BlockService) {}
 
   @ResolveField()
-  action(@Parent() block: TextFieldBlock): Action | null {
+  action(@Parent() block: TextResponseBlock): Action | null {
     if (block.action == null) return null
 
     return {
@@ -33,10 +33,10 @@ export class TextFieldBlockResolver {
       UserJourneyRole.editor
     ])
   )
-  async textFieldBlockCreate(
-    @Args('input') input: TextFieldBlockCreateInput & { __typename }
-  ): Promise<TextFieldBlock> {
-    input.__typename = 'TextFieldBlock'
+  async textResponseBlockCreate(
+    @Args('input') input: TextResponseBlockCreateInput & { __typename }
+  ): Promise<TextResponseBlock> {
+    input.__typename = 'TextResponseBlock'
     const siblings = await this.blockService.getSiblings(
       input.journeyId,
       input.parentBlockId
@@ -51,11 +51,11 @@ export class TextFieldBlockResolver {
   @UseGuards(
     RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
-  async textFieldBlockUpdate(
+  async textResponseBlockUpdate(
     @Args('id') id: string,
     @Args('journeyId') journeyId: string,
-    @Args('input') input: TextFieldBlockUpdateInput
-  ): Promise<TextFieldBlock> {
+    @Args('input') input: TextResponseBlockUpdateInput
+  ): Promise<TextResponseBlock> {
     if (input.submitIconId != null) {
       const submitIcon = await this.blockService.validateBlock(
         input.submitIconId,

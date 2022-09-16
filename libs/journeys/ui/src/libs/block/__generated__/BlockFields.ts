@@ -9,8 +9,8 @@ import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, GridDirec
 // GraphQL fragment: BlockFields
 // ====================================================
 
-export interface BlockFields_TextFieldBlock {
-  __typename: "TextFieldBlock";
+export interface BlockFields_TextResponseBlock {
+  __typename: "TextResponseBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -418,4 +418,4 @@ export interface BlockFields_VideoTriggerBlock {
   triggerAction: BlockFields_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockFields = BlockFields_TextFieldBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
+export type BlockFields = BlockFields_TextResponseBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
