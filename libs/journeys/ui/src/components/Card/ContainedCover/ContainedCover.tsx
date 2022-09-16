@@ -4,6 +4,7 @@ import { NextImage } from '@core/shared/ui/NextImage'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import type { TreeBlock } from '../../../libs/block'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { ContentOverlay } from './ContentOverlay'
@@ -48,7 +49,8 @@ export function ContainedCover({
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
         // plays youTube videos at the start time
-        if (videoBlock?.source === 'youTube') playerRef.current?.play()
+        if (videoBlock?.source === VideoBlockSource.youTube)
+          playerRef.current?.play()
       })
       // Video jumps to new time and finishes loading
       playerRef.current.on('seeked', () => {
@@ -108,7 +110,7 @@ export function ContainedCover({
                 type="application/x-mpegURL"
               />
             )}
-            {videoBlock?.source === 'youTube' && (
+            {videoBlock?.source === VideoBlockSource.youTube && (
               <source
                 src={`https://www.youtube.com/watch?v=${videoBlock?.videoId}`}
                 type="video/youtube"

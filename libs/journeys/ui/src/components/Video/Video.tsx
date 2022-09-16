@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { blurImage } from '../../libs/blurImage'
@@ -81,7 +82,8 @@ export function Video({
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
         // plays youTube videos at the start time
-        if (source === 'youTube' && autoplay === true) playerRef.current?.play()
+        if (source === VideoBlockSource.youTube && autoplay === true)
+          playerRef.current?.play()
       })
 
       if (selectedBlock === undefined) {
@@ -199,7 +201,7 @@ export function Video({
             {video?.variant?.hls != null && (
               <source src={video.variant.hls} type="application/x-mpegURL" />
             )}
-            {source === 'youTube' && (
+            {source === VideoBlockSource.youTube && (
               <source
                 src={`https://www.youtube.com/watch?v=${videoId}`}
                 type="video/youtube"
