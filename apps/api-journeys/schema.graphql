@@ -817,6 +817,22 @@ type TemplatePreviewEvent implements Event {
   journeyId: ID!
 }
 
+input TextFieldSubmissionEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  field: String!
+}
+
+type TextFieldSubmissionEvent implements Event {
+  id: ID!
+  userId: ID!
+  field: String!
+  block: TextFieldBlock
+}
+
 input VideoStartEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -1095,6 +1111,7 @@ extend type Mutation {
   templateLibraryViewEventCreate: TemplateLibraryViewEvent!
   templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent!
   templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent!
+  textFieldSubmissionEventCreate(input: TextFieldSubmissionEventCreateInput!): TextFieldSubmissionEvent!
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
   videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
