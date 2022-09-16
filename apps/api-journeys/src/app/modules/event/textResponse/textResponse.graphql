@@ -1,0 +1,21 @@
+input TextResponseSubmissionEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  field: String!
+}
+
+type TextResponseSubmissionEvent implements Event {
+  id: ID!
+  userId: ID!
+  field: String!
+  block: TextResponseBlock
+}
+
+extend type Mutation {
+  textResponseSubmissionEventCreate(
+    input: TextResponseSubmissionEventCreateInput!
+  ): TextResponseSubmissionEvent!
+}
