@@ -1,10 +1,128 @@
 import { ReactElement } from 'react'
 import LinkIcon from '@mui/icons-material/Link'
+import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
+import { v4 as uuidv4 } from 'uuid'
+import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/TextResponseFields'
+import { gql, useMutation } from '@apollo/client'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor, ActiveTab } from '@core/journeys/ui/EditorProvider'
+import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../../../__generated__/GetJourney'
 import { Button } from '../../Button'
+import { TextResponseBlockCreate } from '../../../../../../__generated__/TextResponseBlockCreate'
+
+export const TEXT_RESPONSE_CREATE = gql`
+  ${TEXT_RESPONSE_FIELDS}
+  ${ICON_FIELDS}
+  mutation TextResponseCreate(
+    $input: TextResponseBlockCreateInput!
+    $iconBlockCreateInput: IconBlockCreateInput!
+    $id: ID!
+    $journeyId: ID!
+    $updateInput: TextResponseBlockUpdateInput!
+  ) {
+    textResponseBlockCreate(input: $input) {
+      id
+    }
+    submitIcon: iconBlockCreate(input: $iconBlockCreateInput) {
+      id
+      parentBlockId
+      ...IconFields
+    }
+    textResponseBlockUpdate(
+      id: $id
+      journeyId: $journeyId
+      input: $updateInput
+    ) {
+      ...TextResponseFields
+    }
+  }
+`
 
 export function NewTextResponseButton(): ReactElement {
+  const [textResponseBlockCreate] =
+    useMutation<TextResponseBlockCreate>(TEXT_RESPONSE_CREATE)
+  const { journey } = useJourney()
+  const {
+    state: { selectedStep },
+    dispatch
+  } = useEditor()
+
   const handleClick = async (): Promise<void> => {
-    console.log('logic here')
+    const id = uuidv4()
+    const submitIconId = uuidv4()
+    const card = selectedStep?.children.find(
+      (block) => block.__typename === 'CardBlock'
+    ) as TreeBlock<CardBlock> | undefined
+
+    if (card != null && journey != null) {
+      const { data } = await textResponseBlockCreate({
+        variables: {
+          input: {
+            id,
+            journeyId: journey.id,
+            parentBlockId: card.id
+            // submitLabel: 'Submit'
+          },
+          iconBlockCreateInput: {
+            id: submitIconId,
+            journeyId: journey.id,
+            parentBlockId: id,
+            name: null
+          },
+          id,
+          journeyId: journey.id,
+          updateInput: {
+            submitIconId
+          }
+        },
+        update(cache, { data }) {
+          if (data?.textResponseBlockUpdate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  const newSubmitIconBlockRef = cache.writeFragment({
+                    data: data.submitIcon,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+
+                  const newBlockRef = cache.writeFragment({
+                    data: data.textResponseBlockUpdate,
+                    fragment: gql`
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
+                  })
+
+                  return [
+                    ...existingBlockRefs,
+                    newBlockRef,
+                    newSubmitIconBlockRef
+                  ]
+                }
+              }
+            })
+          }
+        }
+      })
+
+      if (data?.textResponseBlockCreate != null) {
+        dispatch({
+          type: 'SetSelectedBlockByIdAction',
+          id: data.textResponseBlockCreate.id
+        })
+        dispatch({
+          type: 'SetActiveTabAction',
+          activeTab: ActiveTab.Properties
+        })
+      }
+    }
   }
   return <Button icon={<LinkIcon />} value="Text Field" onClick={handleClick} />
 }
