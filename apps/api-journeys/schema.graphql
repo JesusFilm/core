@@ -435,7 +435,7 @@ input StepBlockUpdateInput {
   locked: Boolean
 }
 
-type TextFieldBlock implements Block {
+type TextResponseBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
@@ -448,7 +448,7 @@ type TextFieldBlock implements Block {
   submitLabel: String
 }
 
-input TextFieldBlockCreateInput {
+input TextResponseBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
@@ -456,7 +456,7 @@ input TextFieldBlockCreateInput {
   submitLabel: String!
 }
 
-input TextFieldBlockUpdateInput {
+input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
   content: String
@@ -817,6 +817,22 @@ type TemplatePreviewEvent implements Event {
   journeyId: ID!
 }
 
+input TextResponseSubmissionEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  field: String!
+}
+
+type TextResponseSubmissionEvent implements Event {
+  id: ID!
+  userId: ID!
+  field: String!
+  block: TextResponseBlock
+}
+
 input VideoStartEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -1081,8 +1097,8 @@ extend type Mutation {
   signUpBlockUpdate(id: ID!, journeyId: ID!, input: SignUpBlockUpdateInput!): SignUpBlock
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(id: ID!, journeyId: ID!, input: StepBlockUpdateInput!): StepBlock!
-  textFieldBlockCreate(input: TextFieldBlockCreateInput!): TextFieldBlock!
-  textFieldBlockUpdate(id: ID!, journeyId: ID!, input: TextFieldBlockUpdateInput!): TextFieldBlock
+  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
+  textResponseBlockUpdate(id: ID!, journeyId: ID!, input: TextResponseBlockUpdateInput!): TextResponseBlock
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock!
   typographyBlockUpdate(id: ID!, journeyId: ID!, input: TypographyBlockUpdateInput!): TypographyBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
@@ -1095,6 +1111,7 @@ extend type Mutation {
   templateLibraryViewEventCreate: TemplateLibraryViewEvent!
   templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent!
   templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent!
+  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent!
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
   videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
