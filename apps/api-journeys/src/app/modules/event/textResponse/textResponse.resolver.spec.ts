@@ -8,7 +8,7 @@ describe('TextResponseEventResolver', () => {
   const input = {
     id: '1',
     blockId: '2',
-    field: 'My response'
+    value: 'My response'
   }
 
   const eventService = {
