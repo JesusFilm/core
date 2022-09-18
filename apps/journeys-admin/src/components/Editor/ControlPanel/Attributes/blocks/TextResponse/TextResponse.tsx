@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
+import Crop169RoundedIcon from '@mui/icons-material/Crop169Rounded'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../__generated__/GetJourney'
 import { Attribute } from '../..'
 import { TextField } from './TextField'
@@ -23,7 +23,7 @@ export function TextResponse(
   return (
     <Attribute
       id={`${id}-text-field-options`}
-      icon={<LinkRoundedIcon />} // change this when we find out correct icon
+      icon={<Crop169RoundedIcon />}
       name="Text Field"
       value="text-field-label" // use block.label when the component is created
       description="Label and Hint text"
