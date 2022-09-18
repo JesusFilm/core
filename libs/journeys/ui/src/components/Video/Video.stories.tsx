@@ -4,7 +4,7 @@ import Box from '@mui/material/Box'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import type { TreeBlock } from '../../libs/block'
 import { VIDEO_START_EVENT_CREATE } from '../VideoEvents/VideoEvents'
-import { VideoBlockSource } from "../../../__generated__/globalTypes"
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { VideoFields } from './__generated__/VideoFields'
 import { Video } from '.'
 

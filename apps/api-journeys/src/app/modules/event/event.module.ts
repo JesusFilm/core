@@ -6,6 +6,7 @@ import { ButtonClickEventResolver } from './button/button.resolver'
 import { JourneyViewEventResolver } from './journey/journey.resolver'
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion/radioQuestion.resolver'
 import { SignUpSubmissionEventResolver } from './signUp/signUp.resolver'
+import { TextResponseSubmissionEventResolver } from './textResponse/textResponse.resolver'
 import {
   VideoStartEventResolver,
   VideoPlayEventResolver,
@@ -32,6 +33,7 @@ import {
     RadioQuestionSubmissionEventResolver,
     SignUpSubmissionEventResolver,
     StepViewEventResolver,
+    TextResponseSubmissionEventResolver,
     VideoStartEventResolver,
     VideoPlayEventResolver,
     VideoPuaseEventResolver,

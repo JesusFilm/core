@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { EditorProvider } from '../../libs/EditorProvider'
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { VideoFields } from './__generated__/VideoFields'
 import { Video } from '.'
 
@@ -73,10 +74,10 @@ describe('Video', () => {
     expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
   })
 
-  it('should render an image if video is null', () => {
+  it('should render an image if videoId is null', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <Video {...block} video={null} />
+        <Video {...block} videoId={null} />
       </MockedProvider>
     )
     expect(getByTestId('VideocamRoundedIcon')).toHaveClass('MuiSvgIcon-root')

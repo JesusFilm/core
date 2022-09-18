@@ -1,4 +1,4 @@
-type TextFieldBlock implements Block {
+type TextResponseBlock implements Block {
   id: ID!
   journeyId: ID!
   parentBlockId: ID
@@ -11,14 +11,14 @@ type TextFieldBlock implements Block {
   submitLabel: String
 }
 
-input TextFieldBlockCreateInput {
+input TextResponseBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
   label: String!
   submitLabel: String!
 }
-input TextFieldBlockUpdateInput {
+input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
   content: String
@@ -27,10 +27,12 @@ input TextFieldBlockUpdateInput {
   submitLabel: String
 }
 extend type Mutation {
-  textFieldBlockCreate(input: TextFieldBlockCreateInput!): TextFieldBlock!
-  textFieldBlockUpdate(
+  textResponseBlockCreate(
+    input: TextResponseBlockCreateInput!
+  ): TextResponseBlock!
+  textResponseBlockUpdate(
     id: ID!
     journeyId: ID!
-    input: TextFieldBlockUpdateInput!
-  ): TextFieldBlock
+    input: TextResponseBlockUpdateInput!
+  ): TextResponseBlock
 }

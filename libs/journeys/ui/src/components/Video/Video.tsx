@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { blurImage } from '../../libs/blurImage'
@@ -23,6 +24,7 @@ export function Video({
   video,
   source,
   videoId,
+  title,
   autoplay,
   startAt,
   endAt,
@@ -53,7 +55,7 @@ export function Video({
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: autoplay === true,
-        controls: source !== 'youTube',
+        controls: true,
         nativeControlsForTouch: true,
         userActions: {
           hotkeys: true,
@@ -79,8 +81,9 @@ export function Video({
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(startAt ?? 0)
-        // plays URL based videos at the start time
-        if (source === 'youTube' && autoplay === true) playerRef.current?.play()
+        // plays youTube videos at the start time
+        if (source === VideoBlockSource.youTube && autoplay === true)
+          playerRef.current?.play()
       })
 
       if (selectedBlock === undefined) {
@@ -126,6 +129,9 @@ export function Video({
       playerRef.current?.pause()
     }
   }, [selectedBlock])
+
+  const eventVideoTitle = video?.title[0].value ?? title
+  const eventVideoId = video?.id ?? videoId
 
   return (
     <Box
@@ -173,28 +179,35 @@ export function Video({
         }
       }}
     >
-      {playerRef.current != null && video != null && (
-        <VideoEvents
-          player={playerRef.current}
-          blockId={blockId}
-          videoTitle={video.title[0].value}
-          videoId={video.id}
-          startAt={startAt}
-          endAt={endAt}
-        />
-      )}
+      {playerRef.current != null &&
+        eventVideoTitle != null &&
+        eventVideoId != null && (
+          <VideoEvents
+            player={playerRef.current}
+            blockId={blockId}
+            videoTitle={eventVideoTitle}
+            videoId={eventVideoId}
+            startAt={startAt}
+            endAt={endAt}
+          />
+        )}
       {videoId != null ? (
         <>
           <video
             ref={videoRef}
             className="video-js vjs-big-play-centered"
             playsInline
-            data-setup='{ "youtube": { "ytControls": 2 } }'
           >
-            {video?.variant?.hls != null && (
-              <source src={video.variant.hls} type="application/x-mpegURL" />
+            {source === VideoBlockSource.internal &&
+              video?.variant?.hls != null && (
+                <source src={video.variant.hls} type="application/x-mpegURL" />
+              )}
+            {source === VideoBlockSource.youTube && (
+              <source
+                src={`https://www.youtube.com/watch?v=${videoId}`}
+                type="video/youtube"
+              />
             )}
-            {source === 'youTube' && <source src={`https://www.youtube.com/watch?v=${videoId}`} type="video/youtube" />}
           </video>
           {children?.map(
             (option) =>
