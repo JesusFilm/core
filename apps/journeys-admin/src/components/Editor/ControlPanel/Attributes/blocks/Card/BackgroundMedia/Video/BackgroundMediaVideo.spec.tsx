@@ -13,8 +13,8 @@ import {
 } from '../../../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
-import { GET_VIDEOS } from '../../../../../../VideoLibrary/VideoList/VideoList'
-import { GET_VIDEO } from '../../../../../../VideoLibrary/VideoDetails/VideoDetails'
+import { GET_VIDEOS } from '../../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
+import { GET_VIDEO } from '../../../../../../VideoLibrary/VideoFromLocal/VideoDetails/VideoDetails'
 import { videos } from '../../../../../../VideoLibrary/VideoList/VideoListData'
 import {
   BackgroundMediaVideo,

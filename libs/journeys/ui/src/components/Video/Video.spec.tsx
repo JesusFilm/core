@@ -1,5 +1,6 @@
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { EditorProvider } from '../../libs/EditorProvider'
 import { VideoFields } from './__generated__/VideoFields'
@@ -19,7 +20,7 @@ const block: TreeBlock<VideoFields> = {
   action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
-  source: null,
+  source: VideoBlockSource.internal,
   title: null,
   description: null,
   duration: null,
