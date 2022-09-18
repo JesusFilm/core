@@ -441,7 +441,6 @@ type TextResponseBlock implements Block {
   parentBlockId: ID
   parentOrder: Int
   label: String!
-  content: String
   hint: String
   action: Action
   submitIconId: ID
@@ -459,7 +458,6 @@ input TextResponseBlockCreateInput {
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
-  content: String
   hint: String
   submitIconId: ID
   submitLabel: String
@@ -823,13 +821,13 @@ input TextResponseSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
-  field: String!
+  value: String!
 }
 
 type TextResponseSubmissionEvent implements Event {
   id: ID!
   userId: ID!
-  field: String!
+  value: String!
   block: TextResponseBlock
 }
 
