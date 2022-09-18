@@ -803,7 +803,6 @@ input TemplateUseEventInput {
 
 type TextResponseBlock implements Block {
   action: Action
-  content: String
   hint: String
   id: ID!
   journeyId: ID!
@@ -823,7 +822,6 @@ input TextResponseBlockCreateInput {
 }
 
 input TextResponseBlockUpdateInput {
-  content: String
   hint: String
   label: String
   parentBlockId: ID
@@ -833,19 +831,19 @@ input TextResponseBlockUpdateInput {
 
 type TextResponseSubmissionEvent implements Event {
   block: TextResponseBlock
-  field: String!
   id: ID!
   userId: ID!
+  value: String!
 }
 
 input TextResponseSubmissionEventCreateInput {
   blockId: ID!
-  field: String!
 
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  value: String!
 }
 
 enum ThemeMode {
