@@ -29,6 +29,7 @@ const textResponseProps: TreeBlock<TextResponseFields> = {
   parentOrder: 0,
   label: 'label',
   hint: 'hint text',
+  minRows: null,
   submitIconId: null,
   submitLabel: null,
   action: {
