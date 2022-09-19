@@ -7,14 +7,14 @@ import Box from '@mui/material/Box'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { v4 as uuidv4 } from 'uuid'
 import { useSnackbar } from 'notistack'
-// import TagManager from 'react-gtm-module'
+import TagManager from 'react-gtm-module'
 import { useTranslation } from 'react-i18next'
 import type { TreeBlock } from '../../libs/block'
-// import { useBlocks } from '../../libs/block'
+import { useBlocks } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
-// import { getStepHeading } from '../../libs/getStepHeading'
+import { getStepHeading } from '../../libs/getStepHeading'
 import { TextField } from '../TextField'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
@@ -47,7 +47,6 @@ export const TextResponse = ({
   label,
   hint,
   submitIconId,
-  // Use translated string when i18n is in
   submitLabel,
   editableSubmitLabel,
   action,
@@ -62,12 +61,12 @@ export const TextResponse = ({
 
   const { admin } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-  // const { activeBlock, treeBlocks } = useBlocks()
+  const { activeBlock, treeBlocks } = useBlocks()
 
-  // const heading =
-  //   activeBlock != null
-  //     ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
-  //     : 'None'
+  const heading =
+    activeBlock != null
+      ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
+      : 'None'
 
   const router = useRouter()
   const [textResponseSubmissionEventCreate, { loading }] =
@@ -92,15 +91,14 @@ export const TextResponse = ({
             }
           }
         })
-        console.log('submission event created')
-        // TagManager.dataLayer({
-        //   dataLayer: {
-        //     event: 'text_field_submission',
-        //     eventId: id,
-        //     blockId,
-        //     stepName: heading
-        //   }
-        // })
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'text_response_submission',
+            eventId: id,
+            blockId,
+            stepName: heading
+          }
+        })
       } catch (e) {
         if (e instanceof ApolloError) {
           enqueueSnackbar(e.message, {
@@ -123,13 +121,12 @@ export const TextResponse = ({
         onSubmit={(values) => {
           if (selectedBlock === undefined) {
             void onSubmitHandler(values).then(() => {
-              console.log('FINISHED SUBMISSION - Submit button click')
               handleAction(router, action)
             })
           }
         }}
       >
-        {({ values, handleChange }) => (
+        {({ values, handleChange, handleBlur }) => (
           <Form
             data-testid={`textResponse-${blockId}`}
             style={{
@@ -141,15 +138,10 @@ export const TextResponse = ({
               data-testid="textResponse-field"
               id="textResponse-field"
               name="response"
-              label={t('Your answer here')}
+              label={label}
               value={values.response}
               onChange={handleChange}
-              onBlur={(e) => {
-                console.log('called onBlur')
-                void onSubmitHandler(values).then(() => {
-                  console.log('FINISHED SUBMISSION - onBlur')
-                })
-              }}
+              onBlur={handleBlur}
               disabled={selectedBlock !== undefined}
             />
             <LoadingButton
