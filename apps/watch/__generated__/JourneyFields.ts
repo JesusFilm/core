@@ -307,6 +307,7 @@ export interface JourneyFields_blocks_TextResponseBlock {
   parentOrder: number | null;
   label: string;
   hint: string | null;
+  minRows: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
   action: JourneyFields_blocks_TextResponseBlock_action | null;

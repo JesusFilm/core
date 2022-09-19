@@ -49,6 +49,7 @@ export interface TextResponseFields {
   parentOrder: number | null;
   label: string;
   hint: string | null;
+  minRows: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
   action: TextResponseFields_action | null;

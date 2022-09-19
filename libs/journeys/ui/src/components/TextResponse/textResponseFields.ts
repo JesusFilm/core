@@ -9,6 +9,7 @@ export const TEXT_RESPONSE_FIELDS = gql`
     parentOrder
     label
     hint
+    minRows
     submitLabel
     submitIconId
     action {

@@ -307,6 +307,7 @@ export interface GetJourney_journey_blocks_TextResponseBlock {
   parentOrder: number | null;
   label: string;
   hint: string | null;
+  minRows: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
   action: GetJourney_journey_blocks_TextResponseBlock_action | null;

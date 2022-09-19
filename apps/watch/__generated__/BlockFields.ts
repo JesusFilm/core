@@ -295,6 +295,7 @@ export interface BlockFields_TextResponseBlock {
   parentOrder: number | null;
   label: string;
   hint: string | null;
+  minRows: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
   action: BlockFields_TextResponseBlock_action | null;
