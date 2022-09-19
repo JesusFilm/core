@@ -70,7 +70,7 @@ export function YouTubeDetails({
   const loading = data == null && error != null
 
   return (
-    <>
+    <Stack spacing={4} sx={{ p: 6 }}>
       {loading ? (
         <>
           <Skeleton
@@ -149,7 +149,7 @@ export function YouTubeDetails({
           Select
         </Button>
       </Stack>
-    </>
+    </Stack>
   )
 }
 

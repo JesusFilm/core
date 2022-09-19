@@ -103,7 +103,7 @@ export function LocalDetails({
   }, [open, loadVideo])
 
   return (
-    <>
+    <Stack spacing={4} sx={{ p: 6 }}>
       {loading ? (
         <>
           <Skeleton
@@ -197,7 +197,7 @@ export function LocalDetails({
         languages={data?.video.variantLanguages}
         loading={loading}
       />
-    </>
+    </Stack>
   )
 }
 

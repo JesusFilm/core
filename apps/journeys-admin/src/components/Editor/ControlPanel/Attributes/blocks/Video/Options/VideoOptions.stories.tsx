@@ -9,7 +9,7 @@ import { VideoBlockSource } from '../../../../../../../../__generated__/globalTy
 import { journeysAdminConfig } from '../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
-import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/VideoDetails/VideoDetails'
+import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
 import { GetVideoVariantLanguages_video } from '../../../../../../../../__generated__/GetVideoVariantLanguages'
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/VideoBlockEditor'

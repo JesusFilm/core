@@ -1,7 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { GET_VIDEOS } from '../../VideoLibrary/VideoFromLocal/VideoFromLocal'
-import { GET_VIDEO } from '../../VideoLibrary/VideoFromLocal/VideoDetails/VideoDetails'
+import { GET_VIDEO } from '../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 import { videos } from '../../VideoLibrary/VideoFromLocal/data'
 import { Source } from '.'
 

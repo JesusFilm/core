@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
 import Drawer from '@mui/material/Drawer'
-import Stack from '@mui/material/Stack'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
@@ -89,9 +88,7 @@ export function VideoDetails({
             </IconButton>
           </Toolbar>
         </AppBar>
-        <Stack spacing={4} sx={{ p: 6 }}>
-          <Details id={id} open={open} onSelect={handleSelect} />
-        </Stack>
+        <Details id={id} open={open} onSelect={handleSelect} />
       </Drawer>
     </>
   )
