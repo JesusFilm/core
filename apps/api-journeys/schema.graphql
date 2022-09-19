@@ -442,6 +442,7 @@ type TextResponseBlock implements Block {
   parentOrder: Int
   label: String!
   hint: String
+  minRows: Int
   action: Action
   submitIconId: ID
   submitLabel: String
@@ -459,6 +460,7 @@ input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
   hint: String
+  minRows: Int
   submitIconId: ID
   submitLabel: String
 }
