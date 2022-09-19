@@ -5,6 +5,7 @@ import { useMutation, gql, ApolloError } from '@apollo/client'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import Box from '@mui/material/Box'
 import LoadingButton from '@mui/lab/LoadingButton'
+import Stack from '@mui/material/Stack'
 import { v4 as uuidv4 } from 'uuid'
 import { useSnackbar } from 'notistack'
 import TagManager from 'react-gtm-module'
@@ -127,38 +128,31 @@ export const TextResponse = ({
         }}
       >
         {({ values, handleChange, handleBlur }) => (
-          <Form
-            data-testid={`textResponse-${blockId}`}
-            style={{
-              display: 'flex',
-              flexDirection: 'column'
-            }}
-          >
-            <TextField
-              data-testid="textResponse-field"
-              id="textResponse-field"
-              name="response"
-              label={label}
-              value={values.response}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              disabled={selectedBlock !== undefined}
-            />
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={loading}
-              size="large"
-              startIcon={
-                submitIcon != null ? <Icon {...submitIcon} /> : undefined
-              }
-              sx={{
-                ...sx,
-                mb: 0
-              }}
-            >
-              {editableSubmitLabel ?? submitLabel ?? t('Submit')}
-            </LoadingButton>
+          <Form data-testid={`textResponse-${blockId}`}>
+            <Stack>
+              <TextField
+                data-testid="textResponse-field"
+                id="textResponse-field"
+                name="response"
+                label={label}
+                value={values.response}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                disabled={selectedBlock !== undefined}
+              />
+              <LoadingButton
+                type="submit"
+                variant="contained"
+                loading={loading}
+                size="large"
+                startIcon={
+                  submitIcon != null ? <Icon {...submitIcon} /> : undefined
+                }
+                sx={{ ...sx, mb: 0 }}
+              >
+                {editableSubmitLabel ?? submitLabel ?? t('Submit')}
+              </LoadingButton>
+            </Stack>
           </Form>
         )}
       </Formik>
