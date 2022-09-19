@@ -1,6 +1,15 @@
+import { MockedProvider } from '@apollo/client/testing'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { render } from '@testing-library/react'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { render, fireEvent } from '@testing-library/react'
+import { ThemeProvider } from '../../../../../ThemeProvider'
+import { Drawer } from '../../../../Drawer'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../__generated__/GetJourney'
+import {
+  IconName,
+  IconColor,
+  IconSize
+} from '../../../../../../../__generated__/globalTypes'
 import { TextResponse } from './TextResponse'
 
 describe('TextResponse', () => {
@@ -9,14 +18,112 @@ describe('TextResponse', () => {
     id: 'textResponseBlock.id',
     parentBlockId: null,
     parentOrder: null,
+    action: null,
+    submitIconId: null,
+    label: 'default label',
     children: []
+  }
+
+  const completeBlock: TreeBlock<TextResponseBlock> = {
+    __typename: 'TextResponseBlock',
+    id: 'textResponseBlock.id',
+    parentBlockId: null,
+    parentOrder: null,
+    action: {
+      __typename: 'LinkAction',
+      parentBlockId: 'responseAction.id',
+      gtmEventName: 'responseAction',
+      url: 'https://www.google.com'
+    },
+    submitIconId: 'icon.id',
+    label: 'compelte label',
+    children: [
+      {
+        id: 'icon.id',
+        __typename: 'IconBlock',
+        parentBlockId: 'button',
+        parentOrder: 0,
+        iconName: IconName.ArrowForwardRounded,
+        iconColor: IconColor.action,
+        iconSize: IconSize.lg,
+        children: []
+      }
+    ]
   }
 
   it('should show default attributes', () => {
     const { getByRole } = render(<TextResponse {...defaultBlock} />)
 
+    expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Text Field text-field-label' })
+      getByRole('button', { name: 'Button Icon None' })
     ).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Text Field default label' })
+    ).toBeInTheDocument()
+  })
+
+  it('should show filled attributes', () => {
+    const { getByRole } = render(<TextResponse {...completeBlock} />)
+
+    expect(
+      getByRole('button', { name: 'Action URL/Website' })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Button Icon Arrow Forward' })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('button', { name: 'Text Field compelte label' })
+    ).toBeInTheDocument()
+  })
+
+  it('should open button icon edit', () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider>
+            <Drawer />
+            <TextResponse {...completeBlock} />
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Action URL/Website' }))
+    expect(getByTestId('drawer-title')).toHaveTextContent('Action')
+  })
+
+  it('should open button action edit', () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider>
+            <Drawer />
+            <TextResponse {...completeBlock} />
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Forward' }))
+    expect(getByTestId('drawer-title')).toHaveTextContent('Button Icon')
+  })
+
+  it('should open text field edit', () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider>
+            <Drawer />
+            <TextResponse {...completeBlock} />
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Text Field compelte label' }))
+    expect(getByTestId('drawer-title')).toHaveTextContent(
+      'Text Field Properties'
+    )
   })
 })

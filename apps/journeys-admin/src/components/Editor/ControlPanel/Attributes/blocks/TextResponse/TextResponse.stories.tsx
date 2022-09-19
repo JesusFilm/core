@@ -1,22 +1,17 @@
 import { Story, Meta } from '@storybook/react'
 import Stack from '@mui/material/Stack'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
-import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../__generated__/GetJourney'
+import {
+  IconName,
+  IconColor,
+  IconSize
+} from '../../../../../../../__generated__/globalTypes'
 import { TextResponse } from './TextResponse'
 
 const TextResponseStory = {
   ...journeysAdminConfig,
   component: TextResponse,
   title: 'Journeys-Admin/Editor/ControlPanel/Attributes/TextResponse'
-}
-
-const defaultBlock: TreeBlock<TextResponseBlock> = {
-  __typename: 'TextResponseBlock',
-  id: 'textResponseBlock.id',
-  parentBlockId: null,
-  parentOrder: null,
-  children: []
 }
 
 const Template: Story = ({ ...args }) => {
@@ -37,7 +32,46 @@ const Template: Story = ({ ...args }) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  block: defaultBlock
+  block: {
+    __typename: 'TextResponseBlock',
+    id: 'textResponseBlock.id',
+    parentBlockId: null,
+    parentOrder: null,
+    action: null,
+    submitIconId: null,
+    label: 'label',
+    children: []
+  }
+}
+
+export const Complete = Template.bind({})
+Complete.args = {
+  block: {
+    __typename: 'TextResponseBlock',
+    id: 'textResponseBlock.id',
+    parentBlockId: null,
+    parentOrder: null,
+    action: {
+      __typename: 'LinkAction',
+      parentBlockId: 'responseAction.id',
+      gtmEventName: 'responseAction',
+      url: 'https://www.google.com'
+    },
+    submitIconId: 'icon.id',
+    label: 'label',
+    children: [
+      {
+        id: 'icon.id',
+        __typename: 'IconBlock',
+        parentBlockId: 'button',
+        parentOrder: 0,
+        iconName: IconName.ArrowForwardRounded,
+        iconColor: IconColor.action,
+        iconSize: IconSize.lg,
+        children: []
+      }
+    ]
+  }
 }
 
 export default TextResponseStory as Meta
