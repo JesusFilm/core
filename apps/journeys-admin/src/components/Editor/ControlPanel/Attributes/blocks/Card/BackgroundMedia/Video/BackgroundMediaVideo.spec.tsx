@@ -14,7 +14,7 @@ import {
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 import { GET_VIDEOS } from '../../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
-import { GET_VIDEO } from '../../../../../../VideoLibrary/VideoFromLocal/VideoDetails/VideoDetails'
+import { GET_VIDEO } from '../../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 import { videos } from '../../../../../../VideoLibrary/VideoFromLocal/data'
 import {
   BackgroundMediaVideo,

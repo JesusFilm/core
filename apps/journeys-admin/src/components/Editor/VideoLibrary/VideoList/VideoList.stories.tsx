@@ -1,9 +1,8 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import { VideoDetails } from '../VideoFromLocal/VideoDetails'
-import { VideoListProps } from './VideoList'
 import { videos } from './data'
+import { VideoListProps } from './VideoList'
 import { VideoList } from '.'
 
 const VideoListStory = {
@@ -18,7 +17,7 @@ const VideoListStory = {
 
 const Template: Story<VideoListProps> = (args) => (
   <MockedProvider>
-    <VideoList {...args} VideoDetails={VideoDetails} />
+    <VideoList {...args} />
   </MockedProvider>
 )
 

@@ -1,14 +1,15 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
-import { GET_VIDEO, VideoDetails } from './VideoDetails'
+import { GET_VIDEO } from './YouTubeDetails'
+import { YouTubeDetails } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
 
-describe('VideoDetails', () => {
+describe('YouTubeDetails', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   const mocks = [

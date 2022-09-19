@@ -1,7 +1,6 @@
 import { render, fireEvent } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
-import { VideoDetails } from '../VideoFromLocal/VideoDetails'
 import { videos } from './data'
 import { VideoList } from '.'
 
@@ -20,7 +19,6 @@ describe('VideoList', () => {
         loading={false}
         fetchMore={jest.fn()}
         hasMore
-        VideoDetails={() => <></>}
         onSelect={jest.fn()}
       />
     )
@@ -37,7 +35,6 @@ describe('VideoList', () => {
           loading={false}
           fetchMore={jest.fn()}
           hasMore
-          VideoDetails={VideoDetails}
           onSelect={onSelect}
         />
       </MockedProvider>
@@ -59,7 +56,6 @@ describe('VideoList', () => {
         loading={false}
         fetchMore={fetchMore}
         hasMore
-        VideoDetails={() => <></>}
         onSelect={jest.fn()}
       />
     )
@@ -74,7 +70,6 @@ describe('VideoList', () => {
         loading={false}
         fetchMore={jest.fn()}
         hasMore={false}
-        VideoDetails={() => <></>}
         onSelect={jest.fn()}
       />
     )
@@ -88,7 +83,6 @@ describe('VideoList', () => {
         loading={false}
         fetchMore={jest.fn()}
         hasMore
-        VideoDetails={() => <></>}
         onSelect={jest.fn()}
       />
     )
@@ -103,7 +97,6 @@ describe('VideoList', () => {
         loading={false}
         fetchMore={jest.fn()}
         hasMore
-        VideoDetails={() => <></>}
         onSelect={jest.fn()}
       />
     )

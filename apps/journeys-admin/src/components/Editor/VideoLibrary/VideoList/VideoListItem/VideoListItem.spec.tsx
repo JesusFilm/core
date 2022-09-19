@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
-import { VideoDetails } from '../../VideoFromLocal/VideoDetails'
+import { LocalDetails } from '../../VideoFromLocal/LocalDetails'
 import { videos } from '../data'
 import { VideoListItem } from './VideoListItem'
 
@@ -16,7 +16,7 @@ describe('Video List Item', () => {
         <VideoListItem
           {...videos[0]}
           onSelect={jest.fn()}
-          VideoDetails={VideoDetails}
+          Details={LocalDetails}
         />
       </MockedProvider>
     )
@@ -36,7 +36,7 @@ describe('Video List Item', () => {
         <VideoListItem
           {...videos[0]}
           onSelect={onSelect}
-          VideoDetails={VideoDetails}
+          Details={LocalDetails}
         />
       </MockedProvider>
     )

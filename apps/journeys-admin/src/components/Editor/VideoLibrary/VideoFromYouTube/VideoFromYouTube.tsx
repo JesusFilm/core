@@ -1,14 +1,15 @@
 import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
 import useSWRInfinite from 'swr/infinite'
 import { reduce } from 'lodash'
 import Typography from '@mui/material/Typography'
-import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
+import {
+  VideoBlockSource,
+  VideoBlockUpdateInput
+} from '../../../../../__generated__/globalTypes'
 import { VideoSearch } from '../VideoSearch'
 import { VideoList } from '../VideoList'
 import { VideoListProps } from '../VideoList/VideoList'
-import { VideoDetails } from './VideoDetails'
 
 interface VideoFromYouTubeProps {
   onSelect: (block: VideoBlockUpdateInput) => void
@@ -67,7 +68,8 @@ const fetcher = async (query: string): Promise<Data> => {
       title: video.snippet.title,
       description: video.snippet.description,
       image: video.snippet.thumbnails.default.url,
-      duration: parseISO8601Duration(video.contentDetails.duration)
+      duration: parseISO8601Duration(video.contentDetails.duration),
+      source: VideoBlockSource.youTube
     }))
   }
 }
@@ -124,7 +126,6 @@ export function VideoFromYouTube({
             await setSize(size + 1)
           }}
           hasMore={data?.[data.length - 1]?.nextPageToken != null}
-          VideoDetails={VideoDetails}
         />
       </Box>
     </>

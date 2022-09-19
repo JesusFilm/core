@@ -4,13 +4,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../__generated__/GetVideo'
 import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
-import { GET_VIDEO } from './VideoDetails'
-import { VideoDetails } from '.'
+import { GET_VIDEO } from './LocalDetails'
+import { LocalDetails } from '.'
 
-const VideoDetailsStory = {
+const LocalDetailsStory = {
   ...journeysAdminConfig,
-  component: VideoDetails,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoDetails',
+  component: LocalDetails,
+  title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromLocal/LocalDetails',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
@@ -106,7 +106,7 @@ const Template: Story = ({ id, onSelect }) => {
         }
       ]}
     >
-      <VideoDetails
+      <LocalDetails
         id={id}
         open={open}
         onClose={() => setOpen(false)}
@@ -126,7 +126,7 @@ export const Loading: Story = ({ id, onSelect }) => {
 
   return (
     <ApolloLoadingProvider>
-      <VideoDetails
+      <LocalDetails
         id={id}
         open={open}
         onClose={() => setOpen(false)}
@@ -139,4 +139,4 @@ Loading.args = {
   id: '2_Acts7302-0-0'
 }
 
-export default VideoDetailsStory as Meta
+export default LocalDetailsStory as Meta

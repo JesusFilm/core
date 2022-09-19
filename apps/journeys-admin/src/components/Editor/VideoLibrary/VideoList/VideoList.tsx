@@ -17,12 +17,11 @@ export interface VideoListProps {
   videos?: Array<
     Pick<
       VideoListItemProps,
-      'id' | 'title' | 'description' | 'image' | 'duration'
+      'id' | 'title' | 'description' | 'image' | 'duration' | 'source'
     >
   >
   fetchMore: () => Promise<void>
   hasMore: boolean
-  VideoDetails: VideoListItemProps['VideoDetails']
 }
 
 export function VideoList({
@@ -30,8 +29,7 @@ export function VideoList({
   loading,
   videos,
   fetchMore,
-  hasMore,
-  VideoDetails
+  hasMore
 }: VideoListProps): ReactElement {
   return (
     <>
@@ -39,11 +37,7 @@ export function VideoList({
       <List data-testid="VideoList" sx={{ p: 0 }} component="div">
         {videos?.map((video) => (
           <Fragment key={video.id}>
-            <VideoListItem
-              {...video}
-              onSelect={onSelect}
-              VideoDetails={VideoDetails}
-            />
+            <VideoListItem {...video} onSelect={onSelect} />
             <Divider sx={{ mx: 6 }} />
           </Fragment>
         ))}

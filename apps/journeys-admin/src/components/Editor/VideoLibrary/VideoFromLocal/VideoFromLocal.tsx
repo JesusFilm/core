@@ -2,12 +2,15 @@ import { ReactElement, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { gql, useQuery } from '@apollo/client'
-import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
+import {
+  VideoBlockSource,
+  VideoBlockUpdateInput
+} from '../../../../../__generated__/globalTypes'
 import { VideoSearch } from '../VideoSearch'
 import { VideoList } from '../VideoList'
 import { GetVideos } from '../../../../../__generated__/GetVideos'
 import { VideoListProps } from '../VideoList/VideoList'
-import { VideoDetails } from './VideoDetails'
+import { LocalDetails } from './LocalDetails'
 
 export const GET_VIDEOS = gql`
   query GetVideos($where: VideosFilter, $limit: Int!, $offset: Int!) {
@@ -56,7 +59,8 @@ export function VideoFromLocal({
           title: video.title.find(({ primary }) => primary)?.value,
           description: video.snippet.find(({ primary }) => primary)?.value,
           image: video.image ?? '',
-          duration: video.variant?.duration
+          duration: video.variant?.duration,
+          source: VideoBlockSource.internal
         }))
       )
     }
@@ -91,7 +95,7 @@ export function VideoFromLocal({
           videos={videos}
           fetchMore={handleFetchMore}
           hasMore={hasMore}
-          VideoDetails={VideoDetails}
+          Details={LocalDetails}
         />
       </Box>
     </>

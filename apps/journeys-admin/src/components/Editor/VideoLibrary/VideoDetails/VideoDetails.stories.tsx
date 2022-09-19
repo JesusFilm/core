@@ -1,16 +1,17 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../../../libs/storybook'
-import { GetVideo_video_variantLanguages as Language } from '../../../../../../__generated__/GetVideo'
-import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
-import { GET_VIDEO } from './VideoDetails'
+import { journeysAdminConfig } from '../../../../libs/storybook'
+import { GetVideo_video_variantLanguages as Language } from '../../../../../__generated__/GetVideo'
+import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
+import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { VideoDetails } from '.'
 
 const VideoDetailsStory = {
   ...journeysAdminConfig,
   component: VideoDetails,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromLocal/VideoDetails',
+  title: 'Journeys-Admin/Editor/VideoLibrary/VideoDetails',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
@@ -111,6 +112,7 @@ const Template: Story = ({ id, onSelect }) => {
         open={open}
         onClose={() => setOpen(false)}
         onSelect={onSelect}
+        source={VideoBlockSource.internal}
       />
     </MockedProvider>
   )
@@ -131,6 +133,7 @@ export const Loading: Story = ({ id, onSelect }) => {
         open={open}
         onClose={() => setOpen(false)}
         onSelect={onSelect}
+        source={VideoBlockSource.internal}
       />
     </ApolloLoadingProvider>
   )
