@@ -141,7 +141,7 @@ export const TextResponse = ({
               data-testid="textResponse-field"
               id="textResponse-field"
               name="response"
-              label={t('Your answer here...')}
+              label={t('Your answer here')}
               value={values.response}
               onChange={handleChange}
               onBlur={(e) => {
