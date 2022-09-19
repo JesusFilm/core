@@ -80,8 +80,6 @@ export function BlockRenderer({
     return <></>
   }
 
-  console.log(block.__typename)
-
   switch (block.__typename) {
     case 'ButtonBlock':
       return (
