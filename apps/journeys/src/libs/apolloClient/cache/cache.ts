@@ -26,6 +26,7 @@ export const cache = (): InMemoryCache =>
         'RadioOptionBlock',
         'SignUpBlock',
         'StepBlock',
+        'TextResponseBlock',
         'TypographyBlock',
         'VideoBlock',
         'VideoTriggerBlock'

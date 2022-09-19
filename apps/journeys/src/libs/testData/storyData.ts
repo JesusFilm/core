@@ -51,10 +51,27 @@ export const basic: TreeBlock[] = [
             children: []
           },
           {
+            id: 'textResponse.id',
+            __typename: 'TextResponseBlock',
+            parentBlockId: 'card1.id',
+            parentOrder: 2,
+            label: 'Your answer here...',
+            hint: null,
+            submitLabel: null,
+            submitIconId: null,
+            children: [],
+            action: {
+              __typename: 'NavigateToBlockAction',
+              parentBlockId: 'textResponse.id',
+              gtmEventName: 'gtmEventName',
+              blockId: 'step2.id'
+            }
+          },
+          {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card1.id',
-            parentOrder: 2,
+            parentOrder: 3,
             children: [
               {
                 id: 'radioOption2.id',

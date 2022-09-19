@@ -34,6 +34,7 @@ export function TextField({
     <MuiTextField
       {...muiFieldProps}
       {...formikFieldProps}
+      onBlur={muiFieldProps.onBlur}
       fullWidth
       name={name}
       // TODO: Switch to filled & clarify styling in cooldown
