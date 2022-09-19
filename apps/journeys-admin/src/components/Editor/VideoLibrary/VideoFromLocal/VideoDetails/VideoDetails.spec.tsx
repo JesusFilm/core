@@ -62,6 +62,7 @@ describe('VideoDetails', () => {
       }
     }
   ]
+
   it('should render details of a video', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
@@ -74,11 +75,10 @@ describe('VideoDetails', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
+      expect(
+        getByRole('heading', { name: 'Jesus Taken Up Into Heaven' })
+      ).toBeInTheDocument()
     )
-    expect(
-      getByRole('heading', { name: 'Jesus Taken Up Into Heaven' })
-    ).toBeInTheDocument()
     expect(getByText('Jesus promises the Holy Spirit.')).toBeInTheDocument()
     const videoPlayer = getByRole('region', {
       name: 'Video Player'

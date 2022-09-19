@@ -10,7 +10,7 @@ import { VideoDetails } from '.'
 const VideoDetailsStory = {
   ...journeysAdminConfig,
   component: VideoDetails,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoDetails',
+  title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromLocal/VideoDetails',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 

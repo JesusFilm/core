@@ -15,7 +15,7 @@ import { VideoBlockSource } from '../../../../../../../../../__generated__/globa
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 import { GET_VIDEOS } from '../../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
 import { GET_VIDEO } from '../../../../../../VideoLibrary/VideoFromLocal/VideoDetails/VideoDetails'
-import { videos } from '../../../../../../VideoLibrary/VideoList/VideoListData'
+import { videos } from '../../../../../../VideoLibrary/VideoFromLocal/data'
 import {
   BackgroundMediaVideo,
   CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,

@@ -236,7 +236,6 @@ export function VideoDetails({
               startIcon={<Check />}
               onClick={handleVideoSelect}
               size="small"
-              disabled={loading}
             >
               Select
             </Button>

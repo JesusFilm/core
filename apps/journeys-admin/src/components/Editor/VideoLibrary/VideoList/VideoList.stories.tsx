@@ -1,71 +1,42 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
-import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
-import { GET_VIDEOS } from './VideoList'
-import { videos } from './VideoListData'
+import { VideoDetails } from '../VideoFromLocal/VideoDetails'
+import { VideoListProps } from './VideoList'
+import { videos } from './data'
 import { VideoList } from '.'
 
 const VideoListStory = {
   ...journeysAdminConfig,
   component: VideoList,
   title: 'Journeys-Admin/Editor/VideoLibrary/VideoList',
-  argTypes: { onSelect: { action: 'clicked' } }
+  argTypes: {
+    fetchMore: { action: 'fetched' },
+    onSelect: { action: 'selected' }
+  }
 }
 
-const Template: Story = ({ onSelect }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: GET_VIDEOS,
-          variables: {
-            offset: 0,
-            limit: 5,
-            where: {
-              availableVariantLanguageIds: ['529'],
-              title: null
-            }
-          }
-        },
-        result: {
-          data: {
-            videos
-          }
-        }
-      },
-      {
-        request: {
-          query: GET_VIDEOS,
-          variables: {
-            offset: 3,
-            limit: 5,
-            where: {
-              availableVariantLanguageIds: ['529'],
-              title: null
-            }
-          }
-        },
-        result: {
-          data: {
-            videos: []
-          }
-        }
-      }
-    ]}
-  >
-    <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
+const Template: Story<VideoListProps> = (args) => (
+  <MockedProvider>
+    <VideoList {...args} VideoDetails={VideoDetails} />
   </MockedProvider>
 )
 
 export const Default = Template.bind({})
+Default.args = {
+  videos,
+  hasMore: true
+}
 
-export const Loading: Story = ({ onSelect }) => {
-  return (
-    <ApolloLoadingProvider>
-      <VideoList onSelect={onSelect} currentLanguageIds={['529']} />
-    </ApolloLoadingProvider>
-  )
+export const Loading: Story = Template.bind({})
+Loading.args = {
+  loading: true
+}
+
+export const Empty: Story = Template.bind({})
+Empty.args = {
+  videos: [],
+  hasMore: true
 }
 
 export default VideoListStory as Meta

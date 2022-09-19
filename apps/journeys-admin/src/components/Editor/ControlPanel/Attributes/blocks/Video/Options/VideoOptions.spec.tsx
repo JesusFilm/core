@@ -7,7 +7,7 @@ import { SnackbarProvider } from 'notistack'
 import { InMemoryCache } from '@apollo/client'
 import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
 import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/VideoDetails/VideoDetails'
-import { videos } from '../../../../../VideoLibrary/VideoList/VideoListData'
+import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock,

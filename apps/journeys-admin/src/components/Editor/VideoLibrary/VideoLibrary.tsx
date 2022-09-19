@@ -86,6 +86,7 @@ export function VideoLibrary({
           borderColor: 'divider',
           backgroundColor: (theme) => theme.palette.background.paper
         }}
+        data-testid="VideoLibrary"
       >
         <Tabs
           value={activeTab}

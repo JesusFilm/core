@@ -16,8 +16,8 @@ import {
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../ThemeProvider'
-import { videos } from '../VideoLibrary/VideoList/VideoListData'
-import { GET_VIDEOS } from '../VideoLibrary/VideoList/VideoList'
+import { videos } from '../VideoLibrary/VideoFromLocal/data'
+import { GET_VIDEOS } from '../VideoLibrary/VideoFromLocal/VideoFromLocal'
 import {
   GET_VIDEO_VARIANT_LANGUAGES,
   VideoBlockEditor
@@ -46,7 +46,7 @@ const card: TreeBlock<CardBlock> = {
   children: []
 }
 
-const video: TreeBlock<VideoBlock> = {
+const videoInternal: TreeBlock<VideoBlock> = {
   id: 'video1.id',
   __typename: 'VideoBlock',
   parentBlockId: card.id,
@@ -85,10 +85,47 @@ const video: TreeBlock<VideoBlock> = {
   children: []
 }
 
-const poster: TreeBlock<ImageBlock> = {
+const posterInternal: TreeBlock<ImageBlock> = {
   id: 'poster1.id',
   __typename: 'ImageBlock',
-  parentBlockId: video.id,
+  parentBlockId: videoInternal.id,
+  parentOrder: 0,
+  src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3',
+  width: 300,
+  height: 200,
+  blurhash: '',
+  alt: 'poster',
+  children: []
+}
+
+const videoYouTube: TreeBlock<VideoBlock> = {
+  id: 'video1.id',
+  __typename: 'VideoBlock',
+  parentBlockId: card.id,
+  description:
+    'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+  duration: 348,
+  endAt: 348,
+  fullsize: true,
+  image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+  muted: false,
+  autoplay: true,
+  startAt: 0,
+  title: 'What is the Bible?',
+  videoId: 'ak06MSETeo4',
+  videoVariantLanguageId: null,
+  parentOrder: 0,
+  action: null,
+  source: VideoBlockSource.youTube,
+  video: null,
+  posterBlockId: 'poster1.id',
+  children: []
+}
+
+const posterYouTube: TreeBlock<ImageBlock> = {
+  id: 'poster1.id',
+  __typename: 'ImageBlock',
+  parentBlockId: videoInternal.id,
   parentOrder: 0,
   src: 'https://images.unsplash.com/photo-1558704164-ab7a0016c1f3',
   width: 300,
@@ -200,19 +237,28 @@ Default.args = {
   selectedBlock: null
 }
 
-export const Filled = Template.bind({})
-Filled.args = {
+export const Internal = Template.bind({})
+Internal.args = {
   selectedBlock: {
-    ...video,
-    children: [poster]
+    ...videoInternal,
+    children: [posterInternal]
+  }
+}
+
+export const YouTube = Template.bind({})
+YouTube.storyName = 'YouTube'
+YouTube.args = {
+  selectedBlock: {
+    ...videoYouTube,
+    children: [posterYouTube]
   }
 }
 
 export const PosterModal = Template.bind({})
 PosterModal.args = {
   selectedBlock: {
-    ...video,
-    children: [poster]
+    ...videoInternal,
+    children: [posterInternal]
   }
 }
 

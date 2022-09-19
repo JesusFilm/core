@@ -3,7 +3,10 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import { gql, useQuery } from '@apollo/client'
-import { VideoBlockUpdateInput } from '../../../../__generated__/globalTypes'
+import {
+  VideoBlockSource,
+  VideoBlockUpdateInput
+} from '../../../../__generated__/globalTypes'
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
@@ -87,7 +90,8 @@ export function VideoBlockEditor({
                   src: selectedBlock?.video?.image ?? selectedBlock.image,
                   alt:
                     selectedBlock?.video?.title?.[0]?.value ??
-                    selectedBlock?.title
+                    selectedBlock?.title ??
+                    ''
                 }
               : null
           }
@@ -95,10 +99,18 @@ export function VideoBlockEditor({
             selectedBlock?.video?.title?.[0]?.value == null &&
             selectedBlock?.title == null
               ? 'Select Video File'
-              : selectedBlock?.video?.title?.[0]?.value ?? selectedBlock?.title
+              : selectedBlock?.video?.title?.[0]?.value ??
+                selectedBlock?.title ??
+                ''
           }
           caption={language}
-          showDelete={showDelete && selectedBlock?.video != null}
+          showDelete={
+            showDelete &&
+            ((selectedBlock?.source === VideoBlockSource.internal &&
+              selectedBlock?.video != null) ||
+              (selectedBlock?.source === VideoBlockSource.youTube &&
+                selectedBlock?.videoId != null))
+          }
           onDelete={handleVideoDelete}
         />
       </Box>

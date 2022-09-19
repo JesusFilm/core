@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { gql, useQuery } from '@apollo/client'
@@ -70,6 +70,8 @@ export function VideoFromLocal({
     })
     if (response.data?.videos?.length === 0) setHasMore(false)
   }
+
+  useEffect(() => setHasMore(true), [searchQuery, setHasMore])
 
   return (
     <>
