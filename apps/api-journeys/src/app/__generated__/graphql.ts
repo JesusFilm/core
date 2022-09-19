@@ -295,6 +295,7 @@ export class TextResponseBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
     hint?: Nullable<string>;
+    minRows?: Nullable<number>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
 }
@@ -654,6 +655,7 @@ export class TextResponseBlock implements Block {
     parentOrder?: Nullable<number>;
     label: string;
     hint?: Nullable<string>;
+    minRows?: Nullable<number>;
     action?: Nullable<Action>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
