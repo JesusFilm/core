@@ -4,14 +4,12 @@ input TextResponseSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
-  label: String!
   value: String!
 }
 
 type TextResponseSubmissionEvent implements Event {
   id: ID!
   userId: ID!
-  label: String!
   value: String!
   block: TextResponseBlock
 }

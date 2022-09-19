@@ -834,7 +834,6 @@ input TextResponseBlockUpdateInput {
 type TextResponseSubmissionEvent implements Event {
   block: TextResponseBlock
   id: ID!
-  label: String!
   userId: ID!
   value: String!
 }
@@ -846,7 +845,6 @@ input TextResponseSubmissionEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
-  label: String!
   value: String!
 }
 
