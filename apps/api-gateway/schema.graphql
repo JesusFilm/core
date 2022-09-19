@@ -807,6 +807,7 @@ type TextResponseBlock implements Block {
   id: ID!
   journeyId: ID!
   label: String!
+  minRows: Int
   parentBlockId: ID
   parentOrder: Int
   submitIconId: ID
@@ -824,6 +825,7 @@ input TextResponseBlockCreateInput {
 input TextResponseBlockUpdateInput {
   hint: String
   label: String
+  minRows: Int
   parentBlockId: ID
   submitIconId: ID
   submitLabel: String
@@ -832,6 +834,7 @@ input TextResponseBlockUpdateInput {
 type TextResponseSubmissionEvent implements Event {
   block: TextResponseBlock
   id: ID!
+  label: String!
   userId: ID!
   value: String!
 }
@@ -843,6 +846,7 @@ input TextResponseSubmissionEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  label: String!
   value: String!
 }
 
