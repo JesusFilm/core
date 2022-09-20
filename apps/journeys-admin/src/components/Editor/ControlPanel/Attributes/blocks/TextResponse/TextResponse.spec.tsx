@@ -18,9 +18,12 @@ describe('TextResponse', () => {
     id: 'textResponseBlock.id',
     parentBlockId: null,
     parentOrder: null,
-    action: null,
-    submitIconId: null,
     label: 'default label',
+    hint: null,
+    submitLabel: 'Submit',
+    minRows: null,
+    submitIconId: null,
+    action: null,
     children: []
   }
 
@@ -29,14 +32,17 @@ describe('TextResponse', () => {
     id: 'textResponseBlock.id',
     parentBlockId: null,
     parentOrder: null,
+    label: 'compelte label',
+    hint: null,
+    minRows: null,
+    submitLabel: 'Submit',
+    submitIconId: 'icon.id',
     action: {
       __typename: 'LinkAction',
       parentBlockId: 'responseAction.id',
       gtmEventName: 'responseAction',
       url: 'https://www.google.com'
     },
-    submitIconId: 'icon.id',
-    label: 'compelte label',
     children: [
       {
         id: 'icon.id',
