@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
-import { LocalDetails } from '../../VideoFromLocal/LocalDetails'
 import { videos } from '../data'
 import { VideoListItem } from './VideoListItem'
 
@@ -13,11 +12,7 @@ describe('Video List Item', () => {
   it('should render the content of VideoListItem', () => {
     const { getByText } = render(
       <MockedProvider>
-        <VideoListItem
-          {...videos[0]}
-          onSelect={jest.fn()}
-          Details={LocalDetails}
-        />
+        <VideoListItem {...videos[0]} onSelect={jest.fn()} />
       </MockedProvider>
     )
     expect(getByText("Andreas' Story")).toBeInTheDocument()
@@ -33,11 +28,7 @@ describe('Video List Item', () => {
     const onSelect = jest.fn()
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <VideoListItem
-          {...videos[0]}
-          onSelect={onSelect}
-          Details={LocalDetails}
-        />
+        <VideoListItem {...videos[0]} onSelect={onSelect} />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
