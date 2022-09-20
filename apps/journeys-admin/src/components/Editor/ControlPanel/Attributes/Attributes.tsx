@@ -92,13 +92,18 @@ interface AttributesProps {
 export function Attributes({ selected, step }: AttributesProps): ReactElement {
   const { dispatch } = useEditor()
   useEffect(() => {
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: 'Social Share Appearance',
-      mobileOpen: false,
-      children: <SocialShareAppearance />
-    })
-  }, [selected.id, dispatch])
+    if (
+      selected.__typename === 'StepBlock' ||
+      selected.__typename === 'CardBlock'
+    ) {
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Social Share Appearance',
+        mobileOpen: false,
+        children: <SocialShareAppearance />
+      })
+    }
+  }, [selected, dispatch])
   return (
     <>
       <Stack

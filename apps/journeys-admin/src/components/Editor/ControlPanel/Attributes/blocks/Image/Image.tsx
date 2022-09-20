@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Photo from '@mui/icons-material/Photo'
@@ -19,10 +19,22 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
       children: <ImageOptions />
     })
 
+  useEffect(() => {
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      id: `${id}-image-options`
+    })
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: 'Image',
+      children: <ImageOptions />
+    })
+  }, [dispatch, id])
+
   return (
     <>
       <Attribute
-        id={`${id}-video-options`}
+        id={`${id}-image-options`}
         icon={<Photo />}
         name="Image Source"
         value={block?.alt ?? ''}

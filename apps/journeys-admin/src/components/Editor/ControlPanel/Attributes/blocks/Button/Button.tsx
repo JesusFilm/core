@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ViewDayOutlinedIcon from '@mui/icons-material/ViewDayOutlined'
@@ -42,6 +42,18 @@ export function Button({
   ) as TreeBlock<IconFields>
 
   const selectedAction = actions.find((act) => act.value === action?.__typename)
+
+  useEffect(() => {
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      id: `${id}-button-action`
+    })
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: 'Action',
+      children: <Action />
+    })
+  }, [dispatch, id])
 
   return (
     <>
