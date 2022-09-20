@@ -4,8 +4,8 @@ type TextResponseBlock implements Block {
   parentBlockId: ID
   parentOrder: Int
   label: String!
-  content: String
   hint: String
+  minRows: Int
   action: Action
   submitIconId: ID
   submitLabel: String
@@ -21,8 +21,8 @@ input TextResponseBlockCreateInput {
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
-  content: String
   hint: String
+  minRows: Int
   submitIconId: ID
   submitLabel: String
 }
