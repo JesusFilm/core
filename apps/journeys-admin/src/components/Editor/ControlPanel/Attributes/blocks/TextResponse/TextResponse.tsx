@@ -29,13 +29,13 @@ export function TextResponse({
       <Attribute
         id={`${id}-text-field-options`}
         icon={<Crop169RoundedIcon />}
-        name="Text Field"
+        name="Feedback"
         value={label}
         description="Label and Hint text"
         onClick={(): void =>
           dispatch({
             type: 'SetDrawerPropsAction',
-            title: 'Text Field Properties',
+            title: 'Feedback Properties',
             mobileOpen: true,
             children: <TextField />
           })

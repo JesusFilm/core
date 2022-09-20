@@ -65,7 +65,7 @@ describe('TextResponse', () => {
       getByRole('button', { name: 'Button Icon None' })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Text Field default label' })
+      getByRole('button', { name: 'Feedback default label' })
     ).toBeInTheDocument()
   })
 
@@ -79,7 +79,7 @@ describe('TextResponse', () => {
       getByRole('button', { name: 'Button Icon Arrow Forward' })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Text Field compelte label' })
+      getByRole('button', { name: 'Feedback compelte label' })
     ).toBeInTheDocument()
   })
 
@@ -115,7 +115,7 @@ describe('TextResponse', () => {
     expect(getByTestId('drawer-title')).toHaveTextContent('Button Icon')
   })
 
-  it('should open text field edit', () => {
+  it('should open feedback edit', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -127,9 +127,7 @@ describe('TextResponse', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Text Field compelte label' }))
-    expect(getByTestId('drawer-title')).toHaveTextContent(
-      'Text Field Properties'
-    )
+    fireEvent.click(getByRole('button', { name: 'Feedback compelte label' }))
+    expect(getByTestId('drawer-title')).toHaveTextContent('Feedback Properties')
   })
 })
