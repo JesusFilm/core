@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import type { TreeBlock } from '../../libs/block'
 import { VIDEO_START_EVENT_CREATE } from '../VideoEvents/VideoEvents'
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { VideoFields } from './__generated__/VideoFields'
 import { Video } from '.'
 
@@ -29,6 +30,11 @@ const videoBlock: TreeBlock<VideoFields> = {
   muted: false,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
+  source: VideoBlockSource.internal,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -136,6 +142,15 @@ Poster.args = {
 }
 Poster.parameters = {
   chromatic: { disableSnapshot: false }
+}
+
+export const Youtube = Template.bind({})
+Youtube.args = {
+  ...videoBlock,
+  video: null,
+  autoplay: true,
+  source: VideoBlockSource.youTube,
+  videoId: 'F7k5pqBVinA'
 }
 
 export const NoVideoSource = Template.bind({})
