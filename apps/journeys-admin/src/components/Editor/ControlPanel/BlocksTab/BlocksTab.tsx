@@ -9,7 +9,7 @@ import { NewImageButton } from './NewImageButton'
 import { NewRadioQuestionButton } from './NewRadioQuestionButton'
 import { NewSignUpButton } from './NewSignUpButton'
 import { NewButtonButton } from './NewButtonButton'
-import { NewFeedbackButton } from './NewFeedbackButton'
+import { NewTextResponseButton } from './NewTextResponseButton'
 
 export function BlocksTab(): ReactElement {
   const { feedbackBlock } = useFlags()
@@ -28,7 +28,7 @@ export function BlocksTab(): ReactElement {
         <NewImageButton />
         <NewVideoButton />
         <NewRadioQuestionButton />
-        {feedbackBlock && <NewFeedbackButton />}
+        {feedbackBlock && <NewTextResponseButton />}
         <NewSignUpButton />
         <NewButtonButton />
       </Stack>

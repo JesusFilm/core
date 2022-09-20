@@ -9,8 +9,8 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../__generated__/GetJourney'
-import { TEXT_RESPONSE_BLOCK_CREATE } from './NewFeedbackButton'
-import { NewFeedbackButton } from '.'
+import { TEXT_RESPONSE_BLOCK_CREATE } from './NewTextResponseButton'
+import { NewTextResponseButton } from '.'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -19,7 +19,7 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-describe('NewFeedbackButton', () => {
+describe('NewTextResponseButton', () => {
   const request = {
     query: TEXT_RESPONSE_BLOCK_CREATE,
     variables: {
@@ -131,7 +131,7 @@ describe('NewFeedbackButton', () => {
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
-            <NewFeedbackButton />
+            <NewTextResponseButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -171,7 +171,7 @@ describe('NewFeedbackButton', () => {
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
-            <NewFeedbackButton />
+            <NewTextResponseButton />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

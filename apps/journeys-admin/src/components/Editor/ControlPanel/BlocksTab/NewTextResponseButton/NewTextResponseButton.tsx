@@ -42,7 +42,7 @@ export const TEXT_RESPONSE_BLOCK_CREATE = gql`
   }
 `
 
-export function NewFeedbackButton(): ReactElement {
+export function NewTextResponseButton(): ReactElement {
   const [textResponseBlockCreate] = useMutation<TextResponseBlockCreate>(
     TEXT_RESPONSE_BLOCK_CREATE
   )
