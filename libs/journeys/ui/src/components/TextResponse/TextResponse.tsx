@@ -131,11 +131,11 @@ export const TextResponse = ({
           <Form data-testid={`textResponse-${blockId}`}>
             <Stack>
               <TextField
-                data-testid="textResponse-field"
                 id="textResponse-field"
                 name="response"
                 label={label}
                 value={values.response}
+                helperText={hint}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 disabled={selectedBlock !== undefined}
