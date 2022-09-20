@@ -11,7 +11,7 @@ import useSWR from 'swr'
 import fetch from 'node-fetch'
 import { parseISO8601Duration, YoutubeVideosData } from '../VideoFromYouTube'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
-import { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
+import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 
 const fetcher = async (
   id: string
