@@ -19,7 +19,7 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-describe('NewTextResponseButton', () => {
+describe('NewFeedbackButton', () => {
   const request = {
     query: TEXT_RESPONSE_BLOCK_CREATE,
     variables: {
@@ -137,7 +137,7 @@ describe('NewTextResponseButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Text Field' }))
+    fireEvent.click(getByRole('button', { name: 'Feedback' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -177,7 +177,7 @@ describe('NewTextResponseButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Text Field' }))
+    fireEvent.click(getByRole('button', { name: 'Feedback' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
       { __ref: 'TextResponseBlock:textResponseBlock.id' },

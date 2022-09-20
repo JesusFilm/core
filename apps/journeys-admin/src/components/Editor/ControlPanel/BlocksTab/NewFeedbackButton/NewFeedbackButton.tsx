@@ -129,5 +129,5 @@ export function NewFeedbackButton(): ReactElement {
       }
     }
   }
-  return <Button icon={<LinkIcon />} value="Text Field" onClick={handleClick} />
+  return <Button icon={<LinkIcon />} value="Feedback" onClick={handleClick} />
 }
