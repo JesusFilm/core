@@ -11,6 +11,7 @@ import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 import { GET_VIDEOS } from '../../../../../../VideoLibrary/VideoList/VideoList'
 import { GET_VIDEO } from '../../../../../../VideoLibrary/VideoDetails/VideoDetails'
@@ -49,6 +50,11 @@ const video: TreeBlock<VideoBlock> = {
   action: null,
   videoId: '5_0-NUA0201-0-0',
   videoVariantLanguageId: '529',
+  source: VideoBlockSource.internal,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
   video: {
     __typename: 'Video',
     id: '5_0-NUA0201-0-0',

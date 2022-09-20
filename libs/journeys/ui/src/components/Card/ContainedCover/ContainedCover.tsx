@@ -4,10 +4,12 @@ import { NextImage } from '@core/shared/ui/NextImage'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import type { TreeBlock } from '../../../libs/block'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { ContentOverlay } from './ContentOverlay'
 
+import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
 
 interface ContainedCoverProps {
@@ -33,7 +35,7 @@ export function ContainedCover({
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
-        autoplay: 'muted',
+        autoplay: true,
         controls: false,
         preload: 'metadata',
         userActions: {
@@ -46,6 +48,9 @@ export function ContainedCover({
       })
       playerRef.current.on('ready', () => {
         playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
+        // plays youTube videos at the start time
+        if (videoBlock?.source === VideoBlockSource.youTube)
+          playerRef.current?.play()
       })
       // Video jumps to new time and finishes loading
       playerRef.current.on('seeked', () => {
@@ -92,12 +97,26 @@ export function ContainedCover({
           }
         }}
       >
-        {videoBlock?.video?.variant?.hls != null && (
-          <video ref={videoRef} className="video-js" playsInline>
-            <source
-              src={videoBlock?.video.variant.hls}
-              type="application/x-mpegURL"
-            />
+        {videoBlock?.videoId != null && (
+          <video
+            ref={videoRef}
+            className="video-js"
+            playsInline
+            style={{ pointerEvents: 'none' }}
+          >
+            {videoBlock?.source === VideoBlockSource.internal &&
+              videoBlock?.video?.variant?.hls != null && (
+                <source
+                  src={videoBlock?.video.variant.hls}
+                  type="application/x-mpegURL"
+                />
+              )}
+            {videoBlock?.source === VideoBlockSource.youTube && (
+              <source
+                src={`https://www.youtube.com/watch?v=${videoBlock?.videoId}`}
+                type="video/youtube"
+              />
+            )}
           </video>
         )}
         {loading && imageBlock != null && backgroundBlur != null && (
