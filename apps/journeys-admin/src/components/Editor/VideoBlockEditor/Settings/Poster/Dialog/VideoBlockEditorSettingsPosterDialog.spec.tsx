@@ -6,7 +6,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import {
   JourneyStatus,
   ThemeMode,
-  ThemeName
+  ThemeName,
+  VideoBlockSource
 } from '../../../../../../../__generated__/globalTypes'
 
 import {
@@ -66,6 +67,11 @@ const video: TreeBlock<VideoBlock> = {
   action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
+  source: VideoBlockSource.internal,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',

@@ -3,6 +3,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { DragDropContext } from 'react-beautiful-dnd'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { CardList } from '.'
 
 jest.mock('react-beautiful-dnd', () => ({
@@ -58,6 +59,11 @@ describe('CardList', () => {
             muted: true,
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
