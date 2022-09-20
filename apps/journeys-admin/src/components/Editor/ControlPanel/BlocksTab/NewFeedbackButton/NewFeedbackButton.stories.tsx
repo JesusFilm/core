@@ -1,20 +1,20 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
 import { simpleComponentConfig } from '../../../../../libs/storybook'
-import { NewTextResponseButton } from './NewTextResponseButton'
+import { NewFeedbackButton } from './NewFeedbackButton'
 
-const NewTextResponseButtonStory = {
+const NewFeedbackButtonStory = {
   ...simpleComponentConfig,
-  component: NewTextResponseButton,
-  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/NewTextResponseButton'
+  component: NewFeedbackButton,
+  title: 'Journeys-Admin/Editor/ControlPanel/BlocksTab/NewFeedbackButton'
 }
 
 export const Default: Story = () => {
   return (
     <MockedProvider>
-      <NewTextResponseButton />
+      <NewFeedbackButton />
     </MockedProvider>
   )
 }
 
-export default NewTextResponseButtonStory as Meta
+export default NewFeedbackButtonStory as Meta
