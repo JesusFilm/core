@@ -18,15 +18,29 @@ jest.mock('formik', () => ({
 }))
 
 describe('TextField', () => {
-  it('should show correct error', () => {
+  it('should show error', () => {
     const errorMock = { ...metaMock, error: 'Required', touched: true }
     const useFieldMock = useField as jest.Mock
     useFieldMock.mockImplementation(() => [fieldMock, errorMock])
 
     render(<TextField {...props} />)
 
-    const inlineErrors = screen.getAllByText('Required')
+    const textField = screen.getByRole('textbox', { name: 'Name' })
 
-    expect(inlineErrors[0]).toHaveProperty('id', 'name-helper-text')
+    expect(textField).toHaveAccessibleDescription('Required')
+  })
+
+  it('should show helper text', () => {
+    const useFieldMock = useField as jest.Mock
+    useFieldMock.mockImplementation(() => [
+      { ...fieldMock, helperText: 'Please enter your full name.' },
+      metaMock
+    ])
+
+    render(<TextField {...props} helperText="Please enter your full name" />)
+
+    const textField = screen.getByRole('textbox', { name: 'Name' })
+
+    expect(textField).toHaveAccessibleDescription('Please enter your full name')
   })
 })
