@@ -13,7 +13,7 @@ import { GetVideo } from '../../../../../../__generated__/GetVideo'
 import { VideoLanguage } from '../../VideoLanguage'
 import 'video.js/dist/video-js.css'
 import { LanguageSelectOption } from '../../../../LanguageSelect'
-import { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
+import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID!) {
