@@ -21,13 +21,6 @@ export interface JourneyFields_language {
   name: JourneyFields_language_name[];
 }
 
-export interface JourneyFields_blocks_TextResponseBlock {
-  __typename: "TextResponseBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-}
-
 export interface JourneyFields_blocks_ButtonBlock_action_NavigateAction {
   __typename: "NavigateAction";
   parentBlockId: string;
@@ -272,6 +265,54 @@ export interface JourneyFields_blocks_StepBlock {
   nextBlockId: string | null;
 }
 
+export interface JourneyFields_blocks_TextResponseBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
+export interface JourneyFields_blocks_TextResponseBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
+export interface JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  journey: JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface JourneyFields_blocks_TextResponseBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type JourneyFields_blocks_TextResponseBlock_action = JourneyFields_blocks_TextResponseBlock_action_NavigateAction | JourneyFields_blocks_TextResponseBlock_action_NavigateToBlockAction | JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction | JourneyFields_blocks_TextResponseBlock_action_LinkAction;
+
+export interface JourneyFields_blocks_TextResponseBlock {
+  __typename: "TextResponseBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  hint: string | null;
+  minRows: number | null;
+  submitLabel: string | null;
+  submitIconId: string | null;
+  action: JourneyFields_blocks_TextResponseBlock_action | null;
+}
+
 export interface JourneyFields_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -430,7 +471,7 @@ export interface JourneyFields_blocks_VideoTriggerBlock {
   triggerAction: JourneyFields_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type JourneyFields_blocks = JourneyFields_blocks_TextResponseBlock | JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_GridItemBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
+export type JourneyFields_blocks = JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_GridItemBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TextResponseBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
 
 export interface JourneyFields_primaryImageBlock {
   __typename: "ImageBlock";

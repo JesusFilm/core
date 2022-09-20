@@ -162,6 +162,12 @@ export interface StepViewEventCreateInput {
   id?: string | null;
 }
 
+export interface TextResponseSubmissionEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  value: string;
+}
+
 export interface VideoCollapseEventCreateInput {
   blockId: string;
   id?: string | null;

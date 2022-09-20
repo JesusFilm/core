@@ -55,7 +55,6 @@ describe('TextResponseBlockResolver', () => {
   const blockUpdate = {
     parentBlockId: '0',
     label: 'Your answer',
-    content: 'My answer',
     hint: 'Enter your answer above',
     submitIconId: 'icon1',
     submitLabel: 'Next'

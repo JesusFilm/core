@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
 import { useRouter } from 'next/router'
-import { object, string } from 'yup'
 import { useMutation, gql, ApolloError } from '@apollo/client'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import Box from '@mui/material/Box'
@@ -20,41 +19,41 @@ import { getStepHeading } from '../../libs/getStepHeading'
 import { TextField } from '../TextField'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
-import { SignUpSubmissionEventCreate } from './__generated__/SignUpSubmissionEventCreate'
-import { SignUpFields } from './__generated__/SignUpFields'
+import { TextResponseSubmissionEventCreate } from './__generated__/TextResponseSubmissionEventCreate'
+import { TextResponseFields } from './__generated__/TextResponseFields'
 
-export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
-  mutation SignUpSubmissionEventCreate(
-    $input: SignUpSubmissionEventCreateInput!
+export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
+  mutation TextResponseSubmissionEventCreate(
+    $input: TextResponseSubmissionEventCreateInput!
   ) {
-    signUpSubmissionEventCreate(input: $input) {
+    textResponseSubmissionEventCreate(input: $input) {
       id
-      name
-      email
+      value
     }
   }
 `
-interface SignUpProps extends TreeBlock<SignUpFields> {
+interface TextResponseProps extends TreeBlock<TextResponseFields> {
   uuid?: () => string
   editableSubmitLabel?: ReactElement
   sx?: SxProps
 }
 
-interface SignUpFormValues {
-  name: string
-  email: string
+interface TextResponseFormValues {
+  response: string
 }
 
-export const SignUp = ({
+export const TextResponse = ({
   id: blockId,
   uuid = uuidv4,
+  label,
+  hint,
   submitIconId,
   submitLabel,
   editableSubmitLabel,
   action,
   children,
   sx
-}: SignUpProps): ReactElement => {
+}: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
 
   const submitIcon = children.find((block) => block.id === submitIconId) as
@@ -71,37 +70,31 @@ export const SignUp = ({
       : 'None'
 
   const router = useRouter()
-  const [signUpSubmissionEventCreate, { loading }] =
-    useMutation<SignUpSubmissionEventCreate>(SIGN_UP_SUBMISSION_EVENT_CREATE)
+  const [textResponseSubmissionEventCreate, { loading }] =
+    useMutation<TextResponseSubmissionEventCreate>(
+      TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
+    )
 
-  const initialValues: SignUpFormValues = { name: '', email: '' }
-  const signUpSchema = object().shape({
-    name: string()
-      .min(2, t('Name must be 2 characters or more'))
-      .max(50, t('Name must be 50 characters or less'))
-      .required(t('Required')),
-    email: string()
-      .email(t('Please enter a valid email address'))
-      .required(t('Required'))
-  })
+  const initialValues: TextResponseFormValues = { response: '' }
 
-  const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
+  const onSubmitHandler = async (
+    values: TextResponseFormValues
+  ): Promise<void> => {
     if (!admin) {
       const id = uuid()
       try {
-        await signUpSubmissionEventCreate({
+        await textResponseSubmissionEventCreate({
           variables: {
             input: {
               id,
               blockId,
-              name: values.name,
-              email: values.email
+              value: values.response
             }
           }
         })
         TagManager.dataLayer({
           dataLayer: {
-            event: 'sign_up_submission',
+            event: 'text_response_submission',
             eventId: id,
             blockId,
             stepName: heading
@@ -126,9 +119,6 @@ export const SignUp = ({
     <Box sx={{ mb: 4 }}>
       <Formik
         initialValues={initialValues}
-        validationSchema={
-          selectedBlock === undefined ? signUpSchema : undefined
-        }
         onSubmit={(values) => {
           if (selectedBlock === undefined) {
             void onSubmitHandler(values).then(() => {
@@ -138,25 +128,16 @@ export const SignUp = ({
         }}
       >
         {({ values, handleChange, handleBlur }) => (
-          <Form data-testid={`signUp-${blockId}`}>
+          <Form data-testid={`textResponse-${blockId}`}>
             <Stack>
               <TextField
-                data-testid="name"
-                id="name"
-                name="name"
-                label={t('Name')}
-                value={values.name}
+                id="textResponse-field"
+                name="response"
+                label={label}
+                value={values.response}
+                helperText={hint}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                disabled={selectedBlock !== undefined}
-              />
-              <TextField
-                value={values.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                id="email"
-                name="email"
-                label={t('Email')}
                 disabled={selectedBlock !== undefined}
               />
               <LoadingButton
