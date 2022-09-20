@@ -1,5 +1,6 @@
 import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { screen, userEvent } from '@storybook/testing-library'
 import { ReactElement } from 'react'
 import { SnackbarProvider } from 'notistack'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
@@ -27,16 +28,15 @@ const textResponseProps: TreeBlock<TextResponseFields> = {
   __typename: 'TextResponseBlock',
   parentBlockId: null,
   parentOrder: 0,
-  label: 'label',
-  hint: 'hint text',
+  label: 'Your answer here',
+  hint: null,
   minRows: null,
   submitIconId: null,
   submitLabel: null,
   action: {
-    __typename: 'NavigateToBlockAction',
+    __typename: 'NavigateAction',
     parentBlockId: 'textResponseBlockId1',
-    gtmEventName: 'gtmEventName',
-    blockId: 'step2.id'
+    gtmEventName: 'gtmEventName'
   },
   children: []
 }
@@ -81,15 +81,17 @@ export const Default = Template.bind({})
 
 export const Complete = Template.bind({})
 Complete.args = {
+  hint: 'Hint text',
+  minRows: 4,
   submitIconId: 'icon',
-  submitLabel: 'Unlock Now',
+  submitLabel: 'Send',
   children: [
     {
       id: 'icon',
       __typename: 'IconBlock',
       parentBlockId: 'parent',
       parentOrder: 0,
-      iconName: IconName.LockOpenRounded,
+      iconName: IconName.SendRounded,
       iconSize: null,
       iconColor: null,
       children: []
@@ -97,11 +99,14 @@ Complete.args = {
   ]
 }
 
-// export const SubmitError = Template.bind({})
-// SubmitError.args = {
-//   label: 'Label',
-//   description: 'Description'
-// }
+export const SubmitError = Template.bind({})
+SubmitError.args = {
+  minRows: 1
+}
+SubmitError.play = () => {
+  const submit = screen.getAllByRole('button')[0]
+  userEvent.click(submit)
+}
 
 const LoadingTemplate: Story<
   TreeBlock<TextResponseFields>
@@ -118,5 +123,14 @@ const LoadingTemplate: Story<
 )
 
 export const Loading = LoadingTemplate.bind({})
+Loading.parameters = {
+  chromatic: { pauseAnimationAtEnd: true }
+}
+Loading.play = () => {
+  const submitButtons = screen.getAllByRole('button')
+  submitButtons.forEach((button) => {
+    userEvent.click(button)
+  })
+}
 
 export default Demo as Meta

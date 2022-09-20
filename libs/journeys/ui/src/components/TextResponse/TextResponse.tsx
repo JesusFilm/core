@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
+import { isEmpty } from 'lodash'
 import { useRouter } from 'next/router'
 import { useMutation, gql, ApolloError } from '@apollo/client'
 import { SxProps } from '@mui/system/styleFunctionSx'
@@ -47,6 +48,7 @@ export const TextResponse = ({
   uuid = uuidv4,
   label,
   hint,
+  minRows,
   submitIconId,
   submitLabel,
   editableSubmitLabel,
@@ -82,30 +84,32 @@ export const TextResponse = ({
   ): Promise<void> => {
     if (!admin) {
       const id = uuid()
-      try {
-        await textResponseSubmissionEventCreate({
-          variables: {
-            input: {
-              id,
-              blockId,
-              value: values.response
+      if (!isEmpty(values)) {
+        try {
+          await textResponseSubmissionEventCreate({
+            variables: {
+              input: {
+                id,
+                blockId,
+                value: values.response
+              }
             }
-          }
-        })
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'text_response_submission',
-            eventId: id,
-            blockId,
-            stepName: heading
-          }
-        })
-      } catch (e) {
-        if (e instanceof ApolloError) {
-          enqueueSnackbar(e.message, {
-            variant: 'error',
-            preventDuplicate: true
           })
+          TagManager.dataLayer({
+            dataLayer: {
+              event: 'text_response_submission',
+              eventId: id,
+              blockId,
+              stepName: heading
+            }
+          })
+        } catch (e) {
+          if (e instanceof ApolloError) {
+            enqueueSnackbar('Could not send response, please try again.', {
+              variant: 'error',
+              preventDuplicate: true
+            })
+          }
         }
       }
     }
@@ -136,6 +140,8 @@ export const TextResponse = ({
                 label={label}
                 value={values.response}
                 helperText={hint}
+                multiline
+                minRows={minRows ?? 3}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 disabled={selectedBlock !== undefined}
