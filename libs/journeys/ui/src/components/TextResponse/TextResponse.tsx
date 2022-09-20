@@ -1,6 +1,5 @@
 import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
-import { isEmpty } from 'lodash'
 import { useRouter } from 'next/router'
 import { useMutation, gql, ApolloError } from '@apollo/client'
 import { SxProps } from '@mui/system/styleFunctionSx'
@@ -84,7 +83,7 @@ export const TextResponse = ({
   ): Promise<void> => {
     if (!admin) {
       const id = uuid()
-      if (!isEmpty(values)) {
+      if (values.response.trim() !== '') {
         try {
           await textResponseSubmissionEventCreate({
             variables: {
@@ -131,7 +130,7 @@ export const TextResponse = ({
           }
         }}
       >
-        {({ values, handleChange, handleBlur }) => (
+        {({ values }) => (
           <Form data-testid={`textResponse-${blockId}`}>
             <Stack>
               <TextField
@@ -139,12 +138,11 @@ export const TextResponse = ({
                 name="response"
                 label={label}
                 value={values.response}
-                helperText={hint}
+                helperText={hint ?? `${values.response.length}`}
                 multiline
                 minRows={minRows ?? 3}
-                onChange={handleChange}
-                onBlur={handleBlur}
                 disabled={selectedBlock !== undefined}
+                inputProps={{ maxLength: 1000 }}
               />
               <LoadingButton
                 type="submit"

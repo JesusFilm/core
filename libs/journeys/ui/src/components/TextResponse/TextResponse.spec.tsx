@@ -110,6 +110,18 @@ const TextResponseMock = ({
 )
 
 describe('TextResponse', () => {
+  it('should have 1000 character max length', async () => {
+    const { getByLabelText } = render(
+      <TextResponseMock mocks={[submissionSuccess]} />
+    )
+
+    const responseField = getByLabelText('Your answer here')
+
+    await waitFor(() => {
+      expect(responseField).toHaveAttribute('maxlength', '1000')
+    })
+  })
+
   it('should redirect when form submit suceeds', async () => {
     const { getByLabelText, getByRole } = render(
       <TextResponseMock mocks={[submissionSuccess]} />
