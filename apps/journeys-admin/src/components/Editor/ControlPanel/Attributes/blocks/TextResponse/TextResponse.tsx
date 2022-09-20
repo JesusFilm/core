@@ -4,6 +4,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Crop169RoundedIcon from '@mui/icons-material/Crop169Rounded'
 import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import Divider from '@mui/material/Divider'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { Attribute } from '../..'
@@ -25,6 +26,24 @@ export function TextResponse({
 
   return (
     <>
+      <Attribute
+        id={`${id}-text-field-options`}
+        icon={<Crop169RoundedIcon />}
+        name="Text Field"
+        value={label}
+        description="Label and Hint text"
+        onClick={(): void =>
+          dispatch({
+            type: 'SetDrawerPropsAction',
+            title: 'Text Field Properties',
+            mobileOpen: true,
+            children: <TextField />
+          })
+        }
+      />
+
+      <Divider orientation="vertical" variant="middle" flexItem />
+
       <Attribute
         id={`${id}-text-field-action`}
         icon={<LinkRoundedIcon />}
@@ -61,22 +80,6 @@ export function TextResponse({
             children: <Icon id={submitIcon.id} />
           })
         }}
-      />
-
-      <Attribute
-        id={`${id}-text-field-options`}
-        icon={<Crop169RoundedIcon />}
-        name="Text Field"
-        value={label}
-        description="Label and Hint text"
-        onClick={(): void =>
-          dispatch({
-            type: 'SetDrawerPropsAction',
-            title: 'Text Field Properties',
-            mobileOpen: true,
-            children: <TextField />
-          })
-        }
       />
     </>
   )
