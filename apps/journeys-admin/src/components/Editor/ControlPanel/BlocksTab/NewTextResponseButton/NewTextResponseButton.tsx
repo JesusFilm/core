@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import LinkIcon from '@mui/icons-material/Link'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { v4 as uuidv4 } from 'uuid'
-import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/TextResponseFields'
+import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
 import { gql, useMutation } from '@apollo/client'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -11,10 +11,10 @@ import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../..
 import { Button } from '../../Button'
 import { TextResponseBlockCreate } from '../../../../../../__generated__/TextResponseBlockCreate'
 
-export const TEXT_RESPONSE_CREATE = gql`
+export const TEXT_RESPONSE_BLOCK_CREATE = gql`
   ${TEXT_RESPONSE_FIELDS}
   ${ICON_FIELDS}
-  mutation TextResponseCreate(
+  mutation TextResponseBlockCreate(
     $input: TextResponseBlockCreateInput!
     $iconBlockCreateInput: IconBlockCreateInput!
     $id: ID!
@@ -23,6 +23,9 @@ export const TEXT_RESPONSE_CREATE = gql`
   ) {
     textResponseBlockCreate(input: $input) {
       id
+      parentBlockId
+      parentOrder
+      ...TextResponseFields
     }
     submitIcon: iconBlockCreate(input: $iconBlockCreateInput) {
       id
@@ -40,8 +43,9 @@ export const TEXT_RESPONSE_CREATE = gql`
 `
 
 export function NewTextResponseButton(): ReactElement {
-  const [textResponseBlockCreate] =
-    useMutation<TextResponseBlockCreate>(TEXT_RESPONSE_CREATE)
+  const [textResponseBlockCreate] = useMutation<TextResponseBlockCreate>(
+    TEXT_RESPONSE_BLOCK_CREATE
+  )
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -61,8 +65,9 @@ export function NewTextResponseButton(): ReactElement {
           input: {
             id,
             journeyId: journey.id,
-            parentBlockId: card.id
-            // submitLabel: 'Submit'
+            parentBlockId: card.id,
+            label: 'Your answer here',
+            submitLabel: 'Submit'
           },
           iconBlockCreateInput: {
             id: submitIconId,
