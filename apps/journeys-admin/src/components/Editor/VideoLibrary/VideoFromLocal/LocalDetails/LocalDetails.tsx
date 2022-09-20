@@ -106,20 +106,19 @@ export function LocalDetails({
     <Stack spacing={4} sx={{ p: 6 }}>
       {loading ? (
         <>
-          <Skeleton
-            variant="rectangular"
-            width={280}
-            height={150}
-            sx={{ borderRadius: 2 }}
-          />
-          <Typography variant="subtitle1">
-            <Skeleton variant="text" />
-          </Typography>
-          <Typography variant="caption">
-            <Skeleton variant="text" />
-            <Skeleton variant="text" />
-            <Skeleton variant="text" width="85%" />
-          </Typography>
+          <Skeleton variant="rectangular" width="100%" sx={{ borderRadius: 2 }}>
+            <div style={{ paddingTop: '57%' }} />
+          </Skeleton>
+          <Box>
+            <Typography variant="subtitle1">
+              <Skeleton variant="text" width="65%" />
+            </Typography>
+            <Typography variant="caption">
+              <Skeleton variant="text" />
+              <Skeleton variant="text" />
+              <Skeleton variant="text" width="85%" />
+            </Typography>
+          </Box>
         </>
       ) : (
         <>

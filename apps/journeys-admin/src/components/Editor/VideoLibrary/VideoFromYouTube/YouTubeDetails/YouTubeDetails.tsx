@@ -8,6 +8,7 @@ import Check from '@mui/icons-material/Check'
 import Skeleton from '@mui/material/Skeleton'
 import 'video.js/dist/video-js.css'
 import useSWR from 'swr'
+import fetch from 'node-fetch'
 import { parseISO8601Duration, YoutubeVideosData } from '../VideoFromYouTube'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
@@ -59,7 +60,8 @@ export function YouTubeDetails({
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         fluid: true,
-        controls: true
+        controls: true,
+        poster: data?.snippet?.thumbnails?.default?.url ?? undefined
       })
       playerRef.current.on('playing', () => {
         setPlaying(true)
@@ -67,26 +69,25 @@ export function YouTubeDetails({
     }
   }, [data])
 
-  const loading = data == null && error != null
+  const loading = data == null && error == null
 
   return (
     <Stack spacing={4} sx={{ p: 6 }}>
       {loading ? (
         <>
-          <Skeleton
-            variant="rectangular"
-            width={280}
-            height={150}
-            sx={{ borderRadius: 2 }}
-          />
-          <Typography variant="subtitle1">
-            <Skeleton variant="text" />
-          </Typography>
-          <Typography variant="caption">
-            <Skeleton variant="text" />
-            <Skeleton variant="text" />
-            <Skeleton variant="text" width="85%" />
-          </Typography>
+          <Skeleton variant="rectangular" width="100%" sx={{ borderRadius: 2 }}>
+            <div style={{ paddingTop: '57%' }} />
+          </Skeleton>
+          <Box>
+            <Typography variant="subtitle1">
+              <Skeleton variant="text" width="65%" />
+            </Typography>
+            <Typography variant="caption">
+              <Skeleton variant="text" />
+              <Skeleton variant="text" />
+              <Skeleton variant="text" width="85%" />
+            </Typography>
+          </Box>
         </>
       ) : (
         <>

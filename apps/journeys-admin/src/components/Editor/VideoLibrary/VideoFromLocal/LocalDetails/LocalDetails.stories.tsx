@@ -1,5 +1,4 @@
 import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../__generated__/GetVideo'
@@ -61,8 +60,6 @@ const languages: Language[] = [
 ]
 
 const Template: Story = ({ id, onSelect }) => {
-  const [open, setOpen] = useState(true)
-
   return (
     <MockedProvider
       mocks={[
@@ -106,12 +103,7 @@ const Template: Story = ({ id, onSelect }) => {
         }
       ]}
     >
-      <LocalDetails
-        id={id}
-        open={open}
-        onClose={() => setOpen(false)}
-        onSelect={onSelect}
-      />
+      <LocalDetails id={id} open onSelect={onSelect} />
     </MockedProvider>
   )
 }
@@ -122,16 +114,9 @@ Default.args = {
 }
 
 export const Loading: Story = ({ id, onSelect }) => {
-  const [open, setOpen] = useState(true)
-
   return (
     <ApolloLoadingProvider>
-      <LocalDetails
-        id={id}
-        open={open}
-        onClose={() => setOpen(false)}
-        onSelect={onSelect}
-      />
+      <LocalDetails id={id} open onSelect={onSelect} />
     </ApolloLoadingProvider>
   )
 }

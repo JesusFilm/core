@@ -82,8 +82,7 @@ export const getVideosWithOffsetAndUrl = rest.get(
     if (req.url.searchParams.get('id') === video2.id) {
       return res(
         ctx.json<YoutubeVideosData>({
-          items: [video2],
-          nextPageToken: 'nextPageToken'
+          items: [video2]
         })
       )
     }

@@ -61,7 +61,7 @@ describe('VideoFromYouTube', () => {
 
   it('should re-enable Load More if filters change', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <VideoFromYouTube onSelect={jest.fn()} />
       </SWRConfig>
@@ -78,7 +78,7 @@ describe('VideoFromYouTube', () => {
       target: { value: 'https://www.youtube.com/watch?v=jQaeIJOA6J0' }
     })
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
+      expect(getByText('Blessing and Curse')).toBeInTheDocument()
     )
   })
 })
