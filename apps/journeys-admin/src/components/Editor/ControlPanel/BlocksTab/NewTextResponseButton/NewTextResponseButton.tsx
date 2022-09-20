@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import LinkIcon from '@mui/icons-material/Link'
+import Crop169RoundedIcon from '@mui/icons-material/Crop169Rounded'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { v4 as uuidv4 } from 'uuid'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
@@ -129,5 +129,11 @@ export function NewTextResponseButton(): ReactElement {
       }
     }
   }
-  return <Button icon={<LinkIcon />} value="Feedback" onClick={handleClick} />
+  return (
+    <Button
+      icon={<Crop169RoundedIcon />}
+      value="Feedback"
+      onClick={handleClick}
+    />
+  )
 }
