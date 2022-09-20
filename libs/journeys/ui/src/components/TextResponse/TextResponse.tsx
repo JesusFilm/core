@@ -47,6 +47,7 @@ export const TextResponse = ({
   uuid = uuidv4,
   label,
   hint,
+  minRows,
   submitIconId,
   submitLabel,
   editableSubmitLabel,
@@ -102,7 +103,7 @@ export const TextResponse = ({
         })
       } catch (e) {
         if (e instanceof ApolloError) {
-          enqueueSnackbar(e.message, {
+          enqueueSnackbar('Could not send response, please try again.', {
             variant: 'error',
             preventDuplicate: true
           })
@@ -136,6 +137,8 @@ export const TextResponse = ({
                 label={label}
                 value={values.response}
                 helperText={hint}
+                multiline
+                minRows={minRows ?? 3}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 disabled={selectedBlock !== undefined}
