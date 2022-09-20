@@ -107,8 +107,7 @@ export const TextResponse = ({
           if (e instanceof ApolloError) {
             enqueueSnackbar('Could not send response, please try again.', {
               variant: 'error',
-              preventDuplicate: true,
-              persist: true
+              preventDuplicate: true
             })
           }
         }
