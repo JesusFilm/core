@@ -10,7 +10,6 @@ import { VideoSearch } from '../VideoSearch'
 import { VideoList } from '../VideoList'
 import { GetVideos } from '../../../../../__generated__/GetVideos'
 import { VideoListProps } from '../VideoList/VideoList'
-import { LocalDetails } from './LocalDetails'
 
 export const GET_VIDEOS = gql`
   query GetVideos($where: VideosFilter, $limit: Int!, $offset: Int!) {
@@ -95,7 +94,6 @@ export function VideoFromLocal({
           videos={videos}
           fetchMore={handleFetchMore}
           hasMore={hasMore}
-          Details={LocalDetails}
         />
       </Box>
     </>

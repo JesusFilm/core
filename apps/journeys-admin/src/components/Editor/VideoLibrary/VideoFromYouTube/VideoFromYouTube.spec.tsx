@@ -1,143 +1,57 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { MockedProvider } from '@apollo/client/testing'
-import { GET_VIDEOS } from './VideoFromLocal'
-import { videos } from './data'
-import { VideoFromLocal } from '.'
-
-jest.mock('node-fetch', () => {
-  const originalModule = jest.requireActual('node-fetch')
-  return {
-    __esModule: true,
-    ...originalModule,
-    default: jest.fn()
-  }
-})
-const mockFetch = fetch as jest.MockedFunction<typeof fetch>
+import { SWRConfig } from 'swr'
+import { mswServer } from '../../../../../test/mswServer'
+import {
+  getVideos,
+  getVideosEmpty,
+  getVideosWithOffsetAndUrl
+} from './VideoFromYouTube.handlers'
+import { VideoFromYouTube } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
 
-const getVideosMock = {
-  request: {
-    query: GET_VIDEOS,
-    variables: {
-      offset: 0,
-      limit: 5,
-      where: {
-        availableVariantLanguageIds: ['529'],
-        title: null
-      }
-    }
-  },
-  result: {
-    data: {
-      videos
-    }
-  }
-}
-
-const getVideosEmptyWithOffsetMock = {
-  request: {
-    query: GET_VIDEOS,
-    variables: {
-      offset: 3,
-      limit: 5,
-      where: {
-        availableVariantLanguageIds: ['529'],
-        title: null
-      }
-    }
-  },
-  result: {
-    data: {
-      videos: []
-    }
-  }
-}
-
-const getVideosEmptyMock = {
-  request: {
-    query: GET_VIDEOS,
-    variables: {
-      offset: 0,
-      limit: 5,
-      where: {
-        availableVariantLanguageIds: ['529'],
-        title: null
-      }
-    }
-  },
-  result: {
-    data: {
-      videos: []
-    }
-  }
-}
-
-const getVideosWithTitleMock = {
-  request: {
-    query: GET_VIDEOS,
-    variables: {
-      offset: 0,
-      limit: 5,
-      where: {
-        availableVariantLanguageIds: ['529'],
-        title: 'abc'
-      }
-    }
-  },
-  result: {
-    data: {
-      videos
-    }
-  }
-}
-
 describe('VideoFromYouTube', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   it('should render a video list item', async () => {
-    const onSelect = jest.fn()
+    mswServer.use(getVideos)
     const { getByText } = render(
-      <MockedProvider mocks={[getVideosMock]}>
-        <VideoFromLocal onSelect={onSelect} />
-      </MockedProvider>
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <VideoFromYouTube onSelect={jest.fn()} />
+      </SWRConfig>
     )
-    await waitFor(() => expect(getByText("Andreas' Story")).toBeInTheDocument())
-    expect(getByText('Brand_Video')).toBeInTheDocument()
-    expect(getByText('The Demoniac')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByText('What is the Bible?')).toBeInTheDocument()
+    )
   })
 
   it('should call api to get more videos', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        videos: []
-      }
-    }))
+    mswServer.use(getVideosWithOffsetAndUrl)
     const { getByRole } = render(
-      <MockedProvider
-        mocks={[getVideosMock, { ...getVideosEmptyWithOffsetMock, result }]}
-      >
-        <VideoFromLocal onSelect={jest.fn()} />
-      </MockedProvider>
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <VideoFromYouTube onSelect={jest.fn()} />
+      </SWRConfig>
     )
     await waitFor(() =>
       expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
     )
     fireEvent.click(getByRole('button', { name: 'Load More' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
+    )
   })
 
   it('should render No More Videos if video length is 0', async () => {
-    const onSelect = jest.fn()
+    mswServer.use(getVideosEmpty)
+
     const { getByText, getByRole } = render(
-      <MockedProvider mocks={[getVideosEmptyMock]}>
-        <VideoFromLocal onSelect={onSelect} />
-      </MockedProvider>
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <VideoFromYouTube onSelect={jest.fn()} />
+      </SWRConfig>
     )
     await waitFor(() =>
       expect(getByText('No Results Found')).toBeInTheDocument()
@@ -146,16 +60,11 @@ describe('VideoFromYouTube', () => {
   })
 
   it('should re-enable Load More if filters change', async () => {
+    mswServer.use(getVideosWithOffsetAndUrl)
     const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          getVideosMock,
-          getVideosEmptyWithOffsetMock,
-          getVideosWithTitleMock
-        ]}
-      >
-        <VideoFromLocal onSelect={jest.fn()} />
-      </MockedProvider>
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <VideoFromYouTube onSelect={jest.fn()} />
+      </SWRConfig>
     )
     await waitFor(() =>
       expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
@@ -166,7 +75,7 @@ describe('VideoFromYouTube', () => {
     )
     const textbox = getByRole('textbox', { name: 'Search' })
     fireEvent.change(textbox, {
-      target: { value: 'abc' }
+      target: { value: 'https://www.youtube.com/watch?v=jQaeIJOA6J0' }
     })
     await waitFor(() =>
       expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
