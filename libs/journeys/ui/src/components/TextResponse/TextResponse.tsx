@@ -142,7 +142,7 @@ export const TextResponse = ({
                 multiline
                 minRows={minRows ?? 3}
                 disabled={selectedBlock !== undefined}
-                inputProps={{ maxLength: 10 }}
+                inputProps={{ maxLength: 1000 }}
               />
               <LoadingButton
                 type="submit"
