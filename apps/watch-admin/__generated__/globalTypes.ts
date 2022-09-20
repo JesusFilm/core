@@ -133,6 +133,11 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
+export enum VideoBlockSource {
+  internal = "internal",
+  youTube = "youTube",
+}
+
 export interface ButtonClickEventCreateInput {
   blockId: string;
   id?: string | null;

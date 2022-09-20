@@ -15,6 +15,11 @@ export const VIDEO_FIELDS = gql`
     fullsize
     videoId
     videoVariantLanguageId
+    source
+    title
+    description
+    image
+    duration
     video {
       id
       title(primary: true) {

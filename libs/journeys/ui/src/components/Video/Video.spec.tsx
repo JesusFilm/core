@@ -2,6 +2,7 @@ import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import type { TreeBlock } from '../../libs/block'
 import { EditorProvider } from '../../libs/EditorProvider'
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { VideoFields } from './__generated__/VideoFields'
 import { Video } from '.'
 
@@ -19,6 +20,11 @@ const block: TreeBlock<VideoFields> = {
   action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
+  source: VideoBlockSource.internal,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -67,10 +73,10 @@ describe('Video', () => {
     expect(sourceTag?.getAttribute('type')).toEqual('application/x-mpegURL')
   })
 
-  it('should render an image if video is null', () => {
+  it('should render an image if videoId is null', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <Video {...block} video={null} />
+        <Video {...block} videoId={null} />
       </MockedProvider>
     )
     expect(getByTestId('VideocamRoundedIcon')).toHaveClass('MuiSvgIcon-root')

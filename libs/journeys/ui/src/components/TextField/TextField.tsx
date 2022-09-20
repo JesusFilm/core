@@ -6,19 +6,7 @@ import MuiTextField, {
 } from '@mui/material/TextField'
 
 export interface TextFieldProps
-  extends Pick<
-    MuiTextFieldProps,
-    | 'id'
-    | 'name'
-    | 'label'
-    | 'focused'
-    | 'disabled'
-    | 'value'
-    | 'helperText'
-    | 'multiline'
-    | 'onBlur'
-    | 'onChange'
-  > {}
+  extends Omit<MuiTextFieldProps, 'variant' | 'error' | 'fullWidth'> {}
 
 // Use as subcomponent of form blocks (eg SignUp, TextResponse)
 export function TextField({

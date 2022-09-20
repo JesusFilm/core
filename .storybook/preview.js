@@ -45,7 +45,7 @@ module.exports = {
       }
     },
     chromatic: { viewports: [360, 1200] },
-    controls: { disabled: true },
+    controls: { disable: true },
     viewport: {
       viewports: customViewports
     }
