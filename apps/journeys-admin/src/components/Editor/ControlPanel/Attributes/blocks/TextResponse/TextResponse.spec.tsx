@@ -33,8 +33,8 @@ describe('TextResponse', () => {
     parentBlockId: null,
     parentOrder: null,
     label: 'compelte label',
-    hint: null,
-    minRows: null,
+    hint: 'hint text',
+    minRows: 2,
     submitLabel: 'Submit',
     submitIconId: 'icon.id',
     action: {
@@ -79,11 +79,27 @@ describe('TextResponse', () => {
       getByRole('button', { name: 'Button Icon Arrow Forward' })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Feedback compelte label' })
+      getByRole('button', { name: 'Feedback complete label' })
     ).toBeInTheDocument()
   })
 
-  it('should open button icon edit', () => {
+  it('should open feedback edit', () => {
+    const { getByRole, getByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <EditorProvider>
+            <Drawer />
+            <TextResponse {...completeBlock} />
+          </EditorProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Feedback complete label' }))
+    expect(getByTestId('drawer-title')).toHaveTextContent('Feedback Properties')
+  })
+
+  it('should open button action edit', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -99,7 +115,7 @@ describe('TextResponse', () => {
     expect(getByTestId('drawer-title')).toHaveTextContent('Action')
   })
 
-  it('should open button action edit', () => {
+  it('should open button icon edit', () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
@@ -113,21 +129,5 @@ describe('TextResponse', () => {
 
     fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Forward' }))
     expect(getByTestId('drawer-title')).toHaveTextContent('Button Icon')
-  })
-
-  it('should open feedback edit', () => {
-    const { getByRole, getByTestId } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <EditorProvider>
-            <Drawer />
-            <TextResponse {...completeBlock} />
-          </EditorProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByRole('button', { name: 'Feedback compelte label' }))
-    expect(getByTestId('drawer-title')).toHaveTextContent('Feedback Properties')
   })
 })

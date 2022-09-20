@@ -59,6 +59,8 @@ Complete.args = {
     },
     submitIconId: 'icon.id',
     label: 'label',
+    hint: 'hint text',
+    minRows: 2,
     children: [
       {
         id: 'icon.id',
