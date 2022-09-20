@@ -123,6 +123,35 @@ describe('VideoOptions', () => {
     }
   ]
 
+  it('displays video library when open is true', () => {
+    const { getByText } = render(
+      <MockedProvider mocks={[...mocks]}>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            admin: true
+          }}
+        >
+          <ThemeProvider>
+            <EditorProvider
+              initialState={{
+                selectedBlock: video
+              }}
+            >
+              <SnackbarProvider>
+                <VideoOptions open />
+              </SnackbarProvider>
+            </EditorProvider>
+          </ThemeProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(getByText('Library')).toBeInTheDocument()
+    expect(getByText('YouTube')).toBeInTheDocument()
+    expect(getByText('Jesus Film Library')).toBeInTheDocument()
+  })
+
   it('updates video block', async () => {
     const videoBlockResult = jest.fn(() => ({
       data: {

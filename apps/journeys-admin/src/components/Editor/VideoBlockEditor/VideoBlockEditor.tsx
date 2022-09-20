@@ -17,6 +17,7 @@ import { Source } from './Source'
 import { VideoBlockEditorSettings } from './Settings'
 
 interface VideoBlockEditorProps {
+  open?: boolean
   selectedBlock: TreeBlock<VideoBlock> | null
   onChange: (input: VideoBlockUpdateInput) => Promise<void>
   showDelete?: boolean
@@ -39,6 +40,7 @@ export const GET_VIDEO_VARIANT_LANGUAGES = gql`
 `
 
 export function VideoBlockEditor({
+  open,
   selectedBlock,
   showDelete = true,
   onChange,
@@ -115,7 +117,7 @@ export function VideoBlockEditor({
         />
       </Box>
       <Box>
-        <Source onChange={onChange} />
+        <Source open={open} onChange={onChange} />
         <Divider />
         <VideoBlockEditorSettings
           selectedBlock={selectedBlock}
