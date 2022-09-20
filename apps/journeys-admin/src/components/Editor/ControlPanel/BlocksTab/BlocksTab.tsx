@@ -26,9 +26,9 @@ export function BlocksTab(): ReactElement {
         <NewImageButton />
         <NewVideoButton />
         <NewRadioQuestionButton />
+        <NewFeedbackButton />
         <NewSignUpButton />
         <NewButtonButton />
-        <NewFeedbackButton />
       </Stack>
       <Box
         sx={{
