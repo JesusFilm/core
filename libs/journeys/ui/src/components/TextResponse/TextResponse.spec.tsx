@@ -71,29 +71,27 @@ const block: TreeBlock<TextResponseFields> = {
   children: []
 }
 
-const submissionSuccess = [
-  {
-    request: {
-      query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'textResponse0.id',
-          value: 'My response'
-        }
+const submissionSuccess = {
+  request: {
+    query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
+    variables: {
+      input: {
+        id: 'uuid',
+        blockId: 'textResponse0.id',
+        value: 'My response'
       }
-    },
-    result: {
-      data: {
-        textResponseSubmissionEventCreate: {
-          id: 'uuid',
-          blockId: 'textResponse0.id',
-          value: 'My response'
-        }
+    }
+  },
+  result: {
+    data: {
+      textResponseSubmissionEventCreate: {
+        id: 'uuid',
+        blockId: 'textResponse0.id',
+        value: 'My response'
       }
     }
   }
-]
+}
 
 interface TextResponseMockProps {
   mocks?: Array<MockedResponse<Record<string, unknown>>>
@@ -114,7 +112,7 @@ const TextResponseMock = ({
 describe('TextResponse', () => {
   it('should redirect when form submit suceeds', async () => {
     const { getByLabelText, getByRole } = render(
-      <TextResponseMock mocks={submissionSuccess} />
+      <TextResponseMock mocks={[submissionSuccess]} />
     )
 
     const responseField = getByLabelText('Your answer here')
@@ -141,7 +139,7 @@ describe('TextResponse', () => {
   it('should be in a loading state when waiting for response', async () => {
     const { getByRole, getByLabelText } = render(
       <ApolloLoadingProvider>
-        <TextResponseMock mocks={submissionSuccess} />
+        <TextResponseMock mocks={[submissionSuccess]} />
       </ApolloLoadingProvider>
     )
     const responseField = getByLabelText('Your answer here')
@@ -167,9 +165,7 @@ describe('TextResponse', () => {
       }
     }))
     const { getByLabelText, getByRole } = render(
-      <TextResponseMock
-        mocks={[{ request: submissionSuccess[0].request, result }]}
-      />
+      <TextResponseMock mocks={[{ ...submissionSuccess, result }]} />
     )
 
     const responseField = getByLabelText('Your answer here')
@@ -196,9 +192,7 @@ describe('TextResponse', () => {
     }))
 
     const { getByLabelText, getByRole } = render(
-      <TextResponseMock
-        mocks={[{ request: submissionSuccess[0].request, result }]}
-      />
+      <TextResponseMock mocks={[{ ...submissionSuccess, result }]} />
     )
 
     const responseField = getByLabelText('Your answer here')
@@ -226,7 +220,7 @@ describe('TextResponse', () => {
     treeBlocksVar([activeBlock])
 
     const { getByLabelText, getByRole } = render(
-      <TextResponseMock mocks={submissionSuccess} />
+      <TextResponseMock mocks={[submissionSuccess]} />
     )
 
     const responseField = getByLabelText('Your answer here')
@@ -248,24 +242,13 @@ describe('TextResponse', () => {
   })
 
   it('should show error when submit fails', async () => {
-    const submissionError = [
-      {
-        request: {
-          query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
-          variables: {
-            input: {
-              id: 'uuid',
-              blockId: 'textResponse0.id',
-              value: 'My response'
-            }
-          }
-        },
-        error: new Error()
-      }
-    ]
+    const submissionError = {
+      ...submissionSuccess,
+      error: new Error()
+    }
 
     const { getByRole, getByLabelText, getByText } = render(
-      <TextResponseMock mocks={submissionError} />
+      <TextResponseMock mocks={[submissionError]} />
     )
     const responseField = getByLabelText('Your answer here')
     const submit = getByRole('button')
