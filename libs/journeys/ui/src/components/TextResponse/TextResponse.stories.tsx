@@ -105,7 +105,6 @@ SubmitError.args = {
 }
 SubmitError.play = () => {
   const submit = screen.getAllByRole('button')[0]
-  console.log('submit', submit)
   userEvent.click(submit)
 }
 
