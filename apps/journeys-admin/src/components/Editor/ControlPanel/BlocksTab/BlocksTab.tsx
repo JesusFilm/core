@@ -2,6 +2,7 @@ import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import MuiTypography from '@mui/material/Typography'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { NewVideoButton } from './NewVideoButton'
 import { NewTypographyButton } from './NewTypographyButton'
 import { NewImageButton } from './NewImageButton'
@@ -11,6 +12,7 @@ import { NewButtonButton } from './NewButtonButton'
 import { NewFeedbackButton } from './NewFeedbackButton'
 
 export function BlocksTab(): ReactElement {
+  const { feedbackBlock } = useFlags()
   return (
     <>
       <Stack
@@ -26,7 +28,7 @@ export function BlocksTab(): ReactElement {
         <NewImageButton />
         <NewVideoButton />
         <NewRadioQuestionButton />
-        <NewFeedbackButton />
+        {feedbackBlock && <NewFeedbackButton />}
         <NewSignUpButton />
         <NewButtonButton />
       </Stack>

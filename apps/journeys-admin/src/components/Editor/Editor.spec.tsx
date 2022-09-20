@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -62,11 +63,13 @@ describe('Editor', () => {
   it('should render the element', () => {
     const { getByText } = render(
       <MockedProvider>
-        <ThemeProvider>
-          <Editor journey={journey}>
-            <JourneyEdit />
-          </Editor>
-        </ThemeProvider>
+        <FlagsProvider flags={{ feedbackBlock: true }}>
+          <ThemeProvider>
+            <Editor journey={journey}>
+              <JourneyEdit />
+            </Editor>
+          </ThemeProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     expect(getByText('Cards')).toBeInTheDocument()
@@ -77,11 +80,13 @@ describe('Editor', () => {
   it('should select step based on ID', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <ThemeProvider>
-          <Editor journey={journey} selectedStepId="step1.id">
-            <JourneyEdit />
-          </Editor>
-        </ThemeProvider>
+        <FlagsProvider flags={{ feedbackBlock: true }}>
+          <ThemeProvider>
+            <Editor journey={journey} selectedStepId="step1.id">
+              <JourneyEdit />
+            </Editor>
+          </ThemeProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     expect(getByTestId('preview-step1.id').parentElement).toHaveStyle(
