@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../libs/storybook'
-import { LocalDetails } from '../../VideoFromLocal/LocalDetails'
 import { VideoListItem } from '.'
 
 const VideoListItemStory = {
@@ -20,7 +20,7 @@ const Template: Story = ({ onSelect, ...args }) => (
       image={args.image}
       duration={args.duration}
       onSelect={onSelect}
-      Details={LocalDetails}
+      source={args.source}
     />
   </MockedProvider>
 )
@@ -33,7 +33,8 @@ Default.args = {
     'After living a life full of fighter planes and porsches, Andreas realizes something is missing.',
   image:
     'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
-  duration: 186
+  duration: 186,
+  source: VideoBlockSource.internal
 }
 
 export default VideoListItemStory as Meta
