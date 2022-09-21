@@ -1,20 +1,20 @@
 resource "aws_lb" "application_load_balancer" {
-  name = "${local.identifier}-${local.environment}-alb"
+  name = "${local.name}-alb"
   security_groups = [
     data.aws_security_group.default_load_balancer.id,
     aws_security_group.load_balancer.id,
   ]
-  subnets = data.aws_subnets.main_public.ids
+  subnets = data.aws_subnets.apps_public.ids
   access_logs {
     bucket  = "jfp-alb-logs"
-    prefix  = "${local.identifier}/${local.environment}"
+    prefix  = "${local.identifier}/${local.env}"
     enabled = "true"
   }
   tags = local.tags
 }
 
 resource "aws_lb_target_group" "target_group" {
-  name        = "${local.identifier}-${local.environment}"
+  name        = local.name
   port        = 4000
   protocol    = "HTTP"
   vpc_id      = data.aws_vpc.main.id

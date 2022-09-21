@@ -19,11 +19,11 @@ data "aws_security_group" "ecs" {
 
 // Create Load Balancer Security group with egress to all outbound IP addresses
 resource "aws_security_group" "load_balancer" {
-  name        = "${local.identifier}-${local.env}-alb"
+  name        = "${local.name}-alb"
   description = "${local.identifier} (${local.env}) ALB"
   vpc_id      = data.aws_vpc.main.id
   tags = merge(local.tags, {
-    Name = "${local.identifier}-${local.env}-alb"
+    Name = "${local.name}-alb"
   })
 
   egress {

@@ -13,13 +13,13 @@ data "aws_vpc" "main" {
   tags = { Name = "Main VPC" }
 }
 
-data "aws_subnets" "main_public" {
+data "aws_subnets" "apps_public" {
   filter {
     name   = "vpc-id"
     values = [data.aws_vpc.main.id]
   }
   tags = {
-    env  = "main"
-    type = "public"
+    env  = local.env
+    type = "apps"
   }
 }
