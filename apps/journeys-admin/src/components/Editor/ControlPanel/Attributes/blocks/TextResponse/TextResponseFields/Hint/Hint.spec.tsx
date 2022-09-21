@@ -55,7 +55,7 @@ describe('Edit Hint field', () => {
     const { getByRole } = render(
       <HintMock initialState={{ selectedBlock: undefined }} />
     )
-    const field = getByRole('textbox', { name: 'Label' })
+    const field = getByRole('textbox', { name: 'Hint' })
 
     expect(field).toBeDisabled()
   })
