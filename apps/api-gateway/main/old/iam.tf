@@ -1,20 +1,3 @@
-# data "aws_iam_policy_document" "task_execution_policy_document" {
-#   # override_policy_documents = [var.task_execution_policy_override_json]
-#   statement {
-#     # Allows role to get ssm parameters by name and path
-#     sid    = "AllowGetParameters"
-#     effect = "Allow"
-#     actions = [
-#       "ssm:GetParametersByPath",
-#       "ssm:GetParameters"
-#     ]
-#     resources = [
-#       "arn:aws:ssm:us-east-2:${data.aws_caller_identity.current.account_id}:parameter/ecs/${local.identifier}/${local.env}/*",
-#       "arn:aws:ssm:us-east-2:${data.aws_caller_identity.current.account_id}:parameter/shared/${local.env}/*"
-#     ]
-#   }
-# }
-
 data "aws_iam_policy_document" "assume_task_document" {
   statement {
     # Allows the role to be assumed by ECS Task
@@ -77,42 +60,6 @@ resource "aws_iam_role_policy_attachment" "task_execution_role_can_execute_ecs_t
   role       = aws_iam_role.task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
-
-# resource "aws_iam_role_policy_attachment" "ecs-task-role-policy-attachment-for-secrets" {
-#   role       = aws_iam_role.ecs_task_execution_role.name
-#   policy_arn = aws_iam_policy.secrets.arn
-# }
-# resource "aws_iam_role_policy" "task_execution_policy" {
-#   name   = "${local.identifier}-${local.env}-TaskExecutionPolicy"
-#   role   = aws_iam_role.task_execution_role.id
-#   policy = data.aws_iam_policy_document.task_execution_policy_document.json
-# }
-
-# resource "aws_iam_policy" "secrets" {
-#   name        = "${local.name}-task-policy-secrets"
-#   description = "Policy that allows access to the secrets we created"
-#   policy_arn  = data.aws_iam_policy_document.secrets_document.arn
-# }
-
-# data "aws_iam_policy_document" "secrets_document" {
-#   statement {
-#     # Allows role to be assumed by ECS
-#     sid    = "AccessSecrets"
-#     effect = "Allow"
-#     principals {
-#       type        = "Service"
-#       identifiers = ["ecs-tasks.amazonaws.com"]
-#     }
-#     actions = [
-#       "secretsmanager:GetSecretValue"
-#     ]
-#   }
-# }
-
-# resource "aws_iam_role_policy_attachment" "ecs-task-role-policy-attachment-for-secrets" {
-#   role       = aws_iam_role.ecs_task_execution_role.name
-#   policy_arn = aws_iam_policy.secrets.arn
-# }
 
 resource "aws_iam_role_policy" "password_policy_parameterstore" {
   name = "password-policy-parameterstore"

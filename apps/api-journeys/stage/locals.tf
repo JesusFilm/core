@@ -1,8 +1,8 @@
 locals {
   identifier  = "api-gateway"
-  env         = "main"
+  env         = "stage"
   port        = 4000
-  public_url  = "graphql.central.jesusfilm.org"
+  public_url  = "graphql-stage.central.jesusfilm.org"
   private_url = "${local.identifier}-${local.env}"
   env_secrets = {
     APOLLO_GRAPH_REF = var.apollo_graph_ref

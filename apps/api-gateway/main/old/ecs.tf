@@ -38,25 +38,6 @@ resource "aws_ecs_task_definition" "app" {
       valueFrom = param.arn
      }
    ]
-  #  environment = [{
-  #   name = "APOLLO_GRAPH_REF"
-  #   value = var.apollo_graph_ref
-  #  },{
-  #   name = "APOLLO_KEY"
-  #   value = var.apollo_key
-  #  }, {
-  #   name = "AWS_ACCESS_KEY_ID"
-  #   value = var.aws_access_key_id
-  #  }, {
-  #   name = "AWS_SECRET_ACCESS_KEY"
-  #   value = var.aws_secret_access_key
-  #  }, {
-  #   name = "GOOGLE_APPLICATION_JSON"
-  #   value = var.google_application_json
-  #  }, {
-  #   name = "LOGGING_LEVEL"
-  #   value = var.logging_level
-  #  }]
    portMappings = [{
      containerPort = local.port
      hostPort      = local.port

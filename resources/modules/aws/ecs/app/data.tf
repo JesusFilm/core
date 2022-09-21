@@ -1,40 +1,27 @@
-data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
-# data "terraform_remote_state" "elasticache" {
-#   backend = "s3"
-#   config = {
-#     encrypt        = true
-#     bucket         = "jfp-terraform-state"
-#     dynamodb_table = "jfp-terraform-state-lock"
-#     region         = "us-east-2"
-#     key            = "aws/elasticache/terraform.tfstate"
-#   }
-# }
+data "aws_region" "current" {}
 
-data "aws_ecs_cluster" "cluster" {
-  cluster_name = var.env
+data "aws_acm_certificate" "central_jesusfilm_org" {
+  domain      = "*.central.jesusfilm.org"
+  most_recent = true
 }
 
-data "aws_iam_role" "ecs_service_role" {
-  name = "AWSServiceRoleForECS"
+data "aws_ecr_repository" "main" {
+  name = "jfp-${var.identifier}"
 }
 
-data "terraform_remote_state" "github_oidc" {
-  backend = "s3"
-  config = {
-    encrypt        = true
-    bucket         = "jfp-terraform-state"
-    dynamodb_table = "jfp-terraform-state-lock"
-    region         = "us-east-2"
-    key            = "aws/iam/github-oidc/terraform.tfstate"
+data "aws_vpc" "main" {
+  tags = { Name = "Main VPC" }
+}
+
+data "aws_subnets" "apps_public" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.main.id]
   }
-}
-
-data "github_repository" "repo" {
-  name = local.repo
-}
-
-data "aws_dynamodb_table" "build_numbers" {
-  name = "ECSBuildNumbers"
+  tags = {
+    env  = var.env
+    type = "apps"
+  }
 }
