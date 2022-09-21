@@ -5,7 +5,7 @@ locals {
       type                               = lookup(service, "type", "app")
       family                             = "${local.name}-${service.name}"
       cluster                            = lookup(service, "cluster", data.aws_ecs_cluster.cluster.arn)
-      desired_count                      = tonumber(lookup(service, "desired_count", lookup(service, "type", "app") == "sidekiq" ? "1" : (var.env == "prod" ? "2" : "1")))
+      desired_count                      = tonumber(lookup(service, "desired_count", "1"))
       launch_type                        = lookup(service, "launch_type", "EC2")
       health_check_grace_period          = tonumber(lookup(service, "health_check_grace_period", "30"))
       deployment_minimum_healthy_percent = tonumber(lookup(service, "deployment_minimum_healthy_percent", null))
@@ -13,37 +13,39 @@ locals {
       deployment_circuit_breaker         = tobool(lookup(service, "deployment_circuit_breaker", true))
       container_port                     = tonumber(lookup(service, "container_port", "0"))
       host_port                          = tonumber(lookup(service, "host_port", "0"))
-      network_mode                       = lookup(service, "network_mode", "") == "" ? null : service.network_mode
+      network_mode                       = lookup(service, "network_mode", null)
       placement_strategy                 = lookup(service, "placement_strategy", "") == "" ? [] : jsondecode(service.placement_strategy)
       network_configuration              = lookup(service, "network_configuration", "") == "" ? [] : [jsondecode(service.network_configuration)]
       service_registries                 = lookup(service, "service_registry", "") == "" ? [] : [jsondecode(service.service_registry)]
-      memory                             = tonumber(lookup(service, "memory", lookup(service, "type", "app") == "sidekiq" ? "512" : "1024"))
+      memory                             = tonumber(lookup(service, "memory", "1024"))
       memory_reservation                 = lookup(service, "memory_reservation", "") == "" ? null : tonumber(service.memory_reservation)
       cpu                                = tonumber(lookup(service, "cpu", lookup(service, "launch_type", "EC2") == "EC2" ? "128" : "256"))
       volumes                            = lookup(service, "volumes", "") == "" ? [] : jsondecode(service.volumes)
+      image                              = lookup(service, "image", null)
       essential                          = tobool(lookup(service, "essential", "true"))
-      scheduling_strategy                = lookup(service, "scheduling_strategy", "") == "" ? "REPLICA" : "DAEMON"
+      scheduling_strategy                = lookup(service, "scheduling_strategy", "REPLICA")
       health_check                       = lookup(service, "health_check", "") == "" ? null : jsondecode(service.health_check)
       capacity_provider_strategy         = lookup(service, "capacity_provider_strategy", "") == "" ? [] : jsondecode(service.capacity_provider_strategy)
       environment                        = [for k, v in lookup(service, "environment", "") == "" ? {} : jsondecode(service.environment) : { name = k, value = v }],
-      log_configuration = lookup(service, "log_configuration", "") == "" ? jsonencode({
-        logDriver = "awsfirelens"
-        options = {
-          dd_message_key = "log"
-          compress       = "gzip"
-          provider       = "ecs"
-          dd_service     = var.identifier
-          Host           = "http-intake.logs.datadoghq.com"
-          TLS            = "on"
-          dd_source      = lookup(service, "log_dd_source", "ecs")
-          dd_tags        = "env:${var.env},application:${var.identifier},integration:${service.name}"
-          Name           = "datadog"
-        }
-        secretOptions = [{
-          valueFrom = "arn:aws:ssm:us-east-1:056154071827:parameter/shared/${var.env}/DD_API_KEY"
-          name      = "apikey"
-        }]
-      }) : service.log_configuration
+      #TODO: Datadog
+      # log_configuration = lookup(service, "log_configuration", "") == "" ? jsonencode({
+      #   logDriver = "awsfirelens"
+      #   options = {
+      #     dd_message_key = "log"
+      #     compress       = "gzip"
+      #     provider       = "ecs"
+      #     dd_service     = var.identifier
+      #     Host           = "http-intake.logs.datadoghq.com"
+      #     TLS            = "on"
+      #     dd_source      = lookup(service, "log_dd_source", "ecs")
+      #     dd_tags        = "env:${var.env},application:${var.identifier},integration:${service.name}"
+      #     Name           = "datadog"
+      #   }
+      #   secretOptions = [{
+      #     valueFrom = "arn:aws:ssm:us-east-2:410965620680:parameter/shared/${var.env}/DD_API_KEY"
+      #     name      = "apikey"
+      #   }]
+      # }) : service.log_configuration
     }
   }
 
@@ -57,28 +59,30 @@ locals {
       desired_count         = tonumber(lookup(task, "desired_count", "1"))
       essential             = true
       host_port             = 0
+      image                 = lookup(task, "image", null)
       environment           = [for k, v in lookup(task, "environment", "") == "" ? {} : jsondecode(task.environment) : { name = k, value = v }],
-      network_mode          = lookup(task, "network_mode", "") == "" ? "awsvpc" : task.network_mode
+      network_mode          = lookup(task, "network_mode", "awsvpc")
       network_configuration = lookup(task, "network_configuration", "") == "" ? [] : [jsondecode(task.network_configuration)]
       health_check          = null
-      log_configuration = lookup(task, "log_configuration", "") == "" ? jsonencode({
-        logDriver = "awsfirelens"
-        options = {
-          dd_message_key = "log"
-          compress       = "gzip"
-          provider       = "ecs"
-          dd_service     = var.identifier
-          Host           = "http-intake.logs.datadoghq.com"
-          TLS            = "on"
-          dd_source      = lookup(task, "log_dd_source", "ecs")
-          dd_tags        = "env:${var.env},application:${var.identifier},integration:${task.name}"
-          Name           = "datadog"
-        }
-        secretOptions = [{
-          valueFrom = "arn:aws:ssm:us-east-1:056154071827:parameter/shared/${var.env}/DD_API_KEY"
-          name      = "apikey"
-        }]
-      }) : task.log_configuration
+      #TODO: Datadog
+      # log_configuration = lookup(task, "log_configuration", "") == "" ? jsonencode({
+      #   logDriver = "awsfirelens"
+      #   options = {
+      #     dd_message_key = "log"
+      #     compress       = "gzip"
+      #     provider       = "ecs"
+      #     dd_service     = var.identifier
+      #     Host           = "http-intake.logs.datadoghq.com"
+      #     TLS            = "on"
+      #     dd_source      = lookup(task, "log_dd_source", "ecs")
+      #     dd_tags        = "env:${var.env},application:${var.identifier},integration:${task.name}"
+      #     Name           = "datadog"
+      #   }
+      #   secretOptions = [{
+      #     valueFrom = "arn:aws:ssm:us-east-2:410965620680:parameter/shared/${var.env}/DD_API_KEY"
+      #     name      = "apikey"
+      #   }]
+      # }) : task.log_configuration
       memory              = tonumber(lookup(task, "memory", "1024"))
       memory_reservation  = lookup(task, "memory_reservation", "") == "" ? null : tonumber(task.memory_reservation)
       cpu                 = tonumber(lookup(task, "cpu", lookup(task, "launch_type", "FARGATE") == "EC2" ? "128" : "256"))
@@ -90,21 +94,21 @@ locals {
 
   tasks = merge(local.services, local.scheduled_tasks)
 
-  latest = {
-    for service in concat(var.services, var.scheduled_tasks) :
-    service.name => {
-      task_definition = "${aws_ecs_task_definition.task_definition[service.name].family}:${max(aws_ecs_task_definition.task_definition[service.name].revision, data.external.latest[service.name].result.revision)}"
-    }
-  }
+  # latest = {
+  #   for service in concat(var.services, var.scheduled_tasks) :
+  #   service.name => {
+  #     task_definition = "${aws_ecs_task_definition.task_definition[service.name].family}:${max(aws_ecs_task_definition.task_definition[service.name].revision, data.external.latest[service.name].result.revision)}"
+  #   }
+  # }
 }
 
-data "external" "latest" {
-  for_each = toset(var.task_names)
-  program  = ["bash", "${path.module}/latest-task-definition.sh"]
-  query = {
-    TASK_DEFINITION = local.tasks[each.key].family
-  }
-}
+# data "external" "latest" {
+#   for_each = toset(var.task_names)
+#   program  = ["bash", "${path.module}/latest-task-definition.sh"]
+#   query = {
+#     TASK_DEFINITION = local.tasks[each.key].family
+#   }
+# }
 
 # data "external" "parameters" {
 #   program = ["bash", "${path.module}/get-ssm-parameters.sh"]
@@ -115,30 +119,30 @@ data "external" "latest" {
 #   depends_on = [aws_ssm_parameter.parameters]
 # }
 
-resource "random_string" "suffix" {
-  for_each = toset(var.task_names)
-  length   = 4
-  special  = false
-  upper    = false
+# resource "random_string" "suffix" {
+#   for_each = toset(var.task_names)
+#   length   = 4
+#   special  = false
+#   upper    = false
 
-  keepers = {
-    // ECS service attributes that require a replacement
-    name           = each.key
-    cluster        = data.aws_ecs_cluster.cluster.cluster_name
-    launch_type    = lookup(try(local.services[each.key], local.scheduled_tasks[each.key]), "launch_type")
-    container_port = lookup(try(local.services[each.key], local.scheduled_tasks[each.key]), "container_port", 0) == 0 ? 80 : lookup(try(local.services[each.key], local.scheduled_tasks[each.key]), "container_port", 0)
+#   keepers = {
+#     // ECS service attributes that require a replacement
+#     name           = each.key
+#     cluster        = data.aws_ecs_cluster.cluster.cluster_name
+#     launch_type    = lookup(try(local.services[each.key], local.scheduled_tasks[each.key]), "launch_type")
+#     container_port = lookup(try(local.services[each.key], local.scheduled_tasks[each.key]), "container_port", 0) == 0 ? 80 : lookup(try(local.services[each.key], local.scheduled_tasks[each.key]), "container_port", 0)
 
-    // This is complicated, in an attempt to (for now) prevent a new random (and thus a new service)
-    // being generated when apps upgrade and keep the same target group config they had before.
-    // So we ensure that `target_group_arns` here is null for those cases; null doesn't register as 'dirty'.
-    target_group_arns = var.create_target_group ? null : (var.target_group_arns == null ? null : jsonencode(var.target_group_arns))
-    target_group_arn  = var.create_target_group ? aws_lb_target_group.target_group[0].arn : var.target_group_arn
+#     // This is complicated, in an attempt to (for now) prevent a new random (and thus a new service)
+#     // being generated when apps upgrade and keep the same target group config they had before.
+#     // So we ensure that `target_group_arns` here is null for those cases; null doesn't register as 'dirty'.
+#     target_group_arns = var.create_target_group ? null : (var.target_group_arns == null ? null : jsonencode(var.target_group_arns))
+#     target_group_arn  = var.create_target_group ? aws_lb_target_group.target_group[0].arn : var.target_group_arn
 
-    placement_strategy   = jsonencode(lookup(try(local.services[each.key], local.scheduled_tasks[each.key]), "placement_strategy", []))
-    networkConfiguration = jsonencode(lookup(try(local.services[each.key], local.scheduled_tasks[each.key]), "network_configuration", []))
-    scheduling_strategy  = lookup(try(local.services[each.key], local.scheduled_tasks[each.key]), "scheduling_strategy", "REPLICA")
-  }
-}
+#     placement_strategy   = jsonencode(lookup(try(local.services[each.key], local.scheduled_tasks[each.key]), "placement_strategy", []))
+#     networkConfiguration = jsonencode(lookup(try(local.services[each.key], local.scheduled_tasks[each.key]), "network_configuration", []))
+#     scheduling_strategy  = lookup(try(local.services[each.key], local.scheduled_tasks[each.key]), "scheduling_strategy", "REPLICA")
+#   }
+# }
 
 locals {
   target_group_arns_for_lb = toset(compact(
@@ -158,16 +162,16 @@ resource "aws_ecs_service" "service" {
 
   lifecycle { create_before_destroy = true }
 
-  provisioner "local-exec" {
-    interpreter = ["/bin/bash", "-c"]
-    command     = "if [ $IMAGE != \"scratch\" ]; then ${path.module}/wait-service-steady-state.sh ${each.value.cluster} ${self.name}; fi"
-    environment = {
-      IMAGE        = lookup(data.external.latest[each.key].result, "image", "scratch")
-      GRACE_PERIOD = each.value.health_check_grace_period
-    }
-  }
+  # provisioner "local-exec" {
+  #   interpreter = ["/bin/bash", "-c"]
+  #   command     = "if [ $IMAGE != \"scratch\" ]; then ${path.module}/wait-service-steady-state.sh ${each.value.cluster} ${self.name}; fi"
+  #   environment = {
+  #     IMAGE        = lookup(data.external.latest[each.key].result, "image", "scratch")
+  #     GRACE_PERIOD = each.value.health_check_grace_period
+  #   }
+  # }
 
-  name                    = "${each.value.family}-${random_string.suffix[each.key].result}"
+  name                    = each.value.family
   cluster                 = each.value.cluster
   task_definition         = local.latest[each.key].task_definition
   desired_count           = each.value.desired_count
@@ -175,7 +179,7 @@ resource "aws_ecs_service" "service" {
   enable_ecs_managed_tags = true
   propagate_tags          = "TASK_DEFINITION"
   scheduling_strategy     = each.value.scheduling_strategy
-  wait_for_steady_state   = false // This is part of the provisioner
+  # wait_for_steady_state   = false // This is part of the provisioner
 
   deployment_controller {
     type = "ECS"
@@ -222,10 +226,10 @@ resource "aws_ecs_service" "service" {
 
   dynamic "placement_constraints" {
     // placement_constraints are only valid on EC2
-    // On env == prod, if type is sidekiq, constrain is "batch" function, otherwise "app" function
+    // On env == main, if type is sidekiq, constrain is "batch" function, otherwise "app" function
     // All other environments, constrain os to "linux"
     for_each = each.value.launch_type == "EC2" ? [{
-      expression = var.env != "prod" ? "attribute:ecs.os-type == linux" : (
+      expression = var.env != "main" ? "attribute:ecs.os-type == linux" : (
         each.value.type == "sidekiq" ? "attribute:function == batch" : "attribute:function == app"
       )
     }] : []
@@ -238,11 +242,11 @@ resource "aws_ecs_service" "service" {
   dynamic "ordered_placement_strategy" {
     // placement strategies are only valid on EC2 (except for Daemon services)
     // If placement_strategy is set, use it
-    // Otherwise, if prod, spread and binpack
+    // Otherwise, if main, spread and binpack
     // else binpack
     for_each = each.value.launch_type == "EC2" && each.value.type != "daemon" ? (
       length(each.value.placement_strategy) != 0 ? each.value.placement_strategy : (
-        var.env == "prod" ? [{ type : "spread", field : "attribute:ecs.availability-zone" }, { type : "binpack", field : "memory" }] : [{ type : "binpack", field : "memory" }]
+        var.env == "main" ? [{ type : "spread", field : "attribute:ecs.availability-zone" }, { type : "binpack", field : "memory" }] : [{ type : "binpack", field : "memory" }]
       )
     ) : []
     content {
@@ -354,7 +358,7 @@ resource "aws_ecs_task_definition" "task_definition" {
       ) : null
       memoryReservation = local.tasks[each.key].memory_reservation
       command           = local.tasks[each.key].type == "sidekiq" ? ["/usr/local/bin/sidekiq-entrypoint.sh"] : null
-
+      image             = local.tasks[each.key].image
       portMappings = (
         local.tasks[each.key].type == "app" ||
         local.tasks[each.key].host_port > 0
@@ -380,28 +384,29 @@ resource "aws_ecs_task_definition" "task_definition" {
       logConfiguration = jsondecode(local.tasks[each.key].log_configuration)
       volumesFrom      = []
 
+      image = 
       // Jenkins "owns" theses fields, so terraform defaults to the latest values on each.
-      image   = lookup(data.external.latest[each.key].result, "image", "scratch")
+      # image   = lookup(data.external.latest[each.key].result, "image", "scratch")
       # secrets = jsondecode(lookup(data.external.parameters.result, "secrets", "[]"))
     },
-    jsondecode(lookup(jsondecode(local.tasks[each.key].log_configuration), "logDriver", "") == "awsfirelens" ? jsonencode({
-      name              = "log_router"
-      image             = "906394416424.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/aws-for-fluent-bit:stable"
-      essential         = true
-      cpu               = 2
-      memoryReservation = 32
-      firelensConfiguration = {
-        type = "fluentbit"
-        options = {
-          enable-ecs-log-metadata = "true"
-        }
-      }
-      // container defaults to help prevent unnecessary replacements
-      environment  = []
-      mountPoints  = []
-      portMappings = []
-      user         = "0"
-      volumesFrom  = []
-    }) : "{}")
+    # jsondecode(lookup(jsondecode(local.tasks[each.key].log_configuration), "logDriver", "") == "awsfirelens" ? jsonencode({
+    #   name              = "log_router"
+    #   image             = "906394416424.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/aws-for-fluent-bit:stable"
+    #   essential         = true
+    #   cpu               = 2
+    #   memoryReservation = 32
+    #   firelensConfiguration = {
+    #     type = "fluentbit"
+    #     options = {
+    #       enable-ecs-log-metadata = "true"
+    #     }
+    #   }
+    #   // container defaults to help prevent unnecessary replacements
+    #   environment  = []
+    #   mountPoints  = []
+    #   portMappings = []
+    #   user         = "0"
+    #   volumesFrom  = []
+    # }) : "{}")
   ] : container if length(container) > 0])
 }

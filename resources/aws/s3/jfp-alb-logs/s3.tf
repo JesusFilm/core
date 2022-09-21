@@ -34,7 +34,7 @@ resource "aws_s3_bucket_public_access_block" "private" {
 }
 
 data "aws_iam_policy_document" "us_east_2_access_logging" {
-  # Allows us-east-1 to write logs to the bucket.
+  # Allows us-east-2 to write logs to the bucket.
   # See https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html
   statement {
     effect = "Allow"

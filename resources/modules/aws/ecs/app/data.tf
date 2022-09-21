@@ -17,7 +17,7 @@ data "aws_ecs_cluster" "cluster" {
 }
 
 data "aws_iam_role" "ecs_service_role" {
-  name = "ecsServiceRole"
+  name = "AWSServiceRoleForECS"
 }
 
 data "terraform_remote_state" "github_oidc" {

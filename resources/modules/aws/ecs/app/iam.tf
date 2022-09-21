@@ -121,21 +121,22 @@ data "aws_iam_policy_document" "assume_task_document" {
     }
     actions = ["sts:AssumeRole"]
   }
-  statement {
-    # Allow the role to be assumed by GitHub Actions from the application repo
-    sid     = "AllowGitHubToAssumeRole"
-    effect  = "Allow"
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-    principals {
-      identifiers = [data.terraform_remote_state.github_oidc.outputs.github_oidc_arn]
-      type        = "Federated"
-    }
-    condition {
-      test     = "StringLike"
-      values   = ["repo:${data.github_repository.repo.full_name}:*"]
-      variable = "${data.terraform_remote_state.github_oidc.outputs.github_provider_hostname}:sub"
-    }
-  }
+  # TODO: fix github implementation
+  # statement {
+  #   # Allow the role to be assumed by GitHub Actions from the application repo
+  #   sid     = "AllowGitHubToAssumeRole"
+  #   effect  = "Allow"
+  #   actions = ["sts:AssumeRoleWithWebIdentity"]
+  #   principals {
+  #     identifiers = [data.terraform_remote_state.github_oidc.outputs.github_oidc_arn]
+  #     type        = "Federated"
+  #   }
+  #   condition {
+  #     test     = "StringLike"
+  #     values   = ["repo:${data.github_repository.repo.full_name}:*"]
+  #     variable = "${data.terraform_remote_state.github_oidc.outputs.github_provider_hostname}:sub"
+  #   }
+  # }
 }
 
 data "aws_iam_policy_document" "task_policy_document" {

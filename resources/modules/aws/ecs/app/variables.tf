@@ -213,7 +213,7 @@ variable "notification_recipients" {
 }
 
 variable "github_repo" {
-  description = "GitHub repository. Must be owned by CruGlobal. Defaults to `identifier`"
+  description = "GitHub repository. Must be owned by JesusFilm. Defaults to `identifier`"
   type        = string
   default     = ""
 }

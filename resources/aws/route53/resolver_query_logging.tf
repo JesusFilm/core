@@ -1,4 +1,4 @@
-# CloudWatch log group in us-east-1
+# CloudWatch log group in us-east-2
 resource "aws_cloudwatch_log_group" "route53_resolver_logging_main_vpc" {
   name              = "/aws/route53/resolver/logging/main-vpc"
   retention_in_days = 30
