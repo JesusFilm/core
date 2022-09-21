@@ -1,18 +1,13 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
-import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
-import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
-import { VideoDetails } from './VideoDetails'
+import { GET_VIDEO, LocalDetails } from './LocalDetails'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
 
-describe('VideoDetails', () => {
-  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
-
+describe('LocalDetails', () => {
   const mocks = [
     {
       request: {
@@ -68,13 +63,7 @@ describe('VideoDetails', () => {
   it('should render details of a video', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <VideoDetails
-          id="2_Acts7302-0-0"
-          source={VideoBlockSource.internal}
-          open
-          onClose={jest.fn()}
-          onSelect={jest.fn()}
-        />
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
       </MockedProvider>
     )
     await waitFor(() =>
@@ -95,51 +84,21 @@ describe('VideoDetails', () => {
     )
   })
 
-  it('should close VideoDetails on close Icon click', () => {
-    const onClose = jest.fn()
-    const { getByRole } = render(
-      <MockedProvider>
-        <VideoDetails
-          id="2_Acts7302-0-0"
-          source={VideoBlockSource.internal}
-          open
-          onClose={onClose}
-          onSelect={jest.fn()}
-        />
-      </MockedProvider>
-    )
-    fireEvent.click(getByRole('button', { name: 'Close' }))
-    expect(onClose).toHaveBeenCalled()
-  })
-
   it('should open the languages drawer on language button click', () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
-        <VideoDetails
-          id="2_Acts7302-0-0"
-          source={VideoBlockSource.internal}
-          open
-          onClose={jest.fn()}
-          onSelect={jest.fn()}
-        />
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={jest.fn()} />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Other Languages' }))
     expect(getByText('Available Languages')).toBeInTheDocument()
   })
 
-  it('should call onSelect and onClose on select click', async () => {
+  it('should call onSelect on select click', async () => {
     const onSelect = jest.fn()
-    const onClose = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <VideoDetails
-          id="2_Acts7302-0-0"
-          source={VideoBlockSource.internal}
-          open
-          onClose={onClose}
-          onSelect={onSelect}
-        />
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
       </MockedProvider>
     )
     await waitFor(() =>
@@ -152,6 +111,5 @@ describe('VideoDetails', () => {
       videoId: '2_Acts7302-0-0',
       videoVariantLanguageId: '529'
     })
-    expect(onClose).toHaveBeenCalledWith()
   })
 })

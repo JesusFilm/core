@@ -1,5 +1,9 @@
 const { createElement } = require('react')
 const NextImage = require('next/image')
+const {
+  initialize: mswInitialize,
+  mswDecorator
+} = require('msw-storybook-addon')
 
 const OriginalNextImage = NextImage.default
 
@@ -36,7 +40,12 @@ const customViewports = {
   }
 }
 
+mswInitialize({
+  onUnhandledRequest: 'bypass'
+})
+
 module.exports = {
+  decorators: [mswDecorator],
   parameters: {
     backgrounds: {
       disable: true,
