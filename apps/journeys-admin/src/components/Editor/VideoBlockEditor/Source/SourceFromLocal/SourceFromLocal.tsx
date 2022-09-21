@@ -61,14 +61,16 @@ export function SourceFromLocal({
 
   return (
     <>
-      <ImageBlockThumbnail
-        selectedBlock={{
-          src: selectedBlock?.video?.image ?? '',
-          alt: selectedBlock?.video?.title?.[0]?.value ?? ''
-        }}
-        Icon={VideocamRoundedIcon}
-      />
-      <Box flexGrow={1}>
+      <Box>
+        <ImageBlockThumbnail
+          selectedBlock={{
+            src: selectedBlock?.video?.image ?? '',
+            alt: selectedBlock?.video?.title?.[0]?.value ?? ''
+          }}
+          Icon={VideocamRoundedIcon}
+        />
+      </Box>
+      <Box flexGrow={1} minWidth={0}>
         <Typography
           variant="subtitle2"
           sx={{

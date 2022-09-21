@@ -4,6 +4,7 @@ import Drawer from '@mui/material/Drawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
+import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
 import Close from '@mui/icons-material/Close'
@@ -60,7 +61,10 @@ export function VideoDetails({
         elevation={smUp ? 1 : 0}
         hideBackdrop
         sx={{
-          display: { xs: smUp ? 'none' : 'block', sm: smUp ? 'block' : 'none' },
+          left: {
+            xs: 0,
+            sm: 'unset'
+          },
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
             width: smUp ? DRAWER_WIDTH : '100%',
@@ -88,7 +92,9 @@ export function VideoDetails({
             </IconButton>
           </Toolbar>
         </AppBar>
-        <Details id={id} open={open} onSelect={handleSelect} />
+        <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+          <Details id={id} open={open} onSelect={handleSelect} />
+        </Box>
       </Drawer>
     </>
   )

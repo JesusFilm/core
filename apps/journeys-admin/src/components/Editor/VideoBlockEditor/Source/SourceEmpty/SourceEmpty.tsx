@@ -8,8 +8,10 @@ import { ImageBlockThumbnail } from '../../../ImageBlockThumbnail'
 export function SourceEmpty(): ReactElement {
   return (
     <>
-      <ImageBlockThumbnail Icon={VideocamRoundedIcon} />
-      <Box flexGrow={1}>
+      <Box>
+        <ImageBlockThumbnail Icon={VideocamRoundedIcon} />
+      </Box>
+      <Box flexGrow={1} minWidth={0}>
         <Typography variant="subtitle2">Select Video</Typography>
       </Box>
       <AddRoundedIcon color="primary" />

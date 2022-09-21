@@ -16,14 +16,16 @@ export function SourceFromYouTube({
 }: SourceFromYouTubeProps): ReactElement {
   return (
     <>
-      <ImageBlockThumbnail
-        selectedBlock={{
-          src: selectedBlock.image ?? '',
-          alt: selectedBlock.title ?? ''
-        }}
-        Icon={VideocamRoundedIcon}
-      />
-      <Box flexGrow={1}>
+      <Box>
+        <ImageBlockThumbnail
+          selectedBlock={{
+            src: selectedBlock.image ?? '',
+            alt: selectedBlock.title ?? ''
+          }}
+          Icon={VideocamRoundedIcon}
+        />
+      </Box>
+      <Box flexGrow={1} minWidth={0}>
         <Typography
           variant="subtitle2"
           sx={{

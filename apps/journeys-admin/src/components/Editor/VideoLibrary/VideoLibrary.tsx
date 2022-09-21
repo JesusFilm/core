@@ -52,7 +52,10 @@ export function VideoLibrary({
       elevation={smUp ? 1 : 0}
       hideBackdrop
       sx={{
-        display: { xs: smUp ? 'none' : 'block', sm: smUp ? 'block' : 'none' },
+        left: {
+          xs: 0,
+          sm: 'unset'
+        },
         '& .MuiDrawer-paper': {
           boxSizing: 'border-box',
           width: smUp ? DRAWER_WIDTH : '100%',
