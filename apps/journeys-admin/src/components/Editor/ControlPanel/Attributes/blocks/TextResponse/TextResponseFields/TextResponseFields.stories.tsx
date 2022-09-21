@@ -10,7 +10,7 @@ const TextResponseStory = {
   ...journeysAdminConfig,
   component: TextResponseFields,
   title:
-    'Journeys-Admin/Editor/ControlPanel/Attributes/TextResponse/TextResponse'
+    'Journeys-Admin/Editor/ControlPanel/Attributes/TextResponse/TextResponseFields'
 }
 
 const Template: Story = ({ ...args }) => {
@@ -38,12 +38,12 @@ Default.args = {
   }
 }
 
-export const Complete = Template.bind({}) // TODO: update text to be correct length
+export const Complete = Template.bind({})
 Complete.args = {
   block: {
-    label:
-      'Answer that needs to be changed to just longer the the allowed amount',
-    hint: 'Answer that needs to be changed to just longer the the allowed amount'
+    label: 'Label limit 1234',
+    hint: 'Hint limit 12345678910',
+    minRows: 4
   }
 }
 
