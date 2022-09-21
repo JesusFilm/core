@@ -5,9 +5,9 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { InMemoryCache } from '@apollo/client'
-import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoList/VideoList'
-import { GET_VIDEO } from '../../../../../VideoLibrary/VideoDetails/VideoDetails'
-import { videos } from '../../../../../VideoLibrary/VideoList/VideoListData'
+import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
+import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock,

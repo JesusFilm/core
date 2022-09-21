@@ -1,17 +1,15 @@
 import { Story, Meta } from '@storybook/react'
-import { useState } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../../../libs/storybook'
-import { GetVideo_video_variantLanguages as Language } from '../../../../../__generated__/GetVideo'
-import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
-import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
-import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
-import { VideoDetails } from '.'
+import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { GetVideo_video_variantLanguages as Language } from '../../../../../../__generated__/GetVideo'
+import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
+import { GET_VIDEO } from './LocalDetails'
+import { LocalDetails } from '.'
 
-const VideoDetailsStory = {
+const LocalDetailsStory = {
   ...journeysAdminConfig,
-  component: VideoDetails,
-  title: 'Journeys-Admin/Editor/VideoLibrary/VideoDetails',
+  component: LocalDetails,
+  title: 'Journeys-Admin/Editor/VideoLibrary/VideoFromLocal/LocalDetails',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
@@ -62,8 +60,6 @@ const languages: Language[] = [
 ]
 
 const Template: Story = ({ id, onSelect }) => {
-  const [open, setOpen] = useState(true)
-
   return (
     <MockedProvider
       mocks={[
@@ -107,13 +103,7 @@ const Template: Story = ({ id, onSelect }) => {
         }
       ]}
     >
-      <VideoDetails
-        id={id}
-        open={open}
-        onClose={() => setOpen(false)}
-        onSelect={onSelect}
-        source={VideoBlockSource.internal}
-      />
+      <LocalDetails id={id} open onSelect={onSelect} />
     </MockedProvider>
   )
 }
@@ -124,17 +114,9 @@ Default.args = {
 }
 
 export const Loading: Story = ({ id, onSelect }) => {
-  const [open, setOpen] = useState(true)
-
   return (
     <ApolloLoadingProvider>
-      <VideoDetails
-        id={id}
-        open={open}
-        onClose={() => setOpen(false)}
-        onSelect={onSelect}
-        source={VideoBlockSource.internal}
-      />
+      <LocalDetails id={id} open onSelect={onSelect} />
     </ApolloLoadingProvider>
   )
 }
@@ -142,4 +124,4 @@ Loading.args = {
   id: '2_Acts7302-0-0'
 }
 
-export default VideoDetailsStory as Meta
+export default LocalDetailsStory as Meta
