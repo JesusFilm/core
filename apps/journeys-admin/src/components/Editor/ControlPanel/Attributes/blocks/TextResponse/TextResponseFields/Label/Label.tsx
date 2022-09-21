@@ -5,6 +5,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { Formik, Form } from 'formik'
+import Box from '@mui/material/Box'
 import { noop } from 'lodash'
 import { TextResponseLabelUpdate } from '../../../../../../../../../__generated__/TextResponseLabelUpdate'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/GetJourney'
@@ -59,7 +60,7 @@ export function Label(): ReactElement {
   const maxCharacters = 16
 
   return (
-    <>
+    <Box sx={{ px: 6, py: 4 }}>
       {selectedBlock != null ? (
         <Formik initialValues={initialValues} onSubmit={noop}>
           {({ values, errors, handleChange, handleBlur }) => (
@@ -78,7 +79,6 @@ export function Label(): ReactElement {
                   handleBlur(e)
                   errors.textResponseLabel == null && handleSubmit(e)
                 }}
-                sx={{ pb: 4 }}
               />
             </Form>
           )}
@@ -94,6 +94,6 @@ export function Label(): ReactElement {
           }}
         />
       )}
-    </>
+    </Box>
   )
 }

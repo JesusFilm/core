@@ -6,6 +6,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { Formik, Form } from 'formik'
 import { noop } from 'lodash'
+import Box from '@mui/material/Box'
 import { TextResponseHintUpdate } from '../../../../../../../../../__generated__/TextResponseHintUpdate'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/GetJourney'
 
@@ -63,7 +64,7 @@ export function Hint(): ReactElement {
   const maxCharacters = 22
 
   return (
-    <>
+    <Box sx={{ px: 6, py: 4 }}>
       {initialValues != null ? (
         <Formik initialValues={initialValues} onSubmit={noop}>
           {({ values, errors, handleChange, handleBlur }) => (
@@ -82,7 +83,6 @@ export function Hint(): ReactElement {
                   handleBlur(e)
                   errors.textResponseHint == null && handleSubmit(e)
                 }}
-                sx={{ pb: 4 }}
               />
             </Form>
           )}
@@ -98,6 +98,6 @@ export function Hint(): ReactElement {
           }}
         />
       )}
-    </>
+    </Box>
   )
 }
