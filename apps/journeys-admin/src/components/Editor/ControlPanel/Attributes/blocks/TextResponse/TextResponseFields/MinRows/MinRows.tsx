@@ -4,6 +4,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
+import Typography from '@mui/material/Typography'
 import { ToggleButtonGroup } from '../../../../ToggleButtonGroup'
 import { TextResponseMinRowsUpdate } from '../../../../../../../../../__generated__/TextResponseMinRowsUpdate'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/GetJourney'
@@ -73,10 +74,15 @@ export function MinRows(): ReactElement {
   ]
 
   return (
-    <ToggleButtonGroup
-      value={selectedBlock?.minRows ?? 3}
-      onChange={handleChange}
-      options={options}
-    />
+    <>
+      <Typography variant="subtitle2" sx={{ pt: 2, px: 6 }}>
+        Minimum Size
+      </Typography>
+      <ToggleButtonGroup
+        value={selectedBlock?.minRows ?? 3}
+        onChange={handleChange}
+        options={options}
+      />
+    </>
   )
 }

@@ -6,7 +6,7 @@ import { TextResponseFields } from '.'
 
 describe('TextResponseFields', () => {
   it('should show text response properties', () => {
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider>
         <JourneyProvider>
           <EditorProvider>
@@ -17,6 +17,6 @@ describe('TextResponseFields', () => {
     )
     expect(getByRole('textbox', { name: 'Label' })).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Hint' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'One Row' })).toBeInTheDocument()
+    expect(getByText('Minimum Size')).toBeInTheDocument()
   })
 })
