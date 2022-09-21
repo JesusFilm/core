@@ -52,7 +52,7 @@ export function Button({
                     {name}
                   </Typography>
                 )}
-                <Typography noWrap>{value}</Typography>
+                <Typography noWrap>{value !== '' ? value : 'None'}</Typography>
               </Box>
             </Stack>
           </CardContent>

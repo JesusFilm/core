@@ -49,8 +49,6 @@ describe('Video', () => {
     const { getByText } = render(<Video {...video} />)
 
     expect(getByText('Video Source')).toBeInTheDocument()
-    expect(
-      getByText('https://arc.gt/hls/2_0-FallingPlates/529')
-    ).toBeInTheDocument()
+    expect(getByText('FallingPlates')).toBeInTheDocument()
   })
 })

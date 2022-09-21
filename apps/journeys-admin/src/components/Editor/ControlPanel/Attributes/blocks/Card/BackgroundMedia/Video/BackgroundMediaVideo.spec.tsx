@@ -13,9 +13,9 @@ import {
 } from '../../../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
-import { GET_VIDEOS } from '../../../../../../VideoLibrary/VideoList/VideoList'
-import { GET_VIDEO } from '../../../../../../VideoLibrary/VideoDetails/VideoDetails'
-import { videos } from '../../../../../../VideoLibrary/VideoList/VideoListData'
+import { GET_VIDEOS } from '../../../../../../VideoLibrary/VideoFromLocal/VideoFromLocal'
+import { GET_VIDEO } from '../../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { videos } from '../../../../../../VideoLibrary/VideoFromLocal/data'
 import {
   BackgroundMediaVideo,
   CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE,
