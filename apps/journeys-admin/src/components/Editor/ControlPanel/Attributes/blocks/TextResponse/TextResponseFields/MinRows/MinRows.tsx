@@ -3,6 +3,7 @@ import { useMutation, gql } from '@apollo/client'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useTranslation } from 'react-i18next'
 import { ToggleButtonGroup } from '../../../../ToggleButtonGroup'
 import { TextResponseMinRowsUpdate } from '../../../../../../../../../__generated__/TextResponseMinRowsUpdate'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/GetJourney'
@@ -25,6 +26,7 @@ export function MinRows(): ReactElement {
     TEXT_RESPONSE_MIN_ROWS_UPDATE
   )
 
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
@@ -54,19 +56,19 @@ export function MinRows(): ReactElement {
   const options = [
     {
       value: 1,
-      label: 'One Row'
+      label: t('One Row')
     },
     {
       value: 2,
-      label: 'Two Rows'
+      label: t('Two Rows')
     },
     {
       value: 3,
-      label: 'Three Rows'
+      label: t('Three Rows')
     },
     {
       value: 4,
-      label: 'Four Rows'
+      label: t('Four Rows')
     }
   ]
 
