@@ -1,121 +1,83 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { Fragment, ReactElement } from 'react'
 import LoadingButton from '@mui/lab/LoadingButton'
 import AddRounded from '@mui/icons-material/AddRounded'
-import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Skeleton from '@mui/material/Skeleton'
+import Divider from '@mui/material/Divider'
 import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
-import { GetVideos } from '../../../../../__generated__/GetVideos'
 import { VideoListItem } from './VideoListItem'
+import { VideoListItemProps } from './VideoListItem/VideoListItem'
 
-export const GET_VIDEOS = gql`
-  query GetVideos($where: VideosFilter, $limit: Int!, $offset: Int!) {
-    videos(where: $where, limit: $limit, offset: $offset) {
-      id
-      image
-      snippet {
-        primary
-        value
-      }
-      title {
-        primary
-        value
-      }
-      variant {
-        id
-        duration
-      }
-    }
-  }
-`
-
-interface VideoListProps {
+export interface VideoListProps {
   onSelect: (block: VideoBlockUpdateInput) => void
-  currentLanguageIds?: string[]
-  title?: string
+  loading: boolean
+  videos?: Array<
+    Pick<
+      VideoListItemProps,
+      'id' | 'title' | 'description' | 'image' | 'duration' | 'source'
+    >
+  >
+  fetchMore: () => Promise<void>
+  hasMore: boolean
 }
 
 export function VideoList({
   onSelect,
-  currentLanguageIds,
-  title = ''
+  loading,
+  videos,
+  fetchMore,
+  hasMore
 }: VideoListProps): ReactElement {
-  const { loading, data, fetchMore } = useQuery<GetVideos>(GET_VIDEOS, {
-    notifyOnNetworkStatusChange: true,
-    variables: {
-      offset: 0,
-      limit: 5,
-      where: {
-        availableVariantLanguageIds: currentLanguageIds,
-        title: title === '' ? null : title
-      }
-    }
-  })
-  const [noMoreVideos, setNoMoreVideos] = useState(false)
-
-  useEffect(() => setNoMoreVideos(false), [currentLanguageIds, title])
-
   return (
     <>
-      <List data-testid="VideoList" sx={{ py: 0, px: 6 }}>
-        {data?.videos?.map((video) => (
-          <VideoListItem
-            id={video.id}
-            title={video.title.find(({ primary }) => primary)?.value}
-            description={video.snippet.find(({ primary }) => primary)?.value}
-            image={video.image ?? ''}
-            duration={video.variant?.duration}
-            onSelect={onSelect}
-            key={video.id}
-          />
+      <Divider sx={{ mx: 6 }} />
+      <List data-testid="VideoList" sx={{ p: 0 }} component="div">
+        {videos?.map((video) => (
+          <Fragment key={video.id}>
+            <VideoListItem {...video} onSelect={onSelect} />
+            <Divider sx={{ mx: 6 }} />
+          </Fragment>
         ))}
         {loading &&
           new Array(5).fill(undefined).map((_val, index) => (
-            <ListItem
-              sx={{ alignItems: 'flex-start', p: 3 }}
-              key={index}
-              divider
-            >
-              <ListItemText
-                primary={<Skeleton variant="text" width="65%" />}
-                secondary={
-                  <>
-                    <Skeleton variant="text" />
-                    <Skeleton variant="text" width="85%" />
-                  </>
-                }
-                secondaryTypographyProps={{
-                  style: {
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
+            <Fragment key={index}>
+              <ListItem sx={{ alignItems: 'flex-start', py: 4, px: 6 }}>
+                <ListItemText
+                  primary={<Skeleton variant="text" width="65%" />}
+                  secondary={
+                    <>
+                      <Skeleton variant="text" />
+                      <Skeleton variant="text" width="85%" />
+                    </>
                   }
-                }}
-              />
-              <Skeleton
-                variant="rectangular"
-                width={79}
-                height={79}
-                sx={{ borderRadius: 2, ml: 2 }}
-              />
-            </ListItem>
+                  secondaryTypographyProps={{
+                    style: {
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }
+                  }}
+                />
+                <Skeleton
+                  variant="rectangular"
+                  width={79}
+                  height={79}
+                  sx={{ borderRadius: 2, ml: 2 }}
+                />
+              </ListItem>
+              <Divider sx={{ mx: 6 }} />
+            </Fragment>
           ))}
-        {data?.videos?.length === 0 && !loading && (
-          <ListItem sx={{ p: 3 }} divider>
-            <ListItemText
-              primary="No Results Found"
-              secondary="If you are searching for videos in a different language, please select it first in the dropdown above."
-              secondaryTypographyProps={{
-                style: {
-                  overflow: 'hidden',
-                  paddingTop: '4px'
-                }
-              }}
-            />
-          </ListItem>
+        {videos?.length === 0 && !loading && (
+          <>
+            <ListItem sx={{ py: 4, px: 6 }}>
+              <ListItemText primary="No Results Found" />
+            </ListItem>
+            <Divider sx={{ mx: 6 }} />
+          </>
         )}
       </List>
       <Box
@@ -123,22 +85,13 @@ export function VideoList({
       >
         <LoadingButton
           variant="outlined"
-          onClick={async () => {
-            const response = await fetchMore({
-              variables: {
-                offset: data?.videos?.length ?? 0
-              }
-            })
-            if (response.data?.videos?.length === 0) setNoMoreVideos(true)
-          }}
+          onClick={fetchMore}
           loading={loading}
           startIcon={<AddRounded />}
           size="medium"
-          disabled={(data?.videos?.length === 0 && !loading) || noMoreVideos}
+          disabled={(videos?.length === 0 && !loading) || !hasMore}
         >
-          {data?.videos?.length === 0 || noMoreVideos
-            ? 'No More Videos'
-            : 'Load More'}
+          {videos?.length === 0 || !hasMore ? 'No More Videos' : 'Load More'}
         </LoadingButton>
       </Box>
     </>
