@@ -66,7 +66,7 @@ const ColorTokens = ({
         sx={{
           bgcolor: theme.palette.background.paper,
           color: theme.palette.text.primary,
-          mb: theme.spacing(7),
+          mb: theme.spacing(6),
           p: theme.spacing(3),
           boxShadow: theme.shadows[1]
         }}

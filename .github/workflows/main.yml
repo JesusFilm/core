@@ -160,5 +160,4 @@ jobs:
           autoAcceptChanges: 'main'
           onlyChanged: true
           skip: 'dependabot/**'
-          untraced: 'package.json,yarn.lock'
           traceChanged: 'expanded'
