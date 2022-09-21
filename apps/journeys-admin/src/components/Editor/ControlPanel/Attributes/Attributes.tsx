@@ -1,4 +1,4 @@
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
@@ -90,12 +90,12 @@ interface AttributesProps {
 }
 
 export function Attributes({ selected, step }: AttributesProps): ReactElement {
-  const { dispatch } = useEditor()
+  const {
+    state: { activeTab },
+    dispatch
+  } = useEditor()
   useEffect(() => {
-    if (
-      selected.__typename === 'StepBlock' ||
-      selected.__typename === 'CardBlock'
-    ) {
+    if (activeTab === ActiveTab.Cards) {
       dispatch({
         type: 'SetDrawerPropsAction',
         title: 'Social Share Appearance',
@@ -103,7 +103,7 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
         children: <SocialShareAppearance />
       })
     }
-  }, [selected, dispatch])
+  }, [activeTab, dispatch])
   return (
     <>
       <Stack
