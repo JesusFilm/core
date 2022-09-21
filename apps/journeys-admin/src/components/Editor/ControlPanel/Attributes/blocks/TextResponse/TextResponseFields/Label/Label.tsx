@@ -86,7 +86,7 @@ export function Label(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label="Title"
+          label="Label"
           fullWidth
           disabled
           sx={{

@@ -32,18 +32,18 @@ const block: TreeBlock<TextResponseBlock> = {
 
 const pageData = { journey: { id: 'journey.id' } as unknown as Journey }
 
-interface LabelMockProps {
+interface HintMockProps {
   mocks?: Array<MockedResponse<Record<string, unknown>>>
+  initialState?: { selectedBlock: TreeBlock<TextResponseBlock> | undefined }
 }
 
-const LabelMock = ({ mocks = [] }: LabelMockProps): ReactElement => (
+const HintMock = ({
+  mocks = [],
+  initialState = { selectedBlock: block }
+}: HintMockProps): ReactElement => (
   <MockedProvider mocks={mocks} addTypename={false}>
     <JourneyProvider value={pageData}>
-      <EditorProvider
-        initialState={{
-          selectedBlock: block
-        }}
-      >
+      <EditorProvider initialState={initialState}>
         <Hint />
       </EditorProvider>
     </JourneyProvider>
@@ -51,25 +51,34 @@ const LabelMock = ({ mocks = [] }: LabelMockProps): ReactElement => (
 )
 
 describe('Edit Hint field', () => {
-  it('should display hint value', () => {
-    const { getByRole } = render(<LabelMock />)
-    const hintField = getByRole('textbox', { name: 'Hint' })
+  it('should display placeholder field if no selectedBlock', () => {
+    const { getByRole } = render(
+      <HintMock initialState={{ selectedBlock: undefined }} />
+    )
+    const field = getByRole('textbox', { name: 'Label' })
 
-    expect(hintField).toHaveValue('A hint message')
+    expect(field).toBeDisabled()
+  })
+
+  it('should display hint value', () => {
+    const { getByRole } = render(<HintMock />)
+    const field = getByRole('textbox', { name: 'Hint' })
+
+    expect(field).toHaveValue('A hint message')
   })
 
   it('should display max hint length', () => {
-    const { getByRole } = render(<LabelMock />)
-    const hintField = getByRole('textbox', { name: 'Hint' })
+    const { getByRole } = render(<HintMock />)
+    const field = getByRole('textbox', { name: 'Hint' })
 
-    expect(hintField).toHaveAccessibleDescription('Can only be 22 characters')
+    expect(field).toHaveAccessibleDescription('Can only be 22 characters')
   })
 
   it('should not be able to type beyond max character limit', () => {
-    const { getByRole } = render(<LabelMock />)
-    const hintField = getByRole('textbox', { name: 'Hint' })
+    const { getByRole } = render(<HintMock />)
+    const field = getByRole('textbox', { name: 'Hint' })
 
-    expect(hintField).toHaveAttribute('maxlength', '22')
+    expect(field).toHaveAttribute('maxlength', '22')
   })
 
   it('should update the hint on blur', async () => {
@@ -97,12 +106,12 @@ describe('Edit Hint field', () => {
       result
     }
 
-    const { getByRole } = render(<LabelMock mocks={[updateSuccess]} />)
+    const { getByRole } = render(<HintMock mocks={[updateSuccess]} />)
 
-    const hintField = getByRole('textbox', { name: 'Hint' })
+    const field = getByRole('textbox', { name: 'Hint' })
 
-    fireEvent.change(hintField, { target: { value: 'Updated hint' } })
-    fireEvent.blur(hintField)
+    fireEvent.change(field, { target: { value: 'Updated hint' } })
+    fireEvent.blur(field)
 
     await waitFor(() => {
       expect(result).toBeCalled()

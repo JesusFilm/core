@@ -32,7 +32,7 @@ describe('TextResponse', () => {
     id: 'textResponseBlock.id',
     parentBlockId: null,
     parentOrder: null,
-    label: 'compelte label',
+    label: 'complete label',
     hint: null,
     minRows: null,
     submitLabel: 'Submit',
@@ -127,7 +127,7 @@ describe('TextResponse', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Text Field compelte label' }))
+    fireEvent.click(getByRole('button', { name: 'Text Field complete label' }))
     expect(getByTestId('drawer-title')).toHaveTextContent(
       'Text Field Properties'
     )

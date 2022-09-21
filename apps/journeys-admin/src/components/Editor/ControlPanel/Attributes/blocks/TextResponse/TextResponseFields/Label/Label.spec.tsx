@@ -34,16 +34,16 @@ const pageData = { journey: { id: 'journey.id' } as unknown as Journey }
 
 interface LabelMockProps {
   mocks?: Array<MockedResponse<Record<string, unknown>>>
+  initialState?: { selectedBlock: TreeBlock<TextResponseBlock> | undefined }
 }
 
-const LabelMock = ({ mocks = [] }: LabelMockProps): ReactElement => (
+const LabelMock = ({
+  mocks = [],
+  initialState = { selectedBlock: block }
+}: LabelMockProps): ReactElement => (
   <MockedProvider mocks={mocks} addTypename={false}>
     <JourneyProvider value={pageData}>
-      <EditorProvider
-        initialState={{
-          selectedBlock: block
-        }}
-      >
+      <EditorProvider initialState={initialState}>
         <Label />
       </EditorProvider>
     </JourneyProvider>
@@ -51,25 +51,34 @@ const LabelMock = ({ mocks = [] }: LabelMockProps): ReactElement => (
 )
 
 describe('Edit Label field', () => {
+  it('should display placeholder field if no selectedBlock', () => {
+    const { getByRole } = render(
+      <LabelMock initialState={{ selectedBlock: undefined }} />
+    )
+    const field = getByRole('textbox', { name: 'Label' })
+
+    expect(field).toBeDisabled()
+  })
+
   it('should display label value', () => {
     const { getByRole } = render(<LabelMock />)
-    const labelField = getByRole('textbox', { name: 'Label' })
+    const field = getByRole('textbox', { name: 'Label' })
 
-    expect(labelField).toHaveValue('Your answer here')
+    expect(field).toHaveValue('Your answer here')
   })
 
   it('should display max label length', () => {
     const { getByRole } = render(<LabelMock />)
-    const labelField = getByRole('textbox', { name: 'Label' })
+    const field = getByRole('textbox', { name: 'Label' })
 
-    expect(labelField).toHaveAccessibleDescription('Can only be 16 characters')
+    expect(field).toHaveAccessibleDescription('Can only be 16 characters')
   })
 
   it('should not be able to type beyond max character limit', () => {
     const { getByRole } = render(<LabelMock />)
-    const labelField = getByRole('textbox', { name: 'Label' })
+    const field = getByRole('textbox', { name: 'Label' })
 
-    expect(labelField).toHaveAttribute('maxlength', '16')
+    expect(field).toHaveAttribute('maxlength', '16')
   })
 
   it('should update the label on blur', async () => {
@@ -99,10 +108,10 @@ describe('Edit Label field', () => {
 
     const { getByRole } = render(<LabelMock mocks={[updateSuccess]} />)
 
-    const labelField = getByRole('textbox', { name: 'Label' })
+    const field = getByRole('textbox', { name: 'Label' })
 
-    fireEvent.change(labelField, { target: { value: 'Updated label' } })
-    fireEvent.blur(labelField)
+    fireEvent.change(field, { target: { value: 'Updated label' } })
+    fireEvent.blur(field)
 
     await waitFor(() => {
       expect(result).toBeCalled()
