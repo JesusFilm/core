@@ -138,7 +138,7 @@ export const TextResponse = ({
                 name="response"
                 label={label}
                 value={values.response}
-                helperText={hint ?? `${values.response.length}`}
+                helperText={hint}
                 multiline
                 minRows={minRows ?? 3}
                 disabled={selectedBlock !== undefined}

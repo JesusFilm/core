@@ -123,9 +123,6 @@ const LoadingTemplate: Story<
 )
 
 export const Loading = LoadingTemplate.bind({})
-Loading.parameters = {
-  chromatic: { pauseAnimationAtEnd: true }
-}
 Loading.play = () => {
   const submitButtons = screen.getAllByRole('button')
   submitButtons.forEach((button) => {
