@@ -129,7 +129,6 @@ export function NewTextResponseButton(): ReactElement {
       }
     }
   }
-  console.log('for testing')
   return (
     <Button
       icon={<Crop169RoundedIcon />}
