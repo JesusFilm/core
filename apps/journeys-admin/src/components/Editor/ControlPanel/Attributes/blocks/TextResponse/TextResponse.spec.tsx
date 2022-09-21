@@ -32,7 +32,7 @@ describe('TextResponse', () => {
     id: 'textResponseBlock.id',
     parentBlockId: null,
     parentOrder: null,
-    label: 'compelte label',
+    label: 'complete label',
     hint: 'hint text',
     minRows: 2,
     submitLabel: 'Submit',
