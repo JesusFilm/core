@@ -6,11 +6,15 @@ import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
 import { VideoLibrary } from '../../VideoLibrary'
 
 interface SourceProps {
+  open?: boolean
   onChange: (block: VideoBlockUpdateInput) => Promise<void>
 }
 
-export function Source({ onChange }: SourceProps): ReactElement {
-  const [open, setOpen] = useState(false)
+export function Source({
+  open: openLibrary,
+  onChange
+}: SourceProps): ReactElement {
+  const [open, setOpen] = useState(openLibrary ?? false)
 
   return (
     <>
