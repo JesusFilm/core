@@ -309,6 +309,15 @@ export interface StepViewEventCreateInput {
   id?: string | null;
 }
 
+export interface TextResponseBlockUpdateInput {
+  hint?: string | null;
+  label?: string | null;
+  minRows?: number | null;
+  parentBlockId?: string | null;
+  submitIconId?: string | null;
+  submitLabel?: string | null;
+}
+
 export interface TextResponseSubmissionEventCreateInput {
   blockId: string;
   id?: string | null;
