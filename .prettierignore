@@ -7,3 +7,4 @@ schema.graphql
 /libs/locales/**/*.json
 .prettierignore
 .docusaurus/
+.storybook/static/mockServiceWorker.js
