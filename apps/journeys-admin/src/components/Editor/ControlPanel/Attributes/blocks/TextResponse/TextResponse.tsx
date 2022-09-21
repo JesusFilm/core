@@ -24,6 +24,8 @@ export function TextResponse({
     (block) => block.id === submitIconId
   ) as TreeBlock<IconFields>
 
+  console.log('for testing')
+
   return (
     <>
       <Attribute
