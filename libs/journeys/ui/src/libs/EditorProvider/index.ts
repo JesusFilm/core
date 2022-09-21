@@ -2,7 +2,8 @@ export {
   useEditor,
   EditorProvider,
   ActiveTab,
-  ActiveFab
+  ActiveFab,
+  EditorState
 } from './EditorProvider'
 export type {
   SetSelectedStepAction,
