@@ -22,9 +22,11 @@ import {
   BlockFields_RadioQuestionBlock as RadioQuestionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_StepBlock as StepBlock,
+  BlockFields_TextResponseBlock as TextResponseBlock,
   BlockFields_TypographyBlock as TypographyBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../libs/block/__generated__/BlockFields'
+import { TextResponse } from '../TextResponse'
 
 export interface WrapperProps<T = Block> {
   block: TreeBlock<T>
@@ -44,6 +46,7 @@ export interface WrappersProps {
   RadioQuestionWrapper?: WrapperFn<RadioQuestionBlock>
   SignUpWrapper?: WrapperFn<SignUpBlock>
   StepWrapper?: WrapperFn<StepBlock>
+  TextResponseWrapper?: WrapperFn<TextResponseBlock>
   TypographyWrapper?: WrapperFn<TypographyBlock>
   VideoWrapper?: WrapperFn<VideoBlock>
 }
@@ -69,6 +72,7 @@ export function BlockRenderer({
   const RadioQuestionWrapper = wrappers?.RadioQuestionWrapper ?? DefaultWrapper
   const SignUpWrapper = wrappers?.SignUpWrapper ?? DefaultWrapper
   const StepWrapper = wrappers?.StepWrapper ?? DefaultWrapper
+  const TextResponseWrapper = wrappers?.TextResponseWrapper ?? DefaultWrapper
   const TypographyWrapper = wrappers?.TypographyWrapper ?? DefaultWrapper
   const VideoWrapper = wrappers?.VideoWrapper ?? DefaultWrapper
 
@@ -147,6 +151,14 @@ export function BlockRenderer({
           <StepWrapper block={block}>
             <Step {...block} wrappers={wrappers} />
           </StepWrapper>
+        </Wrapper>
+      )
+    case 'TextResponseBlock':
+      return (
+        <Wrapper block={block}>
+          <TextResponseWrapper block={block}>
+            <TextResponse {...block} />
+          </TextResponseWrapper>
         </Wrapper>
       )
     case 'TypographyBlock':
