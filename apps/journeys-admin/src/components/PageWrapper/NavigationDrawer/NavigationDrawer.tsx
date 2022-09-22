@@ -152,7 +152,7 @@ export function NavigationDrawer({
         <NavigationListItem
           icon={<ViewCarouselRoundedIcon />}
           label="Discover"
-          selected={selectedPage === 'journeys' || selectedPage == null} // null for when page is index. REMOVE this when we update the index page
+          selected={selectedPage === 'journeys' || selectedPage == null} // null for when page is index. UPDATE when we add the actual index page
           link="/"
         />
 
