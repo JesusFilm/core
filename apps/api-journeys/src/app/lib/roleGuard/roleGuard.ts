@@ -113,6 +113,7 @@ export const RoleGuard = (
             return true
 
           if (
+            userJourney != null &&
             this.userJourneyRole(permission, userJourney) &&
             this.checkAttributes(journey, attributes)
           )
