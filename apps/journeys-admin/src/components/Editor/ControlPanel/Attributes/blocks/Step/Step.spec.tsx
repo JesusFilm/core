@@ -1,4 +1,3 @@
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   ActiveFab,
   ActiveTab,
@@ -6,18 +5,10 @@ import {
   EditorProvider
 } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { render, fireEvent } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
+import { render } from '@testing-library/react'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey as Journey
 } from '../../../../../../../__generated__/GetJourney'
-import {
-  ThemeName,
-  ThemeMode
-} from '../../../../../../../__generated__/globalTypes'
-import { Drawer } from '../../../../Drawer'
-import { ThemeProvider } from '../../../../../ThemeProvider'
 import { NextCard } from './NextCard'
 import { Step } from '.'
 
@@ -42,7 +33,10 @@ jest.mock('@core/journeys/ui/EditorProvider', () => {
 const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 describe('Step', () => {
+  const dispatch = jest.fn()
+
   const state = {
+    steps: [],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,
     activeFab: ActiveFab.Add
@@ -70,41 +64,6 @@ describe('Step', () => {
   })
 
   describe('nextCard', () => {
-    it('shows next card drawer', async () => {
-      const step: TreeBlock<StepBlock> = {
-        id: 'step1.id',
-        __typename: 'StepBlock',
-        parentBlockId: 'step1.id',
-        parentOrder: 0,
-        locked: true,
-        nextBlockId: null,
-        children: []
-      }
-      const { getByText } = render(
-        <MockedProvider>
-          <ThemeProvider>
-            <JourneyProvider
-              value={{
-                journey: {
-                  id: 'journeyId',
-                  themeMode: ThemeMode.light,
-                  themeName: ThemeName.base
-                } as unknown as Journey,
-                admin: true
-              }}
-            >
-              <EditorProvider initialState={{ selectedBlock: step }}>
-                <Drawer />
-                <Step {...step} />
-              </EditorProvider>
-            </JourneyProvider>
-          </ThemeProvider>
-        </MockedProvider>
-      )
-      fireEvent.click(getByText('Next Card'))
-      expect(getByText('Next Card Properties')).toBeInTheDocument()
-    })
-
     it('shows locked', () => {
       const step: TreeBlock<StepBlock> = {
         id: 'step1.id',
@@ -138,6 +97,15 @@ describe('Step', () => {
         nextBlockId: null,
         children: []
       }
+      mockUseEditor.mockReturnValue({
+        state: {
+          steps: [step1, step2],
+          drawerMobileOpen: false,
+          activeTab: ActiveTab.Cards,
+          activeFab: ActiveFab.Add
+        },
+        dispatch
+      })
       const { getByText } = render(
         <EditorProvider
           initialState={{
@@ -203,7 +171,15 @@ describe('Step', () => {
           }
         ]
       }
-
+      mockUseEditor.mockReturnValue({
+        state: {
+          steps: [step1, step2, step5],
+          drawerMobileOpen: false,
+          activeTab: ActiveTab.Cards,
+          activeFab: ActiveFab.Add
+        },
+        dispatch
+      })
       const { getByText } = render(
         <EditorProvider
           initialState={{
@@ -260,6 +236,15 @@ describe('Step', () => {
           }
         ]
       }
+      mockUseEditor.mockReturnValue({
+        state: {
+          steps: [step1, step2],
+          drawerMobileOpen: false,
+          activeTab: ActiveTab.Cards,
+          activeFab: ActiveFab.Add
+        },
+        dispatch
+      })
       const { getByText } = render(
         <EditorProvider
           initialState={{
@@ -319,7 +304,7 @@ describe('Step', () => {
       dispatch
     })
     render(<Step {...step} />)
-    dispatch({
+    expect(dispatch).toHaveBeenCalledWith({
       type: 'SetActiveTabAction',
       activeTab: ActiveTab.Properties
     })

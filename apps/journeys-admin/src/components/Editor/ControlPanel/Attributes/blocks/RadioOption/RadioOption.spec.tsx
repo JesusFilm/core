@@ -37,7 +37,7 @@ describe('RadioOption Attribute', () => {
   const state = {
     steps: [],
     drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
+    activeTab: ActiveTab.Properties,
     activeFab: ActiveFab.Add
   }
 
@@ -55,16 +55,15 @@ describe('RadioOption Attribute', () => {
   })
 
   it('shows filled attributes', async () => {
-    const imageBlock: TreeBlock<RadioOptionBlock> = {
-      ...block,
-      action: {
+    const radioOptionBlock: TreeBlock<RadioOptionBlock> = {
+      ...block, action: {
         __typename: 'NavigateToBlockAction',
         parentBlockId: 'radioOption1.id',
         gtmEventName: 'navigateToBlock',
         blockId: 'step2.id'
       }
     }
-    const { getByRole } = render(<RadioOption {...imageBlock} />)
+    const { getByRole } = render(<RadioOption {...radioOptionBlock} />)
     await waitFor(() =>
       expect(
         getByRole('button', { name: 'Action Selected Card' })
@@ -73,31 +72,33 @@ describe('RadioOption Attribute', () => {
   })
 
   it('clicking on action attribute shows the action edit drawer', async () => {
-    const imageBlock: TreeBlock<RadioOptionBlock> = {
+    const radioOptionBlock: TreeBlock<RadioOptionBlock> = {
       ...block,
       action: {
         __typename: 'NavigateToBlockAction',
         parentBlockId: 'radioOption1.id',
         gtmEventName: 'navigateToBlock',
         blockId: 'step2.id'
-      }
+      },
     }
-    const { getByTestId, getByRole, getByText } = render(
+    const { getByTestId, getByRole, getAllByText } = render(
       <MockedProvider>
         <ThemeProvider>
           <EditorProvider>
             <Drawer />
-            <RadioOption {...imageBlock} />
+            <RadioOption {...radioOptionBlock} />
           </EditorProvider>
         </ThemeProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Action Selected Card' }))
-    await waitFor(() => expect(getByTestId('drawer-title')).toBeInTheDocument())
-    expect(getByText('Action')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(getByTestId('drawer-title')).toBeInTheDocument()
+    )
+    expect(getAllByText('Action')).toHaveLength(2)
   })
 
-  it('should open property drawr for variant', () => {
+  it('should open property drawer for variant', () => {
     const dispatch = jest.fn()
     mockUseEditor.mockReturnValue({
       state,
