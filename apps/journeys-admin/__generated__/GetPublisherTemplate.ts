@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, UserJourneyRole } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetPublisherTemplate
@@ -19,13 +19,6 @@ export interface GetPublisherTemplate_publisherTemplate_language {
   __typename: "Language";
   id: string;
   name: GetPublisherTemplate_publisherTemplate_language_name[];
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_TextFieldBlock {
-  __typename: "TextFieldBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateAction {
@@ -272,6 +265,54 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_StepBlock {
   nextBlockId: string | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  journey: GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action = GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateAction | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_LinkAction;
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock {
+  __typename: "TextResponseBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  hint: string | null;
+  minRows: number | null;
+  submitLabel: string | null;
+  submitIconId: string | null;
+  action: GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -372,6 +413,36 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
    */
   videoVariantLanguageId: string | null;
   /**
+   * internal source: videoId, videoVariantLanguageId, and video present
+   * youTube source: videoId, title, description, and duration present
+   */
+  source: VideoBlockSource;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field.
+   * For other sources this is automatically populated.
+   */
+  title: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  description: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  image: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   * duration in seconds.
+   */
+  duration: number | null;
+  /**
    * internal source videos: video is only populated when videoID and
    * videoVariantLanguageId are present
    */
@@ -430,7 +501,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   triggerAction: GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_TextFieldBlock | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock | GetPublisherTemplate_publisherTemplate_blocks_GridItemBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
+export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock | GetPublisherTemplate_publisherTemplate_blocks_GridItemBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
 
 export interface GetPublisherTemplate_publisherTemplate_primaryImageBlock {
   __typename: "ImageBlock";
