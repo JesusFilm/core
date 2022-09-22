@@ -1,5 +1,10 @@
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveFab,
+  ActiveTab,
+  useEditor,
+  EditorProvider
+} from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { render, fireEvent } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
@@ -13,6 +18,7 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { Drawer } from '../../../../Drawer'
 import { ThemeProvider } from '../../../../../ThemeProvider'
+import { NextCard } from './NextCard'
 import { Step } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -24,7 +30,30 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
+jest.mock('@core/journeys/ui/EditorProvider', () => {
+  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
+  return {
+    __esModule: true,
+    ...originalModule,
+    useEditor: jest.fn()
+  }
+})
+
+const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
+
 describe('Step', () => {
+  const state = {
+    drawerMobileOpen: false,
+    activeTab: ActiveTab.Cards,
+    activeFab: ActiveFab.Add
+  }
+
+  beforeEach(() => {
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch: jest.fn()
+    })
+  })
   it('shows default messages', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step1.id',
@@ -41,7 +70,7 @@ describe('Step', () => {
   })
 
   describe('nextCard', () => {
-    it('shows next card drawer', () => {
+    it('shows next card drawer', async () => {
       const step: TreeBlock<StepBlock> = {
         id: 'step1.id',
         __typename: 'StepBlock',
@@ -272,6 +301,36 @@ describe('Step', () => {
         </EditorProvider>
       )
       expect(getByText('None')).toBeInTheDocument()
+    })
+  })
+  it('should open property drawr for variant', () => {
+    const step: TreeBlock<StepBlock> = {
+      id: 'step1.id',
+      __typename: 'StepBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: []
+    }
+    const dispatch = jest.fn()
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch
+    })
+    render(<Step {...step} />)
+    dispatch({
+      type: 'SetActiveTabAction',
+      activeTab: ActiveTab.Properties
+    })
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetSelectedAttributeIdAction',
+      id: 'step1.id-next-block'
+    })
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetDrawerPropsAction',
+      title: 'Next Card Properties',
+      children: <NextCard />
     })
   })
 })

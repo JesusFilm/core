@@ -45,7 +45,6 @@ export function Step({
     dispatch({
       type: 'SetDrawerPropsAction',
       title: 'Next Card Properties',
-      mobileOpen: true,
       children: <NextCard />
     })
   }, [dispatch, id])

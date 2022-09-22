@@ -1,7 +1,12 @@
 import { fireEvent, render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveFab,
+  ActiveTab,
+  useEditor,
+  EditorProvider
+} from '@core/journeys/ui/EditorProvider'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 import { Drawer } from '../../../../Drawer'
 import { GetJourney_journey_blocks_SignUpBlock as SignUpBlock } from '../../../../../../../__generated__/GetJourney'
@@ -10,7 +15,19 @@ import {
   IconColor,
   IconSize
 } from '../../../../../../../__generated__/globalTypes'
+import { Action } from '../../Action'
 import { SignUp } from '.'
+
+jest.mock('@core/journeys/ui/EditorProvider', () => {
+  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
+  return {
+    __esModule: true,
+    ...originalModule,
+    useEditor: jest.fn()
+  }
+})
+
+const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 
 describe('SignUp Attributes', () => {
   const block: TreeBlock<SignUpBlock> = {
@@ -39,6 +56,19 @@ describe('SignUp Attributes', () => {
       }
     ]
   }
+  const state = {
+    steps: [],
+    drawerMobileOpen: false,
+    activeTab: ActiveTab.Cards,
+    activeFab: ActiveFab.Add
+  }
+
+  beforeEach(() => {
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch: jest.fn()
+    })
+  })
   it('shows default attributes', () => {
     const emptyBlock: TreeBlock<SignUpBlock> = {
       id: 'signup.id',
@@ -80,11 +110,11 @@ describe('SignUp Attributes', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Forward' }))
-    expect(getAllByText('Button Icon')).toHaveLength(3)
+    expect(getAllByText('Button Icon')).toHaveLength(2)
   })
 
   it('action property button should open action edit drawer', async () => {
-    const { getByRole, getByTestId } = render(
+    const { getByRole, getByTestId, getByText } = render(
       <MockedProvider>
         <ThemeProvider>
           <EditorProvider>
@@ -95,6 +125,25 @@ describe('SignUp Attributes', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Action URL/Website' }))
-    expect(getByTestId('drawer-title')).toHaveTextContent('Form Submission')
+    expect(getByTestId('drawer-title')).toBeInTheDocument()
+    expect(getByText('Form Submission')).toBeInTheDocument()
+  })
+
+  it('should open property drawr for variant', () => {
+    const dispatch = jest.fn()
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch
+    })
+    render(<SignUp {...block} />)
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetSelectedAttributeIdAction',
+      id: 'signup.id-signup-action'
+    })
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetDrawerPropsAction',
+      title: 'Form Submission',
+      children: <Action />
+    })
   })
 })
