@@ -283,7 +283,7 @@ export class StepBlockUpdateInput {
     locked?: Nullable<boolean>;
 }
 
-export class TextFieldBlockCreateInput {
+export class TextResponseBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
@@ -291,11 +291,11 @@ export class TextFieldBlockCreateInput {
     submitLabel: string;
 }
 
-export class TextFieldBlockUpdateInput {
+export class TextResponseBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
-    content?: Nullable<string>;
     hint?: Nullable<string>;
+    minRows?: Nullable<number>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
 }
@@ -381,6 +381,12 @@ export class TemplateUseEventInput {
 
 export class TemplatePreviewEventInput {
     journeyId: string;
+}
+
+export class TextResponseSubmissionEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    value: string;
 }
 
 export class VideoStartEventCreateInput {
@@ -641,15 +647,15 @@ export class StepBlock implements Block {
     parentOrder?: Nullable<number>;
 }
 
-export class TextFieldBlock implements Block {
-    __typename?: 'TextFieldBlock';
+export class TextResponseBlock implements Block {
+    __typename?: 'TextResponseBlock';
     id: string;
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     label: string;
-    content?: Nullable<string>;
     hint?: Nullable<string>;
+    minRows?: Nullable<number>;
     action?: Nullable<Action>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
@@ -756,6 +762,14 @@ export class TemplatePreviewEvent implements Event {
     id: string;
     userId: string;
     journeyId: string;
+}
+
+export class TextResponseSubmissionEvent implements Event {
+    __typename?: 'TextResponseSubmissionEvent';
+    id: string;
+    userId: string;
+    value: string;
+    block?: Nullable<TextResponseBlock>;
 }
 
 export class VideoStartEvent implements Event {
@@ -890,9 +904,9 @@ export abstract class IMutation {
 
     abstract stepBlockUpdate(id: string, journeyId: string, input: StepBlockUpdateInput): StepBlock | Promise<StepBlock>;
 
-    abstract textFieldBlockCreate(input: TextFieldBlockCreateInput): TextFieldBlock | Promise<TextFieldBlock>;
+    abstract textResponseBlockCreate(input: TextResponseBlockCreateInput): TextResponseBlock | Promise<TextResponseBlock>;
 
-    abstract textFieldBlockUpdate(id: string, journeyId: string, input: TextFieldBlockUpdateInput): Nullable<TextFieldBlock> | Promise<Nullable<TextFieldBlock>>;
+    abstract textResponseBlockUpdate(id: string, journeyId: string, input: TextResponseBlockUpdateInput): Nullable<TextResponseBlock> | Promise<Nullable<TextResponseBlock>>;
 
     abstract typographyBlockCreate(input: TypographyBlockCreateInput): TypographyBlock | Promise<TypographyBlock>;
 
@@ -917,6 +931,8 @@ export abstract class IMutation {
     abstract templateUseEventCreate(input: TemplateUseEventInput): TemplateUseEvent | Promise<TemplateUseEvent>;
 
     abstract templatePreviewEventCreate(input: TemplatePreviewEventInput): TemplatePreviewEvent | Promise<TemplatePreviewEvent>;
+
+    abstract textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput): TextResponseSubmissionEvent | Promise<TextResponseSubmissionEvent>;
 
     abstract videoStartEventCreate(input: VideoStartEventCreateInput): VideoStartEvent | Promise<VideoStartEvent>;
 

@@ -7,6 +7,7 @@ import { BlockService } from '../block.service'
 import {
   Action,
   CardBlock,
+  Role,
   UserJourneyRole,
   VideoBlock,
   VideoBlockCreateInput,
@@ -74,7 +75,8 @@ export class VideoBlockResolver {
   @UseGuards(
     RoleGuard('input.journeyId', [
       UserJourneyRole.owner,
-      UserJourneyRole.editor
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
     ])
   )
   async videoBlockCreate(
@@ -142,7 +144,11 @@ export class VideoBlockResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async videoBlockUpdate(
     @Args('id') id: string,

@@ -532,8 +532,9 @@ type Mutation {
   templateLibraryViewEventCreate: TemplateLibraryViewEvent! @join__field(graph: JOURNEYS)
   templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @join__field(graph: JOURNEYS)
   templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @join__field(graph: JOURNEYS)
-  textFieldBlockCreate(input: TextFieldBlockCreateInput!): TextFieldBlock! @join__field(graph: JOURNEYS)
-  textFieldBlockUpdate(id: ID!, input: TextFieldBlockUpdateInput!, journeyId: ID!): TextFieldBlock @join__field(graph: JOURNEYS)
+  textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
+  textResponseBlockUpdate(id: ID!, input: TextResponseBlockUpdateInput!, journeyId: ID!): TextResponseBlock @join__field(graph: JOURNEYS)
+  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent! @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
@@ -800,20 +801,20 @@ input TemplateUseEventInput {
   journeyId: ID!
 }
 
-type TextFieldBlock implements Block {
+type TextResponseBlock implements Block {
   action: Action
-  content: String
   hint: String
   id: ID!
   journeyId: ID!
   label: String!
+  minRows: Int
   parentBlockId: ID
   parentOrder: Int
   submitIconId: ID
   submitLabel: String
 }
 
-input TextFieldBlockCreateInput {
+input TextResponseBlockCreateInput {
   id: ID
   journeyId: ID!
   label: String!
@@ -821,13 +822,30 @@ input TextFieldBlockCreateInput {
   submitLabel: String!
 }
 
-input TextFieldBlockUpdateInput {
-  content: String
+input TextResponseBlockUpdateInput {
   hint: String
   label: String
+  minRows: Int
   parentBlockId: ID
   submitIconId: ID
   submitLabel: String
+}
+
+type TextResponseSubmissionEvent implements Event {
+  block: TextResponseBlock
+  id: ID!
+  userId: ID!
+  value: String!
+}
+
+input TextResponseSubmissionEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  value: String!
 }
 
 enum ThemeMode {

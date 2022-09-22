@@ -4,6 +4,7 @@ import {
   IconBlock,
   IconBlockCreateInput,
   IconBlockUpdateInput,
+  Role,
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { BlockService } from '../block.service'
@@ -17,7 +18,8 @@ export class IconBlockResolver {
   @UseGuards(
     RoleGuard('input.journeyId', [
       UserJourneyRole.owner,
-      UserJourneyRole.editor
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
     ])
   )
   async iconBlockCreate(
@@ -33,7 +35,11 @@ export class IconBlockResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async iconBlockUpdate(
     @Args('id') id: string,

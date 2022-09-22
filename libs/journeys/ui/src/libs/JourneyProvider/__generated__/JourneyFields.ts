@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, UserJourneyRole } from "./../../../../__generated__/globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, UserJourneyRole } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: JourneyFields
@@ -19,13 +19,6 @@ export interface JourneyFields_language {
   __typename: "Language";
   id: string;
   name: JourneyFields_language_name[];
-}
-
-export interface JourneyFields_blocks_TextFieldBlock {
-  __typename: "TextFieldBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
 }
 
 export interface JourneyFields_blocks_ButtonBlock_action_NavigateAction {
@@ -272,6 +265,54 @@ export interface JourneyFields_blocks_StepBlock {
   nextBlockId: string | null;
 }
 
+export interface JourneyFields_blocks_TextResponseBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
+export interface JourneyFields_blocks_TextResponseBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
+export interface JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  journey: JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface JourneyFields_blocks_TextResponseBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type JourneyFields_blocks_TextResponseBlock_action = JourneyFields_blocks_TextResponseBlock_action_NavigateAction | JourneyFields_blocks_TextResponseBlock_action_NavigateToBlockAction | JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction | JourneyFields_blocks_TextResponseBlock_action_LinkAction;
+
+export interface JourneyFields_blocks_TextResponseBlock {
+  __typename: "TextResponseBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  hint: string | null;
+  minRows: number | null;
+  submitLabel: string | null;
+  submitIconId: string | null;
+  action: JourneyFields_blocks_TextResponseBlock_action | null;
+}
+
 export interface JourneyFields_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -372,6 +413,36 @@ export interface JourneyFields_blocks_VideoBlock {
    */
   videoVariantLanguageId: string | null;
   /**
+   * internal source: videoId, videoVariantLanguageId, and video present
+   * youTube source: videoId, title, description, and duration present
+   */
+  source: VideoBlockSource;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field.
+   * For other sources this is automatically populated.
+   */
+  title: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  description: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  image: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   * duration in seconds.
+   */
+  duration: number | null;
+  /**
    * internal source videos: video is only populated when videoID and
    * videoVariantLanguageId are present
    */
@@ -430,7 +501,7 @@ export interface JourneyFields_blocks_VideoTriggerBlock {
   triggerAction: JourneyFields_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type JourneyFields_blocks = JourneyFields_blocks_TextFieldBlock | JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_GridItemBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
+export type JourneyFields_blocks = JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_GridItemBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TextResponseBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
 
 export interface JourneyFields_primaryImageBlock {
   __typename: "ImageBlock";

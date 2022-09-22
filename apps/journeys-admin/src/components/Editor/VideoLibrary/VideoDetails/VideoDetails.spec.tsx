@@ -1,7 +1,9 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
-import { GET_VIDEO, VideoDetails } from './VideoDetails'
+import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import { VideoDetails } from './VideoDetails'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -62,11 +64,13 @@ describe('VideoDetails', () => {
       }
     }
   ]
+
   it('should render details of a video', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
         <VideoDetails
           id="2_Acts7302-0-0"
+          source={VideoBlockSource.internal}
           open
           onClose={jest.fn()}
           onSelect={jest.fn()}
@@ -74,11 +78,10 @@ describe('VideoDetails', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Select' })).toBeEnabled()
+      expect(
+        getByRole('heading', { name: 'Jesus Taken Up Into Heaven' })
+      ).toBeInTheDocument()
     )
-    expect(
-      getByRole('heading', { name: 'Jesus Taken Up Into Heaven' })
-    ).toBeInTheDocument()
     expect(getByText('Jesus promises the Holy Spirit.')).toBeInTheDocument()
     const videoPlayer = getByRole('region', {
       name: 'Video Player'
@@ -98,6 +101,7 @@ describe('VideoDetails', () => {
       <MockedProvider>
         <VideoDetails
           id="2_Acts7302-0-0"
+          source={VideoBlockSource.internal}
           open
           onClose={onClose}
           onSelect={jest.fn()}
@@ -113,6 +117,7 @@ describe('VideoDetails', () => {
       <MockedProvider>
         <VideoDetails
           id="2_Acts7302-0-0"
+          source={VideoBlockSource.internal}
           open
           onClose={jest.fn()}
           onSelect={jest.fn()}
@@ -130,6 +135,7 @@ describe('VideoDetails', () => {
       <MockedProvider mocks={mocks}>
         <VideoDetails
           id="2_Acts7302-0-0"
+          source={VideoBlockSource.internal}
           open
           onClose={onClose}
           onSelect={onSelect}

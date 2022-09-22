@@ -1,0 +1,1 @@
+export { StyledFirebaseAuth } from './StyledFirebaseAuth'

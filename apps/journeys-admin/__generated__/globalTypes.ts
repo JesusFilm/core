@@ -309,6 +309,12 @@ export interface StepViewEventCreateInput {
   id?: string | null;
 }
 
+export interface TextResponseSubmissionEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  value: string;
+}
+
 export interface TypographyBlockCreateInput {
   align?: TypographyAlign | null;
   color?: TypographyColor | null;
