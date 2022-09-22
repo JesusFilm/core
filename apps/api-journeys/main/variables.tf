@@ -1,25 +1,51 @@
-variable "apollo_graph_ref" {
-  type = string
-  description = "Apollo graph ref"
-}
-
-variable "apollo_key" {
+variable "database_db" {
   type = string  
 }
 
-variable "aws_access_key_id" {
+variable "database_pass" {
+  type = string  
+}
+
+variable "database_url" {
   type = string
 }
 
-variable "aws_secret_access_key" {
+variable "database_user" {
   type = string
 }
 
-variable "google_application_json" {
+variable "firebase_api_key" {
   type = string
 }
 
-variable "logging_level" {
+variable "power_bi_client_id" {
   type = string
-  default = "error"
+}
+
+variable "power_bi_client_secret" {
+  type = string
+}
+
+variable "power_bi_journeys_multiple_full_report_id" {
+  type = string
+}
+
+variable "power_bi_journeys_multiple_summary_report_id" {
+  type = string
+}
+
+variable "power_bi_journeys_single_full_report_id" {
+  type = string
+}
+
+variable "power_bi_journeys_single_summary_report_id" {
+  type = string
+}
+
+variable "power_bi_tenant_id" {
+  type = string
+}
+
+variable "power_bi_workspace_id" {
+  type = string
 }

@@ -1,19 +1,18 @@
 locals {
-  identifier    = "api-gateway"
-  env           = "main"
-  port          = 4000
-  cpu           = 1024
-  memory        = 1024
+  identifier    = "api-users"
+  env           = "stage"
+  port          = 4002
+  cpu           = 512
+  memory        = 512
   desired_count = 1
-  public_url    = "graphql.central.jesusfilm.org"
+  public_url    = "${local.identifier}-${local.env}.central.jesusfilm.org"
   private_url   = "${local.identifier}-${local.env}"
-  env_secrets   = {
-    APOLLO_GRAPH_REF = var.apollo_graph_ref
-    APOLLO_KEY = var.apollo_key
-    AWS_ACCESS_KEY_ID = var.aws_access_key_id
-    AWS_SECRET_ACCESS_KEY = var.aws_secret_access_key
+  env_secrets = {
+    DATABASE_DB = var.database_db
+    DATABASE_PASS = var.database_pass
+    DATABASE_URL = var.database_url
+    DATABASE_USER = var.database_user
     GOOGLE_APPLICATION_JSON = var.google_application_json
-    LOGGING_LEVEL = var.logging_level
    }
 
   tags = {

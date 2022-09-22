@@ -1,3 +1,3 @@
-DOPPLER_PROJECT=api-journeys \
-DOPPLER_CONFIG=prd \
+DOPPLER_PROJECT=api-languages \
+DOPPLER_CONFIG=stg \
 doppler run --name-transformer tf-var -- terraform $@ 

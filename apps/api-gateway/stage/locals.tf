@@ -1,10 +1,13 @@
 locals {
-  identifier  = "api-gateway"
-  env         = "stage"
-  port        = 4000
-  public_url  = "graphql-stage.central.jesusfilm.org"
-  private_url = "${local.identifier}-${local.env}"
-  env_secrets = {
+  identifier    = "api-gateway"
+  env           = "stage"
+  port          = 4000
+  cpu           = 1024
+  memory        = 1024
+  desired_count = 1
+  public_url    = "graphql-stage.central.jesusfilm.org"
+  private_url   = "${local.identifier}-${local.env}"
+  env_secrets   = {
     APOLLO_GRAPH_REF = var.apollo_graph_ref
     APOLLO_KEY = var.apollo_key
     AWS_ACCESS_KEY_ID = var.aws_access_key_id

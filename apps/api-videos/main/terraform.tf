@@ -8,7 +8,7 @@ terraform {
     bucket         = "jfp-terraform-state"
     dynamodb_table = "jfp-terraform-state-lock"
     region         = "us-east-2"
-    key            = "apps/api-journeys/main/terraform.tfstate"
+    key            = "apps/api-videos/main/terraform.tfstate"
   }
 	required_providers {
 		aws = {
