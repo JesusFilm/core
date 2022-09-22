@@ -99,7 +99,6 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
       dispatch({
         type: 'SetDrawerPropsAction',
         title: 'Social Share Appearance',
-        mobileOpen: false,
         children: <SocialShareAppearance />
       })
     }

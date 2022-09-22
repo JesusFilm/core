@@ -5,7 +5,8 @@ import {
   ActiveFab,
   ActiveTab,
   useEditor,
-  EditorProvider
+  EditorProvider,
+  EditorState
 } from '@core/journeys/ui/EditorProvider'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 import { Drawer } from '../../../../Drawer'
@@ -56,7 +57,7 @@ describe('SignUp Attributes', () => {
       }
     ]
   }
-  const state = {
+  const state: EditorState = {
     steps: [],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,

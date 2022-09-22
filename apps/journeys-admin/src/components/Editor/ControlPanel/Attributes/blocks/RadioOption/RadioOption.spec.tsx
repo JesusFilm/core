@@ -4,7 +4,8 @@ import {
   ActiveFab,
   ActiveTab,
   useEditor,
-  EditorProvider
+  EditorProvider,
+  EditorState
 } from '@core/journeys/ui/EditorProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { ThemeProvider } from '../../../../../ThemeProvider'
@@ -34,7 +35,7 @@ describe('RadioOption Attribute', () => {
     action: null,
     children: []
   }
-  const state = {
+  const state: EditorState = {
     steps: [],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Properties,
@@ -56,7 +57,8 @@ describe('RadioOption Attribute', () => {
 
   it('shows filled attributes', async () => {
     const radioOptionBlock: TreeBlock<RadioOptionBlock> = {
-      ...block, action: {
+      ...block,
+      action: {
         __typename: 'NavigateToBlockAction',
         parentBlockId: 'radioOption1.id',
         gtmEventName: 'navigateToBlock',
@@ -79,7 +81,7 @@ describe('RadioOption Attribute', () => {
         parentBlockId: 'radioOption1.id',
         gtmEventName: 'navigateToBlock',
         blockId: 'step2.id'
-      },
+      }
     }
     const { getByTestId, getByRole, getAllByText } = render(
       <MockedProvider>
@@ -92,9 +94,7 @@ describe('RadioOption Attribute', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Action Selected Card' }))
-    await waitFor(() =>
-      expect(getByTestId('drawer-title')).toBeInTheDocument()
-    )
+    await waitFor(() => expect(getByTestId('drawer-title')).toBeInTheDocument())
     expect(getAllByText('Action')).toHaveLength(2)
   })
 

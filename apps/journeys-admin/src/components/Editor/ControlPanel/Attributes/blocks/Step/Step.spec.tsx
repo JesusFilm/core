@@ -2,13 +2,12 @@ import {
   ActiveFab,
   ActiveTab,
   useEditor,
-  EditorProvider
+  EditorProvider,
+  EditorState
 } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { render } from '@testing-library/react'
-import {
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-} from '../../../../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
 import { NextCard } from './NextCard'
 import { Step } from '.'
 
@@ -35,7 +34,7 @@ const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
 describe('Step', () => {
   const dispatch = jest.fn()
 
-  const state = {
+  const state: EditorState = {
     steps: [],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,

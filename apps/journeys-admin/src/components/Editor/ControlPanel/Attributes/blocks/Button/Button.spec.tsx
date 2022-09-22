@@ -3,6 +3,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
   ActiveTab,
+  EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
@@ -43,7 +44,7 @@ describe('Button attributes', () => {
     action: null,
     children: []
   }
-  const state = {
+  const state: EditorState = {
     steps: [],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,

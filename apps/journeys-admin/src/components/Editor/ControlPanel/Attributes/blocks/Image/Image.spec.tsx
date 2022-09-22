@@ -3,6 +3,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveFab,
   ActiveTab,
+  EditorState,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 
@@ -34,7 +35,7 @@ describe('Image', () => {
     blurhash: '',
     children: []
   }
-  const state = {
+  const state: EditorState = {
     steps: [],
     drawerMobileOpen: false,
     activeTab: ActiveTab.Cards,

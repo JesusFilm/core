@@ -2,10 +2,10 @@ export {
   useEditor,
   EditorProvider,
   ActiveTab,
-  ActiveFab,
-  EditorState
+  ActiveFab
 } from './EditorProvider'
 export type {
+  EditorState,
   SetSelectedStepAction,
   SetSelectedBlockByIdAction
 } from './EditorProvider'
