@@ -48,7 +48,7 @@ function TemplateDetails(): ReactElement {
           title={t('Journey Template')}
           authUser={AuthUser}
           showDrawer
-          backHref="/"
+          backHref="/templates"
           menu={<Menu />}
         >
           <JourneyView journeyType="Template" />
