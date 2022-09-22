@@ -1,7 +1,6 @@
 resource "aws_lb" "application_load_balancer" {
   name = "${local.name}-alb"
-  security_groups = [
-    data.aws_security_group.default_load_balancer.id,
+  security_groups = [    
     aws_security_group.load_balancer.id,
   ]
   subnets = data.aws_subnets.apps_public.ids
@@ -19,15 +18,6 @@ resource "aws_lb_target_group" "target_group" {
   protocol    = "HTTP"
   vpc_id      = data.aws_vpc.main.id
   target_type = "ip" # ip required for Fargate
-  health_check {
-    enabled             = true
-    protocol            = "HTTP"
-    path                = "/monitors/lb"
-    port                = "traffic-port"
-    matcher             = "200"
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-  }
   tags = local.tags
 }
 

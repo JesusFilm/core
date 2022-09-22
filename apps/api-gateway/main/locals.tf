@@ -2,7 +2,7 @@ locals {
   identifier    = "api-gateway"
   env           = "main"
   port          = 4000
-  cpu           = 1024
+  cpu           = 512
   memory        = 1024
   desired_count = 1
   public_url    = "graphql.central.jesusfilm.org"
@@ -17,7 +17,7 @@ locals {
    }
 
   tags = {
-    Name         = local.name
+    Name         = "${local.identifier}-${local.env}"
     env          = local.env
     project_name = local.identifier
     application  = local.identifier
