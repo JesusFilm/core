@@ -9,6 +9,7 @@ import { RADIO_OPTION_FIELDS } from '../../components/RadioOption/radioOptionFie
 import { RADIO_QUESTION_FIELDS } from '../../components/RadioQuestion/radioQuestionFields'
 import { SIGN_UP_FIELDS } from '../../components/SignUp/signUpFields'
 import { STEP_FIELDS } from '../../components/Step/stepFields'
+import { TEXT_RESPONSE_FIELDS } from '../../components/TextResponse/textResponseFields'
 import { TYPOGRAPHY_FIELDS } from '../../components/Typography/typographyFields'
 import { VIDEO_FIELDS } from '../../components/Video/videoFields'
 import { VIDEO_TRIGGER_FIELDS } from '../../components/VideoTrigger/videoTriggerFields'
@@ -24,6 +25,7 @@ export const BLOCK_FIELDS = gql`
   ${RADIO_QUESTION_FIELDS}
   ${SIGN_UP_FIELDS}
   ${STEP_FIELDS}
+  ${TEXT_RESPONSE_FIELDS}
   ${TYPOGRAPHY_FIELDS}
   ${VIDEO_FIELDS}
   ${VIDEO_TRIGGER_FIELDS}
@@ -60,6 +62,9 @@ export const BLOCK_FIELDS = gql`
     }
     ... on StepBlock {
       ...StepFields
+    }
+    ... on TextResponseBlock {
+      ...TextResponseFields
     }
     ... on TypographyBlock {
       ...TypographyFields

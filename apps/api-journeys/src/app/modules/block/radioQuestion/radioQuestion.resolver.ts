@@ -7,7 +7,8 @@ import {
   RadioOptionBlockCreateInput,
   RadioQuestionBlockCreateInput,
   UserJourneyRole,
-  RadioOptionBlockUpdateInput
+  RadioOptionBlockUpdateInput,
+  Role
 } from '../../../__generated__/graphql'
 import { BlockService } from '../block.service'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
@@ -30,7 +31,8 @@ export class RadioOptionBlockResolver {
   @UseGuards(
     RoleGuard('input.journeyId', [
       UserJourneyRole.owner,
-      UserJourneyRole.editor
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
     ])
   )
   async radioOptionBlockCreate(
@@ -49,7 +51,11 @@ export class RadioOptionBlockResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async radioOptionBlockUpdate(
     @Args('id') id: string,
@@ -67,7 +73,8 @@ export class RadioQuestionBlockResolver {
   @UseGuards(
     RoleGuard('input.journeyId', [
       UserJourneyRole.owner,
-      UserJourneyRole.editor
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
     ])
   )
   async radioQuestionBlockCreate(
@@ -86,7 +93,11 @@ export class RadioQuestionBlockResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async radioQuestionBlockUpdate(
     @Args('id') id: string,
