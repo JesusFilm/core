@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import VideoLibrary from '@mui/icons-material/VideoLibrary'
@@ -13,30 +13,32 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
 
   const { dispatch } = useEditor()
 
-  const openDrawer = useCallback(
-    (open?: boolean): void =>
-      dispatch({
-        type: 'SetDrawerPropsAction',
-        title: 'Video',
-        mobileOpen: true,
-        children: <VideoOptions open={open} />
-      }),
-    [dispatch]
-  )
+  const openDrawer = (): void =>
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: 'Video',
+      mobileOpen: true,
+      children: <VideoOptions />
+    })
 
   const selectedAction = actions.find(
     (act) => act.value === block.action?.__typename
   )
 
   useEffect(() => {
+    let open
+    videoId == null ? (open = true) : (open = false)
+
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       id: `${id}-video-options`
     })
-    let open
-    videoId == null ? (open = true) : (open = false)
-    openDrawer(open)
-  }, [id, videoId, openDrawer, dispatch])
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: 'Video',
+      children: <VideoOptions open={open} />
+    })
+  }, [id, videoId, dispatch])
 
   return (
     <>
