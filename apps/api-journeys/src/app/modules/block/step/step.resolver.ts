@@ -2,7 +2,6 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 
 import {
-  Role,
   StepBlock,
   StepBlockCreateInput,
   StepBlockUpdateInput,
@@ -18,8 +17,7 @@ export class StepBlockResolver {
   @UseGuards(
     RoleGuard('input.journeyId', [
       UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
+      UserJourneyRole.editor
     ])
   )
   async stepBlockCreate(
@@ -35,11 +33,7 @@ export class StepBlockResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
   async stepBlockUpdate(
     @Args('id') id: string,

@@ -8,7 +8,6 @@ import {
   Action,
   Block,
   NavigateActionInput,
-  Role,
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { BlockService } from '../../block/block.service'
@@ -19,11 +18,7 @@ export class NavigateActionResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
   async blockUpdateNavigateAction(
     @Args('id') id: string,

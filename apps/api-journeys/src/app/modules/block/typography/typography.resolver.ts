@@ -2,7 +2,6 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 
 import {
-  Role,
   TypographyBlock,
   TypographyBlockCreateInput,
   TypographyBlockUpdateInput,
@@ -18,8 +17,7 @@ export class TypographyBlockResolver {
   @UseGuards(
     RoleGuard('input.journeyId', [
       UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
+      UserJourneyRole.editor
     ])
   )
   async typographyBlockCreate(
@@ -38,11 +36,7 @@ export class TypographyBlockResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [
-      UserJourneyRole.owner,
-      UserJourneyRole.editor,
-      { role: Role.publisher, attributes: { template: true } }
-    ])
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
   )
   async typographyBlockUpdate(
     @Args('id') id: string,
