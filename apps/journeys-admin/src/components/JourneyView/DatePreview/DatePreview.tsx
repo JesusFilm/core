@@ -6,11 +6,10 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Skeleton from '@mui/material/Skeleton'
-import { useRouter } from 'next/router'
+import NextLink from 'next/link'
 
 export function DatePreview(): ReactElement {
   const { journey } = useJourney()
-  const router = useRouter()
 
   return (
     <Stack
@@ -29,21 +28,24 @@ export function DatePreview(): ReactElement {
           <Skeleton variant="text" width="100px" />
         )}
       </Typography>
-      <Button
-        startIcon={<VisibilityIcon />}
-        variant="outlined"
-        size="small"
-        color="secondary"
-        disabled={journey == null}
-        style={{ borderRadius: 8 }}
-        onClick={async () =>
-          await router.push(
-            journey != null ? `/api/preview?slug=${journey.slug}` : ''
-          )
-        }
+      <NextLink
+        href={journey != null ? `/api/preview?slug=${journey.slug}` : ''}
+        passHref
       >
-        Preview
-      </Button>
+        <Button
+          startIcon={<VisibilityIcon />}
+          variant="outlined"
+          size="small"
+          color="secondary"
+          target="_blank"
+          rel="noopener"
+          component="a"
+          disabled={journey == null}
+          style={{ borderRadius: 8 }}
+        >
+          Preview
+        </Button>
+      </NextLink>
     </Stack>
   )
 }
