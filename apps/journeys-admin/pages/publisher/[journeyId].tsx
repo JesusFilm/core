@@ -70,7 +70,7 @@ function TemplateDetailsAdmin(): ReactElement {
               title={t('Template Details')}
               authUser={AuthUser}
               showDrawer
-              backHref="/"
+              backHref="/publisher"
               menu={<Menu />}
             >
               <JourneyView journeyType="Template" />
