@@ -16,6 +16,7 @@ import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
 import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
 import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
+import { NextRouter } from 'next/router'
 import { compact } from 'lodash'
 import { gql, useQuery } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -37,6 +38,7 @@ export interface NavigationDrawerProps {
   onClose: (value: boolean) => void
   authUser?: AuthUser
   title: string
+  router?: NextRouter
 }
 
 export const GET_ME = gql`
@@ -98,23 +100,13 @@ export function NavigationDrawer({
   open,
   onClose,
   authUser,
-  title
+  title,
+  router
 }: NavigationDrawerProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
 
-  const journeysSelected =
-    title === 'Active Journeys' ||
-    title === 'Archived Journeys' ||
-    title === 'Trashed Journeys' ||
-    title === 'Journey Details' ||
-    title === 'Journey Reports'
-
-  const templatesSelected =
-    title === 'Journey Templates' ||
-    title === 'Journey Template' ||
-    title === 'Template Details' ||
-    title === 'Edit Template'
+  const selectedPage = router?.pathname?.split('/')[1]
 
   const { reports, templates } = useFlags()
 
@@ -160,7 +152,7 @@ export function NavigationDrawer({
         <NavigationListItem
           icon={<ViewCarouselRoundedIcon />}
           label="Discover"
-          selected={journeysSelected}
+          selected={selectedPage === 'journeys' || selectedPage == null} // null for when page is index. UPDATE when we add the actual index page
           link="/"
         />
 
@@ -168,7 +160,7 @@ export function NavigationDrawer({
           <NavigationListItem
             icon={<ShopRoundedIcon />}
             label="Templates"
-            selected={templatesSelected}
+            selected={selectedPage === 'templates'}
             link="/templates"
           />
         )}
@@ -177,7 +169,7 @@ export function NavigationDrawer({
           <NavigationListItem
             icon={<LeaderboardRoundedIcon />}
             label="Reports"
-            selected={title === 'Reports'}
+            selected={selectedPage === 'reports'}
             link="/reports"
           />
         )}
@@ -192,7 +184,7 @@ export function NavigationDrawer({
                 <NavigationListItem
                   icon={<ShopTwoRoundedIcon />}
                   label="Publisher"
-                  selected={title === 'Templates Admin'}
+                  selected={selectedPage === 'publisher'}
                   link="/publisher"
                 />
               )}

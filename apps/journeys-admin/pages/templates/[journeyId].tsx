@@ -50,6 +50,7 @@ function TemplateDetails(): ReactElement {
           showDrawer
           backHref="/templates"
           menu={<Menu />}
+          router={router}
         >
           <JourneyView journeyType="Template" />
         </PageWrapper>

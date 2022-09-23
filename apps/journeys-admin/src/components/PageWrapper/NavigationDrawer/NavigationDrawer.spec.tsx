@@ -3,6 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { AuthUser } from 'next-firebase-auth'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { NextRouter } from 'next/router'
 import { Role } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { GET_ME } from './NavigationDrawer'
@@ -18,6 +19,13 @@ describe('NavigationDrawer', () => {
 
   const onClose = jest.fn()
   const signOut = jest.fn()
+
+  function getRouter(path: string): NextRouter {
+    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */
+    return {
+      pathname: path
+    } as unknown as NextRouter
+  }
 
   it('should render the default menu items', () => {
     const { getByText, getAllByRole, getByTestId } = render(
@@ -94,7 +102,12 @@ describe('NavigationDrawer', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <FlagsProvider flags={{ templates: true }}>
-          <NavigationDrawer open onClose={onClose} title="Journey Templates" />
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            title="Journey Templates"
+            router={getRouter('/templates')}
+          />
         </FlagsProvider>
       </MockedProvider>
     )
@@ -108,7 +121,12 @@ describe('NavigationDrawer', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <FlagsProvider flags={{ reports: true }}>
-          <NavigationDrawer open onClose={onClose} title="Reports" />
+          <NavigationDrawer
+            open
+            onClose={onClose}
+            title="Reports"
+            router={getRouter('/reports')}
+          />
         </FlagsProvider>
       </MockedProvider>
     )
@@ -166,6 +184,7 @@ describe('NavigationDrawer', () => {
                 signOut
               } as unknown as AuthUser
             }
+            router={getRouter('/publisher/[journeyId]')}
           />
         </FlagsProvider>
       </MockedProvider>

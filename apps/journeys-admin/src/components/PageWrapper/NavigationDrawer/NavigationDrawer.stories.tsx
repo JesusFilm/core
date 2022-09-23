@@ -4,6 +4,7 @@ import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthUser } from 'next-firebase-auth'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { NextRouter } from 'next/router'
 import { journeysAdminConfig } from '../../../libs/storybook'
 import { Role } from '../../../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
@@ -68,6 +69,7 @@ const Template: Story = ({ ...args }) => {
             } as unknown as AuthUser
           }
           title={args.title}
+          router={{ pathname: undefined } as unknown as NextRouter}
         />
       </FlagsProvider>
     </MockedProvider>
