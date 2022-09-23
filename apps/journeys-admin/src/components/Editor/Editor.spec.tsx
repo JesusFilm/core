@@ -47,7 +47,7 @@ describe('Editor', () => {
         id: 'step1.id',
         __typename: 'StepBlock',
         parentBlockId: null,
-        parentOrder: 0,
+        parentOrder: 1,
         locked: false,
         nextBlockId: 'step1.id'
       }
@@ -74,18 +74,17 @@ describe('Editor', () => {
     expect(getByText('Social Image')).toBeInTheDocument()
   })
 
-  it('should select step based on ID', () => {
-    const { getByTestId } = render(
+  it('should display Next Card property', () => {
+    const { getByText } = render(
       <MockedProvider>
         <ThemeProvider>
-          <Editor journey={journey} selectedStepId="step1.id">
+          <Editor journey={journey} selectedStepId="step0.id">
             <JourneyEdit />
           </Editor>
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getByTestId('preview-step1.id').parentElement).toHaveStyle(
-      'outline: 2px solid #C52D3A'
-    )
+    expect(getByText('Next Card')).toBeInTheDocument()
+    expect(getByText('Unlocked Card')).toBeInTheDocument()
   })
 })
