@@ -1,4 +1,5 @@
 import { Meta, Story } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../libs/storybook'
 import {
   oldTemplate,
@@ -14,7 +15,9 @@ const TemplateLibraryStory = {
 }
 
 const Template: Story = ({ ...args }) => (
-  <TemplateLibrary journeys={args.templates} />
+  <MockedProvider>
+    <TemplateLibrary journeys={args.templates} />
+  </MockedProvider>
 )
 
 export const Default = Template.bind({})
