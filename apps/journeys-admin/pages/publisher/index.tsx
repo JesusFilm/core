@@ -18,9 +18,12 @@ import { TemplateList } from '../../src/components/TemplateList'
 import i18nConfig from '../../next-i18next.config'
 import JourneyListMenu from '../../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
 import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
+import { GetJourneys } from '../../__generated__/GetJourneys'
+import { GET_JOURNEYS } from '..'
 
 function TemplateIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { data: journeyData } = useQuery<GetJourneys>(GET_JOURNEYS)
   const AuthUser = useAuthUser()
   const router = useRouter()
   const [listEvent, setListEvent] = useState('')
@@ -51,7 +54,12 @@ function TemplateIndex(): ReactElement {
         authUser={AuthUser}
         menu={<JourneyListMenu router={router} onClick={handleClick} />}
       >
-        <TemplateList router={router} event={listEvent} authUser={AuthUser} />
+        <TemplateList
+          journeys={journeyData?.journeys}
+          router={router}
+          event={listEvent}
+          authUser={AuthUser}
+        />
       </PageWrapper>
     </>
   )

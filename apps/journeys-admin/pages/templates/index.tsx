@@ -13,6 +13,8 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
 import { GetPublishedTemplates } from '../../__generated__/GetPublishedTemplates'
 import { TemplateLibrary } from '../../src/components/TemplateLibrary'
+import { GetJourneys } from '../../__generated__/GetJourneys'
+import { GET_JOURNEYS } from '..'
 
 const GET_PUBLISHED_TEMPLATES = gql`
   query GetPublishedTemplates {
@@ -63,12 +65,16 @@ const GET_PUBLISHED_TEMPLATES = gql`
 function LibraryIndex(): ReactElement {
   const AuthUser = useAuthUser()
   const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
+  const { data: journeyData } = useQuery<GetJourneys>(GET_JOURNEYS)
 
   return (
     <>
       <NextSeo title="Journey Templates" />
       <PageWrapper title="Journey Templates" authUser={AuthUser}>
-        <TemplateLibrary journeys={data?.journeys} />
+        <TemplateLibrary
+          journeys={journeyData?.journeys}
+          templates={data?.journeys}
+        />
       </PageWrapper>
     </>
   )

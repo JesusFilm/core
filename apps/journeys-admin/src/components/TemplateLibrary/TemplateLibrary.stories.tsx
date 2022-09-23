@@ -13,18 +13,23 @@ const TemplateLibraryStory = {
   title: 'Journeys-Admin/TemplateLibrary'
 }
 
-const Template: Story = ({ ...args }) => (
-  <TemplateLibrary journeys={args.templates} />
-)
+const Template: Story = ({ ...args }) => <TemplateLibrary {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
+  journeys: [{}],
   templates: [oldTemplate, publishedTemplate, descriptiveTemplate]
 }
 
 export const Loading = Template.bind({})
 Loading.args = {
+  journeys: [{}],
   templates: null
+}
+
+export const Access = Template.bind({})
+Access.args = {
+  journeys: []
 }
 
 export default TemplateLibraryStory as Meta
