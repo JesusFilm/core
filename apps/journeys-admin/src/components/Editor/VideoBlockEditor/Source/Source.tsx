@@ -8,7 +8,6 @@ import {
   VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
 import { VideoLibrary } from '../../VideoLibrary'
-import { VideoDetails } from '../../VideoLibrary/VideoDetails'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../__generated__/GetJourney'
 import { SourceFromYouTube } from './SourceFromYouTube'
 import { SourceEmpty } from './SourceEmpty'
@@ -25,8 +24,7 @@ export function Source({
   selectedBlock,
   onChange
 }: SourceProps): ReactElement {
-  const [openVideoLibrary, setOpenVideoLibrary] = useState(openLibrary ?? false)
-  const [openVideoDetails, setOpenVideoDetails] = useState(false)
+  const [open, setOpen] = useState(openLibrary ?? false)
 
   let SourceContent
 
@@ -49,34 +47,17 @@ export function Source({
   return (
     <>
       <Card variant="outlined" sx={{ borderRadius: 2 }}>
-        <CardActionArea
-          onClick={() =>
-            selectedBlock?.videoId == null
-              ? setOpenVideoLibrary(true)
-              : setOpenVideoDetails(true)
-          }
-        >
+        <CardActionArea onClick={() => setOpen(true)}>
           <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
             <SourceContent selectedBlock={selectedBlock} />
           </Stack>
         </CardActionArea>
       </Card>
-      {selectedBlock?.videoId == null && (
-        <VideoLibrary
-          open={openVideoLibrary}
-          onClose={() => setOpenVideoLibrary(false)}
-          onSelect={onChange}
-        />
-      )}
-      {selectedBlock?.videoId != null && (
-        <VideoDetails
-          id={selectedBlock.videoId}
-          open={openVideoDetails}
-          source={selectedBlock?.source}
-          onClose={() => setOpenVideoDetails(false)}
-          onSelect={onChange}
-        />
-      )}
+      <VideoLibrary
+        open={open}
+        onClose={() => setOpen(false)}
+        onSelect={onChange}
+      />
     </>
   )
 }

@@ -35,7 +35,7 @@ export function VideoDetails({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   let Details: (
-    props: Pick<VideoDetailsProps, 'id' | 'open' | 'onSelect'>
+    props: Pick<VideoDetailsProps, 'id' | 'open' | 'onSelect' | 'onClose'>
   ) => ReactElement
 
   switch (source) {
@@ -93,7 +93,12 @@ export function VideoDetails({
           </Toolbar>
         </AppBar>
         <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
-          <Details id={id} open={open} onSelect={handleSelect} />
+          <Details
+            id={id}
+            open={open}
+            onSelect={handleSelect}
+            onClose={onClose}
+          />
         </Box>
       </Drawer>
     </>

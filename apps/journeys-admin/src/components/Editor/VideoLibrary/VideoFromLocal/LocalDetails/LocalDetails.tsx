@@ -8,6 +8,7 @@ import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
 import Check from '@mui/icons-material/Check'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
+import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded'
 import { gql, useLazyQuery } from '@apollo/client'
 import { GetVideo } from '../../../../../../__generated__/GetVideo'
 import { VideoLanguage } from '../../VideoLanguage'
@@ -48,8 +49,12 @@ export const GET_VIDEO = gql`
 export function LocalDetails({
   open,
   id,
-  onSelect
-}: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
+  onSelect,
+  onClose
+}: Pick<
+  VideoDetailsProps,
+  'open' | 'id' | 'onSelect' | 'onClose'
+>): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [playing, setPlaying] = useState(false)
@@ -122,6 +127,13 @@ export function LocalDetails({
         </>
       ) : (
         <>
+          <Button
+            startIcon={<SubscriptionsRoundedIcon />}
+            size="small"
+            onClick={onClose}
+          >
+            Change Video
+          </Button>
           <Box
             sx={{
               borderRadius: 3,
