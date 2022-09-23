@@ -2,17 +2,29 @@ import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Fab from '@mui/material/Fab'
+import TagManager from 'react-gtm-module'
 import EditIcon from '@mui/icons-material/Edit'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { ConvertTemplate } from '../../../../__generated__/ConvertTemplate'
+import { TemplateUseEventCreate } from '../../../../__generated__/TemplateUseEventCreate'
 
 export const CONVERT_TEMPLATE = gql`
   mutation ConvertTemplate($id: ID!) {
     journeyDuplicate(id: $id) {
       id
+    }
+  }
+`
+
+export const TEMPLATE_USE_EVENT_CREATE = gql`
+  mutation TemplateUseEventCreate($input: TemplateUseEventInput!) {
+    templateUseEventCreate(input: $input) {
+      id
+      userId
+      journeyId
     }
   }
 `
@@ -27,6 +39,9 @@ export function JourneyViewFab({
   const { journey } = useJourney()
   const router = useRouter()
   const [ConvertTemplate] = useMutation<ConvertTemplate>(CONVERT_TEMPLATE)
+  const [templateUseEventCreate] = useMutation<TemplateUseEventCreate>(
+    TEMPLATE_USE_EVENT_CREATE
+  )
 
   const handleConvertTemplate = async (): Promise<void> => {
     if (journey == null) return
@@ -63,6 +78,26 @@ export function JourneyViewFab({
     }
   }
 
+  const handleCreateEvent = async (): Promise<void> => {
+    if (journey == null) return
+    const { data } = await templateUseEventCreate({
+      variables: {
+        input: journey.id
+      }
+    })
+    if (data?.templateUseEventCreate != null) {
+      const { id, journeyId, userId } = data.templateUseEventCreate
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'template_use',
+          eventId: id,
+          journeyId,
+          userId
+        }
+      })
+    }
+  }
+
   let editLink
   if (journey != null) {
     if (journey.template === true && isPublisher === true) {
@@ -85,7 +120,10 @@ export function JourneyViewFab({
           }}
           color="primary"
           disabled={journey == null}
-          onClick={handleConvertTemplate}
+          onClick={async () => {
+            await handleConvertTemplate()
+            void handleCreateEvent()
+          }}
         >
           <CheckRoundedIcon sx={{ mr: 3 }} />
           <Typography
