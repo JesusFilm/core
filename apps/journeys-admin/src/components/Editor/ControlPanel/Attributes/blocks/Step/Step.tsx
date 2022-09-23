@@ -1,7 +1,7 @@
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import { useTranslation } from 'react-i18next'
@@ -32,6 +32,22 @@ export function Step({
     nextStep != null && steps != null
       ? getStepHeading(nextStep.id, nextStep.children, steps, t)
       : 'None'
+
+  useEffect(() => {
+    dispatch({
+      type: 'SetActiveTabAction',
+      activeTab: ActiveTab.Properties
+    })
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      id: `${id}-next-block`
+    })
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: 'Next Card Properties',
+      children: <NextCard />
+    })
+  }, [dispatch, id])
 
   return (
     <Attribute

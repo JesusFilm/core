@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
@@ -11,6 +11,18 @@ export function RadioOption({
   action
 }: TreeBlock<RadioOptionBlock>): ReactElement {
   const { dispatch } = useEditor()
+
+  useEffect(() => {
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      id: `${id}-radio-option-action`
+    })
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: 'Action',
+      children: <Action />
+    })
+  }, [dispatch, id])
 
   return (
     <>
