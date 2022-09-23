@@ -82,7 +82,7 @@ export function JourneyViewFab({
     if (journey == null) return
     const { data } = await templateUseEventCreate({
       variables: {
-        input: journey.id
+        input: { journeyId: journey.id }
       }
     })
     if (data?.templateUseEventCreate != null) {
