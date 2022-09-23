@@ -92,7 +92,8 @@ export function JourneyViewFab({
           event: 'template_use',
           eventId: id,
           journeyId,
-          userId
+          userId,
+          journeyTitle: journey.title
         }
       })
     }

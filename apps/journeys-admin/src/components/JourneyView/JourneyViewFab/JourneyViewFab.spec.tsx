@@ -199,7 +199,8 @@ describe('JourneyViewFab', () => {
         event: 'template_use',
         eventId: 'event.id',
         journeyId: 'journey-id',
-        userId: 'user.id'
+        userId: 'user.id',
+        journeyTitle: 'Journey Heading'
       }
     })
   })

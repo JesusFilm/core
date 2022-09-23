@@ -43,7 +43,8 @@ export function DatePreview(): ReactElement {
           event: 'template_preview',
           eventId: id,
           journeyId,
-          userId
+          userId,
+          journeyTitle: journey.title
         }
       })
     }

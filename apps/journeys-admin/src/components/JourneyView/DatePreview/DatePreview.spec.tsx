@@ -119,7 +119,8 @@ describe('DatePreview', () => {
         event: 'template_preview',
         eventId: 'event.id',
         journeyId: 'journey-id',
-        userId: 'user.id'
+        userId: 'user.id',
+        journeyTitle: 'Published Journey Heading'
       }
     })
   })
