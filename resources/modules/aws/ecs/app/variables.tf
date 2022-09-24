@@ -9,7 +9,7 @@ variable "env" {
 }
 
 variable "port" {
-  description = "Internal application aort"
+  description = "Internal application port"
   type        = number
   default     = 80
 }
@@ -53,3 +53,10 @@ variable "desired_count" {
   type        = number
   default     = 1
 }
+
+variable "health_check_path" {
+  description = "path in container to run health check"
+  type        = string
+  default     = "/.well-known/apollo/server-health"
+}
+

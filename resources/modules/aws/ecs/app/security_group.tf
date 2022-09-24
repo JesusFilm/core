@@ -1,36 +1,59 @@
-// Lookup ECS security group
-# data "aws_security_group" "ecs" {
-#   vpc_id = data.aws_vpc.main.id
-#   tags = {
-#     function = "ecs"
-#     env      = var.env
-#   }
-# }
-
-// Create Load Balancer Security group with egress to all outbound IP addresses
 resource "aws_security_group" "load_balancer" {
-  name        = "${local.name}-alb"
-  description = "${var.identifier} (${var.env}) ALB"
-  vpc_id      = data.aws_vpc.main.id
-  tags = merge(local.tags, {
-    Name = "${local.name}-alb"
-  })
+  name   = "${local.name}-sg-alb"
+  vpc_id = data.aws_vpc.main.id
+
+  ingress {
+    protocol         = "tcp"
+    from_port        = 80
+    to_port          = 80
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    protocol         = "tcp"
+    from_port        = 443
+    to_port          = 443
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
 
   egress {
-    from_port       = 0
-    protocol        = "-1"
-    to_port         = 0    
-    cidr_blocks     = ["0.0.0.0/0"] # Allowing traffic out to all IP addresses
+    protocol         = "-1"
+    from_port        = 0
+    to_port          = 0
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
+
+  tags = merge(local.tags, {
+    Name        = "${local.name}-sg-alb"
+    Environment = var.env
+  })
 }
 
-// Allow ingress on ECS from Load Balancer using ephemeral ports.
-# resource "aws_security_group_rule" "ecs_ingress" {
-#   security_group_id        = aws_security_group.load_balancer.id
-#   type                     = "ingress"
-#   description              = aws_security_group.load_balancer.description
-#   from_port                = 49153
-#   protocol                 = "tcp"
-#   to_port                  = 65535
-#   source_security_group_id = aws_security_group.load_balancer.id
-# }
+resource "aws_security_group" "task" {
+  name   = "${local.name}-sg-task"
+  vpc_id = data.aws_vpc.main.id
+
+  ingress {
+    protocol         = "tcp"
+    from_port        = var.port
+    to_port          = var.port
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    protocol         = "-1"
+    from_port        = 0
+    to_port          = 0
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = merge(local.tags, {
+    Name        = "${local.name}-sg-task"
+    Environment = var.env
+  })
+}

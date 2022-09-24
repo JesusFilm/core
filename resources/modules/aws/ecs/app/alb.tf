@@ -1,23 +1,36 @@
 resource "aws_lb" "application_load_balancer" {
-  name = "${local.name}-alb"
-  security_groups = [    
-    aws_security_group.load_balancer.id,
-  ]
-  subnets = data.aws_subnets.apps_public.ids
+  name               = "${local.name}-alb"
+  security_groups    = [aws_security_group.load_balancer.id]
+  subnets            = data.aws_subnets.apps_public.ids
+  internal           = false
+  load_balancer_type = "application"
+  
   access_logs {
     bucket  = "jfp-alb-logs"
     prefix  = "${var.identifier}/${var.env}"
     enabled = "true"
   }
+
   tags = local.tags
 }
 
 resource "aws_lb_target_group" "target_group" {
-  name        = local.name
-  port        = 4000
+  name        = "${local.name}-tg"
+  port        = 80
   protocol    = "HTTP"
   vpc_id      = data.aws_vpc.main.id
-  target_type = "ip" # ip required for Fargate
+  target_type = "ip"
+  
+  health_check {
+    enabled             = true
+    protocol            = "HTTP"
+    path                = var.health_check_path
+    port                = "traffic-port"
+    matcher             = "200"
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+  
   tags = local.tags
 }
 

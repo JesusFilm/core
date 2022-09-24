@@ -15,10 +15,18 @@ resource "aws_ecs_service" "service" {
     container_port   = var.port
   }
   network_configuration {
+    security_groups  = [aws_security_group.task.id] 
     subnets          = data.aws_subnets.apps_public.ids
     assign_public_ip = false
   }
-  lifecycle { create_before_destroy = true }
+  
+  # we ignore task_definition changes as the revision changes on deploy
+  # of a new version of the application
+  # desired_count is ignored as it can change due to autoscaling policy
+  lifecycle { 
+    ignore_changes        = [task_definition, desired_count]
+    create_before_destroy = true
+  }
 }
 
 resource "aws_ecs_task_definition" "app" {
