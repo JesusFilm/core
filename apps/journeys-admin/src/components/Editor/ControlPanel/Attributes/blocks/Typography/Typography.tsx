@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import TextFieldsRoundedIcon from '@mui/icons-material/TextFieldsRounded'
@@ -16,6 +16,18 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
   const { id, align, color, variant } = block
 
   const { dispatch } = useEditor()
+
+  useEffect(() => {
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      id: `${id}-typography-variant`
+    })
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: 'Text Variant',
+      children: <Variant />
+    })
+  }, [dispatch, id])
 
   return (
     <>
