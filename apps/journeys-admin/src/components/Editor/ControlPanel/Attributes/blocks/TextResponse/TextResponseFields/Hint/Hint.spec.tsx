@@ -11,6 +11,15 @@ import {
 import { TEXT_RESPONSE_HINT_UPDATE } from './Hint'
 import { Hint } from '.'
 
+jest.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 const block: TreeBlock<TextResponseBlock> = {
   __typename: 'TextResponseBlock',
   id: 'textResponse0.id',
@@ -71,7 +80,9 @@ describe('Edit Hint field', () => {
     const { getByRole } = render(<HintMock />)
     const field = getByRole('textbox', { name: 'Hint' })
 
-    expect(field).toHaveAccessibleDescription('Can only be 22 characters')
+    expect(field).toHaveAccessibleDescription(
+      'Can only be {{maxCharacters}} characters'
+    )
   })
 
   it('should not be able to type beyond max character limit', () => {

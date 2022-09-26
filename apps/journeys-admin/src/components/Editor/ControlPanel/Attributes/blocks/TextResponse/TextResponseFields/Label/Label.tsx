@@ -7,6 +7,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { Formik, Form } from 'formik'
 import Box from '@mui/material/Box'
 import { noop } from 'lodash'
+import { useTranslation } from 'react-i18next'
 import { TextResponseLabelUpdate } from '../../../../../../../../../__generated__/TextResponseLabelUpdate'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/GetJourney'
 
@@ -24,12 +25,13 @@ export const TEXT_RESPONSE_LABEL_UPDATE = gql`
 `
 
 export function Label(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [textResponseLabelUpdate] = useMutation<TextResponseLabelUpdate>(
     TEXT_RESPONSE_LABEL_UPDATE
   )
-
   const { journey } = useJourney()
   const { state } = useEditor()
+
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
@@ -71,9 +73,15 @@ export function Label(): ReactElement {
                 variant="filled"
                 label="Label"
                 fullWidth
-                value={values.textResponseLabel}
+                value={
+                  values.textResponseLabel !== ''
+                    ? values.textResponseLabel
+                    : t('Your answer here')
+                }
                 inputProps={{ maxLength: maxCharacters }}
-                helperText={`Can only be ${maxCharacters} characters`}
+                helperText={t('Can only be {{maxCharacters}} characters', {
+                  maxCharacters
+                })}
                 onChange={handleChange}
                 onBlur={(e) => {
                   handleBlur(e)
