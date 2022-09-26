@@ -13,10 +13,13 @@
   "Journey Report": "Journey Report",
   "Reports": "Reports",
   "Sign In": "Sign In",
+  "Can only be {{maxCharacters}} characters": "Can only be {{maxCharacters}} characters",
+  "Your answer here": "Your answer here",
   "One Row": "One Row",
   "Two Rows": "Two Rows",
   "Three Rows": "Three Rows",
   "Four Rows": "Four Rows",
+  "Minimum Size": "Minimum Size",
   "Journeys Archived": "Journeys Archived",
   "Journeys Trashed": "Journeys Trashed",
   "Archive Journeys": "Archive Journeys",
@@ -56,7 +59,5 @@
   "By embedding a Journey to your site, you agree to the ": "By embedding a Journey to your site, you agree to the ",
   "Terms of agreement": "Terms of agreement",
   "Field update failed. Reload the page or try again.": "Field update failed. Reload the page or try again.",
-  "Properties": "Properties",
-  "Your answer here": "Your answer here",
-  "Can only be {{maxCharacters}} characters": "Can only be {{maxCharacters}} characters"
+  "Properties": "Properties"
 }
