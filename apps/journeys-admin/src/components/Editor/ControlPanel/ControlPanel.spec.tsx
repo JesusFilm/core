@@ -70,7 +70,7 @@ describe('ControlPanel', () => {
     ]
   }
 
-  it('should render tabs and tab panels', () => {
+  it('should render tabs and tab panels', async () => {
     const { getByTestId, getByText, getByRole } = render(
       <MockedProvider>
         <FlagsProvider flags={{ feedbackBlock: true }}>
@@ -91,9 +91,7 @@ describe('ControlPanel', () => {
         </FlagsProvider>
       </MockedProvider>
     )
-    // Default start on Cards
-    expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
-    fireEvent.click(getByRole('tab', { name: 'Properties' }))
+    // Default start on Properties
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Cards' }))

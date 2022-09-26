@@ -159,5 +159,5 @@ jobs:
           exitOnceUploaded: true,
           autoAcceptChanges: 'main'
           onlyChanged: true
-          skip: 'dependabot/**'
+          skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
           traceChanged: 'expanded'
