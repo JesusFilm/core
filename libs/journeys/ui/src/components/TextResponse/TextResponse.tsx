@@ -130,7 +130,7 @@ export const TextResponse = ({
           }
         }}
       >
-        {({ values }) => (
+        {({ values, handleChange, handleBlur }) => (
           <Form data-testid={`textResponse-${blockId}`}>
             <Stack>
               <TextField
@@ -141,6 +141,8 @@ export const TextResponse = ({
                 helperText={hint}
                 multiline
                 minRows={minRows ?? 3}
+                onChange={handleChange}
+                onBlur={handleBlur}
                 disabled={selectedBlock !== undefined}
                 inputProps={{ maxLength: 1000 }}
               />

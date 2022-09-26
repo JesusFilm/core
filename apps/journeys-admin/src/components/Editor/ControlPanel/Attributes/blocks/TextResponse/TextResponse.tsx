@@ -31,7 +31,7 @@ export function TextResponse({
         icon={<Crop169RoundedIcon />}
         name="Feedback"
         value={label}
-        description="Label and Hint text"
+        description="Feedback Properties"
         onClick={(): void =>
           dispatch({
             type: 'SetDrawerPropsAction',
