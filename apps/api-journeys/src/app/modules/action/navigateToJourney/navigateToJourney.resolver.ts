@@ -54,7 +54,8 @@ export class NavigateToJourneyActionResolver {
           'RadioOptionBlock',
           'ButtonBlock',
           'VideoBlock',
-          'VideoTriggerBlock'
+          'VideoTriggerBlock',
+          'TextResponseBlock'
         ],
         block.__typename
       )
