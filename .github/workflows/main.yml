@@ -113,7 +113,6 @@ jobs:
           targets: generate,test
           args: --ci
   visual-test:
-    needs: [lint, build, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -151,6 +150,7 @@ jobs:
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         # https://www.chromatic.com/docs/github-actions#available-options
+        # https://github.com/chromaui/chromatic-cli/blob/main/action.yml
         with:
           #👇 Chromatic projectToken, see https://storybook.js.org/tutorials/intro-to-storybook/react/en/deploy/ to obtain it
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
@@ -159,3 +159,5 @@ jobs:
           exitOnceUploaded: true,
           autoAcceptChanges: 'main'
           onlyChanged: true
+          skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
+          traceChanged: 'expanded'

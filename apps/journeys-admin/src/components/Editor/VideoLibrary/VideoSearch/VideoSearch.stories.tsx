@@ -10,7 +10,7 @@ const VideoSearchStory = {
   title: 'Journeys-Admin/Editor/VideoLibrary/VideoSearch'
 }
 
-const Template: Story = () => {
+const Template: Story = (args) => {
   const [title, setTitle] = useState<string>()
 
   return (
@@ -20,11 +20,16 @@ const Template: Story = () => {
         height: '200px'
       }}
     >
-      <VideoSearch value={title} onChange={setTitle} />
+      <VideoSearch value={title} onChange={setTitle} {...args} />
     </Box>
   )
 }
 
 export const Default = Template.bind({})
+
+export const CustomLabel = Template.bind({})
+CustomLabel.args = {
+  label: 'Paste any YouTube Link'
+}
 
 export default VideoSearchStory as Meta

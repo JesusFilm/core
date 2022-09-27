@@ -231,9 +231,9 @@ export function ArchivedJourneyList({
         </>
       ) : (
         <>
-          <JourneyCard />
-          <JourneyCard />
-          <JourneyCard />
+          {[0, 1, 2].map((index) => (
+            <JourneyCard key={`journeyCard${index}`} />
+          ))}
         </>
       )}
       <Dialog

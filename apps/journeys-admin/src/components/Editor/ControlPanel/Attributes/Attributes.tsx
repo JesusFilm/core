@@ -1,4 +1,4 @@
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveTab, useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
@@ -14,7 +14,8 @@ import {
   SignUp,
   RadioOption,
   Video,
-  Image
+  Image,
+  TextResponse
 } from './blocks'
 import { MoveBlockButtons } from './MoveBlockButtons'
 
@@ -79,6 +80,9 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
       return withMoveButtons(<SignUp {...selected} />)
     }
 
+    case 'TextResponseBlock': {
+      return withMoveButtons(<TextResponse {...selected} />)
+    }
     default:
       return <></>
   }
@@ -90,15 +94,19 @@ interface AttributesProps {
 }
 
 export function Attributes({ selected, step }: AttributesProps): ReactElement {
-  const { dispatch } = useEditor()
+  const {
+    state: { activeTab },
+    dispatch
+  } = useEditor()
   useEffect(() => {
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: 'Social Share Appearance',
-      mobileOpen: false,
-      children: <SocialShareAppearance />
-    })
-  }, [selected.id, dispatch])
+    if (activeTab === ActiveTab.Cards) {
+      dispatch({
+        type: 'SetDrawerPropsAction',
+        title: 'Social Share Appearance',
+        children: <SocialShareAppearance />
+      })
+    }
+  }, [activeTab, dispatch])
   return (
     <>
       <Stack

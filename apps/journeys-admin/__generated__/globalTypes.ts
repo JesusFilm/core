@@ -144,6 +144,11 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
+export enum VideoBlockSource {
+  internal = "internal",
+  youTube = "youTube",
+}
+
 export enum VideoType {
   episode = "episode",
   playlist = "playlist",
@@ -304,6 +309,29 @@ export interface StepViewEventCreateInput {
   id?: string | null;
 }
 
+export interface TextResponseBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  label: string;
+  parentBlockId: string;
+  submitLabel: string;
+}
+
+export interface TextResponseBlockUpdateInput {
+  hint?: string | null;
+  label?: string | null;
+  minRows?: number | null;
+  parentBlockId?: string | null;
+  submitIconId?: string | null;
+  submitLabel?: string | null;
+}
+
+export interface TextResponseSubmissionEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  value: string;
+}
+
 export interface TypographyBlockCreateInput {
   align?: TypographyAlign | null;
   color?: TypographyColor | null;
@@ -333,6 +361,7 @@ export interface VideoBlockCreateInput {
   muted?: boolean | null;
   parentBlockId: string;
   posterBlockId?: string | null;
+  source?: VideoBlockSource | null;
   startAt?: number | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
@@ -344,6 +373,7 @@ export interface VideoBlockUpdateInput {
   fullsize?: boolean | null;
   muted?: boolean | null;
   posterBlockId?: string | null;
+  source?: VideoBlockSource | null;
   startAt?: number | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
