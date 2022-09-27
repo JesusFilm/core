@@ -76,7 +76,6 @@ describe('Source', () => {
         <Source selectedBlock={null} onChange={onChange} />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
     await waitFor(() =>
@@ -130,39 +129,5 @@ describe('Source', () => {
         name: 'What is the Bible? What is the Bible? YouTube'
       })
     ).toBeInTheDocument()
-  })
-
-  it('shows select video button when block present without video', async () => {
-    const onChange = jest.fn()
-    const { getByRole } = render(
-      <MockedProvider>
-        <Source
-          selectedBlock={{
-            id: 'video1.id',
-            __typename: 'VideoBlock',
-            parentBlockId: 'card1.id',
-            description: null,
-            duration: 348,
-            endAt: 348,
-            fullsize: true,
-            image: null,
-            muted: false,
-            autoplay: true,
-            startAt: 0,
-            title: null,
-            videoId: null,
-            videoVariantLanguageId: null,
-            parentOrder: 0,
-            action: null,
-            source: VideoBlockSource.internal,
-            video: null,
-            posterBlockId: 'poster1.id',
-            children: []
-          }}
-          onChange={onChange}
-        />
-      </MockedProvider>
-    )
-    expect(getByRole('button', { name: 'Select Video' })).toBeInTheDocument()
   })
 })

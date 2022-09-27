@@ -212,7 +212,6 @@ describe('BackgroundMediaVideo', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
     await waitFor(() =>
@@ -290,7 +289,6 @@ describe('BackgroundMediaVideo', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
     await waitFor(() =>
@@ -368,7 +366,6 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByRole('button', { name: 'Select Video' }))
       await waitFor(() => expect(getByText('Brand_Video')).toBeInTheDocument())
       fireEvent.click(getByText('Brand Video'))
       await waitFor(() =>
@@ -386,7 +383,7 @@ describe('BackgroundMediaVideo', () => {
 
     describe('Video Settings', () => {
       it('shows settings', async () => {
-        const { getAllByRole } = render(
+        const { getAllByRole, getByTestId } = render(
           <MockedProvider>
             <JourneyProvider
               value={{
@@ -402,6 +399,9 @@ describe('BackgroundMediaVideo', () => {
             </JourneyProvider>
           </MockedProvider>
         )
+        const closeButton = getAllByRole('button')[0]
+        expect(closeButton).toContainElement(getByTestId('CloseIcon'))
+        fireEvent.click(closeButton)
         expect(getAllByRole('checkbox', { name: 'Muted' })[0]).toBeChecked()
         expect(getAllByRole('checkbox', { name: 'Autoplay' })[0]).toBeChecked()
         expect(getAllByRole('textbox', { name: 'Starts At' })[0]).toHaveValue(
@@ -432,7 +432,7 @@ describe('BackgroundMediaVideo', () => {
             }
           }
         }))
-        const { getAllByRole } = render(
+        const { getAllByRole, getByTestId } = render(
           <MockedProvider
             cache={cache}
             mocks={[
@@ -468,6 +468,9 @@ describe('BackgroundMediaVideo', () => {
             </JourneyProvider>
           </MockedProvider>
         )
+        const closeButton = getAllByRole('button')[0]
+        expect(closeButton).toContainElement(getByTestId('CloseIcon'))
+        fireEvent.click(closeButton)
         const checkbox = await getAllByRole('checkbox', { name: 'Autoplay' })[0]
         fireEvent.click(checkbox)
         await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
@@ -491,7 +494,7 @@ describe('BackgroundMediaVideo', () => {
           videoBlockUpdate: video
         }
       }))
-      const { getAllByRole } = render(
+      const { getAllByRole, getByTestId } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -527,6 +530,9 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+      const closeButton = getAllByRole('button')[0]
+      expect(closeButton).toContainElement(getByTestId('CloseIcon'))
+      fireEvent.click(closeButton)
       const checkbox = await getAllByRole('checkbox', { name: 'Muted' })[0]
       fireEvent.click(checkbox)
       await waitFor(() => expect(videoBlockResult).toHaveBeenCalled())
@@ -549,7 +555,7 @@ describe('BackgroundMediaVideo', () => {
           videoBlockUpdate: video
         }
       }))
-      const { getAllByRole } = render(
+      const { getAllByRole, getByTestId } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -585,6 +591,9 @@ describe('BackgroundMediaVideo', () => {
           </JourneyProvider>
         </MockedProvider>
       )
+      const closeButton = getAllByRole('button')[0]
+      expect(closeButton).toContainElement(getByTestId('CloseIcon'))
+      fireEvent.click(closeButton)
       const textbox = await getAllByRole('textbox', { name: 'Starts At' })[0]
       fireEvent.change(textbox, { target: { value: '00:00:11' } })
       fireEvent.blur(textbox)
@@ -608,7 +617,7 @@ describe('BackgroundMediaVideo', () => {
           videoBlockUpdate: video
         }
       }))
-      const { getAllByRole } = render(
+      const { getAllByRole, getByTestId } = render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -644,6 +653,9 @@ describe('BackgroundMediaVideo', () => {
           </ThemeProvider>
         </MockedProvider>
       )
+      const closeButton = getAllByRole('button')[0]
+      expect(closeButton).toContainElement(getByTestId('CloseIcon'))
+      fireEvent.click(closeButton)
       const textbox = await getAllByRole('textbox', { name: 'Ends At' })[0]
       fireEvent.change(textbox, { target: { value: '00:00:31' } })
       fireEvent.blur(textbox)

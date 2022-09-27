@@ -51,7 +51,7 @@ export function VideoDetails({
 
   function handleSelect(block: VideoBlockUpdateInput): void {
     onSelect(block)
-    onClose(false)
+    onClose()
   }
 
   return (
@@ -85,7 +85,7 @@ export function VideoDetails({
               Video Details
             </Typography>
             <IconButton
-              onClick={() => onClose(false)}
+              onClick={() => onClose()}
               sx={{ display: 'inline-flex' }}
               edge="end"
               aria-label="Close"

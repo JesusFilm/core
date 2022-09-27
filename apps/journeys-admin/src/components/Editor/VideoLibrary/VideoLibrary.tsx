@@ -138,8 +138,8 @@ export function VideoLibrary({
         </TabPanel>
       </Drawer>
       {selectedBlock?.videoId != null &&
-        openVideoDetails &&
-        setOpenVideoDetails && (
+        openVideoDetails != null &&
+        setOpenVideoDetails != null && (
           <VideoDetails
             id={selectedBlock?.videoId}
             open={openVideoDetails}
