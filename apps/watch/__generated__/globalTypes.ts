@@ -133,6 +133,11 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
+export enum VideoBlockSource {
+  internal = "internal",
+  youTube = "youTube",
+}
+
 export enum VideoType {
   episode = "episode",
   playlist = "playlist",
@@ -160,6 +165,12 @@ export interface SignUpSubmissionEventCreateInput {
 export interface StepViewEventCreateInput {
   blockId: string;
   id?: string | null;
+}
+
+export interface TextResponseSubmissionEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  value: string;
 }
 
 export interface VideoCollapseEventCreateInput {

@@ -1,5 +1,11 @@
 import { render } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import {
+  ActiveFab,
+  ActiveTab,
+  EditorState,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { GetJourney_journey_blocks_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/GetJourney'
 import {
   ButtonVariant,
@@ -9,24 +15,50 @@ import {
   IconColor,
   IconSize
 } from '../../../../../../../__generated__/globalTypes'
+import { Action } from '../../Action'
 import { Button } from '.'
 
+jest.mock('@core/journeys/ui/EditorProvider', () => {
+  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
+  return {
+    __esModule: true,
+    ...originalModule,
+    useEditor: jest.fn()
+  }
+})
+
+const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
+
 describe('Button attributes', () => {
+  const block: TreeBlock<ButtonBlock> = {
+    id: 'button.id',
+    __typename: 'ButtonBlock',
+    parentBlockId: 'step1.id',
+    parentOrder: 0,
+    label: 'Button',
+    buttonVariant: null,
+    buttonColor: null,
+    size: null,
+    startIconId: null,
+    endIconId: null,
+    action: null,
+    children: []
+  }
+  const state: EditorState = {
+    steps: [],
+    drawerMobileOpen: false,
+    activeTab: ActiveTab.Cards,
+    activeFab: ActiveFab.Add
+  }
+
+  beforeEach(() => {
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch: jest.fn()
+    })
+  })
+
   it('shows default button', () => {
-    const block: TreeBlock<ButtonBlock> = {
-      id: 'button.id',
-      __typename: 'ButtonBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      label: 'Button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      action: null,
-      children: []
-    }
     const { getByRole } = render(<Button {...block} />)
     expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
     expect(getByRole('button', { name: 'Color Primary' })).toBeInTheDocument()
@@ -45,12 +77,8 @@ describe('Button attributes', () => {
   })
 
   it('shows filled button', () => {
-    const block: TreeBlock<ButtonBlock> = {
-      id: 'button.id',
-      __typename: 'ButtonBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      label: 'Button',
+    const filledBlock: TreeBlock<ButtonBlock> = {
+      ...block,
       buttonVariant: ButtonVariant.text,
       buttonColor: ButtonColor.secondary,
       size: ButtonSize.large,
@@ -85,7 +113,7 @@ describe('Button attributes', () => {
         }
       ]
     }
-    const { getByRole } = render(<Button {...block} />)
+    const { getByRole } = render(<Button {...filledBlock} />)
     expect(
       getByRole('button', { name: 'Action Selected Card' })
     ).toBeInTheDocument()
@@ -100,5 +128,23 @@ describe('Button attributes', () => {
     expect(
       getByRole('button', { name: 'Trailing Icon Chevron Right' })
     ).toBeInTheDocument()
+  })
+
+  it('should open property drawer for action', () => {
+    const dispatch = jest.fn()
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch
+    })
+    render(<Button {...block} />)
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetSelectedAttributeIdAction',
+      id: 'button.id-button-action'
+    })
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetDrawerPropsAction',
+      title: 'Action',
+      children: <Action />
+    })
   })
 })

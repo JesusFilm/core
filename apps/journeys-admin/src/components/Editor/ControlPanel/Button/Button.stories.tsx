@@ -20,6 +20,17 @@ export const Default: Story = () => {
   )
 }
 
+export const Empty: Story = () => {
+  return (
+    <Button
+      icon={<PaletteIcon />}
+      name="Style"
+      value=""
+      description="Card Styling"
+    />
+  )
+}
+
 export const Selected: Story = () => {
   return (
     <Button

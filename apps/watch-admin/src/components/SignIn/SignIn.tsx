@@ -1,5 +1,4 @@
 import { ReactElement, useEffect, useState } from 'react'
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
 import { getApp } from 'firebase/app'
 import {
   getAuth,
@@ -10,6 +9,7 @@ import {
 import Image from 'next/image'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { StyledFirebaseAuth } from '@core/shared/ui/StyledFirebaseAuth'
 import logo from '../../../public/logo.svg'
 
 export function SignIn(): ReactElement {
