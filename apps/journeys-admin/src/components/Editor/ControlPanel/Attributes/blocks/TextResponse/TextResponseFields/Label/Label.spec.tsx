@@ -64,7 +64,7 @@ describe('Edit Label field', () => {
     const { getByRole } = render(<LabelMock />)
     const field = getByRole('textbox', { name: 'Label' })
 
-    expect(field).toHaveValue('Your answer here')
+    expect(field).toHaveValue('Your answer')
   })
 
   it('should display max label length', () => {
