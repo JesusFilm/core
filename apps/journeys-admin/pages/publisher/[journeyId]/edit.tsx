@@ -42,9 +42,7 @@ function TemplateEditPage(): ReactElement {
             title={
               data?.publisherTemplate?.title != null
                 ? t('Edit {{title}}', {
-                    title:
-                      data.publisherTemplate.seoTitle ??
-                      data.publisherTemplate.title
+                    title: data.publisherTemplate.title
                   })
                 : t('Edit Template')
             }
