@@ -41,11 +41,7 @@ export const UPDATE_VIDEO_BLOCK_NEXT_STEP = gql`
   }
 `
 
-interface VideoOptionsProps {
-  open?: boolean
-}
-
-export function VideoOptions({ open }: VideoOptionsProps): ReactElement {
+export function VideoOptions(): ReactElement {
   const {
     state: { selectedStep, selectedBlock }
   } = useEditor()
@@ -111,7 +107,6 @@ export function VideoOptions({ open }: VideoOptionsProps): ReactElement {
 
   return selectedBlock != null && selectedBlock.__typename === 'VideoBlock' ? (
     <VideoBlockEditor
-      open={open}
       selectedBlock={selectedBlock}
       onChange={handleChange}
       showDelete={false}

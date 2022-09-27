@@ -26,9 +26,6 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
   )
 
   useEffect(() => {
-    let open
-    videoId == null ? (open = true) : (open = false)
-
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       id: `${id}-video-options`
@@ -36,7 +33,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
     dispatch({
       type: 'SetDrawerPropsAction',
       title: 'Video',
-      children: <VideoOptions open={open} />
+      children: <VideoOptions />
     })
   }, [id, videoId, dispatch])
 

@@ -1,18 +1,12 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../__generated__/globalTypes'
-import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
-} from '../../../../../../__generated__/GetJourney'
 import { VideoDetails } from '../../VideoDetails'
 
 export interface VideoListItemProps {
@@ -34,23 +28,7 @@ export function VideoListItem({
   duration: time = 0,
   onSelect: handleSelect
 }: VideoListItemProps): ReactElement {
-  const {
-    state: { selectedStep }
-  } = useEditor()
   const [open, setOpen] = useState(false)
-
-  const card = selectedStep?.children.find(
-    (block) => block.__typename === 'CardBlock'
-  ) as TreeBlock<CardBlock> | undefined
-  const video = card?.children.find(
-    (block) => block.__typename === 'VideoBlock'
-  ) as TreeBlock<VideoBlock> | undefined
-
-  useEffect(() => {
-    if (video?.videoId === id) {
-      setOpen(true)
-    }
-  }, [video, id])
 
   const handleOpen = (): void => {
     setOpen(true)

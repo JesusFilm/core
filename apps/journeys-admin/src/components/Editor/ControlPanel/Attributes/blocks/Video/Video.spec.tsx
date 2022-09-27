@@ -97,7 +97,7 @@ describe('Video', () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetDrawerPropsAction',
       title: 'Video',
-      children: <VideoOptions open={false} />
+      children: <VideoOptions />
     })
   })
 })

@@ -10,7 +10,6 @@ import { Source } from './Source'
 import { VideoBlockEditorSettings } from './Settings'
 
 interface VideoBlockEditorProps {
-  open?: boolean
   selectedBlock: TreeBlock<VideoBlock> | null
   onChange: (input: VideoBlockUpdateInput) => Promise<void>
   showDelete?: boolean
@@ -18,7 +17,6 @@ interface VideoBlockEditorProps {
 }
 
 export function VideoBlockEditor({
-  open,
   selectedBlock,
   onChange
 }: VideoBlockEditorProps): ReactElement {
@@ -29,7 +27,7 @@ export function VideoBlockEditor({
   return (
     <>
       <Box sx={{ px: 6, py: 4 }}>
-        <Source open={open} selectedBlock={selectedBlock} onChange={onChange} />
+        <Source selectedBlock={selectedBlock} onChange={onChange} />
       </Box>
       <Box>
         <VideoBlockEditorSettings

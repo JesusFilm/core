@@ -6,7 +6,6 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Check from '@mui/icons-material/Check'
 import Skeleton from '@mui/material/Skeleton'
-import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded'
 import 'video.js/dist/video-js.css'
 import useSWR from 'swr'
 import fetch from 'node-fetch'
@@ -31,12 +30,8 @@ const fetcher = async (
 export function YouTubeDetails({
   open,
   id,
-  onSelect,
-  onClose
-}: Pick<
-  VideoDetailsProps,
-  'open' | 'id' | 'onSelect' | 'onClose'
->): ReactElement {
+  onSelect
+}: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [playing, setPlaying] = useState(false)
@@ -96,13 +91,6 @@ export function YouTubeDetails({
         </>
       ) : (
         <>
-          <Button
-            startIcon={<SubscriptionsRoundedIcon />}
-            size="small"
-            onClick={onClose}
-          >
-            Change Video
-          </Button>
           <Box
             sx={{
               borderRadius: 3,

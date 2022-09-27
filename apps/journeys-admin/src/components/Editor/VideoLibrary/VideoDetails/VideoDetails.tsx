@@ -8,6 +8,8 @@ import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
 import Close from '@mui/icons-material/Close'
+import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded'
+import Button from '@mui/material/Button'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
@@ -20,7 +22,7 @@ export const DRAWER_WIDTH = 328
 export interface VideoDetailsProps {
   open: boolean
   id: string
-  onClose: () => void
+  onClose: (closeParent?: boolean) => void
   onSelect: (block: VideoBlockUpdateInput) => void
   source: VideoBlockSource
 }
@@ -35,7 +37,7 @@ export function VideoDetails({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   let Details: (
-    props: Pick<VideoDetailsProps, 'id' | 'open' | 'onSelect' | 'onClose'>
+    props: Pick<VideoDetailsProps, 'id' | 'open' | 'onSelect'>
   ) => ReactElement
 
   switch (source) {
@@ -49,7 +51,7 @@ export function VideoDetails({
 
   function handleSelect(block: VideoBlockUpdateInput): void {
     onSelect(block)
-    onClose()
+    onClose(false)
   }
 
   return (
@@ -83,7 +85,7 @@ export function VideoDetails({
               Video Details
             </Typography>
             <IconButton
-              onClick={onClose}
+              onClick={() => onClose(false)}
               sx={{ display: 'inline-flex' }}
               edge="end"
               aria-label="Close"
@@ -93,12 +95,15 @@ export function VideoDetails({
           </Toolbar>
         </AppBar>
         <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
-          <Details
-            id={id}
-            open={open}
-            onSelect={handleSelect}
-            onClose={onClose}
-          />
+          <Button
+            startIcon={<SubscriptionsRoundedIcon />}
+            size="small"
+            onClick={() => onClose(false)}
+            sx={{ px: 6, pt: 6, pb: 0 }}
+          >
+            Change Video
+          </Button>
+          <Details id={id} open={open} onSelect={handleSelect} />
         </Box>
       </Drawer>
     </>

@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -14,17 +14,20 @@ import { SourceEmpty } from './SourceEmpty'
 import { SourceFromLocal } from './SourceFromLocal'
 
 interface SourceProps {
-  open?: boolean
   selectedBlock: TreeBlock<VideoBlock> | null
   onChange: (block: VideoBlockUpdateInput) => Promise<void>
 }
 
-export function Source({
-  open: openLibrary,
-  selectedBlock,
-  onChange
-}: SourceProps): ReactElement {
-  const [open, setOpen] = useState(openLibrary ?? false)
+export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
+  const [open, setOpen] = useState(false)
+  const [openVideoDetails, setOpenVideoDetails] = useState(false)
+
+  useEffect(() => {
+    // opens the video library if videoId is null
+    if (selectedBlock?.videoId == null) {
+      setOpen(true)
+    }
+  }, [selectedBlock])
 
   let SourceContent
 
@@ -47,7 +50,15 @@ export function Source({
   return (
     <>
       <Card variant="outlined" sx={{ borderRadius: 2 }}>
-        <CardActionArea onClick={() => setOpen(true)}>
+        <CardActionArea
+          onClick={() => {
+            setOpen(true)
+            // opens video details if videoId is not null
+            if (selectedBlock?.videoId != null) {
+              setOpenVideoDetails(true)
+            }
+          }}
+        >
           <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
             <SourceContent selectedBlock={selectedBlock} />
           </Stack>
@@ -56,6 +67,11 @@ export function Source({
       <VideoLibrary
         open={open}
         onClose={() => setOpen(false)}
+        openVideoDetails={openVideoDetails}
+        setOpenVideoDetails={(closeParent: boolean) =>
+          setOpenVideoDetails(closeParent)
+        }
+        selectedBlock={selectedBlock}
         onSelect={onChange}
       />
     </>
