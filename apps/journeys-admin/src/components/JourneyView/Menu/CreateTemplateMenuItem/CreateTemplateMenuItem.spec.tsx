@@ -91,7 +91,7 @@ describe('CreateTemplateMenuItem', () => {
     fireEvent.click(getByRole('menuitem', { name: 'Create Template' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith('/templates/templateId', undefined, {
+      expect(push).toHaveBeenCalledWith('/publisher/templateId', undefined, {
         shallow: true
       })
     })

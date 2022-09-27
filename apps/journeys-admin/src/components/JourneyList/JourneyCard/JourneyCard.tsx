@@ -1,7 +1,7 @@
 import { ReactElement, useRef, useEffect } from 'react'
 import { parseISO, isThisYear, intlFormat } from 'date-fns'
 import Card from '@mui/material/Card'
-import Grid from '@mui/material/Grid'
+import Stack from '@mui/material/Stack'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
@@ -115,41 +115,26 @@ export function JourneyCard({
         <CardActions
           sx={{
             px: 6,
-            pt: 0,
             pb: 4
           }}
         >
-          <Grid
-            container
-            spacing={2}
-            display="flex"
-            alignItems="center"
-            sx={{ mt: 0 }}
-          >
-            <Grid item sx={{ py: 2 }}>
-              <AccessAvatars
-                journeyId={journey?.id}
-                userJourneys={journey?.userJourneys ?? undefined}
-              />
-            </Grid>
+          <Stack direction="row" alignItems="center" spacing={4} flexGrow={1}>
+            <AccessAvatars
+              journeyId={journey?.id}
+              userJourneys={journey?.userJourneys ?? undefined}
+            />
             {journey != null ? (
               <StatusChip status={journey.status} />
             ) : (
-              <>
-                <Grid item sx={{ py: 2 }}>
-                  <EditIcon sx={{ fontSize: 13 }} />
-                </Grid>
-                <Grid item sx={{ pr: 2, py: 2 }}>
-                  <Typography variant="caption">
-                    <Skeleton variant="text" width={30} />
-                  </Typography>
-                </Grid>
-              </>
+              <Stack direction="row" alignItems="center" spacing={1.5}>
+                <EditIcon sx={{ fontSize: 13 }} />
+                <Typography variant="caption">
+                  <Skeleton variant="text" width={30} />
+                </Typography>
+              </Stack>
             )}
-            <Grid item sx={{ py: 2 }}>
+            <Stack direction="row" alignItems="center" spacing={1.5}>
               <TranslateIcon sx={{ fontSize: 13 }} />
-            </Grid>
-            <Grid item sx={{ py: 2 }}>
               <Typography variant="caption">
                 {journey != null ? (
                   journey.language.name.find(({ primary }) => primary)?.value
@@ -157,8 +142,8 @@ export function JourneyCard({
                   <Skeleton variant="text" width={40} />
                 )}
               </Typography>
-            </Grid>
-          </Grid>
+            </Stack>
+          </Stack>
           {journey != null ? (
             <JourneyCardMenu
               id={journey.id}

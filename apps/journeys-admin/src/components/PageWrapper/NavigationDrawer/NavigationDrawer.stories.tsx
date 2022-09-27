@@ -4,7 +4,10 @@ import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthUser } from 'next-firebase-auth'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { NextRouter } from 'next/router'
 import { journeysAdminConfig } from '../../../libs/storybook'
+import { Role } from '../../../../__generated__/globalTypes'
+import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { GET_ME } from './NavigationDrawer'
 import { NavigationDrawer } from '.'
 
@@ -35,10 +38,25 @@ const Template: Story = ({ ...args }) => {
               }
             }
           }
+        },
+        {
+          request: {
+            query: GET_USER_ROLE
+          },
+          result: {
+            data: {
+              getUserRole: {
+                id: 'userId',
+                roles: [Role.publisher]
+              }
+            }
+          }
         }
       ]}
     >
-      <FlagsProvider flags={{ reports: args.reports }}>
+      <FlagsProvider
+        flags={{ reports: args.reports, templates: args.templates }}
+      >
         <NavigationDrawer
           open={open}
           onClose={() => setOpen(!open)}
@@ -51,6 +69,7 @@ const Template: Story = ({ ...args }) => {
             } as unknown as AuthUser
           }
           title={args.title}
+          router={{ pathname: undefined } as unknown as NextRouter}
         />
       </FlagsProvider>
     </MockedProvider>
@@ -59,19 +78,15 @@ const Template: Story = ({ ...args }) => {
 
 export const Default = Template.bind({})
 Default.args = {
-  reports: true,
+  reports: false,
+  templates: false,
   title: 'Active Journeys'
 }
 
-export const Reports = Template.bind({})
-Reports.args = {
+export const Complete = Template.bind({})
+Complete.args = {
   reports: true,
-  title: 'Reports'
-}
-
-export const ReportsOff = Template.bind({})
-ReportsOff.args = {
-  reports: false,
+  templates: true,
   title: 'Journeys'
 }
 
