@@ -31,7 +31,11 @@ function TemplateEditPage(): ReactElement {
       <NextSeo
         title={
           data?.publisherTemplate?.title != null
-            ? t('Edit {{title}}', { title: data.publisherTemplate.template })
+            ? t('Edit {{title}}', {
+                title:
+                  data.publisherTemplate.seoTitle ??
+                  data.publisherTemplate.title
+              })
             : t('Edit Template')
         }
         description={data?.publisherTemplate?.description ?? undefined}
