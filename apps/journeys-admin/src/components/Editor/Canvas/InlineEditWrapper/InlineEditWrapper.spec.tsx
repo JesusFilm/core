@@ -5,6 +5,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import { SignUp } from '@core/journeys/ui/SignUp'
+import { TextResponse } from '@core/journeys/ui/TextResponse'
 import { Typography } from '@core/journeys/ui/Typography'
 import { SnackbarProvider } from 'notistack'
 import { ButtonFields } from '../../../../../__generated__/ButtonFields'
@@ -12,6 +13,7 @@ import { RadioOptionFields } from '../../../../../__generated__/RadioOptionField
 import { RadioQuestionFields } from '../../../../../__generated__/RadioQuestionFields'
 import { SignUpFields } from '../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../__generated__/StepFields'
+import { TextResponseFields } from '../../../../../__generated__/TextResponseFields'
 import { TypographyVariant } from '../../../../../__generated__/globalTypes'
 import { TypographyFields } from '../../../../../__generated__/TypographyFields'
 import { SelectableWrapper } from '../SelectableWrapper'
@@ -154,6 +156,50 @@ describe('InlineEditWrapper', () => {
             <SelectableWrapper block={block}>
               <InlineEditWrapper block={block}>
                 <SignUp {...block} />
+              </InlineEditWrapper>
+            </SelectableWrapper>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByText('test label'))
+    fireEvent.click(getByText('test label'))
+    expect(getByTestId(`selected-${block.id}`)).toHaveStyle({
+      outline: '3px solid #C52D3A',
+      zIndex: '1'
+    })
+    const input = getByDisplayValue('test label')
+    await waitFor(() => expect(input).toBeInTheDocument())
+  })
+
+  it('should edit sign up button label on double click', async () => {
+    const block: TreeBlock<TextResponseFields> = {
+      __typename: 'TextResponseBlock',
+      id: 'textResponse.id',
+      parentBlockId: 'parent.id',
+      parentOrder: 0,
+      label: 'Your answer here',
+      hint: null,
+      minRows: null,
+      submitLabel: 'test label',
+      submitIconId: null,
+      action: null,
+      children: []
+    }
+
+    const { getByDisplayValue, getByText, getByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step(block)],
+              activeFab: ActiveFab.Add
+            }}
+          >
+            <SelectableWrapper block={block}>
+              <InlineEditWrapper block={block}>
+                <TextResponse {...block} />
               </InlineEditWrapper>
             </SelectableWrapper>
           </EditorProvider>
