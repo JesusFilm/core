@@ -72,7 +72,7 @@ describe('PageWrapper', () => {
         getByTestId('ChevronRightRoundedIcon')
       )
       fireEvent.click(getAllByRole('button')[0])
-      expect(getByText('Journeys')).toBeInTheDocument()
+      expect(getByText('Discover')).toBeInTheDocument()
     })
   })
 
@@ -93,7 +93,7 @@ describe('PageWrapper', () => {
       const button = getAllByRole('button')[0]
       expect(button).toContainElement(getByTestId('MenuIcon'))
       fireEvent.click(button)
-      expect(getByText('Journeys')).toBeInTheDocument()
+      expect(getByText('Discover')).toBeInTheDocument()
     })
 
     it('should not show the drawer on mobile view', () => {

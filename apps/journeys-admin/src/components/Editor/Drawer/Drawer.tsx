@@ -1,6 +1,7 @@
 import { ReactElement, ReactNode } from 'react'
 import AppBar from '@mui/material/AppBar'
 import MuiDrawer from '@mui/material/Drawer'
+import Paper from '@mui/material/Paper'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
@@ -68,25 +69,24 @@ export function Drawer(): ReactElement {
   }
 
   return smUp ? (
-    <MuiDrawer
-      anchor="right"
-      variant="permanent"
+    <Paper
+      elevation={0}
       sx={{
         display: { xs: 'none', sm: 'block' },
-        '& .MuiDrawer-paper': {
-          boxSizing: 'border-box',
-          width: DRAWER_WIDTH
-        }
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        height: '100%',
+        width: '328px',
+        borderLeft: 1,
+        borderColor: 'divider',
+        borderRadius: 0
       }}
-      ModalProps={{
-        keepMounted: true
-      }}
-      open
     >
       <DrawerContent title={title} handleDrawerToggle={handleDrawerToggle}>
         {children}
       </DrawerContent>
-    </MuiDrawer>
+    </Paper>
   ) : (
     <>
       <MuiDrawer
