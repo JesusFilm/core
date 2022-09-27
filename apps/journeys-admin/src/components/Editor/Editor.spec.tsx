@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -47,7 +48,7 @@ describe('Editor', () => {
         id: 'step1.id',
         __typename: 'StepBlock',
         parentBlockId: null,
-        parentOrder: 0,
+        parentOrder: 1,
         locked: false,
         nextBlockId: 'step1.id'
       }
@@ -62,11 +63,13 @@ describe('Editor', () => {
   it('should render the element', () => {
     const { getByText } = render(
       <MockedProvider>
-        <ThemeProvider>
-          <Editor journey={journey}>
-            <JourneyEdit />
-          </Editor>
-        </ThemeProvider>
+        <FlagsProvider flags={{ feedbackBlock: true }}>
+          <ThemeProvider>
+            <Editor journey={journey}>
+              <JourneyEdit />
+            </Editor>
+          </ThemeProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     expect(getByText('Cards')).toBeInTheDocument()
@@ -74,18 +77,19 @@ describe('Editor', () => {
     expect(getByText('Social Image')).toBeInTheDocument()
   })
 
-  it('should select step based on ID', () => {
-    const { getByTestId } = render(
+  it('should display Next Card property', () => {
+    const { getByText } = render(
       <MockedProvider>
-        <ThemeProvider>
-          <Editor journey={journey} selectedStepId="step1.id">
-            <JourneyEdit />
-          </Editor>
-        </ThemeProvider>
+        <FlagsProvider flags={{ feedbackBlock: true }}>
+          <ThemeProvider>
+            <Editor journey={journey} selectedStepId="step0.id">
+              <JourneyEdit />
+            </Editor>
+          </ThemeProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByTestId('preview-step1.id').parentElement).toHaveStyle(
-      'outline: 2px solid #C52D3A'
-    )
+    expect(getByText('Next Card')).toBeInTheDocument()
+    expect(getByText('Unlocked Card')).toBeInTheDocument()
   })
 })
