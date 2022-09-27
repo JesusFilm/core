@@ -6,39 +6,28 @@ import MuiTextField, {
 } from '@mui/material/TextField'
 
 export interface TextFieldProps
-  extends Pick<
-    MuiTextFieldProps,
-    | 'id'
-    | 'name'
-    | 'label'
-    | 'focused'
-    | 'disabled'
-    | 'value'
-    | 'onBlur'
-    | 'onChange'
-  > {}
+  extends Omit<MuiTextFieldProps, 'variant' | 'error' | 'fullWidth'> {}
 
+// Use as subcomponent of form blocks (eg SignUp, TextResponse)
 export function TextField({
   name = '',
+  helperText,
   ...muiFieldProps
 }: TextFieldProps): ReactElement {
   const [formikFieldProps, meta] = useField(name)
 
-  const Field = MuiTextField
   const hasError = meta.error !== undefined && meta.touched
 
   return (
-    <Field
+    <MuiTextField
       {...muiFieldProps}
       {...formikFieldProps}
-      sx={{
-        marginBottom: '16px'
-      }}
       fullWidth
       name={name}
+      // TODO: Switch to filled & clarify styling in cooldown
       variant="outlined"
       error={hasError}
-      helperText={hasError ? meta.error : ' '}
+      helperText={hasError ? meta.error : helperText ?? ' '}
     />
   )
 }

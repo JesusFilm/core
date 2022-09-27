@@ -8,6 +8,7 @@ import { ButtonFields } from '../../../../../__generated__/ButtonFields'
 import { RadioQuestionFields } from '../../../../../__generated__/RadioQuestionFields'
 import { RadioOptionFields } from '../../../../../__generated__/RadioOptionFields'
 import { SignUpFields } from '../../../../../__generated__/SignUpFields'
+import { TextResponseFields } from '../../../../../__generated__/TextResponseFields'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { BLOCK_DELETE } from '../../EditToolbar/DeleteBlock/DeleteBlock'
@@ -16,14 +17,16 @@ import { ButtonEdit } from './ButtonEdit'
 import { RadioOptionEdit } from './RadioOptionEdit'
 import { RadioQuestionEdit } from './RadioQuestionEdit'
 import { SignUpEdit } from './SignUpEdit'
+import { TextResponseEdit } from './TextResponseEdit'
 
 interface InlineEditWrapperProps
   extends WrapperProps<
     | TypographyFields
     | ButtonFields
-    | SignUpFields
     | RadioQuestionFields
     | RadioOptionFields
+    | TextResponseFields
+    | SignUpFields
   > {}
 
 export function InlineEditWrapper({
@@ -70,12 +73,14 @@ export function InlineEditWrapper({
       <TypographyEdit {...block} deleteSelf={handleDeleteBlock} />
     ) : block.__typename === 'ButtonBlock' ? (
       <ButtonEdit {...block} />
-    ) : block.__typename === 'SignUpBlock' ? (
-      <SignUpEdit {...block} />
     ) : block.__typename === 'RadioOptionBlock' ? (
       <RadioOptionEdit {...block} />
     ) : block.__typename === 'RadioQuestionBlock' ? (
       <RadioQuestionEdit {...block} wrappers={children.props.wrappers} />
+    ) : block.__typename === 'TextResponseBlock' ? (
+      <TextResponseEdit {...block} />
+    ) : block.__typename === 'SignUpBlock' ? (
+      <SignUpEdit {...block} />
     ) : (
       children
     )

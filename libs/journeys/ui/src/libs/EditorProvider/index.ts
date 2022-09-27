@@ -5,6 +5,7 @@ export {
   ActiveFab
 } from './EditorProvider'
 export type {
+  EditorState,
   SetSelectedStepAction,
   SetSelectedBlockByIdAction
 } from './EditorProvider'

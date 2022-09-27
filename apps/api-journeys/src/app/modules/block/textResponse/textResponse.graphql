@@ -1,0 +1,38 @@
+type TextResponseBlock implements Block {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String!
+  hint: String
+  minRows: Int
+  action: Action
+  submitIconId: ID
+  submitLabel: String
+}
+
+input TextResponseBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+  submitLabel: String!
+}
+input TextResponseBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+  hint: String
+  minRows: Int
+  submitIconId: ID
+  submitLabel: String
+}
+extend type Mutation {
+  textResponseBlockCreate(
+    input: TextResponseBlockCreateInput!
+  ): TextResponseBlock!
+  textResponseBlockUpdate(
+    id: ID!
+    journeyId: ID!
+    input: TextResponseBlockUpdateInput!
+  ): TextResponseBlock
+}
