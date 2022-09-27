@@ -130,4 +130,45 @@ describe('Source', () => {
       })
     ).toBeInTheDocument()
   })
+
+  it('shows video details on source button click', () => {
+    const onChange = jest.fn()
+    const { getByRole, getByText } = render(
+      <MockedProvider>
+        <Source
+          selectedBlock={{
+            id: 'video1.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card1.id',
+            description:
+              'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+            duration: 348,
+            endAt: 348,
+            fullsize: true,
+            image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+            muted: false,
+            autoplay: true,
+            startAt: 0,
+            title: 'What is the Bible?',
+            videoId: 'ak06MSETeo4',
+            videoVariantLanguageId: null,
+            parentOrder: 0,
+            action: null,
+            source: VideoBlockSource.youTube,
+            video: null,
+            posterBlockId: 'poster1.id',
+            children: []
+          }}
+          onChange={onChange}
+        />
+      </MockedProvider>
+    )
+    fireEvent.click(
+      getByRole('button', {
+        name: 'What is the Bible? What is the Bible? YouTube'
+      })
+    )
+    expect(getByText('Video Details')).toBeInTheDocument()
+    expect(getByText('What is the Bible?')).toBeInTheDocument()
+  })
 })

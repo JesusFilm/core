@@ -154,4 +154,22 @@ describe('VideoDetails', () => {
     })
     expect(onClose).toHaveBeenCalledWith()
   })
+
+  it('should call onClose on changeVideo click', () => {
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider mocks={mocks}>
+        <VideoDetails
+          id="2_Acts7302-0-0"
+          source={VideoBlockSource.internal}
+          open
+          onClose={onClose}
+          onSelect={onSelect}
+        />
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Change Video' }))
+    expect(onClose).toHaveBeenCalled()
+  })
 })
