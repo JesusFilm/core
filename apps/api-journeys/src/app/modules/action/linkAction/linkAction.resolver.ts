@@ -41,7 +41,8 @@ export class LinkActionResolver {
           'RadioOptionBlock',
           'ButtonBlock',
           'VideoBlock',
-          'VideoTriggerBlock'
+          'VideoTriggerBlock',
+          'TextResponseBlock'
         ],
         block.__typename
       )

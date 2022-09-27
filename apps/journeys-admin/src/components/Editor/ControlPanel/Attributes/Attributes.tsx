@@ -14,7 +14,8 @@ import {
   SignUp,
   RadioOption,
   Video,
-  Image
+  Image,
+  TextResponse
 } from './blocks'
 import { MoveBlockButtons } from './MoveBlockButtons'
 
@@ -79,6 +80,9 @@ function AttributesContent({ selected, step }: AttributesProps): ReactElement {
       return withMoveButtons(<SignUp {...selected} />)
     }
 
+    case 'TextResponseBlock': {
+      return withMoveButtons(<TextResponse {...selected} />)
+    }
     default:
       return <></>
   }
