@@ -99,7 +99,7 @@ export function VideoDetails({
             startIcon={<SubscriptionsRoundedIcon />}
             size="small"
             onClick={() => onClose(false)}
-            sx={{ px: 6, pt: 6, pb: 0 }}
+            sx={{ mx: 6, mt: 6, px: 3 }}
           >
             Change Video
           </Button>

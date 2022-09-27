@@ -40,7 +40,6 @@ export function VideoLibrary({
 }: VideoLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [activeTab, setActiveTab] = useState(0)
-  // const [openVideoDetails, setOpenVideoDetails] = useState(false)
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
@@ -49,18 +48,10 @@ export function VideoLibrary({
     setActiveTab(newValue)
   }
 
-  // useEffect(() => {
-  //   if (selectedBlock?.videoId != null) {
-  //     setOpenVideoDetails(true)
-  //   }
-  // }, [])
-
   const onSelect = (block: VideoBlockUpdateInput): void => {
     if (handleSelect != null) handleSelect(block)
     if (onClose != null) onClose()
   }
-
-  console.log(openVideoDetails)
 
   return (
     <>
