@@ -65,7 +65,7 @@ export function Label(): ReactElement {
     <Box sx={{ px: 6, py: 4 }}>
       {selectedBlock != null ? (
         <Formik initialValues={initialValues} onSubmit={noop}>
-          {({ values, errors, handleChange, handleBlur }) => (
+          {({ values, errors, handleChange, handleBlur, setValues }) => (
             <Form>
               <TextField
                 id="textResponseLabel"
@@ -73,11 +73,8 @@ export function Label(): ReactElement {
                 variant="filled"
                 label="Label"
                 fullWidth
-                value={
-                  values.textResponseLabel !== ''
-                    ? values.textResponseLabel
-                    : t('Your answer here')
-                }
+                value={values.textResponseLabel}
+                placeholder={t('Your answer here')}
                 inputProps={{ maxLength: maxCharacters }}
                 helperText={t('Can only be {{maxCharacters}} characters', {
                   maxCharacters
@@ -85,6 +82,10 @@ export function Label(): ReactElement {
                 onChange={handleChange}
                 onBlur={(e) => {
                   handleBlur(e)
+                  if (values.textResponseLabel === '') {
+                    e.target.value = t('Your answer here')
+                    setValues({ textResponseLabel: t('Your answer here') })
+                  }
                   errors.textResponseLabel == null && handleSubmit(e)
                 }}
               />

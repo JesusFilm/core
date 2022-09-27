@@ -16,7 +16,7 @@ const block: TreeBlock<TextResponseBlock> = {
   id: 'textResponse0.id',
   parentBlockId: '0',
   parentOrder: 0,
-  label: 'Your answer here',
+  label: 'Your answer',
   hint: null,
   minRows: null,
   submitIconId: null,
@@ -113,6 +113,43 @@ describe('Edit Label field', () => {
     const field = getByRole('textbox', { name: 'Label' })
 
     fireEvent.change(field, { target: { value: 'Updated label' } })
+    fireEvent.blur(field)
+
+    await waitFor(() => {
+      expect(result).toBeCalled()
+    })
+  })
+
+  it('should set the default label on blur if none set', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: block.id,
+          journeyId: pageData.journey.id,
+          label: 'Your answer here'
+        }
+      }
+    }))
+
+    const updateSuccess = {
+      request: {
+        query: TEXT_RESPONSE_LABEL_UPDATE,
+        variables: {
+          id: block.id,
+          journeyId: pageData.journey.id,
+          input: {
+            label: 'Your answer here'
+          }
+        }
+      },
+      result
+    }
+
+    const { getByRole } = render(<LabelMock mocks={[updateSuccess]} />)
+
+    const field = getByRole('textbox', { name: 'Label' })
+
+    fireEvent.change(field, { target: { value: '' } })
     fireEvent.blur(field)
 
     await waitFor(() => {
