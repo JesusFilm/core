@@ -45,7 +45,7 @@ describe('ToggleButtonGroup', () => {
     expect(handleChange).toHaveBeenCalled()
   })
 
-  it('renders custom label', () => {
+  it('renders custom options', () => {
     const options = [
       {
         value: 'abc',
@@ -57,6 +57,7 @@ describe('ToggleButtonGroup', () => {
     )
     expect(getByTestId('abc-content')).toBeInTheDocument()
   })
+
   it('renders icon', () => {
     const options = [
       {

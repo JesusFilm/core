@@ -43,7 +43,8 @@ export class NavigateToBlockActionResolver {
           'RadioOptionBlock',
           'ButtonBlock',
           'VideoBlock',
-          'VideoTriggerBlock'
+          'VideoTriggerBlock',
+          'TextResponseBlock'
         ],
         block.__typename
       )

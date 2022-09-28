@@ -11,6 +11,7 @@ import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownR
 import Stack from '@mui/material/Stack'
 import { gql, useMutation } from '@apollo/client'
 import {
+  GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock,
   GetJourney_journey_blocks_ButtonBlock as ButtonBlock,
   GetJourney_journey_blocks_SignUpBlock as SignUpBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
@@ -74,6 +75,7 @@ export function Action(): ReactElement {
     | TreeBlock<SignUpBlock>
     | TreeBlock<ButtonBlock>
     | TreeBlock<VideoBlock>
+    | TreeBlock<TextResponseBlock>
     | undefined
 
   const [navigateActionUpdate] = useMutation<NavigateActionUpdate>(

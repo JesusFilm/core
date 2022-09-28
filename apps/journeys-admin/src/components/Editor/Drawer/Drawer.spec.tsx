@@ -31,9 +31,6 @@ describe('Drawer', () => {
       )
       expect(getByTestId('test')).toHaveTextContent('hello world')
       expect(getByTestId('test')).toBeVisible()
-      expect(getByTestId('test').parentElement).toHaveClass(
-        'MuiDrawer-paperAnchorRight'
-      )
     })
   })
 

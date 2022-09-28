@@ -2,6 +2,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { render, fireEvent, waitFor } from '@testing-library/react'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -69,28 +70,28 @@ describe('ControlPanel', () => {
     ]
   }
 
-  it('should render tabs and tab panels', () => {
+  it('should render tabs and tab panels', async () => {
     const { getByTestId, getByText, getByRole } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <EditorProvider initialState={{ steps: [step1, step2] }}>
-            <ControlPanel />
-          </EditorProvider>
-        </JourneyProvider>
+        <FlagsProvider flags={{ feedbackBlock: true }}>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base
+              } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider initialState={{ steps: [step1, step2] }}>
+              <ControlPanel />
+            </EditorProvider>
+          </JourneyProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
-    // Default start on Cards
-    expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
-    fireEvent.click(getByRole('tab', { name: 'Properties' }))
+    // Default start on Properties
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Cards' }))
@@ -105,20 +106,22 @@ describe('ControlPanel', () => {
   it('should hide add button when clicking blocks tab', async () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <EditorProvider initialState={{ steps: [step1, step2] }}>
-            <ControlPanel />
-          </EditorProvider>
-        </JourneyProvider>
+        <FlagsProvider flags={{ feedbackBlock: true }}>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base
+              } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider initialState={{ steps: [step1, step2] }}>
+              <ControlPanel />
+            </EditorProvider>
+          </JourneyProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('tab', { name: 'Blocks' }))
@@ -130,20 +133,22 @@ describe('ControlPanel', () => {
   it('should hide add button when clicking add button', async () => {
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <EditorProvider initialState={{ steps: [step1, step2] }}>
-            <ControlPanel />
-          </EditorProvider>
-        </JourneyProvider>
+        <FlagsProvider flags={{ feedbackBlock: true }}>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base
+              } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider initialState={{ steps: [step1, step2] }}>
+              <ControlPanel />
+            </EditorProvider>
+          </JourneyProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Add' }))
@@ -187,20 +192,22 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
-            <ControlPanel />
-          </EditorProvider>
-        </JourneyProvider>
+        <FlagsProvider flags={{ feedbackBlock: true }}>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base
+              } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
+              <ControlPanel />
+            </EditorProvider>
+          </JourneyProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('preview-step3.id'))
@@ -277,20 +284,22 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
-            <ControlPanel />
-          </EditorProvider>
-        </JourneyProvider>
+        <FlagsProvider flags={{ feedbackBlock: true }}>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base
+              } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
+              <ControlPanel />
+            </EditorProvider>
+          </JourneyProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('preview-step3.id'))
@@ -430,20 +439,22 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
-            <ControlPanel />
-          </EditorProvider>
-        </JourneyProvider>
+        <FlagsProvider flags={{ feedbackBlock: true }}>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base
+              } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
+              <ControlPanel />
+            </EditorProvider>
+          </JourneyProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('preview-step3.id'))
@@ -493,20 +504,22 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
-            <ControlPanel />
-          </EditorProvider>
-        </JourneyProvider>
+        <FlagsProvider flags={{ feedbackBlock: true }}>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base
+              } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
+              <ControlPanel />
+            </EditorProvider>
+          </JourneyProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('preview-step3.id'))
@@ -559,20 +572,22 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
-            <ControlPanel />
-          </EditorProvider>
-        </JourneyProvider>
+        <FlagsProvider flags={{ feedbackBlock: true }}>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base
+              } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
+              <ControlPanel />
+            </EditorProvider>
+          </JourneyProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('preview-step3.id'))
@@ -667,20 +682,22 @@ describe('ControlPanel', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base
-            } as unknown as Journey,
-            admin: true
-          }}
-        >
-          <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
-            <ControlPanel />
-          </EditorProvider>
-        </JourneyProvider>
+        <FlagsProvider flags={{ feedbackBlock: true }}>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base
+              } as unknown as Journey,
+              admin: true
+            }}
+          >
+            <EditorProvider initialState={{ steps: [step1, step2, step3] }}>
+              <ControlPanel />
+            </EditorProvider>
+          </JourneyProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('preview-step3.id'))
