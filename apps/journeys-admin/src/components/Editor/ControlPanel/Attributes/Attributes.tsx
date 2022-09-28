@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import MuiTypography from '@mui/material/Typography'
 import { ReactElement, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
 import {
   Card,
@@ -94,10 +95,12 @@ interface AttributesProps {
 }
 
 export function Attributes({ selected, step }: AttributesProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { activeTab },
     dispatch
   } = useEditor()
+
   useEffect(() => {
     if (activeTab === ActiveTab.Cards) {
       dispatch({
@@ -107,6 +110,21 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
       })
     }
   }, [activeTab, dispatch])
+
+  // Map typename to labels when we have translation keys
+  const blockLabel =
+    selected.__typename === 'StepBlock'
+      ? t('Card')
+      : selected.__typename === 'SignUpBlock'
+      ? t('Subscribe')
+      : selected.__typename === 'TextResponseBlock'
+      ? t('Feedback')
+      : selected.__typename === 'RadioQuestionBlock'
+      ? t('Poll')
+      : selected.__typename === 'RadioOptionBlock'
+      ? t('Poll Option')
+      : selected.__typename.replace('Block', '')
+
   return (
     <>
       <Stack
@@ -126,20 +144,9 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
           borderTop: (theme) => `1px solid ${theme.palette.divider}`
         }}
       >
-        <MuiTypography align="center">{`Editing ${
-          // Properly map typename to labels when doing translations
-          selected.__typename === 'StepBlock'
-            ? 'Card'
-            : selected.__typename === 'SignUpBlock'
-            ? 'Subscribe'
-            : selected.__typename === 'TextResponseBlock'
-            ? 'Feedback'
-            : selected.__typename === 'RadioQuestionBlock'
-            ? 'Poll'
-            : selected.__typename === 'RadioOptionBlock'
-            ? 'Poll Option'
-            : selected.__typename.replace('Block', '')
-        } Properties`}</MuiTypography>
+        <MuiTypography align="center">
+          {t('Editing {{block}} Properties', { block: blockLabel })}
+        </MuiTypography>
       </Box>
     </>
   )
