@@ -1,10 +1,8 @@
 resource "aws_iam_user" "jfp_doppler_integration" {
   name = "jfp-doppler-integration"
-  path = "/system/"
+  path = "/"
 
-  tags = {
-    tag-key = "tag-value"
-  }
+  tags = local.tags
 }
 
 resource "aws_iam_access_key" "jfp_doppler_integration" {
