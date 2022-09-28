@@ -5,24 +5,39 @@ import Box from '@mui/material/Box'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 import { useRouter } from 'next/router'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { CardPreview } from '../../CardPreview'
 
 export interface CardViewProps {
   id?: string
   blocks?: Array<TreeBlock<StepBlock>>
+  isPublisher?: boolean
 }
 
-export function CardView({ id, blocks }: CardViewProps): ReactElement {
+export function CardView({
+  id,
+  blocks,
+  isPublisher
+}: CardViewProps): ReactElement {
+  const { journey } = useJourney()
   const breakpoints = useBreakpoints()
   const router = useRouter()
 
   const handleSelect = (step: { id: string }): void => {
     if (id == null) return
 
-    void router.push(`/journeys/${id}/edit?stepId=${step.id}`, undefined, {
-      shallow: true
-    })
+    if (journey?.template !== true) {
+      void router.push(`/journeys/${id}/edit?stepId=${step.id}`, undefined, {
+        shallow: true
+      })
+    }
+
+    if (journey?.template === true && isPublisher === true) {
+      void router.push(`/publisher/${id}/edit?stepId=${step.id}`, undefined, {
+        shallow: true
+      })
+    }
   }
 
   const stepBlockLength =
@@ -38,7 +53,7 @@ export function CardView({ id, blocks }: CardViewProps): ReactElement {
       <CardPreview
         onSelect={handleSelect}
         steps={blocks}
-        showAddButton
+        showAddButton={journey?.template !== true || isPublisher}
         isDraggable={false}
       />
       <Box sx={{ pt: 2, display: 'flex', justifyContent: 'center' }}>

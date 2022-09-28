@@ -60,6 +60,15 @@ export function Menu(): ReactElement {
   }
 
   function CardMenu(): ReactElement {
+    let settingsLink
+    if (journey != null) {
+      if (journey.template === true) {
+        settingsLink = `/publisher/${journey.id}`
+      } else {
+        settingsLink = `/journeys/${journey.id}`
+      }
+    }
+
     return (
       <>
         <NextLink href={`/api/preview?slug=${journey?.slug ?? ''}`} passHref>
@@ -81,11 +90,15 @@ export function Menu(): ReactElement {
           />
         )}
         <Divider />
-        <NextLink
-          href={journey != null ? `/journeys/${journey.id}` : ''}
-          passHref
-        >
-          <MenuItem label="Journey Settings" icon={<SettingsIcon />} />
+        <NextLink href={settingsLink != null ? settingsLink : ''} passHref>
+          <MenuItem
+            label={
+              journey?.template === true
+                ? 'Publisher Settings'
+                : 'Journey Settings'
+            }
+            icon={<SettingsIcon />}
+          />
         </NextLink>
       </>
     )

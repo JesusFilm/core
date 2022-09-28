@@ -10,7 +10,7 @@ import { IconFields } from '../../../../../../../__generated__/IconFields'
 import { Attribute } from '../..'
 import { Action, actions } from '../../Action/Action'
 import { Icon, icons } from '../../Icon'
-import { TextField } from './TextField'
+import { TextResponseFields } from './TextResponseFields'
 
 export function TextResponse({
   id,
@@ -37,7 +37,7 @@ export function TextResponse({
             type: 'SetDrawerPropsAction',
             title: 'Feedback Properties',
             mobileOpen: true,
-            children: <TextField />
+            children: <TextResponseFields />
           })
         }
       />

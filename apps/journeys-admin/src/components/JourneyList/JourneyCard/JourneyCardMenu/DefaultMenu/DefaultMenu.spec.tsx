@@ -6,7 +6,7 @@ import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { DefaultMenu } from '.'
 
 describe('DefaultMenu', () => {
-  it('should render menu items', () => {
+  it('should render menu for journey', () => {
     const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -26,8 +26,37 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
+  })
+
+  it('should render menu for templates', () => {
+    const { queryByRole, getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <DefaultMenu
+            id="template-id"
+            slug="template-slug"
+            status={JourneyStatus.published}
+            journeyId="template-id"
+            published
+            setOpenAccessDialog={noop}
+            handleCloseMenu={noop}
+            template
+            setOpenTrashDialog={noop}
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
+    expect(queryByRole('menuitem', { name: 'Access' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Duplicate' })
+    ).not.toBeInTheDocument()
   })
 
   it('should call correct functions on Access click', () => {

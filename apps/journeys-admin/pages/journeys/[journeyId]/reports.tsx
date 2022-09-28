@@ -30,6 +30,7 @@ function JourneyReportsPage(): ReactElement {
         title={t('Journey Report')}
         authUser={AuthUser}
         backHref={`/journeys/${journeyId}`}
+        router={router}
       >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
           <MemoizedDynamicReport
