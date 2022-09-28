@@ -8,6 +8,8 @@ export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
   // TODO: Remove this check once allow="fullscreen" works with Safari 16+
   useEffect(() => {
     const makeIframeFullscreenOnSafari = (event: MessageEvent): void => {
+      // Use this page for basic local testing
+      // More accurate testing on stage should use embed script on a webpage.
       if (event.origin === 'http://localhost:4100') {
         const iframe = document.getElementById('jfm-iframe')
         if (iframe != null) {
