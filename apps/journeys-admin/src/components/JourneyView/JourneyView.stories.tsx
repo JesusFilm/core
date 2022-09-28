@@ -1,7 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { NextRouter } from 'next/router'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
@@ -23,31 +22,23 @@ const JourneyViewStory = {
 
 const Template: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
-    <FlagsProvider flags={{ reports: args.reports }}>
-      <JourneyProvider value={{ journey: args.journey }}>
-        <PageWrapper
-          title="Journey Details"
-          showDrawer
-          backHref="/"
-          menu={<Menu />}
-          router={{ pathname: undefined } as unknown as NextRouter}
-        >
-          <JourneyView journeyType="Journey" />
-        </PageWrapper>
-      </JourneyProvider>
-    </FlagsProvider>
+    <JourneyProvider value={{ journey: args.journey }}>
+      <PageWrapper
+        title="Journey Details"
+        showDrawer
+        backHref="/"
+        menu={<Menu />}
+        router={{ pathname: undefined } as unknown as NextRouter}
+      >
+        <JourneyView journeyType="Journey" />
+      </PageWrapper>
+    </JourneyProvider>
   </ApolloLoadingProvider>
 )
 
 export const Default = Template.bind({})
 Default.args = {
   journey: publishedJourney
-}
-
-export const Reports = Template.bind({})
-Reports.args = {
-  journey: publishedJourney,
-  reports: true
 }
 
 export const Loading = Template.bind({})
@@ -58,18 +49,16 @@ Loading.args = {
 const JourneyTemplate: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
     <MockedProvider mocks={args.mocks}>
-      <FlagsProvider flags={{ reports: args.reports }}>
-        <JourneyProvider value={{ journey: args.journey }}>
-          <PageWrapper
-            title="Journey Template"
-            showDrawer
-            backHref="/"
-            menu={<Menu />}
-          >
-            <JourneyView journeyType="Template" />
-          </PageWrapper>
-        </JourneyProvider>
-      </FlagsProvider>
+      <JourneyProvider value={{ journey: args.journey }}>
+        <PageWrapper
+          title="Journey Template"
+          showDrawer
+          backHref="/"
+          menu={<Menu />}
+        >
+          <JourneyView journeyType="Template" />
+        </PageWrapper>
+      </JourneyProvider>
     </MockedProvider>
   </ApolloLoadingProvider>
 )

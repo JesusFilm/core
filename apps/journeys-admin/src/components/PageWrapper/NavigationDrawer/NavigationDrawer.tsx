@@ -108,7 +108,7 @@ export function NavigationDrawer({
 
   const selectedPage = router?.pathname?.split('/')[1]
 
-  const { reports, templates } = useFlags()
+  const { templates } = useFlags()
 
   const profileOpen = Boolean(profileAnchorEl)
   const handleProfileClick = (event): void => {
@@ -165,14 +165,12 @@ export function NavigationDrawer({
           />
         )}
 
-        {reports && (
-          <NavigationListItem
-            icon={<LeaderboardRoundedIcon />}
-            label="Reports"
-            selected={selectedPage === 'reports'}
-            link="/reports"
-          />
-        )}
+        <NavigationListItem
+          icon={<LeaderboardRoundedIcon />}
+          label="Reports"
+          selected={selectedPage === 'reports'}
+          link="/reports"
+        />
 
         {authUser != null && data?.me != null && (
           <>

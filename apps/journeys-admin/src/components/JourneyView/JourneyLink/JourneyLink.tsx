@@ -2,7 +2,6 @@ import { ReactElement, useState } from 'react'
 import Button from '@mui/material/Button'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import DeveloperModeRoundedIcon from '@mui/icons-material/DeveloperModeRounded'
 import EditIcon from '@mui/icons-material/Edit'
 import Typography from '@mui/material/Typography'
@@ -16,7 +15,6 @@ import { SlugDialog } from './SlugDialog'
 export function JourneyLink(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { reports } = useFlags()
   const [showSlugDialog, setShowSlugDialog] = useState(false)
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -39,7 +37,7 @@ export function JourneyLink(): ReactElement {
         }
         label={!smUp ? t('Journey URL') : undefined}
         sx={
-          reports && !smUp
+          !smUp
             ? {
                 '.MuiFilledInput-root': {
                   backgroundColor: 'background.paper'
