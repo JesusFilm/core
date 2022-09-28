@@ -524,6 +524,7 @@ describe('BackgroundMediaVideo', () => {
                     id: video.id,
                     journeyId: 'journeyId',
                     input: {
+                      videoId: '5_0-NUA0201-0-0',
                       startAt: 0,
                       endAt: 144,
                       muted: true,
@@ -583,6 +584,7 @@ describe('BackgroundMediaVideo', () => {
                   id: video.id,
                   journeyId: 'journeyId',
                   input: {
+                    videoId: '5_0-NUA0201-0-0',
                     startAt: 0,
                     endAt: 144,
                     muted: false,
@@ -641,6 +643,7 @@ describe('BackgroundMediaVideo', () => {
                   id: video.id,
                   journeyId: 'journeyId',
                   input: {
+                    videoId: '5_0-NUA0201-0-0',
                     startAt: 11,
                     endAt: 144,
                     autoplay: true,
@@ -700,6 +703,7 @@ describe('BackgroundMediaVideo', () => {
                   id: video.id,
                   journeyId: 'journeyId',
                   input: {
+                    videoId: '5_0-NUA0201-0-0',
                     autoplay: true,
                     muted: true,
                     startAt: 0,

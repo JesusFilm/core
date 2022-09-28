@@ -46,6 +46,7 @@ export function VideoBlockEditorSettings({
     validate: async (values) => {
       await onChange({
         ...values,
+        videoId: selectedBlock?.videoId,
         startAt: timeFormatToSeconds(values.startAt),
         endAt: timeFormatToSeconds(values.endAt)
       })

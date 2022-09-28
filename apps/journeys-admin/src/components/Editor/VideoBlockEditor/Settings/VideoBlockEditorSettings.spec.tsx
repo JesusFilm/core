@@ -97,6 +97,7 @@ describe('VideoBlockEditorSettings', () => {
     fireEvent.click(getByRole('checkbox', { name: 'Autoplay' }))
     await waitFor(() =>
       expect(onChange).toHaveBeenCalledWith({
+        videoId: '2_0-FallingPlates',
         autoplay: false,
         muted: true,
         endAt: 0,
@@ -120,6 +121,7 @@ describe('VideoBlockEditorSettings', () => {
     fireEvent.click(getByRole('checkbox', { name: 'Muted' }))
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith({
+        videoId: '2_0-FallingPlates',
         autoplay: true,
         muted: false,
         endAt: 0,
@@ -145,6 +147,7 @@ describe('VideoBlockEditorSettings', () => {
     fireEvent.blur(textbox)
     await waitFor(() =>
       expect(onChange).toHaveBeenCalledWith({
+        videoId: '2_0-FallingPlates',
         autoplay: true,
         muted: true,
         endAt: 0,
@@ -170,6 +173,7 @@ describe('VideoBlockEditorSettings', () => {
     fireEvent.blur(textbox)
     await waitFor(() =>
       expect(onChange).toHaveBeenCalledWith({
+        videoId: '2_0-FallingPlates',
         autoplay: true,
         muted: true,
         endAt: 11,
