@@ -9,7 +9,7 @@ export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
   useEffect(() => {
     const makeIframeFullscreenOnSafari = (event: MessageEvent): void => {
       // Use this page for basic local testing
-      // More accurate testing on stage should use embed script on a webpage.
+      // More accurate testing with stage should use embed script on a webpage.
       if (event.origin === 'http://localhost:4100') {
         const iframe = document.getElementById('jfm-iframe')
         if (iframe != null) {
