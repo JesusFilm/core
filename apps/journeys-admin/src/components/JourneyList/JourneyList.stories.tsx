@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
 import {
@@ -41,27 +42,16 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <PageWrapper title="Active Journeys">
-      <JourneyList {...args.props} />
-    </PageWrapper>
+    <FlagsProvider>
+      <PageWrapper title="Active Journeys">
+        <JourneyList {...args.props} />
+      </PageWrapper>
+    </FlagsProvider>
   </MockedProvider>
 )
 
 export const Default = Template.bind({})
 Default.args = {
-  props: {
-    journeys: [
-      defaultJourney,
-      publishedJourney,
-      oldJourney,
-      descriptiveJourney
-    ],
-    event: ''
-  }
-}
-
-export const Reports = Template.bind({})
-Reports.args = {
   props: {
     journeys: [
       defaultJourney,

@@ -1,6 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { NextRouter } from 'next/router'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { PageWrapper } from '../PageWrapper'
@@ -22,17 +23,19 @@ const JourneyViewStory = {
 
 const Template: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
-    <JourneyProvider value={{ journey: args.journey }}>
-      <PageWrapper
-        title="Journey Details"
-        showDrawer
-        backHref="/"
-        menu={<Menu />}
-        router={{ pathname: undefined } as unknown as NextRouter}
-      >
-        <JourneyView journeyType="Journey" />
-      </PageWrapper>
-    </JourneyProvider>
+    <FlagsProvider>
+      <JourneyProvider value={{ journey: args.journey }}>
+        <PageWrapper
+          title="Journey Details"
+          showDrawer
+          backHref="/"
+          menu={<Menu />}
+          router={{ pathname: undefined } as unknown as NextRouter}
+        >
+          <JourneyView journeyType="Journey" />
+        </PageWrapper>
+      </JourneyProvider>
+    </FlagsProvider>
   </ApolloLoadingProvider>
 )
 
@@ -48,18 +51,20 @@ Loading.args = {
 
 const JourneyTemplate: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
-    <MockedProvider mocks={args.mocks}>
-      <JourneyProvider value={{ journey: args.journey }}>
-        <PageWrapper
-          title="Journey Template"
-          showDrawer
-          backHref="/"
-          menu={<Menu />}
-        >
-          <JourneyView journeyType="Template" />
-        </PageWrapper>
-      </JourneyProvider>
-    </MockedProvider>
+    <FlagsProvider>
+      <MockedProvider mocks={args.mocks}>
+        <JourneyProvider value={{ journey: args.journey }}>
+          <PageWrapper
+            title="Journey Template"
+            showDrawer
+            backHref="/"
+            menu={<Menu />}
+          >
+            <JourneyView journeyType="Template" />
+          </PageWrapper>
+        </JourneyProvider>
+      </MockedProvider>
+    </FlagsProvider>
   </ApolloLoadingProvider>
 )
 
