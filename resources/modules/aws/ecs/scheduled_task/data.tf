@@ -2,11 +2,6 @@ data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
-data "aws_acm_certificate" "central_jesusfilm_org" {
-  domain      = "*.central.jesusfilm.org"
-  most_recent = true
-}
-
 data "aws_ecr_repository" "main" {
   name = "jfp-${var.identifier}"
 }
@@ -14,7 +9,6 @@ data "aws_ecr_repository" "main" {
 data "aws_ecs_cluster" "cluster" {
   cluster_name = var.env
 }
-
 
 data "aws_vpc" "main" {
   tags = { Name = "Main VPC" }

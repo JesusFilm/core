@@ -5,11 +5,6 @@ resource "aws_ecs_service" "service" {
   task_definition          = aws_ecs_task_definition.app.arn
   launch_type              = "FARGATE"
   scheduling_strategy      = "REPLICA"
-  load_balancer {
-    target_group_arn = aws_lb_target_group.target_group.arn
-    container_name   = "${local.name}-container"
-    container_port   = var.port
-  }
   network_configuration {
     security_groups  = [aws_security_group.task.id] 
     subnets          = data.aws_subnets.apps_public.ids
@@ -43,10 +38,6 @@ resource "aws_ecs_task_definition" "app" {
       valueFrom = param.arn
      }
    ]
-   portMappings = [{
-     containerPort = var.port
-     hostPort      = var.port
-   }]
    logConfiguration = {
       logDriver = "awslogs"
       options = {
