@@ -12,7 +12,7 @@ resource "aws_iam_access_key" "jfp_doppler_integration" {
 }
 
 resource "aws_iam_user_policy" "jfp_doppler_integration" {
-  name = "jfp-doppler-integration-policy"
+  name = "jfp-doppler-integration-ssm-policy"
   user = aws_iam_user.jfp_doppler_integration.name
 
   policy = <<EOF
@@ -20,16 +20,19 @@ resource "aws_iam_user_policy" "jfp_doppler_integration" {
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "AllowSecretsManagerAccess",
+            "Sid": "AllowSSMAccess",
             "Effect": "Allow",
             "Action": [
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:CreateSecret",
-                "secretsmanager:DeleteSecret",
-                "secretsmanager:TagResource",
-                "secretsmanager:UpdateSecret"
+                "ssm:PutParameter",
+                "ssm:LabelParameterVersion",
+                "ssm:DeleteParameter",
+                "ssm:RemoveTagsFromResource",
+                "ssm:GetParameterHistory",
+                "ssm:AddTagsToResource",
+                "ssm:GetParametersByPath",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:DeleteParameters"
             ],
             "Resource": "*"
         }

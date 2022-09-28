@@ -11,10 +11,6 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.24"
     }
-    doppler = {
-      source = "DopplerHQ/doppler"
-      version = "1.1.2" # Always specify the latest version
-    }
   }
   required_version = ">= 1.1.7"
 }
