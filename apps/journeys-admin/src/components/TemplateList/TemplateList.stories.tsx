@@ -54,9 +54,4 @@ Default.args = {
   }
 }
 
-export const Access = Template.bind({})
-Access.args = {
-  props: { journeys: [], event: '' }
-}
-
 export default TemplateListStory as Meta
