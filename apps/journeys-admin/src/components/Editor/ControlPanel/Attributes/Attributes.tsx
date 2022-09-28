@@ -130,6 +130,14 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
           // Properly map typename to labels when doing translations
           selected.__typename === 'StepBlock'
             ? 'Card'
+            : selected.__typename === 'SignUpBlock'
+            ? 'Subscribe'
+            : selected.__typename === 'TextResponseBlock'
+            ? 'Feedback'
+            : selected.__typename === 'RadioQuestionBlock'
+            ? 'Poll'
+            : selected.__typename === 'RadioOptionBlock'
+            ? 'Poll Option'
             : selected.__typename.replace('Block', '')
         } Properties`}</MuiTypography>
       </Box>
