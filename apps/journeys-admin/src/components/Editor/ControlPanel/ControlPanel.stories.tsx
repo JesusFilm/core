@@ -3,6 +3,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import Box from '@mui/material/Box'
 import {
   GetJourney_journey_blocks_StepBlock as StepBlock,
@@ -17,7 +18,8 @@ import {
   IconSize,
   TypographyVariant,
   ThemeMode,
-  ThemeName
+  ThemeName,
+  VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { ControlPanel } from '.'
 
@@ -432,6 +434,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             muted: true,
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -609,26 +616,28 @@ const steps: Array<TreeBlock<StepBlock>> = [
 const Template: Story = (args) => {
   return (
     <MockedProvider>
-      <JourneyProvider
-        value={{
-          journey: {
-            id: 'journeyId',
-            themeMode: ThemeMode.dark,
-            themeName: ThemeName.base
-          } as unknown as Journey,
-          admin: true
-        }}
-      >
-        <EditorProvider
-          initialState={{
-            steps: args.steps
+      <FlagsProvider flags={{ feedbackBlock: true }}>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journeyId',
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            } as unknown as Journey,
+            admin: true
           }}
         >
-          <Box sx={{ mt: '80px' }}>
-            <ControlPanel />
-          </Box>
-        </EditorProvider>
-      </JourneyProvider>
+          <EditorProvider
+            initialState={{
+              steps: args.steps
+            }}
+          >
+            <Box sx={{ mt: '80px' }}>
+              <ControlPanel />
+            </Box>
+          </EditorProvider>
+        </JourneyProvider>
+      </FlagsProvider>
     </MockedProvider>
   )
 }

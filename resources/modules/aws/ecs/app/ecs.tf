@@ -1,7 +1,3 @@
-data "aws_ecs_cluster" "cluster" {
-  cluster_name = var.env
-}
-
 resource "aws_ecs_service" "service" {
   name                     = local.name
   cluster                  = data.aws_ecs_cluster.cluster.id

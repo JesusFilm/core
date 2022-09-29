@@ -8,6 +8,7 @@ import {
   Action,
   Block,
   NavigateToBlockActionInput,
+  Role,
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { BlockService } from '../../block/block.service'
@@ -18,7 +19,11 @@ export class NavigateToBlockActionResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async blockUpdateNavigateToBlockAction(
     @Args('id') id: string,
@@ -38,7 +43,8 @@ export class NavigateToBlockActionResolver {
           'RadioOptionBlock',
           'ButtonBlock',
           'VideoBlock',
-          'VideoTriggerBlock'
+          'VideoTriggerBlock',
+          'TextResponseBlock'
         ],
         block.__typename
       )

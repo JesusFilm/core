@@ -12,6 +12,7 @@ import {
   ImageBlock,
   ImageBlockCreateInput,
   ImageBlockUpdateInput,
+  Role,
   UserJourneyRole
 } from '../../../__generated__/graphql'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
@@ -65,7 +66,8 @@ export class ImageBlockResolver {
   @UseGuards(
     RoleGuard('input.journeyId', [
       UserJourneyRole.owner,
-      UserJourneyRole.editor
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
     ])
   )
   async imageBlockCreate(
@@ -110,7 +112,11 @@ export class ImageBlockResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async imageBlockUpdate(
     @Args('id') id: string,

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant } from "./../../../../__generated__/globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: BlockFields
@@ -253,6 +253,54 @@ export interface BlockFields_StepBlock {
   nextBlockId: string | null;
 }
 
+export interface BlockFields_TextResponseBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
+export interface BlockFields_TextResponseBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface BlockFields_TextResponseBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
+export interface BlockFields_TextResponseBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  journey: BlockFields_TextResponseBlock_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface BlockFields_TextResponseBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type BlockFields_TextResponseBlock_action = BlockFields_TextResponseBlock_action_NavigateAction | BlockFields_TextResponseBlock_action_NavigateToBlockAction | BlockFields_TextResponseBlock_action_NavigateToJourneyAction | BlockFields_TextResponseBlock_action_LinkAction;
+
+export interface BlockFields_TextResponseBlock {
+  __typename: "TextResponseBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  hint: string | null;
+  minRows: number | null;
+  submitLabel: string | null;
+  submitIconId: string | null;
+  action: BlockFields_TextResponseBlock_action | null;
+}
+
 export interface BlockFields_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -341,13 +389,51 @@ export interface BlockFields_VideoBlock {
   posterBlockId: string | null;
   fullsize: boolean | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
    */
   videoId: string | null;
   /**
-   * videoId and videoVariantLanguageId both need to be set to select a video
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
    */
   videoVariantLanguageId: string | null;
+  /**
+   * internal source: videoId, videoVariantLanguageId, and video present
+   * youTube source: videoId, title, description, and duration present
+   */
+  source: VideoBlockSource;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field.
+   * For other sources this is automatically populated.
+   */
+  title: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  description: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  image: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   * duration in seconds.
+   */
+  duration: number | null;
+  /**
+   * internal source videos: video is only populated when videoID and
+   * videoVariantLanguageId are present
+   */
   video: BlockFields_VideoBlock_video | null;
   /**
    * action that should be performed when the video ends
@@ -403,4 +489,4 @@ export interface BlockFields_VideoTriggerBlock {
   triggerAction: BlockFields_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockFields = BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
+export type BlockFields = BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_GridContainerBlock | BlockFields_GridItemBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TextResponseBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;

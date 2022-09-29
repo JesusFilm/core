@@ -1,6 +1,6 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Attribute } from '../..'
@@ -19,6 +19,18 @@ export function SignUp({
   const submitIcon = children.find(
     (block) => block.id === submitIconId
   ) as TreeBlock<IconFields>
+
+  useEffect(() => {
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      id: `${id}-signup-action`
+    })
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: 'Form Submission',
+      children: <Action />
+    })
+  }, [dispatch, id])
 
   return (
     <>

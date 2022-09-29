@@ -3,15 +3,19 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
-import { VideoBlockUpdateInput } from '../../../../../../__generated__/globalTypes'
+import {
+  VideoBlockSource,
+  VideoBlockUpdateInput
+} from '../../../../../../__generated__/globalTypes'
 import { VideoDetails } from '../../VideoDetails'
 
-interface VideoListItemProps {
+export interface VideoListItemProps {
   id: string
   title?: string
   description?: string
   image?: string
   duration?: number
+  source: VideoBlockSource
   onSelect: (block: VideoBlockUpdateInput) => void
 }
 
@@ -20,6 +24,7 @@ export function VideoListItem({
   title,
   description,
   image,
+  source,
   duration: time = 0,
   onSelect: handleSelect
 }: VideoListItemProps): ReactElement {
@@ -42,8 +47,7 @@ export function VideoListItem({
     <>
       <ListItemButton
         onClick={handleOpen}
-        sx={{ alignItems: 'flex-start', p: 3 }}
-        divider
+        sx={{ alignItems: 'flex-start', py: 4, px: 6 }}
       >
         <ListItemText
           primary={title}
@@ -93,6 +97,7 @@ export function VideoListItem({
       <VideoDetails
         id={id}
         open={open}
+        source={source}
         onClose={handleClose}
         onSelect={handleSelect}
       />

@@ -4,7 +4,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { journeysAdminConfig } from '../../../../libs/storybook'
 import { GetVideo_video_variantLanguages as Language } from '../../../../../__generated__/GetVideo'
 import { ApolloLoadingProvider } from '../../../../../test/ApolloLoadingProvider'
-import { GET_VIDEO } from './VideoDetails'
+import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { VideoDetails } from '.'
 
 const VideoDetailsStory = {
@@ -111,6 +112,7 @@ const Template: Story = ({ id, onSelect }) => {
         open={open}
         onClose={() => setOpen(false)}
         onSelect={onSelect}
+        source={VideoBlockSource.internal}
       />
     </MockedProvider>
   )
@@ -131,6 +133,7 @@ export const Loading: Story = ({ id, onSelect }) => {
         open={open}
         onClose={() => setOpen(false)}
         onSelect={onSelect}
+        source={VideoBlockSource.internal}
       />
     </ApolloLoadingProvider>
   )

@@ -11,6 +11,11 @@ data "aws_ecr_repository" "main" {
   name = "jfp-${var.identifier}"
 }
 
+data "aws_ecs_cluster" "cluster" {
+  cluster_name = var.env
+}
+
+
 data "aws_vpc" "main" {
   tags = { Name = "Main VPC" }
 }
