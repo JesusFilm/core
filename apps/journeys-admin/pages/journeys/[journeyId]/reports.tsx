@@ -30,6 +30,7 @@ function JourneyReportsPage(): ReactElement {
         title={t('Journey Report')}
         authUser={AuthUser}
         backHref={`/journeys/${journeyId}`}
+        router={router}
       >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
           <MemoizedDynamicReport
@@ -53,14 +54,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const launchDarklyClient = await getLaunchDarklyClient(ldUser)
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
-  }
-  if (flags.reports !== true) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: '/'
-      }
-    }
   }
   return {
     props: {

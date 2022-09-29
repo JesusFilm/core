@@ -8,7 +8,6 @@ import NewReleasesRounded from '@mui/icons-material/NewReleasesRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import { NextRouter } from 'next/router'
 import { AuthUser } from 'next-firebase-auth'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { MultipleSummaryReport } from '../MultipleSummaryReport'
 import { StatusTabPanel } from '../StatusTabPanel'
@@ -31,7 +30,6 @@ export function JourneyList({
   event,
   authUser
 }: JourneysListProps): ReactElement {
-  const { reports } = useFlags()
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const [activeTabLoaded, setActiveTabLoaded] = useState(false)
   const [activeEvent, setActiveEvent] = useState(event)
@@ -53,9 +51,7 @@ export function JourneyList({
 
   return (
     <>
-      {journeys != null && journeys.length > 0 && reports && (
-        <MultipleSummaryReport />
-      )}
+      {journeys != null && journeys.length > 0 && <MultipleSummaryReport />}
       <Container sx={{ px: { xs: 0, sm: 8 } }}>
         {(journeys == null || journeys.length > 0) && (
           <StatusTabPanel

@@ -1,40 +1,61 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 interface IFrameTestProps {
   journeySlug: string
 }
 
 export function IFrameTest({ journeySlug }: IFrameTestProps): ReactElement {
-  return (
-    <div
-      style={{
-        position: 'relative',
-        width: 356,
-        height: 546,
-        overflow: 'hidden',
-        backgroundColor: 'transparent'
-      }}
-      id="jfm-iframe-container"
-    >
-      <style jsx global>{`
-        body {
-          background: #26262d;
+  // TODO: Remove this check once allow="fullscreen" works with Safari 16+
+  useEffect(() => {
+    const makeIframeFullscreenOnSafari = (event: MessageEvent): void => {
+      // Use this page for basic local testing
+      // More accurate testing with stage should use embed script on a webpage.
+      if (event.origin === 'http://localhost:4100') {
+        const iframe = document.getElementById('jfm-iframe')
+        if (iframe != null) {
+          if (event.data === true) {
+            iframe.style.position = 'fixed'
+            iframe.style.zIndex = '999999999999999999999'
+          } else {
+            iframe.style.position = 'absolute'
+            iframe.style.zIndex = 'auto'
+          }
         }
-      `}</style>
-      <iframe
-        src={`/embed/${journeySlug}`}
+      }
+    }
+    window.addEventListener('message', makeIframeFullscreenOnSafari)
+    return () => {
+      window.removeEventListener('message', makeIframeFullscreenOnSafari)
+    }
+  }, [])
+
+  return (
+    <div style={{ width: '600px', height: '100%' }}>
+      <div
         style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
+          position: 'relative',
           width: '100%',
-          height: '100%',
-          border: 'none'
+          paddingTop: '150%',
+          overflow: 'hidden',
+          backgroundColor: 'transparent'
         }}
-        allowFullScreen
-      />
+      >
+        <iframe
+          id="jfm-iframe"
+          src={`/embed/${journeySlug}`}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            width: '100%',
+            height: '100%',
+            border: 'none'
+          }}
+          allow="fullscreen"
+        />
+      </div>
     </div>
   )
 }

@@ -2,50 +2,70 @@ import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider'
-import Drawer from '@mui/material/Drawer'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
+import Paper from '@mui/material/Paper'
 import { AccessAvatars } from '../../AccessAvatars'
+import { JourneyLink } from '../JourneyLink'
+import type { JourneyType } from '../JourneyView'
 import { JourneyDetails } from './JourneyDetails'
 import { AccessControl } from './AccessControl'
-import { JourneyLink } from './JourneyLink'
 
-export function Properties(): ReactElement {
+interface PropertiesProps {
+  journeyType: JourneyType
+  isPublisher?: boolean
+}
+
+export function Properties({
+  journeyType,
+  isPublisher
+}: PropertiesProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
   return (
     <>
-      <Drawer
-        variant="permanent"
-        anchor="right"
+      <Paper
+        elevation={0}
         sx={{
           display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: '328px'
-          }
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          height: '100%',
+          width: '328px',
+          borderLeft: 1,
+          borderColor: 'divider',
+          borderRadius: 0
         }}
       >
         <Toolbar>
           <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
-            {t('Properties')}
+            {journeyType === 'Template' ? t('Details') : t('Properties')}
           </Typography>
         </Toolbar>
         <Stack sx={{ py: 6 }} spacing={6} divider={<Divider />}>
           <Box sx={{ px: 6 }}>
-            <JourneyDetails />
+            <JourneyDetails
+              journeyType={journeyType}
+              isPublisher={isPublisher}
+            />
           </Box>
-          <Box sx={{ px: 6 }}>
-            <AccessControl />
-          </Box>
-          <Box sx={{ px: 6 }}>
-            <JourneyLink />
-          </Box>
+          {journeyType !== 'Template' && (
+            <>
+              <Box sx={{ px: 6 }}>
+                <AccessControl />
+              </Box>
+              <Divider />
+              <Box sx={{ px: 6 }}>
+                <JourneyLink />
+              </Box>
+            </>
+          )}
         </Stack>
-      </Drawer>
+      </Paper>
       <Stack
         sx={{
           display: {
@@ -57,15 +77,17 @@ export function Properties(): ReactElement {
         }}
         spacing={6}
       >
-        <Divider>
-          <AccessAvatars
-            journeyId={journey?.id}
-            userJourneys={journey?.userJourneys ?? undefined}
-            size="medium"
-          />
-        </Divider>
+        {journeyType !== 'Template' && (
+          <Divider>
+            <AccessAvatars
+              journeyId={journey?.id}
+              userJourneys={journey?.userJourneys ?? undefined}
+              size="medium"
+            />
+          </Divider>
+        )}
         <Box sx={{ px: 6 }}>
-          <JourneyDetails />
+          <JourneyDetails journeyType={journeyType} isPublisher={isPublisher} />
         </Box>
       </Stack>
     </>

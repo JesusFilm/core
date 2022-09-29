@@ -7,7 +7,7 @@ import { setContext } from '@apollo/client/link/context'
 import { useMemo } from 'react'
 import { cache } from './cache'
 
-function createApolloClient(
+export function createApolloClient(
   token: string
 ): ApolloClient<NormalizedCacheObject> {
   const httpLink = createHttpLink({
