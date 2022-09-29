@@ -24,8 +24,6 @@ export const DRAWER_WIDTH = 328
 interface VideoLibraryProps {
   open: boolean
   onClose?: () => void
-  openVideoDetails?: boolean
-  setOpenVideoDetails?: (closeParent: boolean) => void
   selectedBlock?: TreeBlock<VideoBlock> | null
   onSelect?: (block: VideoBlockUpdateInput) => void
 }
