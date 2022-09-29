@@ -158,7 +158,11 @@ export function Video({
             objectFit: 'cover'
           },
           '> .vjs-loading-spinner': {
-            zIndex: 1
+            zIndex: 1,
+            display:
+              autoplay !== true && source === VideoBlockSource.youTube
+                ? 'none'
+                : null
           },
           '> .vjs-big-play-button': {
             zIndex: 1

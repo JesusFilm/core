@@ -225,6 +225,9 @@ VideoYoutubeDefault.args = {
     }
   ]
 }
+VideoYoutubeDefault.parameters = {
+  chromatic: { delay: 100, diffThreshold: 0.2 }
+}
 
 // Expanded - child video block displays fullscreen simulating video only card
 export const VideoContent: Story<TreeBlock<CardFields>> = Template.bind({})
