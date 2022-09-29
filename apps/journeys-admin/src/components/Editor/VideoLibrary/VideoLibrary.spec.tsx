@@ -1,6 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { GET_VIDEOS } from './VideoFromLocal/VideoFromLocal'
 import { VideoLibrary } from '.'
 
@@ -199,6 +200,7 @@ describe('Video Library', () => {
     expect(onSelect).toHaveBeenCalledWith({
       endAt: 0,
       startAt: 0,
+      source: VideoBlockSource.internal,
       videoId: '2_0-AndreasStory',
       videoVariantLanguageId: '529'
     })
