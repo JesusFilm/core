@@ -1,4 +1,4 @@
-import { ReactElement, SyntheticEvent, useState } from 'react'
+import { ReactElement, SyntheticEvent, useState, useEffect } from 'react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import Drawer from '@mui/material/Drawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -33,13 +33,20 @@ interface VideoLibraryProps {
 export function VideoLibrary({
   open,
   onClose,
-  openVideoDetails,
-  setOpenVideoDetails,
   selectedBlock,
   onSelect: handleSelect
 }: VideoLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const [openVideoDetails, setOpenVideoDetails] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
+
+  useEffect(() => {
+    // opens video details if videoId is not null
+    // and video library is open
+    if (selectedBlock?.videoId != null && open) {
+      setOpenVideoDetails(true)
+    }
+  }, [selectedBlock, open])
 
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,

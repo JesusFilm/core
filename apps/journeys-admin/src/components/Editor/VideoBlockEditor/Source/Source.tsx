@@ -20,7 +20,6 @@ interface SourceProps {
 
 export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
   const [open, setOpen] = useState(false)
-  const [openVideoDetails, setOpenVideoDetails] = useState(false)
 
   useEffect(() => {
     // opens the video library if videoId is null
@@ -50,15 +49,7 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
   return (
     <>
       <Card variant="outlined" sx={{ borderRadius: 2 }}>
-        <CardActionArea
-          onClick={() => {
-            setOpen(true)
-            // opens video details if videoId is not null
-            if (selectedBlock?.videoId != null) {
-              setOpenVideoDetails(true)
-            }
-          }}
-        >
+        <CardActionArea onClick={() => setOpen(true)}>
           <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
             <SourceContent selectedBlock={selectedBlock} />
           </Stack>
@@ -67,10 +58,6 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
       <VideoLibrary
         open={open}
         onClose={() => setOpen(false)}
-        openVideoDetails={openVideoDetails}
-        setOpenVideoDetails={(closeParent: boolean) =>
-          setOpenVideoDetails(closeParent)
-        }
         selectedBlock={selectedBlock}
         onSelect={onChange}
       />

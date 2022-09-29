@@ -85,7 +85,7 @@ export function VideoDetails({
               Video Details
             </Typography>
             <IconButton
-              onClick={() => onClose()}
+              onClick={() => onClose(false)}
               sx={{ display: 'inline-flex' }}
               edge="end"
               aria-label="Close"
