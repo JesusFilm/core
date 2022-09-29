@@ -142,19 +142,17 @@ export function VideoLibrary({
           <VideoFromYouTube onSelect={onSelect} />
         </TabPanel>
       </Drawer>
-      {selectedBlock?.videoId != null &&
-        openVideoDetails != null &&
-        setOpenVideoDetails != null && (
-          <VideoDetails
-            id={selectedBlock?.videoId}
-            open={openVideoDetails}
-            source={selectedBlock.source}
-            onClose={(closeParent: boolean) => {
-              setOpenVideoDetails(closeParent)
-            }}
-            onSelect={onSelect}
-          />
-        )}
+      {selectedBlock?.videoId != null && (
+        <VideoDetails
+          id={selectedBlock?.videoId}
+          open={openVideoDetails}
+          source={selectedBlock.source}
+          onClose={(closeParent: boolean) => {
+            setOpenVideoDetails(closeParent)
+          }}
+          onSelect={onSelect}
+        />
+      )}
     </>
   )
 }
