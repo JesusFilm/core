@@ -120,7 +120,7 @@ describe('NavigationDrawer', () => {
   it('should select the reports button', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ reports: true }}>
+        <FlagsProvider>
           <NavigationDrawer
             open
             onClose={onClose}

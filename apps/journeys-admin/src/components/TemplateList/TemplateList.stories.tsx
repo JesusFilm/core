@@ -41,7 +41,7 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <FlagsProvider flags={{ reports: true, templates: true }}>
+    <FlagsProvider flags={{ templates: true }}>
       <TemplateList {...args.props} />
     </FlagsProvider>
   </MockedProvider>
