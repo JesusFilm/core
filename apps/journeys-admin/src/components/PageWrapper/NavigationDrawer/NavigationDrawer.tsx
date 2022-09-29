@@ -8,23 +8,28 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
-import Link from 'next/link'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
+import ShopRoundedIcon from '@mui/icons-material/ShopRounded'
+import ShopTwoRoundedIcon from '@mui/icons-material/ShopTwoRounded'
 import Backdrop from '@mui/material/Backdrop'
 import Image from 'next/image'
+import { NextRouter } from 'next/router'
 import { compact } from 'lodash'
 import { gql, useQuery } from '@apollo/client'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ViewCarouselRoundedIcon from '@mui/icons-material/ViewCarouselRounded'
 import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded'
+import { Role } from '../../../../__generated__/globalTypes'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import { GetMe } from '../../../../__generated__/GetMe'
+import { GetUserRole } from '../../../../__generated__/GetUserRole'
+import { GET_USER_ROLE } from '../../JourneyView/JourneyView'
 import { UserMenu } from './UserMenu'
+import { NavigationListItem } from './NavigationListItem'
 
 const DRAWER_WIDTH = '237px'
 
@@ -33,6 +38,7 @@ export interface NavigationDrawerProps {
   onClose: (value: boolean) => void
   authUser?: AuthUser
   title: string
+  router?: NextRouter
 }
 
 export const GET_ME = gql`
@@ -94,18 +100,15 @@ export function NavigationDrawer({
   open,
   onClose,
   authUser,
-  title
+  title,
+  router
 }: NavigationDrawerProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [profileAnchorEl, setProfileAnchorEl] = useState(null)
-  const journeysSelected =
-    title === 'Active Journeys' ||
-    title === 'Archived Journeys' ||
-    title === 'Trashed Journeys' ||
-    title === 'Journey Details' ||
-    title === 'Journey Reports'
 
-  const { reports } = useFlags()
+  const selectedPage = router?.pathname?.split('/')[1]
+
+  const { reports, templates } = useFlags()
 
   const profileOpen = Boolean(profileAnchorEl)
   const handleProfileClick = (event): void => {
@@ -121,6 +124,7 @@ export function NavigationDrawer({
   }
 
   const { data } = useQuery<GetMe>(GET_ME)
+  const { data: userRoleData } = useQuery<GetUserRole>(GET_USER_ROLE)
 
   return (
     <StyledNavigationDrawer
@@ -144,61 +148,59 @@ export function NavigationDrawer({
             {open ? <ChevronLeftRounded /> : <ChevronRightRounded />}
           </ListItemIcon>
         </ListItemButton>
-        <Link href="/" passHref>
-          <ListItemButton>
-            <ListItemIcon
-              sx={{
-                color: journeysSelected ? 'background.paper' : 'secondary.light'
-              }}
-            >
-              <ViewCarouselRoundedIcon />
-            </ListItemIcon>
-            <ListItemText
-              primary="Journeys"
-              sx={{
-                color: journeysSelected ? 'background.paper' : 'secondary.light'
-              }}
-            />
-          </ListItemButton>
-        </Link>
+
+        <NavigationListItem
+          icon={<ViewCarouselRoundedIcon />}
+          label="Discover"
+          selected={selectedPage === 'journeys' || selectedPage == null} // null for when page is index. UPDATE when we add the actual index page
+          link="/"
+        />
+
+        {templates && (
+          <NavigationListItem
+            icon={<ShopRoundedIcon />}
+            label="Templates"
+            selected={selectedPage === 'templates'}
+            link="/templates"
+          />
+        )}
 
         {reports && (
-          <Link href="/reports" passHref>
-            <ListItemButton>
-              <ListItemIcon
-                sx={{
-                  color:
-                    title === 'Reports' ? 'background.paper' : 'secondary.light'
-                }}
-              >
-                <LeaderboardRoundedIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="Reports"
-                sx={{
-                  color:
-                    title === 'Reports' ? 'background.paper' : 'secondary.light'
-                }}
-              />
-            </ListItemButton>
-          </Link>
+          <NavigationListItem
+            icon={<LeaderboardRoundedIcon />}
+            label="Reports"
+            selected={selectedPage === 'reports'}
+            link="/reports"
+          />
         )}
+
         {authUser != null && data?.me != null && (
           <>
-            <Divider sx={{ m: 6, mt: 0, borderColor: 'secondary.main' }} />
-            <ListItemButton onClick={handleProfileClick}>
-              <ListItemIcon>
+            <Divider sx={{ mb: 2, mx: 6, borderColor: 'secondary.main' }} />
+
+            {userRoleData?.getUserRole?.roles?.includes(Role.publisher) ===
+              true &&
+              templates && (
+                <NavigationListItem
+                  icon={<ShopTwoRoundedIcon />}
+                  label="Publisher"
+                  selected={selectedPage === 'publisher'}
+                  link="/publisher"
+                />
+              )}
+
+            <NavigationListItem
+              icon={
                 <Avatar
                   alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
                   src={data.me.imageUrl ?? undefined}
                   sx={{ width: 24, height: 24 }}
                 />
-              </ListItemIcon>
-              <ListItemText
-                primary="Profile"
-                sx={{ color: 'secondary.light' }}
-              />
-            </ListItemButton>
+              }
+              label="Profile"
+              selected={false}
+              handleClick={handleProfileClick}
+            />
             <UserMenu
               user={data.me}
               profileOpen={profileOpen}

@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
+import { SnackbarProvider } from 'notistack'
 import { journeysConfig } from '../../libs/storybook'
 import {
   basic,
@@ -21,7 +22,9 @@ const Demo = {
 
 const Template: Story<ConductorProps> = ({ ...props }) => (
   <MockedProvider>
-    <Conductor {...props} />
+    <SnackbarProvider>
+      <Conductor {...props} />
+    </SnackbarProvider>
   </MockedProvider>
 )
 

@@ -4,8 +4,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { userEvent, waitFor, within } from '@storybook/testing-library'
 import { expect } from '@storybook/jest'
 import { journeysAdminConfig } from '../../../libs/storybook'
-import { videos } from './VideoList/VideoListData'
-import { GET_VIDEOS } from './VideoList/VideoList'
+import { videos } from './VideoFromLocal/data'
+import { GET_VIDEOS } from './VideoFromLocal/VideoFromLocal'
 import { VideoLibrary } from '.'
 
 const VideoLibraryStory = {

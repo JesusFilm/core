@@ -5,7 +5,8 @@ import {
   ButtonVariant,
   IconName,
   IconSize,
-  TypographyVariant
+  TypographyVariant,
+  VideoBlockSource
 } from '../../../__generated__/globalTypes'
 
 export const basic: TreeBlock[] = [
@@ -54,7 +55,7 @@ export const basic: TreeBlock[] = [
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card1.id',
-            parentOrder: 2,
+            parentOrder: 3,
             children: [
               {
                 id: 'radioOption2.id',
@@ -586,7 +587,7 @@ export const imageBlocks: TreeBlock[] = [
     nextBlockId: 'step3.id',
     children: [
       {
-        id: 'card0.id',
+        id: 'card2.id',
         __typename: 'CardBlock',
         parentBlockId: 'step0.id',
         parentOrder: 1,
@@ -599,7 +600,7 @@ export const imageBlocks: TreeBlock[] = [
           {
             id: 'typographyBlockId1',
             __typename: 'TypographyBlock',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card2.id',
             parentOrder: 0,
             align: null,
             color: null,
@@ -610,7 +611,7 @@ export const imageBlocks: TreeBlock[] = [
           {
             id: 'typographyBlockId12',
             __typename: 'TypographyBlock',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card2.id',
             parentOrder: 1,
             align: null,
             color: null,
@@ -619,51 +620,21 @@ export const imageBlocks: TreeBlock[] = [
             children: []
           },
           {
-            id: 'radioQuestion1.id',
-            __typename: 'RadioQuestionBlock',
-            parentBlockId: 'step2.id',
+            id: 'textResponse.id',
+            __typename: 'TextResponseBlock',
+            parentBlockId: 'card2.id',
             parentOrder: 2,
-            children: [
-              {
-                id: 'radioOption1.id',
-                __typename: 'RadioOptionBlock',
-                parentBlockId: 'radioQuestion1.id',
-                parentOrder: 0,
-                label: 'One of many ways to God',
-                action: {
-                  __typename: 'NavigateAction',
-                  parentBlockId: 'radioOption1.id',
-                  gtmEventName: 'gtmEventName'
-                },
-                children: []
-              },
-              {
-                id: 'radioOption3.id',
-                __typename: 'RadioOptionBlock',
-                parentBlockId: 'radioQuestion1.id',
-                parentOrder: 1,
-                label: 'One great lie...',
-                action: {
-                  __typename: 'NavigateAction',
-                  parentBlockId: 'radioOption3.id',
-                  gtmEventName: 'gtmEventName'
-                },
-                children: []
-              },
-              {
-                id: 'radioOption4.id',
-                __typename: 'RadioOptionBlock',
-                parentBlockId: 'radioQuestion1.id',
-                parentOrder: 2,
-                label: 'One true way to God',
-                action: {
-                  __typename: 'NavigateAction',
-                  parentBlockId: 'radioOption4.id',
-                  gtmEventName: 'gtmEventName'
-                },
-                children: []
-              }
-            ]
+            label: 'Your answer here',
+            hint: null,
+            minRows: null,
+            submitLabel: null,
+            submitIconId: null,
+            children: [],
+            action: {
+              __typename: 'NavigateAction',
+              parentBlockId: 'textResponse.id',
+              gtmEventName: 'gtmEventName'
+            }
           },
           {
             id: 'image0.id',
@@ -672,7 +643,7 @@ export const imageBlocks: TreeBlock[] = [
             width: 1920,
             height: 1080,
             alt: 'random image from unsplash',
-            parentBlockId: 'card0.id',
+            parentBlockId: 'card2.id',
             parentOrder: 0,
             children: [],
             blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@'
@@ -903,6 +874,11 @@ export const videoBlocks: TreeBlock[] = [
             muted: true,
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -1068,6 +1044,11 @@ export const videoBlocks: TreeBlock[] = [
             posterBlockId: 'posterBlockId',
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -1137,6 +1118,11 @@ export const videoBlocks: TreeBlock[] = [
             posterBlockId: null,
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -1195,6 +1181,11 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             muted: true,
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -1348,6 +1339,11 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             posterBlockId: 'posterBlockId',
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -1417,6 +1413,11 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             posterBlockId: null,
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -1475,6 +1476,11 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             muted: true,
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: null,
 
             endAt: null,
@@ -1613,6 +1619,11 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             posterBlockId: 'posterBlockId',
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -1682,6 +1693,11 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             posterBlockId: null,
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -1792,6 +1808,11 @@ export const videoLoop: TreeBlock[] = [
             muted: true,
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -1861,6 +1882,11 @@ export const videoLoop: TreeBlock[] = [
             muted: false,
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -1935,6 +1961,11 @@ export const videoLoop: TreeBlock[] = [
             muted: true,
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
+            source: VideoBlockSource.internal,
+            title: null,
+            description: null,
+            duration: null,
+            image: null,
             video: {
               __typename: 'Video',
               id: '2_0-FallingPlates',

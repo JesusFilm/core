@@ -19,6 +19,7 @@ export interface JourneyCardMenuProps {
   status: JourneyStatus
   slug: string
   published: boolean
+  template?: boolean
   refetch?: () => Promise<
     ApolloQueryResult<
       GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
@@ -31,6 +32,7 @@ export function JourneyCardMenu({
   status,
   slug,
   published,
+  template,
   refetch
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -84,6 +86,7 @@ export function JourneyCardMenu({
             setOpenAccessDialog={() => setOpenAccessDialog(true)}
             handleCloseMenu={handleCloseMenu}
             setOpenTrashDialog={() => setOpenTrashDialog(true)}
+            template={template}
             refetch={refetch}
           />
         )}

@@ -23,6 +23,7 @@ interface DefaultMenuProps {
   setOpenAccessDialog: () => void
   handleCloseMenu: () => void
   setOpenTrashDialog: () => void
+  template?: boolean
   refetch?: () => Promise<
     ApolloQueryResult<
       GetActiveJourneys | GetArchivedJourneys | GetTrashedJourneys
@@ -39,22 +40,32 @@ export function DefaultMenu({
   setOpenAccessDialog,
   handleCloseMenu,
   setOpenTrashDialog,
+  template,
   refetch
 }: DefaultMenuProps): ReactElement {
   return (
     <>
-      <NextLink href={`/journeys/${journeyId}`} passHref>
+      <NextLink
+        href={
+          template === true
+            ? `/templates/${journeyId}`
+            : `/journeys/${journeyId}`
+        }
+        passHref
+      >
         <MenuItem label="Edit" icon={<EditIcon color="secondary" />} />
       </NextLink>
 
-      <MenuItem
-        label="Access"
-        icon={<PeopleIcon color="secondary" />}
-        onClick={() => {
-          setOpenAccessDialog()
-          handleCloseMenu()
-        }}
-      />
+      {template !== true && (
+        <MenuItem
+          label="Access"
+          icon={<PeopleIcon color="secondary" />}
+          onClick={() => {
+            setOpenAccessDialog()
+            handleCloseMenu()
+          }}
+        />
+      )}
       <NextLink href={`/api/preview?slug=${slug}`} passHref>
         <MenuItem
           label="Preview"
@@ -64,7 +75,9 @@ export function DefaultMenu({
         />
       </NextLink>
 
-      <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+      {template !== true && (
+        <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+      )}
 
       <Divider />
 

@@ -16,6 +16,7 @@ import {
   RadioOptionBlockResolver,
   RadioQuestionBlockResolver
 } from './radioQuestion/radioQuestion.resolver'
+import { TextResponseBlockResolver } from './textResponse/textResponse.resolver'
 import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
 
 @Module({
@@ -32,6 +33,7 @@ import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
     RadioQuestionBlockResolver,
     SignUpBlockResolver,
     StepBlockResolver,
+    TextResponseBlockResolver,
     TypographyBlockResolver,
     VideoBlockResolver,
     VideoTriggerResolver
