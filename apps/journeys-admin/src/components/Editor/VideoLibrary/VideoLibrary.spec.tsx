@@ -209,14 +209,11 @@ describe('Video Library', () => {
   it('should render video details if videoId is not null', () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
-    const setOpenVideoDetails = jest.fn()
 
     const { getByText } = render(
       <MockedProvider>
         <VideoLibrary
           open
-          openVideoDetails
-          setOpenVideoDetails={setOpenVideoDetails}
           selectedBlock={{
             id: 'video1.id',
             __typename: 'VideoBlock',
