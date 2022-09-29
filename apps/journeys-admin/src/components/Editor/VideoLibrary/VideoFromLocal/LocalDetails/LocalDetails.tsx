@@ -10,6 +10,7 @@ import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
 import { gql, useLazyQuery } from '@apollo/client'
 import { GetVideo } from '../../../../../../__generated__/GetVideo'
+import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { VideoLanguage } from '../../VideoLanguage'
 import 'video.js/dist/video-js.css'
 import { LanguageSelectOption } from '../../../../LanguageSelect'
@@ -72,6 +73,7 @@ export function LocalDetails({
     onSelect({
       videoId: id,
       videoVariantLanguageId: selectedLanguage.id,
+      source: VideoBlockSource.internal,
       startAt: 0,
       endAt: time
     })
