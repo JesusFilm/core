@@ -190,6 +190,7 @@ describe('BackgroundMediaVideo', () => {
                   parentBlockId: 'cardId',
                   videoId: '2_0-Brand_Video',
                   videoVariantLanguageId: '529',
+                  source: VideoBlockSource.internal,
                   startAt: 0,
                   endAt: 144,
                   isCover: true
@@ -268,6 +269,7 @@ describe('BackgroundMediaVideo', () => {
                   parentBlockId: 'cardId',
                   videoId: '2_0-Brand_Video',
                   videoVariantLanguageId: '529',
+                  source: VideoBlockSource.internal,
                   startAt: 0,
                   endAt: 144,
                   isCover: true
@@ -347,6 +349,7 @@ describe('BackgroundMediaVideo', () => {
                   input: {
                     videoId: '2_0-Brand_Video',
                     videoVariantLanguageId: '529',
+                    source: VideoBlockSource.internal,
                     startAt: 0,
                     endAt: 144
                   }

@@ -142,6 +142,7 @@ describe('VideoOptions', () => {
                 input: {
                   videoId: '2_0-Brand_Video',
                   videoVariantLanguageId: '529',
+                  source: VideoBlockSource.internal,
                   startAt: 0,
                   endAt: 144
                 }
@@ -241,6 +242,7 @@ describe('VideoOptions', () => {
                 input: {
                   videoId: '2_0-Brand_Video',
                   videoVariantLanguageId: '529',
+                  source: VideoBlockSource.internal,
                   startAt: 0,
                   endAt: 144
                 }
