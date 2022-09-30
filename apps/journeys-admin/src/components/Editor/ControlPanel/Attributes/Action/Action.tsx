@@ -91,6 +91,8 @@ export function Action(): ReactElement {
   useEffect(() => {
     if (selectedAction != null) {
       setAction(selectedAction.value)
+    } else {
+    	setAction('none')
     }
   }, [selectedBlock, selectedAction])
 
