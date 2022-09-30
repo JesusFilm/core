@@ -8,7 +8,20 @@
   "workspaceFolder": "/workspaces",
 
   // Set *default* container specific settings.json values on container create.
-  "settings": {},
+  "settings": {
+    "sqltools.connections": [
+      {
+        "name": "Container database",
+        "driver": "PostgreSQL",
+        "previewLimit": 50,
+        "server": "localhost",
+        "port": 5432,
+        "database": "postgres",
+        "username": "postgres",
+        "password": "postgres"
+      }
+    ]
+  },
 
   // Add the IDs of extensions you want installed when the container is created.
   "extensions": [
@@ -17,12 +30,14 @@
     "monotykamary.vscode-aql",
     "eamodio.gitlens",
     "graphql.vscode-graphql",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-pg"
   ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // 8529 is Arangodb
-  "forwardPorts": [8529],
+  "forwardPorts": [8529, 5432],
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "bash /workspaces/core/.devcontainer/post-create-command.sh",

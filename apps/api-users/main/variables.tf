@@ -14,6 +14,10 @@ variable "database_user" {
   type = string
 }
 
+variable "database_root_pass" {
+  type = string
+}
+
 variable "google_application_json" {
   type = string
 }

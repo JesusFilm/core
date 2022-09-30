@@ -2,7 +2,7 @@ locals {
   identifier    = "api-users"
   env           = "main"
   port          = 4002
-  cpu           = 1024
+  cpu           = 512
   memory        = 512
   desired_count = 1
   public_url    = "${local.identifier}.central.jesusfilm.org"
@@ -16,7 +16,6 @@ locals {
    }
 
   tags = {
-    Name         = local.name
     env          = local.env
     project_name = local.identifier
     application  = local.identifier

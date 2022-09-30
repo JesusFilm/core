@@ -30,3 +30,14 @@ data "aws_subnets" "apps_public" {
     type = "apps"
   }
 }
+
+data "aws_availability_zones" "main" {
+  filter {
+    name = "region-name"
+    values = [data.aws_region.current.name]
+  }
+}
+
+data "aws_db_subnet_group" "main" {
+  name = "main"
+}

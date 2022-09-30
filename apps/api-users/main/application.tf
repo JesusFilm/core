@@ -9,5 +9,9 @@ module "main" {
   port          = local.port
   public_url    = local.public_url
   env_secrets   = local.env_secrets
+  include_rds   = true
+  database_user = var.database_user
+  database_pass = var.database_pass
+  database_root_pass = var.database_root_pass
   tags          = local.tags
 }

@@ -35,9 +35,10 @@
       }
     },
     "seed": {
-      "executor": "@nrwl/workspace:run-commands",
+      "executor": "@nx-tools/nx-prisma:seed",
       "options": {
-        "command": "npx ts-node apps/api-media/db/seed.ts"
+        "script": "apps/api-media/prisma/seed.ts",
+        "tsConfig": "apps/api-medis/tsconfig.app.json"
       }
     },
     "serve-nowatch": {
@@ -93,6 +94,24 @@
             "command": "DOPPLER_TOKEN=$DOPPLER_API_MEDIA_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-media > apps/api-media/.env"
           }
         ]
+      }
+    },
+    "generate": {
+      "executor": "@nx-tools/nx-prisma:generate",
+      "options": {
+        "schema": "apps/api-journeys/prisma/schema.prisma"
+      }
+    },
+    "migrations": {
+      "executor": "@nx-tools/nx-prisma:migrations",
+      "options": {
+        "schema": "apps/api-journeys/prisma/schema.prisma"
+      }
+    },
+    "rollback": {
+      "executor": "@nx-tools/nx-prisma:rollback",
+      "options": {
+        "schema": "apps/api-journeys/prisma/schema.prisma"
       }
     }
   },

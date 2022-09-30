@@ -12,7 +12,7 @@ terraform {
   }
 	required_providers {
 		aws = {
-	    version = "~> 4.28.0"
+	    version = "~> 4.30.0"
 		}
     github = {
       source  = "integrations/github"

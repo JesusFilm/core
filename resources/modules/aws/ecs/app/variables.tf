@@ -60,3 +60,23 @@ variable "health_check_path" {
   default     = "/.well-known/apollo/server-health"
 }
 
+# RDS specific variables
+variable "include_rds" {
+  description = "Add a serverless Aurora instance"
+  type        = bool
+  default     = false
+}
+
+variable "database_user" {
+  type = string
+  default = ""
+}
+
+variable "database_pass" {
+  type = string
+  default = ""
+}
+variable "database_root_pass" {
+  type    = string
+  default = ""
+}
