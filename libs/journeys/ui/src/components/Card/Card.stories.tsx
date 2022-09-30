@@ -220,13 +220,11 @@ VideoYoutubeDefault.args = {
     {
       ...video,
       video: null,
-      videoId: 'F7k5pqBVinA',
-      source: VideoBlockSource.youTube
+      videoId: '5I69DCxYbBg',
+      source: VideoBlockSource.youTube,
+      startAt: 2738
     }
   ]
-}
-VideoYoutubeDefault.parameters = {
-  chromatic: { delay: 100, diffThreshold: 0.2 }
 }
 
 // Expanded - child video block displays fullscreen simulating video only card
