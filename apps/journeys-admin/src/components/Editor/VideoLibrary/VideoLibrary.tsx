@@ -150,6 +150,7 @@ export function VideoLibrary({
           onClose={(closeParent: boolean) => {
             setOpenVideoDetails(closeParent)
           }}
+          onLibraryClose={onClose}
           onSelect={onSelect}
         />
       )}

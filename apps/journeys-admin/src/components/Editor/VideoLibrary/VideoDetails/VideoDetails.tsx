@@ -24,12 +24,14 @@ export interface VideoDetailsProps {
   id: string
   onClose: (closeParent?: boolean) => void
   onSelect: (block: VideoBlockUpdateInput) => void
+  onLibraryClose?: () => void
   source: VideoBlockSource
 }
 
 export function VideoDetails({
   open,
   id,
+  onLibraryClose,
   onClose,
   onSelect,
   source
@@ -85,7 +87,10 @@ export function VideoDetails({
               Video Details
             </Typography>
             <IconButton
-              onClick={() => onClose(false)}
+              onClick={() => {
+                onClose(false)
+                if (onLibraryClose != null) onLibraryClose()
+              }}
               sx={{ display: 'inline-flex' }}
               edge="end"
               aria-label="Close"
