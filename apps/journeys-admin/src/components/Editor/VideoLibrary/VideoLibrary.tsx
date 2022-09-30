@@ -147,9 +147,7 @@ export function VideoLibrary({
           id={selectedBlock?.videoId}
           open={openVideoDetails}
           source={selectedBlock.source}
-          onClose={(closeParent: boolean) => {
-            setOpenVideoDetails(closeParent)
-          }}
+          onClose={setOpenVideoDetails}
           onLibraryClose={onClose}
           onSelect={onSelect}
         />

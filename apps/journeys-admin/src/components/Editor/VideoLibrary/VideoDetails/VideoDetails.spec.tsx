@@ -152,7 +152,7 @@ describe('VideoDetails', () => {
       videoId: '2_Acts7302-0-0',
       videoVariantLanguageId: '529'
     })
-    expect(onClose).toHaveBeenCalledWith()
+    expect(onClose).toHaveBeenCalledWith(false)
   })
 
   it('should call onClose on changeVideo click', () => {

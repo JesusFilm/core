@@ -22,7 +22,7 @@ export const DRAWER_WIDTH = 328
 export interface VideoDetailsProps {
   open: boolean
   id: string
-  onClose: (closeParent?: boolean) => void
+  onClose: (closeParent: boolean) => void
   onSelect: (block: VideoBlockUpdateInput) => void
   onLibraryClose?: () => void
   source: VideoBlockSource
@@ -53,7 +53,7 @@ export function VideoDetails({
 
   function handleSelect(block: VideoBlockUpdateInput): void {
     onSelect(block)
-    onClose()
+    onClose(false)
   }
 
   return (
