@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -42,7 +42,6 @@ export const ACTION_DELETE = gql`
     }
   }
 `
-
 export const actions = [
   {
     value: 'none',
@@ -88,6 +87,12 @@ export function Action(): ReactElement {
   )
 
   const [action, setAction] = useState(selectedAction?.value ?? 'none')
+
+  useEffect(() => {
+    if (selectedAction != null) {
+      setAction(selectedAction.value)
+    }
+  }, [selectedBlock, selectedAction])
 
   async function navigateAction(): Promise<void> {
     if (
