@@ -18,7 +18,7 @@ describe('TemplateLibrary', () => {
       <TemplateLibrary journeys={[]} templates={[defaultTemplate]} />
     )
     expect(
-      getByText('You need to be invited to create the first template')
+      getByText('You need to be invited to use your first template')
     ).toBeInTheDocument()
   })
 

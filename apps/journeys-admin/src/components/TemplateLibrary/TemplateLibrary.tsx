@@ -19,7 +19,7 @@ export function TemplateLibrary({
 }: TemplateLibraryProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  // TODO: journey == null is journey loading
+  // journey == null is journey loading
   const showLibrary = journeys == null || journeys?.length > 0 || isPublisher
 
   return (

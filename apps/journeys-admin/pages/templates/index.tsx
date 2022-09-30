@@ -79,7 +79,7 @@ function LibraryIndex(): ReactElement {
 
   return (
     <>
-      <NextSeo title="Journey Templates" />
+      <NextSeo title={t('Journey Templates')} />
       <PageWrapper
         title={t('Journey Templates')}
         authUser={AuthUser}

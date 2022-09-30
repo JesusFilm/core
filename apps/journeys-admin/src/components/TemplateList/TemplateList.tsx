@@ -9,14 +9,14 @@ import { ArchivedTemplates } from './ArchivedTemplates'
 import { TrashedTemplates } from './TrashedTemplates'
 
 interface TemplateListProps {
-  router?: NextRouter
   event: string | undefined
+  router?: NextRouter
   authUser?: AuthUser
 }
 
 export function TemplateList({
-  router,
   event,
+  router,
   authUser
 }: TemplateListProps): ReactElement {
   const [sortOrder, setSortOrder] = useState<SortOrder>()
