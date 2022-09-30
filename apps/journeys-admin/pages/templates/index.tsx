@@ -16,10 +16,10 @@ import i18nConfig from '../../next-i18next.config'
 import { GetPublishedTemplates } from '../../__generated__/GetPublishedTemplates'
 import { TemplateLibrary } from '../../src/components/TemplateLibrary'
 import { GetJourneys } from '../../__generated__/GetJourneys'
-import { GET_JOURNEYS } from '..'
 import { GetUserRole } from '../../__generated__/GetUserRole'
 import { Role } from '../../__generated__/globalTypes'
 import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
+import { GET_JOURNEYS } from '..'
 
 const GET_PUBLISHED_TEMPLATES = gql`
   query GetPublishedTemplates {
