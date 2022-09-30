@@ -1,6 +1,5 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import {
   ButtonColor,
@@ -594,18 +593,16 @@ const blocks: GetJourney_journey_blocks[] = [
 
 const Template: Story = (args) => (
   <MockedProvider>
-    <FlagsProvider>
-      <Editor journey={args.journey}>
-        <PageWrapper
-          title={args.journey?.title ?? 'Edit Journey'}
-          showDrawer
-          menu={<EditToolbar />}
-          backHref="/journeys/nua-journey-ep-3-decision"
-        >
-          <JourneyEdit />
-        </PageWrapper>
-      </Editor>
-    </FlagsProvider>
+    <Editor journey={args.journey}>
+      <PageWrapper
+        title={args.journey?.title ?? 'Edit Journey'}
+        showDrawer
+        menu={<EditToolbar />}
+        backHref="/journeys/nua-journey-ep-3-decision"
+      >
+        <JourneyEdit />
+      </PageWrapper>
+    </Editor>
   </MockedProvider>
 )
 

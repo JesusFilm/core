@@ -1,7 +1,6 @@
 import { render } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -63,13 +62,11 @@ describe('Editor', () => {
   it('should render the element', () => {
     const { getByText } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ feedbackBlock: true }}>
-          <ThemeProvider>
-            <Editor journey={journey}>
-              <JourneyEdit />
-            </Editor>
-          </ThemeProvider>
-        </FlagsProvider>
+        <ThemeProvider>
+          <Editor journey={journey}>
+            <JourneyEdit />
+          </Editor>
+        </ThemeProvider>
       </MockedProvider>
     )
     expect(getByText('Cards')).toBeInTheDocument()
@@ -80,13 +77,11 @@ describe('Editor', () => {
   it('should display Next Card property', () => {
     const { getByText } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ feedbackBlock: true }}>
-          <ThemeProvider>
-            <Editor journey={journey} selectedStepId="step0.id">
-              <JourneyEdit />
-            </Editor>
-          </ThemeProvider>
-        </FlagsProvider>
+        <ThemeProvider>
+          <Editor journey={journey} selectedStepId="step0.id">
+            <JourneyEdit />
+          </Editor>
+        </ThemeProvider>
       </MockedProvider>
     )
     expect(getByText('Next Card')).toBeInTheDocument()
