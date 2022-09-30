@@ -92,7 +92,7 @@ export function Action(): ReactElement {
     if (selectedAction != null) {
       setAction(selectedAction.value)
     } else {
-    	setAction('none')
+      setAction('none')
     }
   }, [selectedBlock, selectedAction])
 
