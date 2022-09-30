@@ -21,4 +21,15 @@ describe('TemplateLibrary', () => {
       getByText('You need to be invited to create the first template')
     ).toBeInTheDocument()
   })
+
+  it('should show templates to new publishers', () => {
+    const { getByText } = render(
+      <TemplateLibrary
+        isPublisher
+        journeys={[]}
+        templates={[defaultTemplate]}
+      />
+    )
+    expect(getByText('Default Template Heading')).toBeInTheDocument()
+  })
 })

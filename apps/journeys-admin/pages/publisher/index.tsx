@@ -13,11 +13,11 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { useRouter } from 'next/router'
 import { Role } from '../../__generated__/globalTypes'
 import { GetUserRole } from '../../__generated__/GetUserRole'
+import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
 import i18nConfig from '../../next-i18next.config'
 import JourneyListMenu from '../../src/components/JourneyList/JourneyListMenu/JourneyListMenu'
-import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
 
 function TemplateIndex(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

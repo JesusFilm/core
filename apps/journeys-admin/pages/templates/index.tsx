@@ -1,5 +1,6 @@
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import { gql, useQuery } from '@apollo/client'
 import {
   AuthAction,
@@ -16,6 +17,9 @@ import { GetPublishedTemplates } from '../../__generated__/GetPublishedTemplates
 import { TemplateLibrary } from '../../src/components/TemplateLibrary'
 import { GetJourneys } from '../../__generated__/GetJourneys'
 import { GET_JOURNEYS } from '..'
+import { GetUserRole } from '../../__generated__/GetUserRole'
+import { Role } from '../../__generated__/globalTypes'
+import { GET_USER_ROLE } from '../../src/components/JourneyView/JourneyView'
 
 const GET_PUBLISHED_TEMPLATES = gql`
   query GetPublishedTemplates {
@@ -64,20 +68,25 @@ const GET_PUBLISHED_TEMPLATES = gql`
 `
 
 function LibraryIndex(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
   const { data } = useQuery<GetPublishedTemplates>(GET_PUBLISHED_TEMPLATES)
   const router = useRouter()
   const { data: journeyData } = useQuery<GetJourneys>(GET_JOURNEYS)
+  const { data: userData } = useQuery<GetUserRole>(GET_USER_ROLE)
+
+  const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
 
   return (
     <>
       <NextSeo title="Journey Templates" />
       <PageWrapper
-        title="Journey Templates"
+        title={t('Journey Templates')}
         authUser={AuthUser}
         router={router}
       >
         <TemplateLibrary
+          isPublisher={isPublisher}
           journeys={journeyData?.journeys}
           templates={data?.journeys}
         />
