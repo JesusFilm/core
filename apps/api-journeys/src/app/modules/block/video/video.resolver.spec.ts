@@ -382,7 +382,7 @@ describe('VideoBlockResolver', () => {
         ).rejects.toThrow('videoId cannot be found on YouTube')
       })
 
-      it('updates a VideoBlock', async () => {
+      it('updates videoId', async () => {
         mockFetch.mockResolvedValueOnce({
           ok: true,
           json: async () =>
@@ -421,6 +421,19 @@ describe('VideoBlockResolver', () => {
           duration: 1167,
           image: 'https://i.ytimg.com/vi/7RoqnGcEjcs/hqdefault.jpg',
           title: 'What is the Bible?'
+        })
+      })
+
+      it('updates a VideoBlock', async () => {
+        expect(
+          await resolver.videoBlockUpdate('blockId', 'journeyId', {
+            autoplay: true,
+            source: VideoBlockSource.youTube
+          })
+        ).toEqual({
+          ...updatedBlock,
+          autoplay: true,
+          source: VideoBlockSource.youTube
         })
       })
     })

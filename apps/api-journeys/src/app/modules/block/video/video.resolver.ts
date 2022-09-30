@@ -159,9 +159,11 @@ export class VideoBlockResolver {
     switch (input.source ?? block.source) {
       case VideoBlockSource.youTube:
         await videoBlockYouTubeSchema.validate({ ...block, ...input })
-        input = {
-          ...input,
-          ...(await this.fetchFieldsFromYouTube(input.videoId as string))
+        if (input.videoId != null) {
+          input = {
+            ...input,
+            ...(await this.fetchFieldsFromYouTube(input.videoId))
+          }
         }
         break
       case VideoBlockSource.internal:
