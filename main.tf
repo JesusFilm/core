@@ -1,10 +1,5 @@
-locals {
-  internal_alb_target_groups = {for service, config in var.microservice_config : service => config.alb_target_group if !config.is_gateway}
-  public_alb_target_groups   = {for service, config in var.microservice_config : service => config.alb_target_group if config.is_gateway}
-}
-
 module "iam" {
-  source   = "./modules/aws/iam"
+  source = "./modules/aws/iam"
 }
 
 module "vpc" {
@@ -39,7 +34,6 @@ module "internal-alb" {
   name              = "core-internal-alb"
   subnets           = module.vpc.private_subnets
   vpc_id            = module.vpc.vpc_id
-  target_groups     = local.internal_alb_target_groups
   internal          = true
   listener_port     = 80
   listener_protocol = "HTTP"
@@ -52,7 +46,6 @@ module "public-alb" {
   name              = "core-public-alb"
   subnets           = module.vpc.public_subnets
   vpc_id            = module.vpc.vpc_id
-  target_groups     = local.public_alb_target_groups
   internal          = false
   listener_port     = 80
   listener_protocol = "HTTP"
@@ -75,6 +68,16 @@ module "ecs" {
 }
 
 module "api-gateway" {
-  source = "./apps/api-gateway"
+  source                      = "./apps/api-gateway"
+  account                     = var.account
+  region                      = var.region
+  ecs_task_execution_role_arn = module.iam.ecs_task_execution_role_arn
+  vpc_id                      = module.vpc.vpc_id
+  private_subnets             = module.vpc.private_subnets
+  public_subnets              = module.vpc.public_subnets
+  public_alb_security_group   = module.public_alb_security_group
+  internal_alb_security_group = module.internal_alb_security_group
+  internal_alb_target_groups  = module.internal-alb.target_groups
+  public_alb_target_groups    = module.public-alb.target_groups
 }
 

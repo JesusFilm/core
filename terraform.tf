@@ -3,10 +3,10 @@ terraform {
     encrypt        = true
     bucket         = "jfp-terraform-state"
     dynamodb_table = "jfp-terraform-state-lock"
-    region         = var.region
+    region         = "us-east-2"
     key            = "terraform.tfstate"
   }
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -17,5 +17,5 @@ terraform {
 }
 
 provider "aws" {
-  region = var.region
+  region = "us-east-2"
 }

@@ -13,3 +13,7 @@ resource "aws_ecr_repository" "main" {
 }
 
 # TODO: Add ecr_lifecycle_policy
+
+module "ecs-task" {
+  source = "../../modules/aws/ecs-task"
+}

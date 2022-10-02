@@ -29,7 +29,7 @@ variable "public_subnets" {
 variable "service_config" {
   type = object({
     name           = string
-    is_gateway      = bool
+    is_public      = bool
     container_port = number
     host_port      = number
     cpu            = number
@@ -47,7 +47,7 @@ variable "service_config" {
     auto_scaling = object({
       max_capacity = number
       min_capacity = number
-      cpu          = object({
+      cpu = object({
         target_value = number
       })
       memory = object({

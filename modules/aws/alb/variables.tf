@@ -20,7 +20,7 @@ variable "security_groups" {
 
 variable "listeners" {
   type = map(object({
-    listener_port = number
+    listener_port     = number
     listener_protocol = string
   }))
 }
