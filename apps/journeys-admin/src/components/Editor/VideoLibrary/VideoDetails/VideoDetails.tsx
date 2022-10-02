@@ -4,9 +4,12 @@ import Drawer from '@mui/material/Drawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
+import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
 import Close from '@mui/icons-material/Close'
+import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded'
+import Button from '@mui/material/Button'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
@@ -19,14 +22,16 @@ export const DRAWER_WIDTH = 328
 export interface VideoDetailsProps {
   open: boolean
   id: string
-  onClose: () => void
+  onClose: (closeParent: boolean) => void
   onSelect: (block: VideoBlockUpdateInput) => void
+  onLibraryClose?: () => void
   source: VideoBlockSource
 }
 
 export function VideoDetails({
   open,
   id,
+  onLibraryClose,
   onClose,
   onSelect,
   source
@@ -48,7 +53,7 @@ export function VideoDetails({
 
   function handleSelect(block: VideoBlockUpdateInput): void {
     onSelect(block)
-    onClose()
+    onClose(false)
   }
 
   return (
@@ -60,7 +65,10 @@ export function VideoDetails({
         elevation={smUp ? 1 : 0}
         hideBackdrop
         sx={{
-          display: { xs: smUp ? 'none' : 'block', sm: smUp ? 'block' : 'none' },
+          left: {
+            xs: 0,
+            sm: 'unset'
+          },
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
             width: smUp ? DRAWER_WIDTH : '100%',
@@ -79,7 +87,10 @@ export function VideoDetails({
               Video Details
             </Typography>
             <IconButton
-              onClick={onClose}
+              onClick={() => {
+                onClose(false)
+                if (onLibraryClose != null) onLibraryClose()
+              }}
               sx={{ display: 'inline-flex' }}
               edge="end"
               aria-label="Close"
@@ -88,7 +99,17 @@ export function VideoDetails({
             </IconButton>
           </Toolbar>
         </AppBar>
-        <Details id={id} open={open} onSelect={handleSelect} />
+        <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+          <Button
+            startIcon={<SubscriptionsRoundedIcon />}
+            size="small"
+            onClick={() => onClose(false)}
+            sx={{ mx: 6, mt: 6, px: 3 }}
+          >
+            Change Video
+          </Button>
+          <Details id={id} open={open} onSelect={handleSelect} />
+        </Box>
       </Drawer>
     </>
   )

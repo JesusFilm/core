@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import VideoLibrary from '@mui/icons-material/VideoLibrary'
@@ -9,7 +9,7 @@ import { Attribute } from '../..'
 import { VideoOptions } from './Options/VideoOptions'
 
 export function Video(block: TreeBlock<VideoBlock>): ReactElement {
-  const { id } = block
+  const { id, videoId } = block
 
   const { dispatch } = useEditor()
 
@@ -24,6 +24,18 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
   const selectedAction = actions.find(
     (act) => act.value === block.action?.__typename
   )
+
+  useEffect(() => {
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      id: `${id}-video-options`
+    })
+    dispatch({
+      type: 'SetDrawerPropsAction',
+      title: 'Video',
+      children: <VideoOptions />
+    })
+  }, [id, videoId, dispatch])
 
   return (
     <>
