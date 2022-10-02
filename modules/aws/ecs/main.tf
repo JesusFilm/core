@@ -1,5 +1,5 @@
 resource "aws_ecs_cluster" "ecs_cluster" {
-  name = lower("core-cluster")
+  name = "core-cluster"
 }
 
 resource "aws_security_group" "internal_security_group" {

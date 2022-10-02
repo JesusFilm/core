@@ -30,7 +30,7 @@ variable "availability_zones" {
   description = "Availability zones that the services are running"
 }
 
-variable "private_subnets" {
+variable "internal_subnets" {
   type        = list(string)
   description = "Private subnets"
 }

@@ -8,11 +8,11 @@ app_services = ["api-gateway"]
 cidr               = "10.10.0.0/16"
 availability_zones = ["us-east-2a", "us-east-2b"]
 public_subnets     = ["10.10.50.0/24", "10.10.51.0/24"]
-private_subnets    = ["10.10.0.0/24", "10.10.1.0/24"]
+internal_subnets   = ["10.10.0.0/24", "10.10.1.0/24"]
 
 #Internal ALB configurations
 internal_alb_config = {
-  name      = "internal-alb"
+  name = "internal-alb"
   listeners = {
     "HTTP" = {
       listener_port     = 80
@@ -45,7 +45,7 @@ internal_url_name = "service.internal"
 
 #Public ALB configurations
 public_alb_config = {
-  name      = "public-alb"
+  name = "public-alb"
   listeners = {
     "HTTP" = {
       listener_port     = 80

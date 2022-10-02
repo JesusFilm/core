@@ -10,7 +10,7 @@ variable "availability_zones" {
   type = list(string)
 }
 
-variable "private_subnets" {
+variable "internal_subnets" {
   type = list(string)
 }
 

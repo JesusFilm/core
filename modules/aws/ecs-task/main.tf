@@ -1,5 +1,9 @@
+resource "aws_ecr_repository" "ecr_repository" {
+  name = "core-${var.service_config.name}"
+}
+
 resource "aws_cloudwatch_log_group" "ecs_cw_log_group" {
-  name = lower("${var.service_config.name}-logs")
+  name = "${var.service_config.name}-logs"
 }
 
 #Create task definitions for app services
@@ -40,16 +44,16 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 #Create services for app services
 resource "aws_ecs_service" "private_service" {
   name            = "${var.service_config.name}-service"
-  cluster         = aws_ecs_cluster.ecs_cluster.id
+  cluster         = var.ecs_cluster_id
   task_definition = aws_ecs_task_definition.ecs_task_definition.arn
   launch_type     = "FARGATE"
   desired_count   = var.service_config.desired_count
 
   network_configuration {
-    subnets          = var.service_config.is_public == true ? var.public_subnets : var.private_subnets
+    subnets          = var.service_config.is_public == true ? var.public_subnets : var.internal_subnets
     assign_public_ip = var.service_config.is_public == true ? true : false
     security_groups = [
-      each.value.is_public == true ? aws_security_group.webapp_security_group.id : aws_security_group.service_security_group.id
+      var.service_config.is_public == true ? aws_security_group.webapp_security_group.id : aws_security_group.service_security_group.id
     ]
   }
 

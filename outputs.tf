@@ -1,43 +1,31 @@
-output "vpc-id" {
- value = module.vpc.vpc-id
+output "vpc_id" {
+  value = module.vpc.vpc_id
 }
 
-output "private-subnets" {
- value = module.vpc.private-subnets
+output "internal_subnets" {
+  value = module.vpc.internal_subnets
 }
 
-output "public-subnets" {
- value = module.vpc.public-subnets
+output "public_subnets" {
+  value = module.vpc.public_subnets
 }
 
-output "internal-alb-dns" {
- value = module.internal-alb.internal-alb-dns
+output "internal_alb_dns" {
+  value = module.internal_alb.internal_alb_dns
 }
 
-output "internal-alb-target-groups" {
- value = module.internal-alb.target-groups
-}
+# output "internal_alb_target_groups" {
+#   value = module.internal_alb.target_groups
+# }
 
-output "public-alb-target-groups" {
- value = module.public-alb.target-groups
-}
+# output "public_alb_target_groups" {
+#   value = module.public_alb.target_groups
+# }
 
 output "aws_alb_listener" {
- value = module.internal-alb.aws_alb_listener
+  value = module.internal_alb.aws_alb_listener
 }
 
-output "ecr-repositories" {
- value = module.ecr.repository-services
-}
-
-output "ecs-task-execution-role-arn" {
- value = module.iam.ecs-task-execution-role-arn
-}
-
-output "aws_cloudwatch_log_group" {
- value = module.ecs.aws_cloudwatch_log_group
-}
-
-output "aws_ecs_task_definition" {
- value = module.ecs.aws_cloudwatch_log_group
+output "ecs_task_execution_role_arn" {
+  value = module.iam.ecs_task_execution_role_arn
 }
