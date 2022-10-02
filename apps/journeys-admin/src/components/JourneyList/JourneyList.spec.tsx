@@ -35,7 +35,7 @@ describe('JourneyList', () => {
     expect(getByRole('tablist')).toBeInTheDocument()
   })
 
-  it('should prevent users from creating a journey unless invited', () => {
+  it('should show access denied message to new user', () => {
     const { getByText, getByRole, queryByText } = render(
       <SnackbarProvider>
         <MockedProvider>
