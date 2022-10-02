@@ -6,7 +6,6 @@ import { transformer } from '@core/journeys/ui/transformer'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { useTheme } from '@mui/material/styles'
 import { JourneysReportType, Role } from '../../../__generated__/globalTypes'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
@@ -39,7 +38,6 @@ interface JourneyViewProps {
 
 export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
   const { journey } = useJourney()
-  const { reports } = useFlags()
   const theme = useTheme()
   const blocks =
     journey?.blocks != null
@@ -87,7 +85,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
       </Box>
       <Properties journeyType={journeyType} isPublisher={isPublisher} />
 
-      {reports && journey != null && journey.template !== true && (
+      {journey != null && journey.template !== true && (
         <>
           <Box
             sx={{ height: '213px', pb: 6, mx: 6 }}
@@ -104,12 +102,7 @@ export function JourneyView({ journeyType }: JourneyViewProps): ReactElement {
       {journeyType === 'Journey' && (
         <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
           <Divider />
-          <Box
-            sx={{
-              p: 6,
-              backgroundColor: !reports ? 'background.paper' : undefined
-            }}
-          >
+          <Box sx={{ p: 6 }}>
             <JourneyLink />
           </Box>
           <Divider />

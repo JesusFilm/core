@@ -23,7 +23,7 @@ const JourneyViewStory = {
 
 const Template: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
-    <FlagsProvider flags={{ reports: args.reports }}>
+    <FlagsProvider>
       <JourneyProvider value={{ journey: args.journey }}>
         <PageWrapper
           title="Journey Details"
@@ -44,12 +44,6 @@ Default.args = {
   journey: publishedJourney
 }
 
-export const Reports = Template.bind({})
-Reports.args = {
-  journey: publishedJourney,
-  reports: true
-}
-
 export const Loading = Template.bind({})
 Loading.args = {
   journey: undefined
@@ -57,8 +51,8 @@ Loading.args = {
 
 const JourneyTemplate: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
-    <MockedProvider mocks={args.mocks}>
-      <FlagsProvider flags={{ reports: args.reports }}>
+    <FlagsProvider>
+      <MockedProvider mocks={args.mocks}>
         <JourneyProvider value={{ journey: args.journey }}>
           <PageWrapper
             title="Journey Template"
@@ -69,8 +63,8 @@ const JourneyTemplate: Story = ({ ...args }) => (
             <JourneyView journeyType="Template" />
           </PageWrapper>
         </JourneyProvider>
-      </FlagsProvider>
-    </MockedProvider>
+      </MockedProvider>
+    </FlagsProvider>
   </ApolloLoadingProvider>
 )
 

@@ -2,7 +2,6 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import Box from '@mui/material/Box'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { publishedJourney } from '../data'
@@ -17,18 +16,16 @@ const JourneyLinkStory = {
 const Template: Story = ({ ...args }) => (
   <ApolloLoadingProvider>
     <MockedProvider>
-      <FlagsProvider>
-        <JourneyProvider value={{ journey: args.journey }}>
-          <Box
-            sx={{
-              p: 6,
-              backgroundColor: 'background.paper'
-            }}
-          >
-            <JourneyLink />
-          </Box>
-        </JourneyProvider>
-      </FlagsProvider>
+      <JourneyProvider value={{ journey: args.journey }}>
+        <Box
+          sx={{
+            p: 6,
+            backgroundColor: 'background.paper'
+          }}
+        >
+          <JourneyLink />
+        </Box>
+      </JourneyProvider>
     </MockedProvider>
   </ApolloLoadingProvider>
 )

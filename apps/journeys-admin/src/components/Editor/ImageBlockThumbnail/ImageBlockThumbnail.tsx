@@ -1,16 +1,19 @@
 import { ReactElement } from 'react'
 import CircularProgress from '@mui/material/CircularProgress'
 import ImageIcon from '@mui/icons-material/Image'
+import SvgIcon from '@mui/material/SvgIcon'
 import Box from '@mui/material/Box'
 
 interface ImageBlockThumbnailProps {
-  selectedBlock: { src: string | null; alt: string } | null
+  selectedBlock?: { src: string | null; alt: string } | null
   loading?: boolean
+  Icon?: typeof SvgIcon
 }
 
 export function ImageBlockThumbnail({
   selectedBlock,
-  loading
+  loading,
+  Icon = ImageIcon
 }: ImageBlockThumbnailProps): ReactElement {
   return (
     <Box
@@ -40,7 +43,7 @@ export function ImageBlockThumbnail({
           }}
         />
       ) : (
-        <ImageIcon data-testid="imageBlockThumbnailPlaceholder" />
+        <Icon data-testid="imageBlockThumbnailPlaceholder" />
       )}
     </Box>
   )
