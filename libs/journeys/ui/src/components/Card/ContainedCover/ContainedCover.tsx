@@ -73,6 +73,8 @@ export function ContainedCover({
     }
   }, [imageBlock, theme, videoBlock, backgroundBlur])
 
+  const videoImage = videoBlock?.image ?? videoBlock?.video?.image
+
   return (
     <>
       <Box
@@ -119,6 +121,19 @@ export function ContainedCover({
             )}
           </video>
         )}
+        {/* video image */}
+        {videoImage != null && (
+          <NextImage
+            src={videoImage}
+            alt="video image"
+            placeholder={videoImage != null ? 'blur' : 'empty'}
+            blurDataURL={videoImage}
+            layout="fill"
+            objectFit="cover"
+          />
+        )}
+
+        {/* background image */}
         {loading && imageBlock != null && backgroundBlur != null && (
           <NextImage
             data-testid={

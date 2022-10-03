@@ -24,6 +24,7 @@ export function Video({
   video,
   source,
   videoId,
+  image,
   title,
   autoplay,
   startAt,
@@ -132,6 +133,10 @@ export function Video({
 
   const eventVideoTitle = video?.title[0].value ?? title
   const eventVideoId = video?.id ?? videoId
+
+  const videoImage = image ?? video?.image
+
+  console.log(videoImage)
 
   return (
     <Box
@@ -251,6 +256,16 @@ export function Video({
             />
           </Paper>
         </>
+      )}
+      {/* Video Image  */}
+      {videoImage != null && (
+        <NextImage
+          src={videoImage}
+          alt="video image"
+          layout="fill"
+          objectFit="cover"
+          quality="100"
+        />
       )}
       {/* Lazy load higher res poster */}
       {posterBlock?.src != null && loading && (
