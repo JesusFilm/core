@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 
@@ -6,7 +6,7 @@ import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../
 import { GetVideoVariantLanguages_video } from '../../../../__generated__/GetVideoVariantLanguages'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../ThemeProvider'
-import { GET_VIDEO_VARIANT_LANGUAGES } from './VideoBlockEditor'
+import { GET_VIDEO_VARIANT_LANGUAGES } from './Source/SourceFromLocal/SourceFromLocal'
 import { VideoBlockEditor } from '.'
 
 const videoInternal: TreeBlock<VideoBlock> = {
@@ -120,7 +120,7 @@ describe('VideoBlockEditor', () => {
           </MockedProvider>
         </ThemeProvider>
       )
-      expect(getByText('Select Video File')).toBeInTheDocument()
+      expect(getByText('Select Video')).toBeInTheDocument()
     })
   })
 
@@ -270,24 +270,6 @@ describe('VideoBlockEditor', () => {
       expect(getByText('FallingPlates')).toBeInTheDocument()
       await waitFor(() => expect(getByText('English')).toBeInTheDocument())
     })
-
-    it('calls onDelete', async () => {
-      const onDelete = jest.fn()
-      const { getByTestId } = render(
-        <ThemeProvider>
-          <MockedProvider mocks={mocks}>
-            <VideoBlockEditor
-              selectedBlock={videoInternal}
-              onChange={jest.fn()}
-              onDelete={onDelete}
-            />
-          </MockedProvider>
-        </ThemeProvider>
-      )
-      const button = await getByTestId('imageBlockHeaderDelete')
-      fireEvent.click(button)
-      expect(onDelete).toHaveBeenCalledWith()
-    })
   })
 
   describe('video youTube source', () => {
@@ -304,24 +286,6 @@ describe('VideoBlockEditor', () => {
         </ThemeProvider>
       )
       expect(getByText('What is the Bible?')).toBeInTheDocument()
-    })
-
-    it('calls onDelete', async () => {
-      const onDelete = jest.fn()
-      const { getByTestId } = render(
-        <ThemeProvider>
-          <MockedProvider mocks={mocks}>
-            <VideoBlockEditor
-              selectedBlock={videoYouTube}
-              onChange={jest.fn()}
-              onDelete={onDelete}
-            />
-          </MockedProvider>
-        </ThemeProvider>
-      )
-      const button = await getByTestId('imageBlockHeaderDelete')
-      fireEvent.click(button)
-      expect(onDelete).toHaveBeenCalledWith()
     })
   })
 

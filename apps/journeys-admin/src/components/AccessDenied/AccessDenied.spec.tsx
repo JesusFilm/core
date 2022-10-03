@@ -13,4 +13,14 @@ describe('AccessDenied', () => {
     fireEvent.click(getByRole('button', { name: 'Request Access' }))
     expect(onClick).toHaveBeenCalled()
   })
+
+  it('should show back button', () => {
+    const { getByRole } = render(
+      <AccessDenied title="title" description="description" />
+    )
+
+    expect(
+      getByRole('link', { name: 'Back to the Admin Panel' })
+    ).toHaveAttribute('href', '/')
+  })
 })

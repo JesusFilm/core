@@ -23,10 +23,10 @@ describe('useFlags', () => {
 
   it('should render flags when in provider', () => {
     const { getByText } = render(
-      <FlagsProvider flags={{ reports: true }}>
+      <FlagsProvider flags={{ testFlag: true }}>
         <FlagsComponent />
       </FlagsProvider>
     )
-    expect(getByText('{"reports":true}')).toBeInTheDocument()
+    expect(getByText('{"testFlag":true}')).toBeInTheDocument()
   })
 })

@@ -55,7 +55,7 @@ const Template: Story = ({ ...args }) => (
       }
     ]}
   >
-    <FlagsProvider flags={{ reports: args.reports, templates: args.templates }}>
+    <FlagsProvider flags={{ templates: args.templates }}>
       <PageWrapper {...(args.props as unknown as PageWrapperProps)} />
     </FlagsProvider>
   </MockedProvider>
@@ -63,8 +63,7 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  props: { title: 'Active Journeys' },
-  reports: true
+  props: { title: 'Active Journeys' }
 }
 
 export const Complete = Template.bind({})
@@ -85,7 +84,6 @@ Complete.args = {
       </IconButton>
     )
   },
-  reports: true,
   templates: true
 }
 

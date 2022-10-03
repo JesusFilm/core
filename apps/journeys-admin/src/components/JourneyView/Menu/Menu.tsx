@@ -16,7 +16,6 @@ import CheckRounded from '@mui/icons-material/CheckRounded'
 import NextLink from 'next/link'
 import { useSnackbar } from 'notistack'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { useRouter } from 'next/router'
 import {
   JourneyStatus,
@@ -78,7 +77,6 @@ export function Menu(): ReactElement {
   const [showDescriptionDialog, setShowDescriptionDialog] = useState(false)
   const [showLanguageDialog, setShowLanguageDialog] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
-  const { reports } = useFlags()
 
   const openMenu = Boolean(anchorEl)
 
@@ -264,7 +262,7 @@ export function Menu(): ReactElement {
                 onClick={handleUpdateLanguage}
               />
             )}
-            {journey.template !== true && reports && (
+            {journey.template !== true && (
               <NextLink href={`/journeys/${journey.id}/reports`} passHref>
                 <MenuItem label="Report" icon={<AssessmentRoundedIcon />} />
               </NextLink>

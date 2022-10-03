@@ -1,6 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { GET_VIDEOS } from './VideoFromLocal/VideoFromLocal'
 import { VideoLibrary } from '.'
 
@@ -203,5 +204,44 @@ describe('Video Library', () => {
       videoVariantLanguageId: '529'
     })
     expect(onClose).toHaveBeenCalled()
+  })
+
+  it('should render video details if videoId is not null', () => {
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+
+    const { getByText } = render(
+      <MockedProvider>
+        <VideoLibrary
+          open
+          selectedBlock={{
+            id: 'video1.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card1.id',
+            description:
+              'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+            duration: 348,
+            endAt: 348,
+            fullsize: true,
+            image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+            muted: false,
+            autoplay: true,
+            startAt: 0,
+            title: 'What is the Bible?',
+            videoId: 'ak06MSETeo4',
+            videoVariantLanguageId: null,
+            parentOrder: 0,
+            action: null,
+            source: VideoBlockSource.youTube,
+            video: null,
+            posterBlockId: 'poster1.id',
+            children: []
+          }}
+          onSelect={onSelect}
+          onClose={onClose}
+        />
+      </MockedProvider>
+    )
+    expect(getByText('Video Details')).toBeInTheDocument()
   })
 })
