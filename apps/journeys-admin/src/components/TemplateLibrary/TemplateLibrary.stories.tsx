@@ -16,7 +16,7 @@ const TemplateLibraryStory = {
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider>
-    <TemplateLibrary journeys={args.templates} />
+    <TemplateLibrary journeys={args.journeys} templates={args.templates} />
   </MockedProvider>
 )
 
