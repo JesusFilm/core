@@ -54,8 +54,9 @@ function JourneyIdPage(): ReactElement {
               backHref="/"
               menu={<Menu />}
               authUser={AuthUser}
+              router={router}
             >
-              <JourneyView />
+              <JourneyView journeyType="Journey" />
             </PageWrapper>
           </JourneyProvider>
         </>

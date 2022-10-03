@@ -43,6 +43,7 @@ const allStories = [
 ]
 
 module.exports = {
+  staticDirs: ['./static'],
   stories: allStories,
   addons: [
     '@storybook/addon-essentials',

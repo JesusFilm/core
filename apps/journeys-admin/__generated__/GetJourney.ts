@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, UserJourneyRole } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -19,13 +19,6 @@ export interface GetJourney_journey_language {
   __typename: "Language";
   id: string;
   name: GetJourney_journey_language_name[];
-}
-
-export interface GetJourney_journey_blocks_TextResponseBlock {
-  __typename: "TextResponseBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateAction {
@@ -272,6 +265,54 @@ export interface GetJourney_journey_blocks_StepBlock {
   nextBlockId: string | null;
 }
 
+export interface GetJourney_journey_blocks_TextResponseBlock_action_NavigateAction {
+  __typename: "NavigateAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
+export interface GetJourney_journey_blocks_TextResponseBlock_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface GetJourney_journey_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+}
+
+export interface GetJourney_journey_blocks_TextResponseBlock_action_NavigateToJourneyAction {
+  __typename: "NavigateToJourneyAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  journey: GetJourney_journey_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey | null;
+}
+
+export interface GetJourney_journey_blocks_TextResponseBlock_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export type GetJourney_journey_blocks_TextResponseBlock_action = GetJourney_journey_blocks_TextResponseBlock_action_NavigateAction | GetJourney_journey_blocks_TextResponseBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_TextResponseBlock_action_NavigateToJourneyAction | GetJourney_journey_blocks_TextResponseBlock_action_LinkAction;
+
+export interface GetJourney_journey_blocks_TextResponseBlock {
+  __typename: "TextResponseBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  hint: string | null;
+  minRows: number | null;
+  submitLabel: string | null;
+  submitIconId: string | null;
+  action: GetJourney_journey_blocks_TextResponseBlock_action | null;
+}
+
 export interface GetJourney_journey_blocks_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
@@ -372,6 +413,36 @@ export interface GetJourney_journey_blocks_VideoBlock {
    */
   videoVariantLanguageId: string | null;
   /**
+   * internal source: videoId, videoVariantLanguageId, and video present
+   * youTube source: videoId, title, description, and duration present
+   */
+  source: VideoBlockSource;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field.
+   * For other sources this is automatically populated.
+   */
+  title: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  description: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  image: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   * duration in seconds.
+   */
+  duration: number | null;
+  /**
    * internal source videos: video is only populated when videoID and
    * videoVariantLanguageId are present
    */
@@ -430,7 +501,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock {
   triggerAction: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_TextResponseBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_GridItemBlock | GetJourney_journey_blocks_IconBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_GridItemBlock | GetJourney_journey_blocks_IconBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TextResponseBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
 
 export interface GetJourney_journey_primaryImageBlock {
   __typename: "ImageBlock";

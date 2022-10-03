@@ -294,8 +294,8 @@ export class TextResponseBlockCreateInput {
 export class TextResponseBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
-    content?: Nullable<string>;
     hint?: Nullable<string>;
+    minRows?: Nullable<number>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
 }
@@ -386,7 +386,7 @@ export class TemplatePreviewEventInput {
 export class TextResponseSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
-    field: string;
+    value: string;
 }
 
 export class VideoStartEventCreateInput {
@@ -654,8 +654,8 @@ export class TextResponseBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     label: string;
-    content?: Nullable<string>;
     hint?: Nullable<string>;
+    minRows?: Nullable<number>;
     action?: Nullable<Action>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
@@ -768,7 +768,7 @@ export class TextResponseSubmissionEvent implements Event {
     __typename?: 'TextResponseSubmissionEvent';
     id: string;
     userId: string;
-    field: string;
+    value: string;
     block?: Nullable<TextResponseBlock>;
 }
 

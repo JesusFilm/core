@@ -4,13 +4,13 @@ input TextResponseSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
-  field: String!
+  value: String!
 }
 
 type TextResponseSubmissionEvent implements Event {
   id: ID!
   userId: ID!
-  field: String!
+  value: String!
   block: TextResponseBlock
 }
 

@@ -107,7 +107,7 @@ export function CreateTemplateMenuItem(): ReactElement {
         })
 
         void router.push(
-          `/templates/${templateData.journeyTemplate.id}`,
+          `/publisher/${templateData.journeyTemplate.id}`,
           undefined,
           { shallow: true }
         )

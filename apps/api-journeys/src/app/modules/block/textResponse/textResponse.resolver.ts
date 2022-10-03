@@ -4,6 +4,7 @@ import { Args, Mutation, Resolver, ResolveField, Parent } from '@nestjs/graphql'
 
 import {
   Action,
+  Role,
   TextResponseBlock,
   TextResponseBlockCreateInput,
   TextResponseBlockUpdateInput,
@@ -30,7 +31,8 @@ export class TextResponseBlockResolver {
   @UseGuards(
     RoleGuard('input.journeyId', [
       UserJourneyRole.owner,
-      UserJourneyRole.editor
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
     ])
   )
   async textResponseBlockCreate(
@@ -49,7 +51,11 @@ export class TextResponseBlockResolver {
 
   @Mutation()
   @UseGuards(
-    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+    RoleGuard('journeyId', [
+      UserJourneyRole.owner,
+      UserJourneyRole.editor,
+      { role: Role.publisher, attributes: { template: true } }
+    ])
   )
   async textResponseBlockUpdate(
     @Args('id') id: string,

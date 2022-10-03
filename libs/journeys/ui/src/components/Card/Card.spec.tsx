@@ -2,7 +2,11 @@ import { render, waitFor } from '@testing-library/react'
 import { themes } from '@core/shared/ui/themes'
 import type { TreeBlock } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
-import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import {
+  ThemeMode,
+  ThemeName,
+  VideoBlockSource
+} from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 import { Card } from '.'
@@ -72,6 +76,11 @@ describe('CardBlock', () => {
     action: null,
     videoId: '2_0-FallingPlates',
     videoVariantLanguageId: '529',
+    source: VideoBlockSource.internal,
+    title: null,
+    description: null,
+    duration: null,
+    image: null,
     video: {
       __typename: 'Video',
       id: '2_0-FallingPlates',

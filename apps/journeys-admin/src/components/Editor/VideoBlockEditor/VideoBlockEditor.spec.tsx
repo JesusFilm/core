@@ -1,14 +1,15 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../__generated__/GetJourney'
 import { GetVideoVariantLanguages_video } from '../../../../__generated__/GetVideoVariantLanguages'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../ThemeProvider'
-import { GET_VIDEO_VARIANT_LANGUAGES } from './VideoBlockEditor'
+import { GET_VIDEO_VARIANT_LANGUAGES } from './Source/SourceFromLocal/SourceFromLocal'
 import { VideoBlockEditor } from '.'
 
-const video: TreeBlock<VideoBlock> = {
+const videoInternal: TreeBlock<VideoBlock> = {
   id: 'video1.id',
   __typename: 'VideoBlock',
   parentBlockId: 'card1.id',
@@ -21,6 +22,11 @@ const video: TreeBlock<VideoBlock> = {
   action: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
+  source: VideoBlockSource.internal,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -76,6 +82,30 @@ const mocks = [
   }
 ]
 
+const videoYouTube: TreeBlock<VideoBlock> = {
+  id: 'video1.id',
+  __typename: 'VideoBlock',
+  parentBlockId: 'card1.id',
+  description:
+    'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+  duration: 348,
+  endAt: 348,
+  fullsize: true,
+  image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+  muted: false,
+  autoplay: true,
+  startAt: 0,
+  title: 'What is the Bible?',
+  videoId: 'ak06MSETeo4',
+  videoVariantLanguageId: null,
+  parentOrder: 0,
+  action: null,
+  source: VideoBlockSource.youTube,
+  video: null,
+  posterBlockId: 'poster1.id',
+  children: []
+}
+
 describe('VideoBlockEditor', () => {
   describe('no existing block', () => {
     it('shows placeholders on null', () => {
@@ -90,17 +120,17 @@ describe('VideoBlockEditor', () => {
           </MockedProvider>
         </ThemeProvider>
       )
-      expect(getByText('Select Video File')).toBeInTheDocument()
+      expect(getByText('Select Video')).toBeInTheDocument()
     })
   })
 
-  describe('existing block', () => {
+  describe('video internal source', () => {
     it('shows title and language', async () => {
       const { getByText } = render(
         <ThemeProvider>
           <MockedProvider mocks={mocks}>
             <VideoBlockEditor
-              selectedBlock={video}
+              selectedBlock={videoInternal}
               onChange={jest.fn()}
               onDelete={jest.fn()}
             />
@@ -117,9 +147,9 @@ describe('VideoBlockEditor', () => {
           <MockedProvider mocks={mocks}>
             <VideoBlockEditor
               selectedBlock={{
-                ...video,
+                ...videoInternal,
                 video: {
-                  ...video.video,
+                  ...videoInternal.video,
                   variantLanguages: [
                     {
                       __typename: 'Language',
@@ -185,9 +215,9 @@ describe('VideoBlockEditor', () => {
           <MockedProvider mocks={mocks}>
             <VideoBlockEditor
               selectedBlock={{
-                ...video,
+                ...videoInternal,
                 video: {
-                  ...video.video
+                  ...videoInternal.video
                 } as unknown as VideoBlock['video']
               }}
               onChange={jest.fn()}
@@ -208,9 +238,9 @@ describe('VideoBlockEditor', () => {
           <MockedProvider mocks={mocks}>
             <VideoBlockEditor
               selectedBlock={{
-                ...video,
+                ...videoInternal,
                 video: {
-                  ...video.video,
+                  ...videoInternal.video,
                   variantLanguages: [
                     {
                       __typename: 'Language',
@@ -240,38 +270,37 @@ describe('VideoBlockEditor', () => {
       expect(getByText('FallingPlates')).toBeInTheDocument()
       await waitFor(() => expect(getByText('English')).toBeInTheDocument())
     })
+  })
 
-    it('calls onDelete', async () => {
-      const onDelete = jest.fn()
-      const { getByTestId } = render(
+  describe('video youTube source', () => {
+    it('shows title', async () => {
+      const { getByText } = render(
         <ThemeProvider>
           <MockedProvider mocks={mocks}>
             <VideoBlockEditor
-              selectedBlock={video}
-              onChange={jest.fn()}
-              onDelete={onDelete}
-            />
-          </MockedProvider>
-        </ThemeProvider>
-      )
-      const button = await getByTestId('imageBlockHeaderDelete')
-      fireEvent.click(button)
-      expect(onDelete).toHaveBeenCalledWith()
-    })
-
-    it('has settings enabled', async () => {
-      const { getByRole } = render(
-        <ThemeProvider>
-          <MockedProvider mocks={mocks}>
-            <VideoBlockEditor
-              selectedBlock={video}
+              selectedBlock={videoYouTube}
               onChange={jest.fn()}
               onDelete={jest.fn()}
             />
           </MockedProvider>
         </ThemeProvider>
       )
-      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeEnabled()
+      expect(getByText('What is the Bible?')).toBeInTheDocument()
     })
+  })
+
+  it('has settings enabled', async () => {
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider mocks={mocks}>
+          <VideoBlockEditor
+            selectedBlock={videoInternal}
+            onChange={jest.fn()}
+            onDelete={jest.fn()}
+          />
+        </MockedProvider>
+      </ThemeProvider>
+    )
+    expect(getByRole('checkbox', { name: 'Autoplay' })).toBeEnabled()
   })
 })

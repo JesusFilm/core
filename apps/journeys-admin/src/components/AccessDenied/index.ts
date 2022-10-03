@@ -1,0 +1,1 @@
+export { AccessDenied } from './AccessDenied'

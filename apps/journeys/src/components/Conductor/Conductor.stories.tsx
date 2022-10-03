@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
+import { SnackbarProvider } from 'notistack'
 import { journeysConfig } from '../../libs/storybook'
 import {
   basic,
@@ -21,7 +22,9 @@ const Demo = {
 
 const Template: Story<ConductorProps> = ({ ...props }) => (
   <MockedProvider>
-    <Conductor {...props} />
+    <SnackbarProvider>
+      <Conductor {...props} />
+    </SnackbarProvider>
   </MockedProvider>
 )
 
@@ -39,16 +42,10 @@ export const WithVideo: Story<ConductorProps> = Template.bind({})
 WithVideo.args = {
   blocks: videoBlocks
 }
-WithVideo.parameters = {
-  chromatic: { delay: 100, diffThreshold: 0.2 }
-}
 
 export const WithVideoLoop: Story<ConductorProps> = Template.bind({})
 WithVideoLoop.args = {
   blocks: videoLoop
-}
-WithVideoLoop.parameters = {
-  chromatic: { delay: 100, diffThreshold: 0.2 }
 }
 
 export default Demo as Meta

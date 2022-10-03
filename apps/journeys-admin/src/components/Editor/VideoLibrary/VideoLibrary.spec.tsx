@@ -1,7 +1,8 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { MockedProvider } from '@apollo/client/testing'
-import { GET_VIDEOS } from './VideoList/VideoList'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import { GET_VIDEOS } from './VideoFromLocal/VideoFromLocal'
 import { VideoLibrary } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -22,7 +23,7 @@ describe('Video Library', () => {
         </MockedProvider>
       )
       expect(getByText('Video Library')).toBeInTheDocument()
-      expect(getByTestId('VideoList').parentElement?.parentElement).toHaveClass(
+      expect(getByTestId('VideoLibrary').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorRight'
       )
     })
@@ -54,7 +55,7 @@ describe('Video Library', () => {
         </MockedProvider>
       )
       expect(getByText('Video Library')).toBeInTheDocument()
-      expect(getByTestId('VideoList').parentElement?.parentElement).toHaveClass(
+      expect(getByTestId('VideoLibrary').parentElement).toHaveClass(
         'MuiDrawer-paperAnchorBottom'
       )
     })
@@ -123,5 +124,124 @@ describe('Video Library', () => {
         expect(getByText("Andreas' Story")).toBeInTheDocument()
       )
     })
+  })
+
+  it('should render the Video Library on the right', () => {
+    const { getByText, getByTestId } = render(
+      <MockedProvider>
+        <VideoLibrary open />
+      </MockedProvider>
+    )
+    expect(getByText('Video Library')).toBeInTheDocument()
+    expect(getByTestId('VideoLibrary').parentElement).toHaveClass(
+      'MuiDrawer-paperAnchorRight'
+    )
+  })
+
+  it('when video selected calls onSelect', async () => {
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+    const { getByRole, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_VIDEOS,
+              variables: {
+                offset: 0,
+                limit: 5,
+                where: {
+                  availableVariantLanguageIds: ['529'],
+                  title: null
+                }
+              }
+            },
+            result: {
+              data: {
+                videos: [
+                  {
+                    id: '2_0-AndreasStory',
+                    image:
+                      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
+                    snippet: [
+                      {
+                        primary: true,
+                        value:
+                          'After living a life full of fighter planes and porsches, Andreas realizes something is missing.'
+                      }
+                    ],
+                    title: [
+                      {
+                        primary: true,
+                        value: "Andreas' Story"
+                      }
+                    ],
+                    variant: {
+                      id: 'variantA',
+                      duration: 186
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]}
+      >
+        <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(getByText("Andreas' Story")).toBeInTheDocument())
+    fireEvent.click(
+      getByRole('button', {
+        name: "Andreas' Story After living a life full of fighter planes and porsches, Andreas realizes something is missing. 03:06"
+      })
+    )
+    fireEvent.click(getByRole('button', { name: 'Select' }))
+    expect(onSelect).toHaveBeenCalledWith({
+      endAt: 0,
+      startAt: 0,
+      videoId: '2_0-AndreasStory',
+      videoVariantLanguageId: '529'
+    })
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  it('should render video details if videoId is not null', () => {
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+
+    const { getByText } = render(
+      <MockedProvider>
+        <VideoLibrary
+          open
+          selectedBlock={{
+            id: 'video1.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card1.id',
+            description:
+              'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+            duration: 348,
+            endAt: 348,
+            fullsize: true,
+            image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+            muted: false,
+            autoplay: true,
+            startAt: 0,
+            title: 'What is the Bible?',
+            videoId: 'ak06MSETeo4',
+            videoVariantLanguageId: null,
+            parentOrder: 0,
+            action: null,
+            source: VideoBlockSource.youTube,
+            video: null,
+            posterBlockId: 'poster1.id',
+            children: []
+          }}
+          onSelect={onSelect}
+          onClose={onClose}
+        />
+      </MockedProvider>
+    )
+    expect(getByText('Video Details')).toBeInTheDocument()
   })
 })
