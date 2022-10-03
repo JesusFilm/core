@@ -34,12 +34,6 @@
         }
       }
     },
-    "seed": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "command": "npx ts-node apps/api-users/db/seed.ts"
-      }
-    },
     "serve-nowatch": {
       "executor": "@nrwl/node:execute",
       "options": {
@@ -93,6 +87,40 @@
             "command": "DOPPLER_TOKEN=$DOPPLER_API_USERS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-users > apps/api-users/.env"
           }
         ]
+      }
+    },
+    "prisma": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx prisma migrate dev --name init"
+          }
+        ],
+        "cwd": "/workspaces/core/apps/api-users"
+      }
+    },
+    "seed": {
+      "executor": "@nx-tools/nx-prisma:seed",
+      "options": {
+        "script": "apps/api-media/prisma/seed.ts",
+        "tsConfig": "apps/api-media/tsconfig.app.json"
+      }
+    },
+    "migrations": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx prisma migrate apps/api-users/prisma/schema.prisma"
+          }
+        ]
+      }
+    },
+    "rollback": {
+      "executor": "@nx-tools/nx-prisma:rollback",
+      "options": {
+        "schema": "apps/api-users/prisma/schema.prisma"
       }
     }
   },
