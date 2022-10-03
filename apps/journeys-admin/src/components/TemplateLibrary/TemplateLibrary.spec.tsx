@@ -19,7 +19,24 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
 describe('TemplateLibrary', () => {
   it('should render templates', () => {
     const { getByText } = render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: TEMPLATE_LIBRARY_VIEW_EVENT_CREATE,
+              variables: {}
+            },
+            result: {
+              data: {
+                templateLibraryViewEventCreate: {
+                  id: 'event.id',
+                  __typename: 'TemplateLibraryViewEvent'
+                }
+              }
+            }
+          }
+        ]}
+      >
         <TemplateLibrary
           journeys={[defaultTemplate]}
           templates={[defaultTemplate]}
