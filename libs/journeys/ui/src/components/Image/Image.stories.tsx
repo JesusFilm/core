@@ -20,9 +20,9 @@ const imageProps = {
   blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
 }
 
-const Template: Story<TreeBlock<ImageFields>> = ({ alt, ...props }) => (
+const Template: Story<TreeBlock<ImageFields>> = ({ alt, ...args }) => (
   <StoryCard>
-    <Image {...imageProps} {...props} alt={alt} />
+    <Image {...imageProps} {...args} alt={alt} />
   </StoryCard>
 )
 
@@ -33,6 +33,9 @@ Default.args = {
 
 // Throttle network to see loading image
 export const Loading: Story<TreeBlock<ImageFields>> = Template.bind({})
+Loading.parameters = {
+  chromatic: { delay: 0 }
+}
 
 export const WebImage: Story<TreeBlock<ImageFields>> = Template.bind({})
 WebImage.parameters = {

@@ -67,7 +67,7 @@ const arclightVideo: TreeBlock<VideoFields> = {
   }
 }
 
-const Template: Story<TreeBlock<VideoFields>> = ({ ...props }) => (
+const Template: Story<TreeBlock<VideoFields>> = ({ ...args }) => (
   <MockedProvider
     mocks={[
       {
@@ -95,7 +95,7 @@ const Template: Story<TreeBlock<VideoFields>> = ({ ...props }) => (
         height: '100%'
       }}
     >
-      <Video {...props} />
+      <Video {...args} />
     </Box>
   </MockedProvider>
 )

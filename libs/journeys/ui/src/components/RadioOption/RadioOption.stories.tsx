@@ -9,9 +9,9 @@ const Demo = {
   title: 'Journeys-Ui/RadioQuestion/RadioOption'
 }
 
-const Template: Story<RadioOptionProps> = ({ ...props }) => (
+const Template: Story<RadioOptionProps> = ({ ...args }) => (
   <StoryCard>
-    <RadioOption {...props} />
+    <RadioOption {...args} />
   </StoryCard>
 )
 

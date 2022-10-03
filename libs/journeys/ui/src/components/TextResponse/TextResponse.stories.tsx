@@ -56,7 +56,7 @@ const textResponseProps: TreeBlock<TextResponseFields> = {
 
 const Template: Story<
   TreeBlock<TextResponseFields> & { complete?: boolean }
-> = ({ complete = false, ...props }): ReactElement => (
+> = ({ complete = false, ...args }): ReactElement => (
   <MockedProvider
     mocks={[
       {
@@ -86,7 +86,7 @@ const Template: Story<
       <SnackbarProvider>
         <StoryCard>
           {complete && <Typography {...typographyProps} />}
-          <TextResponse {...props} uuid={() => 'uuid'} />
+          <TextResponse {...textResponseProps} {...args} uuid={() => 'uuid'} />
           {complete && (
             <Typography
               {...typographyProps}
@@ -101,7 +101,6 @@ const Template: Story<
 )
 
 export const Default = Template.bind({})
-Default.args = { ...textResponseProps }
 
 export const Complete = Template.bind({})
 Complete.args = {

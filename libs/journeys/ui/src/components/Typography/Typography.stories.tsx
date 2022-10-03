@@ -30,20 +30,20 @@ interface TypographyStoryProps extends TreeBlock<TypographyFields> {
 const TypographyColors = ({
   variants,
   heading = '',
-  ...props
+  ...args
 }: TypographyStoryProps): ReactElement => {
   return (
     <>
       {variants.map((variant) => (
         <>
           <Typography
-            {...props}
+            {...args}
             id="id"
             variant={TypographyVariant.overline}
             content={variant ?? heading}
           />
           <Typography
-            {...props}
+            {...args}
             id="id"
             variant={TypographyVariant.h5}
             color={variant as TypographyColor}
@@ -55,11 +55,11 @@ const TypographyColors = ({
   )
 }
 
-const VariantTemplate: Story<TypographyStoryProps> = (props) => (
+const VariantTemplate: Story<TypographyStoryProps> = (args) => (
   <StoryCard>
-    {props.variants.map((variant) => (
+    {args.variants.map((variant) => (
       <Typography
-        {...props}
+        {...args}
         id="id"
         key={variant}
         variant={variant as TypographyVariant}
@@ -116,11 +116,11 @@ Colors.args = {
   variants: ['primary', 'secondary', 'error']
 }
 
-const AlignmentTemplate: Story<TypographyStoryProps> = (props) => (
+const AlignmentTemplate: Story<TypographyStoryProps> = (args) => (
   <StoryCard>
-    {props.variants.map((variant) => (
+    {args.variants.map((variant) => (
       <Typography
-        {...props}
+        {...args}
         id="id"
         key={variant}
         variant={TypographyVariant.h6}

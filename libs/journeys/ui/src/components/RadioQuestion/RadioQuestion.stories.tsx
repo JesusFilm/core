@@ -66,7 +66,7 @@ const Demo = {
   title: 'Journeys-Ui/RadioQuestion'
 }
 
-const Template: Story<TreeBlock<RadioQuestionFields>> = ({ ...props }) => (
+const Template: Story<TreeBlock<RadioQuestionFields>> = ({ ...args }) => (
   <MockedProvider
     mocks={[
       {
@@ -93,20 +93,12 @@ const Template: Story<TreeBlock<RadioQuestionFields>> = ({ ...props }) => (
   >
     <StoryCard>
       <Typography {...typographyProps} />
-      {props.id === 'Long' && (
-        <Typography
-          {...typographyProps}
-          content="Have you declared that you want to accept Jesus in your life as your Lord and savior?"
-          variant={TypographyVariant.body2}
-          parentOrder={1}
-        />
-      )}
-      <RadioQuestion {...props} uuid={() => 'uuid'} />
+      <RadioQuestion {...args} uuid={() => 'uuid'} />
       <Typography
         {...typographyProps}
         content="RadioQuestion is just the button group above"
         variant={TypographyVariant.body1}
-        parentOrder={props.id === 'Long' ? 3 : 2}
+        parentOrder={2}
       />
     </StoryCard>
   </MockedProvider>

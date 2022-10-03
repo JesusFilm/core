@@ -59,7 +59,7 @@ const signUpProps: TreeBlock<SignUpFields> = {
 
 const Template: Story<TreeBlock<SignUpFields> & { complete?: boolean }> = ({
   complete = false,
-  ...props
+  ...args
 }): ReactElement => (
   <MockedProvider
     mocks={[
@@ -92,7 +92,7 @@ const Template: Story<TreeBlock<SignUpFields> & { complete?: boolean }> = ({
       <SnackbarProvider>
         <StoryCard>
           {complete && <Typography {...typographyProps} />}
-          <SignUp {...props} uuid={() => 'uuid'} />
+          <SignUp {...signUpProps} {...args} uuid={() => 'uuid'} />
           {complete && (
             <Typography
               {...typographyProps}
@@ -107,7 +107,6 @@ const Template: Story<TreeBlock<SignUpFields> & { complete?: boolean }> = ({
 )
 
 export const Default = Template.bind({})
-Default.args = { ...signUpProps }
 
 export const Complete = Template.bind({})
 Complete.args = {
@@ -131,9 +130,10 @@ Complete.args = {
 export const SubmitError = Template.bind({})
 SubmitError.play = () => {
   const submit = screen.getAllByRole('button')[0]
+  const fields = screen.getAllByRole('textbox')
 
-  userEvent.type(screen.getAllByRole('textbox')[0], 'Name')
-  userEvent.type(screen.getAllByRole('textbox')[1], 'name@domain.com')
+  userEvent.type(fields[0], 'Name')
+  userEvent.type(fields[1], 'name@domain.com')
   userEvent.click(submit)
 }
 
@@ -153,11 +153,11 @@ export const Loading = LoadingTemplate.bind({})
 Loading.play = () => {
   const submitButtons = screen.getAllByRole('button')
   const fields = screen.getAllByRole('textbox')
+
   userEvent.type(fields[0], 'Name')
   userEvent.type(fields[1], 'name@domain.com')
   userEvent.type(fields[2], 'Name')
   userEvent.type(fields[3], 'name@domain.com')
-
   submitButtons.forEach((button) => {
     userEvent.click(button)
   })
