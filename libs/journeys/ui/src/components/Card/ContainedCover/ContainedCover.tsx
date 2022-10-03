@@ -125,9 +125,7 @@ export function ContainedCover({
         {videoImage != null && (
           <NextImage
             src={videoImage}
-            alt="video image"
-            placeholder={videoImage != null ? 'blur' : 'empty'}
-            blurDataURL={videoImage}
+            alt="card video image"
             layout="fill"
             objectFit="cover"
           />

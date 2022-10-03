@@ -136,8 +136,6 @@ export function Video({
 
   const videoImage = image ?? video?.image
 
-  console.log(videoImage)
-
   return (
     <Box
       data-testid={`video-${blockId}`}
@@ -262,13 +260,12 @@ export function Video({
         </>
       )}
       {/* Video Image  */}
-      {videoImage != null && (
+      {videoImage != null && posterBlock?.src == null && (
         <NextImage
           src={videoImage}
           alt="video image"
           layout="fill"
           objectFit="cover"
-          quality="100"
         />
       )}
       {/* Lazy load higher res poster */}
@@ -277,7 +274,7 @@ export function Video({
           src={posterBlock.src}
           alt={posterBlock.alt}
           placeholder={blurBackground != null ? 'blur' : 'empty'}
-          blurDataURL={blurBackground ?? posterBlock.src}
+          blurDataURL={blurBackground}
           layout="fill"
           objectFit="cover"
         />
