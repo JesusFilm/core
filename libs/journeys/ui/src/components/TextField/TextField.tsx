@@ -17,6 +17,7 @@ export function TextField({
   const [formikFieldProps, meta] = useField(name)
 
   const hasError = meta.error !== undefined && meta.touched
+  const hint = helperText != null && helperText !== '' ? helperText : ' '
 
   return (
     <MuiTextField
@@ -27,7 +28,7 @@ export function TextField({
       // TODO: Switch to filled & clarify styling in cooldown
       variant="outlined"
       error={hasError}
-      helperText={hasError ? meta.error : helperText ?? ' '}
+      helperText={hasError ? meta.error : hint}
     />
   )
 }

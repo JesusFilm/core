@@ -1,7 +1,6 @@
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useRouter } from 'next/router'
@@ -27,52 +26,28 @@ export function EmbeddedPreview({
   const maximizableElement = useRef(null)
   const [allowFullscreen, setAllowFullscreen] = useState(true)
   let isFullscreen: boolean, setIsFullscreen
+  // Safari / iPhone fullscreen check
   const [isFullContainer, setIsFullContainer] = useState(false)
   let canFullscreen = true
   try {
+    // Chrome / Firefox fullscreen check
     ;[isFullscreen, setIsFullscreen] = useFullscreenStatus(maximizableElement)
   } catch {
     isFullscreen = false
     canFullscreen = false
   }
-  const [previousContainerDimensions, setPreviousContainerDimensions] =
-    useState({
-      width: 0,
-      height: 0
-    })
 
   const maximizeView = useCallback(
     (value: boolean) => {
       if (canFullscreen) {
         setIsFullscreen(value)
+        // TODO: Remove this check once allow="fullscreen" works with Safari 16+
       } else {
         setIsFullContainer(value)
-        const iframeContainer = window.parent.document.getElementById(
-          'jfm-iframe-container'
-        )
-        if (iframeContainer != null) {
-          if (value) {
-            setPreviousContainerDimensions({
-              width: iframeContainer.offsetWidth,
-              height: iframeContainer.offsetHeight
-            })
-            iframeContainer.style.height = '100vh'
-            iframeContainer.style.width = '100vw'
-          } else {
-            iframeContainer.style.height =
-              previousContainerDimensions.height.toString() + 'px'
-            iframeContainer.style.width =
-              previousContainerDimensions.width.toString() + 'px'
-          }
-        }
+        window.parent.postMessage(value, '*')
       }
     },
-    [
-      canFullscreen,
-      setIsFullscreen,
-      setIsFullContainer,
-      previousContainerDimensions
-    ]
+    [canFullscreen, setIsFullscreen, setIsFullContainer]
   )
 
   // use router internally on this component as it does not function properly when passed as prop
@@ -96,6 +71,63 @@ export function EmbeddedPreview({
     }
   }, [setAllowFullscreen, handleClick, router?.query])
 
+  const ClickableCard = (): ReactElement => (
+    <Box
+      sx={{
+        p: 8,
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        cursor: allowFullscreen ? 'pointer' : 'default',
+        zindex: 10,
+        height: '100%'
+      }}
+      onClick={() => handleClick()}
+    >
+      <Box
+        sx={{
+          mx: 'auto',
+          mb: 0,
+          height: 6.5,
+          width: '82.5%',
+          backgroundColor: 'rgba(220,222,229)',
+          borderRadius: '16px 16px 0 0',
+          opacity: 0.3
+        }}
+      />
+      <Box
+        sx={{
+          mx: 'auto',
+          mb: 0,
+          height: 6.5,
+          width: '90%',
+          backgroundColor: 'rgba(170,172,287)',
+          borderRadius: '16px 16px 0 0',
+          opacity: 0.3
+        }}
+      />
+      <Box
+        sx={{
+          height: '100%',
+          width: '100%',
+          borderRadius: '16px',
+          border: '1px solid rgba(186, 186, 187, 0.5)'
+        }}
+      >
+        <BlockRenderer
+          data-testid="embedded-preview-block-renderer"
+          block={blocks?.[0]}
+          wrappers={{
+            ButtonWrapper: ButtonWrapper,
+            ImageWrapper: NullWrapper,
+            RadioOptionWrapper: RadioOptionWrapper,
+            VideoWrapper: VideoWrapper
+          }}
+        />
+      </Box>
+    </Box>
+  )
+
   return (
     <>
       <style jsx global>{`
@@ -109,94 +141,34 @@ export function EmbeddedPreview({
         }
       `}</style>
       <Div100vh data-testid="embedded-preview">
-        <Stack
+        {!(isFullscreen || isFullContainer) && <ClickableCard />}
+        <Box
+          ref={maximizableElement}
           sx={{
-            justifyContent: 'center',
-            height: '100%'
+            backgroundColor: 'background.default',
+            overflow: 'hidden'
           }}
         >
-          <Box
-            sx={{
-              p: 8,
-              flexGrow: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              cursor: allowFullscreen ? 'pointer' : 'default',
-              zindex: 10
-            }}
-            onClick={() => handleClick()}
-          >
-            <Box
-              sx={{
-                mx: 'auto',
-                mb: 0,
-                height: 6.5,
-                width: 'calc(100% - 17.5%)',
-                backgroundColor: 'rgba(220,222,229)',
-                borderRadius: '16px 16px 0 0',
-                opacity: 0.3
-              }}
-            />
-            <Box
-              sx={{
-                mx: 'auto',
-                mb: 0,
-                height: 6.5,
-                width: 'calc(100% - 10%)',
-                backgroundColor: 'rgba(170,172,287)',
-                borderRadius: '16px 16px 0 0',
-                opacity: 0.3
-              }}
-            />
-            <Box
-              sx={{
-                height: '100%',
-                width: '100%',
-                borderRadius: '16px',
-                border: '1px solid rgba(186, 186, 187, 0.5)'
-              }}
-            >
-              {!(isFullscreen || isFullContainer) && (
-                <BlockRenderer
-                  data-testid="embedded-preview-block-renderer"
-                  block={blocks?.[0]}
-                  wrappers={{
-                    ButtonWrapper: ButtonWrapper,
-                    ImageWrapper: NullWrapper,
-                    RadioOptionWrapper: RadioOptionWrapper,
-                    VideoWrapper: VideoWrapper
-                  }}
-                />
-              )}
-            </Box>
-          </Box>
-          <Box
-            ref={maximizableElement}
-            sx={{
-              backgroundColor: (theme) => theme.palette.background.default
-            }}
-          >
-            {(isFullscreen || isFullContainer) && (
-              <>
-                <IconButton
-                  sx={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    zIndex: 1000,
-                    color: (theme) => theme.palette.text.primary
-                  }}
-                  onClick={() => maximizeView(false)}
-                >
-                  <Close />
-                </IconButton>
-                <Box sx={{ paddingTop: '12px' }}>
-                  <Conductor blocks={blocks} />
-                </Box>
-              </>
-            )}
-          </Box>
-        </Stack>
+          {(isFullscreen || isFullContainer) && (
+            <>
+              <IconButton
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  zIndex: 1000,
+                  color: 'text.primary'
+                }}
+                onClick={() => {
+                  maximizeView(false)
+                }}
+              >
+                <Close />
+              </IconButton>
+              <Conductor blocks={blocks} />
+            </>
+          )}
+        </Box>
       </Div100vh>
     </>
   )

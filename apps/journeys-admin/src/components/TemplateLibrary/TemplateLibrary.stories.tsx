@@ -22,11 +22,13 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
+  journeys: [oldTemplate],
   templates: [oldTemplate, publishedTemplate, descriptiveTemplate]
 }
 
 export const Loading = Template.bind({})
 Loading.args = {
+  journeys: null,
   templates: null
 }
 

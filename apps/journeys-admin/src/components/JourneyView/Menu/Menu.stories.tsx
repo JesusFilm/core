@@ -2,7 +2,6 @@ import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import { defaultJourney } from '../data'
@@ -92,11 +91,9 @@ const journeyMocks = [
 
 const Template: Story = ({ ...args }) => (
   <MockedProvider mocks={args.mocks}>
-    <FlagsProvider flags={{ reports: args.reports }}>
-      <JourneyProvider value={{ journey: args.journey, admin: true }}>
-        <Menu {...args} />
-      </JourneyProvider>
-    </FlagsProvider>
+    <JourneyProvider value={{ journey: args.journey, admin: true }}>
+      <Menu {...args} />
+    </JourneyProvider>
   </MockedProvider>
 )
 
@@ -114,22 +111,13 @@ Published.args = {
     publishedAt: '2021-11-19T12:34:56.647Z',
     status: JourneyStatus.published
   },
-  mocks: journeyMocks,
-  forceOpen: true
+  mocks: journeyMocks
 }
 Published.play = () => {
   const button = screen.getByRole('button')
   userEvent.click(button)
 }
-
-export const Reports = Template.bind({})
-Reports.args = {
-  journey: defaultJourney,
-  reports: true,
-  mocks: journeyMocks,
-  forceOpen: true
-}
-Reports.play = () => {
+Published.play = () => {
   const button = screen.getByRole('button')
   userEvent.click(button)
 }

@@ -160,7 +160,7 @@ describe('VideoOptions', () => {
           <ThemeProvider>
             <EditorProvider
               initialState={{
-                selectedBlock: video
+                selectedBlock: { ...video, videoId: null }
               }}
             >
               <SnackbarProvider>
@@ -171,7 +171,6 @@ describe('VideoOptions', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select a Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
     await waitFor(() =>
@@ -280,7 +279,10 @@ describe('VideoOptions', () => {
         >
           <ThemeProvider>
             <EditorProvider
-              initialState={{ selectedStep, selectedBlock: video }}
+              initialState={{
+                selectedStep,
+                selectedBlock: { ...video, videoId: null }
+              }}
             >
               <SnackbarProvider>
                 <VideoOptions />
@@ -290,7 +292,6 @@ describe('VideoOptions', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select a Video' }))
     await waitFor(() => expect(getByText('Brand Video')).toBeInTheDocument())
     fireEvent.click(getByText('Brand Video'))
     await waitFor(() =>

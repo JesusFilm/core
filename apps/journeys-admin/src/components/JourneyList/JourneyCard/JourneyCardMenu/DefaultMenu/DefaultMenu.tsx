@@ -75,7 +75,9 @@ export function DefaultMenu({
         />
       </NextLink>
 
-      <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+      {template !== true && (
+        <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+      )}
 
       <Divider />
 

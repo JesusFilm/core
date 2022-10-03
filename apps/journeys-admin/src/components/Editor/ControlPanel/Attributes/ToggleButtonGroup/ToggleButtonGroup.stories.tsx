@@ -19,8 +19,8 @@ const ToggleButtonGroupStory = {
   layout: 'fullscreen'
 }
 
-export const Default: Story = () => {
-  const [value, setValue] = useState(TypographyAlign.left)
+const Template: Story = ({ ...args }) => {
+  const [value, setValue] = useState(args.initialValue ?? TypographyAlign.left)
 
   const options = [
     {
@@ -41,12 +41,26 @@ export const Default: Story = () => {
   ]
 
   return (
-    <ToggleButtonGroup value={value} onChange={setValue} options={options} />
+    <ToggleButtonGroup
+      label={args.label}
+      value={value}
+      onChange={setValue}
+      options={args.options ?? options}
+    />
   )
 }
-export const CustomLabel: Story = () => {
-  const [value, setValue] = useState(TypographyVariant.h1)
-  const options = [
+
+export const Default = Template.bind({})
+
+export const CustomLabel = Template.bind({})
+CustomLabel.args = {
+  label: 'Typography Alignment'
+}
+
+export const CustomOptions = Template.bind({})
+CustomOptions.args = {
+  initialValue: TypographyVariant.h1,
+  options: [
     {
       value: TypographyVariant.h1,
       label: <Typography variant={TypographyVariant.h1}>Heading 1</Typography>,
@@ -58,10 +72,6 @@ export const CustomLabel: Story = () => {
       icon: <HorizontalRuleRoundedIcon />
     }
   ]
-
-  return (
-    <ToggleButtonGroup value={value} onChange={setValue} options={options} />
-  )
 }
 
 export default ToggleButtonGroupStory as Meta

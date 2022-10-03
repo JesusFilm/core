@@ -21,7 +21,6 @@ jest.mock('react-gtm-module', () => ({
 const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
-
 describe('DatePreview', () => {
   it('should have template date and the preview button', async () => {
     const { getByText, getByRole } = render(

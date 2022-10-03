@@ -20,7 +20,10 @@ describe('TemplateLibrary', () => {
   it('should render templates', () => {
     const { getByText } = render(
       <MockedProvider>
-        <TemplateLibrary journeys={[defaultTemplate]} />
+        <TemplateLibrary
+          journeys={[defaultTemplate]}
+          templates={[defaultTemplate]}
+        />
       </MockedProvider>
     )
     expect(getByText('Default Template Heading')).toBeInTheDocument()
@@ -59,5 +62,29 @@ describe('TemplateLibrary', () => {
         eventId: 'event.id'
       }
     })
+  })
+
+  it('should show access denied message to new user', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <TemplateLibrary journeys={[]} templates={[defaultTemplate]} />
+      </MockedProvider>
+    )
+    expect(
+      getByText('You need to be invited to use your first template')
+    ).toBeInTheDocument()
+  })
+
+  it('should show templates to new publishers', () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <TemplateLibrary
+          isPublisher
+          journeys={[]}
+          templates={[defaultTemplate]}
+        />
+      </MockedProvider>
+    )
+    expect(getByText('Default Template Heading')).toBeInTheDocument()
   })
 })

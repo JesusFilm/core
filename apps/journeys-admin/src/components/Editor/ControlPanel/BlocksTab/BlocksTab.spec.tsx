@@ -15,6 +15,7 @@ describe('BlocksTab', () => {
     expect(getByText('Poll')).toBeInTheDocument()
     expect(getByText('Subscribe')).toBeInTheDocument()
     expect(getByText('Button')).toBeInTheDocument()
+    expect(getByText('Feedback')).toBeInTheDocument()
   })
   it('contains correct bottom text', () => {
     const { getByText } = render(

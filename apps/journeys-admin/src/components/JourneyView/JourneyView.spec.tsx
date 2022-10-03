@@ -59,13 +59,11 @@ describe('JourneyView', () => {
   it.skip('should have edit button', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ reports: true }}>
-          <SnackbarProvider>
-            <JourneyProvider value={{ journey, admin: true }}>
-              <JourneyView journeyType="Journey" />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </FlagsProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, admin: true }}>
+            <JourneyView journeyType="Journey" />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByRole('link', { name: 'Edit' })).toHaveAttribute(
@@ -76,7 +74,7 @@ describe('JourneyView', () => {
   it('should show reports', async () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ reports: true }}>
+        <FlagsProvider>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, admin: true }}>
               <JourneyView journeyType="Journey" />
@@ -88,20 +86,5 @@ describe('JourneyView', () => {
     await waitFor(() =>
       expect(getByTestId('power-bi-report')).toBeInTheDocument()
     )
-  })
-
-  it('should hide reports', async () => {
-    const { queryByTestId } = render(
-      <MockedProvider>
-        <FlagsProvider flags={{ reports: false }}>
-          <SnackbarProvider>
-            <JourneyProvider value={{ journey, admin: true }}>
-              <JourneyView journeyType="Journey" />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </FlagsProvider>
-      </MockedProvider>
-    )
-    expect(queryByTestId('power-bi-report')).not.toBeInTheDocument()
   })
 })

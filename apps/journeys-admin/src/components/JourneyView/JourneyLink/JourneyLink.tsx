@@ -39,7 +39,7 @@ export function JourneyLink(): ReactElement {
         }
         label={!smUp ? t('Journey URL') : undefined}
         sx={
-          reports && !smUp
+          !smUp
             ? {
                 '.MuiFilledInput-root': {
                   backgroundColor: 'background.paper'

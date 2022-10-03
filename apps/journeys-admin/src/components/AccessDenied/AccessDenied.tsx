@@ -47,11 +47,15 @@ export function AccessDenied({
           </Typography>
           <Typography>{description}</Typography>
         </CardContent>
-        {requestAccess && (
-          <CardActions>
+        <CardActions>
+          {requestAccess ? (
             <Button onClick={onClick}>Request Access</Button>
-          </CardActions>
-        )}
+          ) : (
+            <Link href="/" passHref>
+              <Button>Back to the Admin Panel</Button>
+            </Link>
+          )}
+        </CardActions>
       </Card>
     </Container>
   )
