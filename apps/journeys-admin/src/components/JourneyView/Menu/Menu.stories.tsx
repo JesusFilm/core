@@ -117,10 +117,6 @@ Published.play = () => {
   const button = screen.getByRole('button')
   userEvent.click(button)
 }
-Published.play = () => {
-  const button = screen.getByRole('button')
-  userEvent.click(button)
-}
 
 export const TemplateMenu = Template.bind({})
 TemplateMenu.args = {

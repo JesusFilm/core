@@ -2,7 +2,6 @@ import { render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import {
   JourneyStatus,
@@ -74,13 +73,11 @@ describe('JourneyView', () => {
   it('should show reports', async () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <FlagsProvider>
-          <SnackbarProvider>
-            <JourneyProvider value={{ journey, admin: true }}>
-              <JourneyView journeyType="Journey" />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </FlagsProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, admin: true }}>
+            <JourneyView journeyType="Journey" />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() =>
