@@ -11,14 +11,7 @@ import { Video } from '.'
 const Demo = {
   ...journeyUiConfig,
   component: Video,
-  title: 'Journeys-Ui/Video',
-  parameters: {
-    ...journeyUiConfig.parameters,
-    chromatic: {
-      ...journeyUiConfig.parameters.chromatic,
-      disableSnapshot: true
-    }
-  }
+  title: 'Journeys-Ui/Video'
 }
 
 const videoProps: Omit<TreeBlock<VideoFields>, 'source'> = {
@@ -102,16 +95,10 @@ const Template: Story<TreeBlock<VideoFields>> = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = { ...videoProps }
-Default.parameters = {
-  chromatic: { disableSnapshot: false }
-}
 
 export const Arclight = Template.bind({})
 Arclight.args = {
   ...arclightVideo
-}
-Arclight.parameters = {
-  chromatic: { disableSnapshot: false }
 }
 
 export const Autoplay = Template.bind({})
@@ -119,11 +106,17 @@ Autoplay.args = {
   ...arclightVideo,
   autoplay: true
 }
+Autoplay.parameters = {
+  chromatic: { disableSnapshot: true }
+}
 
 export const Muted = Template.bind({})
 Muted.args = {
   ...arclightVideo,
   muted: true
+}
+Muted.parameters = {
+  chromatic: { disableSnapshot: true }
 }
 
 export const StartAndEndAt = Template.bind({})
@@ -152,18 +145,12 @@ Poster.args = {
     }
   ]
 }
-Poster.parameters = {
-  chromatic: { disableSnapshot: false }
-}
 
 export const Youtube = Template.bind({})
 Youtube.args = {
   ...videoProps,
   source: VideoBlockSource.youTube,
   videoId: 'F7k5pqBVinA'
-}
-Youtube.parameters = {
-  chromatic: { disableSnapshot: false }
 }
 
 export default Demo as Meta
