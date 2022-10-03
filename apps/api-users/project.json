@@ -89,22 +89,26 @@
         ]
       }
     },
-    "prisma": {
+    "prisma-init": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
           {
-            "command": "npx prisma migrate dev --name init"
+            "command": "npx prisma migrate dev --name init --skip-generate"
           }
         ],
         "cwd": "/workspaces/core/apps/api-users"
       }
     },
     "seed": {
-      "executor": "@nx-tools/nx-prisma:seed",
+      "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "script": "apps/api-media/prisma/seed.ts",
-        "tsConfig": "apps/api-media/tsconfig.app.json"
+        "commands": [
+          {
+            "command": "npx prisma db seed --file apps/api-users/prisma/seed"
+          }
+        ],
+        "cwd": "/workspaces/core/apps/api-users"
       }
     },
     "migrations": {
@@ -112,9 +116,10 @@
       "options": {
         "commands": [
           {
-            "command": "npx prisma migrate apps/api-users/prisma/schema.prisma"
+            "command": "npx prisma migrate deploy"
           }
-        ]
+        ],
+        "cwd": "/workspaces/core/apps/api-users"
       }
     },
     "rollback": {

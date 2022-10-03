@@ -17,4 +17,6 @@ model User {
   lastName      String?
   email         String?
   imageUrl      String?
+
+  @@unique([email, userId])
 }
