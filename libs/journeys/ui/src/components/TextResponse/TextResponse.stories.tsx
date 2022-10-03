@@ -9,7 +9,8 @@ import type { TreeBlock } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { StoryCard } from '../StoryCard'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { IconName } from '../../../__generated__/globalTypes'
+import { IconName, TypographyVariant } from '../../../__generated__/globalTypes'
+import { Typography } from '../Typography'
 import {
   TextResponse,
   TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
@@ -21,6 +22,18 @@ const Demo = {
   ...simpleComponentConfig,
   component: TextResponse,
   title: 'Journeys-Ui/TextResponse'
+}
+
+const typographyProps: TreeBlock = {
+  __typename: 'TypographyBlock',
+  id: 'id',
+  parentOrder: 0,
+  parentBlockId: 'card',
+  align: null,
+  color: null,
+  variant: TypographyVariant.h3,
+  content: 'Some block above',
+  children: []
 }
 
 const textResponseProps: TreeBlock<TextResponseFields> = {
@@ -41,9 +54,9 @@ const textResponseProps: TreeBlock<TextResponseFields> = {
   children: []
 }
 
-const Template: Story<TreeBlock<TextResponseFields>> = ({
-  ...props
-}): ReactElement => (
+const Template: Story<
+  TreeBlock<TextResponseFields> & { complete?: boolean }
+> = ({ complete = false, ...props }): ReactElement => (
   <MockedProvider
     mocks={[
       {
@@ -69,22 +82,35 @@ const Template: Story<TreeBlock<TextResponseFields>> = ({
       }
     ]}
   >
-    <SnackbarProvider>
-      <StoryCard>
-        <TextResponse {...textResponseProps} {...props} uuid={() => 'uuid'} />
-      </StoryCard>
-    </SnackbarProvider>
+    <JourneyProvider>
+      <SnackbarProvider>
+        <StoryCard>
+          {complete && <Typography {...typographyProps} />}
+          <TextResponse {...props} uuid={() => 'uuid'} />
+          {complete && (
+            <Typography
+              {...typographyProps}
+              content="Some block below"
+              variant={TypographyVariant.body1}
+            />
+          )}
+        </StoryCard>
+      </SnackbarProvider>
+    </JourneyProvider>
   </MockedProvider>
 )
 
 export const Default = Template.bind({})
+Default.args = { ...textResponseProps }
 
 export const Complete = Template.bind({})
 Complete.args = {
-  hint: 'Hint text',
+  complete: true,
+  hint: 'Optional Hint text',
   minRows: 4,
+  label: 'Custom label',
   submitIconId: 'icon',
-  submitLabel: 'Send',
+  submitLabel: 'Custom label',
   children: [
     {
       id: 'icon',
@@ -105,6 +131,7 @@ SubmitError.args = {
 }
 SubmitError.play = () => {
   const submit = screen.getAllByRole('button')[0]
+  userEvent.type(screen.getAllByRole('textbox')[0], 'Answer')
   userEvent.click(submit)
 }
 
@@ -125,6 +152,10 @@ const LoadingTemplate: Story<
 export const Loading = LoadingTemplate.bind({})
 Loading.play = () => {
   const submitButtons = screen.getAllByRole('button')
+  const textFields = screen.getAllByRole('textbox')
+  textFields.forEach((field) => {
+    userEvent.type(field, 'Answer')
+  })
   submitButtons.forEach((button) => {
     userEvent.click(button)
   })

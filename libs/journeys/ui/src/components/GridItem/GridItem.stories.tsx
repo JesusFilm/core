@@ -17,10 +17,13 @@ import { GridItemFields } from './__generated__/GridItemFields'
 const Demo = {
   ...journeyUiConfig,
   component: GridItem,
-  title: 'Journeys-Ui/Grid/Item'
+  title: 'Journeys-Ui/Grid/Item',
+  parameters: {
+    chromatic: { disable: true }
+  }
 }
 
-const DefaultTemplate: Story<TreeBlock<GridItemFields>> = ({ ...props }) => (
+const Template: Story<TreeBlock<GridItemFields>> = ({ ...props }) => (
   <MockedProvider>
     <StoryCard>
       <GridItem {...props} />
@@ -79,9 +82,7 @@ const childrenOne: TreeBlock[] = [
   }
 ]
 
-export const Default: Story<TreeBlock<GridItemFields>> = DefaultTemplate.bind(
-  {}
-)
+export const Default: Story<TreeBlock<GridItemFields>> = Template.bind({})
 Default.args = {
   id: 'GridItemLeft',
   __typename: 'GridItemBlock',

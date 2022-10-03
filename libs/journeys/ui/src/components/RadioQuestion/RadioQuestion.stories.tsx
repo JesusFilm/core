@@ -60,38 +60,13 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
   }
 ]
 
-const longLabel: Array<TreeBlock<RadioOptionFields>> = [
-  {
-    __typename: 'RadioOptionBlock',
-    label:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    id: 'RadioOption1',
-    parentBlockId: 'MoreQuestions',
-    parentOrder: 0,
-    action: null,
-    children: []
-  },
-  {
-    __typename: 'RadioOptionBlock',
-    label:
-      'when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting',
-    id: 'RadioOption2',
-    parentBlockId: 'MoreQuestions',
-    parentOrder: 1,
-    action: null,
-    children: []
-  }
-]
-
 const Demo = {
   ...simpleComponentConfig,
   component: RadioQuestion,
   title: 'Journeys-Ui/RadioQuestion'
 }
 
-const DefaultTemplate: Story<TreeBlock<RadioQuestionFields>> = ({
-  ...props
-}) => (
+const Template: Story<TreeBlock<RadioQuestionFields>> = ({ ...props }) => (
   <MockedProvider
     mocks={[
       {
@@ -129,7 +104,7 @@ const DefaultTemplate: Story<TreeBlock<RadioQuestionFields>> = ({
       <RadioQuestion {...props} uuid={() => 'uuid'} />
       <Typography
         {...typographyProps}
-        content="Next block goes here"
+        content="RadioQuestion is just the button group above"
         variant={TypographyVariant.body1}
         parentOrder={props.id === 'Long' ? 3 : 2}
       />
@@ -137,22 +112,12 @@ const DefaultTemplate: Story<TreeBlock<RadioQuestionFields>> = ({
   </MockedProvider>
 )
 
-export const Default: Story<TreeBlock<RadioQuestionFields>> =
-  DefaultTemplate.bind({})
+export const Default: Story<TreeBlock<RadioQuestionFields>> = Template.bind({})
 Default.args = {
   id: 'Default',
   children,
   parentOrder: 1,
   parentBlockId: 'Step1'
-}
-
-export const Long: Story<TreeBlock<RadioQuestionFields>> = DefaultTemplate.bind(
-  {}
-)
-Long.args = {
-  id: 'Long',
-  children: longLabel,
-  parentOrder: 2
 }
 
 export default Demo as Meta

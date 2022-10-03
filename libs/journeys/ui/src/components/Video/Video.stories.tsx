@@ -21,20 +21,33 @@ const Demo = {
   }
 }
 
-const videoBlock: TreeBlock<VideoFields> = {
+const videoProps: Omit<TreeBlock<VideoFields>, 'source'> = {
   __typename: 'VideoBlock',
   id: 'video1.id',
   parentBlockId: 'step1.id',
   parentOrder: 0,
   autoplay: false,
   muted: false,
-  videoId: '2_0-FallingPlates',
-  videoVariantLanguageId: '529',
-  source: VideoBlockSource.internal,
+  videoId: null,
+  videoVariantLanguageId: null,
   title: null,
   description: null,
   duration: null,
   image: null,
+  video: null,
+  startAt: null,
+  endAt: null,
+  posterBlockId: null,
+  fullsize: null,
+  action: null,
+  children: []
+}
+
+const arclightVideo: TreeBlock<VideoFields> = {
+  ...videoProps,
+  videoId: '2_0-FallingPlates',
+  videoVariantLanguageId: '529',
+  source: VideoBlockSource.internal,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -51,13 +64,7 @@ const videoBlock: TreeBlock<VideoFields> = {
       id: '2_0-FallingPlates-529',
       hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
     }
-  },
-  startAt: null,
-  endAt: null,
-  posterBlockId: null,
-  fullsize: null,
-  action: null,
-  children: []
+  }
 }
 
 const Template: Story<TreeBlock<VideoFields>> = ({ ...props }) => (
@@ -94,36 +101,41 @@ const Template: Story<TreeBlock<VideoFields>> = ({ ...props }) => (
 )
 
 export const Default = Template.bind({})
-Default.args = {
-  ...videoBlock
-}
+Default.args = { ...videoProps }
 Default.parameters = {
+  chromatic: { disableSnapshot: false }
+}
+
+export const Arclight = Template.bind({})
+Arclight.args = {
+  ...arclightVideo
+}
+Arclight.parameters = {
   chromatic: { disableSnapshot: false }
 }
 
 export const Autoplay = Template.bind({})
 Autoplay.args = {
-  ...videoBlock,
+  ...arclightVideo,
   autoplay: true
 }
 
 export const Muted = Template.bind({})
 Muted.args = {
-  ...videoBlock,
+  ...arclightVideo,
   muted: true
 }
 
-export const StartAt = Template.bind({})
-StartAt.args = {
-  ...videoBlock,
-  startAt: 20
+export const StartAndEndAt = Template.bind({})
+StartAndEndAt.args = {
+  ...arclightVideo,
+  startAt: 20,
+  endAt: 60
 }
-
-// TODO: Add EndAt
 
 export const Poster = Template.bind({})
 Poster.args = {
-  ...videoBlock,
+  ...arclightVideo,
   posterBlockId: 'posterBlockId',
   children: [
     {
@@ -146,27 +158,12 @@ Poster.parameters = {
 
 export const Youtube = Template.bind({})
 Youtube.args = {
-  ...videoBlock,
-  video: null,
-  autoplay: true,
+  ...videoProps,
   source: VideoBlockSource.youTube,
   videoId: 'F7k5pqBVinA'
 }
-
-export const NoVideoSource = Template.bind({})
-NoVideoSource.args = {
-  __typename: 'VideoBlock',
-  id: 'video1.id',
-  parentBlockId: 'step1.id',
-  parentOrder: 0,
-  autoplay: false,
-  muted: false,
-  video: null,
-  startAt: null,
-  endAt: null,
-  posterBlockId: null,
-  fullsize: null,
-  children: []
+Youtube.parameters = {
+  chromatic: { disableSnapshot: false }
 }
 
 export default Demo as Meta

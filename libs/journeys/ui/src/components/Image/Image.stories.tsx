@@ -11,14 +11,7 @@ const Demo = {
   title: 'Journeys-Ui/Image'
 }
 
-const DefaultTemplate: Story<TreeBlock<ImageFields>> = ({ alt, ...props }) => (
-  <StoryCard>
-    <Image {...props} alt={alt} />
-  </StoryCard>
-)
-
-export const Default: Story<TreeBlock<ImageFields>> = DefaultTemplate.bind({})
-Default.args = {
+const imageProps = {
   id: 'Image',
   src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
   alt: 'random image from unsplash',
@@ -26,15 +19,23 @@ Default.args = {
   height: 1067,
   blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
 }
-Default.parameters = {
-  chromatic: { delay: 300 }
-}
 
-export const NoImageSource: Story<TreeBlock<ImageFields>> =
-  DefaultTemplate.bind({})
-NoImageSource.args = {
-  ...Default.args,
+const Template: Story<TreeBlock<ImageFields>> = ({ alt, ...props }) => (
+  <StoryCard>
+    <Image {...imageProps} {...props} alt={alt} />
+  </StoryCard>
+)
+
+export const Default: Story<TreeBlock<ImageFields>> = Template.bind({})
+Default.args = {
   src: null
 }
 
+// Throttle network to see loading image
+export const Loading: Story<TreeBlock<ImageFields>> = Template.bind({})
+
+export const WebImage: Story<TreeBlock<ImageFields>> = Template.bind({})
+WebImage.parameters = {
+  chromatic: { delay: 300 }
+}
 export default Demo as Meta

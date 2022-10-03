@@ -19,10 +19,11 @@ const Template: Story<TextFieldProps> = () => (
     <Formik
       initialValues={{
         default: '',
+        focused: '',
+        placeholder: '',
         prepopulated: 'Prepopulated',
         hint: '',
         error: '',
-        focused: '',
         disabled: ''
       }}
       validationSchema={object().shape({
@@ -39,11 +40,19 @@ const Template: Story<TextFieldProps> = () => (
       {() => (
         <Form>
           <Stack>
-            <TextField name="default" label="Default" />
+            <Stack direction="row" spacing={4}>
+              <TextField name="default" label="Default" />
+              <TextField name="focused" label="Default focused" focused />
+            </Stack>
+            <TextField
+              name="placeholder"
+              label="Placeholder"
+              placeholder="Placeholder"
+              focused
+            />
             <TextField name="prepopulated" label="Prepopulated" />
             <TextField name="hint" label="Hint" helperText="Hint Text" />
             <TextField name="error" label="Error" />
-            <TextField name="focused" label="Focused" focused />
             <TextField name="disabled" label="Disabled" disabled />
           </Stack>
         </Form>
