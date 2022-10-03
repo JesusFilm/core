@@ -349,7 +349,11 @@ describe('VideoBlockResolver', () => {
           ...updatedBlock,
           videoId: 'videoId',
           videoVariantLanguageId: 'videoVariantLanguageId',
-          source: VideoBlockSource.internal
+          source: VideoBlockSource.internal,
+          title: null,
+          description: null,
+          image: null,
+          duration: null
         })
       })
     })
