@@ -872,32 +872,16 @@ export const videoBlocks: TreeBlock[] = [
             parentOrder: 0,
             autoplay: true,
             muted: true,
-            videoId: '2_0-FallingPlates',
-            videoVariantLanguageId: '529',
-            source: VideoBlockSource.internal,
+            videoId: '5I69DCxYbBg',
+            videoVariantLanguageId: null,
+            source: VideoBlockSource.youTube,
             title: null,
             description: null,
             duration: null,
             image: null,
-            video: {
-              __typename: 'Video',
-              id: '2_0-FallingPlates',
-              title: [
-                {
-                  __typename: 'Translation',
-                  value: 'FallingPlates'
-                }
-              ],
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-              variant: {
-                __typename: 'VideoVariant',
-                id: '2_0-FallingPlates-529',
-                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
-            },
+            video: null,
             endAt: null,
-            startAt: null,
+            startAt: 2738,
             posterBlockId: 'image1.id',
             fullsize: true,
             action: null,
@@ -907,7 +891,7 @@ export const videoBlocks: TreeBlock[] = [
                 __typename: 'VideoTriggerBlock',
                 parentBlockId: 'video1.id',
                 parentOrder: 0,
-                triggerStart: 20,
+                triggerStart: 2755,
                 triggerAction: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'trigger.id',
@@ -1042,32 +1026,16 @@ export const videoBlocks: TreeBlock[] = [
             autoplay: false,
             muted: false,
             posterBlockId: 'posterBlockId',
-            videoId: '2_0-FallingPlates',
-            videoVariantLanguageId: '529',
-            source: VideoBlockSource.internal,
+            videoId: '5I69DCxYbBg',
+            videoVariantLanguageId: null,
+            source: VideoBlockSource.youTube,
             title: null,
             description: null,
             duration: null,
             image: null,
-            video: {
-              __typename: 'Video',
-              id: '2_0-FallingPlates',
-              title: [
-                {
-                  __typename: 'Translation',
-                  value: 'FallingPlates'
-                }
-              ],
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-              variant: {
-                __typename: 'VideoVariant',
-                id: '2_0-FallingPlates-529',
-                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
-            },
+            video: null,
             endAt: null,
-            startAt: null,
+            startAt: 2738,
             fullsize: true,
             action: null,
             children: [
@@ -1116,32 +1084,16 @@ export const videoBlocks: TreeBlock[] = [
             autoplay: true,
             muted: false,
             posterBlockId: null,
-            videoId: '2_0-FallingPlates',
-            videoVariantLanguageId: '529',
-            source: VideoBlockSource.internal,
+            videoId: '5I69DCxYbBg',
+            videoVariantLanguageId: null,
+            source: VideoBlockSource.youTube,
             title: null,
             description: null,
             duration: null,
             image: null,
-            video: {
-              __typename: 'Video',
-              id: '2_0-FallingPlates',
-              title: [
-                {
-                  __typename: 'Translation',
-                  value: 'FallingPlates'
-                }
-              ],
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-              variant: {
-                __typename: 'VideoVariant',
-                id: '2_0-FallingPlates-529',
-                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
-            },
+            video: null,
             endAt: null,
-            startAt: 10,
+            startAt: 2738,
             fullsize: true,
             action: null,
             children: []
@@ -1179,32 +1131,16 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             parentOrder: 0,
             autoplay: true,
             muted: true,
-            videoId: '2_0-FallingPlates',
-            videoVariantLanguageId: '529',
-            source: VideoBlockSource.internal,
+            videoId: '5I69DCxYbBg',
+            videoVariantLanguageId: null,
+            source: VideoBlockSource.youTube,
             title: null,
             description: null,
             duration: null,
             image: null,
-            video: {
-              __typename: 'Video',
-              id: '2_0-FallingPlates',
-              title: [
-                {
-                  __typename: 'Translation',
-                  value: 'FallingPlates'
-                }
-              ],
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-              variant: {
-                __typename: 'VideoVariant',
-                id: '2_0-FallingPlates-529',
-                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
-            },
+            video: null,
             endAt: null,
-            startAt: 5,
+            startAt: 2738,
             posterBlockId: null,
             fullsize: true,
             action: null,
@@ -1214,7 +1150,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                 __typename: 'VideoTriggerBlock',
                 parentBlockId: 'video1.id',
                 parentOrder: 0,
-                triggerStart: 20,
+                triggerStart: 2755,
                 triggerAction: {
                   __typename: 'NavigateToBlockAction',
                   parentBlockId: 'trigger.id',
@@ -1337,32 +1273,16 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             autoplay: false,
             muted: false,
             posterBlockId: 'posterBlockId',
-            videoId: '2_0-FallingPlates',
-            videoVariantLanguageId: '529',
-            source: VideoBlockSource.internal,
+            videoId: '5I69DCxYbBg',
+            videoVariantLanguageId: null,
+            source: VideoBlockSource.youTube,
             title: null,
             description: null,
             duration: null,
             image: null,
-            video: {
-              __typename: 'Video',
-              id: '2_0-FallingPlates',
-              title: [
-                {
-                  __typename: 'Translation',
-                  value: 'FallingPlates'
-                }
-              ],
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-              variant: {
-                __typename: 'VideoVariant',
-                id: '2_0-FallingPlates-529',
-                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
-            },
+            video: null,
             endAt: null,
-            startAt: null,
+            startAt: 2738,
             fullsize: true,
             action: null,
             children: [
@@ -1411,32 +1331,16 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             autoplay: true,
             muted: false,
             posterBlockId: null,
-            videoId: '2_0-FallingPlates',
-            videoVariantLanguageId: '529',
-            source: VideoBlockSource.internal,
+            videoId: '5I69DCxYbBg',
+            videoVariantLanguageId: null,
+            source: VideoBlockSource.youTube,
             title: null,
             description: null,
             duration: null,
             image: null,
-            video: {
-              __typename: 'Video',
-              id: '2_0-FallingPlates',
-              title: [
-                {
-                  __typename: 'Translation',
-                  value: 'FallingPlates'
-                }
-              ],
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-              variant: {
-                __typename: 'VideoVariant',
-                id: '2_0-FallingPlates-529',
-                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
-            },
+            video: null,
             endAt: null,
-            startAt: 10,
+            startAt: 2738,
             fullsize: true,
             action: null,
             children: []
@@ -1482,7 +1386,6 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             duration: null,
             image: null,
             video: null,
-
             endAt: null,
             startAt: 5,
             posterBlockId: null,
@@ -1617,32 +1520,16 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             autoplay: false,
             muted: false,
             posterBlockId: 'posterBlockId',
-            videoId: '2_0-FallingPlates',
-            videoVariantLanguageId: '529',
-            source: VideoBlockSource.internal,
+            videoId: '5I69DCxYbBg',
+            videoVariantLanguageId: null,
+            source: VideoBlockSource.youTube,
             title: null,
             description: null,
             duration: null,
             image: null,
-            video: {
-              __typename: 'Video',
-              id: '2_0-FallingPlates',
-              title: [
-                {
-                  __typename: 'Translation',
-                  value: 'FallingPlates'
-                }
-              ],
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-              variant: {
-                __typename: 'VideoVariant',
-                id: '2_0-FallingPlates-529',
-                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
-            },
+            video: null,
             endAt: null,
-            startAt: null,
+            startAt: 2738,
             fullsize: true,
             action: null,
             children: [
@@ -1691,32 +1578,16 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             autoplay: true,
             muted: false,
             posterBlockId: null,
-            videoId: '2_0-FallingPlates',
-            videoVariantLanguageId: '529',
-            source: VideoBlockSource.internal,
+            videoId: '5I69DCxYbBg',
+            videoVariantLanguageId: null,
+            source: VideoBlockSource.youTube,
             title: null,
             description: null,
             duration: null,
             image: null,
-            video: {
-              __typename: 'Video',
-              id: '2_0-FallingPlates',
-              title: [
-                {
-                  __typename: 'Translation',
-                  value: 'FallingPlates'
-                }
-              ],
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-              variant: {
-                __typename: 'VideoVariant',
-                id: '2_0-FallingPlates-529',
-                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
-            },
+            video: null,
             endAt: null,
-            startAt: 10,
+            startAt: 2738,
             fullsize: true,
             action: null,
             children: []
@@ -1806,32 +1677,16 @@ export const videoLoop: TreeBlock[] = [
             parentOrder: 0,
             autoplay: true,
             muted: true,
-            videoId: '2_0-FallingPlates',
-            videoVariantLanguageId: '529',
-            source: VideoBlockSource.internal,
+            videoId: '5I69DCxYbBg',
+            videoVariantLanguageId: null,
+            source: VideoBlockSource.youTube,
             title: null,
             description: null,
             duration: null,
             image: null,
-            video: {
-              __typename: 'Video',
-              id: '2_0-FallingPlates',
-              title: [
-                {
-                  __typename: 'Translation',
-                  value: 'FallingPlates'
-                }
-              ],
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-              variant: {
-                __typename: 'VideoVariant',
-                id: '2_0-FallingPlates-529',
-                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
-            },
-            startAt: 10,
-            endAt: 30,
+            video: null,
+            startAt: 2738,
+            endAt: 2758,
             posterBlockId: 'image1.id',
             fullsize: true,
             action: null,
@@ -1880,32 +1735,16 @@ export const videoLoop: TreeBlock[] = [
             parentOrder: 0,
             autoplay: true,
             muted: false,
-            videoId: '2_0-FallingPlates',
-            videoVariantLanguageId: '529',
-            source: VideoBlockSource.internal,
+            videoId: '5I69DCxYbBg',
+            videoVariantLanguageId: null,
+            source: VideoBlockSource.youTube,
             title: null,
             description: null,
             duration: null,
             image: null,
-            video: {
-              __typename: 'Video',
-              id: '2_0-FallingPlates',
-              title: [
-                {
-                  __typename: 'Translation',
-                  value: 'FallingPlates'
-                }
-              ],
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-              variant: {
-                __typename: 'VideoVariant',
-                id: '2_0-FallingPlates-529',
-                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
-            },
-            startAt: 10,
-            endAt: 30,
+            video: null,
+            startAt: 2738,
+            endAt: 2758,
             posterBlockId: 'image1.id',
             fullsize: true,
             action: {
@@ -1959,32 +1798,16 @@ export const videoLoop: TreeBlock[] = [
             parentOrder: 0,
             autoplay: true,
             muted: true,
-            videoId: '2_0-FallingPlates',
-            videoVariantLanguageId: '529',
-            source: VideoBlockSource.internal,
+            videoId: '5I69DCxYbBg',
+            videoVariantLanguageId: null,
+            source: VideoBlockSource.youTube,
             title: null,
             description: null,
             duration: null,
             image: null,
-            video: {
-              __typename: 'Video',
-              id: '2_0-FallingPlates',
-              title: [
-                {
-                  __typename: 'Translation',
-                  value: 'FallingPlates'
-                }
-              ],
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-              variant: {
-                __typename: 'VideoVariant',
-                id: '2_0-FallingPlates-529',
-                hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-              }
-            },
-            startAt: 10,
-            endAt: 30,
+            video: null,
+            startAt: 2738,
+            endAt: 2758,
             posterBlockId: 'image1.id',
             fullsize: true,
             action: null,

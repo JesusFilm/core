@@ -5,7 +5,7 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '../ThemeProvider'
 import { TemplateList } from '.'
 
-describe('JourneyList', () => {
+describe('TemplatesList', () => {
   it('should render tab panel', () => {
     const { getByRole } = render(
       <SnackbarProvider>

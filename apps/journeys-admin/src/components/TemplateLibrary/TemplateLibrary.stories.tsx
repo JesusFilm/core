@@ -13,17 +13,17 @@ const TemplateLibraryStory = {
   title: 'Journeys-Admin/TemplateLibrary'
 }
 
-const Template: Story = ({ ...args }) => (
-  <TemplateLibrary journeys={args.templates} />
-)
+const Template: Story = ({ ...args }) => <TemplateLibrary {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
+  journeys: [oldTemplate],
   templates: [oldTemplate, publishedTemplate, descriptiveTemplate]
 }
 
 export const Loading = Template.bind({})
 Loading.args = {
+  journeys: null,
   templates: null
 }
 
