@@ -41,10 +41,38 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   ])
 }
 
+resource "aws_alb_target_group" "alb_target_group" {
+  name        = "${var.service_config.name}-tg"
+  port        = var.service_config.alb_target_group.port
+  protocol    = var.service_config.alb_target_group.protocol
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path     = var.service_config.alb_target_group.health_check_path
+    protocol = var.service_config.alb_target_group.protocol
+  }
+
+}
+
+
+resource "aws_alb_listener_rule" "alb_listener_rule" {
+  listener_arn = var.service_config.is_public == true ? var.public_alb_listener[var.service_config.alb_target_group.protocol].arn : var.internal_alb_listener[var.service_config.alb_target_group.protocol].arn
+  action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.alb_target_group.arn
+  }
+  condition {
+    path_pattern {
+      values = var.service_config.alb_target_group.path_pattern
+    }
+  }
+}
+
 #Create services for app services
-resource "aws_ecs_service" "private_service" {
+resource "aws_ecs_service" "ecs_service" {
   name            = "${var.service_config.name}-service"
-  cluster         = var.ecs_cluster_id
+  cluster         = var.ecs_cluster.id
   task_definition = aws_ecs_task_definition.ecs_task_definition.arn
   launch_type     = "FARGATE"
   desired_count   = var.service_config.desired_count
@@ -53,12 +81,12 @@ resource "aws_ecs_service" "private_service" {
     subnets          = var.service_config.is_public == true ? var.public_subnets : var.internal_subnets
     assign_public_ip = var.service_config.is_public == true ? true : false
     security_groups = [
-      var.service_config.is_public == true ? aws_security_group.webapp_security_group.id : aws_security_group.service_security_group.id
+      var.service_config.is_public == true ? var.public_ecs_security_group_id : var.internal_ecs_security_group_id
     ]
   }
 
   load_balancer {
-    target_group_arn = var.service_config.is_public == true ? var.public_alb_target_groups[each.key].arn : var.internal_alb_target_groups[each.key].arn
+    target_group_arn = aws_alb_target_group.alb_target_group.arn
     container_name   = var.service_config.name
     container_port   = var.service_config.container_port
   }
@@ -67,7 +95,7 @@ resource "aws_ecs_service" "private_service" {
 resource "aws_appautoscaling_target" "service_autoscaling" {
   max_capacity       = var.service_config.auto_scaling.max_capacity
   min_capacity       = var.service_config.auto_scaling.min_capacity
-  resource_id        = "service/${aws_ecs_cluster.ecs_cluster.name}/${aws_ecs_service.private_service.name}"
+  resource_id        = "service/${var.ecs_cluster.name}/${aws_ecs_service.ecs_service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }
@@ -101,41 +129,5 @@ resource "aws_appautoscaling_policy" "ecs_policy_cpu" {
     }
 
     target_value = var.service_config.auto_scaling.cpu.target_value
-  }
-}
-
-resource "aws_security_group" "service_security_group" {
-  vpc_id = var.vpc_id
-
-  ingress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    security_groups = [var.internal_alb_security_group.security_group_id]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_security_group" "webapp_security_group" {
-  vpc_id = var.vpc_id
-
-  ingress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    security_groups = [var.public_alb_security_group.security_group_id]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
   }
 }

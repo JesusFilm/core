@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-1"
+  region = "us-east-2"
 }
 
 # VPC
@@ -8,7 +8,7 @@ resource "aws_vpc" "vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags = {
-    Name = "core"
+    Name = "core-vpc"
     Env  = var.env
   }
 }
@@ -17,7 +17,7 @@ resource "aws_vpc" "vpc" {
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "core"
+    Name = "core-igw"
     Env  = var.env
   }
 }
@@ -53,7 +53,7 @@ resource "aws_subnet" "public_subnet" {
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "corepublic-route-table"
+    Name = "core-public-route-table"
     Env  = var.env
   }
 }
@@ -76,7 +76,7 @@ resource "aws_route_table_association" "public-route-association" {
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "coreprivate-route-table"
+    Name = "core-private-route-table"
     Env  = var.env
   }
 }
@@ -100,9 +100,17 @@ resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.eip.id
   subnet_id     = element(aws_subnet.public_subnet.*.id, 0)
   depends_on    = [aws_internet_gateway.igw]
+  tags = {
+    Name = "core-ng"
+    Env  = var.env
+  }
 }
 
 # Elastic API for gateway
 resource "aws_eip" "eip" {
   vpc = true
+  tags = {
+    Name = "core-eip"
+    Env  = var.env
+  }
 }

@@ -14,7 +14,6 @@ module "vpc" {
 module "internal_alb_security_group" {
   source        = "./modules/aws/security-group"
   name          = "core-internal-alb-sg"
-  description   = "core-internal-alb-sg"
   vpc_id        = module.vpc.vpc_id
   ingress_rules = var.internal_alb_config.ingress_rules
   egress_rules  = var.internal_alb_config.egress_rules
@@ -23,7 +22,6 @@ module "internal_alb_security_group" {
 module "public_alb_security_group" {
   source        = "./modules/aws/security-group"
   name          = "core-public-alb-sg"
-  description   = "core-public-alb-sg"
   vpc_id        = module.vpc.vpc_id
   ingress_rules = var.public_alb_config.ingress_rules
   egress_rules  = var.public_alb_config.egress_rules
@@ -68,17 +66,19 @@ module "ecs" {
 }
 
 module "api-gateway" {
-  source                      = "./apps/api-gateway"
-  account                     = var.account
-  region                      = var.region
-  ecs_task_execution_role_arn = module.iam.ecs_task_execution_role_arn
-  ecs_cluster_id              = module.ecs.ecs_cluster_id
-  vpc_id                      = module.vpc.vpc_id
-  internal_subnets            = module.vpc.internal_subnets
-  public_subnets              = module.vpc.public_subnets
-  public_alb_security_group   = module.public_alb_security_group
-  internal_alb_security_group = module.internal_alb_security_group
-  # internal_alb_target_groups  = module.internal_alb.target_groups
-  # public_alb_target_groups    = module.public_alb.target_groups
+  source                         = "./apps/api-gateway/infrastructure"
+  account                        = var.account
+  region                         = var.region
+  ecs_task_execution_role_arn    = module.iam.ecs_task_execution_role_arn
+  ecs_cluster                    = module.ecs.ecs_cluster
+  public_ecs_security_group_id   = module.ecs.public_ecs_security_group_id
+  internal_ecs_security_group_id = module.ecs.internal_ecs_security_group_id
+  vpc_id                         = module.vpc.vpc_id
+  internal_subnets               = module.vpc.internal_subnets
+  public_subnets                 = module.vpc.public_subnets
+  public_alb_security_group      = module.public_alb_security_group
+  public_alb_listener            = module.public_alb.aws_alb_listener
+  internal_alb_security_group    = module.internal_alb_security_group
+  internal_alb_listener          = module.internal_alb.aws_alb_listener
 }
 

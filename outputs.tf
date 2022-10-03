@@ -14,18 +14,6 @@ output "internal_alb_dns" {
   value = module.internal_alb.internal_alb_dns
 }
 
-# output "internal_alb_target_groups" {
-#   value = module.internal_alb.target_groups
-# }
-
-# output "public_alb_target_groups" {
-#   value = module.public_alb.target_groups
-# }
-
-output "aws_alb_listener" {
-  value = module.internal_alb.aws_alb_listener
-}
-
 output "ecs_task_execution_role_arn" {
   value = module.iam.ecs_task_execution_role_arn
 }

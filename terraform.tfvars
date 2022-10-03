@@ -1,5 +1,5 @@
 ## Application configurations
-account      = 000000
+account      = 410965620680
 region       = "us-east-2"
 env          = "prod"
 app_services = ["api-gateway"]
