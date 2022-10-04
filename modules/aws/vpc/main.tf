@@ -1,8 +1,5 @@
-provider "aws" {
-  region = "us-east-2"
-}
+data "aws_availability_zones" "current" {}
 
-# VPC
 resource "aws_vpc" "vpc" {
   cidr_block           = var.cidr
   enable_dns_hostnames = true
@@ -13,7 +10,6 @@ resource "aws_vpc" "vpc" {
   }
 }
 
-# Internet gateway
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
   tags = {
@@ -22,25 +18,11 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-# Private subnets
-resource "aws_subnet" "private_subnet" {
-  vpc_id            = aws_vpc.vpc.id
-  count             = length(var.internal_subnets)
-  cidr_block        = element(var.internal_subnets, count.index)
-  availability_zone = element(var.availability_zones, count.index)
-
-  tags = {
-    Name = "core-private-subnet-${count.index}"
-    Env  = var.env
-  }
-}
-
-# Public subnets
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.vpc.id
-  count                   = length(var.public_subnets)
-  cidr_block              = element(var.public_subnets, count.index)
-  availability_zone       = element(var.availability_zones, count.index)
+  count                   = length(data.aws_availability_zones.current.names)
+  cidr_block              = cidrsubnet(var.cidr, 8, 10 + count.index)
+  availability_zone       = data.aws_availability_zones.current.names[count.index]
   map_public_ip_on_launch = true
 
   tags = {
@@ -49,7 +31,6 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
-# Public route table
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.vpc.id
   tags = {
@@ -58,44 +39,50 @@ resource "aws_route_table" "public_route_table" {
   }
 }
 
-# Public route
-resource "aws_route" "public-route" {
+resource "aws_route" "public_route" {
   route_table_id         = aws_route_table.public_route_table.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.igw.id
 }
 
-# Route table association with public subnets
-resource "aws_route_table_association" "public-route-association" {
-  count          = length(var.public_subnets)
+resource "aws_route_table_association" "public_route_association" {
+  count          = length(aws_subnet.public_subnet)
   subnet_id      = element(aws_subnet.public_subnet.*.id, count.index)
   route_table_id = aws_route_table.public_route_table.id
 }
 
-# Private route table
-resource "aws_route_table" "private_route_table" {
-  vpc_id = aws_vpc.vpc.id
+resource "aws_subnet" "internal_subnet" {
+  vpc_id            = aws_vpc.vpc.id
+  count             = length(data.aws_availability_zones.current.names)
+  cidr_block        = cidrsubnet(var.cidr, 8, 20 + count.index)
+  availability_zone = data.aws_availability_zones.current.names[count.index]
+
   tags = {
-    Name = "core-private-route-table"
+    Name = "core-internal-subnet-${count.index}"
     Env  = var.env
   }
 }
 
-# Public route
-resource "aws_route" "private_route" {
-  route_table_id         = aws_route_table.private_route_table.id
+resource "aws_route_table" "internal_route_table" {
+  vpc_id = aws_vpc.vpc.id
+  tags = {
+    Name = "core-internal-route-table"
+    Env  = var.env
+  }
+}
+
+resource "aws_route" "internal_route" {
+  route_table_id         = aws_route_table.internal_route_table.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_nat_gateway.nat_gateway.id
 }
 
-# Route table association with private subnets
-resource "aws_route_table_association" "private_route_association" {
-  count          = length(var.internal_subnets)
-  subnet_id      = element(aws_subnet.private_subnet.*.id, count.index)
-  route_table_id = aws_route_table.private_route_table.id
+resource "aws_route_table_association" "internal_route_association" {
+  count          = length(aws_subnet.internal_subnet)
+  subnet_id      = element(aws_subnet.internal_subnet.*.id, count.index)
+  route_table_id = aws_route_table.internal_route_table.id
 }
 
-# Nat gateway
 resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.eip.id
   subnet_id     = element(aws_subnet.public_subnet.*.id, 0)
@@ -106,7 +93,6 @@ resource "aws_nat_gateway" "nat_gateway" {
   }
 }
 
-# Elastic API for gateway
 resource "aws_eip" "eip" {
   vpc = true
   tags = {
