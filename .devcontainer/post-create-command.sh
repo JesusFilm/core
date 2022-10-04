@@ -13,7 +13,7 @@ psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;"
 npm install -g nx
 
 # install Nest CLI tool
-npm install -g @nestjs/cli@^8.1.5
+npm install -g @nestjs/cli@^8.1.5 prisma@^4.4.0
 
 # install Rover CLI tool
 ./tools/scripts/install-rover.sh

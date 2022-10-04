@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../../../node_modules/.prisma/api-users-client"
 }
 
 datasource db {
@@ -12,11 +13,9 @@ datasource db {
 
 model User {
   id            String    @id @default(uuid())
-  userId        String
-  firstName     String?  
+  userId        String    @unique
+  firstName     String
   lastName      String?
-  email         String?
+  email         String
   imageUrl      String?
-
-  @@unique([email, userId])
 }

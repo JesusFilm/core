@@ -89,8 +89,20 @@
         ]
       }
     },
-    "prisma": {
+    "prisma-generate": {
       "executor": "@nx-tools/nx-prisma:generate",
+      "options": {
+        "schema": "apps/api-media/prisma/schema.prisma"
+      }
+    },
+    "prisma-migrate": {
+      "executor": "@nx-tools/nx-prisma:migrate",
+      "options": {
+        "schema": "apps/api-media/prisma/schema.prisma"
+      }
+    },
+    "prisma-rollback": {
+      "executor": "@nx-tools/nx-prisma:rollback",
       "options": {
         "schema": "apps/api-media/prisma/schema.prisma"
       }
@@ -100,18 +112,6 @@
       "options": {
         "script": "apps/api-media/prisma/seed.ts",
         "tsConfig": "apps/api-media/tsconfig.app.json"
-      }
-    },
-    "migrations": {
-      "executor": "@nx-tools/nx-prisma:migrations",
-      "options": {
-        "schema": "apps/api-media/prisma/schema.prisma"
-      }
-    },
-    "rollback": {
-      "executor": "@nx-tools/nx-prisma:rollback",
-      "options": {
-        "schema": "apps/api-media/prisma/schema.prisma"
       }
     }
   },

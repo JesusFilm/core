@@ -17,7 +17,7 @@
       "port": 5432,
       "name": "Container database",
       "driver": "PostgreSQL",
-      "database": "postgres",
+      "database": "users",
       "username": "postgres",
       "password": "postgres"
     }
