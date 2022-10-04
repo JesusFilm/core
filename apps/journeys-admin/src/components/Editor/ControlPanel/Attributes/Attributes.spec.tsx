@@ -2,6 +2,12 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import {
+  ActiveFab,
+  ActiveTab,
+  EditorState,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
+import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../__generated__/GetJourney'
@@ -10,9 +16,35 @@ import {
   ThemeMode,
   VideoBlockSource
 } from '../../../../../__generated__/globalTypes'
+import { SocialShareAppearance } from '../../Drawer/SocialShareAppearance'
 import { Attributes } from '.'
 
+jest.mock('@core/journeys/ui/EditorProvider', () => {
+  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
+  return {
+    __esModule: true,
+    ...originalModule,
+    useEditor: jest.fn()
+  }
+})
+
+const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
+
 describe('Attributes', () => {
+  const state: EditorState = {
+    steps: [],
+    drawerMobileOpen: false,
+    activeTab: ActiveTab.Cards,
+    activeFab: ActiveFab.Add
+  }
+
+  beforeEach(() => {
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch: jest.fn()
+    })
+  })
+
   const card: TreeBlock<CardBlock> = {
     id: 'card0.id',
     __typename: 'CardBlock',
@@ -243,5 +275,19 @@ describe('Attributes', () => {
 
     expect(getByTestId('move-block-buttons')).toBeInTheDocument()
     expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+  })
+
+  it('should open social share appearance drawer', () => {
+    const dispatch = jest.fn()
+    mockUseEditor.mockReturnValue({
+      state,
+      dispatch
+    })
+    render(<Attributes selected={card} step={card} />)
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetDrawerPropsAction',
+      title: 'Social Share Appearance',
+      children: <SocialShareAppearance />
+    })
   })
 })

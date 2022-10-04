@@ -102,14 +102,14 @@ export function Attributes({ selected, step }: AttributesProps): ReactElement {
   } = useEditor()
 
   useEffect(() => {
-    if (activeTab === ActiveTab.Cards) {
+    if (activeTab === ActiveTab.Cards || selected?.__typename === 'StepBlock') {
       dispatch({
         type: 'SetDrawerPropsAction',
         title: 'Social Share Appearance',
         children: <SocialShareAppearance />
       })
     }
-  }, [activeTab, dispatch])
+  }, [activeTab, dispatch, selected])
 
   // Map typename to labels when we have translation keys
   const blockLabel =

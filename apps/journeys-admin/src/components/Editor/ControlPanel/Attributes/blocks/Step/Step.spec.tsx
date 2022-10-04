@@ -1,14 +1,7 @@
-import {
-  ActiveFab,
-  ActiveTab,
-  useEditor,
-  EditorProvider,
-  EditorState
-} from '@core/journeys/ui/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { render } from '@testing-library/react'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
-import { NextCard } from './NextCard'
 import { Step } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -20,33 +13,7 @@ jest.mock('react-i18next', () => ({
   }
 }))
 
-jest.mock('@core/journeys/ui/EditorProvider', () => {
-  const originalModule = jest.requireActual('@core/journeys/ui/EditorProvider')
-  return {
-    __esModule: true,
-    ...originalModule,
-    useEditor: jest.fn()
-  }
-})
-
-const mockUseEditor = useEditor as jest.MockedFunction<typeof useEditor>
-
 describe('Step', () => {
-  const dispatch = jest.fn()
-
-  const state: EditorState = {
-    steps: [],
-    drawerMobileOpen: false,
-    activeTab: ActiveTab.Cards,
-    activeFab: ActiveFab.Add
-  }
-
-  beforeEach(() => {
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch: jest.fn()
-    })
-  })
   it('shows default messages', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step1.id',
@@ -96,15 +63,6 @@ describe('Step', () => {
         nextBlockId: null,
         children: []
       }
-      mockUseEditor.mockReturnValue({
-        state: {
-          steps: [step1, step2],
-          drawerMobileOpen: false,
-          activeTab: ActiveTab.Cards,
-          activeFab: ActiveFab.Add
-        },
-        dispatch
-      })
       const { getByText } = render(
         <EditorProvider
           initialState={{
@@ -170,15 +128,6 @@ describe('Step', () => {
           }
         ]
       }
-      mockUseEditor.mockReturnValue({
-        state: {
-          steps: [step1, step2, step5],
-          drawerMobileOpen: false,
-          activeTab: ActiveTab.Cards,
-          activeFab: ActiveFab.Add
-        },
-        dispatch
-      })
       const { getByText } = render(
         <EditorProvider
           initialState={{
@@ -235,15 +184,6 @@ describe('Step', () => {
           }
         ]
       }
-      mockUseEditor.mockReturnValue({
-        state: {
-          steps: [step1, step2],
-          drawerMobileOpen: false,
-          activeTab: ActiveTab.Cards,
-          activeFab: ActiveFab.Add
-        },
-        dispatch
-      })
       const { getByText } = render(
         <EditorProvider
           initialState={{
@@ -285,36 +225,6 @@ describe('Step', () => {
         </EditorProvider>
       )
       expect(getByText('None')).toBeInTheDocument()
-    })
-  })
-  it('should open property drawr for variant', () => {
-    const step: TreeBlock<StepBlock> = {
-      id: 'step1.id',
-      __typename: 'StepBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
-    const dispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state,
-      dispatch
-    })
-    render(<Step {...step} />)
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Properties
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedAttributeIdAction',
-      id: 'step1.id-next-block'
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      title: 'Next Card Properties',
-      children: <NextCard />
     })
   })
 })
