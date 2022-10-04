@@ -1,21 +1,11 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import Container from '@mui/material/Container'
-import TagManager from 'react-gtm-module'
-import { useMutation, gql } from '@apollo/client'
 import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
 import { GetPublishedTemplates_journeys as Template } from '../../../__generated__/GetPublishedTemplates'
 import { TemplateCard } from '../TemplateCard'
 import { ContactSupport } from '../ContactSupport'
-import { TemplateLibraryViewEventCreate } from '../../../__generated__/TemplateLibraryViewEventCreate'
 
-export const TEMPLATE_LIBRARY_VIEW_EVENT_CREATE = gql`
-  mutation TemplateLibraryViewEventCreate {
-    templateLibraryViewEventCreate {
-      id
-    }
-  }
-`
 interface TemplateLibraryProps {
   isPublisher?: boolean
   journeys?: Journey[]
@@ -27,27 +17,7 @@ export function TemplateLibrary({
   journeys,
   templates
 }: TemplateLibraryProps): ReactElement {
-  const [templateLibraryViewEventCreate] =
-    useMutation<TemplateLibraryViewEventCreate>(
-      TEMPLATE_LIBRARY_VIEW_EVENT_CREATE
-    )
-
   const { t } = useTranslation('apps-journeys-admin')
-
-  useEffect(() => {
-    async function handleEventCreation(): Promise<void> {
-      const { data } = await templateLibraryViewEventCreate()
-      if (data?.templateLibraryViewEventCreate != null) {
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'template_library_view',
-            eventId: data.templateLibraryViewEventCreate.id
-          }
-        })
-      }
-    }
-    void handleEventCreation()
-  }, [templateLibraryViewEventCreate])
 
   // journey == null is journey loading
   const showLibrary = journeys == null || journeys?.length > 0 || isPublisher

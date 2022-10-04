@@ -1,6 +1,5 @@
 import { Story, Meta } from '@storybook/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { defaultJourney } from '../data'
 import { DatePreview } from './DatePreview'
@@ -12,11 +11,9 @@ const DatePreviewStory = {
 }
 
 const Template: Story = ({ ...args }) => (
-  <MockedProvider>
-    <JourneyProvider value={{ journey: args.journey }}>
-      <DatePreview />
-    </JourneyProvider>
-  </MockedProvider>
+  <JourneyProvider value={{ journey: args.journey }}>
+    <DatePreview />
+  </JourneyProvider>
 )
 
 export const Default = Template.bind({})
