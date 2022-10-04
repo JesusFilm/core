@@ -10,7 +10,7 @@ module "vpc" {
 
 module "internal_alb_security_group" {
   source        = "./modules/aws/security-group"
-  name          = "core-internal-alb-sg"
+  name          = "jfp-internal-alb-sg"
   vpc_id        = module.vpc.vpc_id
   ingress_rules = local.internal_alb_config.ingress_rules
   egress_rules  = local.internal_alb_config.egress_rules
@@ -18,7 +18,7 @@ module "internal_alb_security_group" {
 
 module "public_alb_security_group" {
   source        = "./modules/aws/security-group"
-  name          = "core-public-alb-sg"
+  name          = "jfp-public-alb-sg"
   vpc_id        = module.vpc.vpc_id
   ingress_rules = local.public_alb_config.ingress_rules
   egress_rules  = local.public_alb_config.egress_rules
@@ -26,7 +26,7 @@ module "public_alb_security_group" {
 
 module "internal_alb" {
   source            = "./modules/aws/alb"
-  name              = "core-internal-alb"
+  name              = "jfp-internal-alb"
   subnets           = module.vpc.internal_subnets
   vpc_id            = module.vpc.vpc_id
   internal          = true
@@ -38,7 +38,7 @@ module "internal_alb" {
 
 module "public_alb" {
   source            = "./modules/aws/alb"
-  name              = "core-public-alb"
+  name              = "jfp-public-alb"
   subnets           = module.vpc.public_subnets
   vpc_id            = module.vpc.vpc_id
   internal          = false

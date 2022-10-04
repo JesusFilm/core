@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "ecr_repository" {
-  name = "core-${var.service_config.name}"
+  name = "jfp-${var.service_config.name}"
 }
 
 resource "aws_cloudwatch_log_group" "ecs_cw_log_group" {
@@ -8,7 +8,7 @@ resource "aws_cloudwatch_log_group" "ecs_cw_log_group" {
 
 #Create task definitions for app services
 resource "aws_ecs_task_definition" "ecs_task_definition" {
-  family                   = "core-${var.service_config.name}"
+  family                   = "jfp-${var.service_config.name}"
   execution_role_arn       = var.ecs_config.task_execution_role_arn
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -18,7 +18,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   container_definitions = jsonencode([
     {
       name      = var.service_config.name
-      image     = "${local.account}.dkr.ecr.${local.region}.amazonaws.com/core-${var.service_config.name}:latest"
+      image     = "${local.account}.dkr.ecr.${local.region}.amazonaws.com/jfp-${var.service_config.name}:latest"
       cpu       = var.service_config.cpu
       memory    = var.service_config.memory
       essential = true
@@ -99,7 +99,7 @@ resource "aws_appautoscaling_target" "service_autoscaling" {
 }
 
 resource "aws_appautoscaling_policy" "ecs_policy_memory" {
-  name               = "core-memory-autoscaling"
+  name               = "jfp-memory-autoscaling"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.service_autoscaling.resource_id
   scalable_dimension = aws_appautoscaling_target.service_autoscaling.scalable_dimension
@@ -115,7 +115,7 @@ resource "aws_appautoscaling_policy" "ecs_policy_memory" {
 }
 
 resource "aws_appautoscaling_policy" "ecs_policy_cpu" {
-  name               = "core-cpu-autoscaling"
+  name               = "jfp-cpu-autoscaling"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.service_autoscaling.resource_id
   scalable_dimension = aws_appautoscaling_target.service_autoscaling.scalable_dimension

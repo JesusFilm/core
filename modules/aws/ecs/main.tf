@@ -1,9 +1,9 @@
 resource "aws_ecs_cluster" "ecs_cluster" {
-  name = "core-cluster"
+  name = "jfp-ecs-cluster"
 }
 
 resource "aws_security_group" "internal_security_group" {
-  name   = "core-ecs-internal-sg"
+  name   = "jfp-ecs-internal-sg"
   vpc_id = var.vpc_id
 
   ingress {
@@ -22,7 +22,7 @@ resource "aws_security_group" "internal_security_group" {
 }
 
 resource "aws_security_group" "public_security_group" {
-  name   = "core-ecs-public-sg"
+  name   = "jfp-ecs-public-sg"
   vpc_id = var.vpc_id
 
   ingress {
