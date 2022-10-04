@@ -162,8 +162,8 @@ export function CardPreview({
               ]
             }
           })
+          setIsDragging(false)
         }
-        setIsDragging(false)
       },
     [steps, journey, stepsOrderUpdate]
   )
