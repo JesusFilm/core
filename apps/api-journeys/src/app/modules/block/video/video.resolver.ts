@@ -33,7 +33,7 @@ export interface YoutubeVideosData {
     snippet: {
       title: string
       description: string
-      thumbnails: { default: { url: string } }
+      thumbnails: { high: { url: string } }
     }
     contentDetails: {
       duration: string
@@ -167,6 +167,15 @@ export class VideoBlockResolver {
         }
         break
       case VideoBlockSource.internal:
+        input = {
+          ...input,
+          ...{
+            title: null,
+            description: null,
+            image: null,
+            duration: null
+          }
+        }
         await videoBlockInternalSchema.validate({ ...block, ...input })
         break
     }
@@ -223,7 +232,7 @@ export class VideoBlockResolver {
     return {
       title: videosData.items[0].snippet.title,
       description: videosData.items[0].snippet.description,
-      image: videosData.items[0].snippet.thumbnails.default.url,
+      image: videosData.items[0].snippet.thumbnails.high.url,
       duration: parseISO8601Duration(
         videosData.items[0].contentDetails.duration
       )

@@ -277,7 +277,7 @@ describe('VideoBlockResolver', () => {
                     description:
                       'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
                     thumbnails: {
-                      default: {
+                      high: {
                         url: 'https://i.ytimg.com/vi/7RoqnGcEjcs/hqdefault.jpg'
                       }
                     }
@@ -349,7 +349,11 @@ describe('VideoBlockResolver', () => {
           ...updatedBlock,
           videoId: 'videoId',
           videoVariantLanguageId: 'videoVariantLanguageId',
-          source: VideoBlockSource.internal
+          source: VideoBlockSource.internal,
+          title: null,
+          description: null,
+          image: null,
+          duration: null
         })
       })
     })
@@ -395,7 +399,7 @@ describe('VideoBlockResolver', () => {
                     description:
                       'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
                     thumbnails: {
-                      default: {
+                      high: {
                         url: 'https://i.ytimg.com/vi/7RoqnGcEjcs/hqdefault.jpg'
                       }
                     }
