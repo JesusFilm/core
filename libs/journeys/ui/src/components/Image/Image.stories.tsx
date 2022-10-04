@@ -26,15 +26,10 @@ const Template: Story<TreeBlock<ImageFields>> = ({ alt, ...args }) => (
   </StoryCard>
 )
 
+// Throttle network to see loading image
 export const Default: Story<TreeBlock<ImageFields>> = Template.bind({})
 Default.args = {
   src: null
-}
-
-// Throttle network to see loading image
-export const Loading: Story<TreeBlock<ImageFields>> = Template.bind({})
-Loading.parameters = {
-  chromatic: { delay: 0 }
 }
 
 export const WebImage: Story<TreeBlock<ImageFields>> = Template.bind({})
