@@ -277,14 +277,42 @@ describe('Attributes', () => {
     expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
   })
 
-  it('should open social share appearance drawer', () => {
+  it('should open social share if active tab is Cards', () => {
     const dispatch = jest.fn()
     mockUseEditor.mockReturnValue({
       state,
       dispatch
     })
-    render(<Attributes selected={card} step={card} />)
+    render(<Attributes selected={card} step={step} />)
     expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetDrawerPropsAction',
+      title: 'Social Share Appearance',
+      children: <SocialShareAppearance />
+    })
+  })
+
+  it('should open social share if selectedBlock is a StepBlock', () => {
+    const dispatch = jest.fn()
+    mockUseEditor.mockReturnValue({
+      state: { ...state, activeTab: ActiveTab.Properties },
+      dispatch
+    })
+    render(<Attributes selected={step} step={step} />)
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'SetDrawerPropsAction',
+      title: 'Social Share Appearance',
+      children: <SocialShareAppearance />
+    })
+  })
+
+  it('should not open social share if active tab is not Cards or selectedBlock not StepBlock', () => {
+    const dispatch = jest.fn()
+    mockUseEditor.mockReturnValue({
+      state: { ...state, activeTab: ActiveTab.Properties },
+      dispatch
+    })
+    render(<Attributes selected={card} step={step} />)
+    expect(dispatch).not.toHaveBeenCalledWith({
       type: 'SetDrawerPropsAction',
       title: 'Social Share Appearance',
       children: <SocialShareAppearance />
