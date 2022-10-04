@@ -14,6 +14,7 @@ const nextConfig = {
       'localhost',
       'unsplash.com',
       'imagizer.imageshack.com',
+      // arclight image provider - cloudfront
       'd1wl257kev7hsz.cloudfront.net',
       'i.ytimg.com'
     ]
