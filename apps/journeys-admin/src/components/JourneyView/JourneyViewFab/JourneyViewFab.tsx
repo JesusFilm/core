@@ -72,6 +72,7 @@ export function JourneyViewFab({
     })
 
     if (data?.journeyDuplicate != null) {
+      void handleCreateEvent()
       void router.push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
         shallow: true
       })
@@ -121,10 +122,7 @@ export function JourneyViewFab({
           }}
           color="primary"
           disabled={journey == null}
-          onClick={async () => {
-            await handleConvertTemplate()
-            void handleCreateEvent()
-          }}
+          onClick={handleConvertTemplate}
         >
           <CheckRoundedIcon sx={{ mr: 3 }} />
           <Typography
