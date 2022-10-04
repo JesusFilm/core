@@ -125,6 +125,9 @@ StartAndEndAt.args = {
   startAt: 20,
   endAt: 60
 }
+StartAndEndAt.parameters = {
+  chromatic: { disableSnapshot: true }
+}
 
 export const Poster = Template.bind({})
 Poster.args = {
