@@ -139,7 +139,7 @@ describe('JourneyViewFab', () => {
     })
   })
 
-  it('should create event', async () => {
+  it('should create use event when preview button is clicked', async () => {
     const result = jest.fn(() => ({
       data: {
         templateUseEventCreate: {
