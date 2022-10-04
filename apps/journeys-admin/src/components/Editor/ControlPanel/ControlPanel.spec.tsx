@@ -88,7 +88,9 @@ describe('ControlPanel', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    // Default start on Properties
+    // Default start on Cards
+    expect(getByRole('tabpanel', { name: 'Cards' })).toBeInTheDocument()
+    fireEvent.click(getByRole('tab', { name: 'Properties' }))
     expect(getByRole('tabpanel', { name: 'Properties' })).toBeInTheDocument()
     expect(getByText('Unlocked Card')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Cards' }))
