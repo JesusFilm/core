@@ -146,7 +146,7 @@ export function CardPreview({
           const parentOrder =
             cardDragging.parentOrder + destIndex - source.index
 
-          await stepsOrderUpdate({
+          const { data } = await stepsOrderUpdate({
             variables: {
               id: cardDragging.id,
               journeyId: journey.id,
@@ -162,7 +162,9 @@ export function CardPreview({
               ]
             }
           })
-          setIsDragging(false)
+          if (data?.blockOrderUpdate != null) {
+            setIsDragging(false)
+          }
         }
       },
     [steps, journey, stepsOrderUpdate]
