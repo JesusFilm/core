@@ -17,7 +17,7 @@ export function NextCard(): ReactElement {
     setTabValue(newValue)
   }
 
-  console.log('pls deploy')
+  pls('im getting despreate to get this to deploy')
 
   return (
     <>
@@ -55,4 +55,8 @@ export function NextCard(): ReactElement {
       </Box>
     </>
   )
+}
+
+function pls(text: string): any {
+  console.log(text)
 }
