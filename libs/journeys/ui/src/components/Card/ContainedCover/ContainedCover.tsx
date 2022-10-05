@@ -125,7 +125,7 @@ export function ContainedCover({
           </video>
         )}
         {/* video image */}
-        {videoImage != null && (
+        {videoImage != null && loading && (
           <NextImage
             src={videoImage}
             alt="card video image"
