@@ -1,9 +1,9 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { GET_VIDEOS } from '../../VideoLibrary/VideoFromLocal/VideoFromLocal'
 import { GET_VIDEO } from '../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 import { videos } from '../../VideoLibrary/VideoFromLocal/data'
-import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { Source } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -86,6 +86,7 @@ describe('Source', () => {
       expect(onChange).toHaveBeenCalledWith({
         videoId: '2_0-Brand_Video',
         videoVariantLanguageId: '529',
+        source: VideoBlockSource.internal,
         startAt: 0,
         endAt: 144
       })
