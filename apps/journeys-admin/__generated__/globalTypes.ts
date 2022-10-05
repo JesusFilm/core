@@ -309,10 +309,6 @@ export interface StepViewEventCreateInput {
   id?: string | null;
 }
 
-export interface TemplateUseEventInput {
-  journeyId: string;
-}
-
 export interface TextResponseBlockCreateInput {
   id?: string | null;
   journeyId: string;
