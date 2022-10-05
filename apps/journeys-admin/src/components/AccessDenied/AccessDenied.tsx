@@ -40,13 +40,16 @@ export function AccessDenied({
           </a>
         </Link>
       </Box>
-      <Card variant="outlined" sx={{
+      <Card
+        variant="outlined"
+        sx={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           textAlign: 'center'
-        }}>
+        }}
+      >
         <CardContent>
           <Typography variant="h3" component="h1" gutterBottom>
             {title}
@@ -55,10 +58,12 @@ export function AccessDenied({
         </CardContent>
         <CardActions>
           {requestAccess ? (
-            <Button variant="outlined" onClick={onClick}>Request Access</Button>
+            <Button variant="outlined" onClick={onClick}>
+              Request Access
+            </Button>
           ) : (
             <Link href="/" passHref>
-              <Button variant="outlined" >Back to the Admin Panel</Button>
+              <Button variant="outlined">Back to the Admin Panel</Button>
             </Link>
           )}
         </CardActions>
