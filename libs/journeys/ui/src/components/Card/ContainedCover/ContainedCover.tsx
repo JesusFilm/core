@@ -73,7 +73,10 @@ export function ContainedCover({
     }
   }, [imageBlock, theme, videoBlock, backgroundBlur])
 
-  const videoImage = videoBlock?.image ?? videoBlock?.video?.image
+  const videoImage =
+    videoBlock?.source === VideoBlockSource.internal
+      ? videoBlock?.video?.image
+      : videoBlock?.image
 
   return (
     <>

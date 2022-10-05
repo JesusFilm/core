@@ -134,7 +134,7 @@ export function Video({
   const eventVideoTitle = video?.title[0].value ?? title
   const eventVideoId = video?.id ?? videoId
 
-  const videoImage = image ?? video?.image
+  const videoImage = source === VideoBlockSource.internal ? video?.image : image
 
   return (
     <Box
