@@ -2,16 +2,16 @@ locals {
   service_config = {
     name           = "api-gateway"
     is_public      = true
-    container_port = 80
-    host_port      = 80
+    container_port = 4000
+    host_port      = 4000
     cpu            = 256
     memory         = 512
     desired_count  = 1
     alb_target_group = {
-      port              = 80
+      port              = 4000
       protocol          = "HTTP"
       path_pattern      = ["/*"]
-      health_check_path = "/health"
+      health_check_path = "/.well-known/apollo/server-health"
       priority          = 1
     }
     auto_scaling = {
