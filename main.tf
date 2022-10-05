@@ -63,14 +63,14 @@ module "route53_private_zone" {
 module "route53_jesusfilm_org_zone" {
   source      = "./modules/aws/route53/domain"
   domain_name = "jesusfilm.org"
-  vpc_id      = module.vpc.vpc_id
+  # vpc_id      = module.vpc.vpc_id
 }
 
 module "route53_central_jesusfilm_org" {
   source         = "./modules/aws/route53/subdomain"
   domain_name    = "central.jesusfilm.org"
   parent_zone_id = module.route53_jesusfilm_org_zone.zone_id
-  vpc_id         = module.vpc.vpc_id
+  # vpc_id         = module.vpc.vpc_id
 }
 
 module "acm_central_jesusfilm_org" {

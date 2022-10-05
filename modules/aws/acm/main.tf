@@ -1,7 +1,7 @@
 resource "aws_acm_certificate" "main" {
   domain_name               = var.domain_name
   validation_method         = "DNS"
-  subject_alternative_names = concat([var.domain_name], var.alternative_names)
+  subject_alternative_names = var.alternative_names
 }
 
 resource "aws_acm_certificate_validation" "main" {
