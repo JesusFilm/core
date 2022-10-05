@@ -54,11 +54,10 @@ export const GET_ME = gql`
 `
 
 const StyledNavigationDrawer = styled(Drawer)(({ theme, open }) => ({
-  width: DRAWER_WIDTH,
+  width: '72px',
   display: 'flex',
-  boxSizing: 'border-box',
-  border: 0,
   '& .MuiDrawer-paper': {
+    border: 0,
     backgroundColor: theme.palette.secondary.dark,
     overflowX: 'hidden',
     ...(open === true && {

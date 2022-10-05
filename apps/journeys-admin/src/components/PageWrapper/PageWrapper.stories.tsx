@@ -1,4 +1,5 @@
 import { Meta, Story } from '@storybook/react'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import MenuRounded from '@mui/icons-material/MenuRounded'
 import { noop } from 'lodash'
@@ -63,7 +64,7 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  props: { title: 'Active Journeys' }
+  props: { title: 'Main Content' }
 }
 
 export const Complete = Template.bind({})
@@ -71,7 +72,9 @@ Complete.args = {
   props: {
     backHref: '/',
     showDrawer: true,
-    title: 'Journey Details',
+    title: 'Main Content',
+    sidePanelTitle: 'Side Panel Content',
+    sidePanel: <Box />,
     authUser: {
       displayName: 'Amin One',
       photoURL: 'https://bit.ly/3Gth4Yf',
