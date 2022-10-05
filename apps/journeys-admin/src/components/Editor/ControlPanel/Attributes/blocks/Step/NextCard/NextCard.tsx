@@ -17,6 +17,8 @@ export function NextCard(): ReactElement {
     setTabValue(newValue)
   }
 
+  console.log('pls deploy')
+
   return (
     <>
       <SelectedCard />
