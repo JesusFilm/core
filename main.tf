@@ -61,9 +61,9 @@ module "route53_jesusfilm_org_zone" {
 }
 
 module "route53_central_jesusfilm_org" {
-  source             = "./modules/aws/route53/subdomain"
-  domain_name        = "central.jesusfilm.org"
-  parent_domain_name = module.route53_jesusfilm_org_zone.domain_name
+  source         = "./modules/aws/route53/subdomain"
+  domain_name    = "central.jesusfilm.org"
+  parent_zone_id = module.route53_jesusfilm_org_zone.zone_id
 }
 
 module "ecs" {

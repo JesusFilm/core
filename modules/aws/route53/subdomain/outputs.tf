@@ -1,7 +1,3 @@
-output "parent_domain_name" {
-  value = var.parent_domain_name
-}
-
-output "domain_name" {
-  value = var.domain_name
+output "sub_zone_id" {
+  value = aws_route53_zone.sub_zone.id
 }
