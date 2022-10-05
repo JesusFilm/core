@@ -196,7 +196,7 @@ export function PageWrapper({
         <Stack
           component="section"
           sx={{
-            width: { xs: '100%', sm: '327px' },
+            minWidth: { xs: '100%', sm: '327px' },
             backgroundColor: 'white',
             borderLeft: { sm: '1px solid' },
             borderColor: { sm: 'divider' }
