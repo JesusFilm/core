@@ -260,7 +260,7 @@ export function Video({
         </>
       )}
       {/* Video Image  */}
-      {videoImage != null && posterBlock?.src == null && (
+      {videoImage != null && posterBlock?.src == null && loading && (
         <NextImage
           src={videoImage}
           alt="video image"
