@@ -9,22 +9,11 @@ import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { ConvertTemplate } from '../../../../__generated__/ConvertTemplate'
-import { TemplateUseEventCreate } from '../../../../__generated__/TemplateUseEventCreate'
 
 export const CONVERT_TEMPLATE = gql`
   mutation ConvertTemplate($id: ID!) {
     journeyDuplicate(id: $id) {
       id
-    }
-  }
-`
-
-export const TEMPLATE_USE_EVENT_CREATE = gql`
-  mutation TemplateUseEventCreate($input: TemplateUseEventInput!) {
-    templateUseEventCreate(input: $input) {
-      id
-      userId
-      journeyId
     }
   }
 `
@@ -39,9 +28,6 @@ export function JourneyViewFab({
   const { journey } = useJourney()
   const router = useRouter()
   const [ConvertTemplate] = useMutation<ConvertTemplate>(CONVERT_TEMPLATE)
-  const [templateUseEventCreate] = useMutation<TemplateUseEventCreate>(
-    TEMPLATE_USE_EVENT_CREATE
-  )
 
   const handleConvertTemplate = async (): Promise<void> => {
     if (journey == null) return
@@ -72,30 +58,16 @@ export function JourneyViewFab({
     })
 
     if (data?.journeyDuplicate != null) {
-      void handleCreateEvent()
-      void router.push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
-        shallow: true
-      })
-    }
-  }
-
-  const handleCreateEvent = async (): Promise<void> => {
-    if (journey == null) return
-    const { data } = await templateUseEventCreate({
-      variables: {
-        input: { journeyId: journey.id }
-      }
-    })
-    if (data?.templateUseEventCreate != null) {
-      const { id, journeyId, userId } = data.templateUseEventCreate
       TagManager.dataLayer({
         dataLayer: {
           event: 'template_use',
-          eventId: id,
-          journeyId,
-          userId,
+          journeyId: journey.id,
           journeyTitle: journey.title
         }
+      })
+
+      void router.push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
+        shallow: true
       })
     }
   }

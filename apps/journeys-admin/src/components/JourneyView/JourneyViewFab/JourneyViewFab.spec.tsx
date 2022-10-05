@@ -6,11 +6,7 @@ import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
 import { defaultJourney } from '../data'
-import {
-  CONVERT_TEMPLATE,
-  TEMPLATE_USE_EVENT_CREATE,
-  JourneyViewFab
-} from './JourneyViewFab'
+import { CONVERT_TEMPLATE, JourneyViewFab } from './JourneyViewFab'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -95,24 +91,6 @@ describe('JourneyViewFab', () => {
               }
             },
             result
-          },
-          {
-            request: {
-              query: TEMPLATE_USE_EVENT_CREATE,
-              variables: {
-                input: { journeyId: 'journey-id' }
-              }
-            },
-            result: {
-              data: {
-                templateUseEventCreate: {
-                  __typename: 'TemplateUseEvent',
-                  userId: 'user.id',
-                  journeyId: 'journey-id',
-                  id: 'event.id'
-                }
-              }
-            }
           }
         ]}
       >
@@ -139,30 +117,10 @@ describe('JourneyViewFab', () => {
     })
   })
 
-  it('should create use event when preview button is clicked', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        templateUseEventCreate: {
-          __typename: 'TemplateUseEvent',
-          userId: 'user.id',
-          journeyId: 'journey-id',
-          id: 'event.id'
-        }
-      }
-    }))
-
+  it('should send custom event to GTM when preview button is clicked', async () => {
     const { getByRole } = render(
       <MockedProvider
         mocks={[
-          {
-            request: {
-              query: TEMPLATE_USE_EVENT_CREATE,
-              variables: {
-                input: { journeyId: 'journey-id' }
-              }
-            },
-            result
-          },
           {
             request: {
               query: CONVERT_TEMPLATE,
@@ -193,15 +151,14 @@ describe('JourneyViewFab', () => {
     )
 
     fireEvent.click(getByRole('button'))
-    await waitFor(() => expect(result).toHaveBeenCalled)
-    expect(mockedDataLayer).toHaveBeenCalledWith({
-      dataLayer: {
-        event: 'template_use',
-        eventId: 'event.id',
-        journeyId: 'journey-id',
-        userId: 'user.id',
-        journeyTitle: 'Journey Heading'
-      }
-    })
+    await waitFor(() =>
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'template_use',
+          journeyId: 'journey-id',
+          journeyTitle: 'Journey Heading'
+        }
+      })
+    )
   })
 })
