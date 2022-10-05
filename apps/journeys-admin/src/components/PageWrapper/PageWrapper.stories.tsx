@@ -64,7 +64,16 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  props: { title: 'Main Content' }
+  props: {
+    title: 'Main Content',
+    children: (
+      <>
+        Main Body Container - Lots of content in here. So it overflows on
+        mobile. On the "complete" story we want to test scroll. We should still
+        see the side panel content below
+      </>
+    )
+  }
 }
 
 export const Complete = Template.bind({})
@@ -74,7 +83,15 @@ Complete.args = {
     showDrawer: true,
     title: 'Main Content',
     sidePanelTitle: 'Side Panel Content',
+    children: (
+      <>
+        Main Body Container - Lots of content in here. So it overflows on
+        mobile. On the "complete" story we want to test scroll. We should still
+        see the side panel content below
+      </>
+    ),
     sidePanel: <Box />,
+    bottomPanel: <Box />,
     authUser: {
       displayName: 'Amin One',
       photoURL: 'https://bit.ly/3Gth4Yf',

@@ -26,6 +26,7 @@ export interface PageWrapperProps {
   showAppHeader?: boolean
   sidePanelTitle?: string
   sidePanel?: ReactNode
+  bottomPanel?: ReactNode
   authUser?: AuthUser
   router?: NextRouter
 }
@@ -38,6 +39,7 @@ export function PageWrapper({
   menu: customMenu,
   sidePanelTitle,
   sidePanel,
+  bottomPanel,
   children,
   authUser,
   router
@@ -187,8 +189,7 @@ export function PageWrapper({
           }}
         >
           <MainBodyContainer />
-          <BottomPanelContainer />
-          {children}
+          {bottomPanel != null && <BottomPanelContainer />}
         </Grid>
       </Stack>
       {sidePanel != null && (
@@ -227,9 +228,7 @@ export function PageWrapper({
         py: 9
       }}
     >
-      Main Body Container - Lots of content in here. So it overflows on mobile.
-      On the "complete" story we want to test scroll. We should still see the
-      side panel content below
+      {children}
     </Grid>
   )
 
@@ -248,6 +247,7 @@ export function PageWrapper({
         borderColor: 'divider'
       }}
     >
+      {bottomPanel}
       Bottom Panel Container - no padding since TabPanels usually go here
     </Grid>
   )
