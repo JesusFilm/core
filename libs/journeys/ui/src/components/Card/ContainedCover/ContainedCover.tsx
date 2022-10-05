@@ -73,6 +73,11 @@ export function ContainedCover({
     }
   }, [imageBlock, theme, videoBlock, backgroundBlur])
 
+  const videoImage =
+    videoBlock?.source === VideoBlockSource.internal
+      ? videoBlock?.video?.image
+      : videoBlock?.image
+
   return (
     <>
       <Box
@@ -119,6 +124,17 @@ export function ContainedCover({
             )}
           </video>
         )}
+        {/* video image */}
+        {videoImage != null && (
+          <NextImage
+            src={videoImage}
+            alt="card video image"
+            layout="fill"
+            objectFit="cover"
+          />
+        )}
+
+        {/* background image */}
         {loading && imageBlock != null && backgroundBlur != null && (
           <NextImage
             data-testid={
