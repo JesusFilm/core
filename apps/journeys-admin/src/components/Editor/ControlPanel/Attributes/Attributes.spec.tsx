@@ -304,46 +304,4 @@ describe('Attributes', () => {
       children: <SocialShareAppearance />
     })
   })
-
-  it('should not open social share if active tab is not Cards', () => {
-    const dispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state: { ...state, activeTab: ActiveTab.Properties },
-      dispatch
-    })
-    render(<Attributes selected={card} step={step} />)
-    expect(dispatch).not.toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      title: 'Social Share Appearance',
-      children: <SocialShareAppearance />
-    })
-  })
-
-  it('should not open social share if selectedBlock is not StepBlock', () => {
-    const dispatch = jest.fn()
-    mockUseEditor.mockReturnValue({
-      state: { ...state, activeTab: ActiveTab.Properties },
-      dispatch
-    })
-    const block: TreeBlock = {
-      id: 'signup.id',
-      __typename: 'SignUpBlock',
-      parentBlockId: null,
-      parentOrder: 0,
-      submitLabel: null,
-      action: null,
-      submitIconId: null,
-      children: []
-    }
-    render(
-      <MockedProvider>
-        <Attributes selected={block} step={{ ...card, children: [block] }} />
-      </MockedProvider>
-    )
-    expect(dispatch).not.toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      title: 'Social Share Appearance',
-      children: <SocialShareAppearance />
-    })
-  })
 })
