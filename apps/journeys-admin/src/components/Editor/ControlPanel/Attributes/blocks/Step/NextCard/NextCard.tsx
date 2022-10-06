@@ -17,8 +17,6 @@ export function NextCard(): ReactElement {
     setTabValue(newValue)
   }
 
-  pls('im getting despreate to get this to deploy')
-
   return (
     <>
       <SelectedCard />
@@ -55,8 +53,4 @@ export function NextCard(): ReactElement {
       </Box>
     </>
   )
-}
-
-function pls(text: string): any {
-  console.log(text)
 }
