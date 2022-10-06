@@ -2,14 +2,19 @@
 
 Please include a summary of the change and which todo is completed. Please also include relevant motivation and context. List any dependencies that are required for this change.
 
-- Link to Basecamp Todo
+Link to Basecamp Todo
 
-# How should this PR be QA Tested?
+# QA Testing
 
-Please describe the QA tests that you ran to verify your changes. Please also note any relevant details for your test configuration.
+Please describe what remains to be tested via E2E and manual testing, noting relevant test configuration details.
 
-- [ ] Test A
-- [ ] Test B
+**E2E / Manual testing**
+
+As [any user / a role] on the [page]
+
+- [ ] it [action][on component][in context]
+  - Steps to reproduce
+- [ ] it
 
 # Checklist
 
