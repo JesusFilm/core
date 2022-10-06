@@ -24,6 +24,7 @@ export function Video({
   video,
   source,
   videoId,
+  image,
   title,
   autoplay,
   startAt,
@@ -132,6 +133,8 @@ export function Video({
 
   const eventVideoTitle = video?.title[0].value ?? title
   const eventVideoId = video?.id ?? videoId
+
+  const videoImage = source === VideoBlockSource.internal ? video?.image : image
 
   return (
     <Box
@@ -256,13 +259,22 @@ export function Video({
           </Paper>
         </>
       )}
+      {/* Video Image  */}
+      {videoImage != null && posterBlock?.src == null && loading && (
+        <NextImage
+          src={videoImage}
+          alt="video image"
+          layout="fill"
+          objectFit="cover"
+        />
+      )}
       {/* Lazy load higher res poster */}
       {posterBlock?.src != null && loading && (
         <NextImage
           src={posterBlock.src}
           alt={posterBlock.alt}
           placeholder={blurBackground != null ? 'blur' : 'empty'}
-          blurDataURL={blurBackground ?? posterBlock.src}
+          blurDataURL={blurBackground}
           layout="fill"
           objectFit="cover"
         />
