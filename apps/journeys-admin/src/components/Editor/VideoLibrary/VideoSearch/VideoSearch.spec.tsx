@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { VideoSearch } from './VideoSearch'
 
 describe('VideoSearch', () => {
@@ -17,5 +18,19 @@ describe('VideoSearch', () => {
       target: { value: 'Jesus' }
     })
     await waitFor(() => expect(onChange).toHaveBeenCalledWith('Jesus'))
+  })
+
+  it('uses the search icon if tab is internal', () => {
+    const { getByTestId } = render(
+      <VideoSearch onChange={jest.fn()} activeTab={VideoBlockSource.internal} />
+    )
+    expect(getByTestId('SearchIcon')).toBeInTheDocument()
+  })
+
+  it('uses the link icon if tab is youtube', () => {
+    const { getByTestId } = render(
+      <VideoSearch onChange={jest.fn()} activeTab={VideoBlockSource.youTube} />
+    )
+    expect(getByTestId('LinkRoundedIcon')).toBeInTheDocument()
   })
 })
