@@ -7,16 +7,7 @@ export function VideoWrapper({ block }: WrapperProps): ReactElement {
     <Video
       {...{
         ...block,
-        video:
-          block.video != null
-            ? {
-                ...block.video,
-                variant:
-                  block.video.variant != null
-                    ? { ...block.video.variant, hls: null }
-                    : null
-              }
-            : null
+        videoId: null
       }}
     />
   ) : (

@@ -2,6 +2,7 @@ import { ReactElement } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Fab from '@mui/material/Fab'
+import TagManager from 'react-gtm-module'
 import EditIcon from '@mui/icons-material/Edit'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
 import Typography from '@mui/material/Typography'
@@ -57,6 +58,14 @@ export function JourneyViewFab({
     })
 
     if (data?.journeyDuplicate != null) {
+      TagManager.dataLayer({
+        dataLayer: {
+          event: 'template_use',
+          journeyId: journey.id,
+          journeyTitle: journey.title
+        }
+      })
+
       void router.push(`/journeys/${data.journeyDuplicate.id}`, undefined, {
         shallow: true
       })

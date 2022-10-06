@@ -4,6 +4,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import TagManager from 'react-gtm-module'
 import { defaultJourney } from '../data'
 import { CONVERT_TEMPLATE, JourneyViewFab } from './JourneyViewFab'
 
@@ -13,6 +14,17 @@ jest.mock('next/router', () => ({
 }))
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
+jest.mock('react-gtm-module', () => ({
+  __esModule: true,
+  default: {
+    dataLayer: jest.fn()
+  }
+}))
+
+const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
+  typeof TagManager.dataLayer
+>
 
 describe('JourneyViewFab', () => {
   it('should redirect to journey editor on edit button click', () => {
@@ -103,5 +115,50 @@ describe('JourneyViewFab', () => {
         { shallow: true }
       )
     })
+  })
+
+  it('should send custom event to GTM when preview button is clicked', async () => {
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CONVERT_TEMPLATE,
+              variables: {
+                id: 'journey-id'
+              }
+            },
+            result: {
+              data: {
+                journeyDuplicate: {
+                  id: 'duplicatedJourneyId'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider>
+            <JourneyProvider
+              value={{ journey: { ...defaultJourney, template: true } }}
+            >
+              <JourneyViewFab />
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button'))
+    await waitFor(() =>
+      expect(mockedDataLayer).toHaveBeenCalledWith({
+        dataLayer: {
+          event: 'template_use',
+          journeyId: 'journey-id',
+          journeyTitle: 'Journey Heading'
+        }
+      })
+    )
   })
 })

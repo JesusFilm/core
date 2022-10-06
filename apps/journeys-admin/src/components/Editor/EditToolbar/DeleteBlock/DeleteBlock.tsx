@@ -55,27 +55,27 @@ export function DeleteBlock({
     const stepsBeforeDelete = steps
     const stepBeforeDelete = selectedStep
 
-    const { data } = await blockDelete({
+    await blockDelete({
       variables: {
         id: selectedBlock.id,
         journeyId: journey.id,
         parentBlockId: selectedBlock.parentBlockId
       },
       update(cache, { data }) {
+        if (data?.blockDelete != null && deletedBlockParentOrder != null) {
+          const selected = getSelected({
+            parentOrder: deletedBlockParentOrder,
+            siblings: data.blockDelete,
+            type: deletedBlockType,
+            steps: stepsBeforeDelete,
+            selectedStep: stepBeforeDelete
+          })
+          selected != null && dispatch(selected)
+        }
+
         blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journey.id)
       }
     })
-
-    if (data?.blockDelete != null && deletedBlockParentOrder != null) {
-      const selected = getSelected({
-        parentOrder: deletedBlockParentOrder,
-        siblings: data.blockDelete,
-        type: deletedBlockType,
-        steps: stepsBeforeDelete,
-        selectedStep: stepBeforeDelete
-      })
-      selected != null && dispatch(selected)
-    }
 
     handleCloseDialog()
 
