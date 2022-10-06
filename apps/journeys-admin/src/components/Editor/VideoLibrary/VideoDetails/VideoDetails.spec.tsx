@@ -150,6 +150,7 @@ describe('VideoDetails', () => {
     expect(onSelect).toHaveBeenCalledWith({
       endAt: 144,
       startAt: 0,
+      source: VideoBlockSource.internal,
       videoId: '2_Acts7302-0-0',
       videoVariantLanguageId: '529'
     })
