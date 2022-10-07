@@ -1,40 +1,79 @@
-import { Story, Meta } from '@storybook/react'
+import { Meta, ComponentStory } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import type { TreeBlock } from '../../libs/block'
 import { VIDEO_START_EVENT_CREATE } from '../VideoEvents/VideoEvents'
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
-import { VideoFields } from './__generated__/VideoFields'
 import { Video } from '.'
 
 const Demo = {
   ...journeyUiConfig,
   component: Video,
-  title: 'Journeys-Ui/Video',
-  parameters: {
-    ...journeyUiConfig.parameters,
-    chromatic: {
-      ...journeyUiConfig.parameters.chromatic,
-      disableSnapshot: true
-    }
-  }
+  title: 'Journeys-Ui/Video'
 }
 
-const videoBlock: TreeBlock<VideoFields> = {
+const emptyVideo: Omit<Parameters<typeof Video>[0], 'source'> = {
   __typename: 'VideoBlock',
   id: 'video1.id',
   parentBlockId: 'step1.id',
   parentOrder: 0,
   autoplay: false,
   muted: false,
-  videoId: '2_0-FallingPlates',
-  videoVariantLanguageId: '529',
-  source: VideoBlockSource.internal,
+  videoId: null,
+  videoVariantLanguageId: null,
   title: null,
   description: null,
   duration: null,
   image: null,
+  video: null,
+  startAt: null,
+  endAt: null,
+  posterBlockId: null,
+  fullsize: null,
+  action: null,
+  children: []
+}
+
+const startVideoMock = {
+  request: {
+    query: VIDEO_START_EVENT_CREATE,
+    variables: {
+      id: 'uuid',
+      blockId: 'video0.id',
+      position: 30
+    }
+  },
+  result: {
+    data: {
+      id: 'uuid',
+      position: 30
+    }
+  }
+}
+
+const Template: ComponentStory<typeof Video> = ({ ...args }) => (
+  <MockedProvider mocks={[startVideoMock]}>
+    <Box
+      sx={{
+        position: 'relative',
+        minHeight: 'inherit',
+        height: '100%'
+      }}
+    >
+      <Video {...args} />
+    </Box>
+  </MockedProvider>
+)
+
+export const Default = Template.bind({})
+Default.args = { ...emptyVideo }
+
+export const Arclight = Template.bind({})
+Arclight.args = {
+  ...Default.args,
+  videoId: '2_0-FallingPlates',
+  videoVariantLanguageId: '529',
+  source: VideoBlockSource.internal,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -51,79 +90,47 @@ const videoBlock: TreeBlock<VideoFields> = {
       id: '2_0-FallingPlates-529',
       hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
     }
-  },
-  startAt: null,
-  endAt: null,
-  posterBlockId: null,
-  fullsize: null,
-  action: null,
-  children: []
+  }
 }
 
-const Template: Story<TreeBlock<VideoFields>> = ({ ...props }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: VIDEO_START_EVENT_CREATE,
-          variables: {
-            id: 'uuid',
-            blockId: 'video0.id',
-            position: 30
-          }
-        },
-        result: {
-          data: {
-            id: 'uuid',
-            position: 30
-          }
-        }
-      }
-    ]}
-  >
-    <Box
-      sx={{
-        position: 'relative',
-        minHeight: 'inherit',
-        height: '100%'
-      }}
-    >
-      <Video {...props} />
-    </Box>
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  ...videoBlock
-}
-Default.parameters = {
-  chromatic: { disableSnapshot: false }
+export const Youtube = Template.bind({})
+Youtube.args = {
+  ...Default.args,
+  source: VideoBlockSource.youTube,
+  videoId: 'F7k5pqBVinA'
 }
 
 export const Autoplay = Template.bind({})
 Autoplay.args = {
-  ...videoBlock,
+  ...Arclight.args,
   autoplay: true
+}
+Autoplay.parameters = {
+  chromatic: { disableSnapshot: true }
 }
 
 export const Muted = Template.bind({})
 Muted.args = {
-  ...videoBlock,
+  ...Arclight.args,
   muted: true
 }
-
-export const StartAt = Template.bind({})
-StartAt.args = {
-  ...videoBlock,
-  startAt: 20
+Muted.parameters = {
+  chromatic: { disableSnapshot: true }
 }
 
-// TODO: Add EndAt
+export const StartAndEndAt = Template.bind({})
+StartAndEndAt.args = {
+  ...Arclight.args,
+  startAt: 20,
+  endAt: 60
+}
+StartAndEndAt.parameters = {
+  chromatic: { disableSnapshot: true }
+}
 
 export const Poster = Template.bind({})
 Poster.args = {
-  ...videoBlock,
+  ...Arclight.args,
   posterBlockId: 'posterBlockId',
   children: [
     {
@@ -139,34 +146,6 @@ Poster.args = {
       children: []
     }
   ]
-}
-Poster.parameters = {
-  chromatic: { disableSnapshot: false }
-}
-
-export const Youtube = Template.bind({})
-Youtube.args = {
-  ...videoBlock,
-  video: null,
-  autoplay: true,
-  source: VideoBlockSource.youTube,
-  videoId: 'F7k5pqBVinA'
-}
-
-export const NoVideoSource = Template.bind({})
-NoVideoSource.args = {
-  __typename: 'VideoBlock',
-  id: 'video1.id',
-  parentBlockId: 'step1.id',
-  parentOrder: 0,
-  autoplay: false,
-  muted: false,
-  video: null,
-  startAt: null,
-  endAt: null,
-  posterBlockId: null,
-  fullsize: null,
-  children: []
 }
 
 export default Demo as Meta

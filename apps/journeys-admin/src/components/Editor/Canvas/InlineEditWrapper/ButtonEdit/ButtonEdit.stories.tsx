@@ -163,14 +163,4 @@ Default.args = {
   selectedBlock: contained
 }
 
-export const Filled = Template.bind({})
-Filled.args = {
-  selectedBlock: filled
-}
-
-export const Text = Template.bind({})
-Text.args = {
-  selectedBlock: text
-}
-
 export default ButtonEditStory as Meta
