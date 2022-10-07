@@ -1,4 +1,4 @@
-import { Story, Meta } from '@storybook/react'
+import { ComponentStory, Meta } from '@storybook/react'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import { MockedProvider } from '@apollo/client/testing'
@@ -15,7 +15,6 @@ import {
 } from '../../../__generated__/globalTypes'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
-import { CardFields } from './__generated__/CardFields'
 import { Card } from './Card'
 
 const Demo = {
@@ -24,7 +23,7 @@ const Demo = {
   title: 'Journeys-Ui/Card'
 }
 
-const Template: Story<TreeBlock<CardFields>> = ({ ...props }) => {
+const Template: ComponentStory<typeof Card> = ({ ...args }) => {
   const theme = useTheme()
   return (
     <MockedProvider>
@@ -41,7 +40,7 @@ const Template: Story<TreeBlock<CardFields>> = ({ ...props }) => {
           }
         }}
       >
-        <Card {...props} />
+        <Card {...args} />
       </Box>
     </MockedProvider>
   )
@@ -151,7 +150,7 @@ const video: TreeBlock<VideoFields> = {
 }
 
 // Expanded - default content background
-export const Default: Story<TreeBlock<CardFields>> = Template.bind({})
+export const Default = Template.bind({})
 Default.args = {
   themeMode: null,
   themeName: null,
@@ -159,14 +158,14 @@ Default.args = {
 }
 
 // Expanded - override content background
-export const Custom: Story<TreeBlock<CardFields>> = Template.bind({})
+export const Custom = Template.bind({})
 Custom.args = {
   backgroundColor: '#F1A025',
   children: content
 }
 
 // Expanded - blur image content background
-export const ImageBlur: Story<TreeBlock<CardFields>> = Template.bind({})
+export const ImageBlur = Template.bind({})
 ImageBlur.args = {
   coverBlockId: image.id,
   children: [...content, image],
@@ -174,21 +173,21 @@ ImageBlur.args = {
 }
 
 // Contained - cover image background with blur image content background
-export const ImageCover: Story<TreeBlock<CardFields>> = Template.bind({})
+export const ImageCover = Template.bind({})
 ImageCover.args = {
   coverBlockId: image.id,
   children: [...content, image]
 }
 
 // Contained - cover video background with default content background
-export const VideoCoverDefault: Story<TreeBlock<CardFields>> = Template.bind({})
+export const VideoCoverDefault = Template.bind({})
 VideoCoverDefault.args = {
   coverBlockId: video.id,
   children: [...content, video]
 }
 
 // Contained - cover video background with override content background
-export const VideoCoverCustom: Story<TreeBlock<CardFields>> = Template.bind({})
+export const VideoCoverCustom = Template.bind({})
 VideoCoverCustom.args = {
   backgroundColor: '#F1A025',
   coverBlockId: video.id,
@@ -196,7 +195,7 @@ VideoCoverCustom.args = {
 }
 
 // Contained - cover video background with blur poster image content background
-export const VideoCoverPoster: Story<TreeBlock<CardFields>> = Template.bind({})
+export const VideoCoverPoster = Template.bind({})
 VideoCoverPoster.args = {
   coverBlockId: video.id,
   children: [
@@ -210,9 +209,7 @@ VideoCoverPoster.args = {
 }
 
 // Contained - youtube
-export const VideoYoutubeDefault: Story<TreeBlock<CardFields>> = Template.bind(
-  {}
-)
+export const VideoYoutubeDefault = Template.bind({})
 VideoYoutubeDefault.args = {
   coverBlockId: video.id,
   children: [
@@ -228,7 +225,7 @@ VideoYoutubeDefault.args = {
 }
 
 // Expanded - child video block displays fullscreen simulating video only card
-export const VideoContent: Story<TreeBlock<CardFields>> = Template.bind({})
+export const VideoContent = Template.bind({})
 VideoContent.args = {
   children: [{ ...video, autoplay: false, parentOrder: 0 }]
 }

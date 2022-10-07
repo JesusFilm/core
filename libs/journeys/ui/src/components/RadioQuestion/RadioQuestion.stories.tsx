@@ -1,4 +1,4 @@
-import { Story, Meta } from '@storybook/react'
+import { ComponentStory, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import type { TreeBlock } from '../../libs/block'
@@ -6,10 +6,9 @@ import { StoryCard } from '../StoryCard'
 import { TypographyVariant } from '../../../__generated__/globalTypes'
 import { Typography } from '../Typography'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
-import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
 
-const typographyProps: TreeBlock = {
+const typographyProps: Parameters<typeof Typography>[0] = {
   __typename: 'TypographyBlock',
   id: 'id',
   parentOrder: 0,
@@ -66,7 +65,7 @@ const Demo = {
   title: 'Journeys-Ui/RadioQuestion'
 }
 
-const Template: Story<TreeBlock<RadioQuestionFields>> = ({ ...args }) => (
+const Template: ComponentStory<typeof RadioQuestion> = ({ ...args }) => (
   <MockedProvider
     mocks={[
       {
@@ -104,7 +103,7 @@ const Template: Story<TreeBlock<RadioQuestionFields>> = ({ ...args }) => (
   </MockedProvider>
 )
 
-export const Default: Story<TreeBlock<RadioQuestionFields>> = Template.bind({})
+export const Default = Template.bind({})
 Default.args = {
   id: 'Default',
   children,

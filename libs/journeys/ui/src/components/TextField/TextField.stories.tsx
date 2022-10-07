@@ -1,11 +1,11 @@
 import Stack from '@mui/material/Stack'
-import { Story, Meta } from '@storybook/react'
+import { ComponentStory, Meta } from '@storybook/react'
 import { Form, Formik } from 'formik'
 import { object, string } from 'yup'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { StoryCard } from '../StoryCard'
-import { TextField, TextFieldProps } from './TextField'
+import { TextField } from './TextField'
 
 const Demo = {
   ...journeyUiConfig,
@@ -14,7 +14,7 @@ const Demo = {
   title: 'Journeys-Ui/TextField'
 }
 
-const Template: Story<TextFieldProps> = () => (
+const Template: ComponentStory<typeof TextField> = () => (
   <StoryCard>
     <Formik
       initialValues={{
@@ -61,7 +61,7 @@ const Template: Story<TextFieldProps> = () => (
   </StoryCard>
 )
 
-const TextareaTemplate: Story<TextFieldProps> = () => {
+const TextareaTemplate: ComponentStory<typeof TextField> = () => {
   // Hack to create multiple components in 1 story. Only done for journey-ui
   const fields = [
     {

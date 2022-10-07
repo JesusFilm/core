@@ -1,9 +1,7 @@
-import { Story, Meta } from '@storybook/react'
+import { ComponentStory, Meta } from '@storybook/react'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import type { TreeBlock } from '../../libs/block'
 import { StoryCard } from '../StoryCard'
 import { Image } from './Image'
-import { ImageFields } from './__generated__/ImageFields'
 
 const Demo = {
   ...journeyUiConfig,
@@ -11,28 +9,35 @@ const Demo = {
   title: 'Journeys-Ui/Image'
 }
 
-const imageProps = {
+const emptyImage: Omit<Parameters<typeof Image>[0], 'src'> = {
+  __typename: 'ImageBlock',
+  parentBlockId: 'card.id',
+  parentOrder: 0,
   id: 'Image',
-  src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
   alt: 'random image from unsplash',
   width: 1600,
   height: 1067,
-  blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+  blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+  children: []
 }
 
-const Template: Story<TreeBlock<ImageFields>> = ({ alt, ...args }) => (
+const Template: ComponentStory<typeof Image> = ({ alt, ...args }) => (
   <StoryCard>
-    <Image {...imageProps} {...args} alt={alt} />
+    <Image {...args} alt={alt} />
   </StoryCard>
 )
 
 // Throttle network to see loading image
-export const Default: Story<TreeBlock<ImageFields>> = Template.bind({})
+export const Default = Template.bind({})
 Default.args = {
-  src: null
+  ...emptyImage
 }
 
-export const WebImage: Story<TreeBlock<ImageFields>> = Template.bind({})
+export const WebImage = Template.bind({})
+WebImage.args = {
+  ...emptyImage,
+  src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
+}
 WebImage.parameters = {
   chromatic: { delay: 300 }
 }

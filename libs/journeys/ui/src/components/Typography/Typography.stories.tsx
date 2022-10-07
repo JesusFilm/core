@@ -1,4 +1,3 @@
-import { ReactElement } from 'react'
 import { Story, Meta } from '@storybook/react'
 
 import {
@@ -10,10 +9,8 @@ import {
 } from '../../../__generated__/globalTypes'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import type { TreeBlock } from '../../libs/block'
 import { StoryCard } from '../StoryCard'
 import { Typography } from './Typography'
-import { TypographyFields } from './__generated__/TypographyFields'
 
 const TypographyDemo = {
   ...journeyUiConfig,
@@ -22,19 +19,49 @@ const TypographyDemo = {
   title: 'Journeys-Ui/Typography'
 }
 
-interface TypographyStoryProps extends TreeBlock<TypographyFields> {
-  variants: Array<string | null>
-  heading?: string
+const VariantTemplate: Story<
+  Parameters<typeof Typography>[0] & { variants: TypographyVariant[] }
+> = (args) => (
+  <StoryCard>
+    {args.variants.map((variant) => (
+      <Typography
+        {...args}
+        id="id"
+        key={variant}
+        variant={variant}
+        content={variant ?? ''}
+      />
+    ))}
+  </StoryCard>
+)
+
+export const Variants = VariantTemplate.bind({})
+Variants.args = {
+  variants: [
+    TypographyVariant.h1,
+    TypographyVariant.h2,
+    TypographyVariant.h3,
+    TypographyVariant.h4,
+    TypographyVariant.h5,
+    TypographyVariant.h6,
+    TypographyVariant.subtitle1,
+    TypographyVariant.subtitle2,
+    TypographyVariant.body1,
+    TypographyVariant.body2,
+    TypographyVariant.caption,
+    TypographyVariant.overline
+  ]
 }
 
-const TypographyColors = ({
-  variants,
-  heading = '',
-  ...args
-}: TypographyStoryProps): ReactElement => {
+const TypographyColors: Story<
+  Parameters<typeof Typography>[0] & {
+    variants: Array<TypographyColor | null>
+    heading?: string
+  }
+> = ({ heading = '', ...args }) => {
   return (
     <>
-      {variants.map((variant) => (
+      {args.variants.map((variant) => (
         <>
           <Typography
             {...args}
@@ -46,7 +73,7 @@ const TypographyColors = ({
             {...args}
             id="id"
             variant={TypographyVariant.h5}
-            color={variant as TypographyColor}
+            color={variant}
             content="Heading"
           />
         </>
@@ -55,39 +82,9 @@ const TypographyColors = ({
   )
 }
 
-const VariantTemplate: Story<TypographyStoryProps> = (args) => (
-  <StoryCard>
-    {args.variants.map((variant) => (
-      <Typography
-        {...args}
-        id="id"
-        key={variant}
-        variant={variant as TypographyVariant}
-        content={variant ?? ''}
-      />
-    ))}
-  </StoryCard>
-)
-
-export const Variants = VariantTemplate.bind({})
-Variants.args = {
-  variants: [
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'h6',
-    'subtitle1',
-    'subtitle2',
-    'body1',
-    'body2',
-    'caption',
-    'overline'
-  ]
-}
-
-const ColorTemplate: Story<TypographyStoryProps> = (props) => (
+const ColorTemplate: Story<
+  Parameters<typeof Typography>[0] & { variants: TypographyColor[] }
+> = (args) => (
   <div
     style={{
       display: 'flex',
@@ -97,14 +94,14 @@ const ColorTemplate: Story<TypographyStoryProps> = (props) => (
     }}
   >
     <StoryCard themeMode={ThemeMode.light} themeName={ThemeName.base}>
-      <TypographyColors {...props} variants={[null]} heading="Default " />
-      <TypographyColors {...props} variants={props.variants} />
+      <TypographyColors {...args} variants={[null]} heading="Default " />
+      <TypographyColors {...args} variants={args.variants} />
     </StoryCard>
     <StoryCard themeMode={ThemeMode.dark} themeName={ThemeName.base}>
-      <TypographyColors {...props} variants={[null]} heading="Default" />
+      <TypographyColors {...args} variants={[null]} heading="Default" />
       <TypographyColors
-        {...props}
-        variants={props.variants}
+        {...args}
+        variants={args.variants}
         heading="Override colors"
       />
     </StoryCard>
@@ -113,10 +110,16 @@ const ColorTemplate: Story<TypographyStoryProps> = (props) => (
 
 export const Colors = ColorTemplate.bind({})
 Colors.args = {
-  variants: ['primary', 'secondary', 'error']
+  variants: [
+    TypographyColor.primary,
+    TypographyColor.secondary,
+    TypographyColor.error
+  ]
 }
 
-const AlignmentTemplate: Story<TypographyStoryProps> = (args) => (
+const AlignmentTemplate: Story<
+  Parameters<typeof Typography>[0] & { variants: TypographyAlign[] }
+> = (args) => (
   <StoryCard>
     {args.variants.map((variant) => (
       <Typography
@@ -124,7 +127,7 @@ const AlignmentTemplate: Story<TypographyStoryProps> = (args) => (
         id="id"
         key={variant}
         variant={TypographyVariant.h6}
-        align={variant as TypographyAlign}
+        align={variant}
         content={variant ?? ''}
       />
     ))}
@@ -133,7 +136,11 @@ const AlignmentTemplate: Story<TypographyStoryProps> = (args) => (
 
 export const Alignment = AlignmentTemplate.bind({})
 Alignment.args = {
-  variants: ['left', 'center', 'right']
+  variants: [
+    TypographyAlign.left,
+    TypographyAlign.center,
+    TypographyAlign.right
+  ]
 }
 
 export default TypographyDemo as Meta

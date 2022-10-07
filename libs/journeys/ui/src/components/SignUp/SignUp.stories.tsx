@@ -1,18 +1,16 @@
-import { Meta, Story } from '@storybook/react'
+import { Meta, ComponentStory } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
 import { ReactElement } from 'react'
 import { SnackbarProvider } from 'notistack'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import type { TreeBlock } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { StoryCard } from '../StoryCard'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { IconName, TypographyVariant } from '../../../__generated__/globalTypes'
 import { Typography } from '../Typography'
 import { SignUp, SIGN_UP_SUBMISSION_EVENT_CREATE } from './SignUp'
-import { SignUpFields } from './__generated__/SignUpFields'
 
 const Demo = {
   ...journeyUiConfig,
@@ -29,7 +27,7 @@ const Demo = {
   }
 }
 
-const typographyProps: TreeBlock = {
+const typographyProps: Parameters<typeof Typography>[0] = {
   __typename: 'TypographyBlock',
   id: 'id',
   parentOrder: 0,
@@ -41,7 +39,7 @@ const typographyProps: TreeBlock = {
   children: []
 }
 
-const signUpProps: TreeBlock<SignUpFields> = {
+const signUpProps: Parameters<typeof SignUp>[0] = {
   id: 'signUpBlockId1',
   __typename: 'SignUpBlock',
   parentBlockId: null,
@@ -57,10 +55,7 @@ const signUpProps: TreeBlock<SignUpFields> = {
   children: []
 }
 
-const Template: Story<TreeBlock<SignUpFields> & { complete?: boolean }> = ({
-  complete = false,
-  ...args
-}): ReactElement => (
+const Template: ComponentStory<typeof SignUp> = ({ ...args }): ReactElement => (
   <MockedProvider
     mocks={[
       {
@@ -91,15 +86,13 @@ const Template: Story<TreeBlock<SignUpFields> & { complete?: boolean }> = ({
     <JourneyProvider>
       <SnackbarProvider>
         <StoryCard>
-          {complete && <Typography {...typographyProps} />}
-          <SignUp {...signUpProps} {...args} uuid={() => 'uuid'} />
-          {complete && (
-            <Typography
-              {...typographyProps}
-              content="Some block below"
-              variant={TypographyVariant.body1}
-            />
-          )}
+          <Typography {...typographyProps} />
+          <SignUp {...args} uuid={() => 'uuid'} />
+          <Typography
+            {...typographyProps}
+            content="Some block below"
+            variant={TypographyVariant.body1}
+          />
         </StoryCard>
       </SnackbarProvider>
     </JourneyProvider>
@@ -107,10 +100,11 @@ const Template: Story<TreeBlock<SignUpFields> & { complete?: boolean }> = ({
 )
 
 export const Default = Template.bind({})
+Default.args = { ...signUpProps }
 
 export const Complete = Template.bind({})
 Complete.args = {
-  complete: true,
+  ...signUpProps,
   submitIconId: 'icon',
   submitLabel: 'Custom label',
   children: [
@@ -128,6 +122,7 @@ Complete.args = {
 }
 
 export const SubmitError = Template.bind({})
+SubmitError.args = { ...signUpProps }
 SubmitError.play = () => {
   const submit = screen.getAllByRole('button')[0]
   const fields = screen.getAllByRole('textbox')
@@ -137,12 +132,14 @@ SubmitError.play = () => {
   userEvent.click(submit)
 }
 
-const LoadingTemplate: Story<TreeBlock<SignUpFields>> = (): ReactElement => (
+const LoadingTemplate: ComponentStory<typeof SignUp> = ({
+  ...args
+}): ReactElement => (
   <ApolloLoadingProvider>
     <JourneyProvider>
       <SnackbarProvider>
         <StoryCard>
-          <SignUp {...signUpProps} uuid={() => 'uuid'} />
+          <SignUp {...args} uuid={() => 'uuid'} />
         </StoryCard>
       </SnackbarProvider>
     </JourneyProvider>
@@ -150,6 +147,7 @@ const LoadingTemplate: Story<TreeBlock<SignUpFields>> = (): ReactElement => (
 )
 
 export const Loading = LoadingTemplate.bind({})
+Loading.args = { ...signUpProps }
 Loading.play = () => {
   const submitButtons = screen.getAllByRole('button')
   const fields = screen.getAllByRole('textbox')

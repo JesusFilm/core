@@ -1,11 +1,10 @@
-import { Meta, Story } from '@storybook/react'
+import { ComponentStory, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
 import { ReactElement } from 'react'
 import { SnackbarProvider } from 'notistack'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import type { TreeBlock } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { StoryCard } from '../StoryCard'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
@@ -15,7 +14,6 @@ import {
   TextResponse,
   TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
 } from './TextResponse'
-import { TextResponseFields } from './__generated__/TextResponseFields'
 
 const Demo = {
   ...journeyUiConfig,
@@ -24,7 +22,7 @@ const Demo = {
   title: 'Journeys-Ui/TextResponse'
 }
 
-const typographyProps: TreeBlock = {
+const typographyProps: Parameters<typeof Typography>[0] = {
   __typename: 'TypographyBlock',
   id: 'id',
   parentOrder: 0,
@@ -36,7 +34,7 @@ const typographyProps: TreeBlock = {
   children: []
 }
 
-const textResponseProps: TreeBlock<TextResponseFields> = {
+const textResponseProps: Parameters<typeof TextResponse>[0] = {
   id: 'textResponseBlockId1',
   __typename: 'TextResponseBlock',
   parentBlockId: null,
@@ -54,9 +52,9 @@ const textResponseProps: TreeBlock<TextResponseFields> = {
   children: []
 }
 
-const Template: Story<
-  TreeBlock<TextResponseFields> & { complete?: boolean }
-> = ({ complete = false, ...args }): ReactElement => (
+const Template: ComponentStory<typeof TextResponse> = ({
+  ...args
+}): ReactElement => (
   <MockedProvider
     mocks={[
       {
@@ -85,15 +83,13 @@ const Template: Story<
     <JourneyProvider>
       <SnackbarProvider>
         <StoryCard>
-          {complete && <Typography {...typographyProps} />}
-          <TextResponse {...textResponseProps} {...args} uuid={() => 'uuid'} />
-          {complete && (
-            <Typography
-              {...typographyProps}
-              content="Some block below"
-              variant={TypographyVariant.body1}
-            />
-          )}
+          <Typography {...typographyProps} />
+          <TextResponse {...args} uuid={() => 'uuid'} />
+          <Typography
+            {...typographyProps}
+            content="Some block below"
+            variant={TypographyVariant.body1}
+          />
         </StoryCard>
       </SnackbarProvider>
     </JourneyProvider>
@@ -101,10 +97,11 @@ const Template: Story<
 )
 
 export const Default = Template.bind({})
+Default.args = { ...textResponseProps }
 
 export const Complete = Template.bind({})
 Complete.args = {
-  complete: true,
+  ...textResponseProps,
   hint: 'Optional Hint text',
   minRows: 4,
   label: 'Custom label',
@@ -126,6 +123,7 @@ Complete.args = {
 
 export const SubmitError = Template.bind({})
 SubmitError.args = {
+  ...textResponseProps,
   minRows: 1
 }
 SubmitError.play = () => {
@@ -134,14 +132,14 @@ SubmitError.play = () => {
   userEvent.click(submit)
 }
 
-const LoadingTemplate: Story<
-  TreeBlock<TextResponseFields>
-> = (): ReactElement => (
+const LoadingTemplate: ComponentStory<typeof TextResponse> = ({
+  ...args
+}): ReactElement => (
   <ApolloLoadingProvider>
     <JourneyProvider>
       <SnackbarProvider>
         <StoryCard>
-          <TextResponse {...textResponseProps} uuid={() => 'uuid'} />
+          <TextResponse {...args} uuid={() => 'uuid'} />
         </StoryCard>
       </SnackbarProvider>
     </JourneyProvider>
@@ -149,6 +147,7 @@ const LoadingTemplate: Story<
 )
 
 export const Loading = LoadingTemplate.bind({})
+Loading.args = { ...textResponseProps }
 Loading.play = () => {
   const submitButtons = screen.getAllByRole('button')
   const textFields = screen.getAllByRole('textbox')
