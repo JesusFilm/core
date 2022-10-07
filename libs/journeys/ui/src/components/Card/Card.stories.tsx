@@ -23,29 +23,6 @@ const Demo = {
   title: 'Journeys-Ui/Card'
 }
 
-const Template: ComponentStory<typeof Card> = ({ ...args }) => {
-  const theme = useTheme()
-  return (
-    <MockedProvider>
-      <Box
-        sx={{
-          height: 'calc(100vh - 80px)',
-          maxHeight: 'calc(100vh - 80px)',
-          [theme.breakpoints.up('sm')]: {
-            maxHeight: '460px'
-          },
-          [theme.breakpoints.up('lg')]: {
-            maxWidth: '854px',
-            maxHeight: '480px'
-          }
-        }}
-      >
-        <Card {...args} />
-      </Box>
-    </MockedProvider>
-  )
-}
-
 const content: TreeBlock[] = [
   {
     id: 'typographyBlockId1',
@@ -149,6 +126,29 @@ const video: TreeBlock<VideoFields> = {
   children: []
 }
 
+const Template: ComponentStory<typeof Card> = ({ ...args }) => {
+  const theme = useTheme()
+  return (
+    <MockedProvider>
+      <Box
+        sx={{
+          height: 'calc(100vh - 80px)',
+          maxHeight: 'calc(100vh - 80px)',
+          [theme.breakpoints.up('sm')]: {
+            maxHeight: '460px'
+          },
+          [theme.breakpoints.up('lg')]: {
+            maxWidth: '854px',
+            maxHeight: '480px'
+          }
+        }}
+      >
+        <Card {...args} />
+      </Box>
+    </MockedProvider>
+  )
+}
+
 // Expanded - default content background
 export const Default = Template.bind({})
 Default.args = {
@@ -160,13 +160,14 @@ Default.args = {
 // Expanded - override content background
 export const Custom = Template.bind({})
 Custom.args = {
-  backgroundColor: '#F1A025',
-  children: content
+  ...Default.args,
+  backgroundColor: '#F1A025'
 }
 
 // Expanded - blur image content background
 export const ImageBlur = Template.bind({})
 ImageBlur.args = {
+  ...Default.args,
   coverBlockId: image.id,
   children: [...content, image],
   fullscreen: true
@@ -175,6 +176,7 @@ ImageBlur.args = {
 // Contained - cover image background with blur image content background
 export const ImageCover = Template.bind({})
 ImageCover.args = {
+  ...Default.args,
   coverBlockId: image.id,
   children: [...content, image]
 }
@@ -182,6 +184,7 @@ ImageCover.args = {
 // Contained - cover video background with default content background
 export const VideoCoverDefault = Template.bind({})
 VideoCoverDefault.args = {
+  ...Default.args,
   coverBlockId: video.id,
   children: [...content, video]
 }
@@ -189,6 +192,7 @@ VideoCoverDefault.args = {
 // Contained - cover video background with override content background
 export const VideoCoverCustom = Template.bind({})
 VideoCoverCustom.args = {
+  ...Default.args,
   backgroundColor: '#F1A025',
   coverBlockId: video.id,
   children: [...content, video]
@@ -197,6 +201,7 @@ VideoCoverCustom.args = {
 // Contained - cover video background with blur poster image content background
 export const VideoCoverPoster = Template.bind({})
 VideoCoverPoster.args = {
+  ...Default.args,
   coverBlockId: video.id,
   children: [
     ...content,
@@ -211,6 +216,7 @@ VideoCoverPoster.args = {
 // Contained - youtube
 export const VideoYoutubeDefault = Template.bind({})
 VideoYoutubeDefault.args = {
+  ...Default.args,
   coverBlockId: video.id,
   children: [
     ...content,
@@ -227,6 +233,7 @@ VideoYoutubeDefault.args = {
 // Expanded - child video block displays fullscreen simulating video only card
 export const VideoContent = Template.bind({})
 VideoContent.args = {
+  ...Default.args,
   children: [{ ...video, autoplay: false, parentOrder: 0 }]
 }
 

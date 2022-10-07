@@ -1,5 +1,5 @@
 import { ComponentStory, Meta } from '@storybook/react'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import type { TreeBlock } from '../../libs/block'
 import { StoryCard } from '../StoryCard'
@@ -7,6 +7,12 @@ import { TypographyVariant } from '../../../__generated__/globalTypes'
 import { Typography } from '../Typography'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
 import { RadioQuestion, RADIO_QUESTION_SUBMISSION_EVENT_CREATE } from '.'
+
+const Demo = {
+  ...simpleComponentConfig,
+  component: RadioQuestion,
+  title: 'Journeys-Ui/RadioQuestion'
+}
 
 const typographyProps: Parameters<typeof Typography>[0] = {
   __typename: 'TypographyBlock',
@@ -59,37 +65,29 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
   }
 ]
 
-const Demo = {
-  ...simpleComponentConfig,
-  component: RadioQuestion,
-  title: 'Journeys-Ui/RadioQuestion'
+const submitEventMock: MockedResponse = {
+  request: {
+    query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+    variables: {
+      input: {
+        id: 'uuid',
+        blockId: 'RadioQuestion1',
+        radioOptionBlockId: 'RadioOption1'
+      }
+    }
+  },
+  result: {
+    data: {
+      radioQuestionSubmissionEventCreate: {
+        id: 'uuid',
+        radioOptionBlockId: 'RadioOption1'
+      }
+    }
+  }
 }
 
 const Template: ComponentStory<typeof RadioQuestion> = ({ ...args }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
-          variables: {
-            input: {
-              id: 'uuid',
-              blockId: 'RadioQuestion1',
-              radioOptionBlockId: 'RadioOption1'
-            }
-          }
-        },
-        result: {
-          data: {
-            radioQuestionSubmissionEventCreate: {
-              id: 'uuid',
-              radioOptionBlockId: 'RadioOption1'
-            }
-          }
-        }
-      }
-    ]}
-  >
+  <MockedProvider mocks={[submitEventMock]}>
     <StoryCard>
       <Typography {...typographyProps} />
       <RadioQuestion {...args} uuid={() => 'uuid'} />

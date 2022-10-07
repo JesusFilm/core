@@ -1,5 +1,5 @@
 import { Meta, ComponentStory } from '@storybook/react'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
 import { ReactElement } from 'react'
 import { SnackbarProvider } from 'notistack'
@@ -55,34 +55,32 @@ const signUpProps: Parameters<typeof SignUp>[0] = {
   children: []
 }
 
-const Template: ComponentStory<typeof SignUp> = ({ ...args }): ReactElement => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: SIGN_UP_SUBMISSION_EVENT_CREATE,
-          variables: {
-            input: {
-              id: 'uuid',
-              blockId: 'signUpBlockId1',
-              name: 'Anon',
-              email: '123abc@gmail.com'
-            }
-          }
-        },
-        result: {
-          data: {
-            signUpSubmissionEventCreate: {
-              id: 'uuid',
-              blockId: 'signUpBlockId1',
-              name: 'Anon',
-              email: '123abc@gmail.com'
-            }
-          }
-        }
+const submitEventMock: MockedResponse = {
+  request: {
+    query: SIGN_UP_SUBMISSION_EVENT_CREATE,
+    variables: {
+      input: {
+        id: 'uuid',
+        blockId: 'signUpBlockId1',
+        name: 'Anon',
+        email: '123abc@gmail.com'
       }
-    ]}
-  >
+    }
+  },
+  result: {
+    data: {
+      signUpSubmissionEventCreate: {
+        id: 'uuid',
+        blockId: 'signUpBlockId1',
+        name: 'Anon',
+        email: '123abc@gmail.com'
+      }
+    }
+  }
+}
+
+const Template: ComponentStory<typeof SignUp> = ({ ...args }): ReactElement => (
+  <MockedProvider mocks={[submitEventMock]}>
     <JourneyProvider>
       <SnackbarProvider>
         <StoryCard>
@@ -104,7 +102,7 @@ Default.args = { ...signUpProps }
 
 export const Complete = Template.bind({})
 Complete.args = {
-  ...signUpProps,
+  ...Default.args,
   submitIconId: 'icon',
   submitLabel: 'Custom label',
   children: [
@@ -122,7 +120,7 @@ Complete.args = {
 }
 
 export const SubmitError = Template.bind({})
-SubmitError.args = { ...signUpProps }
+SubmitError.args = { ...Default.args }
 SubmitError.play = () => {
   const submit = screen.getAllByRole('button')[0]
   const fields = screen.getAllByRole('textbox')
@@ -147,7 +145,7 @@ const LoadingTemplate: ComponentStory<typeof SignUp> = ({
 )
 
 export const Loading = LoadingTemplate.bind({})
-Loading.args = { ...signUpProps }
+Loading.args = { ...Default.args }
 Loading.play = () => {
   const submitButtons = screen.getAllByRole('button')
   const fields = screen.getAllByRole('textbox')
@@ -159,6 +157,9 @@ Loading.play = () => {
   submitButtons.forEach((button) => {
     userEvent.click(button)
   })
+}
+Loading.parameters = {
+  chromatic: { disableSnapshot: true }
 }
 
 export default Demo as Meta

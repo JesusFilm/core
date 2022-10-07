@@ -1,5 +1,5 @@
 import { ComponentStory, Meta } from '@storybook/react'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
 import { ReactElement } from 'react'
 import { SnackbarProvider } from 'notistack'
@@ -52,34 +52,32 @@ const textResponseProps: Parameters<typeof TextResponse>[0] = {
   children: []
 }
 
+const submitEventMock: MockedResponse = {
+  request: {
+    query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
+    variables: {
+      input: {
+        id: 'uuid',
+        blockId: 'textResponseBlockId1',
+        value: 'My response'
+      }
+    }
+  },
+  result: {
+    data: {
+      textResponseSubmissionEventCreate: {
+        id: 'uuid',
+        blockId: 'textResponseBlockId1',
+        value: 'My response'
+      }
+    }
+  }
+}
+
 const Template: ComponentStory<typeof TextResponse> = ({
   ...args
 }): ReactElement => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
-          variables: {
-            input: {
-              id: 'uuid',
-              blockId: 'textResponseBlockId1',
-              value: 'My response'
-            }
-          }
-        },
-        result: {
-          data: {
-            textResponseSubmissionEventCreate: {
-              id: 'uuid',
-              blockId: 'textResponseBlockId1',
-              value: 'My response'
-            }
-          }
-        }
-      }
-    ]}
-  >
+  <MockedProvider mocks={[submitEventMock]}>
     <JourneyProvider>
       <SnackbarProvider>
         <StoryCard>
@@ -101,7 +99,7 @@ Default.args = { ...textResponseProps }
 
 export const Complete = Template.bind({})
 Complete.args = {
-  ...textResponseProps,
+  ...Default.args,
   hint: 'Optional Hint text',
   minRows: 4,
   label: 'Custom label',
@@ -123,7 +121,7 @@ Complete.args = {
 
 export const SubmitError = Template.bind({})
 SubmitError.args = {
-  ...textResponseProps,
+  ...Default.args,
   minRows: 1
 }
 SubmitError.play = () => {
@@ -147,7 +145,7 @@ const LoadingTemplate: ComponentStory<typeof TextResponse> = ({
 )
 
 export const Loading = LoadingTemplate.bind({})
-Loading.args = { ...textResponseProps }
+Loading.args = { ...Default.args }
 Loading.play = () => {
   const submitButtons = screen.getAllByRole('button')
   const textFields = screen.getAllByRole('textbox')
@@ -158,5 +156,6 @@ Loading.play = () => {
     userEvent.click(button)
   })
 }
+Loading.parameters = { chromatic: { disableSnapshot: true } }
 
 export default Demo as Meta

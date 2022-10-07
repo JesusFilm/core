@@ -25,11 +25,10 @@ Default.args = {
 
 export const Long = Template.bind({})
 Long.args = {
+  ...Default.args,
   id: 'NestedOptions2',
   label:
-    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the ',
-  selected: false,
-  disabled: false
+    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the '
 }
 
 export const Selected = Template.bind({})

@@ -21,9 +21,9 @@ const emptyImage: Omit<Parameters<typeof Image>[0], 'src'> = {
   children: []
 }
 
-const Template: ComponentStory<typeof Image> = ({ alt, ...args }) => (
+const Template: ComponentStory<typeof Image> = ({ ...args }) => (
   <StoryCard>
-    <Image {...args} alt={alt} />
+    <Image {...args} alt={args.alt} />
   </StoryCard>
 )
 
@@ -35,7 +35,7 @@ Default.args = {
 
 export const WebImage = Template.bind({})
 WebImage.args = {
-  ...emptyImage,
+  ...Default.args,
   src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
 }
 WebImage.parameters = {

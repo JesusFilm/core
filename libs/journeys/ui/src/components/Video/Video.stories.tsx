@@ -34,8 +34,43 @@ const emptyVideo: Omit<Parameters<typeof Video>[0], 'source'> = {
   children: []
 }
 
-const arclightVideo: Parameters<typeof Video>[0] = {
-  ...emptyVideo,
+const startVideoMock = {
+  request: {
+    query: VIDEO_START_EVENT_CREATE,
+    variables: {
+      id: 'uuid',
+      blockId: 'video0.id',
+      position: 30
+    }
+  },
+  result: {
+    data: {
+      id: 'uuid',
+      position: 30
+    }
+  }
+}
+
+const Template: ComponentStory<typeof Video> = ({ ...args }) => (
+  <MockedProvider mocks={[startVideoMock]}>
+    <Box
+      sx={{
+        position: 'relative',
+        minHeight: 'inherit',
+        height: '100%'
+      }}
+    >
+      <Video {...args} />
+    </Box>
+  </MockedProvider>
+)
+
+export const Default = Template.bind({})
+Default.args = { ...emptyVideo }
+
+export const Arclight = Template.bind({})
+Arclight.args = {
+  ...Default.args,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
   source: VideoBlockSource.internal,
@@ -58,50 +93,16 @@ const arclightVideo: Parameters<typeof Video>[0] = {
   }
 }
 
-const Template: ComponentStory<typeof Video> = ({ ...args }) => (
-  <MockedProvider
-    mocks={[
-      {
-        request: {
-          query: VIDEO_START_EVENT_CREATE,
-          variables: {
-            id: 'uuid',
-            blockId: 'video0.id',
-            position: 30
-          }
-        },
-        result: {
-          data: {
-            id: 'uuid',
-            position: 30
-          }
-        }
-      }
-    ]}
-  >
-    <Box
-      sx={{
-        position: 'relative',
-        minHeight: 'inherit',
-        height: '100%'
-      }}
-    >
-      <Video {...args} />
-    </Box>
-  </MockedProvider>
-)
-
-export const Default = Template.bind({})
-Default.args = { ...emptyVideo }
-
-export const Arclight = Template.bind({})
-Arclight.args = {
-  ...arclightVideo
+export const Youtube = Template.bind({})
+Youtube.args = {
+  ...Default.args,
+  source: VideoBlockSource.youTube,
+  videoId: 'F7k5pqBVinA'
 }
 
 export const Autoplay = Template.bind({})
 Autoplay.args = {
-  ...arclightVideo,
+  ...Arclight.args,
   autoplay: true
 }
 Autoplay.parameters = {
@@ -110,7 +111,7 @@ Autoplay.parameters = {
 
 export const Muted = Template.bind({})
 Muted.args = {
-  ...arclightVideo,
+  ...Arclight.args,
   muted: true
 }
 Muted.parameters = {
@@ -119,7 +120,7 @@ Muted.parameters = {
 
 export const StartAndEndAt = Template.bind({})
 StartAndEndAt.args = {
-  ...arclightVideo,
+  ...Arclight.args,
   startAt: 20,
   endAt: 60
 }
@@ -129,7 +130,7 @@ StartAndEndAt.parameters = {
 
 export const Poster = Template.bind({})
 Poster.args = {
-  ...arclightVideo,
+  ...Arclight.args,
   posterBlockId: 'posterBlockId',
   children: [
     {
@@ -145,13 +146,6 @@ Poster.args = {
       children: []
     }
   ]
-}
-
-export const Youtube = Template.bind({})
-Youtube.args = {
-  ...emptyVideo,
-  source: VideoBlockSource.youTube,
-  videoId: 'F7k5pqBVinA'
 }
 
 export default Demo as Meta
