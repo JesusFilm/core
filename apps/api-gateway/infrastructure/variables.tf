@@ -1,13 +1,21 @@
 variable "ecs_config" {
   type = object({
-    vpc_id    = string
-    is_public = bool
-    subnets   = list(string)
-    alb_listener = map(
-      object({
-        arn = string
-      })
-    )
+    vpc_id           = string
+    is_public        = bool
+    subnets          = list(string)
+    image_tag        = string
+    alb_dns_name     = string
+    zone_id          = string
+    alb_listener_arn = string
+    zone_id          = string
+    alb_dns_name     = string
+    alb_target_group = object({
+      port              = number
+      protocol          = string
+      path_pattern      = list(string)
+      health_check_path = string
+      priority          = number
+    })
     security_group_id       = string
     task_execution_role_arn = string
     cluster = object({
@@ -15,4 +23,9 @@ variable "ecs_config" {
       name = string
     })
   })
+}
+
+variable "env" {
+  type    = string
+  default = "prod"
 }

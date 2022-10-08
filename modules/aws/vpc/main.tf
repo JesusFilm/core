@@ -5,7 +5,7 @@ resource "aws_vpc" "vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags = {
-    Name = "jfp-vpc"
+    Name = "jfp-vpc-${var.env}"
     Env  = var.env
   }
 }
@@ -13,7 +13,7 @@ resource "aws_vpc" "vpc" {
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "jfp-igw"
+    Name = "jfp-igw-${var.env}"
     Env  = var.env
   }
 }
@@ -26,7 +26,7 @@ resource "aws_subnet" "public_subnet" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "jfp-public-subnet-${count.index}"
+    Name = "jfp-public-subnet-${count.index}-${var.env}"
     Env  = var.env
   }
 }
@@ -34,7 +34,7 @@ resource "aws_subnet" "public_subnet" {
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "jfp-public-route-table"
+    Name = "jfp-public-route-table-${var.env}"
     Env  = var.env
   }
 }
@@ -58,7 +58,7 @@ resource "aws_subnet" "internal_subnet" {
   availability_zone = data.aws_availability_zones.current.names[count.index]
 
   tags = {
-    Name = "jfp-internal-subnet-${count.index}"
+    Name = "jfp-internal-subnet-${count.index}-${var.env}"
     Env  = var.env
   }
 }
@@ -66,7 +66,7 @@ resource "aws_subnet" "internal_subnet" {
 resource "aws_route_table" "internal_route_table" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "jfp-internal-route-table"
+    Name = "jfp-internal-route-table-${var.env}"
     Env  = var.env
   }
 }
@@ -88,7 +88,7 @@ resource "aws_nat_gateway" "nat_gateway" {
   subnet_id     = element(aws_subnet.public_subnet.*.id, 0)
   depends_on    = [aws_internet_gateway.igw]
   tags = {
-    Name = "jfp-ng"
+    Name = "jfp-ng-${var.env}"
     Env  = var.env
   }
 }
@@ -96,7 +96,7 @@ resource "aws_nat_gateway" "nat_gateway" {
 resource "aws_eip" "eip" {
   vpc = true
   tags = {
-    Name = "jfp-eip"
+    Name = "jfp-eip-${var.env}"
     Env  = var.env
   }
 }

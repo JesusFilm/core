@@ -8,7 +8,7 @@ resource "aws_route53_zone" "private_zone" {
 resource "aws_route53_record" "internal_service_record" {
   name    = var.internal_url_name
   type    = "A"
-  zone_id = aws_route53_zone.private_zone.zone_id
+  zone_id = aws_route53_zone.private_zone.id
 
   alias {
     evaluate_target_health = true

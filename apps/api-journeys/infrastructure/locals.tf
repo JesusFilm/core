@@ -1,17 +1,15 @@
 locals {
   service_config = {
-    name           = "api-gateway"
-    is_public      = true
-    container_port = 4000
-    host_port      = 4000
-    cpu            = 512
-    memory         = 1024
+    name           = "api-journeys"
+    is_public      = false
+    container_port = 4001
+    host_port      = 4001
+    cpu            = 256
+    memory         = 512
     desired_count  = 1
-    image_tag      = var.ecs_config.image_tag
-    alb_dns_name   = var.ecs_config.alb_dns_name
-    zone_id        = var.ecs_config.zone_id
+    image_tag      = var.image_tag
     alb_target_group = {
-      port              = 4000
+      port              = 4001
       protocol          = "HTTP"
       path_pattern      = ["/*"]
       health_check_path = "/.well-known/apollo/server-health"

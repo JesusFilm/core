@@ -11,6 +11,7 @@ resource "aws_alb_listener" "alb_listener" {
   load_balancer_arn = aws_alb.alb.id
   port              = each.value["listener_port"]
   protocol          = each.value["listener_protocol"]
+  certificate_arn   = each.value.listener_protocol == "HTTPS" ? var.certificate_arn : null
 
   default_action {
     type = "fixed-response"

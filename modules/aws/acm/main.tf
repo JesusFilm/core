@@ -20,3 +20,7 @@ resource "aws_route53_record" "acm_validation" {
   allow_overwrite = true
   zone_id         = var.zone_id
 }
+
+output "arn" {
+  value = aws_acm_certificate.main.arn
+}

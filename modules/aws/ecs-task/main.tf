@@ -1,14 +1,10 @@
-resource "aws_ecr_repository" "ecr_repository" {
-  name = "jfp-${var.service_config.name}"
-}
-
 resource "aws_cloudwatch_log_group" "ecs_cw_log_group" {
-  name = "${var.service_config.name}-logs"
+  name = "${var.service_config.name}-${var.env}-logs"
 }
 
 #Create task definitions for app services
 resource "aws_ecs_task_definition" "ecs_task_definition" {
-  family                   = "jfp-${var.service_config.name}"
+  family                   = "jfp-${var.service_config.name}-${var.env}"
   execution_role_arn       = var.ecs_config.task_execution_role_arn
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -18,7 +14,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   container_definitions = jsonencode([
     {
       name      = var.service_config.name
-      image     = "${local.account}.dkr.ecr.${local.region}.amazonaws.com/jfp-${var.service_config.name}:latest"
+      image     = "${local.account}.dkr.ecr.${local.region}.amazonaws.com/jfp-${var.service_config.name}:${var.service_config.image_tag}"
       cpu       = var.service_config.cpu
       memory    = var.service_config.memory
       essential = true
@@ -32,7 +28,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = "${var.service_config.name}-logs"
+          awslogs-group         = "${var.service_config.name}-${var.env}-logs"
           awslogs-region        = local.region
           awslogs-stream-prefix = "core"
         }
@@ -42,7 +38,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 }
 
 resource "aws_alb_target_group" "alb_target_group" {
-  name        = "${var.service_config.name}-tg"
+  name        = "${var.service_config.name}-${var.env}-tg"
   port        = var.service_config.alb_target_group.port
   protocol    = var.service_config.alb_target_group.protocol
   target_type = "ip"
@@ -52,12 +48,10 @@ resource "aws_alb_target_group" "alb_target_group" {
     path     = var.service_config.alb_target_group.health_check_path
     protocol = var.service_config.alb_target_group.protocol
   }
-
 }
 
-
 resource "aws_alb_listener_rule" "alb_listener_rule" {
-  listener_arn = var.ecs_config.alb_listener[var.service_config.alb_target_group.protocol].arn
+  listener_arn = var.ecs_config.alb_listener_arn
   action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.alb_target_group.arn
@@ -71,7 +65,7 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
 
 #Create services for app services
 resource "aws_ecs_service" "ecs_service" {
-  name            = "${var.service_config.name}-service"
+  name            = "${var.service_config.name}-${var.env}-service"
   cluster         = var.ecs_config.cluster.id
   task_definition = aws_ecs_task_definition.ecs_task_definition.arn
   launch_type     = "FARGATE"
@@ -79,7 +73,7 @@ resource "aws_ecs_service" "ecs_service" {
 
   network_configuration {
     subnets          = var.ecs_config.subnets
-    assign_public_ip = var.ecs_config.is_public
+    assign_public_ip = var.service_config.is_public
     security_groups  = [var.ecs_config.security_group_id]
   }
 
@@ -87,6 +81,11 @@ resource "aws_ecs_service" "ecs_service" {
     target_group_arn = aws_alb_target_group.alb_target_group.arn
     container_name   = var.service_config.name
     container_port   = var.service_config.container_port
+  }
+
+  lifecycle {
+    ignore_changes        = [task_definition, desired_count]
+    create_before_destroy = true
   }
 }
 
@@ -99,7 +98,7 @@ resource "aws_appautoscaling_target" "service_autoscaling" {
 }
 
 resource "aws_appautoscaling_policy" "ecs_policy_memory" {
-  name               = "jfp-memory-autoscaling"
+  name               = "jfp-memory-autoscaling-${var.env}"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.service_autoscaling.resource_id
   scalable_dimension = aws_appautoscaling_target.service_autoscaling.scalable_dimension
@@ -115,7 +114,7 @@ resource "aws_appautoscaling_policy" "ecs_policy_memory" {
 }
 
 resource "aws_appautoscaling_policy" "ecs_policy_cpu" {
-  name               = "jfp-cpu-autoscaling"
+  name               = "jfp-cpu-autoscaling-${var.env}"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.service_autoscaling.resource_id
   scalable_dimension = aws_appautoscaling_target.service_autoscaling.scalable_dimension
@@ -128,4 +127,12 @@ resource "aws_appautoscaling_policy" "ecs_policy_cpu" {
 
     target_value = var.service_config.auto_scaling.cpu.target_value
   }
+}
+
+resource "aws_route53_record" "record" {
+  name    = var.env == "prod" ? var.service_config.name : "${var.service_config.name}-${var.env}"
+  type    = "CNAME"
+  ttl     = 300
+  zone_id = var.service_config.zone_id
+  records = [var.service_config.alb_dns_name]
 }

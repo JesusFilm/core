@@ -1,14 +1,14 @@
-output "internal_alb_dns" {
+output "dns_name" {
   value = aws_alb.alb.dns_name
 }
-output "internal_alb_id" {
+output "id" {
   value = aws_alb.alb.id
 }
 
-output "aws_alb_listener" {
-  value = aws_alb_listener.alb_listener
+output "zone_id" {
+  value = aws_alb.alb.zone_id
 }
 
-output "internal_alb" {
-  value = aws_alb.alb
+output "alb_listener" {
+  value = aws_alb_listener.alb_listener
 }

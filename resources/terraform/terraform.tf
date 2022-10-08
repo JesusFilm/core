@@ -4,7 +4,7 @@ terraform {
     bucket         = "jfp-terraform-state"
     dynamodb_table = "jfp-terraform-state-lock"
     region         = "us-east-2"
-    key            = "core.tfstate"
+    key            = "terraform.tfstate"
   }
 
   required_providers {

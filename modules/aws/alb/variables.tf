@@ -23,12 +23,35 @@ variable "listeners" {
     listener_port     = number
     listener_protocol = string
   }))
+  default = {}
 }
 
+variable "redirects" {
+  type = map(object({
+    listener_port     = number
+    listener_protocol = string
+    redirect_port     = number
+    redirect_protocol = string
+  }))
+  default = {}
+}
+
+variable "forwards" {
+  type = map(object({
+    listener_port     = number
+    listener_protocol = string
+  }))
+  default = {}
+}
 variable "listener_port" {
   type = number
 }
 
 variable "listener_protocol" {
   type = string
+}
+
+variable "certificate_arn" {
+  type    = string
+  default = null
 }
