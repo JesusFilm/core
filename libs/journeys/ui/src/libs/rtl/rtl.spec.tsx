@@ -62,4 +62,8 @@ describe('getJourneyRtl', () => {
       })
     ).toBe(false)
   })
+
+  it('should return false for undefined journey', () => {
+    expect(getJourneyRtl(undefined)).toBe(false)
+  })
 })
