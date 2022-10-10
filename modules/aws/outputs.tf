@@ -39,3 +39,7 @@ output "ecs" {
     internal_ecs_security_group_id = module.ecs.internal_ecs_security_group_id
   }
 }
+
+output "route53_private_zone_id" {
+  value = module.route53_private_zone.id
+}

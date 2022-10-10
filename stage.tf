@@ -18,13 +18,7 @@ locals {
     alb_dns_name            = module.stage.public_alb.dns_name
     image_tag               = "stage"
     zone_id                 = module.route53_central_jesusfilm_org.zone_id
-    alb_target_group = {
-      port              = 443
-      protocol          = "HTTPS"
-      path_pattern      = ["/*"]
-      health_check_path = "/.well-known/apollo/server-health"
-      priority          = 1
-    }
+    alb_target_group        = local.alb_target_group
   }
 
   internal_stage_ecs_config = {

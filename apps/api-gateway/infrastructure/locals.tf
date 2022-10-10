@@ -10,13 +10,9 @@ locals {
     image_tag      = var.ecs_config.image_tag
     alb_dns_name   = var.ecs_config.alb_dns_name
     zone_id        = var.ecs_config.zone_id
-    alb_target_group = {
-      port              = 4000
-      protocol          = "HTTP"
-      path_pattern      = ["/*"]
-      health_check_path = "/.well-known/apollo/server-health"
-      priority          = 1
-    }
+    alb_target_group = merge(var.ecs_config.alb_target_group, {
+      port = 4000
+    })
     auto_scaling = {
       max_capacity = 2
       min_capacity = 1

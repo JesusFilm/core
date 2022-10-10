@@ -22,15 +22,18 @@ module "acm_central_jesusfilm_org" {
 }
 
 locals {
-  serivices = [
+  services = [
     "api-gateway",
     "api-journeys",
     "api-languages",
+    "api-media",
     "api-users",
-    "api-video"
+    "api-videos",
+    "arangodb-bigquery-etl",
+    "arangodb-s3-backup"
   ]
 }
 resource "aws_ecr_repository" "ecr_repository" {
-  for_each = toset(local.serivices)
+  for_each = toset(local.services)
   name     = "jfp-${each.key}"
 }
