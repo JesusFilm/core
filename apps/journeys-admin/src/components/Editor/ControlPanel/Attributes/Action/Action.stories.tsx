@@ -32,6 +32,8 @@ const journey: Journey = {
   language: {
     __typename: 'Language',
     id: '529',
+    bcp47: 'en',
+    iso3: 'en',
     name: [
       {
         __typename: 'Translation',
