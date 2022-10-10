@@ -11,10 +11,10 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import Box from '@mui/material/Box'
-import { PageWrapper } from '../src/components/PageWrapper'
-import i18nConfig from '../next-i18next.config'
-import { MemoizedDynamicReport } from '../src/components/DynamicPowerBiReport'
-import { JourneysReportType } from '../__generated__/globalTypes'
+import { PageWrapper } from '../../src/components/PageWrapper'
+import i18nConfig from '../../next-i18next.config'
+import { MemoizedDynamicReport } from '../../src/components/DynamicPowerBiReport'
+import { JourneysReportType } from '../../__generated__/globalTypes'
 
 function ReportsPage(): ReactElement {
   const router = useRouter()
@@ -23,8 +23,12 @@ function ReportsPage(): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('Reports')} />
-      <PageWrapper title={t('Reports')} authUser={AuthUser} router={router}>
+      <NextSeo title={t('Journeys Reports')} />
+      <PageWrapper
+        title={t('Journeys Reports')}
+        authUser={AuthUser}
+        router={router}
+      >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
           <MemoizedDynamicReport reportType={JourneysReportType.multipleFull} />
         </Box>
