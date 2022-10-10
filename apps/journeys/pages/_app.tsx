@@ -16,7 +16,7 @@ import { useApollo } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
 import i18nConfig from '../next-i18next.config'
 
-const clientSideEmotionCache = createEmotionCache()
+const clientSideEmotionCache = createEmotionCache(false)
 
 function JourneysApp({
   Component,
