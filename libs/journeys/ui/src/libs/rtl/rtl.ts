@@ -1,4 +1,4 @@
-import { isRtl } from '../../../../../shared/ui/src/libs/rtl'
+import { isRtl } from '@core/shared/ui/rtl'
 import { JourneyFields as Journey } from '../JourneyProvider/__generated__/JourneyFields'
 
 export function getJourneyRtl(journey: Journey | undefined): boolean {
