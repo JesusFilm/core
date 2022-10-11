@@ -22,7 +22,8 @@ export class StepViewEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'StepViewEvent',
-      userId
+      userId,
+      timeStamp: new Date().toISOString()
     })
   }
 }

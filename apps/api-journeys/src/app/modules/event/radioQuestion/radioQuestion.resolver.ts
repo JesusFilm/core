@@ -23,7 +23,8 @@ export class RadioQuestionSubmissionEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'RadioQuestionSubmissionEvent',
-      userId
+      userId,
+      timeStamp: new Date().toISOString()
     })
   }
 }

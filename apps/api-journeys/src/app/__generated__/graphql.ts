@@ -478,6 +478,7 @@ export interface Block {
 export interface Event {
     id: string;
     userId: string;
+    timeStamp: DateTime;
 }
 
 export class NavigateAction implements Action {
@@ -710,6 +711,7 @@ export class ButtonClickEvent implements Event {
     __typename?: 'ButtonClickEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     block?: Nullable<ButtonBlock>;
 }
 
@@ -724,6 +726,7 @@ export class RadioQuestionSubmissionEvent implements Event {
     __typename?: 'RadioQuestionSubmissionEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     radioOptionBlockId: string;
     block?: Nullable<RadioQuestionBlock>;
 }
@@ -732,6 +735,7 @@ export class SignUpSubmissionEvent implements Event {
     __typename?: 'SignUpSubmissionEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     name: string;
     email: string;
     block?: Nullable<SignUpBlock>;
@@ -741,6 +745,7 @@ export class StepViewEvent implements Event {
     __typename?: 'StepViewEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     block?: Nullable<StepBlock>;
 }
 
@@ -768,6 +773,7 @@ export class TextResponseSubmissionEvent implements Event {
     __typename?: 'TextResponseSubmissionEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     value: string;
     block?: Nullable<TextResponseBlock>;
 }

@@ -22,7 +22,8 @@ export class JourneyViewEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'JourneyViewEvent',
-      userId
+      userId,
+      timeStamp: new Date().toISOString()
     })
   }
 }

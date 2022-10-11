@@ -10,6 +10,7 @@ input VideoStartEventCreateInput {
 type VideoStartEvent implements Event {
   id: ID!
   userId: ID!
+  timeStamp: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -26,6 +27,7 @@ input VideoPlayEventCreateInput {
 type VideoPlayEvent implements Event {
   id: ID!
   userId: ID!
+  timeStamp: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -42,6 +44,7 @@ input VideoPauseEventCreateInput {
 type VideoPauseEvent implements Event {
   id: ID!
   userId: ID!
+  timeStamp: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -58,6 +61,7 @@ input VideoCompleteEventCreateInput {
 type VideoCompleteEvent implements Event {
   id: ID!
   userId: ID!
+  timeStamp: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -74,6 +78,7 @@ input VideoExpandEventCreateInput {
 type VideoExpandEvent implements Event {
   id: ID!
   userId: ID!
+  timeStamp: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -90,6 +95,7 @@ input VideoCollapseEventCreateInput {
 type VideoCollapseEvent implements Event {
   id: ID!
   userId: ID!
+  timeStamp: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -110,6 +116,7 @@ input VideoProgressEventCreateInput {
 type VideoProgressEvent implements Event {
   id: ID!
   userId: ID!
+  timeStamp: DateTime!
   position: Float
   progress: Int!
   block: VideoBlock

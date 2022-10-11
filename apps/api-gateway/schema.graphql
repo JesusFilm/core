@@ -65,6 +65,7 @@ input ButtonBlockUpdateInput {
 type ButtonClickEvent implements Event {
   block: ButtonBlock
   id: ID!
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -172,6 +173,7 @@ scalar DateTime
 
 interface Event {
   id: ID!
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -424,6 +426,7 @@ input JourneyUpdateInput {
 type JourneyViewEvent implements Event {
   id: ID!
   journey: Journey
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -665,6 +668,7 @@ type RadioQuestionSubmissionEvent implements Event {
   block: RadioQuestionBlock
   id: ID!
   radioOptionBlockId: ID!
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -714,6 +718,7 @@ type SignUpSubmissionEvent implements Event {
   email: String!
   id: ID!
   name: String!
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -764,6 +769,7 @@ input StepBlockUpdateInput {
 type StepViewEvent implements Event {
   block: StepBlock
   id: ID!
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -778,12 +784,14 @@ input StepViewEventCreateInput {
 
 type TemplateLibraryViewEvent implements Event {
   id: ID!
+  timeStamp: DateTime!
   userId: ID!
 }
 
 type TemplatePreviewEvent implements Event {
   id: ID!
   journeyId: ID!
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -794,6 +802,7 @@ input TemplatePreviewEventInput {
 type TemplateUseEvent implements Event {
   id: ID!
   journeyId: ID!
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -834,6 +843,7 @@ input TextResponseBlockUpdateInput {
 type TextResponseSubmissionEvent implements Event {
   block: TextResponseBlock
   id: ID!
+  timeStamp: DateTime!
   userId: ID!
   value: String!
 }
@@ -1163,6 +1173,7 @@ type VideoCollapseEvent implements Event {
   block: VideoBlock
   id: ID!
   position: Float
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -1180,6 +1191,7 @@ type VideoCompleteEvent implements Event {
   block: VideoBlock
   id: ID!
   position: Float
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -1197,6 +1209,7 @@ type VideoExpandEvent implements Event {
   block: VideoBlock
   id: ID!
   position: Float
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -1214,6 +1227,7 @@ type VideoPauseEvent implements Event {
   block: VideoBlock
   id: ID!
   position: Float
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -1231,6 +1245,7 @@ type VideoPlayEvent implements Event {
   block: VideoBlock
   id: ID!
   position: Float
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -1249,6 +1264,7 @@ type VideoProgressEvent implements Event {
   id: ID!
   position: Float
   progress: Int!
+  timeStamp: DateTime!
   userId: ID!
 }
 
@@ -1276,6 +1292,7 @@ type VideoStartEvent implements Event {
   block: VideoBlock
   id: ID!
   position: Float
+  timeStamp: DateTime!
   userId: ID!
 }
 

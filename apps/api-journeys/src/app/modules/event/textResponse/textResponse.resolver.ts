@@ -22,7 +22,8 @@ export class TextResponseSubmissionEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'TextResponseSubmissionEvent',
-      userId
+      userId,
+      timeStamp: new Date().toISOString()
     })
   }
 }

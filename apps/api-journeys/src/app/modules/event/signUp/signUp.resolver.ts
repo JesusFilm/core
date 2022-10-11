@@ -22,7 +22,8 @@ export class SignUpSubmissionEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'SignUpSubmissionEvent',
-      userId
+      userId,
+      timeStamp: new Date().toISOString()
     })
   }
 }

@@ -10,6 +10,7 @@ input RadioQuestionSubmissionEventCreateInput {
 type RadioQuestionSubmissionEvent implements Event {
   id: ID!
   userId: ID!
+  timeStamp: DateTime!
   radioOptionBlockId: ID!
   block: RadioQuestionBlock
 }
