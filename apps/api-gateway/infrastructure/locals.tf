@@ -1,9 +1,10 @@
 locals {
+  port = 4000
   service_config = {
     name           = "api-gateway"
     is_public      = true
-    container_port = 4000
-    host_port      = 4000
+    container_port = local.port
+    host_port      = local.port
     cpu            = 512
     memory         = 1024
     desired_count  = 1
@@ -11,7 +12,7 @@ locals {
     alb_dns_name   = var.ecs_config.alb_dns_name
     zone_id        = var.ecs_config.zone_id
     alb_target_group = merge(var.ecs_config.alb_target_group, {
-      port = 4000
+      port = local.port
     })
     auto_scaling = {
       max_capacity = 2

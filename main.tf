@@ -44,3 +44,17 @@ module "api-journeys" {
   source     = "./apps/api-journeys/infrastructure"
   ecs_config = local.internal_ecs_config
 }
+
+module "api-languages" {
+  source     = "./apps/api-languages/infrastructure"
+  ecs_config = local.internal_ecs_config
+}
+
+module "api-users" {
+  source     = "./apps/api-users/infrastructure"
+  ecs_config = local.internal_ecs_config
+}
+module "api-videos" {
+  source     = "./apps/api-videos/infrastructure"
+  ecs_config = local.internal_ecs_config
+}

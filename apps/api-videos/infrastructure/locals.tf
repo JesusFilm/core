@@ -1,7 +1,7 @@
 locals {
-  port = 4001
+  port = 4004
   service_config = {
-    name           = "api-journeys"
+    name           = "api-videos"
     is_public      = false
     container_port = local.port
     host_port      = local.port
