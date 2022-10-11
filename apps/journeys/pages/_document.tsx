@@ -4,13 +4,15 @@ import createEmotionServer from '@emotion/server/create-instance'
 import type { EmotionCache } from '@emotion/cache'
 import type { Enhancer, AppType } from 'next/dist/shared/lib/utils'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import { getJourneyRtl } from '@core/journeys/ui/rtl'
 
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
+  isRTL: boolean
 }> {
   render(): ReactElement {
     return (
-      <Html lang="en">
+      <Html lang="en" dir={this.props.isRTL ? 'rtl' : ''}>
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
@@ -74,10 +76,13 @@ MyDocument.getInitialProps = async (ctx) => {
   const cache = createEmotionCache()
   const { extractCriticalToChunks } = createEmotionServer(cache)
 
+  let pageProps
+
   ctx.renderPage = () =>
     originalRenderPage({
       enhanceApp: ((App: FunctionComponent<{ emotionCache: EmotionCache }>) => {
         return function EnhanceApp(props) {
+          pageProps = props.pageProps.journey
           return <App emotionCache={cache} {...props} />
         }
       }) as unknown as Enhancer<AppType>
@@ -96,8 +101,11 @@ MyDocument.getInitialProps = async (ctx) => {
     />
   ))
 
+  const isRTL = getJourneyRtl(pageProps)
+
   return {
     ...initialProps,
-    emotionStyleTags
+    emotionStyleTags,
+    isRTL
   }
 }
