@@ -12,7 +12,7 @@ import { GET_VIDEOS } from '../../../../../VideoLibrary/VideoFromLocal/VideoFrom
 import { GET_VIDEO } from '../../../../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 import { videos } from '../../../../../VideoLibrary/VideoFromLocal/data'
 import { GetVideoVariantLanguages_video } from '../../../../../../../../__generated__/GetVideoVariantLanguages'
-import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/VideoBlockEditor'
+import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
 import { VideoOptions } from './VideoOptions'
 
 const VideoOptionsStory = {

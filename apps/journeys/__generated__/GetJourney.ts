@@ -18,6 +18,8 @@ export interface GetJourney_journey_language_name {
 export interface GetJourney_journey_language {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
+  iso3: string | null;
   name: GetJourney_journey_language_name[];
 }
 

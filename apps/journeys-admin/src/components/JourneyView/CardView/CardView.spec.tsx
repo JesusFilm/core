@@ -53,7 +53,7 @@ describe('JourneyView/CardView', () => {
     expect(getByText('Select Empty Card to add')).toBeInTheDocument()
   })
 
-  it('should navigate to edit page when adding new card', async () => {
+  it('should navigate to journey edit page when adding new card', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
     const { getByTestId } = render(
@@ -67,6 +67,28 @@ describe('JourneyView/CardView', () => {
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
         '/journeys/journeyId/edit?stepId=step0.id',
+        undefined,
+        { shallow: true }
+      )
+    )
+  })
+
+  it('should navigate to publisher edit page when adding new card', async () => {
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: { ...journey, template: true }, admin: true }}
+        >
+          <CardView id="journeyId" blocks={steps} isPublisher />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('preview-step0.id'))
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/publisher/journeyId/edit?stepId=step0.id',
         undefined,
         { shallow: true }
       )

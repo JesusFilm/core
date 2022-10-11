@@ -43,32 +43,20 @@ export const WithVideo: Story<EmbeddedPreviewProps> = Template.bind({})
 WithVideo.args = {
   blocks: videoBlocks
 }
-WithVideo.parameters = {
-  chromatic: { delay: 100, diffThreshold: 0.2 }
-}
 
 export const WithVideoNoPoster: Story<EmbeddedPreviewProps> = Template.bind({})
 WithVideoNoPoster.args = {
   blocks: videoBlocksNoPoster
-}
-WithVideoNoPoster.parameters = {
-  chromatic: { delay: 100, diffThreshold: 0.2 }
 }
 
 export const WithVideoNoVideo: Story<EmbeddedPreviewProps> = Template.bind({})
 WithVideoNoVideo.args = {
   blocks: videoBlocksNoVideo
 }
-WithVideoNoVideo.parameters = {
-  chromatic: { delay: 100, diffThreshold: 0.2 }
-}
 
 export const WithVideoLoop: Story<EmbeddedPreviewProps> = Template.bind({})
 WithVideoLoop.args = {
   blocks: videoLoop
-}
-WithVideoLoop.parameters = {
-  chromatic: { delay: 100, diffThreshold: 0.2 }
 }
 
 export default Demo as Meta

@@ -23,7 +23,7 @@ export function VideoTrigger({
   useEffect(() => {
     if (player != null && !triggered) {
       const timeUpdate = (): void => {
-        if (player.currentTime() >= triggerStart && !player.seeking()) {
+        if (player.currentTime() >= triggerStart - 1 && !player.seeking()) {
           setTriggered(true)
           player.pause()
           if (player.isFullscreen()) {

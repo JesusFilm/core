@@ -23,6 +23,8 @@ describe('Editor', () => {
     language: {
       __typename: 'Language',
       id: '529',
+      bcp47: 'en',
+      iso3: 'eng',
       name: [
         {
           __typename: 'Translation',
@@ -63,7 +65,7 @@ describe('Editor', () => {
   it('should render the element', () => {
     const { getByText } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ feedbackBlock: true }}>
+        <FlagsProvider>
           <ThemeProvider>
             <Editor journey={journey}>
               <JourneyEdit />
@@ -80,7 +82,7 @@ describe('Editor', () => {
   it('should display Next Card property', () => {
     const { getByText } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ feedbackBlock: true }}>
+        <FlagsProvider>
           <ThemeProvider>
             <Editor journey={journey} selectedStepId="step0.id">
               <JourneyEdit />

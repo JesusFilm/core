@@ -18,10 +18,8 @@ import {
 import { ThemeProvider } from '../../ThemeProvider'
 import { videos } from '../VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEOS } from '../VideoLibrary/VideoFromLocal/VideoFromLocal'
-import {
-  GET_VIDEO_VARIANT_LANGUAGES,
-  VideoBlockEditor
-} from './VideoBlockEditor'
+import { VideoBlockEditor } from './VideoBlockEditor'
+import { GET_VIDEO_VARIANT_LANGUAGES } from './Source/SourceFromLocal/SourceFromLocal'
 
 const BackgroundMediaStory = {
   ...journeysAdminConfig,
