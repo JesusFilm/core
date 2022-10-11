@@ -719,6 +719,7 @@ export class JourneyViewEvent implements Event {
     __typename?: 'JourneyViewEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     journey?: Nullable<Journey>;
 }
 
@@ -753,12 +754,14 @@ export class TemplateLibraryViewEvent implements Event {
     __typename?: 'TemplateLibraryViewEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
 }
 
 export class TemplateUseEvent implements Event {
     __typename?: 'TemplateUseEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     journeyId: string;
 }
 
@@ -766,6 +769,7 @@ export class TemplatePreviewEvent implements Event {
     __typename?: 'TemplatePreviewEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     journeyId: string;
 }
 
@@ -782,6 +786,7 @@ export class VideoStartEvent implements Event {
     __typename?: 'VideoStartEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -790,6 +795,7 @@ export class VideoPlayEvent implements Event {
     __typename?: 'VideoPlayEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -798,6 +804,7 @@ export class VideoPauseEvent implements Event {
     __typename?: 'VideoPauseEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -806,6 +813,7 @@ export class VideoCompleteEvent implements Event {
     __typename?: 'VideoCompleteEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -814,6 +822,7 @@ export class VideoExpandEvent implements Event {
     __typename?: 'VideoExpandEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -822,6 +831,7 @@ export class VideoCollapseEvent implements Event {
     __typename?: 'VideoCollapseEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -830,6 +840,7 @@ export class VideoProgressEvent implements Event {
     __typename?: 'VideoProgressEvent';
     id: string;
     userId: string;
+    timeStamp: DateTime;
     position?: Nullable<number>;
     progress: number;
     block?: Nullable<VideoBlock>;
