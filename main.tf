@@ -1,4 +1,4 @@
-
+data "aws_availability_zones" "current" {}
 
 module "prod" {
   source          = "./modules/aws"
@@ -33,6 +33,37 @@ locals {
     zone_id                 = module.prod.route53_private_zone_id
     alb_target_group        = local.alb_target_group
   }
+}
+
+module "atlantis" {
+  source  = "terraform-aws-modules/atlantis/aws"
+  version = "~> 3.0"
+
+  name = "atlantis"
+
+  # VPC
+  vpc_id             = module.prod.vpc.id
+  private_subnet_ids = module.prod.vpc.internal_subnets
+  public_subnet_ids  = module.prod.vpc.public_subnets
+  cidr               = var.cidr
+
+  # DNS
+  route53_zone_name = module.route53_central_jesusfilm_org.name
+
+  # ACM
+  certificate_arn = module.acm_central_jesusfilm_org.arn
+
+  # ECS
+  ecs_cluster_id = module.prod.ecs.ecs_cluster.id
+
+  # Atlantis
+  atlantis_github_user       = "jesus-film-bot"
+  atlantis_github_user_token = var.atlantis_github_user_token
+  atlantis_repo_allowlist    = ["github.com/JesusFilm/*"]
+
+  # GitHub
+  allow_unauthenticated_access = true
+  allow_github_webhooks        = true
 }
 
 module "api-gateway" {

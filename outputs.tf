@@ -17,3 +17,8 @@ output "internal_alb_dns" {
 output "ecs_task_execution_role_arn" {
   value = module.iam.ecs_task_execution_role_arn
 }
+
+output "atlantis_url" {
+  description = "URL of Atlantis"
+  value       = module.atlantis.atlantis_url
+}

@@ -11,3 +11,9 @@ variable "cidr" {
   description = "VPC CIDR"
   default     = "10.10.0.0/16"
 }
+
+# Atlantis 
+variable "atlantis_github_user_token" {
+  type        = string
+  description = "jesus-film-bot personal access token"
+}
