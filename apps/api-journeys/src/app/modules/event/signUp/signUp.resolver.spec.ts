@@ -3,6 +3,15 @@ import { EventService } from '../event.service'
 import { SignUpSubmissionEventResolver } from './signUp.resolver'
 
 describe('SignUpEventResolver', () => {
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   let resolver: SignUpSubmissionEventResolver
 
   const input = {
@@ -35,7 +44,8 @@ describe('SignUpEventResolver', () => {
       ).toEqual({
         ...input,
         __typename: 'SignUpSubmissionEvent',
-        userId: 'userId'
+        userId: 'userId',
+        timeStamp: new Date().toISOString()
       })
     })
   })

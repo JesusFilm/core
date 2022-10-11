@@ -11,6 +11,14 @@ import {
 } from './video.resolver'
 
 describe('VideoResolver', () => {
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
   describe('videoStartEventCreate', () => {
     let resolver: VideoStartEventResolver
 
@@ -38,7 +46,8 @@ describe('VideoResolver', () => {
       expect(await resolver.videoStartEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoStartEvent',
-        userId: 'userid'
+        userId: 'userid',
+        timeStamp: new Date().toISOString()
       })
     })
   })
@@ -70,7 +79,8 @@ describe('VideoResolver', () => {
       expect(await resolver.videoPlayEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoPlayEvent',
-        userId: 'userid'
+        userId: 'userid',
+        timeStamp: new Date().toISOString()
       })
     })
   })
@@ -102,7 +112,8 @@ describe('VideoResolver', () => {
       expect(await resolver.videoPauseEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoPauseEvent',
-        userId: 'userid'
+        userId: 'userid',
+        timeStamp: new Date().toISOString()
       })
     })
   })
@@ -136,7 +147,8 @@ describe('VideoResolver', () => {
       expect(await resolver.videoCompleteEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoCompleteEvent',
-        userId: 'userid'
+        userId: 'userid',
+        timeStamp: new Date().toISOString()
       })
     })
   })
@@ -168,7 +180,8 @@ describe('VideoResolver', () => {
       expect(await resolver.videoExpandEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoExpandEvent',
-        userId: 'userid'
+        userId: 'userid',
+        timeStamp: new Date().toISOString()
       })
     })
   })
@@ -202,7 +215,8 @@ describe('VideoResolver', () => {
       expect(await resolver.videoCollapseEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoCollapseEvent',
-        userId: 'userid'
+        userId: 'userid',
+        timeStamp: new Date().toISOString()
       })
     })
   })
@@ -237,7 +251,8 @@ describe('VideoResolver', () => {
       expect(await resolver.videoProgressEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoProgressEvent',
-        userId: 'userid'
+        userId: 'userid',
+        timeStamp: new Date().toISOString()
       })
     })
   })

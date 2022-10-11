@@ -3,6 +3,15 @@ import { EventService } from '../event.service'
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion.resolver'
 
 describe('RadioQuestionSubmissionEventResolver', () => {
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   let resolver: RadioQuestionSubmissionEventResolver
 
   const input = {
@@ -34,7 +43,8 @@ describe('RadioQuestionSubmissionEventResolver', () => {
       ).toEqual({
         ...input,
         __typename: 'RadioQuestionSubmissionEvent',
-        userId: 'userId'
+        userId: 'userId',
+        timeStamp: new Date().toISOString()
       })
     })
   })

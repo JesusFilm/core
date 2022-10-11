@@ -3,6 +3,15 @@ import { EventService } from '../event.service'
 import { TextResponseSubmissionEventResolver } from './textResponse.resolver'
 
 describe('TextResponseEventResolver', () => {
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   let resolver: TextResponseSubmissionEventResolver
 
   const input = {
@@ -34,7 +43,8 @@ describe('TextResponseEventResolver', () => {
       ).toEqual({
         ...input,
         __typename: 'TextResponseSubmissionEvent',
-        userId: 'userId'
+        userId: 'userId',
+        timeStamp: new Date().toISOString()
       })
     })
   })

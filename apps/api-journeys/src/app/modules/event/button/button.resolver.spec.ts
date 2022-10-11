@@ -4,6 +4,15 @@ import { ButtonClickEventCreateInput } from '../../../__generated__/graphql'
 import { ButtonClickEventResolver } from './button.resolver'
 
 describe('ButtonClickEventResolver', () => {
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   let resolver: ButtonClickEventResolver
 
   const input: ButtonClickEventCreateInput = {
@@ -30,7 +39,8 @@ describe('ButtonClickEventResolver', () => {
       expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
         ...input,
         __typename: 'ButtonClickEvent',
-        userId: 'userId'
+        userId: 'userId',
+        timeStamp: new Date().toISOString()
       })
     })
   })
