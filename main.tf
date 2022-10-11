@@ -54,6 +54,7 @@ module "api-users" {
   source     = "./apps/api-users/infrastructure"
   ecs_config = local.internal_ecs_config
 }
+
 module "api-videos" {
   source     = "./apps/api-videos/infrastructure"
   ecs_config = local.internal_ecs_config
