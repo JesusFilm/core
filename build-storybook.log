@@ -1,0 +1,51 @@
+
+> nx run shared-storybook:build-storybook --webpackStatsJson --outputDir=/tmp/chromatic--46312-ElRcSeCGA0kU 
+
+>  NX  ui framework: @storybook/react
+
+
+>  NX  Storybook builder starting ...
+
+info => Cleaning outputDir: /workspaces/core/dist/storybook/shared-storybook
+info => Loading presets
+info => Copying static files: /workspaces/core/.storybook/static at /workspaces/core/dist/storybook/shared-storybook/
+info => Loading custom manager config
+info => Compiling manager..
+info => Compiling preview..
+(node:46768) [DEP0148] DeprecationWarning: Use of deprecated folder mapping "./" in the "exports" field module resolution of the package at /workspaces/core/node_modules/tslib/package.json.
+Update this package.json to use a subpath pattern like "./*".
+(Use `node --trace-deprecation ...` to show where the warning was created)
+info => Loading custom manager config
+info => Using implicit CSS loaders
+info => Using default Webpack5 setup
+info => Manager built (19 s)
+info => Preview built (48 s)
+WARN asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+WARN This can impact web performance.
+WARN Assets: 
+WARN   169.77cb6a70.iframe.bundle.js (522 KiB)
+WARN   main.1e1e964f.iframe.bundle.js (2.45 MiB)
+WARN   127.2ce2ded0.iframe.bundle.js (6.07 MiB)
+WARN   115.8f94134e.iframe.bundle.js (590 KiB)
+WARN entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
+WARN Entrypoints:
+WARN   main (8.53 MiB)
+WARN       runtime~main.368cbd1b.iframe.bundle.js
+WARN       127.2ce2ded0.iframe.bundle.js
+WARN       main.1e1e964f.iframe.bundle.js
+WARN 
+info => preview stats written to /workspaces/core/dist/storybook/shared-storybook/preview-stats.json
+info => manager stats written to /workspaces/core/dist/storybook/shared-storybook/manager-stats.json
+info => Output directory: /workspaces/core/dist/storybook/shared-storybook
+
+>  NX  Storybook builder finished ...
+
+
+>  NX  Storybook files available in dist/storybook/shared-storybook
+
+
+———————————————————————————————————————————————
+
+>  NX   SUCCESS  Running target "build-storybook" succeeded
+
+
