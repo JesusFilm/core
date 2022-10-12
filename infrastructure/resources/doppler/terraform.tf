@@ -4,19 +4,15 @@ terraform {
     bucket         = "jfp-terraform-state"
     dynamodb_table = "jfp-terraform-state-lock"
     region         = "us-east-2"
-    key            = "core.tfstate"
+    key            = "doppler/terraform.tfstate"
   }
-
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.74"
-    }
-    doppler = {
-      source = "DopplerHQ/doppler"
+      version = "~> 4.0"
     }
   }
-  required_version = ">= 1.0.9"
+  required_version = ">= 1.1.7"
 }
 
 provider "aws" {

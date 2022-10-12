@@ -1,11 +1,24 @@
 # This file is maintained automatically by "terraform init".
 # Manual edits may be lost in future updates.
 
+provider "registry.terraform.io/arangodb-managed/oasis" {
+  version     = "2.1.7"
+  constraints = ">= 2.1.0"
+  hashes = [
+    "h1:BRiSZDhXDKl+tPPO1eCilC/s1o1j2K7D1hREbUsa4yE=",
+    "zh:0466ce7af3e11fe32ba42c5a0ad75255b5408d34fede18441cef6a2ddcc917cb",
+    "zh:04c40f2a4cb691a3b2436d2d1a69741bdc2c719fcd2e1258bba770e1c2c9bda3",
+    "zh:1e37743719ade374fb25e22460a18e546a84319837a33b3c198fa5baf994bda9",
+    "zh:9b12af85486a96aedd8d7984b0ff811a4b42e3d88dad1a3fb4c0b580d04fa425",
+    "zh:fd601fa6b470c662d01ecee538020a17f81153951e5f520261b9d97f7c6bb911",
+  ]
+}
+
 provider "registry.terraform.io/hashicorp/aws" {
   version     = "3.75.2"
   constraints = "~> 3.74"
   hashes = [
-    "h1:x0gluX9ZKEmz+JJW3Ut5GgWDFOq/lhs2vkqJ+xt57zs=",
+    "h1:Sex0YVg5DvsEDktgkUbBWVD1FR21cp/XsHBPq6UvOPw=",
     "zh:0e75fb14ec42d69bc46461dd54016bb2487d38da324222cec20863918b8954c4",
     "zh:30831a1fe29f005d8b809250b43d09522288db45d474c9d238b26f40bdca2388",
     "zh:36163d625ab2999c9cd31ef2475d978f9f033a8dfa0d585f1665f2d6492fac4b",
