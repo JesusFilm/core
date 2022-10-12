@@ -31,5 +31,5 @@ type StepNextEvent implements Event {
 
 extend type Mutation {
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
-  stepNextwEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
 }

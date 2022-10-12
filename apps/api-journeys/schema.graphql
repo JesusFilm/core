@@ -1124,7 +1124,7 @@ extend type Mutation {
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
-  stepNextwEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
   templateLibraryViewEventCreate: TemplateLibraryViewEvent!
   templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent!
   templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent!

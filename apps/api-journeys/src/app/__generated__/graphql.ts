@@ -940,7 +940,7 @@ export abstract class IMutation {
 
     abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
 
-    abstract stepNextwEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
+    abstract stepNextEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
 
     abstract templateLibraryViewEventCreate(): TemplateLibraryViewEvent | Promise<TemplateLibraryViewEvent>;
 

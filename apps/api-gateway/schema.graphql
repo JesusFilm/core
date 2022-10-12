@@ -528,7 +528,7 @@ type Mutation {
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
-  stepNextwEventCreate(input: StepNextEventCreateInput!): StepNextEvent! @join__field(graph: JOURNEYS)
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent! @join__field(graph: JOURNEYS)
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
   templateLibraryViewEventCreate: TemplateLibraryViewEvent! @join__field(graph: JOURNEYS)
   templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @join__field(graph: JOURNEYS)
