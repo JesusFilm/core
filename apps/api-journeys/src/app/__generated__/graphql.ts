@@ -375,6 +375,12 @@ export class StepViewEventCreateInput {
     blockId: string;
 }
 
+export class StepNextEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    nextStepId?: Nullable<string>;
+}
+
 export class TemplateUseEventInput {
     journeyId: string;
 }
@@ -744,6 +750,14 @@ export class StepViewEvent implements Event {
     block?: Nullable<StepBlock>;
 }
 
+export class StepNextEvent implements Event {
+    __typename?: 'StepNextEvent';
+    id: string;
+    userId: string;
+    block?: Nullable<StepBlock>;
+    nextStepId?: Nullable<string>;
+}
+
 export class TemplateLibraryViewEvent implements Event {
     __typename?: 'TemplateLibraryViewEvent';
     id: string;
@@ -925,6 +939,8 @@ export abstract class IMutation {
     abstract signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput): SignUpSubmissionEvent | Promise<SignUpSubmissionEvent>;
 
     abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
+
+    abstract stepNextwEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
 
     abstract templateLibraryViewEventCreate(): TemplateLibraryViewEvent | Promise<TemplateLibraryViewEvent>;
 

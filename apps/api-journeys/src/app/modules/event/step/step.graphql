@@ -12,6 +12,24 @@ type StepViewEvent implements Event {
   block: StepBlock
 }
 
+input StepNextEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  nextStepId: ID
+}
+
+type StepNextEvent implements Event {
+  id: ID!
+  userId: ID!
+  #createdAt: DateTime!
+  block: StepBlock
+  nextStepId: ID
+}
+
 extend type Mutation {
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
+  stepNextwEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
 }

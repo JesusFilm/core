@@ -792,6 +792,22 @@ type StepViewEvent implements Event {
   block: StepBlock
 }
 
+input StepNextEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  nextStepId: ID
+}
+
+type StepNextEvent implements Event {
+  id: ID!
+  userId: ID!
+  block: StepBlock
+  nextStepId: ID
+}
+
 type TemplateLibraryViewEvent implements Event {
   id: ID!
   userId: ID!
@@ -1108,6 +1124,7 @@ extend type Mutation {
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
+  stepNextwEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
   templateLibraryViewEventCreate: TemplateLibraryViewEvent!
   templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent!
   templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent!
