@@ -1,5 +1,5 @@
 module "stage" {
-  source            = "../../../modules/aws"
+  source            = "../../modules/aws"
   env               = "stage"
   cidr              = "10.11.0.0/16"
   internal_url_name = "service.stage.internal"
