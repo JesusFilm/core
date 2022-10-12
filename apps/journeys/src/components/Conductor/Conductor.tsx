@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { createElement, ReactElement, useEffect, useState } from 'react'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { findIndex } from 'lodash'
@@ -6,7 +6,7 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
-import { useTheme } from '@mui/material/styles'
+import { useTheme, styled } from '@mui/material/styles'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useBlocks } from '@core/journeys/ui/block'
@@ -17,6 +17,7 @@ import 'swiper/swiper.min.css'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { gql, useMutation } from '@apollo/client'
+import { getJourneyRtl } from '@core/journeys/ui/rtl'
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
@@ -33,6 +34,14 @@ export const JOURNEY_VIEW_EVENT_CREATE = gql`
   }
 `
 
+const LeftNavigationContainer = styled(Box)`
+  /* @noflip */
+  left: 0;
+`
+const RightNavigationContainer = styled(Box)`
+  /* @noflip */
+  right: 0;
+`
 export interface ConductorProps {
   blocks: TreeBlock[]
 }
@@ -41,11 +50,18 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const { setTreeBlocks, nextActiveBlock, treeBlocks, activeBlock } =
     useBlocks()
   const [swiper, setSwiper] = useState<SwiperCore>()
-  const [showNavArrows, setShowNavArrow] = useState(true)
+  const [slideTransitioning, setSlideTransitioning] = useState(false)
   const breakpoints = useBreakpoints()
   const theme = useTheme()
   const { journey, admin } = useJourney()
-  const lastStep = last(treeBlocks)
+  const isRtl = getJourneyRtl(journey)
+
+  const onFirstStep = activeBlock === treeBlocks[0]
+  const onLastStep = activeBlock === last(treeBlocks)
+  const showLeftButton = (!isRtl && !onFirstStep) || (isRtl && !onLastStep)
+  const showRightButton = (!isRtl && !onLastStep) || (isRtl && !onFirstStep)
+  const disableLeftButton = !isRtl || (isRtl && activeBlock?.locked === true)
+  const disableRightButton = isRtl || (!isRtl && activeBlock?.locked === true)
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -74,6 +90,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     setTreeBlocks(blocks)
   }, [setTreeBlocks, blocks])
 
+  // Navigate to selected block if set
   useEffect(() => {
     if (swiper != null && activeBlock != null && treeBlocks != null) {
       const index = findIndex(
@@ -116,6 +133,51 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   const [gapBetweenSlides, setGapBetween] = useState(getResponsiveGap())
 
+  const Navigation = ({
+    variant
+  }: {
+    variant: 'Left' | 'Right'
+  }): ReactElement => {
+    // Issue using https://mui.com/material-ui/guides/right-to-left/#emotion-amp-styled-components for justifyContent
+    const alignSx =
+      (isRtl && variant === 'Left') || (!isRtl && variant === 'Right')
+        ? { justifyContent: 'flex-start' }
+        : { justifyContent: 'flex-end' }
+
+    const iconName = variant === 'Left' ? ChevronLeftIcon : ChevronRightIcon
+    const icon = createElement(iconName, {
+      fontSize: 'large',
+      sx: { display: { xs: 'none', xl: 'block' } }
+    })
+    const NavigationContainer =
+      variant === 'Left' ? LeftNavigationContainer : RightNavigationContainer
+
+    return (
+      <NavigationContainer
+        data-testid={`${variant.toLowerCase()}NavContainer`}
+        sx={{
+          ...alignSx,
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          zIndex: 2,
+          display: slideTransitioning ? 'none' : 'flex',
+          width: `${2 * edgeSlideWidth + gapBetweenSlides}px`
+        }}
+      >
+        <IconButton
+          data-testid={`conductor${variant}Button`}
+          onClick={handleNext}
+          disabled={variant === 'Left' ? disableLeftButton : disableRightButton}
+          disableRipple
+          sx={{ color: 'text.primary', px: 13 }}
+        >
+          {icon}
+        </IconButton>
+      </NavigationContainer>
+    )
+  }
+
   return (
     <Div100vh>
       <Stack
@@ -139,14 +201,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           }}
         >
           <Swiper
+            dir={!isRtl ? 'ltr' : 'rtl'}
             slidesPerView="auto"
             centeredSlides
             centeredSlidesBounds
             onSwiper={(swiper) => setSwiper(swiper)}
             resizeObserver
             onBeforeResize={() => setGapBetween(getResponsiveGap())}
-            onSlideChangeTransitionStart={() => setShowNavArrow(false)}
-            onSlideChangeTransitionEnd={() => setShowNavArrow(true)}
+            onSlideChangeTransitionStart={() => setSlideTransitioning(true)}
+            onSlideChangeTransitionEnd={() => setSlideTransitioning(false)}
             allowTouchMove={false}
             style={{
               width: '100%',
@@ -195,79 +258,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                 </Box>
               </SwiperSlide>
             ))}
-            {activeBlock !== treeBlocks[0] && (
-              <IconButton
-                data-testid="conductorPrevButton"
-                onClick={handleNext}
-                disabled
-                disableRipple
-                sx={{
-                  display: showNavArrows ? 'flex' : 'none',
-                  position: 'absolute',
-                  top: 0,
-                  bottom: 0,
-                  zIndex: 2,
-                  left: 0,
-                  width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
-                  pl: ` ${gapBetweenSlides - 100}px`,
-                  color: (theme) => theme.palette.text.primary
-                }}
-              >
-                <ChevronLeftIcon
-                  fontSize="large"
-                  sx={{
-                    display: 'none',
-                    [theme.breakpoints.only('xl')]: {
-                      display: 'block'
-                    }
-                  }}
-                />
-              </IconButton>
-            )}
-            <Box
-              sx={{
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                zIndex: 2,
-                right: 0,
-                background: (theme) => theme.palette.background.default,
-                transition: 'opacity 0.5s ease-out',
-                opacity: activeBlock?.nextBlockId != null ? 0 : 1,
-                width: (theme) => theme.spacing(4)
-              }}
-            />
-            {activeBlock !== lastStep && (
-              <IconButton
-                data-testid="conductorNextButton"
-                onClick={handleNext}
-                disabled={
-                  activeBlock?.locked === true || lastStep === activeBlock
-                }
-                disableRipple
-                sx={{
-                  display: showNavArrows ? 'flex' : 'none',
-                  position: 'absolute',
-                  top: 0,
-                  bottom: 0,
-                  zIndex: 2,
-                  right: 0,
-                  width: `${2 * edgeSlideWidth + gapBetweenSlides}px`,
-                  pr: ` ${gapBetweenSlides - 100}px`,
-                  color: (theme) => theme.palette.text.primary
-                }}
-              >
-                <ChevronRightIcon
-                  fontSize="large"
-                  sx={{
-                    display: 'none',
-                    [theme.breakpoints.only('xl')]: {
-                      display: 'block'
-                    }
-                  }}
-                />
-              </IconButton>
-            )}
+            {showLeftButton && <Navigation variant="Left" />}
+            {showRightButton && <Navigation variant="Right" />}
           </Swiper>
         </Box>
         <Box
