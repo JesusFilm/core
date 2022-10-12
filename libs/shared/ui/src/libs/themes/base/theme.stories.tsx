@@ -2,6 +2,7 @@ import { useState, useEffect, ReactElement } from 'react'
 import { Story, Meta } from '@storybook/react'
 import Box from '@mui/material/Box'
 import Typography, { TypographyProps } from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
 import {
   useTheme,
   PaletteColor,
@@ -400,6 +401,48 @@ Viewport.parameters = {
       breakpoints.values.xl
     ]
   }
+}
+
+const RightToLeftTemplate: Story = () => {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        m: '20%'
+      }}
+    >
+      <Typography variant="body1" gutterBottom>
+        Text Component
+      </Typography>
+      <Typography variant="h2" gutterBottom>
+        Right To Left
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        Native Button Component
+      </Typography>
+      <button
+        style={{
+          height: '50px',
+          width: '200px',
+          borderRadius: 10,
+          marginBottom: 10
+        }}
+      >
+        Native Button
+      </button>
+      <Typography variant="body1" gutterBottom>
+        MUI Component - Text Field
+      </Typography>
+      <TextField label="Filled" variant="filled" />
+    </Box>
+  )
+}
+
+export const RightToLeft = RightToLeftTemplate.bind({})
+RightToLeft.parameters = {
+  rtl: true
 }
 
 export default ThemeDemo as Meta
