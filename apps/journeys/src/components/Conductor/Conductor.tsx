@@ -23,6 +23,7 @@ import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
 import last from 'lodash/last'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
+// import { StepNextEventCreate } from '../../../__generated__/StepNextEventCreate'
 import { Footer } from '../Footer'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
@@ -32,6 +33,14 @@ export const JOURNEY_VIEW_EVENT_CREATE = gql`
     }
   }
 `
+
+// export const STEP_NEXT_EVENT_CREATE = gql`
+//   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
+//     stepNextEventCreate(input: $input) {
+//       id
+//     }
+//   }
+// `
 
 export interface ConductorProps {
   blocks: TreeBlock[]
@@ -50,6 +59,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
   )
+  // const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
+  //   STEP_NEXT_EVENT_CREATE
+  // )
 
   useEffect(() => {
     if (!admin && journey != null) {
@@ -86,8 +98,31 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }, [swiper, activeBlock, treeBlocks])
 
+  // function createStepNextEvent(): void {
+  //   if (activeBlock == null) return
+
+  //   const nextStepId =
+  //     activeBlock.nextBlockId ??
+  //     treeBlocks[(activeBlock.parentOrder as number) + 1].id
+
+  //   const id = uuidv4()
+
+  //   void stepNextEventCreate({
+  //     variables: {
+  //       input: {
+  //         id,
+  //         blockId: activeBlock.id,
+  //         nextStepId
+  //       }
+  //     }
+  //   })
+  // }
+
   function handleNext(): void {
-    if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
+    if (activeBlock != null && !activeBlock.locked) {
+      nextActiveBlock()
+      // createStepNextEvent()
+    }
   }
 
   const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
