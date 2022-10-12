@@ -5,7 +5,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { getJourneyRtl } from '@core/journeys/ui/rtl'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -70,7 +70,7 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
         <ThemeProvider
           themeName={journey.themeName}
           themeMode={journey.themeMode}
-          rtl={getJourneyRtl(journey)}
+          rtl={getJourneyRTL(journey)}
         >
           {journey.blocks != null && (
             <Conductor blocks={transformer(journey.blocks)} />
