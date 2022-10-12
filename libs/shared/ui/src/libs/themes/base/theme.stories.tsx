@@ -406,7 +406,7 @@ Viewport.parameters = {
   }
 }
 
-export const StyledButton = styled(Button)(({ theme }) => ({
+const StyledButton = styled(Button)(({ theme }) => ({
   fontFamily: theme.typography.body2.fontFamily,
   fontSize: theme.typography.body2.fontSize,
   fontWeight: 600,

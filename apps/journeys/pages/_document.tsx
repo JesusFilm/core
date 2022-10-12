@@ -4,7 +4,7 @@ import createEmotionServer from '@emotion/server/create-instance'
 import type { EmotionCache } from '@emotion/cache'
 import type { Enhancer, AppType } from 'next/dist/shared/lib/utils'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
-import { getJourneyRtl } from '@core/journeys/ui/rtl'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
@@ -101,7 +101,7 @@ MyDocument.getInitialProps = async (ctx) => {
     />
   ))
 
-  const isRTL = getJourneyRtl(pageProps)
+  const isRTL = getJourneyRTL(pageProps)
 
   return {
     ...initialProps,
