@@ -17,17 +17,17 @@ interface ThemeDecoratorProps extends Pick<Parameters, 'layout'> {
   mode: typeof themeMode[number]
   children: ReactNode
   emotionCache?: EmotionCache
-  isRTL?: boolean
+  rtl?: boolean
 }
 
-const clientSideEmotionCache = (isRTL?: boolean): EmotionCache =>
-  createEmotionCache(isRTL)
+const clientSideEmotionCache = (rtl?: boolean): EmotionCache =>
+  createEmotionCache(rtl)
 
 const ThemeContainer = ({
   mode,
   layout = 'padded',
   children,
-  isRTL
+  rtl
 }: ThemeDecoratorProps): ReactElement => {
   return (
     <div
@@ -44,7 +44,7 @@ const ThemeContainer = ({
       <ThemeProvider
         themeName={ThemeName.base}
         themeMode={ThemeMode[mode as ThemeMode]}
-        rtl={isRTL}
+        rtl={rtl}
       >
         {children}
       </ThemeProvider>
@@ -56,50 +56,50 @@ export const ThemeDecorator = ({
   mode,
   layout,
   children,
-  isRTL,
-  emotionCache = clientSideEmotionCache(isRTL)
+  rtl,
+  emotionCache = clientSideEmotionCache(rtl)
 }: ThemeDecoratorProps): ReactElement => {
   switch (mode) {
     case 'all':
       return (
-        <CacheProvider value={emotionCache}>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              maxWidth: '100vw',
-              margin: layout === 'fullscreen' ? '0px' : '-16px',
-              overflowX: 'hidden'
-            }}
-            dir={isRTL === true ? 'rtl' : 'ltr'}
-          >
-            <ThemeContainer mode="light" layout={layout} isRTL={isRTL}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            maxWidth: '100vw',
+            margin: layout === 'fullscreen' ? '0px' : '-16px',
+            overflowX: 'hidden'
+          }}
+          dir={rtl === true ? 'rtl' : 'ltr'}
+        >
+          <CacheProvider value={emotionCache}>
+            <ThemeContainer mode="light" layout={layout} rtl={rtl}>
               {children}
             </ThemeContainer>
-            <ThemeContainer mode="dark" layout={layout} isRTL={isRTL}>
+            <ThemeContainer mode="dark" layout={layout} rtl={rtl}>
               {children}
             </ThemeContainer>
-          </div>
-        </CacheProvider>
+          </CacheProvider>
+        </div>
       )
     default:
       return (
-        <CacheProvider value={emotionCache}>
-          <div
-            style={{
-              height: 'calc(100vh - 2rem)'
-            }}
-            dir={isRTL === true ? 'rtl' : 'ltr'}
-          >
+        <div
+          style={{
+            height: 'calc(100vh - 2rem)'
+          }}
+          dir={rtl === true ? 'rtl' : 'ltr'}
+        >
+          <CacheProvider value={emotionCache}>
             <ThemeProvider
               themeName={ThemeName.base}
               themeMode={ThemeMode[mode as ThemeMode]}
-              rtl={isRTL}
+              rtl={rtl}
             >
               {children}
             </ThemeProvider>
-          </div>
-        </CacheProvider>
+          </CacheProvider>
+        </div>
       )
   }
 }

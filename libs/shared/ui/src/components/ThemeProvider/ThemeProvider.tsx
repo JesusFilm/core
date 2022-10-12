@@ -25,15 +25,13 @@ export const ThemeProvider = ({
   themeName,
   themeMode,
   children,
-  rtl,
+  rtl = false,
   nested
 }: ThemeProviderProps): ReactElement => {
   const theme = themes[themeName][themeMode]
 
   return (
-    <MuiThemeProvider
-      theme={{ ...theme, direction: rtl === true ? 'rtl' : 'ltr' }}
-    >
+    <MuiThemeProvider theme={{ ...theme, direction: rtl ? 'rtl' : 'ltr' }}>
       {nested !== true && <CssBaseline />}
       {children}
     </MuiThemeProvider>
