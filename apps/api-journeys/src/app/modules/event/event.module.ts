@@ -16,7 +16,10 @@ import {
   VideoExpandEventResolver,
   VideoProgressEventResolver
 } from './video/video.resolver'
-import { StepViewEventResolver } from './step/step.resolver'
+import {
+  StepViewEventResolver,
+  StepNextEventResolver
+} from './step/step.resolver'
 import {
   TemplateLibraryViewEventResolver,
   TemplateUseEventResolver,
@@ -33,6 +36,7 @@ import {
     RadioQuestionSubmissionEventResolver,
     SignUpSubmissionEventResolver,
     StepViewEventResolver,
+    StepNextEventResolver,
     TextResponseSubmissionEventResolver,
     VideoStartEventResolver,
     VideoPlayEventResolver,
