@@ -1,5 +1,5 @@
 import { ReactElement, ReactNode } from 'react'
-import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
+import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import { themes } from '../../libs/themes/index'
 
@@ -29,16 +29,10 @@ export const ThemeProvider = ({
   nested
 }: ThemeProviderProps): ReactElement => {
   const theme = themes[themeName][themeMode]
-  const newTheme = createTheme(
-    {
-      ...theme,
-      direction: 'rtl'
-    }
-  )
 
   return (
     <MuiThemeProvider
-      theme={newTheme}
+      theme={{ ...theme, direction: rtl === true ? 'rtl' : 'ltr' }}
     >
       {nested !== true && <CssBaseline />}
       {children}

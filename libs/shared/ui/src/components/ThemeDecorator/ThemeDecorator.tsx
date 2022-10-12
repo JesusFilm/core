@@ -15,41 +15,40 @@ const themeMode = globalTypes.theme.toolbar.items
 
 interface ThemeDecoratorProps extends Pick<Parameters, 'layout'> {
   mode: typeof themeMode[number]
-  children: ReactNode,
+  children: ReactNode
   emotionCache?: EmotionCache
+  isRTL?: boolean
 }
 
-const clientSideEmotionCache = (isRTL: boolean): EmotionCache =>
+const clientSideEmotionCache = (isRTL?: boolean): EmotionCache =>
   createEmotionCache(isRTL)
 
 const ThemeContainer = ({
   mode,
   layout = 'padded',
   children,
-  emotionCache = clientSideEmotionCache(true)
+  isRTL
 }: ThemeDecoratorProps): ReactElement => {
   return (
-    <CacheProvider value={emotionCache}>
-      <div
-        style={{
-          width: '100%',
-          height: 'auto',
-          minHeight: '50vh',
-          overflow: 'auto',
-          padding: layout === 'padded' ? '1.5rem' : '0px',
-          background: themes.base[mode as ThemeMode].palette.background.default,
-          color: themes.base[mode as ThemeMode].palette.text.primary
-        }}
+    <div
+      style={{
+        width: '100%',
+        height: 'auto',
+        minHeight: '50vh',
+        overflow: 'auto',
+        padding: layout === 'padded' ? '1.5rem' : '0px',
+        background: themes.base[mode as ThemeMode].palette.background.default,
+        color: themes.base[mode as ThemeMode].palette.text.primary
+      }}
+    >
+      <ThemeProvider
+        themeName={ThemeName.base}
+        themeMode={ThemeMode[mode as ThemeMode]}
+        rtl={isRTL}
       >
-        <ThemeProvider
-          themeName={ThemeName.base}
-          themeMode={ThemeMode[mode as ThemeMode]}
-          rtl
-        >
-          {children}
-        </ThemeProvider>
-      </div>
-    </CacheProvider>
+        {children}
+      </ThemeProvider>
+    </div>
   )
 }
 
@@ -57,7 +56,8 @@ export const ThemeDecorator = ({
   mode,
   layout,
   children,
-  emotionCache = clientSideEmotionCache(true)
+  isRTL,
+  emotionCache = clientSideEmotionCache(isRTL)
 }: ThemeDecoratorProps): ReactElement => {
   switch (mode) {
     case 'all':
@@ -71,11 +71,12 @@ export const ThemeDecorator = ({
               margin: layout === 'fullscreen' ? '0px' : '-16px',
               overflowX: 'hidden'
             }}
+            dir={isRTL === true ? 'rtl' : 'ltr'}
           >
-            <ThemeContainer mode="light" layout={layout} emotionCache={emotionCache}>
+            <ThemeContainer mode="light" layout={layout} isRTL={isRTL}>
               {children}
             </ThemeContainer>
-            <ThemeContainer mode="dark" layout={layout} emotionCache={emotionCache}>
+            <ThemeContainer mode="dark" layout={layout} isRTL={isRTL}>
               {children}
             </ThemeContainer>
           </div>
@@ -88,11 +89,12 @@ export const ThemeDecorator = ({
             style={{
               height: 'calc(100vh - 2rem)'
             }}
+            dir={isRTL === true ? 'rtl' : 'ltr'}
           >
             <ThemeProvider
               themeName={ThemeName.base}
               themeMode={ThemeMode[mode as ThemeMode]}
-              rtl
+              rtl={isRTL}
             >
               {children}
             </ThemeProvider>
