@@ -1,1 +1,1 @@
-export { isRtl } from './rtl'
+export { getLocaleRTL } from './rtl'
