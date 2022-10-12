@@ -56,7 +56,7 @@ export const ThemeDecorator = ({
   mode,
   layout,
   children,
-  rtl,
+  rtl = false,
   emotionCache = clientSideEmotionCache(rtl)
 }: ThemeDecoratorProps): ReactElement => {
   switch (mode) {
@@ -70,7 +70,7 @@ export const ThemeDecorator = ({
             margin: layout === 'fullscreen' ? '0px' : '-16px',
             overflowX: 'hidden'
           }}
-          dir={rtl === true ? 'rtl' : 'ltr'}
+          dir={rtl ? 'rtl' : 'ltr'}
         >
           <CacheProvider value={emotionCache}>
             <ThemeContainer mode="light" layout={layout} rtl={rtl}>
@@ -88,7 +88,7 @@ export const ThemeDecorator = ({
           style={{
             height: 'calc(100vh - 2rem)'
           }}
-          dir={rtl === true ? 'rtl' : 'ltr'}
+          dir={rtl ? 'rtl' : 'ltr'}
         >
           <CacheProvider value={emotionCache}>
             <ThemeProvider
