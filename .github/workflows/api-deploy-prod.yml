@@ -1,0 +1,79 @@
+name: API push build
+on:
+  push:
+    branches:
+      - main
+jobs:
+  api-journeys:
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
+    with:
+      name: api-journeys
+      repository: jfp-api-journeys-prod
+      branch: ${{ github.ref_name }}
+    secrets:
+      ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
+      ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
+      ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
+  api-users:
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
+    with:
+      name: api-users
+      repository: jfp-api-users-prod
+      branch: ${{ github.ref_name }}
+    secrets:
+      ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
+      ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
+      ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
+  api-languages:
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
+    with:
+      name: api-languages
+      repository: jfp-api-languages-prod
+      branch: ${{ github.ref_name }}
+    secrets:
+      ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
+      ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
+      ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
+  api-videos:
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
+    with:
+      name: api-videos
+      repository: jfp-api-videos-prod
+      branch: ${{ github.ref_name }}
+    secrets:
+      ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
+      ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
+      ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
+
+  api-gateway:
+    needs: [api-journeys, api-users, api-languages, api-videos]
+    uses: JesusFilm/core/.github/workflows/api-gateway-prod-worker.yml@main
+    with:
+      name: api-gateway
+      repository: jfp-api-gateway-prod
+      branch: ${{ github.ref_name }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}

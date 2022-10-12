@@ -20,7 +20,7 @@ spec:
       nodeSelector:
         type: api
       containers:
-        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-gateway:main
+        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-gateway-prod:latest
           imagePullPolicy: IfNotPresent
           name: jfp-api-gateway
           ports:
