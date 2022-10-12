@@ -32,9 +32,13 @@ locals {
   }
 }
 
+data "aws_ssm_parameter" "doppler_api_gateway_stage_token" {
+  name = "/terraform/prd/DOPPLER_API_GATEWAY_STAGE_TOKEN"
+}
+
 module "api-gateway-stage" {
   source        = "./apps/api-gateway/infrastructure"
   ecs_config    = local.public_stage_ecs_config
   env           = "stage"
-  doppler_token = var.doppler_api_gateway_stage_token
+  doppler_token = data.aws_ssm_parameter.doppler_api_gateway_stage_token.value
 }
