@@ -40,7 +40,7 @@ describe('ButtonClickEventResolver', () => {
         ...input,
         __typename: 'ButtonClickEvent',
         userId: 'userId',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })

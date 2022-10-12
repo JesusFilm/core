@@ -24,7 +24,7 @@ export class RadioQuestionSubmissionEventResolver {
       ...input,
       __typename: 'RadioQuestionSubmissionEvent',
       userId,
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }

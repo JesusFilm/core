@@ -33,7 +33,7 @@ export class VideoStartEventResolver {
       ...input,
       __typename: 'VideoStartEvent',
       userId,
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -50,7 +50,7 @@ export class VideoPlayEventResolver {
       ...input,
       __typename: 'VideoPlayEvent',
       userId,
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -67,7 +67,7 @@ export class VideoPuaseEventResolver {
       ...input,
       __typename: 'VideoPauseEvent',
       userId,
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -84,7 +84,7 @@ export class VideoCompleteEventResolver {
       ...input,
       __typename: 'VideoCompleteEvent',
       userId,
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -101,7 +101,7 @@ export class VideoExpandEventResolver {
       ...input,
       __typename: 'VideoExpandEvent',
       userId,
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -118,7 +118,7 @@ export class VideoCollapseEventResolver {
       ...input,
       __typename: 'VideoCollapseEvent',
       userId,
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -135,7 +135,7 @@ export class VideoProgressEventResolver {
       ...input,
       __typename: 'VideoProgressEvent',
       userId,
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }

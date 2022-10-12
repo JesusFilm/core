@@ -47,7 +47,7 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoStartEvent',
         userId: 'userid',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })
@@ -80,7 +80,7 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoPlayEvent',
         userId: 'userid',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })
@@ -113,7 +113,7 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoPauseEvent',
         userId: 'userid',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })
@@ -148,7 +148,7 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoCompleteEvent',
         userId: 'userid',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })
@@ -181,7 +181,7 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoExpandEvent',
         userId: 'userid',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })
@@ -216,7 +216,7 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoCollapseEvent',
         userId: 'userid',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })
@@ -252,7 +252,7 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoProgressEvent',
         userId: 'userid',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })

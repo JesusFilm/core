@@ -41,7 +41,7 @@ describe('StepViewEventResolver', () => {
         ...input,
         __typename: 'StepViewEvent',
         userId: 'userId',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })

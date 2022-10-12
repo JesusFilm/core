@@ -23,7 +23,7 @@ export class SignUpSubmissionEventResolver {
       ...input,
       __typename: 'SignUpSubmissionEvent',
       userId,
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }

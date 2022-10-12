@@ -68,7 +68,7 @@ describe('TemplateResolver', () => {
         __typename: 'TemplateLibraryViewEvent',
         id: '1',
         userId: 'userId',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })
@@ -85,7 +85,7 @@ describe('TemplateResolver', () => {
         __typename: 'TemplateUseEvent',
         id: '1',
         userId: 'userId',
-        timeStamp: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
         journeyId: 'journeyId'
       })
     })
@@ -106,7 +106,7 @@ describe('TemplateResolver', () => {
         __typename: 'TemplatePreviewEvent',
         id: '1',
         userId: 'userId',
-        timeStamp: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
         journeyId: 'journeyId'
       })
     })

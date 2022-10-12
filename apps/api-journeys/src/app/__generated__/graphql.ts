@@ -478,7 +478,7 @@ export interface Block {
 export interface Event {
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
 }
 
 export class NavigateAction implements Action {
@@ -711,7 +711,7 @@ export class ButtonClickEvent implements Event {
     __typename?: 'ButtonClickEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     block?: Nullable<ButtonBlock>;
 }
 
@@ -719,7 +719,7 @@ export class JourneyViewEvent implements Event {
     __typename?: 'JourneyViewEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     journey?: Nullable<Journey>;
 }
 
@@ -727,7 +727,7 @@ export class RadioQuestionSubmissionEvent implements Event {
     __typename?: 'RadioQuestionSubmissionEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     radioOptionBlockId: string;
     block?: Nullable<RadioQuestionBlock>;
 }
@@ -736,7 +736,7 @@ export class SignUpSubmissionEvent implements Event {
     __typename?: 'SignUpSubmissionEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     name: string;
     email: string;
     block?: Nullable<SignUpBlock>;
@@ -746,7 +746,7 @@ export class StepViewEvent implements Event {
     __typename?: 'StepViewEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     block?: Nullable<StepBlock>;
 }
 
@@ -754,14 +754,14 @@ export class TemplateLibraryViewEvent implements Event {
     __typename?: 'TemplateLibraryViewEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
 }
 
 export class TemplateUseEvent implements Event {
     __typename?: 'TemplateUseEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     journeyId: string;
 }
 
@@ -769,7 +769,7 @@ export class TemplatePreviewEvent implements Event {
     __typename?: 'TemplatePreviewEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     journeyId: string;
 }
 
@@ -777,7 +777,7 @@ export class TextResponseSubmissionEvent implements Event {
     __typename?: 'TextResponseSubmissionEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     value: string;
     block?: Nullable<TextResponseBlock>;
 }
@@ -786,7 +786,7 @@ export class VideoStartEvent implements Event {
     __typename?: 'VideoStartEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -795,7 +795,7 @@ export class VideoPlayEvent implements Event {
     __typename?: 'VideoPlayEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -804,7 +804,7 @@ export class VideoPauseEvent implements Event {
     __typename?: 'VideoPauseEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -813,7 +813,7 @@ export class VideoCompleteEvent implements Event {
     __typename?: 'VideoCompleteEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -822,7 +822,7 @@ export class VideoExpandEvent implements Event {
     __typename?: 'VideoExpandEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -831,7 +831,7 @@ export class VideoCollapseEvent implements Event {
     __typename?: 'VideoCollapseEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -840,7 +840,7 @@ export class VideoProgressEvent implements Event {
     __typename?: 'VideoProgressEvent';
     id: string;
     userId: string;
-    timeStamp: DateTime;
+    createdAt: DateTime;
     position?: Nullable<number>;
     progress: number;
     block?: Nullable<VideoBlock>;

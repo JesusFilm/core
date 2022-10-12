@@ -23,7 +23,7 @@ export class TextResponseSubmissionEventResolver {
       ...input,
       __typename: 'TextResponseSubmissionEvent',
       userId,
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }

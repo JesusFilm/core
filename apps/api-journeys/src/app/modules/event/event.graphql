@@ -1,5 +1,5 @@
 interface Event {
   id: ID!
   userId: ID!
-  timeStamp: DateTime!
+  createdAt: DateTime!
 }

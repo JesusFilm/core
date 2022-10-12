@@ -1,7 +1,7 @@
 type TemplateLibraryViewEvent implements Event {
   id: ID!
   userId: ID!
-  timeStamp: DateTime!
+  createdAt: DateTime!
 }
 
 input TemplateUseEventInput {
@@ -11,7 +11,7 @@ input TemplateUseEventInput {
 type TemplateUseEvent implements Event {
   id: ID!
   userId: ID!
-  timeStamp: DateTime!
+  createdAt: DateTime!
   journeyId: ID!
 }
 
@@ -22,7 +22,7 @@ input TemplatePreviewEventInput {
 type TemplatePreviewEvent implements Event {
   id: ID!
   userId: ID!
-  timeStamp: DateTime!
+  createdAt: DateTime!
   journeyId: ID!
 }
 

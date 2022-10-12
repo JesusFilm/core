@@ -23,7 +23,7 @@ export class ButtonClickEventResolver {
       ...input,
       __typename: 'ButtonClickEvent',
       userId,
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }

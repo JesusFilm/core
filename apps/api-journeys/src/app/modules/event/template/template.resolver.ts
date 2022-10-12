@@ -24,7 +24,7 @@ export class TemplateLibraryViewEventResolver {
       __typename: 'TemplateLibraryViewEvent',
       userId,
       id: uuidv4(),
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -43,7 +43,7 @@ export class TemplateUseEventResolver {
       __typename: 'TemplateUseEvent',
       userId,
       id: uuidv4(),
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -62,7 +62,7 @@ export class TemplatePreviewEventResolver {
       __typename: 'TemplatePreviewEvent',
       userId,
       id: uuidv4(),
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }

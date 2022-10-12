@@ -9,7 +9,7 @@ input ButtonClickEventCreateInput {
 type ButtonClickEvent implements Event {
   id: ID!
   userId: ID!
-  timeStamp: DateTime!
+  createdAt: DateTime!
   block: ButtonBlock
 }
 

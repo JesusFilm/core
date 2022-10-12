@@ -23,7 +23,7 @@ export class StepViewEventResolver {
       ...input,
       __typename: 'StepViewEvent',
       userId,
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }

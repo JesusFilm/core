@@ -44,7 +44,7 @@ describe('TextResponseEventResolver', () => {
         ...input,
         __typename: 'TextResponseSubmissionEvent',
         userId: 'userId',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })

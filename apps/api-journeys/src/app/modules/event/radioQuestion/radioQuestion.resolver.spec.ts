@@ -44,7 +44,7 @@ describe('RadioQuestionSubmissionEventResolver', () => {
         ...input,
         __typename: 'RadioQuestionSubmissionEvent',
         userId: 'userId',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })

@@ -40,7 +40,7 @@ describe('JourneyViewEventResolver', () => {
         ...input,
         __typename: 'JourneyViewEvent',
         userId: 'userId',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })

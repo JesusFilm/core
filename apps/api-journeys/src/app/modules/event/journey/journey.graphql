@@ -9,7 +9,7 @@ input JourneyViewEventCreateInput {
 type JourneyViewEvent implements Event {
   id: ID!
   userId: ID!
-  timeStamp: DateTime!
+  createdAt: DateTime!
   journey: Journey
 }
 

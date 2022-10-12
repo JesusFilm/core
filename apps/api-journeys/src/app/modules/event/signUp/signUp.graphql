@@ -11,7 +11,7 @@ input SignUpSubmissionEventCreateInput {
 type SignUpSubmissionEvent implements Event {
   id: ID!
   userId: ID!
-  timeStamp: DateTime!
+  createdAt: DateTime!
   name: String!
   email: String!
   block: SignUpBlock

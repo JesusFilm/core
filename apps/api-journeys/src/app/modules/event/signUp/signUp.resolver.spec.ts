@@ -45,7 +45,7 @@ describe('SignUpEventResolver', () => {
         ...input,
         __typename: 'SignUpSubmissionEvent',
         userId: 'userId',
-        timeStamp: new Date().toISOString()
+        createdAt: new Date().toISOString()
       })
     })
   })

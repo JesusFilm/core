@@ -23,7 +23,7 @@ export class JourneyViewEventResolver {
       ...input,
       __typename: 'JourneyViewEvent',
       userId,
-      timeStamp: new Date().toISOString()
+      createdAt: new Date().toISOString()
     })
   }
 }
