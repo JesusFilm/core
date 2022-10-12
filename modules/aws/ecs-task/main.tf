@@ -2,6 +2,18 @@ resource "aws_cloudwatch_log_group" "ecs_cw_log_group" {
   name = "${var.service_config.name}-${var.env}-logs"
 }
 
+resource "aws_ssm_parameter" "parameters" {
+  for_each = toset(var.environment_variables)
+
+  name      = "/ecs/${var.service_config.name}/${var.env}/${each.key}"
+  type      = "SecureString"
+  value     = data.doppler_secrets.app.map[each.key]
+  overwrite = true
+  tags = {
+    name = each.key
+  }
+}
+
 #Create task definitions for app services
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   family                   = "jfp-${var.service_config.name}-${var.env}"
@@ -24,7 +36,12 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           hostPort : var.service_config.host_port
         }
       ]
-
+      secrets = [
+        for param in aws_ssm_parameter.parameters : {
+          name      = param.tags.name
+          valueFrom = param.arn
+        }
+      ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {

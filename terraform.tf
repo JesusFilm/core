@@ -12,6 +12,9 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 3.74"
     }
+    doppler = {
+      source = "DopplerHQ/doppler"
+    }
   }
   required_version = ">= 1.0.9"
 }

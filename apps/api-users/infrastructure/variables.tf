@@ -29,3 +29,7 @@ variable "env" {
   type    = string
   default = "prod"
 }
+
+variable "doppler_token" {
+  type = string
+}

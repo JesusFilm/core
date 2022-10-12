@@ -1,5 +1,20 @@
 locals {
   port = 4001
+  environment_variables = [
+    "DATABASE_DB",
+    "DATABASE_PASS",
+    "DATABASE_URL",
+    "DATABASE_USER",
+    "FIREBASE_API_KEY",
+    "POWER_BI_CLIENT_ID",
+    "POWER_BI_CLIENT_SECRET",
+    "POWER_BI_JOURNEYS_MULTIPLE_FULL_REPORT_ID",
+    "POWER_BI_JOURNEYS_MULTIPLE_SUMMARY_REPORT_ID",
+    "POWER_BI_JOURNEYS_SINGLE_FULL_REPORT_ID",
+    "POWER_BI_JOURNEYS_SINGLE_SUMMARY_REPORT_ID",
+    "POWER_BI_TENANT_ID",
+    "POWER_BI_WORKSPACE_ID"
+  ]
   service_config = {
     name           = "api-journeys"
     is_public      = false

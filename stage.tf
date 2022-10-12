@@ -33,7 +33,8 @@ locals {
 }
 
 module "api-gateway-stage" {
-  source     = "./apps/api-gateway/infrastructure"
-  ecs_config = local.public_stage_ecs_config
-  env        = "stage"
+  source        = "./apps/api-gateway/infrastructure"
+  ecs_config    = local.public_stage_ecs_config
+  env           = "stage"
+  doppler_token = var.doppler_api_gateway_stage_token
 }

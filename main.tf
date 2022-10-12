@@ -67,26 +67,31 @@ module "atlantis" {
 }
 
 module "api-gateway" {
-  source     = "./apps/api-gateway/infrastructure"
-  ecs_config = local.public_ecs_config
+  source        = "./apps/api-gateway/infrastructure"
+  ecs_config    = local.public_ecs_config
+  doppler_token = var.doppler_api_gateway_prod_token
 }
 
 module "api-journeys" {
-  source     = "./apps/api-journeys/infrastructure"
-  ecs_config = local.internal_ecs_config
+  source        = "./apps/api-journeys/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  doppler_token = var.doppler_api_journeys_prod_token
 }
 
 module "api-languages" {
-  source     = "./apps/api-languages/infrastructure"
-  ecs_config = local.internal_ecs_config
+  source        = "./apps/api-languages/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  doppler_token = var.doppler_api_languages_prod_token
 }
 
 module "api-users" {
-  source     = "./apps/api-users/infrastructure"
-  ecs_config = local.internal_ecs_config
+  source        = "./apps/api-users/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  doppler_token = var.doppler_api_users_prod_token
 }
 
 module "api-videos" {
-  source     = "./apps/api-videos/infrastructure"
-  ecs_config = local.internal_ecs_config
+  source        = "./apps/api-videos/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  doppler_token = var.doppler_api_videos_prod_token
 }

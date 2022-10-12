@@ -1,5 +1,14 @@
 locals {
   port = 4004
+  environment_variables = [
+    "DATABASE_DB",
+    "DATABASE_PASS",
+    "DATABASE_URL",
+    "DATABASE_USER",
+    "ARCLIGHT_API_KEY",
+    "ARCLIGHT_V3_URL",
+    "CROWDIN_API_KEY"
+  ]
   service_config = {
     name           = "api-videos"
     is_public      = false
