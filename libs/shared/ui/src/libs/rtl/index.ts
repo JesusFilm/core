@@ -1,0 +1,1 @@
+export { isRtl } from './rtl'

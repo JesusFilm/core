@@ -18,6 +18,8 @@ export interface GetTemplate_template_language_name {
 export interface GetTemplate_template_language {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
+  iso3: string | null;
   name: GetTemplate_template_language_name[];
 }
 
