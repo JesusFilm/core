@@ -40,6 +40,13 @@ module "atlantis" {
   version = "~> 3.0"
 
   name = "atlantis"
+  # user needed because of https://github.com/runatlantis/atlantis/issues/2221
+  # this is atlantis user per the official docker image
+  user = "100:1000"
+
+  # ephemeral storage, needed because the EFS storage
+  # gets created with root-owned directories
+  enable_ephemeral_storage = true
 
   # VPC
   vpc_id             = module.prod.vpc.id

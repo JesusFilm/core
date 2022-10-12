@@ -4,6 +4,7 @@
 provider "registry.terraform.io/dopplerhq/doppler" {
   version = "1.1.2"
   hashes = [
+    "h1:BK15KXBY7GHW1AVpIdKtXSIMV8Ufh3UspSwdVQ/gMBo=",
     "h1:LF0I5N2zhVAJ03/0bg0p9rzbXHZ+9YfLzq77ZFjE7dQ=",
     "zh:19dfd8f392c0e685b67ca834975d8252f515a39c3dff363c7753c8893d3b44c2",
     "zh:24096d9c988444cf14fbb6013c33648c4ae6065fcdbd1a3c89cc237da7564c4d",
