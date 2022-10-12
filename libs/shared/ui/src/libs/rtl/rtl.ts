@@ -1,4 +1,5 @@
-export function isRtl(locale: string): boolean {
+// Use app specific RTL getter (eg getJourneyRTL) when calling from apps
+export function getLocaleRTL(locale: string): boolean {
   // locale should be bcp47, else iso3
   const formattedLocale = locale.split('-')[0].toLowerCase()
 
