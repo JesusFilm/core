@@ -3,12 +3,15 @@ import { Story, Meta } from '@storybook/react'
 import Box from '@mui/material/Box'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import {
   useTheme,
   PaletteColor,
   PaletteOptions,
   SimplePaletteColorOptions,
-  Breakpoint
+  Breakpoint,
+  styled
 } from '@mui/material/styles'
 
 import { simpleComponentConfig } from '../../simpleComponentConfig'
@@ -403,6 +406,18 @@ Viewport.parameters = {
   }
 }
 
+export const StyledButton = styled(Button)(({ theme }) => ({
+  fontFamily: theme.typography.body2.fontFamily,
+  fontSize: theme.typography.body2.fontSize,
+  fontWeight: 600,
+  lineHeight: theme.typography.body2.lineHeight,
+  width: 200,
+  borderRadius: 10,
+  textAlign: 'start',
+  justifyContent: 'flex-start',
+  padding: '14px 10px 14px 14px'
+}))
+
 const RightToLeftTemplate: Story = () => {
   return (
     <Box
@@ -410,6 +425,7 @@ const RightToLeftTemplate: Story = () => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
+        height: 600,
         m: '20%'
       }}
     >
@@ -436,6 +452,16 @@ const RightToLeftTemplate: Story = () => {
         MUI Component - Text Field
       </Typography>
       <TextField label="Filled" variant="filled" />
+      <Typography variant="body1" gutterBottom sx={{ mt: 2 }}>
+        MUI Styled Component - Styled Button
+      </Typography>
+      <StyledButton
+        variant="contained"
+        fullWidth
+        startIcon={<CheckCircleIcon />}
+      >
+        Styled Button
+      </StyledButton>
     </Box>
   )
 }
