@@ -109,4 +109,13 @@ Default.args = {
   parentBlockId: 'Step1'
 }
 
+export const RTL = Template.bind({})
+RTL.args = {
+  id: 'RTL',
+  children,
+  parentOrder: 1,
+  parentBlockId: 'Step1'
+}
+RTL.parameters = { rtl: true }
+
 export default Demo as Meta

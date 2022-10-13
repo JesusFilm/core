@@ -47,4 +47,13 @@ Disabled.args = {
   disabled: true
 }
 
+export const RTL = Template.bind({})
+RTL.args = {
+  id: 'NestedOptions',
+  label: 'Chat Privately',
+  selected: false,
+  disabled: false
+}
+RTL.parameters = { rtl: true }
+
 export default Demo as Meta
