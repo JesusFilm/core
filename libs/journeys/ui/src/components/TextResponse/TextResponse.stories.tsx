@@ -158,4 +158,27 @@ Loading.play = () => {
 }
 Loading.parameters = { chromatic: { disableSnapshot: true } }
 
+export const RTL = Template.bind({})
+RTL.args = {
+  ...Default.args,
+  hint: 'Optional Hint text',
+  minRows: 4,
+  label: 'Custom label',
+  submitIconId: 'icon',
+  submitLabel: 'Custom label',
+  children: [
+    {
+      id: 'icon',
+      __typename: 'IconBlock',
+      parentBlockId: 'parent',
+      parentOrder: 0,
+      iconName: IconName.SendRounded,
+      iconSize: null,
+      iconColor: null,
+      children: []
+    }
+  ]
+}
+RTL.parameters = { rtl: true }
+
 export default Demo as Meta
