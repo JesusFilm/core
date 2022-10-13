@@ -53,8 +53,6 @@ export const ThemeDecorator = ({
   children,
   rtl = false
 }: ThemeDecoratorProps): ReactElement => {
-  console.log('window', window.document, document)
-  document.dir = rtl ? 'rtl' : ''
   const storybookEmotionCache = createEmotionCache({ rtl, prepend: false })
 
   switch (mode) {
