@@ -2,10 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { NextRouter, useRouter } from 'next/router'
 import { defaultJourney, publishedJourney } from '../data'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
-import { GET_ROLE } from './Menu'
+import { APPLY_TEMPLATE, GET_ROLE } from './Menu'
 import { Menu, JOURNEY_PUBLISH } from '.'
 
 Object.assign(navigator, {
@@ -14,6 +14,13 @@ Object.assign(navigator, {
   }
 })
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 describe('JourneyView/Menu', () => {
   const originalEnv = process.env
 
@@ -21,11 +28,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -39,11 +44,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -59,11 +62,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: publishedJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: publishedJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -103,11 +104,9 @@ describe('JourneyView/Menu', () => {
             }
           ]}
         >
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -121,8 +120,7 @@ describe('JourneyView/Menu', () => {
     expect(menu).not.toHaveAttribute('aria-expanded')
   })
 
-  // TODO: Add when template list displayed
-  it.skip('should publish template if user is publisher', async () => {
+  it('should publish template if user is publisher', async () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider
@@ -160,23 +158,23 @@ describe('JourneyView/Menu', () => {
             }
           ]}
         >
-          <FlagsProvider>
-            <JourneyProvider
-              value={{
-                journey: { ...defaultJourney, template: true },
-                admin: true
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider
+            value={{
+              journey: { ...defaultJourney, template: true },
+              admin: true
+            }}
+          >
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
 
     const menu = getByRole('button')
     fireEvent.click(menu)
-    fireEvent.click(getByRole('menuitem', { name: 'Publish' }))
+    await waitFor(() =>
+      fireEvent.click(getByRole('menuitem', { name: 'Publish' }))
+    )
     await waitFor(() => {
       expect(getByText('Template Published')).toBeInTheDocument()
     })
@@ -187,11 +185,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: publishedJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: publishedJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -224,11 +220,9 @@ describe('JourneyView/Menu', () => {
             }
           ]}
         >
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -240,15 +234,105 @@ describe('JourneyView/Menu', () => {
     )
   })
 
+  it('should convert template to journey on Use Template click', async () => {
+    const push = jest.fn()
+    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
+    const result = jest.fn(() => {
+      return {
+        data: {
+          journeyDuplicate: {
+            id: 'duplicatedJourneyId'
+          }
+        }
+      }
+    })
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: APPLY_TEMPLATE,
+                variables: {
+                  id: defaultJourney.id
+                }
+              },
+              result
+            }
+          ]}
+        >
+          <JourneyProvider
+            value={{
+              journey: { ...defaultJourney, template: true },
+              admin: true
+            }}
+          >
+            <Menu />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    fireEvent.click(getByRole('menuitem', { name: 'Use Template' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith(
+        '/journeys/duplicatedJourneyId',
+        undefined,
+        { shallow: true }
+      )
+    })
+  })
+
+  it('should handle edit journey title and description if user is publisher', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_ROLE
+              },
+              result: {
+                data: {
+                  getUserRole: {
+                    id: 'userRoleId',
+                    userId: '1',
+                    roles: [Role.publisher]
+                  }
+                }
+              }
+            }
+          ]}
+        >
+          <JourneyProvider
+            value={{
+              journey: { ...defaultJourney, template: true },
+              admin: true
+            }}
+          >
+            <Menu />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const menu = getByRole('button')
+    fireEvent.click(menu)
+    await waitFor(() => {
+      fireEvent.click(getByRole('menuitem', { name: 'Description' }))
+    })
+    expect(getByRole('dialog')).toBeInTheDocument()
+    expect(menu).not.toHaveAttribute('aria-expanded')
+  })
+
   it('should handle edit journey title', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -264,11 +348,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -284,11 +366,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -301,15 +381,13 @@ describe('JourneyView/Menu', () => {
     expect(menu).not.toHaveAttribute('aria-expanded')
   })
 
-  it('should handle edit cards', () => {
+  it('should handle edit cards for journey', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -320,6 +398,49 @@ describe('JourneyView/Menu', () => {
       'href',
       '/journeys/journey-id/edit'
     )
+  })
+
+  it('should handle edit cards for template', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_ROLE
+              },
+              result: {
+                data: {
+                  getUserRole: {
+                    id: 'userRoleId',
+                    userId: '1',
+                    roles: [Role.publisher]
+                  }
+                }
+              }
+            }
+          ]}
+        >
+          <JourneyProvider
+            value={{
+              journey: { ...defaultJourney, template: true },
+              admin: true
+            }}
+          >
+            <Menu />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const menu = getByRole('button')
+    fireEvent.click(menu)
+    await waitFor(() => {
+      expect(getByRole('menuitem', { name: 'Edit Cards' })).toHaveAttribute(
+        'href',
+        '/publisher/journey-id/edit'
+      )
+    })
   })
 
   it('should handle copy url in development', async () => {
@@ -334,11 +455,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -369,11 +488,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -396,11 +513,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider flags={{ reports: true }}>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -411,23 +526,5 @@ describe('JourneyView/Menu', () => {
       'href',
       '/journeys/journey-id/reports'
     )
-  })
-
-  it('should hide reports', () => {
-    const { getByRole, queryByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[]}>
-          <FlagsProvider flags={{ reports: false }}>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const menu = getByRole('button')
-    fireEvent.click(menu)
-    expect(queryByRole('menuitem', { name: 'Report' })).toBeNull()
   })
 })

@@ -4,20 +4,18 @@ terraform {
     bucket         = "jfp-terraform-state"
     dynamodb_table = "jfp-terraform-state-lock"
     region         = "us-east-2"
-    key            = "terraform/terraform.tfstate"
+    key            = "terraform.tfstate"
   }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.14"
+      version = "~> 3.74"
     }
   }
-  required_version = ">= 0.14.3"
+  required_version = ">= 1.0.9"
 }
 
 provider "aws" {
   region = "us-east-2"
-  default_tags {
-    tags = local.tags
-  }
 }

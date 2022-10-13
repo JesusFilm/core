@@ -5,7 +5,7 @@ import MuiTextField, {
   OutlinedTextFieldProps as MuiTextFieldProps
 } from '@mui/material/TextField'
 
-export interface TextFieldProps
+interface TextFieldProps
   extends Omit<MuiTextFieldProps, 'variant' | 'error' | 'fullWidth'> {}
 
 // Use as subcomponent of form blocks (eg SignUp, TextResponse)
@@ -17,6 +17,7 @@ export function TextField({
   const [formikFieldProps, meta] = useField(name)
 
   const hasError = meta.error !== undefined && meta.touched
+  const hint = helperText != null && helperText !== '' ? helperText : ' '
 
   return (
     <MuiTextField
@@ -27,7 +28,7 @@ export function TextField({
       // TODO: Switch to filled & clarify styling in cooldown
       variant="outlined"
       error={hasError}
-      helperText={hasError ? meta.error : helperText ?? ' '}
+      helperText={hasError ? meta.error : hint}
     />
   )
 }

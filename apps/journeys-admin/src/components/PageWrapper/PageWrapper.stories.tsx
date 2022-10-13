@@ -5,6 +5,8 @@ import { noop } from 'lodash'
 import { MockedProvider } from '@apollo/client/testing'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
+import { Role } from '../../../__generated__/globalTypes'
+import { GET_USER_ROLE } from '../JourneyView/JourneyView'
 import { PageWrapperProps } from './PageWrapper'
 import { GET_ME } from './NavigationDrawer/NavigationDrawer'
 import { PageWrapper } from '.'
@@ -37,10 +39,23 @@ const Template: Story = ({ ...args }) => (
             }
           }
         }
+      },
+      {
+        request: {
+          query: GET_USER_ROLE
+        },
+        result: {
+          data: {
+            getUserRole: {
+              id: 'userId',
+              roles: [Role.publisher]
+            }
+          }
+        }
       }
     ]}
   >
-    <FlagsProvider flags={{ reports: args.reports }}>
+    <FlagsProvider flags={{ templates: args.templates }}>
       <PageWrapper {...(args.props as unknown as PageWrapperProps)} />
     </FlagsProvider>
   </MockedProvider>
@@ -48,20 +63,7 @@ const Template: Story = ({ ...args }) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  props: { title: 'Active Journeys' },
-  reports: true
-}
-
-export const Reports = Template.bind({})
-Reports.args = {
-  props: { title: 'Reports' },
-  reports: true
-}
-
-export const ReportsOff = Template.bind({})
-ReportsOff.args = {
-  props: { title: 'Journeys' },
-  reports: false
+  props: { title: 'Active Journeys' }
 }
 
 export const Complete = Template.bind({})
@@ -82,7 +84,7 @@ Complete.args = {
       </IconButton>
     )
   },
-  reports: true
+  templates: true
 }
 
 export default PageWrapperStory as Meta

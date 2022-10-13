@@ -6,6 +6,7 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
@@ -16,13 +17,14 @@ import { MemoizedDynamicReport } from '../src/components/DynamicPowerBiReport'
 import { JourneysReportType } from '../__generated__/globalTypes'
 
 function ReportsPage(): ReactElement {
+  const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
 
   return (
     <>
       <NextSeo title={t('Reports')} />
-      <PageWrapper title={t('Reports')} authUser={AuthUser}>
+      <PageWrapper title={t('Reports')} authUser={AuthUser} router={router}>
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
           <MemoizedDynamicReport reportType={JourneysReportType.multipleFull} />
         </Box>
@@ -42,14 +44,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const launchDarklyClient = await getLaunchDarklyClient(ldUser)
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
     [key: string]: boolean | undefined
-  }
-  if (flags.reports !== true) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: '/'
-      }
-    }
   }
   return {
     props: {

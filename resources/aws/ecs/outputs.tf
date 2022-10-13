@@ -1,3 +1,0 @@
-output "aws_service_role_for_application_auto_scaling_ecs_service_role_arn" {
-  value = aws_iam_role.aws_service_role_for_application_auto_scaling_ecs_service_role.arn
-}
