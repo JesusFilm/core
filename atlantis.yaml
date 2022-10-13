@@ -4,27 +4,7 @@ delete_source_branch_on_merge: true
 parallel_plan: true
 parallel_apply: true
 projects:
-  - name: core
-    dir: './infrastructure'
-    workspace: default
-    autoplan:
-      when_modified: ['**/*.tf']
-      enabled: true
-  - name: infrastructure-resources-atlantis
-    dir: './infrastructure/resources/atlantis'
-    workspace: default
-    autoplan:
-      when_modified: ['./infrastructure/resources/atlantis/*.tf']
-      enabled: true
-  - name: infrastructure-resources-doppler
-    dir: './infrastructure/resources/doppler'
-    workspace: default
-    autoplan:
-      when_modified: ['./infrastructure/resources/doppler/*.tf']
-      enabled: true
-  - name: infrastructure-resources-terraform
-    dir: './infrastructure/resources/terraform'
-    workspace: default
-    autoplan:
-      when_modified: ['./infrastructure/resources/terraform/*.tf']
-      enabled: true
+  - dir: './infrastructure'
+  - dir: './infrastructure/resources/atlantis'
+  - dir: './infrastructure/resources/doppler'
+  - dir: './infrastructure/resources/terraform'
