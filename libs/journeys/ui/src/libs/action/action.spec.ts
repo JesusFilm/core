@@ -46,7 +46,7 @@ describe('action', () => {
       expect(router.push).toHaveBeenCalledWith('/journey-slug')
     })
 
-    it('should navigate with page reload on journey with different RTL on NavigateToJourneyAction', () => {
+    it('should navigate on journey with different RTL on NavigateToJourneyAction', () => {
       window.open = jest.fn()
 
       handleAction(router, {
@@ -56,7 +56,7 @@ describe('action', () => {
           __typename: 'Journey',
           id: 'journey-id',
           slug: 'journey-slug',
-          language: { __typename: 'Language', bcp47: 'en' }
+          language: { __typename: 'Language', bcp47: 'ar' }
         },
         gtmEventName: null
       })

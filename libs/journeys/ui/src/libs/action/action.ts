@@ -16,11 +16,12 @@ export function handleAction(
     case 'NavigateToJourneyAction':
       if (action.journey != null) {
         const currentRTL = document.dir
-        const newRTL = getJourneyRTL(action.journey as Journey) ? 'rtl' : 'ltr'
+        const newRTL = getJourneyRTL(action.journey as Journey) ? 'rtl' : ''
 
         if (newRTL === currentRTL) {
           void router.push(`/${action.journey.slug}`)
         } else {
+          // window.open forces document reload to get correct dir
           window.open(`/${action.journey.slug}`, '_self')
         }
       }

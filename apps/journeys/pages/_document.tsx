@@ -12,7 +12,7 @@ export default class MyDocument extends Document<{
 }> {
   render(): ReactElement {
     return (
-      <Html lang="en" dir={this.props.isRTL ? 'rtl' : 'ltr'}>
+      <Html lang="en" dir={this.props.isRTL ? 'rtl' : ''}>
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
