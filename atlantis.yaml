@@ -1,8 +1,6 @@
 version: 3
 automerge: true
 delete_source_branch_on_merge: true
-parallel_plan: true
-parallel_apply: true
 projects:
   - dir: 'infrastructure'
   - dir: 'infrastructure/resources/atlantis'
