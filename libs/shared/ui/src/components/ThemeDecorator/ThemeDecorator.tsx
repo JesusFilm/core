@@ -1,6 +1,5 @@
 import { Parameters } from '@storybook/react'
 import { ReactElement, ReactNode } from 'react'
-import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { createEmotionCache } from '../../../src/libs/createEmotionCache'
 import { ThemeProvider } from '../../components/ThemeProvider'
@@ -16,12 +15,8 @@ const themeMode = globalTypes.theme.toolbar.items
 interface ThemeDecoratorProps extends Pick<Parameters, 'layout'> {
   mode: typeof themeMode[number]
   children: ReactNode
-  emotionCache?: EmotionCache
   rtl?: boolean
 }
-
-const clientSideEmotionCache = (rtl?: boolean): EmotionCache =>
-  createEmotionCache(rtl)
 
 const ThemeContainer = ({
   mode,
@@ -56,9 +51,12 @@ export const ThemeDecorator = ({
   mode,
   layout,
   children,
-  rtl = false,
-  emotionCache = clientSideEmotionCache(rtl)
+  rtl = false
 }: ThemeDecoratorProps): ReactElement => {
+  console.log('window', window.document, document)
+  document.dir = rtl ? 'rtl' : ''
+  const storybookEmotionCache = createEmotionCache({ rtl, prepend: false })
+
   switch (mode) {
     case 'all':
       return (
@@ -72,7 +70,7 @@ export const ThemeDecorator = ({
           }}
           dir={rtl ? 'rtl' : 'ltr'}
         >
-          <CacheProvider value={emotionCache}>
+          <CacheProvider value={storybookEmotionCache}>
             <ThemeContainer mode="light" layout={layout} rtl={rtl}>
               {children}
             </ThemeContainer>
@@ -90,7 +88,7 @@ export const ThemeDecorator = ({
           }}
           dir={rtl ? 'rtl' : 'ltr'}
         >
-          <CacheProvider value={emotionCache}>
+          <CacheProvider value={storybookEmotionCache}>
             <ThemeProvider
               themeName={ThemeName.base}
               themeMode={ThemeMode[mode as ThemeMode]}
