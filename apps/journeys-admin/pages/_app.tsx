@@ -19,7 +19,7 @@ import i18nConfig from '../next-i18next.config'
 
 // your _app component
 initAuth()
-const clientSideEmotionCache = createEmotionCache()
+const clientSideEmotionCache = createEmotionCache({})
 
 function JourneysAdminApp({
   Component,
