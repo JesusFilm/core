@@ -4,7 +4,7 @@ delete_source_branch_on_merge: true
 parallel_plan: true
 parallel_apply: true
 projects:
-  - dir: './infrastructure'
-  - dir: './infrastructure/resources/atlantis'
-  - dir: './infrastructure/resources/doppler'
-  - dir: './infrastructure/resources/terraform'
+  - dir: 'infrastructure'
+  - dir: 'infrastructure/resources/atlantis'
+  - dir: 'infrastructure/resources/doppler'
+  - dir: 'infrastructure/resources/terraform'
