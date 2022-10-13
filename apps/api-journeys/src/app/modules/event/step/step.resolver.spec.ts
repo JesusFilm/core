@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
 import { StepViewEventResolver, StepNextEventResolver } from './step.resolver'
 
-describe('StepViewEventResolver', () => {
+describe('StepResolver', () => {
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
@@ -19,34 +19,32 @@ describe('StepViewEventResolver', () => {
     })
   }
 
-  describe('stepResolver', () => {
-    describe('stepViewEventCreate', () => {
-      let resolver: StepViewEventResolver
+  describe('stepViewEventCreate', () => {
+    let resolver: StepViewEventResolver
 
-      beforeEach(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-          providers: [StepViewEventResolver, eventService]
-        }).compile()
-        resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
-      })
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [StepViewEventResolver, eventService]
+      }).compile()
+      resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
+    })
 
-      it('returns StepViewEvent', async () => {
-        const input = {
-          id: '1',
-          blockId: 'block.id',
-          previousBlockId: 'previousBlock.id',
-          journeyId: 'journey.id'
-        }
+    it('returns StepViewEvent', async () => {
+      const input = {
+        id: '1',
+        blockId: 'block.id',
+        previousBlockId: 'previousBlock.id',
+        journeyId: 'journey.id',
+        createdAt: new Date().toISOString()
+      }
 
-        expect(await resolver.stepViewEventCreate('userId', input)).toEqual({
-          ...input,
-          __typename: 'StepViewEvent',
-          userId: 'userId'
-        })
+      expect(await resolver.stepViewEventCreate('userId', input)).toEqual({
+        ...input,
+        __typename: 'StepViewEvent',
+        userId: 'userId'
       })
     })
   })
-
   describe('stepNextEventCreate', () => {
     let resolver: StepNextEventResolver
 
@@ -66,7 +64,7 @@ describe('StepViewEventResolver', () => {
 
       expect(await resolver.stepNextEventCreate('userId', input)).toEqual({
         ...input,
-        __typename: 'StepViewEvent',
+        __typename: 'StepNextEvent',
         userId: 'userId',
         createdAt: new Date().toISOString()
       })

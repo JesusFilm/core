@@ -760,6 +760,7 @@ export class StepNextEvent implements Event {
     __typename?: 'StepNextEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     block?: Nullable<StepBlock>;
     nextStepId?: Nullable<string>;
 }

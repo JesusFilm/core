@@ -769,6 +769,7 @@ input StepBlockUpdateInput {
 
 type StepNextEvent implements Event {
   block: StepBlock
+  createdAt: DateTime!
   id: ID!
   nextStepId: ID
   userId: ID!

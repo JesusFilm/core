@@ -810,6 +810,7 @@ input StepNextEventCreateInput {
 type StepNextEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   block: StepBlock
   nextStepId: ID
 }

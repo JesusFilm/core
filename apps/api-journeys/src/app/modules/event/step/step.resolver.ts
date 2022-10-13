@@ -42,8 +42,8 @@ export class StepNextEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'StepNextEvent',
-      userId
-      // createdAt: new Date().toISOString()
+      userId,
+      createdAt: new Date().toISOString()
     })
   }
 }
