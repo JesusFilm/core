@@ -122,5 +122,8 @@ RTL.args = {
   journey: { ...defaultJourney, language: rtlLanguage },
   blocks: basic
 }
+RTL.parameters = {
+  rtl: true
+}
 
 export default Demo as Meta
