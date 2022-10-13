@@ -17,7 +17,7 @@ import 'swiper/swiper.min.css'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { gql, useMutation } from '@apollo/client'
-import { getJourneyRtl } from '@core/journeys/ui/rtl'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
@@ -54,7 +54,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const breakpoints = useBreakpoints()
   const theme = useTheme()
   const { journey, admin } = useJourney()
-  const isRtl = getJourneyRtl(journey)
+  const isRtl = getJourneyRTL(journey)
 
   const onFirstStep = activeBlock === treeBlocks[0]
   const onLastStep = activeBlock === last(treeBlocks)
