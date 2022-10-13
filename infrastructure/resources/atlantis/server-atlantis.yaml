@@ -1,2 +1,4 @@
 version: 3
-allowed_overrides: [apply_requirements]
+repos:
+  - id: /.*/
+    apply_requirements: [mergeable, approved, undiverged]

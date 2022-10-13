@@ -5,30 +5,26 @@ parallel_plan: true
 parallel_apply: true
 projects:
   - name: core
-    dir: .
+    dir: './infrastructure'
     workspace: default
     autoplan:
       when_modified: ['**/*.tf']
       enabled: true
-    apply_requirements: [mergeable, approved, undiverged]
   - name: infrastructure-resources-atlantis
     dir: './infrastructure/resources/atlantis'
     workspace: default
     autoplan:
       when_modified: ['./infrastructure/resources/atlantis/*.tf']
       enabled: true
-    apply_requirements: [mergeable, approved, undiverged]
   - name: infrastructure-resources-doppler
     dir: './infrastructure/resources/doppler'
     workspace: default
     autoplan:
       when_modified: ['./infrastructure/resources/doppler/*.tf']
       enabled: true
-    apply_requirements: [mergeable, approved, undiverged]
   - name: infrastructure-resources-terraform
     dir: './infrastructure/resources/terraform'
     workspace: default
     autoplan:
       when_modified: ['./infrastructure/resources/terraform/*.tf']
       enabled: true
-    apply_requirements: [mergeable, approved, undiverged]
