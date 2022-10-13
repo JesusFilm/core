@@ -38,7 +38,8 @@ describe('action', () => {
         journey: {
           __typename: 'Journey',
           id: 'journey-id',
-          slug: 'journey-slug'
+          slug: 'journey-slug',
+          language: { __typename: 'Language', bcp47: 'en' }
         },
         gtmEventName: null
       })
