@@ -42,7 +42,9 @@ module "atlantis" {
   certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
 
   # ECS
-  ecs_cluster_id = data.aws_ecs_cluster.ecs_cluster.id
+  ecs_cluster_id  = data.aws_ecs_cluster.ecs_cluster.id
+  ecs_task_cpu    = 512
+  ecs_task_memory = 1024
 
   # Atlantis
   atlantis_github_user           = "jesus-film-bot"
