@@ -61,11 +61,6 @@ variable "environment_variables" {
   type = list(string)
 }
 
-variable "database_root_password" {
-  type      = string
-  sensitive = true
-}
-
 variable "create_rds_cluster" {
   type    = bool
   default = false

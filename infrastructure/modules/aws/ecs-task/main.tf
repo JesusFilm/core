@@ -154,6 +154,12 @@ resource "aws_route53_record" "record" {
   records = [var.service_config.alb_dns_name]
 }
 
+resource "random_password" "password" {
+  length           = 16
+  special          = true
+  override_special = "!$%&*?"
+}
+
 resource "aws_rds_cluster" "default" {
   count                   = var.create_rds_cluster ? 1 : 0
   cluster_identifier      = "${var.service_config.name}-${var.env}"
@@ -162,7 +168,11 @@ resource "aws_rds_cluster" "default" {
   db_subnet_group_name    = data.aws_db_subnet_group.current.id
   database_name           = var.env
   master_username         = "root"
-  master_password         = var.database_root_password
+  master_password         = random_password.password
   backup_retention_period = 5
   preferred_backup_window = "07:00-09:00"
+}
+
+resource "postgresql_role" "api" {
+
 }
