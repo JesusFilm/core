@@ -16,7 +16,7 @@ import i18nConfig from '../../next-i18next.config'
 import { MemoizedDynamicReport } from '../../src/components/DynamicPowerBiReport'
 import { JourneysReportType } from '../../__generated__/globalTypes'
 
-function JourneysReportsPage(): ReactElement {
+function ReportsJourneysPage(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
@@ -63,4 +63,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(JourneysReportsPage)
+})(ReportsJourneysPage)
