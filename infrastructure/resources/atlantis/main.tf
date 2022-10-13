@@ -15,7 +15,7 @@ module "atlantis" {
   custom_environment_variables = [
     {
       name : "ATLANTIS_REPO_CONFIG_JSON",
-      value : jsonencode(yamldecode(file("${path.module}/resources/atlantis/server-atlantis.yaml"))),
+      value : jsonencode(yamldecode(file("${path.module}/server-atlantis.yaml"))),
       }, {
       name : "AWS_ACCESS_KEY_ID"
       value : resource.aws_iam_access_key.jfp_terraform_user_access_key.id
@@ -30,19 +30,19 @@ module "atlantis" {
   enable_ephemeral_storage = true
 
   # VPC
-  vpc_id             = module.prod.vpc.id
-  private_subnet_ids = module.prod.vpc.internal_subnets
-  public_subnet_ids  = module.prod.vpc.public_subnets
-  cidr               = var.cidr
+  vpc_id             = data.aws_vpc.vpc.id
+  cidr               = data.aws_vpc.vpc.cidr_block
+  private_subnet_ids = data.aws_subnets.internal_subnets.ids
+  public_subnet_ids  = data.aws_subnets.public_subnets.ids
 
   # DNS
-  route53_zone_name = module.route53_central_jesusfilm_org.name
+  route53_zone_name = data.aws_route53_zone.route53_central_jesusfilm_org.name
 
   # ACM
-  certificate_arn = module.acm_central_jesusfilm_org.arn
+  certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
 
   # ECS
-  ecs_cluster_id = module.prod.ecs.ecs_cluster.id
+  ecs_cluster_id = data.aws_ecs_cluster.ecs_cluster.id
 
   # Atlantis
   atlantis_github_user           = "jesus-film-bot"

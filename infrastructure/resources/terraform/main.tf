@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "state_lock" {
-  name           = "${var.name}-lock"
+  name           = "jfp-terraform-state-lock"
   hash_key       = "LockID"
   read_capacity  = 20
   write_capacity = 20
@@ -11,7 +11,7 @@ resource "aws_dynamodb_table" "state_lock" {
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = var.name
+  bucket = "jfp-terraform-state"
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
