@@ -60,3 +60,9 @@ module "ecs" {
   internal_alb_security_group = module.internal_alb_security_group
   public_alb_security_group   = module.public_alb_security_group
 }
+
+module "rds" {
+  source     = "./rds"
+  env        = var.env
+  subnet_ids = module.vpc.internal_subnets
+}

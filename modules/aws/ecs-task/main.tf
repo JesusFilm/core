@@ -153,3 +153,16 @@ resource "aws_route53_record" "record" {
   zone_id = var.service_config.zone_id
   records = [var.service_config.alb_dns_name]
 }
+
+resource "aws_rds_cluster" "default" {
+  count                   = var.create_rds_cluster ? 1 : 0
+  cluster_identifier      = "${var.service_config.name}-${var.env}"
+  engine                  = "aurora-postgresql"
+  availability_zones      = data.aws_availability_zones.current.names.*
+  db_subnet_group_name    = data.aws_db_subnet_group.current.id
+  database_name           = var.env
+  master_username         = "root"
+  master_password         = var.database_root_password
+  backup_retention_period = 5
+  preferred_backup_window = "07:00-09:00"
+}
