@@ -722,12 +722,14 @@ input ButtonClickEventCreateInput {
 type ButtonClickEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   block: ButtonBlock
 }
 
 interface Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
 }
 
 input JourneyViewEventCreateInput {
@@ -741,6 +743,7 @@ input JourneyViewEventCreateInput {
 type JourneyViewEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   journey: Journey
 }
 
@@ -756,6 +759,7 @@ input RadioQuestionSubmissionEventCreateInput {
 type RadioQuestionSubmissionEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   radioOptionBlockId: ID!
   block: RadioQuestionBlock
 }
@@ -773,6 +777,7 @@ input SignUpSubmissionEventCreateInput {
 type SignUpSubmissionEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   name: String!
   email: String!
   block: SignUpBlock
@@ -789,6 +794,7 @@ input StepViewEventCreateInput {
 type StepViewEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   block: StepBlock
 }
 
@@ -811,6 +817,7 @@ type StepNextEvent implements Event {
 type TemplateLibraryViewEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
 }
 
 input TemplateUseEventInput {
@@ -820,6 +827,7 @@ input TemplateUseEventInput {
 type TemplateUseEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   journeyId: ID!
 }
 
@@ -830,6 +838,7 @@ input TemplatePreviewEventInput {
 type TemplatePreviewEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   journeyId: ID!
 }
 
@@ -845,6 +854,7 @@ input TextResponseSubmissionEventCreateInput {
 type TextResponseSubmissionEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   value: String!
   block: TextResponseBlock
 }
@@ -861,6 +871,7 @@ input VideoStartEventCreateInput {
 type VideoStartEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -877,6 +888,7 @@ input VideoPlayEventCreateInput {
 type VideoPlayEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -893,6 +905,7 @@ input VideoPauseEventCreateInput {
 type VideoPauseEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -909,6 +922,7 @@ input VideoCompleteEventCreateInput {
 type VideoCompleteEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -925,6 +939,7 @@ input VideoExpandEventCreateInput {
 type VideoExpandEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -941,6 +956,7 @@ input VideoCollapseEventCreateInput {
 type VideoCollapseEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -960,6 +976,7 @@ input VideoProgressEventCreateInput {
 type VideoProgressEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   progress: Int!
   block: VideoBlock

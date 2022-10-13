@@ -64,6 +64,7 @@ input ButtonBlockUpdateInput {
 
 type ButtonClickEvent implements Event {
   block: ButtonBlock
+  createdAt: DateTime!
   id: ID!
   userId: ID!
 }
@@ -171,6 +172,7 @@ type Country
 scalar DateTime
 
 interface Event {
+  createdAt: DateTime!
   id: ID!
   userId: ID!
 }
@@ -422,6 +424,7 @@ input JourneyUpdateInput {
 }
 
 type JourneyViewEvent implements Event {
+  createdAt: DateTime!
   id: ID!
   journey: Journey
   userId: ID!
@@ -664,6 +667,7 @@ input RadioQuestionBlockCreateInput {
 
 type RadioQuestionSubmissionEvent implements Event {
   block: RadioQuestionBlock
+  createdAt: DateTime!
   id: ID!
   radioOptionBlockId: ID!
   userId: ID!
@@ -712,6 +716,7 @@ input SignUpBlockUpdateInput {
 
 type SignUpSubmissionEvent implements Event {
   block: SignUpBlock
+  createdAt: DateTime!
   email: String!
   id: ID!
   name: String!
@@ -781,6 +786,7 @@ input StepNextEventCreateInput {
 
 type StepViewEvent implements Event {
   block: StepBlock
+  createdAt: DateTime!
   id: ID!
   userId: ID!
 }
@@ -795,11 +801,13 @@ input StepViewEventCreateInput {
 }
 
 type TemplateLibraryViewEvent implements Event {
+  createdAt: DateTime!
   id: ID!
   userId: ID!
 }
 
 type TemplatePreviewEvent implements Event {
+  createdAt: DateTime!
   id: ID!
   journeyId: ID!
   userId: ID!
@@ -810,6 +818,7 @@ input TemplatePreviewEventInput {
 }
 
 type TemplateUseEvent implements Event {
+  createdAt: DateTime!
   id: ID!
   journeyId: ID!
   userId: ID!
@@ -851,6 +860,7 @@ input TextResponseBlockUpdateInput {
 
 type TextResponseSubmissionEvent implements Event {
   block: TextResponseBlock
+  createdAt: DateTime!
   id: ID!
   userId: ID!
   value: String!
@@ -1179,6 +1189,7 @@ input VideoBlockUpdateInput {
 
 type VideoCollapseEvent implements Event {
   block: VideoBlock
+  createdAt: DateTime!
   id: ID!
   position: Float
   userId: ID!
@@ -1196,6 +1207,7 @@ input VideoCollapseEventCreateInput {
 
 type VideoCompleteEvent implements Event {
   block: VideoBlock
+  createdAt: DateTime!
   id: ID!
   position: Float
   userId: ID!
@@ -1213,6 +1225,7 @@ input VideoCompleteEventCreateInput {
 
 type VideoExpandEvent implements Event {
   block: VideoBlock
+  createdAt: DateTime!
   id: ID!
   position: Float
   userId: ID!
@@ -1230,6 +1243,7 @@ input VideoExpandEventCreateInput {
 
 type VideoPauseEvent implements Event {
   block: VideoBlock
+  createdAt: DateTime!
   id: ID!
   position: Float
   userId: ID!
@@ -1247,6 +1261,7 @@ input VideoPauseEventCreateInput {
 
 type VideoPlayEvent implements Event {
   block: VideoBlock
+  createdAt: DateTime!
   id: ID!
   position: Float
   userId: ID!
@@ -1264,6 +1279,7 @@ input VideoPlayEventCreateInput {
 
 type VideoProgressEvent implements Event {
   block: VideoBlock
+  createdAt: DateTime!
   id: ID!
   position: Float
   progress: Int!
@@ -1292,6 +1308,7 @@ input VideosFilter {
 
 type VideoStartEvent implements Event {
   block: VideoBlock
+  createdAt: DateTime!
   id: ID!
   position: Float
   userId: ID!

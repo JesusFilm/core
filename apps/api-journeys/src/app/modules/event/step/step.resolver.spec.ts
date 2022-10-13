@@ -3,6 +3,15 @@ import { EventService } from '../event.service'
 import { StepViewEventResolver, StepNextEventResolver } from './step.resolver'
 
 describe('StepViewEventResolver', () => {
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   const eventService = {
     provide: EventService,
     useFactory: () => ({
@@ -57,9 +66,9 @@ describe('StepViewEventResolver', () => {
 
       expect(await resolver.stepNextEventCreate('userId', input)).toEqual({
         ...input,
-        __typename: 'StepNextEvent',
-        userId: 'userId'
-        // createdAt: new Date().toISOString()
+        __typename: 'StepViewEvent',
+        userId: 'userId',
+        createdAt: new Date().toISOString()
       })
     })
   })
