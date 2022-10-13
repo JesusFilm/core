@@ -1,1 +1,1 @@
-export { getJourneyRtl } from './rtl'
+export { getJourneyRTL } from './rtl'
