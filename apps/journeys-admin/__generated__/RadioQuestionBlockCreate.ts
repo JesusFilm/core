@@ -29,10 +29,16 @@ export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAct
   blockId: string;
 }
 
+export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: RadioQuestionBlockCreate_radioOption1_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface RadioQuestionBlockCreate_radioOption1_action_NavigateToJourneyAction {
@@ -73,10 +79,16 @@ export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAct
   blockId: string;
 }
 
+export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: RadioQuestionBlockCreate_radioOption2_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToJourneyAction {
