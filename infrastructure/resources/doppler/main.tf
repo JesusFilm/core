@@ -1,12 +1,5 @@
 resource "aws_iam_user" "jfp_doppler_integration" {
   name = "jfp-doppler-integration"
-  path = "/"
-
-  tags = local.tags
-}
-
-resource "aws_iam_access_key" "jfp_doppler_integration" {
-  user = aws_iam_user.jfp_doppler_integration.name
 }
 
 resource "aws_iam_user_policy" "jfp_doppler_integration" {

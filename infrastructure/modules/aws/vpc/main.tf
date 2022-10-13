@@ -28,6 +28,7 @@ resource "aws_subnet" "public_subnet" {
   tags = {
     Name = "jfp-public-subnet-${count.index}-${var.env}"
     Env  = var.env
+    Tier = "Public"
   }
 }
 
@@ -60,6 +61,7 @@ resource "aws_subnet" "internal_subnet" {
   tags = {
     Name = "jfp-internal-subnet-${count.index}-${var.env}"
     Env  = var.env
+    Tier = "Internal"
   }
 }
 
