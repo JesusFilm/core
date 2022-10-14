@@ -22,7 +22,7 @@ spec:
       containers:
         - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-videos-prod:latest
           imagePullPolicy: IfNotPresent
-          name: jfp-api-videos
+          name: jfp-api-videos-prod
           ports:
             - containerPort: 4004
           envFrom:

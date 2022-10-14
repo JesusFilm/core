@@ -22,7 +22,7 @@ spec:
       containers:
         - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-journeys-stage:latest
           imagePullPolicy: IfNotPresent
-          name: jfp-api-journeys
+          name: jfp-api-journeys-stage
           ports:
             - containerPort: 4001
           envFrom:
