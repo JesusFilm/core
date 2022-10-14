@@ -46,7 +46,7 @@ export function Image({
           layout="responsive"
           objectFit="cover"
           style={{
-            transform: rtl === true ? 'scaleX(-1)' : undefined
+            transform: rtl ? 'scaleX(-1)' : undefined
           }}
         />
       ) : (

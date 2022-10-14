@@ -1,10 +1,9 @@
 import { Story, Meta } from '@storybook/react'
+import { ThemeName, ThemeMode } from '../../../__generated__/globalTypes'
 import {
-  ThemeName,
-  ThemeMode,
-  JourneyStatus
-} from '../../../__generated__/globalTypes'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+  JourneyFields as Journey,
+  JourneyFields_language as Language
+} from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { StoryCard } from '../StoryCard'
@@ -28,43 +27,19 @@ const emptyImage: Omit<Parameters<typeof Image>[0], 'src'> = {
   children: []
 }
 
-const journey: Journey = {
-  __typename: 'Journey',
-  id: 'journeyId',
-  themeName: ThemeName.base,
-  themeMode: ThemeMode.light,
-  title: 'my journey',
-  slug: 'my-journey',
-  language: {
-    __typename: 'Language',
-    id: '529',
-    bcp47: 'ar',
-    iso3: 'arb',
-    name: [
-      {
-        __typename: 'Translation',
-        value: 'Arabic',
-        primary: false
-      }
-    ]
-  },
-  description: 'my cool journey',
-  status: JourneyStatus.draft,
-  createdAt: '2021-11-19T12:34:56.647Z',
-  publishedAt: null,
-  blocks: [],
-  primaryImageBlock: null,
-  userJourneys: [],
-  template: null,
-  seoTitle: null,
-  seoDescription: null
-}
-
-const Template: Story<Parameters<typeof Image>[0] & { journey?: Journey }> = ({
-  journey,
-  ...args
-}) => (
-  <JourneyProvider value={{ journey }}>
+const Template: Story<
+  Parameters<typeof Image>[0] & { language?: Language }
+> = ({ language, ...args }) => (
+  <JourneyProvider
+    value={{
+      journey: {
+        id: 'journeyId',
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base,
+        language: language
+      } as unknown as Journey
+    }}
+  >
     <StoryCard>
       <Image {...args} alt={args.alt} />
     </StoryCard>
@@ -74,7 +49,20 @@ const Template: Story<Parameters<typeof Image>[0] & { journey?: Journey }> = ({
 // Throttle network to see loading image
 export const Default = Template.bind({})
 Default.args = {
-  ...emptyImage
+  ...emptyImage,
+  language: {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  }
 }
 
 export const WebImage = Template.bind({})
@@ -89,7 +77,19 @@ WebImage.parameters = {
 export const RTL = Template.bind({})
 RTL.args = {
   ...WebImage.args,
-  journey
+  language: {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'ar',
+    iso3: 'arb',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'Arabic',
+        primary: false
+      }
+    ]
+  }
 }
 RTL.parameters = { rtl: true }
 
