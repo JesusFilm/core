@@ -3,17 +3,14 @@ import { ReactElement, ReactNode } from 'react'
 import { CacheProvider } from '@emotion/react'
 import { createEmotionCache } from '../../../src/libs/createEmotionCache'
 import { ThemeProvider } from '../../components/ThemeProvider'
-import {
-  ThemeMode,
-  ThemeName
-} from '../../components/ThemeProvider/ThemeProvider'
 import { globalTypes } from '../../../../../../.storybook/preview'
-import { themes } from '../../libs/themes'
+import { getTheme, ThemeMode, ThemeName } from '../../libs/themes'
 
-const themeMode = globalTypes.theme.toolbar.items
+const storybookMode = globalTypes.theme.toolbar.items
+type StorybookThemeMode = typeof storybookMode[number]
 
 interface ThemeDecoratorProps extends Pick<Parameters, 'layout'> {
-  mode: typeof themeMode[number]
+  mode: StorybookThemeMode
   children: ReactNode
   rtl?: boolean
 }
@@ -22,8 +19,10 @@ const ThemeContainer = ({
   mode,
   layout = 'padded',
   children,
-  rtl
+  rtl = false
 }: ThemeDecoratorProps): ReactElement => {
+  const theme = getTheme(ThemeName.base, ThemeMode[mode as ThemeMode], rtl)
+
   return (
     <div
       style={{
@@ -32,8 +31,8 @@ const ThemeContainer = ({
         minHeight: '50vh',
         overflow: 'auto',
         padding: layout === 'padded' ? '1.5rem' : '0px',
-        background: themes.base[mode as ThemeMode].palette.background.default,
-        color: themes.base[mode as ThemeMode].palette.text.primary
+        background: theme.palette.background.default,
+        color: theme.palette.text.primary
       }}
     >
       <ThemeProvider

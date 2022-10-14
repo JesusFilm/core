@@ -13,7 +13,7 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
       '"Montserrat", "Open Sans", "Tahoma", "Verdana", sans-serif'
     ].join(','),
     h1: {
-      fontSize: '36px',
+      fontSize: 36,
       fontWeight: 600,
       lineHeight: '38px',
       textShadow: '0px 1px 3px rgba(0, 0, 0, 0.25)'
@@ -78,6 +78,77 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
     },
     caption: {
       fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
+      fontSize: 12,
+      fontWeight: 400,
+      lineHeight: '20px'
+    }
+  }
+}
+
+export const baseTypographyRTL: Pick<ThemeOptions, 'typography'> = {
+  typography: {
+    fontFamily: ['"El Messiri", "Tajawal", "Arial",  sans-serif'].join(','),
+    h1: {
+      fontSize: 36,
+      fontWeight: 600,
+      lineHeight: '40px'
+    },
+    h2: {
+      fontSize: 28,
+      fontWeight: 700,
+      lineHeight: '33px'
+    },
+    h3: {
+      fontSize: 32,
+      fontWeight: 700,
+      lineHeight: '40px'
+    },
+    h4: {
+      fontSize: 28,
+      fontWeight: 700,
+      lineHeight: '36px'
+    },
+    h5: {
+      fontSize: 23,
+      fontWeight: 700,
+      lineHeight: '30px'
+    },
+    h6: {
+      fontSize: 16,
+      fontWeight: 600,
+      lineHeight: '20px',
+      letterSpacing: 2
+    },
+    subtitle1: {
+      fontSize: 18,
+      fontWeight: 600,
+      lineHeight: '24px',
+      letterSpacing: 0.5
+    },
+    subtitle2: {
+      fontSize: 16,
+      fontWeight: 600,
+      lineHeight: '24px',
+      letterSpacing: 0.5
+    },
+    body1: {
+      fontSize: 16,
+      fontWeight: 400,
+      lineHeight: '24px'
+    },
+    body2: {
+      fontSize: 14,
+      fontWeight: 400,
+      lineHeight: '24px'
+    },
+    overline: {
+      fontSize: 16,
+      fontWeight: 600,
+      lineHeight: '18px',
+      letterSpacing: 3,
+      marginBottom: '4px'
+    },
+    caption: {
       fontSize: 12,
       fontWeight: 400,
       lineHeight: '20px'

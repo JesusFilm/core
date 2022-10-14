@@ -143,4 +143,8 @@ Alignment.args = {
   ]
 }
 
+export const RTL = VariantTemplate.bind({})
+RTL.args = { ...Variants.args }
+RTL.parameters = { rtl: true }
+
 export default TypographyDemo as Meta
