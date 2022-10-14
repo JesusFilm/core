@@ -1,4 +1,5 @@
 interface Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
 }
