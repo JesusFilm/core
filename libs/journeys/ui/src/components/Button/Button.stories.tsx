@@ -149,7 +149,7 @@ export const Icon = IconTemplate.bind({})
 Icon.args = { variants: ['Start', 'End'] }
 
 export const RTL = IconTemplate.bind({})
-RTL.args = { variants: ['Start', 'End'] }
+RTL.args = { ...Icon.args }
 RTL.parameters = { rtl: true }
 
 export default ButtonDemo as Meta
