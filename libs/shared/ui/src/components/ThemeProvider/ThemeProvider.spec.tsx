@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react'
-import { getTheme, themes } from '../../libs/themes'
-import { ThemeName, ThemeMode } from './ThemeProvider'
+import { getTheme, ThemeName, ThemeMode } from '../../libs/themes'
 import { ThemeProvider } from '.'
 
 describe('ThemeProvider', () => {
@@ -38,14 +37,15 @@ describe('ThemeProvider', () => {
 
   it('should apply base rtl theme', () => {
     const { baseElement } = render(
-      <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
+      <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light} rtl>
         Hello from ThemeProvider
       </ThemeProvider>
     )
     expect(baseElement.parentElement?.innerHTML).toEqual(
       expect.stringContaining(
         `font-family:${
-          getTheme(ThemeName.base, ThemeMode.light, false).typography.fontFamily
+          getTheme(ThemeName.base, ThemeMode.light, true).typography
+            .fontFamily ?? ''
         };`
       )
     )

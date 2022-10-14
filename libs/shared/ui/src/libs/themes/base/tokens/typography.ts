@@ -9,9 +9,9 @@ declare module '@mui/material' {
 
 export const baseTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
-    fontFamily: [
-      '"Montserrat", "Open Sans", "Tahoma", "Verdana", sans-serif'
-    ].join(','),
+    fontFamily: ['"Montserrat","Open Sans","Tahoma","Verdana",sans-serif'].join(
+      ','
+    ),
     h1: {
       fontSize: 36,
       fontWeight: 600,
@@ -58,13 +58,13 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
       letterSpacing: 0.5
     },
     body1: {
-      fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
+      fontFamily: '"Open Sans","Tahoma","Verdana",sans-serif',
       fontSize: 16,
       fontWeight: 400,
       lineHeight: '24px'
     },
     body2: {
-      fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
+      fontFamily: '"Open Sans","Tahoma","Verdana",sans-serif',
       fontSize: 14,
       fontWeight: 400,
       lineHeight: '20px'
@@ -77,7 +77,7 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
       marginBottom: '4px'
     },
     caption: {
-      fontFamily: '"Open Sans", "Tahoma", "Verdana", sans-serif',
+      fontFamily: '"Open Sans","Tahoma","Verdana",sans-serif',
       fontSize: 12,
       fontWeight: 400,
       lineHeight: '20px'
@@ -87,7 +87,7 @@ export const baseTypography: Pick<ThemeOptions, 'typography'> = {
 
 export const baseTypographyRTL: Pick<ThemeOptions, 'typography'> = {
   typography: {
-    fontFamily: ['"El Messiri", "Tajawal", "Arial",  sans-serif'].join(','),
+    fontFamily: ['"El Messiri","Tajawal","Arial",sans-serif'].join(','),
     h1: {
       fontSize: 36,
       fontWeight: 600,

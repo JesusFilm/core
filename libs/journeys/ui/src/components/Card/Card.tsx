@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode, useMemo } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { themes } from '@core/shared/ui/themes'
+import { getTheme } from '@core/shared/ui/themes'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import { SxProps } from '@mui/system/styleFunctionSx'
@@ -52,7 +52,7 @@ export function Card({
 
   const customCardTheme =
     themeName != null && themeMode != null
-      ? themes[themeName][themeMode]
+      ? getTheme(themeName, themeMode, theme.direction === 'rtl')
       : undefined
 
   const cardColor =

@@ -8,8 +8,8 @@ import VerticalSplit from '@mui/icons-material/VerticalSplit'
 import Videocam from '@mui/icons-material/Videocam'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
-import { themes } from '@core/shared/ui/themes'
-import { ThemeMode } from '../../../../../../../__generated__/globalTypes'
+import { ThemeName, ThemeMode, getTheme } from '@core/shared/ui/themes'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { Attribute } from '../..'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -37,10 +37,11 @@ export function Card({
     | TreeBlock<ImageBlock | VideoBlock>
     | undefined
 
-  const cardTheme =
-    themes[themeName ?? journey?.themeName ?? 'base'][
-      themeMode ?? journey?.themeMode ?? 'dark'
-    ]
+  const cardTheme = getTheme(
+    themeName ?? journey?.themeName ?? ThemeName.base,
+    themeMode ?? journey?.themeMode ?? ThemeMode.dark,
+    getJourneyRTL(journey)
+  )
   const selectedCardColor =
     backgroundColor ?? cardTheme.palette.background.paper
 
