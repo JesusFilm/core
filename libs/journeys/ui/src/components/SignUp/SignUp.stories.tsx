@@ -163,23 +163,7 @@ Loading.parameters = {
 }
 
 export const RTL = Template.bind({})
-RTL.args = {
-  ...Default.args,
-  submitIconId: 'icon',
-  submitLabel: 'Custom label',
-  children: [
-    {
-      id: 'icon',
-      __typename: 'IconBlock',
-      parentBlockId: 'parent',
-      parentOrder: 0,
-      iconName: IconName.LockOpenRounded,
-      iconSize: null,
-      iconColor: null,
-      children: []
-    }
-  ]
-}
+RTL.args = { ...Complete.args }
 RTL.parameters = { rtl: true }
 
 export default Demo as Meta
