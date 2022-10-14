@@ -114,29 +114,29 @@ const IconTemplate: Story<
             children={
               variant === 'Start'
                 ? [
-                  {
-                    id: 'start',
-                    __typename: 'IconBlock',
-                    parentBlockId: 'id',
-                    parentOrder: 0,
-                    iconName: IconName.CheckCircleRounded,
-                    iconColor: null,
-                    iconSize: IconSize.md,
-                    children: []
-                  }
-                ]
+                    {
+                      id: 'start',
+                      __typename: 'IconBlock',
+                      parentBlockId: 'id',
+                      parentOrder: 0,
+                      iconName: IconName.CheckCircleRounded,
+                      iconColor: null,
+                      iconSize: IconSize.md,
+                      children: []
+                    }
+                  ]
                 : [
-                  {
-                    id: 'end',
-                    __typename: 'IconBlock',
-                    parentBlockId: 'id',
-                    parentOrder: 0,
-                    iconName: IconName.CheckCircleRounded,
-                    iconColor: null,
-                    iconSize: IconSize.md,
-                    children: []
-                  }
-                ]
+                    {
+                      id: 'end',
+                      __typename: 'IconBlock',
+                      parentBlockId: 'id',
+                      parentOrder: 0,
+                      iconName: IconName.CheckCircleRounded,
+                      iconColor: null,
+                      iconSize: IconSize.md,
+                      children: []
+                    }
+                  ]
             }
           />
         ))}
