@@ -6,7 +6,8 @@ import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   RadioQuestionSubmissionEvent,
-  RadioQuestionSubmissionEventCreateInput
+  RadioQuestionSubmissionEventCreateInput,
+  Block
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
@@ -20,11 +21,15 @@ export class RadioQuestionSubmissionEventResolver {
     @Args('input')
     input: RadioQuestionSubmissionEventCreateInput
   ): Promise<RadioQuestionSubmissionEvent> {
+    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const journeyId = block.journeyId
+
     return await this.eventService.save({
       ...input,
       __typename: 'RadioQuestionSubmissionEvent',
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      journeyId
     })
   }
 }

@@ -24,8 +24,14 @@ describe('StepViewEventResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((input) => input)
+      save: jest.fn((input) => input),
+      getBlockById: jest.fn(() => block)
     })
+  }
+
+  const block = {
+    id: 'block.id',
+    journeyId: 'journey.id'
   }
 
   beforeEach(async () => {
@@ -41,7 +47,8 @@ describe('StepViewEventResolver', () => {
         ...input,
         __typename: 'StepViewEvent',
         userId: 'userId',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })

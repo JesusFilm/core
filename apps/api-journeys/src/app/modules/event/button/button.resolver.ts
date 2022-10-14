@@ -28,7 +28,7 @@ export class ButtonClickEventResolver {
       __typename: 'ButtonClickEvent',
       userId,
       createdAt: new Date().toISOString(),
-      journeyId: journeyId
+      journeyId
     })
   }
 }

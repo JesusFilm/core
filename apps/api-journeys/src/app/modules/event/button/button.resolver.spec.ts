@@ -14,6 +14,7 @@ describe('ButtonClickEventResolver', () => {
   })
 
   let resolver: ButtonClickEventResolver
+
   const input: ButtonClickEventCreateInput = {
     id: '1',
     blockId: 'block.id'

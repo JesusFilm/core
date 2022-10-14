@@ -6,7 +6,8 @@ import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   StepViewEvent,
-  StepViewEventCreateInput
+  StepViewEventCreateInput,
+  Block
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
@@ -19,11 +20,15 @@ export class StepViewEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: StepViewEventCreateInput
   ): Promise<StepViewEvent> {
+    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const journeyId = block.journeyId
+
     return await this.eventService.save({
       ...input,
       __typename: 'StepViewEvent',
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      journeyId
     })
   }
 }

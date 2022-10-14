@@ -16,7 +16,8 @@ import {
   VideoCollapseEvent,
   VideoCollapseEventCreateInput,
   VideoProgressEvent,
-  VideoProgressEventCreateInput
+  VideoProgressEventCreateInput,
+  Block
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
@@ -29,11 +30,15 @@ export class VideoStartEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoStartEventCreateInput
   ): Promise<VideoStartEvent> {
+    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const journeyId = block.journeyId
+
     return await this.eventService.save({
       ...input,
       __typename: 'VideoStartEvent',
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      journeyId
     })
   }
 }
@@ -46,11 +51,15 @@ export class VideoPlayEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoPlayEventCreateInput
   ): Promise<VideoPlayEvent> {
+    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const journeyId = block.journeyId
+
     return await this.eventService.save({
       ...input,
       __typename: 'VideoPlayEvent',
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      journeyId
     })
   }
 }
@@ -63,11 +72,15 @@ export class VideoPuaseEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoPauseEventCreateInput
   ): Promise<VideoPauseEvent> {
+    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const journeyId = block.journeyId
+
     return await this.eventService.save({
       ...input,
       __typename: 'VideoPauseEvent',
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      journeyId
     })
   }
 }
@@ -80,11 +93,15 @@ export class VideoCompleteEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoCompleteEventCreateInput
   ): Promise<VideoCompleteEvent> {
+    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const journeyId = block.journeyId
+
     return await this.eventService.save({
       ...input,
       __typename: 'VideoCompleteEvent',
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      journeyId
     })
   }
 }
@@ -97,11 +114,15 @@ export class VideoExpandEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoExpandEventCreateInput
   ): Promise<VideoExpandEvent> {
+    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const journeyId = block.journeyId
+
     return await this.eventService.save({
       ...input,
       __typename: 'VideoExpandEvent',
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      journeyId
     })
   }
 }
@@ -114,11 +135,15 @@ export class VideoCollapseEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoCollapseEventCreateInput
   ): Promise<VideoCollapseEvent> {
+    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const journeyId = block.journeyId
+
     return await this.eventService.save({
       ...input,
       __typename: 'VideoCollapseEvent',
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      journeyId
     })
   }
 }
@@ -131,11 +156,15 @@ export class VideoProgressEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoProgressEventCreateInput
   ): Promise<VideoProgressEvent> {
+    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const journeyId = block.journeyId
+
     return await this.eventService.save({
       ...input,
       __typename: 'VideoProgressEvent',
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      journeyId
     })
   }
 }

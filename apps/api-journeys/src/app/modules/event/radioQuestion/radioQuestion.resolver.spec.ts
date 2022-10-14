@@ -23,8 +23,14 @@ describe('RadioQuestionSubmissionEventResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((input) => input)
+      save: jest.fn((input) => input),
+      getBlockById: jest.fn(() => block)
     })
+  }
+
+  const block = {
+    id: 'block.id',
+    journeyId: 'journey.id'
   }
 
   beforeEach(async () => {
@@ -44,7 +50,8 @@ describe('RadioQuestionSubmissionEventResolver', () => {
         ...input,
         __typename: 'RadioQuestionSubmissionEvent',
         userId: 'userId',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })

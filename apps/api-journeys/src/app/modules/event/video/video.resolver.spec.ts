@@ -19,15 +19,21 @@ describe('VideoResolver', () => {
   afterAll(() => {
     jest.useRealTimers()
   })
+  const eventService = {
+    provide: EventService,
+    useFactory: () => ({
+      save: jest.fn((input) => input),
+      getBlockById: jest.fn(() => block)
+    })
+  }
+
+  const block = {
+    id: 'block.id',
+    journeyId: 'journey.id'
+  }
+
   describe('videoStartEventCreate', () => {
     let resolver: VideoStartEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -47,20 +53,14 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoStartEvent',
         userId: 'userid',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })
 
   describe('videoPlayEventCreate', () => {
     let resolver: VideoPlayEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -80,20 +80,14 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoPlayEvent',
         userId: 'userid',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })
 
   describe('videoPauseEventCreate', () => {
     let resolver: VideoPuaseEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -113,20 +107,14 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoPauseEvent',
         userId: 'userid',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })
 
   describe('videoCompleteEventCreate', () => {
     let resolver: VideoCompleteEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -148,20 +136,14 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoCompleteEvent',
         userId: 'userid',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })
 
   describe('videoExpandEventCreate', () => {
     let resolver: VideoExpandEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -181,20 +163,14 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoExpandEvent',
         userId: 'userid',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })
 
   describe('videoCollapseEventCreate', () => {
     let resolver: VideoCollapseEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -216,20 +192,14 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoCollapseEvent',
         userId: 'userid',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })
 
   describe('videoProgressEventCreate', () => {
     let resolver: VideoProgressEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -252,7 +222,8 @@ describe('VideoResolver', () => {
         ...input,
         __typename: 'VideoProgressEvent',
         userId: 'userid',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })
