@@ -112,6 +112,9 @@ export const States = Template.bind({})
 
 export const Textarea = TextareaTemplate.bind({})
 
+export const RTL = Template.bind({})
+RTL.parameters = { rtl: true }
+
 // TODO: Future variants
 
 // export const Size = Template.bind({})
