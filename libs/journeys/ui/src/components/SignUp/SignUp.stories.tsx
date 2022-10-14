@@ -162,4 +162,8 @@ Loading.parameters = {
   chromatic: { disableSnapshot: true }
 }
 
+export const RTL = Template.bind({})
+RTL.args = { ...Complete.args }
+RTL.parameters = { rtl: true }
+
 export default Demo as Meta
