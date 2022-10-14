@@ -32,7 +32,8 @@ export class VideoStartEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'VideoStartEvent',
-      userId
+      userId,
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -48,7 +49,8 @@ export class VideoPlayEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'VideoPlayEvent',
-      userId
+      userId,
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -64,7 +66,8 @@ export class VideoPuaseEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'VideoPauseEvent',
-      userId
+      userId,
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -80,7 +83,8 @@ export class VideoCompleteEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'VideoCompleteEvent',
-      userId
+      userId,
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -96,7 +100,8 @@ export class VideoExpandEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'VideoExpandEvent',
-      userId
+      userId,
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -112,7 +117,8 @@ export class VideoCollapseEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'VideoCollapseEvent',
-      userId
+      userId,
+      createdAt: new Date().toISOString()
     })
   }
 }
@@ -128,7 +134,8 @@ export class VideoProgressEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'VideoProgressEvent',
-      userId
+      userId,
+      createdAt: new Date().toISOString()
     })
   }
 }

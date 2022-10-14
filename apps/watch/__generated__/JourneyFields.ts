@@ -36,10 +36,16 @@ export interface JourneyFields_blocks_ButtonBlock_action_NavigateToBlockAction {
   blockId: string;
 }
 
+export interface JourneyFields_blocks_ButtonBlock_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface JourneyFields_blocks_ButtonBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: JourneyFields_blocks_ButtonBlock_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface JourneyFields_blocks_ButtonBlock_action_NavigateToJourneyAction {
@@ -165,10 +171,16 @@ export interface JourneyFields_blocks_RadioOptionBlock_action_NavigateToBlockAct
   blockId: string;
 }
 
+export interface JourneyFields_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface JourneyFields_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: JourneyFields_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface JourneyFields_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
@@ -216,10 +228,16 @@ export interface JourneyFields_blocks_SignUpBlock_action_NavigateToBlockAction {
   blockId: string;
 }
 
+export interface JourneyFields_blocks_SignUpBlock_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface JourneyFields_blocks_SignUpBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: JourneyFields_blocks_SignUpBlock_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface JourneyFields_blocks_SignUpBlock_action_NavigateToJourneyAction {
@@ -280,10 +298,16 @@ export interface JourneyFields_blocks_TextResponseBlock_action_NavigateToBlockAc
   blockId: string;
 }
 
+export interface JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface JourneyFields_blocks_TextResponseBlock_action_NavigateToJourneyAction {
@@ -358,10 +382,16 @@ export interface JourneyFields_blocks_VideoBlock_action_NavigateToBlockAction {
   blockId: string;
 }
 
+export interface JourneyFields_blocks_VideoBlock_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface JourneyFields_blocks_VideoBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: JourneyFields_blocks_VideoBlock_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface JourneyFields_blocks_VideoBlock_action_NavigateToJourneyAction {
@@ -468,10 +498,16 @@ export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateTo
   blockId: string;
 }
 
+export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey_language;
 }
 
 export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction {

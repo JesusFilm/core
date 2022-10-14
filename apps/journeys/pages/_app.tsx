@@ -17,13 +17,10 @@ import { useApollo } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
 import i18nConfig from '../next-i18next.config'
 
-const clientSideEmotionCache = (isRTL: boolean): EmotionCache =>
-  createEmotionCache(isRTL)
-
 function JourneysApp({
   Component,
   pageProps,
-  emotionCache = clientSideEmotionCache(getJourneyRTL(pageProps.journey))
+  emotionCache = createEmotionCache({ rtl: getJourneyRTL(pageProps.journey) })
 }: AppProps & { emotionCache?: EmotionCache }): ReactElement {
   const { t } = useTranslation('apps-journeys')
   useEffect(() => {
