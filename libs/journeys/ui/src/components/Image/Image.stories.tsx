@@ -4,7 +4,7 @@ import {
   ThemeMode,
   JourneyStatus
 } from '../../../__generated__/globalTypes'
-import { JourneyFields } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { StoryCard } from '../StoryCard'
@@ -28,9 +28,42 @@ const emptyImage: Omit<Parameters<typeof Image>[0], 'src'> = {
   children: []
 }
 
-const Template: Story<
-  Parameters<typeof Image>[0] & { journey?: JourneyFields }
-> = ({ journey, ...args }) => (
+const journey: Journey = {
+  __typename: 'Journey',
+  id: 'journeyId',
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
+  title: 'my journey',
+  slug: 'my-journey',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'ar',
+    iso3: 'arb',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'Arabic',
+        primary: false
+      }
+    ]
+  },
+  description: 'my cool journey',
+  status: JourneyStatus.draft,
+  createdAt: '2021-11-19T12:34:56.647Z',
+  publishedAt: null,
+  blocks: [],
+  primaryImageBlock: null,
+  userJourneys: [],
+  template: null,
+  seoTitle: null,
+  seoDescription: null
+}
+
+const Template: Story<Parameters<typeof Image>[0] & { journey?: Journey }> = ({
+  journey,
+  ...args
+}) => (
   <JourneyProvider value={{ journey }}>
     <StoryCard>
       <Image {...args} alt={args.alt} />
@@ -56,37 +89,7 @@ WebImage.parameters = {
 export const RTL = Template.bind({})
 RTL.args = {
   ...WebImage.args,
-  journey: {
-    __typename: 'Journey',
-    id: 'journeyId',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    title: 'my journey',
-    slug: 'my-journey',
-    language: {
-      __typename: 'Language',
-      id: '529',
-      bcp47: 'ar',
-      iso3: 'arb',
-      name: [
-        {
-          __typename: 'Translation',
-          value: 'Arabic',
-          primary: false
-        }
-      ]
-    },
-    description: 'my cool journey',
-    status: JourneyStatus.draft,
-    createdAt: '2021-11-19T12:34:56.647Z',
-    publishedAt: null,
-    blocks: [],
-    primaryImageBlock: null,
-    userJourneys: [],
-    template: null,
-    seoTitle: null,
-    seoDescription: null
-  }
+  journey
 }
 RTL.parameters = { rtl: true }
 
