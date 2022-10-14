@@ -91,7 +91,8 @@ export function ContentOverlay({
           top: 0,
           bottom: 0,
           display: { xs: 'none', md: 'flex' },
-          flexDirection: 'column'
+          flexDirection: 'column',
+          justifyContent: 'center'
         }}
       >
         <Box
