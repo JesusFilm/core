@@ -122,6 +122,7 @@ export function CardWrapper({
       sx={{
         display: 'flex',
         flexDirection: { xs: 'column', sm: 'row' },
+        justifyContent: { md: 'flex-end' },
         borderRadius: (theme) => theme.spacing(4),
         backgroundColor,
         width: '100%',
