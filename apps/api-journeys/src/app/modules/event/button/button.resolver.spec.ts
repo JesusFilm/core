@@ -14,7 +14,6 @@ describe('ButtonClickEventResolver', () => {
   })
 
   let resolver: ButtonClickEventResolver
-
   const input: ButtonClickEventCreateInput = {
     id: '1',
     blockId: 'block.id'
@@ -23,8 +22,14 @@ describe('ButtonClickEventResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((event) => event)
+      save: jest.fn((event) => event),
+      getBlockById: jest.fn(() => block)
     })
+  }
+
+  const block = {
+    id: 'block.id',
+    journeyId: 'journey.id'
   }
 
   beforeEach(async () => {
@@ -40,7 +45,8 @@ describe('ButtonClickEventResolver', () => {
         ...input,
         __typename: 'ButtonClickEvent',
         userId: 'userId',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })
