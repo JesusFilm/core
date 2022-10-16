@@ -52,10 +52,12 @@ Variant.args = {
   iconSize: IconSize.lg,
   variants: [
     IconName.ArrowForwardRounded,
+    IconName.ArrowBackRounded,
     IconName.BeenhereRounded,
     IconName.ChatBubbleOutlineRounded,
     IconName.CheckCircleRounded,
     IconName.ChevronRightRounded,
+    IconName.ChevronLeftRounded,
     IconName.ContactSupportRounded,
     IconName.FormatQuoteRounded,
     IconName.LiveTvRounded,

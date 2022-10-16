@@ -43,7 +43,7 @@ export const icons = [
     display: <ArrowForwardRounded />
   },
   {
-    value: 'ArrowBackRounded',
+    value: IconName.ArrowBackRounded,
     label: 'Arrow Left',
     display: <ArrowBackRounded />
   },
@@ -68,7 +68,7 @@ export const icons = [
     display: <ChevronRightRounded />
   },
   {
-    value: 'ChevronLeftRounded',
+    value: IconName.ChevronLeftRounded,
     label: 'Chevron Left',
     display: <ChevronLeftRounded />
   },
@@ -134,7 +134,7 @@ export const ICON_BLOCK_NAME_UPDATE = gql`
 `
 type IconParentBlock<T = TreeBlock<ButtonBlock>> = T
 
-interface IconProps extends Pick<TreeBlock<IconFields>, 'id'> {}
+interface IconProps extends Pick<TreeBlock<IconFields>, 'id'> { }
 
 export function Icon({ id }: IconProps): ReactElement {
   const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
