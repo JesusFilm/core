@@ -44,6 +44,7 @@ const VariantTemplate: Story<
   </Container>
 )
 
+// Add ArrowBackRounded, ChevronLeftRounded
 export const Variant = VariantTemplate.bind({})
 Variant.args = {
   __typename: 'IconBlock',

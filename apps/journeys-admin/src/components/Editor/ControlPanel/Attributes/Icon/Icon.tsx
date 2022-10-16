@@ -16,10 +16,12 @@ import RadioButtonUncheckedRounded from '@mui/icons-material/RadioButtonUnchecke
 import FormatQuoteRounded from '@mui/icons-material/FormatQuoteRounded'
 import LockOpenRounded from '@mui/icons-material/LockOpenRounded'
 import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded'
+import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import ChatBubbleOutlineRounded from '@mui/icons-material/ChatBubbleOutlineRounded'
 import LiveTvRounded from '@mui/icons-material/LiveTvRounded'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
+import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import BeenhereRounded from '@mui/icons-material/BeenhereRounded'
 import SendRounded from '@mui/icons-material/SendRounded'
 import SubscriptionsRounded from '@mui/icons-material/SubscriptionsRounded'
@@ -37,8 +39,13 @@ import { Color } from './Color'
 export const icons = [
   {
     value: IconName.ArrowForwardRounded,
-    label: 'Arrow Forward',
+    label: 'Arrow Right',
     display: <ArrowForwardRounded />
+  },
+  {
+    value: 'ArrowBackRounded',
+    label: 'Arrow Left',
+    display: <ArrowBackRounded />
   },
   {
     value: IconName.BeenhereRounded,
@@ -59,6 +66,11 @@ export const icons = [
     value: IconName.ChevronRightRounded,
     label: 'Chevron Right',
     display: <ChevronRightRounded />
+  },
+  {
+    value: 'ChevronLeftRounded',
+    label: 'Chevron Left',
+    display: <ChevronLeftRounded />
   },
   {
     value: IconName.ContactSupportRounded,
