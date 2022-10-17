@@ -100,7 +100,7 @@
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "0.13.7",
     "rxjs": "^7.1.0",
-    "sharp": "^0.30.7",
+    "sharp": "^0.31.1",
     "slugify": "^1.6.1",
     "subscriptions-transport-ws": "^0.11.0",
     "swiper": "^6.8.4",
