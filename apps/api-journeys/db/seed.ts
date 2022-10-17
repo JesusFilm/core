@@ -3,6 +3,7 @@ import { nua1 } from './seeds/nua1'
 import { nua2 } from './seeds/nua2'
 import { nua8 } from './seeds/nua8'
 import { nua9 } from './seeds/nua9'
+import { populateNewFields } from './populateNewFields'
 
 const db = ArangoDB()
 
@@ -47,6 +48,8 @@ async function main(): Promise<void> {
   await nua2()
   await nua8()
   await nua9()
+
+  await populateNewFields()
 }
 main().catch((e) => {
   console.error(e)
