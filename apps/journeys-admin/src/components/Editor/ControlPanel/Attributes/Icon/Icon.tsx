@@ -134,7 +134,7 @@ export const ICON_BLOCK_NAME_UPDATE = gql`
 `
 type IconParentBlock<T = TreeBlock<ButtonBlock>> = T
 
-interface IconProps extends Pick<TreeBlock<IconFields>, 'id'> { }
+interface IconProps extends Pick<TreeBlock<IconFields>, 'id'> {}
 
 export function Icon({ id }: IconProps): ReactElement {
   const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
