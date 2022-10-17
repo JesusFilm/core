@@ -1,7 +1,6 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { SnackbarProvider } from 'notistack'
 import { defaultJourney } from '../data'
 import { JourneyLink } from './JourneyLink'
@@ -16,11 +15,9 @@ describe('JourneyLink', () => {
     const { getAllByRole, getByRole, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <JourneyLink />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyLink />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -34,11 +31,9 @@ describe('JourneyLink', () => {
     const { getAllByRole, getByRole, queryByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <JourneyLink />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <JourneyLink />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )

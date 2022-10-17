@@ -22,7 +22,8 @@ export class ButtonClickEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'ButtonClickEvent',
-      userId
+      userId,
+      createdAt: new Date().toISOString()
     })
   }
 }

@@ -83,6 +83,7 @@ export function LinkAction(): ReactElement {
         initialValues={initialValues}
         validationSchema={linkActionSchema}
         onSubmit={noop}
+        enableReinitialize
       >
         {({ values, touched, errors, handleChange, handleBlur }) => (
           <Form>

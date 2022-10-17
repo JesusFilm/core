@@ -4,6 +4,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 
+import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -20,7 +21,6 @@ import {
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import { Drawer } from '../../../../../Drawer'
 import { GetVideoVariantLanguages_video } from '../../../../../../../../__generated__/GetVideoVariantLanguages'
-import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../VideoBlockEditor/VideoBlockEditor'
 import { BackgroundMedia } from '.'
 
 const BackgroundMediaStory = {
@@ -43,6 +43,8 @@ const journey: Journey = {
   language: {
     __typename: 'Language',
     id: '529',
+    bcp47: 'en',
+    iso3: 'eng',
     name: [
       {
         __typename: 'Translation',

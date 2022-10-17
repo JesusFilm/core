@@ -4,6 +4,15 @@ import { JourneyViewEventCreateInput } from '../../../__generated__/graphql'
 import { JourneyViewEventResolver } from './journey.resolver'
 
 describe('JourneyViewEventResolver', () => {
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   let resolver: JourneyViewEventResolver
 
   const input: JourneyViewEventCreateInput = {
@@ -30,7 +39,8 @@ describe('JourneyViewEventResolver', () => {
       expect(await resolver.journeyViewEventCreate('userId', input)).toEqual({
         ...input,
         __typename: 'JourneyViewEvent',
-        userId: 'userId'
+        userId: 'userId',
+        createdAt: new Date().toISOString()
       })
     })
   })

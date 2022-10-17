@@ -2,7 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { NextRouter, useRouter } from 'next/router'
 import { defaultJourney, publishedJourney } from '../data'
 import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
@@ -29,11 +28,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -47,11 +44,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -67,11 +62,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: publishedJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: publishedJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -111,11 +104,9 @@ describe('JourneyView/Menu', () => {
             }
           ]}
         >
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -167,16 +158,14 @@ describe('JourneyView/Menu', () => {
             }
           ]}
         >
-          <FlagsProvider>
-            <JourneyProvider
-              value={{
-                journey: { ...defaultJourney, template: true },
-                admin: true
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider
+            value={{
+              journey: { ...defaultJourney, template: true },
+              admin: true
+            }}
+          >
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -196,11 +185,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: publishedJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: publishedJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -233,11 +220,9 @@ describe('JourneyView/Menu', () => {
             }
           ]}
         >
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -276,16 +261,14 @@ describe('JourneyView/Menu', () => {
             }
           ]}
         >
-          <FlagsProvider>
-            <JourneyProvider
-              value={{
-                journey: { ...defaultJourney, template: true },
-                admin: true
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider
+            value={{
+              journey: { ...defaultJourney, template: true },
+              admin: true
+            }}
+          >
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -322,16 +305,14 @@ describe('JourneyView/Menu', () => {
             }
           ]}
         >
-          <FlagsProvider>
-            <JourneyProvider
-              value={{
-                journey: { ...defaultJourney, template: true },
-                admin: true
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider
+            value={{
+              journey: { ...defaultJourney, template: true },
+              admin: true
+            }}
+          >
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -349,11 +330,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -369,11 +348,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -389,11 +366,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -410,11 +385,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -448,16 +421,14 @@ describe('JourneyView/Menu', () => {
             }
           ]}
         >
-          <FlagsProvider>
-            <JourneyProvider
-              value={{
-                journey: { ...defaultJourney, template: true },
-                admin: true
-              }}
-            >
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider
+            value={{
+              journey: { ...defaultJourney, template: true },
+              admin: true
+            }}
+          >
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -484,11 +455,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -519,11 +488,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -546,11 +513,9 @@ describe('JourneyView/Menu', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <FlagsProvider flags={{ reports: true }}>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
+          <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
+            <Menu />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -561,23 +526,5 @@ describe('JourneyView/Menu', () => {
       'href',
       '/journeys/journey-id/reports'
     )
-  })
-
-  it('should hide reports', () => {
-    const { getByRole, queryByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[]}>
-          <FlagsProvider flags={{ reports: false }}>
-            <JourneyProvider value={{ journey: defaultJourney, admin: true }}>
-              <Menu />
-            </JourneyProvider>
-          </FlagsProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const menu = getByRole('button')
-    fireEvent.click(menu)
-    expect(queryByRole('menuitem', { name: 'Report' })).toBeNull()
   })
 })

@@ -8,7 +8,7 @@ import type { TreeBlock } from '../../libs/block'
 import { handleAction } from '../../libs/action'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
-export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
+interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   selected?: boolean
   disabled?: boolean
   onClick?: (selected: string) => void

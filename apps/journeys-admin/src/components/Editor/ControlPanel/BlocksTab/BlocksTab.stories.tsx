@@ -1,6 +1,5 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
@@ -20,43 +19,41 @@ const BlocksTabStory = {
 export const Default: Story = () => {
   return (
     <MockedProvider mocks={[]}>
-      <FlagsProvider flags={{ feedbackBlock: true }}>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            admin: true
+      <JourneyProvider
+        value={{
+          journey: { id: 'journeyId' } as unknown as Journey,
+          admin: true
+        }}
+      >
+        <EditorProvider
+          initialState={{
+            selectedStep: {
+              __typename: 'StepBlock',
+              id: 'stepId',
+              parentBlockId: null,
+              parentOrder: 0,
+              locked: true,
+              nextBlockId: null,
+              children: [
+                {
+                  id: 'cardId',
+                  __typename: 'CardBlock',
+                  parentBlockId: 'stepId',
+                  coverBlockId: null,
+                  parentOrder: 0,
+                  backgroundColor: null,
+                  themeMode: null,
+                  themeName: null,
+                  fullscreen: false,
+                  children: []
+                }
+              ]
+            }
           }}
         >
-          <EditorProvider
-            initialState={{
-              selectedStep: {
-                __typename: 'StepBlock',
-                id: 'stepId',
-                parentBlockId: null,
-                parentOrder: 0,
-                locked: true,
-                nextBlockId: null,
-                children: [
-                  {
-                    id: 'cardId',
-                    __typename: 'CardBlock',
-                    parentBlockId: 'stepId',
-                    coverBlockId: null,
-                    parentOrder: 0,
-                    backgroundColor: null,
-                    themeMode: null,
-                    themeName: null,
-                    fullscreen: false,
-                    children: []
-                  }
-                ]
-              }
-            }}
-          >
-            <BlocksTab />
-          </EditorProvider>
-        </JourneyProvider>
-      </FlagsProvider>
+          <BlocksTab />
+        </EditorProvider>
+      </JourneyProvider>
     </MockedProvider>
   )
 }
