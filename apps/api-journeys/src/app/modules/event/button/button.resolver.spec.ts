@@ -36,8 +36,16 @@ describe('ButtonClickEventResolver', () => {
 
   describe('buttonClickEventCreate', () => {
     it('returns ButtonClickEvent', async () => {
-      expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
+      const info = {
+        deviceInfo: 'some data',
+        locationInfo: '000.00.000'
+      }
+
+      expect(
+        await resolver.buttonClickEventCreate('userId', info, input)
+      ).toEqual({
         ...input,
+        info,
         __typename: 'ButtonClickEvent',
         userId: 'userId',
         createdAt: new Date().toISOString()
