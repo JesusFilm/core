@@ -52,6 +52,8 @@ export function Video({
       : undefined
   }, [posterBlock, theme])
 
+  const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
@@ -211,7 +213,7 @@ export function Video({
               )}
             {source === VideoBlockSource.youTube && (
               <source
-                src={`https://www.youtube.com/watch?v=${videoId}`}
+                src={`https://www.youtube.com/embed/watch?v=${videoId}`}
                 type="video/youtube"
               />
             )}
@@ -260,7 +262,8 @@ export function Video({
         </>
       )}
       {/* Video Image  */}
-      {videoImage != null && posterBlock?.src == null && loading && (
+      {/* Issues with video image covering controls */}
+      {videoImage != null && posterBlock?.src == null && !mobile && loading && (
         <NextImage
           src={videoImage}
           alt="video image"

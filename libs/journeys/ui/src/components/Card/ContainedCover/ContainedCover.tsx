@@ -32,17 +32,19 @@ export function ContainedCover({
   const theme = useTheme()
   const [loading, setLoading] = useState(true)
 
+  const isYouTube = videoBlock?.source === VideoBlockSource.youTube
+
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
-        autoplay: true,
+        autoplay: !isYouTube,
         controls: false,
         preload: 'metadata',
         userActions: {
           hotkeys: false,
           doubleClick: false
         },
-        muted: true,
+        muted: !isYouTube,
         loop: true,
         poster: backgroundBlur
       })
@@ -71,7 +73,7 @@ export function ContainedCover({
         }
       })
     }
-  }, [imageBlock, theme, videoBlock, backgroundBlur])
+  }, [imageBlock, theme, videoBlock, backgroundBlur, isYouTube])
 
   const videoImage =
     videoBlock?.source === VideoBlockSource.internal
@@ -102,7 +104,7 @@ export function ContainedCover({
           }
         }}
       >
-        {videoBlock?.videoId != null && (
+        {videoBlock?.videoId != null && !isYouTube && (
           <video
             ref={videoRef}
             className="video-js"
