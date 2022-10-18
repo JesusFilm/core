@@ -20,6 +20,14 @@ class AuthenticatedDataSource extends RemoteGraphQLDataSource {
     if (context.userId != null) {
       request.http.headers.set('user-id', context.userId)
     }
+
+    const headers = context.req.headers
+    for (const key in headers) {
+      const value = headers[key]
+      if (value != null) {
+        request.http.headers.set(key, String(value))
+      }
+    }
   }
 }
 
@@ -46,7 +54,7 @@ const server = new ApolloServer({
       return {}
     try {
       const { uid } = await auth().verifyIdToken(token)
-      return { userId: uid }
+      return { req, userId: uid }
     } catch (err) {
       console.log(err)
       return {}
