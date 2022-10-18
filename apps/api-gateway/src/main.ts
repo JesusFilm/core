@@ -20,13 +20,11 @@ class AuthenticatedDataSource extends RemoteGraphQLDataSource {
     if (context.userId != null) {
       request.http.headers.set('user-id', context.userId)
     }
-
-    const headers = context.req.headers
-    for (const key in headers) {
-      const value = headers[key]
-      if (value != null) {
-        request.http.headers.set(key, String(value))
-      }
+    if (context.ipAddress != null) {
+      request.http.headers.set('ip-address', context.ipAddress)
+    }
+    if (context.userAgent != null) {
+      request.http.headers.set('user-agent', context.userAgent)
     }
   }
 }
@@ -44,6 +42,11 @@ const server = new ApolloServer({
   csrfPrevention: true,
   cors: config.cors,
   context: async ({ req }) => {
+    const context = {
+      ipAddress: req.headers['X-Forwared-For'] ?? req.socket.remoteAddress,
+      userAgent: req.headers['user-agent']
+    }
+
     const token = req.headers.authorization
     if (
       process.env.GOOGLE_APPLICATION_JSON == null ||
@@ -51,13 +54,13 @@ const server = new ApolloServer({
       token == null ||
       token === ''
     )
-      return {}
+      return { ...context }
     try {
       const { uid } = await auth().verifyIdToken(token)
-      return { req, userId: uid }
+      return { ...context, userId: uid }
     } catch (err) {
       console.log(err)
-      return {}
+      return { ...context }
     }
   }
 })
