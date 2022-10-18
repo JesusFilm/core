@@ -52,7 +52,7 @@ export function Video({
       : undefined
   }, [posterBlock, theme])
 
-  const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+  const mobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
 
   useEffect(() => {
     if (videoRef.current != null) {
