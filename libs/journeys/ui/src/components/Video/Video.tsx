@@ -52,8 +52,6 @@ export function Video({
       : undefined
   }, [posterBlock, theme])
 
-  const iosMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
-
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
@@ -164,14 +162,7 @@ export function Video({
           },
           '> .vjs-loading-spinner': {
             zIndex: 1,
-            display:
-              autoplay !== true && source === VideoBlockSource.youTube
-                ? 'none'
-                : autoplay === true &&
-                  source === VideoBlockSource.youTube &&
-                  iosMobile
-                ? 'none'
-                : 'block'
+            display: source === VideoBlockSource.youTube ? 'none' : 'block'
           },
           '> .vjs-big-play-button': {
             zIndex: 1
