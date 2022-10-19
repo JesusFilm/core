@@ -425,8 +425,15 @@ input JourneyUpdateInput {
 
 type JourneyViewEvent implements Event {
   createdAt: DateTime!
+
+  """user-agent data from header"""
+  deviceinfo: String
   id: ID!
-  journey: Journey
+  journey: Journey @deprecated(reason: "no longer used")
+  journeyId: ID
+
+  """user ip address"""
+  locationInfo: String
   userId: ID!
 }
 

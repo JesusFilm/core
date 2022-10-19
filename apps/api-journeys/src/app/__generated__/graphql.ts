@@ -721,6 +721,9 @@ export class JourneyViewEvent implements Event {
     userId: string;
     createdAt: DateTime;
     journey?: Nullable<Journey>;
+    journeyId?: Nullable<string>;
+    locationInfo?: Nullable<string>;
+    deviceinfo?: Nullable<string>;
 }
 
 export class RadioQuestionSubmissionEvent implements Event {
