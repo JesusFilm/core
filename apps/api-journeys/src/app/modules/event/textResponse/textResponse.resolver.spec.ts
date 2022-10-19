@@ -31,7 +31,8 @@ describe('TextResponseEventResolver', () => {
 
   const block = {
     id: 'block.id',
-    journeyId: 'journey.id'
+    journeyId: 'journey.id',
+    parentBlockId: 'parent.id'
   }
 
   beforeEach(async () => {

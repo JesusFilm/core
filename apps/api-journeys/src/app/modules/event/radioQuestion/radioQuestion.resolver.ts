@@ -23,9 +23,10 @@ export class RadioQuestionSubmissionEventResolver {
   ): Promise<RadioQuestionSubmissionEvent> {
     const block: Block = await this.eventService.getBlockById(input.blockId)
     const journeyId = block.journeyId
-    const stepName: string = await this.eventService.getStepHeader(
-      block.parentBlockId ?? ''
-    ) // should return untitled if no parentBlockId
+    const stepName: string =
+      block.parentBlockId != null
+        ? await this.eventService.getStepHeader(block.parentBlockId)
+        : 'Untitled'
 
     return await this.eventService.save({
       ...input,
