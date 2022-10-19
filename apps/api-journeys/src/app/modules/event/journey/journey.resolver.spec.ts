@@ -36,8 +36,15 @@ describe('JourneyViewEventResolver', () => {
 
   describe('JourneyViewEventCreate', () => {
     it('returns journeyViewEvent', async () => {
-      expect(await resolver.journeyViewEventCreate('userId', input)).toEqual({
+      const userInfo = {
+        deviceInfo: 'device info',
+        ipAddress: '000.00.000.00'
+      }
+      expect(
+        await resolver.journeyViewEventCreate('userId', userInfo, input)
+      ).toEqual({
         ...input,
+        ...userInfo,
         __typename: 'JourneyViewEvent',
         userId: 'userId',
         createdAt: new Date().toISOString(),
