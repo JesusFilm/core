@@ -22,6 +22,9 @@ export class TextResponseSubmissionEventResolver {
   ): Promise<TextResponseSubmissionEvent> {
     const block: Block = await this.eventService.getBlockById(input.blockId)
     const journeyId = block.journeyId
+    const stepName: string = await this.eventService.getStepHeader(
+      block.parentBlockId ?? ''
+    ) // should return untitled if no parentBlockId
 
     return await this.eventService.save({
       ...input,
@@ -29,6 +32,7 @@ export class TextResponseSubmissionEventResolver {
       userId,
       createdAt: new Date().toISOString(),
       journeyId,
+      stepName,
       teamId: 'team.id' // TODO: update
     })
   }

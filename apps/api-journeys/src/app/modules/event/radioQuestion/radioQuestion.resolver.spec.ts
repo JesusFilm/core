@@ -24,7 +24,8 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((input) => input),
-      getBlockById: jest.fn(() => block)
+      getBlockById: jest.fn(() => block),
+      getStepHeader: jest.fn(() => 'header')
     })
   }
 
@@ -52,6 +53,7 @@ describe('RadioQuestionSubmissionEventResolver', () => {
         userId: 'userId',
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
+        stepName: 'header',
         teamId: 'team.id' // TODO: update
       })
     })

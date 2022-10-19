@@ -24,7 +24,8 @@ describe('ButtonClickEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((event) => event),
-      getBlockById: jest.fn(() => block)
+      getBlockById: jest.fn(() => block),
+      getStepHeader: jest.fn(() => 'header')
     })
   }
 
@@ -48,6 +49,7 @@ describe('ButtonClickEventResolver', () => {
         userId: 'userId',
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
+        stepName: 'header',
         teamId: 'team.id' // TODO: update
       })
     })

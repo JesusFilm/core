@@ -28,11 +28,11 @@ export class EventService extends BaseService {
   }
 
   @KeyAsId()
-  async getStepHeader(cardBlockId: string): Promise<string> {
+  async getStepHeader(parentBlockId: string): Promise<string> {
     const cardBlock: CardBlock = await (
       await this.db.query(aql`
       FOR block in blocks
-        FILTER block._key == ${cardBlockId}
+        FILTER block._key == ${parentBlockId}
           LIMIT 1
           return block
     `)

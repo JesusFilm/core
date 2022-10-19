@@ -23,7 +23,8 @@ describe('VideoResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((input) => input),
-      getBlockById: jest.fn(() => block)
+      getBlockById: jest.fn(() => block),
+      getStepHeader: jest.fn(() => 'header')
     })
   }
 
@@ -55,6 +56,7 @@ describe('VideoResolver', () => {
         userId: 'userid',
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
+        stepName: 'header',
         teamId: 'team.id' // TODO: update
       })
     })
@@ -83,6 +85,7 @@ describe('VideoResolver', () => {
         userId: 'userid',
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
+        stepName: 'header',
         teamId: 'team.id' // TODO: update
       })
     })
@@ -111,6 +114,7 @@ describe('VideoResolver', () => {
         userId: 'userid',
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
+        stepName: 'header',
         teamId: 'team.id' // TODO: update
       })
     })
@@ -141,6 +145,7 @@ describe('VideoResolver', () => {
         userId: 'userid',
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
+        stepName: 'header',
         teamId: 'team.id' // TODO: update
       })
     })
@@ -169,6 +174,7 @@ describe('VideoResolver', () => {
         userId: 'userid',
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
+        stepName: 'header',
         teamId: 'team.id' // TODO: update
       })
     })
@@ -199,6 +205,7 @@ describe('VideoResolver', () => {
         userId: 'userid',
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
+        stepName: 'header',
         teamId: 'team.id' // TODO: update
       })
     })
@@ -230,6 +237,7 @@ describe('VideoResolver', () => {
         userId: 'userid',
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
+        stepName: 'header',
         teamId: 'team.id' // TODO: update
       })
     })
