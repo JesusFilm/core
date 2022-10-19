@@ -673,7 +673,11 @@ const Template: Story = ({ ...args }) => {
           journey: {
             id: 'journeyId',
             themeMode: ThemeMode.light,
-            themeName: ThemeName.base
+            themeName: ThemeName.base,
+            language: {
+              __typename: 'Language',
+              bcp47: 'en'
+            }
           } as unknown as Journey,
           admin: true
         }}

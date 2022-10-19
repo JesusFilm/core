@@ -54,7 +54,13 @@ const VariantTemplate: Story<
             alignItems="center"
           >
             <Icon {...args} iconName={variant} />
-            <Typography mt={1} variant="caption">{`${variant}`}</Typography>
+            <Typography mt={1} variant="caption">{`${
+              variant === IconName.ArrowBackRounded
+                ? 'ArrowLeftRounded'
+                : variant === IconName.ArrowForwardRounded
+                ? 'ArrowRightRounded'
+                : variant
+            }`}</Typography>
           </Grid>
         ))}
       </Grid>

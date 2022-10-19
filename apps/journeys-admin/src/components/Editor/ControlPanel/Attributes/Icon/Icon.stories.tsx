@@ -103,5 +103,4 @@ export const Filled: Story = () => {
     </MockedProvider>
   )
 }
-
 export default IconStory as Meta
