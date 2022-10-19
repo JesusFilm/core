@@ -29,7 +29,8 @@ export class RadioQuestionSubmissionEventResolver {
       __typename: 'RadioQuestionSubmissionEvent',
       userId,
       createdAt: new Date().toISOString(),
-      journeyId
+      journeyId,
+      teamId: 'team.id' // TODO: update
     })
   }
 }

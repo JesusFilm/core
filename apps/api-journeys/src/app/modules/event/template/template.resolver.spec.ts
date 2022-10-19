@@ -67,8 +67,7 @@ describe('TemplateResolver', () => {
       ).toEqual({
         __typename: 'TemplateLibraryViewEvent',
         id: '1',
-        userId: 'userId',
-        createdAt: new Date().toISOString()
+        userId: 'userId'
       })
     })
   })
@@ -85,7 +84,6 @@ describe('TemplateResolver', () => {
         __typename: 'TemplateUseEvent',
         id: '1',
         userId: 'userId',
-        createdAt: new Date().toISOString(),
         journeyId: 'journeyId'
       })
     })
@@ -106,7 +104,6 @@ describe('TemplateResolver', () => {
         __typename: 'TemplatePreviewEvent',
         id: '1',
         userId: 'userId',
-        createdAt: new Date().toISOString(),
         journeyId: 'journeyId'
       })
     })

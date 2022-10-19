@@ -48,7 +48,8 @@ describe('StepViewEventResolver', () => {
         __typename: 'StepViewEvent',
         userId: 'userId',
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id'
+        journeyId: 'journey.id',
+        teamId: 'team.id' // TODO: update
       })
     })
   })

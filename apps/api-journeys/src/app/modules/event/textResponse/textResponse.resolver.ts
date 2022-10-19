@@ -28,7 +28,8 @@ export class TextResponseSubmissionEventResolver {
       __typename: 'TextResponseSubmissionEvent',
       userId,
       createdAt: new Date().toISOString(),
-      journeyId
+      journeyId,
+      teamId: 'team.id' // TODO: update
     })
   }
 }

@@ -47,7 +47,8 @@ describe('ButtonClickEventResolver', () => {
         __typename: 'ButtonClickEvent',
         userId: 'userId',
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id'
+        journeyId: 'journey.id',
+        teamId: 'team.id' // TODO: update
       })
     })
   })

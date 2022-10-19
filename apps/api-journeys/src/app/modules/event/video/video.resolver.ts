@@ -38,7 +38,8 @@ export class VideoStartEventResolver {
       __typename: 'VideoStartEvent',
       userId,
       createdAt: new Date().toISOString(),
-      journeyId
+      journeyId,
+      teamId: 'team.id' // TODO: update
     })
   }
 }
@@ -59,7 +60,8 @@ export class VideoPlayEventResolver {
       __typename: 'VideoPlayEvent',
       userId,
       createdAt: new Date().toISOString(),
-      journeyId
+      journeyId,
+      teamId: 'team.id' // TODO: update
     })
   }
 }
@@ -80,7 +82,8 @@ export class VideoPuaseEventResolver {
       __typename: 'VideoPauseEvent',
       userId,
       createdAt: new Date().toISOString(),
-      journeyId
+      journeyId,
+      teamId: 'team.id' // TODO: update
     })
   }
 }
@@ -101,7 +104,8 @@ export class VideoCompleteEventResolver {
       __typename: 'VideoCompleteEvent',
       userId,
       createdAt: new Date().toISOString(),
-      journeyId
+      journeyId,
+      teamId: 'team.id' // TODO: update
     })
   }
 }
@@ -122,7 +126,8 @@ export class VideoExpandEventResolver {
       __typename: 'VideoExpandEvent',
       userId,
       createdAt: new Date().toISOString(),
-      journeyId
+      journeyId,
+      teamId: 'team.id' // TODO: update
     })
   }
 }
@@ -143,7 +148,8 @@ export class VideoCollapseEventResolver {
       __typename: 'VideoCollapseEvent',
       userId,
       createdAt: new Date().toISOString(),
-      journeyId
+      journeyId,
+      teamId: 'team.id' // TODO: update
     })
   }
 }
@@ -164,7 +170,8 @@ export class VideoProgressEventResolver {
       __typename: 'VideoProgressEvent',
       userId,
       createdAt: new Date().toISOString(),
-      journeyId
+      journeyId,
+      teamId: 'team.id' // TODO: update
     })
   }
 }

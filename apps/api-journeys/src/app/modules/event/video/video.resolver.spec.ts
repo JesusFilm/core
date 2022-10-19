@@ -54,7 +54,8 @@ describe('VideoResolver', () => {
         __typename: 'VideoStartEvent',
         userId: 'userid',
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id'
+        journeyId: 'journey.id',
+        teamId: 'team.id' // TODO: update
       })
     })
   })
@@ -81,7 +82,8 @@ describe('VideoResolver', () => {
         __typename: 'VideoPlayEvent',
         userId: 'userid',
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id'
+        journeyId: 'journey.id',
+        teamId: 'team.id' // TODO: update
       })
     })
   })
@@ -108,7 +110,8 @@ describe('VideoResolver', () => {
         __typename: 'VideoPauseEvent',
         userId: 'userid',
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id'
+        journeyId: 'journey.id',
+        teamId: 'team.id' // TODO: update
       })
     })
   })
@@ -137,7 +140,8 @@ describe('VideoResolver', () => {
         __typename: 'VideoCompleteEvent',
         userId: 'userid',
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id'
+        journeyId: 'journey.id',
+        teamId: 'team.id' // TODO: update
       })
     })
   })
@@ -164,7 +168,8 @@ describe('VideoResolver', () => {
         __typename: 'VideoExpandEvent',
         userId: 'userid',
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id'
+        journeyId: 'journey.id',
+        teamId: 'team.id' // TODO: update
       })
     })
   })
@@ -193,7 +198,8 @@ describe('VideoResolver', () => {
         __typename: 'VideoCollapseEvent',
         userId: 'userid',
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id'
+        journeyId: 'journey.id',
+        teamId: 'team.id' // TODO: update
       })
     })
   })
@@ -223,7 +229,8 @@ describe('VideoResolver', () => {
         __typename: 'VideoProgressEvent',
         userId: 'userid',
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id'
+        journeyId: 'journey.id',
+        teamId: 'team.id' // TODO: update
       })
     })
   })

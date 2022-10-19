@@ -23,8 +23,7 @@ export class TemplateLibraryViewEventResolver {
     return await this.eventService.save({
       __typename: 'TemplateLibraryViewEvent',
       userId,
-      id: uuidv4(),
-      createdAt: new Date().toISOString()
+      id: uuidv4()
     })
   }
 }
@@ -42,8 +41,7 @@ export class TemplateUseEventResolver {
       ...input,
       __typename: 'TemplateUseEvent',
       userId,
-      id: uuidv4(),
-      createdAt: new Date().toISOString()
+      id: uuidv4()
     })
   }
 }
@@ -61,8 +59,7 @@ export class TemplatePreviewEventResolver {
       ...input,
       __typename: 'TemplatePreviewEvent',
       userId,
-      id: uuidv4(),
-      createdAt: new Date().toISOString()
+      id: uuidv4()
     })
   }
 }

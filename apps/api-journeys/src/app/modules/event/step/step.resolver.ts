@@ -28,7 +28,8 @@ export class StepViewEventResolver {
       __typename: 'StepViewEvent',
       userId,
       createdAt: new Date().toISOString(),
-      journeyId
+      journeyId,
+      teamId: 'team.id' // TODO: update
     })
   }
 }

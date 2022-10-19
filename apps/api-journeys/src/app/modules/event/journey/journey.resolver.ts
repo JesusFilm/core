@@ -23,7 +23,8 @@ export class JourneyViewEventResolver {
       ...input,
       __typename: 'JourneyViewEvent',
       userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      teamId: 'team.id' // TODO: update
     })
   }
 }
