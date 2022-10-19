@@ -33,18 +33,19 @@ export function ContainedCover({
   const [loading, setLoading] = useState(true)
 
   const isYouTube = videoBlock?.source === VideoBlockSource.youTube
+  const iosMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
 
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
-        autoplay: !isYouTube,
+        autoplay: !(isYouTube && iosMobile),
         controls: false,
         preload: 'metadata',
         userActions: {
           hotkeys: false,
           doubleClick: false
         },
-        muted: !isYouTube,
+        muted: !(isYouTube && iosMobile),
         loop: true,
         poster: backgroundBlur
       })
@@ -73,7 +74,7 @@ export function ContainedCover({
         }
       })
     }
-  }, [imageBlock, theme, videoBlock, backgroundBlur, isYouTube])
+  }, [imageBlock, theme, videoBlock, backgroundBlur, isYouTube, iosMobile])
 
   const videoImage =
     videoBlock?.source === VideoBlockSource.internal
@@ -96,7 +97,8 @@ export function ContainedCover({
               objectFit: 'cover'
             },
             '> .vjs-loading-spinner': {
-              zIndex: 1
+              zIndex: 1,
+              display: isYouTube && iosMobile ? 'none' : 'block'
             },
             '> .vjs-poster': {
               backgroundSize: 'cover'
@@ -104,7 +106,7 @@ export function ContainedCover({
           }
         }}
       >
-        {videoBlock?.videoId != null && !isYouTube && (
+        {videoBlock?.videoId != null && (
           <video
             ref={videoRef}
             className="video-js"

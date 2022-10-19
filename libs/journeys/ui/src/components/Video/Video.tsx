@@ -52,7 +52,7 @@ export function Video({
       : undefined
   }, [posterBlock, theme])
 
-  const mobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
+  const iosMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent)
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -167,7 +167,11 @@ export function Video({
             display:
               autoplay !== true && source === VideoBlockSource.youTube
                 ? 'none'
-                : null
+                : autoplay === true &&
+                  source === VideoBlockSource.youTube &&
+                  iosMobile
+                ? 'none'
+                : 'block'
           },
           '> .vjs-big-play-button': {
             zIndex: 1
@@ -185,6 +189,16 @@ export function Video({
           '&:hover': {
             color: VIDEO_FOREGROUND_COLOR
           }
+        },
+        // renders big play button for youtube videos on IOS devices
+        'video::-webkit-media-controls-start-playback-button': {
+          display: 'none'
+        },
+        '> .video-js.vjs-controls-enabled .vjs-big-play-button': {
+          display: 'none'
+        },
+        '> .video-js.vjs-controls-enabled.vjs-paused .vjs-big-play-button': {
+          display: 'block'
         }
       }}
     >
@@ -262,8 +276,7 @@ export function Video({
         </>
       )}
       {/* Video Image  */}
-      {/* Issues with video image covering controls */}
-      {videoImage != null && posterBlock?.src == null && !mobile && loading && (
+      {videoImage != null && posterBlock?.src == null && loading && (
         <NextImage
           src={videoImage}
           alt="video image"
