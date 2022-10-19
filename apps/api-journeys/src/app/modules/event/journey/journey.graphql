@@ -10,16 +10,7 @@ type JourneyViewEvent implements Event {
   id: ID!
   userId: ID!
   createdAt: DateTime!
-  journey: Journey @deprecated(reason: "no longer used")
-  journeyId: ID
-  """
-  user ip address
-  """
-  locationInfo: String
-  """
-  user-agent data from header
-  """
-  deviceinfo: String
+  journey: Journey
 }
 
 extend type Mutation {
