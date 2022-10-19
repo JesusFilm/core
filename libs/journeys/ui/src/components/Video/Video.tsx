@@ -181,7 +181,7 @@ export function Video({
             color: VIDEO_FOREGROUND_COLOR
           }
         },
-        // renders big play button for youtube videos on IOS devices
+        // renders big play button for youtube videos on iOS devices
         'video::-webkit-media-controls-start-playback-button': {
           display: 'none'
         },
@@ -218,7 +218,7 @@ export function Video({
               )}
             {source === VideoBlockSource.youTube && (
               <source
-                src={`https://www.youtube.com/embed/watch?v=${videoId}`}
+                src={`https://www.youtube.com/watch?v=${videoId}`}
                 type="video/youtube"
               />
             )}

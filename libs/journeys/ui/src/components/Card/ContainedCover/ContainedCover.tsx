@@ -36,17 +36,18 @@ export function ContainedCover({
 
   useEffect(() => {
     if (videoRef.current != null) {
+      // autoplay when video is YouTube on iOS does not work. We should disable autoplay in that case.
+      const isYouTubeAndiOS =
+        isYouTube && /iPhone|iPad|iPod/i.test(navigator?.userAgent)
       playerRef.current = videojs(videoRef.current, {
-        autoplay: !(
-          isYouTube && /iPhone|iPad|iPod/i.test(navigator?.userAgent)
-        ),
+        autoplay: !isYouTubeAndiOS,
         controls: false,
         preload: 'metadata',
         userActions: {
           hotkeys: false,
           doubleClick: false
         },
-        muted: !(isYouTube && /iPhone|iPad|iPod/i.test(navigator?.userAgent)),
+        muted: true,
         loop: true,
         poster: backgroundBlur
       })
