@@ -3,7 +3,14 @@ import { aql } from 'arangojs'
 import { BaseService } from '@core/nest/database/BaseService'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
-import { Block } from '../../__generated__/graphql'
+import { orderBy, findIndex } from 'lodash'
+import {
+  Block,
+  TypographyBlock,
+  CardBlock,
+  StepBlock,
+  TypographyVariant
+} from '../../__generated__/graphql'
 
 @Injectable()
 export class EventService extends BaseService {
@@ -18,5 +25,99 @@ export class EventService extends BaseService {
         RETURN block
     `)
     return await result.next()
+  }
+
+  @KeyAsId()
+  async getStepHeader(cardBlockId: string): Promise<string> {
+    const cardBlock: CardBlock = await (
+      await this.db.query(aql`
+      FOR block in blocks
+        FILTER block._key == ${cardBlockId}
+          LIMIT 1
+          return block
+    `)
+    ).next()
+
+    const typogsArray: TypographyBlock[] = await (
+      await this.db.query(aql`
+    FOR block in blocks
+      FILTER block.__typename == "TypgoraphyBlock"
+      AND block.parentBlockId == ${cardBlock.id} 
+        return block
+    `)
+    ).all()
+
+    const typog =
+      typogsArray.length > 0
+        ? typogsArray.reduce(findMostImportantTypographyBlock, null)
+        : undefined
+
+    if (typog != null) {
+      return typog.content
+    } else {
+      const stepBlock: StepBlock = await (
+        await this.db.query(aql`
+        FOR block in blocks
+          FILTER block._key == ${cardBlock.parentBlockId}
+            LIMIT 1
+            return block
+      `)
+      ).next()
+
+      const steps: StepBlock[] = orderBy(
+        await (
+          await this.db.query(aql`
+        FOR block in blocks
+          FILTER block.__typename == "StepBlock"
+              return block
+      `)
+        ).all(),
+        ['parentOrder'],
+        ['asc']
+      )
+
+      return getStepNumber(stepBlock.id, steps)
+    }
+  }
+}
+
+const orderedVariants: TypographyVariant[] = [
+  TypographyVariant.overline,
+  TypographyVariant.caption,
+  TypographyVariant.body2,
+  TypographyVariant.body1,
+  TypographyVariant.subtitle2,
+  TypographyVariant.subtitle1,
+  TypographyVariant.h6,
+  TypographyVariant.h5,
+  TypographyVariant.h4,
+  TypographyVariant.h3,
+  TypographyVariant.h2,
+  TypographyVariant.h1
+]
+
+function findMostImportantTypographyBlock(
+  previous: TypographyBlock | null,
+  current: TypographyBlock
+): TypographyBlock | null {
+  if (current.__typename !== 'TypographyBlock') return previous
+  if (previous === null) return current
+
+  const previousIndex = orderedVariants.findIndex(
+    (variant) => variant === previous.variant
+  )
+  const currentIndex = orderedVariants.findIndex(
+    (variant) => variant === current.variant
+  )
+  return currentIndex > previousIndex ? current : previous
+}
+
+function getStepNumber(stepId: string, steps: StepBlock[]): string {
+  const index = findIndex(steps, { id: stepId })
+  console.log(index)
+  if (index === -1) {
+    return 'Untitled'
+  } else {
+    return `Step number ${index + 1}`
   }
 }
