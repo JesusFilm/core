@@ -26,6 +26,7 @@ import BeenhereRounded from '@mui/icons-material/BeenhereRounded'
 import SendRounded from '@mui/icons-material/SendRounded'
 import SubscriptionsRounded from '@mui/icons-material/SubscriptionsRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import {
   IconColor,
   IconName
@@ -56,6 +57,11 @@ export const icons = [
     value: IconName.ChatBubbleOutlineRounded,
     label: 'Chat Bubble',
     display: <ChatBubbleOutlineRounded />
+  },
+  {
+    value: IconName.ChatBubbleOutlineRounded,
+    label: 'Chat Bubble RTL',
+    display: <ChatBubbleOutlineRounded sx={{ transform: 'scaleX(-1)' }} />
   },
   {
     value: IconName.CheckCircleRounded,
@@ -109,6 +115,11 @@ export const icons = [
   },
   { value: IconName.SendRounded, label: 'Send', display: <SendRounded /> },
   {
+    value: IconName.SendRounded,
+    label: 'Send RTL',
+    display: <SendRounded sx={{ transform: 'scaleX(-1)' }} />
+  },
+  {
     value: IconName.SubscriptionsRounded,
     label: 'Subscription',
     display: <SubscriptionsRounded />
@@ -143,6 +154,8 @@ export function Icon({ id }: IconProps): ReactElement {
   const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as IconParentBlock
+
+  const rtl = getJourneyRTL(journey)
 
   // Get updated iconBlock, passing via props doesn't update as selectedBlock doesn't change
   const iconBlock = selectedBlock?.children.find(
@@ -196,7 +209,17 @@ export function Icon({ id }: IconProps): ReactElement {
           <MenuItem value="">Select an icon...</MenuItem>
           {icons.map(({ value, label, display }) => {
             return (
-              <MenuItem key={`button-icon-name-${value}`} value={value}>
+              <MenuItem
+                key={`button-icon-name-${value}`}
+                // Disables Chat Bubble and Send RTL if journey is not RTL
+                // Disables Chat Bubble and Send if journey is RTL
+                disabled={
+                  (!rtl &&
+                    (label === 'Chat Bubble RTL' || label === 'Send RTL')) ||
+                  (rtl && (label === 'Chat Bubble' || label === 'Send'))
+                }
+                value={value}
+              >
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   {display}
                   <Typography sx={{ pl: 3 }}>{label}</Typography>
