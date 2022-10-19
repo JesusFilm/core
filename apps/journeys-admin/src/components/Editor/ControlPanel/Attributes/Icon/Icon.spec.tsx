@@ -39,23 +39,6 @@ describe('Icon', () => {
     children: [icon]
   }
 
-  const journey = {
-    id: 'journeyId',
-    language: {
-      __typename: 'Language',
-      id: '529',
-      bcp47: 'en',
-      iso3: 'eng',
-      name: [
-        {
-          __typename: 'Translation',
-          value: 'English',
-          primary: true
-        }
-      ]
-    }
-  } as unknown as Journey
-
   it('shows toggle options if there is a icon', () => {
     const { getByText } = render(
       <MockedProvider>
@@ -132,7 +115,7 @@ describe('Icon', () => {
       >
         <JourneyProvider
           value={{
-            journey,
+            journey: { id: 'journeyId' } as unknown as Journey,
             admin: true
           }}
         >
@@ -182,7 +165,7 @@ describe('Icon', () => {
       >
         <JourneyProvider
           value={{
-            journey,
+            journey: { id: 'journeyId' } as unknown as Journey,
             admin: true
           }}
         >
@@ -231,7 +214,7 @@ describe('Icon', () => {
       >
         <JourneyProvider
           value={{
-            journey,
+            journey: { id: 'journeyId' } as unknown as Journey,
             admin: true
           }}
         >
