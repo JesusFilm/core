@@ -21,6 +21,7 @@ export class JourneyViewEventResolver {
     @CurrentUserInfo() currentUserInfo,
     @Args('input') input: JourneyViewEventCreateInput
   ): Promise<JourneyViewEvent> {
+    // TODO: should check if visitor team exists and create if not
     return await this.eventService.save({
       ...input,
       ...currentUserInfo,
