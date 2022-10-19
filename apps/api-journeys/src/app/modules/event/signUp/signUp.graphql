@@ -14,7 +14,7 @@ type SignUpSubmissionEvent implements Event {
   createdAt: DateTime!
   name: String!
   email: String!
-  block: SignUpBlock
+  block: SignUpBlock @deprecated(reason: "never used")
 }
 
 extend type Mutation {

@@ -1,29 +1,29 @@
 type TemplateLibraryViewEvent implements Event {
-  id: ID!
-  userId: ID!
-  createdAt: DateTime!
+  id: ID! @deprecated(reason: "never used")
+  userId: ID! @deprecated(reason: "never used")
+  createdAt: DateTime! @deprecated(reason: "never used")
 }
 
 input TemplateUseEventInput {
-  journeyId: ID!
+  journeyId: ID @deprecated(reason: "never used")
 }
 
 type TemplateUseEvent implements Event {
-  id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  journeyId: ID!
+  id: ID! @deprecated(reason: "never used")
+  userId: ID! @deprecated(reason: "never used")
+  createdAt: DateTime! @deprecated(reason: "never used")
+  journeyId: ID @deprecated(reason: "never used")
 }
 
 input TemplatePreviewEventInput {
-  journeyId: ID!
+  journeyId: ID @deprecated(reason: "never used")
 }
 
 type TemplatePreviewEvent implements Event {
-  id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  journeyId: ID!
+  id: ID! @deprecated(reason: "never used")
+  userId: ID! @deprecated(reason: "never used")
+  createdAt: DateTime! @deprecated(reason: "never used")
+  journeyId: ID @deprecated(reason: "never used")
 }
 
 extend type Mutation {

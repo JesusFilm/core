@@ -12,7 +12,7 @@ type TextResponseSubmissionEvent implements Event {
   userId: ID!
   createdAt: DateTime!
   value: String!
-  block: TextResponseBlock
+  block: TextResponseBlock @deprecated(reason: "never used")
 }
 
 extend type Mutation {

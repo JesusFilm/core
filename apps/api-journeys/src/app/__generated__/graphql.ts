@@ -376,11 +376,11 @@ export class StepViewEventCreateInput {
 }
 
 export class TemplateUseEventInput {
-    journeyId: string;
+    journeyId?: Nullable<string>;
 }
 
 export class TemplatePreviewEventInput {
-    journeyId: string;
+    journeyId?: Nullable<string>;
 }
 
 export class TextResponseSubmissionEventCreateInput {
@@ -762,7 +762,7 @@ export class TemplateUseEvent implements Event {
     id: string;
     userId: string;
     createdAt: DateTime;
-    journeyId: string;
+    journeyId?: Nullable<string>;
 }
 
 export class TemplatePreviewEvent implements Event {
@@ -770,7 +770,7 @@ export class TemplatePreviewEvent implements Event {
     id: string;
     userId: string;
     createdAt: DateTime;
-    journeyId: string;
+    journeyId?: Nullable<string>;
 }
 
 export class TextResponseSubmissionEvent implements Event {

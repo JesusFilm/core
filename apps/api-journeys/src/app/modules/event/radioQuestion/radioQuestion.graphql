@@ -12,7 +12,7 @@ type RadioQuestionSubmissionEvent implements Event {
   userId: ID!
   createdAt: DateTime!
   radioOptionBlockId: ID!
-  block: RadioQuestionBlock
+  block: RadioQuestionBlock @deprecated(reason: "never used")
 }
 
 extend type Mutation {

@@ -10,7 +10,7 @@ type JourneyViewEvent implements Event {
   id: ID!
   userId: ID!
   createdAt: DateTime!
-  journey: Journey
+  journey: Journey @deprecated(reason: "never used")
 }
 
 extend type Mutation {

@@ -10,7 +10,7 @@ type ButtonClickEvent implements Event {
   id: ID!
   userId: ID!
   createdAt: DateTime!
-  block: ButtonBlock
+  block: ButtonBlock @deprecated(reason: "never used")
 }
 
 extend type Mutation {
