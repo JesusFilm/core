@@ -80,10 +80,10 @@ describe('EventService', () => {
         content: 'I am body text'
       }
 
-      db.query.mockReturnValueOnce(mockDbQueryResult(db, [cardBlock]))
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [cardBlock])) // cardBlock query
       db.query.mockReturnValueOnce(
         mockDbQueryResult(db, [typogBlock, secondaryTypog])
-      )
+      ) // typog block array query
 
       expect(await service.getStepHeader('card1.id')).toEqual(
         typogBlock.content
@@ -111,12 +111,12 @@ describe('EventService', () => {
         parentOrder: 2
       }
 
-      db.query.mockReturnValueOnce(mockDbQueryResult(db, [card2]))
-      db.query.mockReturnValueOnce(mockDbQueryResult(db, []))
-      db.query.mockReturnValueOnce(mockDbQueryResult(db, [step2]))
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [card2])) // card block query
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [])) // typog blocks array query
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [step2])) // step block query
       db.query.mockReturnValueOnce(
-        mockDbQueryResult(db, [stepBlock, step2, step3])
-      )
+        mockDbQueryResult(db, [step3, step2, stepBlock]) // reverse parentBlockOrder to test _orderBy
+      ) // step blocks array query
 
       expect(await service.getStepHeader('card2.id')).toEqual('Step number 2')
     })
