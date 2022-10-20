@@ -16,7 +16,7 @@ import {
 
 import { simpleComponentConfig } from '../../simpleComponentConfig'
 import { useBreakpoints } from '../../useBreakpoints'
-import { themes } from '..'
+import { getTheme, ThemeMode, ThemeName } from '..'
 
 const ThemeDemo = {
   ...simpleComponentConfig,
@@ -382,7 +382,10 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
   )
 }
 
-const breakpoints = themes.base.light.breakpoints
+const breakpoints = getTheme({
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light
+}).breakpoints
 
 export const Viewport = ViewportTemplate.bind({})
 Viewport.args = {
