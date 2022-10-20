@@ -623,7 +623,14 @@ Default.args = {
       __typename: 'Language',
       id: '529',
       bcp47: 'en',
-      iso3: 'eng'
+      iso3: 'eng',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'English',
+          primary: true
+        }
+      ]
     },
     status: JourneyStatus.draft,
     createdAt: '2021-11-19T12:34:56.647Z',

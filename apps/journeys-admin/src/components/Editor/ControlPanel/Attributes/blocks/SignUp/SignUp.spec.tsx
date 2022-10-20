@@ -95,7 +95,7 @@ describe('SignUp Attributes', () => {
       getByRole('button', { name: 'Action URL/Website' })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Button Icon Arrow Forward' })
+      getByRole('button', { name: 'Button Icon Arrow Right' })
     ).toBeInTheDocument()
   })
 
@@ -110,7 +110,7 @@ describe('SignUp Attributes', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Forward' }))
+    fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Right' }))
     expect(getAllByText('Button Icon')).toHaveLength(2)
   })
 

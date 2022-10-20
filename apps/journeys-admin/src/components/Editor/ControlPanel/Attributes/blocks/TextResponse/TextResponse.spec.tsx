@@ -76,7 +76,7 @@ describe('TextResponse', () => {
       getByRole('button', { name: 'Action URL/Website' })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Button Icon Arrow Forward' })
+      getByRole('button', { name: 'Button Icon Arrow Right' })
     ).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Feedback complete label' })
@@ -127,7 +127,7 @@ describe('TextResponse', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Forward' }))
+    fireEvent.click(getByRole('button', { name: 'Button Icon Arrow Right' }))
     expect(getByTestId('drawer-title')).toHaveTextContent('Button Icon')
   })
 })

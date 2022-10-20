@@ -625,7 +625,14 @@ const Template: Story = (args) => {
               __typename: 'Language',
               id: '529',
               bcp47: 'en',
-              iso3: 'eng'
+              iso3: 'eng',
+              name: [
+                {
+                  __typename: 'Translation',
+                  value: 'English',
+                  primary: true
+                }
+              ]
             }
           } as unknown as Journey,
           admin: true
