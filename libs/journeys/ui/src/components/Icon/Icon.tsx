@@ -16,14 +16,20 @@ import BeenhereRounded from '@mui/icons-material/BeenhereRounded'
 import SendRounded from '@mui/icons-material/SendRounded'
 import SubscriptionsRounded from '@mui/icons-material/SubscriptionsRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
+import { IconName } from '../../../__generated__/globalTypes'
 import { BlockFields_IconBlock as IconBlock } from '../../libs/block/__generated__/BlockFields'
 import type { TreeBlock } from '../../libs/block'
+import { useJourney } from '../../libs/JourneyProvider'
+import { getJourneyRTL } from '../../libs/rtl'
 
 export function Icon({
   iconName,
   iconColor,
   iconSize
 }: TreeBlock<IconBlock>): ReactElement | null {
+  const { journey } = useJourney()
+  const rtl = getJourneyRTL(journey)
+
   const fontSize =
     iconSize === 'sm'
       ? '16px'
@@ -55,12 +61,17 @@ export function Icon({
     ContactSupportRounded
   }
 
+  const iconRTL =
+    rtl &&
+    (iconName === IconName.ChatBubbleOutlineRounded ||
+      iconName === IconName.SendRounded)
+
   return iconName === null ? (
     <div data-testid="None" />
   ) : (
     createElement(icons[iconName], {
       color: iconColor ?? undefined,
-      sx: { fontSize }
+      sx: { fontSize, transform: iconRTL ? 'scaleX(-1)' : undefined }
     })
   )
 }
