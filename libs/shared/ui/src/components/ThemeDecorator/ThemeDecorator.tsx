@@ -1,12 +1,8 @@
 import { Parameters } from '@storybook/react'
 import { ReactElement, ReactNode } from 'react'
 import { ThemeProvider } from '../../components/ThemeProvider'
-import {
-  ThemeMode,
-  ThemeName
-} from '../../components/ThemeProvider/ThemeProvider'
 import { globalTypes } from '../../../../../../.storybook/preview'
-import { themes } from '../../libs/themes'
+import { getTheme, ThemeMode, ThemeName } from '../../libs/themes'
 
 const themeMode = globalTypes.theme.toolbar.items
 
@@ -20,6 +16,11 @@ const ThemeContainer = ({
   layout = 'padded',
   children
 }: ThemeDecoratorProps): ReactElement => {
+  const theme = getTheme({
+    themeName: ThemeName.base,
+    themeMode: ThemeMode[mode as ThemeMode]
+  })
+
   return (
     <div
       style={{
@@ -28,8 +29,8 @@ const ThemeContainer = ({
         minHeight: '50vh',
         overflow: 'auto',
         padding: layout === 'padded' ? '1.5rem' : '0px',
-        background: themes.base[mode as ThemeMode].palette.background.default,
-        color: themes.base[mode as ThemeMode].palette.text.primary
+        background: theme.palette.background.default,
+        color: theme.palette.text.primary
       }}
     >
       <ThemeProvider

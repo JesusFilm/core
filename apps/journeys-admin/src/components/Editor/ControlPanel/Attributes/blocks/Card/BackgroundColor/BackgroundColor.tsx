@@ -15,7 +15,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import { themes } from '@core/shared/ui/themes'
+import { getTheme, ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { CardFields } from '../../../../../../../../__generated__/CardFields'
 import { CardBlockBackgroundColorUpdate } from '../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 import { Swatch } from './Swatch'
@@ -71,10 +71,13 @@ export function BackgroundColor(): ReactElement {
 
   const { journey } = useJourney()
 
-  const cardTheme =
-    themes[cardBlock?.themeName ?? journey?.themeName ?? 'base'][
-      cardBlock?.themeMode ?? journey?.themeMode ?? 'dark'
-    ]
+  const themeName = cardBlock?.themeName ?? journey?.themeName ?? ThemeName.base
+  const themeMode = cardBlock?.themeMode ?? journey?.themeMode ?? ThemeMode.dark
+
+  const cardTheme = getTheme({
+    themeName,
+    themeMode
+  })
 
   const [tabValue, setTabValue] = useState(0)
   const [selectedColor, setSelectedColor] = useState(
