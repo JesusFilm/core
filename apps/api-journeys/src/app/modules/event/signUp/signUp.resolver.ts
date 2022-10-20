@@ -27,6 +27,8 @@ export class SignUpSubmissionEventResolver {
         ? await this.eventService.getStepHeader(block.parentBlockId)
         : 'Untitled'
 
+    // TODO: check name and email in visitorTeam and update if null
+
     return await this.eventService.save({
       ...input,
       __typename: 'SignUpSubmissionEvent',

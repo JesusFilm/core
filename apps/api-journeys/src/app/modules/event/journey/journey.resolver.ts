@@ -21,6 +21,7 @@ export class JourneyViewEventResolver {
     @CurrentUserInfo() userInfo,
     @Args('input') input: JourneyViewEventCreateInput
   ): Promise<JourneyViewEvent> {
+    // TODO:  check user info in visitorTeam and update if null
     return await this.eventService.save({
       ...input,
       ...userInfo,
