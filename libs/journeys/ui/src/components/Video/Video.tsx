@@ -162,10 +162,7 @@ export function Video({
           },
           '> .vjs-loading-spinner': {
             zIndex: 1,
-            display:
-              autoplay !== true && source === VideoBlockSource.youTube
-                ? 'none'
-                : null
+            display: source === VideoBlockSource.youTube ? 'none' : 'block'
           },
           '> .vjs-big-play-button': {
             zIndex: 1
@@ -183,6 +180,16 @@ export function Video({
           '&:hover': {
             color: VIDEO_FOREGROUND_COLOR
           }
+        },
+        // renders big play button for youtube videos on iOS devices
+        'video::-webkit-media-controls-start-playback-button': {
+          display: 'none'
+        },
+        '> .video-js.vjs-controls-enabled .vjs-big-play-button': {
+          display: 'none'
+        },
+        '> .video-js.vjs-controls-enabled.vjs-paused .vjs-big-play-button': {
+          display: 'block'
         }
       }}
     >

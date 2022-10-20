@@ -32,10 +32,15 @@ export function ContainedCover({
   const theme = useTheme()
   const [loading, setLoading] = useState(true)
 
+  const isYouTube = videoBlock?.source === VideoBlockSource.youTube
+
   useEffect(() => {
     if (videoRef.current != null) {
+      // autoplay when video is YouTube on iOS does not work. We should disable autoplay in that case.
+      const isYouTubeAndiOS =
+        isYouTube && /iPhone|iPad|iPod/i.test(navigator?.userAgent)
       playerRef.current = videojs(videoRef.current, {
-        autoplay: true,
+        autoplay: !isYouTubeAndiOS,
         controls: false,
         preload: 'metadata',
         userActions: {
@@ -71,7 +76,7 @@ export function ContainedCover({
         }
       })
     }
-  }, [imageBlock, theme, videoBlock, backgroundBlur])
+  }, [imageBlock, theme, videoBlock, backgroundBlur, isYouTube])
 
   const videoImage =
     videoBlock?.source === VideoBlockSource.internal
@@ -94,7 +99,8 @@ export function ContainedCover({
               objectFit: 'cover'
             },
             '> .vjs-loading-spinner': {
-              zIndex: 1
+              zIndex: 1,
+              display: isYouTube ? 'none' : 'block'
             },
             '> .vjs-poster': {
               backgroundSize: 'cover'
