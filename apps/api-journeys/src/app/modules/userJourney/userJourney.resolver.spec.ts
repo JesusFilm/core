@@ -11,13 +11,13 @@ import {
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { JourneyService } from '../journey/journey.service'
 import { UserRoleService } from '../userRole/userRole.service'
-import { UserTeamService } from '../userTeam/userTeam.service'
+import { MemberService } from '../member/member.service'
 import { UserJourneyResolver } from './userJourney.resolver'
 
 describe('UserJourneyResolver', () => {
   let resolver: UserJourneyResolver,
     service: UserJourneyService,
-    utService: UserTeamService
+    mService: MemberService
 
   const userJourney = {
     id: '1',
@@ -101,10 +101,10 @@ describe('UserJourneyResolver', () => {
     })
   }
 
-  const userTeamService = {
-    provide: UserTeamService,
+  const memberService = {
+    provide: MemberService,
     useFactory: () => ({
-      save: jest.fn((userTeam) => userTeam)
+      save: jest.fn((member) => member)
     })
   }
 
@@ -115,12 +115,12 @@ describe('UserJourneyResolver', () => {
         userJourneyService,
         journeyService,
         userRoleService,
-        userTeamService
+        memberService
       ]
     }).compile()
     resolver = module.get<UserJourneyResolver>(UserJourneyResolver)
     service = await module.resolve(UserJourneyService)
-    utService = module.get<UserTeamService>(UserTeamService)
+    mService = module.get<MemberService>(MemberService)
   })
 
   describe('userJourneyRequest', () => {
@@ -156,7 +156,7 @@ describe('UserJourneyResolver', () => {
 
     it('adds user to team', async () => {
       await resolver.userJourneyApprove(userJourney.id, actorUserJourney.userId)
-      expect(utService.save).toHaveBeenCalledWith(
+      expect(mService.save).toHaveBeenCalledWith(
         {
           id: '2:jfp-team',
           userId: '2',

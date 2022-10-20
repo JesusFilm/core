@@ -23,7 +23,7 @@ export async function jfpTeam(): Promise<void> {
       IN journeys
   `)
 
-  // add all users to JFP team (userTeams)
+  // add all users to JFP team (members)
   await db.query(aql`
     FOR userJourney IN userJourneys
       INSERT {
@@ -31,7 +31,7 @@ export async function jfpTeam(): Promise<void> {
         userId: userJourney.userId, 
         createdAt: DATE_ISO8601(DATE_NOW())
       }
-      INTO userTeams OPTIONS { ignoreErrors: true }
+      INTO members OPTIONS { ignoreErrors: true }
   `)
 
   // add all visitors to JFP team (visitors)

@@ -53,12 +53,12 @@ async function main(): Promise<void> {
     unique: true
   })
 
-  if (!(await db.collection('userTeams').exists()))
-    await db.createCollection('userTeams', {
+  if (!(await db.collection('members').exists()))
+    await db.createCollection('members', {
       keyOptions: { type: 'uuid' }
     })
 
-  await db.collection('userTeams').ensureIndex({
+  await db.collection('members').ensureIndex({
     type: 'persistent',
     fields: ['teamId', 'userId'],
     name: 'teamIdAndUserId',

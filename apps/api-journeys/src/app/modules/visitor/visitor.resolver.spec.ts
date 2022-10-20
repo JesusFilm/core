@@ -5,7 +5,7 @@ import { VisitorResolver } from './visitor.resolver'
 import { VisitorService } from './visitor.service'
 
 describe('VisitorResolver', () => {
-  let resolver: VisitorResolver, vtService: VisitorService
+  let resolver: VisitorResolver, vService: VisitorService
   const connection: VisitorsConnection = {
     edges: [],
     pageInfo: {
@@ -27,7 +27,7 @@ describe('VisitorResolver', () => {
       providers: [VisitorResolver, visitorService]
     }).compile()
     resolver = module.get<VisitorResolver>(VisitorResolver)
-    vtService = module.get<VisitorService>(VisitorService)
+    vService = module.get<VisitorService>(VisitorService)
   })
 
   describe('visitorsConnection', () => {
@@ -37,7 +37,7 @@ describe('VisitorResolver', () => {
 
     it('should call service with first, after and filter', async () => {
       await resolver.visitorsConnection('jfp-team', 50, 'cursorId')
-      expect(vtService.getList).toHaveBeenCalledWith({
+      expect(vService.getList).toHaveBeenCalledWith({
         after: 'cursorId',
         filter: { teamId: 'jfp-team' },
         first: 50

@@ -19,7 +19,7 @@ import {
 } from '../../__generated__/graphql'
 import { JourneyService } from '../journey/journey.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
-import { UserTeamService } from '../userTeam/userTeam.service'
+import { MemberService } from '../member/member.service'
 import { UserJourneyService } from './userJourney.service'
 
 @Resolver('UserJourney')
@@ -27,7 +27,7 @@ export class UserJourneyResolver {
   constructor(
     private readonly userJourneyService: UserJourneyService,
     private readonly journeyService: JourneyService,
-    private readonly userTeamService: UserTeamService
+    private readonly memberService: MemberService
   ) {}
 
   @Query()
@@ -92,7 +92,7 @@ export class UserJourneyResolver {
 
     console.log()
 
-    await this.userTeamService.save(
+    await this.memberService.save(
       {
         id: `${userId}:${journey.teamId}`,
         userId,

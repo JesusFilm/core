@@ -1,11 +1,11 @@
 import { Global, Module } from '@nestjs/common'
 import { DatabaseModule } from '@core/nest/database/DatabaseModule'
-import { UserTeamService } from './userTeam.service'
+import { MemberService } from './member.service'
 
 @Global()
 @Module({
   imports: [DatabaseModule],
-  providers: [UserTeamService],
-  exports: [UserTeamService]
+  providers: [MemberService],
+  exports: [MemberService]
 })
-export class UserTeamModule {}
+export class MemberModule {}

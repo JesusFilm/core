@@ -42,7 +42,7 @@ import {
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { UserRoleService } from '../userRole/userRole.service'
-import { UserTeamService } from '../userTeam/userTeam.service'
+import { MemberService } from '../member/member.service'
 import { JourneyService } from './journey.service'
 
 const ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED = 1210
@@ -54,7 +54,7 @@ export class JourneyResolver {
     private readonly blockService: BlockService,
     private readonly userJourneyService: UserJourneyService,
     private readonly userRoleService: UserRoleService,
-    private readonly userTeamService: UserTeamService
+    private readonly memberService: MemberService
   ) {}
 
   @Query()
@@ -194,7 +194,7 @@ export class JourneyResolver {
           journeyId: journey.id,
           role: UserJourneyRole.owner
         })
-        await this.userTeamService.save(
+        await this.memberService.save(
           {
             id: `${userId}:${team.id}`,
             userId,

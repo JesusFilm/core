@@ -16,7 +16,7 @@ import { BlockService } from '../block/block.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
 import { UserRoleResolver } from '../userRole/userRole.resolver'
-import { UserTeamService } from '../userTeam/userTeam.service'
+import { MemberService } from '../member/member.service'
 import { JourneyResolver } from './journey.resolver'
 import { JourneyService } from './journey.service'
 
@@ -51,7 +51,7 @@ describe('JourneyResolver', () => {
     bService: BlockService,
     ujService: UserJourneyService,
     urService: UserRoleService,
-    utService: UserTeamService
+    mService: MemberService
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
@@ -251,10 +251,10 @@ describe('JourneyResolver', () => {
     })
   }
 
-  const userTeamService = {
-    provide: UserTeamService,
+  const memberService = {
+    provide: MemberService,
     useFactory: () => ({
-      save: jest.fn((userTeam) => userTeam)
+      save: jest.fn((member) => member)
     })
   }
 
@@ -268,7 +268,7 @@ describe('JourneyResolver', () => {
         userJourneyService,
         UserRoleResolver,
         userRoleService,
-        userTeamService
+        memberService
       ]
     }).compile()
     resolver = module.get<JourneyResolver>(JourneyResolver)
@@ -276,7 +276,7 @@ describe('JourneyResolver', () => {
     ujService = module.get<UserJourneyService>(UserJourneyService)
     bService = module.get<BlockService>(BlockService)
     urService = module.get<UserRoleService>(UserRoleService)
-    utService = module.get<UserTeamService>(UserTeamService)
+    mService = module.get<MemberService>(MemberService)
   })
 
   describe('adminJourneysEmbed', () => {
@@ -650,13 +650,13 @@ describe('JourneyResolver', () => {
       })
     })
 
-    it('creates a UserTeam', async () => {
+    it('creates a Member', async () => {
       mockUuidv4.mockReturnValueOnce('journeyId')
       await resolver.journeyCreate(
         { title: 'Untitled Journey', languageId: '529' },
         'userId'
       )
-      expect(utService.save).toHaveBeenCalledWith(
+      expect(mService.save).toHaveBeenCalledWith(
         {
           id: 'userId:jfp-team',
           userId: 'userId',
