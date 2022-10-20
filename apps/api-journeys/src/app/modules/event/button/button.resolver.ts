@@ -7,7 +7,7 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   ButtonClickEvent,
   ButtonClickEventCreateInput,
-  Block
+  ButtonBlock
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
@@ -20,12 +20,15 @@ export class ButtonClickEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: ButtonClickEventCreateInput
   ): Promise<ButtonClickEvent> {
-    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const block = (await this.eventService.getBlockById(
+      input.blockId
+    )) as ButtonBlock
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null
         ? await this.eventService.getStepHeader(block.parentBlockId)
         : 'Untitled'
+    const buttonLabel: string = block.label
 
     return await this.eventService.save({
       ...input,
@@ -34,6 +37,7 @@ export class ButtonClickEventResolver {
       createdAt: new Date().toISOString(),
       journeyId,
       stepName,
+      buttonLabel,
       teamId: 'team.id' // TODO: update
     })
   }

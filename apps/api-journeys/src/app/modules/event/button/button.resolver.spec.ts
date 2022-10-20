@@ -32,7 +32,8 @@ describe('ButtonClickEventResolver', () => {
   const block = {
     id: 'block.id',
     journeyId: 'journey.id',
-    parentBlockId: 'parent.id'
+    parentBlockId: 'parent.id',
+    label: 'label'
   }
 
   beforeEach(async () => {
@@ -51,6 +52,7 @@ describe('ButtonClickEventResolver', () => {
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
         stepName: 'header',
+        buttonLabel: 'label',
         teamId: 'team.id' // TODO: update
       })
     })
