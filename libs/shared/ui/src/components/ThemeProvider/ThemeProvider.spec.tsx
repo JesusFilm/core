@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react'
-import { themes } from '../../libs/themes'
-import { ThemeName, ThemeMode } from './ThemeProvider'
+import { getTheme, ThemeName, ThemeMode } from '../../libs/themes'
 import { ThemeProvider } from '.'
 
 describe('ThemeProvider', () => {
@@ -13,7 +12,9 @@ describe('ThemeProvider', () => {
     expect(baseElement.parentElement?.innerHTML).toEqual(
       expect.stringContaining(
         `background-color:${
-          themes[ThemeName.base][ThemeMode.light].palette.background.default
+          getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.light })
+            .palette.background.default
+        }
         };`
       )
     )
@@ -28,7 +29,8 @@ describe('ThemeProvider', () => {
     expect(baseElement.parentElement?.innerHTML).toEqual(
       expect.stringContaining(
         `background-color:${
-          themes[ThemeName.base][ThemeMode.dark].palette.background.default
+          getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.light })
+            .palette.background.default
         };`
       )
     )
