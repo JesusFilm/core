@@ -14,7 +14,6 @@ describe('ThemeProvider', () => {
         `background-color:${
           getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.light })
             .palette.background.default
-        }
         };`
       )
     )
@@ -29,7 +28,7 @@ describe('ThemeProvider', () => {
     expect(baseElement.parentElement?.innerHTML).toEqual(
       expect.stringContaining(
         `background-color:${
-          getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.light })
+          getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.dark })
             .palette.background.default
         };`
       )
