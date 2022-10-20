@@ -46,7 +46,7 @@
     "@mdx-js/react": "^1.6.21",
     "@mui/icons-material": "^5.3.0",
     "@mui/lab": "^5.0.0-alpha.71",
-    "@mui/material": "^5.10.9",
+    "@mui/material": "^5.3.0",
     "@mui/styles": "^5.3.0",
     "@mui/system": "^5.3.0",
     "@mui/x-data-grid": "^5.3.0",
