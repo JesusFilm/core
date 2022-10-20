@@ -1075,6 +1075,44 @@ enum Role {
   publisher
 }
 
+"""A visitor with attributes connected to a team."""
+type VisitorTeam @key(fields: "id") {
+  id: ID!
+  teamId: ID!
+  userId: ID!
+  createdAt: String!
+}
+
+"""An edge in a connection."""
+type VisitorTeamEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: VisitorTeam!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+"""A list of visitors connected with a team."""
+type VisitorTeamsConnection {
+  """A list of edges."""
+  edges: [VisitorTeamEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
 extend type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction!
@@ -1182,6 +1220,18 @@ extend type Query {
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
   getUserRole: UserRole
+
+  """A list of visitors that are connected with a specific team."""
+  visitorTeamsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+  ): VisitorTeamsConnection!
 }
 
 extend type User @key(fields: "id") {

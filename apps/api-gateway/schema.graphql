@@ -594,6 +594,18 @@ input NavigateToJourneyActionInput {
   journeyId: String!
 }
 
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+}
+
 type PowerBiEmbed {
   """The embed token"""
   accessToken: String!
@@ -628,6 +640,18 @@ type Query {
   videoTag(id: ID!): VideoTag @join__field(graph: VIDEOS)
   videoTags: [VideoTag!] @join__field(graph: VIDEOS)
   videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
+
+  """A list of visitors that are connected with a specific team."""
+  visitorTeamsConnection(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the visitor items related to a specific team."""
+    teamId: String!
+  ): VisitorTeamsConnection! @join__field(graph: JOURNEYS)
 }
 
 type RadioOptionBlock implements Block {
@@ -1353,4 +1377,33 @@ type VideoVariantDownload {
 enum VideoVariantDownloadQuality {
   high
   low
+}
+
+"""A visitor with attributes connected to a team."""
+type VisitorTeam
+  @join__owner(graph: JOURNEYS)
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  createdAt: String! @join__field(graph: JOURNEYS)
+  id: ID! @join__field(graph: JOURNEYS)
+  teamId: ID! @join__field(graph: JOURNEYS)
+  userId: ID! @join__field(graph: JOURNEYS)
+}
+
+"""An edge in a connection."""
+type VisitorTeamEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: VisitorTeam!
+}
+
+"""A list of visitors connected with a team."""
+type VisitorTeamsConnection {
+  """A list of edges."""
+  edges: [VisitorTeamEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
 }

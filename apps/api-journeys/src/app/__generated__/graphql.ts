@@ -872,6 +872,33 @@ export class UserRole {
     roles?: Nullable<Role[]>;
 }
 
+export class VisitorTeam {
+    __typename?: 'VisitorTeam';
+    id: string;
+    teamId: string;
+    userId: string;
+    createdAt: string;
+}
+
+export class VisitorTeamEdge {
+    __typename?: 'VisitorTeamEdge';
+    node: VisitorTeam;
+    cursor: string;
+}
+
+export class PageInfo {
+    __typename?: 'PageInfo';
+    hasNextPage: boolean;
+    startCursor?: Nullable<string>;
+    endCursor?: Nullable<string>;
+}
+
+export class VisitorTeamsConnection {
+    __typename?: 'VisitorTeamsConnection';
+    edges: VisitorTeamEdge[];
+    pageInfo: PageInfo;
+}
+
 export abstract class IMutation {
     abstract blockDeleteAction(id: string, journeyId: string): Block | Promise<Block>;
 
@@ -1015,6 +1042,8 @@ export abstract class IQuery {
     abstract journey(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
+
+    abstract visitorTeamsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorTeamsConnection | Promise<VisitorTeamsConnection>;
 }
 
 export class User {
