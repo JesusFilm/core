@@ -90,8 +90,6 @@ export class UserJourneyResolver {
       userJourney.journeyId
     )
 
-    console.log()
-
     await this.memberService.save(
       {
         id: `${userId}:${journey.teamId}`,
