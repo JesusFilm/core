@@ -11,7 +11,7 @@ import { JourneyModule } from './modules/journey/journey.module'
 import { EventModule } from './modules/event/event.module'
 import { UserJourneyModule } from './modules/userJourney/userJourney.module'
 import { UserRoleModule } from './modules/userRole/userRole.module'
-import { VisitorTeamModule } from './modules/visitorTeam/visitorTeam.module'
+import { VisitorModule } from './modules/visitor/visitor.module'
 import { UserTeamModule } from './modules/userTeam/userTeam.module'
 
 @Module({
@@ -23,7 +23,7 @@ import { UserTeamModule } from './modules/userTeam/userTeam.module'
     UserJourneyModule,
     UserRoleModule,
     UserTeamModule,
-    VisitorTeamModule,
+    VisitorModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths: [

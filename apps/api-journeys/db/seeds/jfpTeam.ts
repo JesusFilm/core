@@ -34,7 +34,7 @@ export async function jfpTeam(): Promise<void> {
       INTO userTeams OPTIONS { ignoreErrors: true }
   `)
 
-  // add all visitors to JFP team (visitorTeams)
+  // add all visitors to JFP team (visitors)
   await db.query(aql`
     FOR event IN events
       INSERT {
@@ -42,6 +42,6 @@ export async function jfpTeam(): Promise<void> {
         userId: event.userId, 
         createdAt: DATE_ISO8601(DATE_NOW())
       }
-      IN visitorTeams OPTIONS { ignoreErrors: true }
+      IN visitors OPTIONS { ignoreErrors: true }
   `)
 }

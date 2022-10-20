@@ -4,15 +4,15 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { mockDbQueryResult } from '@core/nest/database/mock'
 import { DocumentCollection } from 'arangojs/collection'
 import { AqlQuery } from 'arangojs/aql'
-import { VisitorTeamService } from './visitorTeam.service'
+import { VisitorService } from './visitor.service'
 
-describe('VisitorTeamService', () => {
-  let service: VisitorTeamService, db: DeepMockProxy<Database>
+describe('VisitorService', () => {
+  let service: VisitorService, db: DeepMockProxy<Database>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        VisitorTeamService,
+        VisitorService,
         {
           provide: 'DATABASE',
           useFactory: () => mockDeep<Database>()
@@ -20,7 +20,7 @@ describe('VisitorTeamService', () => {
       ]
     }).compile()
 
-    service = module.get<VisitorTeamService>(VisitorTeamService)
+    service = module.get<VisitorService>(VisitorService)
     db = service.db as DeepMockProxy<Database>
     service.collection = mockDeep<DocumentCollection>()
   })
@@ -35,12 +35,12 @@ describe('VisitorTeamService', () => {
         endCursor: null
       }
     }
-    it('returns a visitor teams connection', async () => {
+    it('returns a visitors connection', async () => {
       db.query.mockImplementation(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(`
     LET $edges_plus_one = (
-      FOR item IN visitorTeams
+      FOR item IN visitors
         FILTER item.@value0 == @value1
         SORT item.createdAt @value2
         LIMIT @value3 + 1
@@ -69,7 +69,7 @@ describe('VisitorTeamService', () => {
       ).toEqual(connection)
     })
 
-    it('allows pagination of the visitor teams connection', async () => {
+    it('allows pagination of the visitors connection', async () => {
       db.query.mockImplementation(async (q) => {
         const { bindVars } = q as unknown as AqlQuery
         expect(bindVars).toEqual({
@@ -88,7 +88,7 @@ describe('VisitorTeamService', () => {
       })
     })
 
-    it('allows custom sort order of the visitor teams connection', async () => {
+    it('allows custom sort order of the visitors connection', async () => {
       db.query.mockImplementation(async (q) => {
         const { bindVars } = q as unknown as AqlQuery
         expect(bindVars).toEqual({

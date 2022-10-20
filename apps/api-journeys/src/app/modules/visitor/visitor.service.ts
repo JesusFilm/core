@@ -5,7 +5,7 @@ import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { GeneratedAqlQuery } from 'arangojs/aql'
 import { forEach } from 'lodash'
-import { VisitorTeamsConnection } from '../../__generated__/graphql'
+import { VisitorsConnection } from '../../__generated__/graphql'
 
 interface ListParams {
   after?: string | null
@@ -17,8 +17,8 @@ interface ListParams {
 }
 
 @Injectable()
-export class VisitorTeamService extends BaseService {
-  collection: DocumentCollection = this.db.collection('visitorTeams')
+export class VisitorService extends BaseService {
+  collection: DocumentCollection = this.db.collection('visitors')
 
   @KeyAsId()
   async getList({
@@ -26,7 +26,7 @@ export class VisitorTeamService extends BaseService {
     first,
     filter,
     sortOrder = 'ASC'
-  }: ListParams): Promise<VisitorTeamsConnection> {
+  }: ListParams): Promise<VisitorsConnection> {
     const filters: GeneratedAqlQuery[] = []
     if (after != null) filters.push(aql`FILTER item._key > ${after}`)
 
@@ -36,7 +36,7 @@ export class VisitorTeamService extends BaseService {
 
     const result = await this.db.query(aql`
     LET $edges_plus_one = (
-      FOR item IN visitorTeams
+      FOR item IN visitors
         ${aql.join(filters)}
         SORT item.createdAt ${sortOrder}
         LIMIT ${first} + 1

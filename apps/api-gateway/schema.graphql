@@ -642,7 +642,7 @@ type Query {
   videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 
   """A list of visitors that are connected with a specific team."""
-  visitorTeamsConnection(
+  visitorsConnection(
     """Returns the elements in the list that come after the specified cursor."""
     after: String
 
@@ -651,7 +651,7 @@ type Query {
 
     """Returns the visitor items related to a specific team."""
     teamId: String!
-  ): VisitorTeamsConnection! @join__field(graph: JOURNEYS)
+  ): VisitorsConnection! @join__field(graph: JOURNEYS)
 }
 
 type RadioOptionBlock implements Block {
@@ -1380,7 +1380,7 @@ enum VideoVariantDownloadQuality {
 }
 
 """A visitor with attributes connected to a team."""
-type VisitorTeam
+type Visitor
   @join__owner(graph: JOURNEYS)
   @join__type(graph: JOURNEYS, key: "id")
 {
@@ -1391,18 +1391,18 @@ type VisitorTeam
 }
 
 """An edge in a connection."""
-type VisitorTeamEdge {
+type VisitorEdge {
   """A cursor for use in pagination."""
   cursor: String!
 
   """The item at the end of the edge."""
-  node: VisitorTeam!
+  node: Visitor!
 }
 
 """A list of visitors connected with a team."""
-type VisitorTeamsConnection {
+type VisitorsConnection {
   """A list of edges."""
-  edges: [VisitorTeamEdge!]!
+  edges: [VisitorEdge!]!
 
   """Information to aid in pagination."""
   pageInfo: PageInfo!

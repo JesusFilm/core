@@ -70,12 +70,12 @@ async function main(): Promise<void> {
       keyOptions: { type: 'uuid' }
     })
 
-  if (!(await db.collection('visitorTeams').exists()))
-    await db.createCollection('visitorTeams', {
+  if (!(await db.collection('visitors').exists()))
+    await db.createCollection('visitors', {
       keyOptions: { type: 'uuid' }
     })
 
-  await db.collection('visitorTeams').ensureIndex({
+  await db.collection('visitors').ensureIndex({
     type: 'persistent',
     fields: ['teamId', 'userId'],
     name: 'teamIdAndUserId',

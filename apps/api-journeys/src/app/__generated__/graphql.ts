@@ -872,17 +872,17 @@ export class UserRole {
     roles?: Nullable<Role[]>;
 }
 
-export class VisitorTeam {
-    __typename?: 'VisitorTeam';
+export class Visitor {
+    __typename?: 'Visitor';
     id: string;
     teamId: string;
     userId: string;
     createdAt: string;
 }
 
-export class VisitorTeamEdge {
-    __typename?: 'VisitorTeamEdge';
-    node: VisitorTeam;
+export class VisitorEdge {
+    __typename?: 'VisitorEdge';
+    node: Visitor;
     cursor: string;
 }
 
@@ -893,9 +893,9 @@ export class PageInfo {
     endCursor?: Nullable<string>;
 }
 
-export class VisitorTeamsConnection {
-    __typename?: 'VisitorTeamsConnection';
-    edges: VisitorTeamEdge[];
+export class VisitorsConnection {
+    __typename?: 'VisitorsConnection';
+    edges: VisitorEdge[];
     pageInfo: PageInfo;
 }
 
@@ -1043,7 +1043,7 @@ export abstract class IQuery {
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
-    abstract visitorTeamsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorTeamsConnection | Promise<VisitorTeamsConnection>;
+    abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
 }
 
 export class User {

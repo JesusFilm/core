@@ -1,7 +1,7 @@
 """
 A visitor with attributes connected to a team.
 """
-type VisitorTeam @key(fields: "id") {
+type Visitor @key(fields: "id") {
   id: ID!
   teamId: ID!
   userId: ID!
@@ -11,7 +11,7 @@ type VisitorTeam @key(fields: "id") {
 """
 An edge in a connection.
 """
-type VisitorTeamEdge {
+type VisitorEdge {
   """
   A cursor for use in pagination.
   """
@@ -19,7 +19,7 @@ type VisitorTeamEdge {
   """
   The item at the end of the edge.
   """
-  node: VisitorTeam!
+  node: Visitor!
 }
 
 """
@@ -43,11 +43,11 @@ type PageInfo {
 """
 A list of visitors connected with a team.
 """
-type VisitorTeamsConnection {
+type VisitorsConnection {
   """
   A list of edges.
   """
-  edges: [VisitorTeamEdge!]!
+  edges: [VisitorEdge!]!
   """
   Information to aid in pagination.
   """
@@ -58,7 +58,7 @@ extend type Query {
   """
   A list of visitors that are connected with a specific team.
   """
-  visitorTeamsConnection(
+  visitorsConnection(
     """
     Returns the visitor items related to a specific team.
     """
@@ -71,5 +71,5 @@ extend type Query {
     Returns the elements in the list that come after the specified cursor.
     """
     after: String
-  ): VisitorTeamsConnection!
+  ): VisitorsConnection!
 }
