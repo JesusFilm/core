@@ -17,7 +17,7 @@ import {
   VideoCollapseEventCreateInput,
   VideoProgressEvent,
   VideoProgressEventCreateInput,
-  Block
+  VideoBlock
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
@@ -30,11 +30,16 @@ export class VideoStartEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoStartEventCreateInput
   ): Promise<VideoStartEvent> {
-    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const block = (await this.eventService.getBlockById(
+      input.blockId
+    )) as VideoBlock
     const journeyId = block.journeyId
-    const stepName: string = await this.eventService.getStepHeader(
-      block.parentBlockId ?? ''
-    ) // should return untitled if no parentBlockId
+    const stepName: string =
+      block.parentBlockId != null
+        ? await this.eventService.getStepHeader(block.parentBlockId)
+        : 'Untitled'
+    const videoTitle = block.title ?? 'Untitled'
+    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
@@ -43,6 +48,8 @@ export class VideoStartEventResolver {
       createdAt: new Date().toISOString(),
       journeyId,
       stepName,
+      videoTitle,
+      videoSource,
       teamId: 'team.id' // TODO: update
     })
   }
@@ -56,11 +63,16 @@ export class VideoPlayEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoPlayEventCreateInput
   ): Promise<VideoPlayEvent> {
-    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const block = (await this.eventService.getBlockById(
+      input.blockId
+    )) as VideoBlock
     const journeyId = block.journeyId
-    const stepName: string = await this.eventService.getStepHeader(
-      block.parentBlockId ?? ''
-    ) // should return untitled if no parentBlockId
+    const stepName: string =
+      block.parentBlockId != null
+        ? await this.eventService.getStepHeader(block.parentBlockId)
+        : 'Untitled'
+    const videoTitle = block.title ?? 'Untitled'
+    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
@@ -69,6 +81,8 @@ export class VideoPlayEventResolver {
       createdAt: new Date().toISOString(),
       journeyId,
       stepName,
+      videoTitle,
+      videoSource,
       teamId: 'team.id' // TODO: update
     })
   }
@@ -82,11 +96,16 @@ export class VideoPuaseEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoPauseEventCreateInput
   ): Promise<VideoPauseEvent> {
-    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const block = (await this.eventService.getBlockById(
+      input.blockId
+    )) as VideoBlock
     const journeyId = block.journeyId
-    const stepName: string = await this.eventService.getStepHeader(
-      block.parentBlockId ?? ''
-    ) // should return untitled if no parentBlockId
+    const stepName: string =
+      block.parentBlockId != null
+        ? await this.eventService.getStepHeader(block.parentBlockId)
+        : 'Untitled'
+    const videoTitle = block.title ?? 'Untitled'
+    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
@@ -95,6 +114,8 @@ export class VideoPuaseEventResolver {
       createdAt: new Date().toISOString(),
       journeyId,
       stepName,
+      videoTitle,
+      videoSource,
       teamId: 'team.id' // TODO: update
     })
   }
@@ -108,11 +129,16 @@ export class VideoCompleteEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoCompleteEventCreateInput
   ): Promise<VideoCompleteEvent> {
-    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const block = (await this.eventService.getBlockById(
+      input.blockId
+    )) as VideoBlock
     const journeyId = block.journeyId
-    const stepName: string = await this.eventService.getStepHeader(
-      block.parentBlockId ?? ''
-    ) // should return untitled if no parentBlockId
+    const stepName: string =
+      block.parentBlockId != null
+        ? await this.eventService.getStepHeader(block.parentBlockId)
+        : 'Untitled'
+    const videoTitle = block.title ?? 'Untitled'
+    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
@@ -121,6 +147,8 @@ export class VideoCompleteEventResolver {
       createdAt: new Date().toISOString(),
       journeyId,
       stepName,
+      videoTitle,
+      videoSource,
       teamId: 'team.id' // TODO: update
     })
   }
@@ -134,12 +162,16 @@ export class VideoExpandEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoExpandEventCreateInput
   ): Promise<VideoExpandEvent> {
-    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const block = (await this.eventService.getBlockById(
+      input.blockId
+    )) as VideoBlock
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null
         ? await this.eventService.getStepHeader(block.parentBlockId)
         : 'Untitled'
+    const videoTitle = block.title ?? 'Untitled'
+    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
@@ -148,6 +180,8 @@ export class VideoExpandEventResolver {
       createdAt: new Date().toISOString(),
       journeyId,
       stepName,
+      videoTitle,
+      videoSource,
       teamId: 'team.id' // TODO: update
     })
   }
@@ -161,11 +195,16 @@ export class VideoCollapseEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoCollapseEventCreateInput
   ): Promise<VideoCollapseEvent> {
-    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const block = (await this.eventService.getBlockById(
+      input.blockId
+    )) as VideoBlock
     const journeyId = block.journeyId
-    const stepName: string = await this.eventService.getStepHeader(
-      block.parentBlockId ?? ''
-    ) // should return untitled if no parentBlockId
+    const stepName: string =
+      block.parentBlockId != null
+        ? await this.eventService.getStepHeader(block.parentBlockId)
+        : 'Untitled'
+    const videoTitle = block.title ?? 'Untitled'
+    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
@@ -174,6 +213,8 @@ export class VideoCollapseEventResolver {
       createdAt: new Date().toISOString(),
       journeyId,
       stepName,
+      videoTitle,
+      videoSource,
       teamId: 'team.id' // TODO: update
     })
   }
@@ -187,11 +228,16 @@ export class VideoProgressEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoProgressEventCreateInput
   ): Promise<VideoProgressEvent> {
-    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const block = (await this.eventService.getBlockById(
+      input.blockId
+    )) as VideoBlock
     const journeyId = block.journeyId
-    const stepName: string = await this.eventService.getStepHeader(
-      block.parentBlockId ?? ''
-    ) // should return untitled if no parentBlockId
+    const stepName: string =
+      block.parentBlockId != null
+        ? await this.eventService.getStepHeader(block.parentBlockId)
+        : 'Untitled'
+    const videoTitle = block.title ?? 'Untitled'
+    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
@@ -200,6 +246,8 @@ export class VideoProgressEventResolver {
       createdAt: new Date().toISOString(),
       journeyId,
       stepName,
+      videoTitle,
+      videoSource,
       teamId: 'team.id' // TODO: update
     })
   }
