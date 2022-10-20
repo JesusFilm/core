@@ -1,17 +1,32 @@
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { Args, Resolver, Query } from '@nestjs/graphql'
-import { IQuery, VisitorsConnection } from '../../__generated__/graphql'
+import { ForbiddenError } from 'apollo-server'
+import { VisitorsConnection } from '../../__generated__/graphql'
+import { MemberService } from '../member/member.service'
 import { VisitorService } from './visitor.service'
 
-@Resolver('UserJourney')
-export class VisitorResolver implements Pick<IQuery, 'visitorsConnection'> {
-  constructor(private readonly visitorService: VisitorService) {}
+@Resolver('Visitor')
+export class VisitorResolver {
+  constructor(
+    private readonly visitorService: VisitorService,
+    private readonly memberService: MemberService
+  ) {}
 
   @Query()
   async visitorsConnection(
+    @CurrentUserId() userId: string,
     @Args('teamId') teamId: string,
     @Args('first') first?: number | null,
     @Args('after') after?: string | null
   ): Promise<VisitorsConnection> {
+    const memberResult = await this.memberService.getMemberByTeamId(
+      userId,
+      teamId
+    )
+
+    if (memberResult == null)
+      throw new ForbiddenError('User is not a member of the team.')
+
     return await this.visitorService.getList({
       filter: { teamId },
       first: first ?? 50,
