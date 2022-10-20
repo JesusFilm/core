@@ -58,10 +58,12 @@ export enum IconColor {
  * IconName is equivalent to the icons found in @mui/icons-material
  */
 export enum IconName {
+  ArrowBackRounded = "ArrowBackRounded",
   ArrowForwardRounded = "ArrowForwardRounded",
   BeenhereRounded = "BeenhereRounded",
   ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
   CheckCircleRounded = "CheckCircleRounded",
+  ChevronLeftRounded = "ChevronLeftRounded",
   ChevronRightRounded = "ChevronRightRounded",
   ContactSupportRounded = "ContactSupportRounded",
   FormatQuoteRounded = "FormatQuoteRounded",
