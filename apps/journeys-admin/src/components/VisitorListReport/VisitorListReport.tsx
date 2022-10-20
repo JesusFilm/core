@@ -11,7 +11,7 @@ export interface VisitorListReportProps {
   }: VisitorListReportProps): ReactElement {    
     const columns = [
         {
-          field: 'identification',
+          field: 'id',
           headerName: 'Ident.',
           width: 150,
           editable: true,
@@ -50,14 +50,14 @@ export interface VisitorListReportProps {
       ];
       
       const rows = [
-        { identification: 1, location: 'Snow', startTime: 'Jon', chatStartTimege: 35, stared: 10 },
-        { identification: 2, location: 'Snow', startTime: 'Jon', chatStartTimege: 35, stared: 10 },
-        { identification: 3, location: 'Snow', startTime: 'Jon', chatStartTimege: 35, stared: 10 },
-        { identification: 4, location: 'Snow', startTime: 'Jon', chatStartTimege: 35, stared: 10 },
-        { identification: 5, location: 'Snow', startTime: 'Jon', chatStartTimege: 35, stared: 10 },
-        { identification: 6, location: 'Snow', startTime: 'Jon', chatStartTimege: 35, stared: 10 },
-        { identification: 7, location: 'Snow', startTime: 'Jon', chatStartTimege: 35, stared: 10 },
-        { identification: 8, location: 'Snow', startTime: 'Jon', chatStartTimege: 35, stared: 10 },
+        { id: 1, location: 'Snow', startTime: 'Jon', chatStartTime: 35, stared: 10 },
+        { id: 2, location: 'Snow', startTime: 'Jon', chatStartTime: 35, stared: 10 },
+        { id: 3, location: 'Snow', startTime: 'Jon', chatStartTime: 35, stared: 10 },
+        { id: 4, location: 'Snow', startTime: 'Jon', chatStartTime: 35, stared: 10 },
+        { id: 5, location: 'Snow', startTime: 'Jon', chatStartTime: 35, stared: 10 },
+        { id: 6, location: 'Snow', startTime: 'Jon', chatStartTime: 35, stared: 10 },
+        { id: 7, location: 'Snow', startTime: 'Jon', chatStartTime: 35, stared: 10 },
+        { id: 8, location: 'Snow', startTime: 'Jon', chatStartTime: 35, stared: 10 },
       ];
 
 
