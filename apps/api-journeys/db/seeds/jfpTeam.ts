@@ -10,7 +10,7 @@ export async function jfpTeam(): Promise<void> {
     {
       _key: 'jfp-team',
       title: 'Jesus Film Project',
-      contact: 'sway.ciaramello@jesusfilm.org',
+      contactEmail: 'sway.ciaramello@jesusfilm.org',
       createdAt: new Date().toISOString()
     },
     { overwriteMode: 'ignore' }
