@@ -7,7 +7,8 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   RadioQuestionSubmissionEvent,
   RadioQuestionSubmissionEventCreateInput,
-  Block
+  RadioQuestionBlock,
+  RadioOptionBlock
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
@@ -21,7 +22,12 @@ export class RadioQuestionSubmissionEventResolver {
     @Args('input')
     input: RadioQuestionSubmissionEventCreateInput
   ): Promise<RadioQuestionSubmissionEvent> {
-    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const block = (await this.eventService.getBlockById(
+      input.blockId
+    )) as RadioQuestionBlock
+    const radioOptionBlock = (await this.eventService.getBlockById(
+      input.radioOptionBlockId
+    )) as RadioOptionBlock
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null
@@ -35,6 +41,7 @@ export class RadioQuestionSubmissionEventResolver {
       createdAt: new Date().toISOString(),
       journeyId,
       stepName,
+      selectedOption: radioOptionBlock.label,
       teamId: 'team.id' // TODO: update
     })
   }

@@ -16,23 +16,30 @@ describe('RadioQuestionSubmissionEventResolver', () => {
 
   const input = {
     id: '1',
-    blockId: '2',
-    radioOptionBlockId: '4'
+    blockId: 'block.id',
+    radioOptionBlockId: 'radioOptionBlock.id'
   }
 
   const eventService = {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((input) => input),
-      getBlockById: jest.fn(() => block),
+      getBlockById: jest.fn((blockId) =>
+        [radioQuestionBlock, radioOptionBlock].find(({ id }) => id === blockId)
+      ),
       getStepHeader: jest.fn(() => 'header')
     })
   }
 
-  const block = {
+  const radioQuestionBlock = {
     id: 'block.id',
     journeyId: 'journey.id',
     parentBlockId: 'parent.id'
+  }
+
+  const radioOptionBlock = {
+    id: 'radioOptionBlock.id',
+    label: 'option'
   }
 
   beforeEach(async () => {
@@ -55,6 +62,7 @@ describe('RadioQuestionSubmissionEventResolver', () => {
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
         stepName: 'header',
+        selectedOption: 'option',
         teamId: 'team.id' // TODO: update
       })
     })
