@@ -126,10 +126,10 @@ describe('VisitorResolver', () => {
 
   describe('visitorUpdate', () => {
     const input = {
-      email: 'abc@example.com',
-      messengerId: '021589083',
+      email: 'sarah@example.com',
+      messengerId: '0800838383',
       messengerNetwork: 'phone',
-      name: 'abc',
+      name: 'Sarah',
       notes: 'this is a test',
       status: 'star'
     }
