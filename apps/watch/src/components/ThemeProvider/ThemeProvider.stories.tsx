@@ -12,7 +12,7 @@ import {
 
 import { simpleComponentConfig } from '@core/shared/ui/simpleComponentConfig'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
-import { themes } from '@core/shared/ui/themes'
+import { getTheme, ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 const ThemeDemo = {
   ...simpleComponentConfig,
@@ -378,7 +378,10 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
   )
 }
 
-const breakpoints = themes.base.light.breakpoints
+const breakpoints = getTheme({
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light
+}).breakpoints
 
 export const Viewport = ViewportTemplate.bind({})
 Viewport.args = {
