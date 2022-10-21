@@ -78,12 +78,7 @@ describe('VisitorResolver', () => {
 
   describe('userAgent', () => {
     it('parses empty case', () => {
-      expect(resolver.userAgent({})).toMatchObject({
-        browser: { major: undefined, name: undefined, version: undefined },
-        device: { model: undefined, type: undefined, vendor: undefined },
-        os: { name: undefined, version: undefined },
-        ua: ''
-      })
+      expect(resolver.userAgent({})).toBeUndefined()
     })
 
     it('parses desktop user-agent', () => {

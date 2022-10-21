@@ -1421,7 +1421,10 @@ type Visitor
   """
   The country code of the visitor as poulated by visitor ip address detected in
   the JourneyViewEventCreate mutation. This field country code is converted
-  from an IP Address by the @maxmind/geoip2-node library.
+  from an IP address by the @maxmind/geoip2-node library. If this field is empty
+  it is likely that the JourneyViewEventCreate mutation was not called by the
+  visitor or that the country was not able to be determined based on the
+  visitor IP address.
   """
   countryCode: String @join__field(graph: JOURNEYS)
 
@@ -1478,9 +1481,10 @@ type Visitor
   """
   The user agent of the visitor as poulated by the visitor's user-agent string
   detected in the JourneyViewEventCreate mutation. This field is enriched
-  by data from the ua-parser-js library.
+  by data from the ua-parser-js library. If this field is empty it is likely
+  that the JourneyViewEventCreate mutation was not called by the visitor.
   """
-  userAgent: UserAgent! @join__field(graph: JOURNEYS)
+  userAgent: UserAgent @join__field(graph: JOURNEYS)
 }
 
 """An edge in a connection."""

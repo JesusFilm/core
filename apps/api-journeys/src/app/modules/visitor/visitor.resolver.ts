@@ -36,7 +36,8 @@ export class VisitorResolver {
   }
 
   @ResolveField()
-  userAgent(@Parent() visitor): IResult {
-    return new UAParser(visitor.userAgent).getResult()
+  userAgent(@Parent() visitor): IResult | undefined {
+    if (visitor.userAgent != null)
+      return new UAParser(visitor.userAgent).getResult()
   }
 }
