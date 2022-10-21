@@ -13,6 +13,7 @@ import { HexColorPicker } from 'react-colorful'
 import { gql, useMutation } from '@apollo/client'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { getTheme, ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -70,11 +71,14 @@ export function BackgroundColor(): ReactElement {
   ) as TreeBlock<CardFields> | undefined
 
   const { journey } = useJourney()
+  const { rtl, locale } = getJourneyRTL(journey)
 
-  const themeName = cardBlock?.themeName ?? journey?.themeName ?? ThemeName.base
-  const themeMode = cardBlock?.themeMode ?? journey?.themeMode ?? ThemeMode.dark
-
-  const cardTheme = getTheme({ themeName, themeMode })
+  const cardTheme = getTheme({
+    themeName: cardBlock?.themeName ?? journey?.themeName ?? ThemeName.base,
+    themeMode: cardBlock?.themeMode ?? journey?.themeMode ?? ThemeMode.dark,
+    rtl,
+    locale
+  })
 
   const [tabValue, setTabValue] = useState(0)
   const [selectedColor, setSelectedColor] = useState(

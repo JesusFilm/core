@@ -8,6 +8,7 @@ interface ThemeProviderProps {
   themeName: ThemeName
   themeMode: ThemeMode
   rtl?: boolean
+  locale?: string
   /** if nested ThemeProvider then CssBaseline should not be inserted */
   nested?: boolean
 }
@@ -17,9 +18,10 @@ export const ThemeProvider = ({
   themeMode,
   children,
   rtl = false,
+  locale = '',
   nested
 }: ThemeProviderProps): ReactElement => {
-  const theme = getTheme({ themeName, themeMode, rtl })
+  const theme = getTheme({ themeName, themeMode, rtl, locale })
 
   return (
     <MuiThemeProvider theme={theme}>

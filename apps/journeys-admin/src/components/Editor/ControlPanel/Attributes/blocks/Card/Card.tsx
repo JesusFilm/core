@@ -32,7 +32,7 @@ export function Card({
 }: TreeBlock<CardBlock>): ReactElement {
   const { dispatch } = useEditor()
   const { journey } = useJourney()
-  const rtl = getJourneyRTL(journey)
+  const { rtl, locale } = getJourneyRTL(journey)
 
   const coverBlock = children.find((block) => block.id === coverBlockId) as
     | TreeBlock<ImageBlock | VideoBlock>
@@ -41,7 +41,8 @@ export function Card({
   const cardTheme = getTheme({
     themeName: themeName ?? journey?.themeName ?? ThemeName.base,
     themeMode: themeMode ?? journey?.themeMode ?? ThemeMode.dark,
-    rtl
+    rtl,
+    locale
   })
   const selectedCardColor =
     backgroundColor ?? cardTheme.palette.background.paper

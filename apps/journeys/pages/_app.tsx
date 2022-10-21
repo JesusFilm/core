@@ -20,7 +20,9 @@ import i18nConfig from '../next-i18next.config'
 function JourneysApp({
   Component,
   pageProps,
-  emotionCache = createEmotionCache({ rtl: getJourneyRTL(pageProps.journey) })
+  emotionCache = createEmotionCache({
+    rtl: getJourneyRTL(pageProps.journey).rtl
+  })
 }: AppProps & { emotionCache?: EmotionCache }): ReactElement {
   const { t } = useTranslation('apps-journeys')
   useEffect(() => {

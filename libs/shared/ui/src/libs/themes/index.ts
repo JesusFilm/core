@@ -11,18 +11,20 @@ export enum ThemeName {
 }
 
 interface ThemeProps {
-  themeMode: ThemeMode
   themeName: ThemeName
+  themeMode: ThemeMode
   rtl?: boolean
+  locale?: string
 }
 
 export const getTheme = ({
   themeName,
   themeMode,
-  rtl = false
+  rtl = false,
+  locale = ''
 }: ThemeProps): Theme => {
   const themes = {
-    base: { light: getBaseLight(rtl), dark: getBaseDark(rtl) }
+    base: { light: getBaseLight(rtl, locale), dark: getBaseDark(rtl, locale) }
   }
   return {
     ...themes[themeName][themeMode]

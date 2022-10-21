@@ -152,4 +152,14 @@ export const RTL = IconTemplate.bind({})
 RTL.args = { ...Icon.args }
 RTL.parameters = { rtl: true }
 
+// Only added here since Urdu language uses separate typography theme
+export const Urdu = IconTemplate.bind({})
+Urdu.args = { ...RTL.args }
+Urdu.parameters = {
+  rtl: true,
+  locale: 'ur',
+  // Disable until we get i18n translations in SB
+  chromatic: { disableSnapshot: true }
+}
+
 export default ButtonDemo as Meta

@@ -54,14 +54,14 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const breakpoints = useBreakpoints()
   const theme = useTheme()
   const { journey, admin } = useJourney()
-  const isRtl = getJourneyRTL(journey)
+  const { rtl } = getJourneyRTL(journey)
 
   const onFirstStep = activeBlock === treeBlocks[0]
   const onLastStep = activeBlock === last(treeBlocks)
-  const showLeftButton = (!isRtl && !onFirstStep) || (isRtl && !onLastStep)
-  const showRightButton = (!isRtl && !onLastStep) || (isRtl && !onFirstStep)
-  const disableLeftButton = !isRtl || (isRtl && activeBlock?.locked === true)
-  const disableRightButton = isRtl || (!isRtl && activeBlock?.locked === true)
+  const showLeftButton = (!rtl && !onFirstStep) || (rtl && !onLastStep)
+  const showRightButton = (!rtl && !onLastStep) || (rtl && !onFirstStep)
+  const disableLeftButton = !rtl || (rtl && activeBlock?.locked === true)
+  const disableRightButton = rtl || (!rtl && activeBlock?.locked === true)
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -140,7 +140,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   }): ReactElement => {
     // Issue using https://mui.com/material-ui/guides/right-to-left/#emotion-amp-styled-components for justifyContent
     const alignSx =
-      (isRtl && variant === 'Left') || (!isRtl && variant === 'Right')
+      (rtl && variant === 'Left') || (!rtl && variant === 'Right')
         ? { justifyContent: 'flex-start' }
         : { justifyContent: 'flex-end' }
 
@@ -201,7 +201,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           }}
         >
           <Swiper
-            dir={!isRtl ? 'ltr' : 'rtl'}
+            dir={!rtl ? 'ltr' : 'rtl'}
             slidesPerView="auto"
             centeredSlides
             centeredSlidesBounds

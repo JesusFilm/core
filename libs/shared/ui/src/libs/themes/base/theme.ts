@@ -6,16 +6,22 @@ import { baseComponents } from './tokens/components'
 import { baseSpacing } from './tokens/spacing'
 import {
   baseTypography as baseTypographyLTR,
-  baseTypographyArabic
+  baseTypographyArabic,
+  baseTypographyUrdu
 } from './tokens/typography'
 
 export const baseTheme = (
-  rtl: boolean
+  rtl: boolean,
+  locale: string
 ): Pick<
   ThemeOptions,
   'spacing' | 'components' | 'breakpoints' | 'typography' | 'direction'
 > => {
-  const baseTypography = rtl ? baseTypographyArabic : baseTypographyLTR
+  const baseTypography = rtl
+    ? locale === 'ur'
+      ? baseTypographyUrdu
+      : baseTypographyArabic
+    : baseTypographyLTR
 
   return {
     ...baseSpacing,
@@ -27,8 +33,8 @@ export const baseTheme = (
 }
 
 // DeepMerge no longer needed - remove or keep just in case for future?
-export const getBaseLight = (rtl: boolean): Theme =>
-  createTheme(deepmerge(baseColorsLight(), baseTheme(rtl)))
+export const getBaseLight = (rtl: boolean, locale: string): Theme =>
+  createTheme(deepmerge(baseColorsLight(), baseTheme(rtl, locale)))
 
-export const getBaseDark = (rtl: boolean): Theme =>
-  createTheme(deepmerge(baseColorsDark(), baseTheme(rtl)))
+export const getBaseDark = (rtl: boolean, locale: string): Theme =>
+  createTheme(deepmerge(baseColorsDark(), baseTheme(rtl, locale)))

@@ -147,4 +147,13 @@ export const RTL = VariantTemplate.bind({})
 RTL.args = { ...Variants.args }
 RTL.parameters = { rtl: true }
 
+export const Urdu = VariantTemplate.bind({})
+Urdu.args = { ...RTL.args }
+Urdu.parameters = {
+  rtl: true,
+  locale: 'ur',
+  // Disable until we get i18n translations in SB
+  chromatic: { disableSnapshot: true }
+}
+
 export default TypographyDemo as Meta
