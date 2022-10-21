@@ -1,8 +1,15 @@
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { Args, Resolver, Query, ResolveField, Parent } from '@nestjs/graphql'
-import { ForbiddenError } from 'apollo-server'
+import {
+  Args,
+  Resolver,
+  Query,
+  ResolveField,
+  Parent,
+  Mutation
+} from '@nestjs/graphql'
+import { ForbiddenError, UserInputError } from 'apollo-server'
 import { IResult, UAParser } from 'ua-parser-js'
-import { VisitorsConnection } from '../../__generated__/graphql'
+import { Visitor, VisitorsConnection } from '../../__generated__/graphql'
 import { MemberService } from '../member/member.service'
 import { VisitorService } from './visitor.service'
 
@@ -33,6 +40,57 @@ export class VisitorResolver {
       first: first ?? 50,
       after
     })
+  }
+
+  @Query()
+  async visitor(
+    @CurrentUserId() userId: string,
+    @Args('id') id: string
+  ): Promise<Visitor> {
+    const visitor = await this.visitorService.get<
+      ({ teamId: string } & Visitor) | undefined
+    >(id)
+
+    if (visitor == null)
+      throw new UserInputError(`Visitor with ID "${id}" does not exist`)
+
+    const memberResult = await this.memberService.getMemberByTeamId(
+      userId,
+      visitor.teamId
+    )
+
+    if (memberResult == null)
+      throw new ForbiddenError(
+        'User is not a member of the team the visitor belongs to'
+      )
+
+    return visitor
+  }
+
+  @Mutation()
+  async visitorUpdate(
+    @CurrentUserId() userId: string,
+    @Args('id') id: string,
+    @Args('input') input
+  ): Promise<Visitor> {
+    const visitor = await this.visitorService.get<
+      ({ teamId: string } & Visitor) | undefined
+    >(id)
+
+    if (visitor == null)
+      throw new UserInputError(`Visitor with ID "${id}" does not exist`)
+
+    const memberResult = await this.memberService.getMemberByTeamId(
+      userId,
+      visitor.teamId
+    )
+
+    if (memberResult == null)
+      throw new ForbiddenError(
+        'User is not a member of the team the visitor belongs to'
+      )
+
+    return await this.visitorService.update(id, input)
   }
 
   @ResolveField()

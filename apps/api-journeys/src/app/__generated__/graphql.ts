@@ -478,6 +478,15 @@ export class JourneyTemplateInput {
     template?: Nullable<boolean>;
 }
 
+export class VisitorUpdateInput {
+    email?: Nullable<string>;
+    messengerId?: Nullable<string>;
+    messengerNetwork?: Nullable<string>;
+    name?: Nullable<string>;
+    notes?: Nullable<string>;
+    status?: Nullable<VisitorStatus>;
+}
+
 export interface Action {
     parentBlockId: string;
     gtmEventName?: Nullable<string>;
@@ -1067,6 +1076,8 @@ export abstract class IMutation {
     abstract userJourneyRemoveAll(id: string): UserJourney[] | Promise<UserJourney[]>;
 
     abstract userJourneyRequest(journeyId: string, idType?: Nullable<IdType>): UserJourney | Promise<UserJourney>;
+
+    abstract visitorUpdate(id: string, input: VisitorUpdateInput): Visitor | Promise<Visitor>;
 }
 
 export class Video {
@@ -1092,6 +1103,8 @@ export abstract class IQuery {
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
     abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
+
+    abstract visitor(id: string): Visitor | Promise<Visitor>;
 }
 
 export class User {

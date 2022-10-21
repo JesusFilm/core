@@ -6,9 +6,7 @@ import { VisitorResolver } from './visitor.resolver'
 import { VisitorService } from './visitor.service'
 
 describe('VisitorResolver', () => {
-  let resolver: VisitorResolver,
-    vService: VisitorService,
-    mService: MemberService
+  let resolver: VisitorResolver, vService: VisitorService
 
   const connection: VisitorsConnection = {
     edges: [],
@@ -19,10 +17,33 @@ describe('VisitorResolver', () => {
     }
   }
 
+  const visitor = {
+    countryCode: null,
+    email: 'bob@example.com',
+    lastChatStartedAt: null,
+    messengerId: '555-000000',
+    messengerNetwork: 'phone',
+    name: 'Bob Smith',
+    notes: 'Bob called this afternoon to arrange a meet-up.',
+    status: 'star',
+    userAgent: null
+  }
+
   const visitorService = {
     provide: VisitorService,
     useFactory: () => ({
-      getList: jest.fn(() => connection)
+      getList: jest.fn(() => connection),
+      get: jest.fn((id) => {
+        switch (id) {
+          case 'visitorId':
+            return { ...visitor, id, teamId: 'teamId' }
+          case 'unknownVisitorId':
+            return undefined
+          case 'visitorWithDifferentTeamId':
+            return { ...visitor, id, teamId: 'differentTeamId' }
+        }
+      }),
+      update: jest.fn((_id, input) => ({ ...visitor, ...input }))
     })
   }
 
@@ -35,7 +56,14 @@ describe('VisitorResolver', () => {
   const memberService = {
     provide: MemberService,
     useFactory: () => ({
-      getMemberByTeamId: jest.fn(() => member)
+      getMemberByTeamId: jest.fn((_userId, teamId) => {
+        switch (teamId) {
+          case 'teamId':
+            return member
+          case 'differentTeamId':
+            return undefined
+        }
+      })
     })
   }
 
@@ -45,7 +73,6 @@ describe('VisitorResolver', () => {
     }).compile()
     resolver = module.get<VisitorResolver>(VisitorResolver)
     vService = module.get<VisitorService>(VisitorService)
-    mService = module.get<MemberService>(MemberService)
   })
 
   describe('visitorsConnection', () => {
@@ -65,14 +92,71 @@ describe('VisitorResolver', () => {
     })
 
     it('throws error when user is not a team member', async () => {
-      ;(
-        mService.getMemberByTeamId as jest.MockedFunction<
-          typeof mService.getMemberByTeamId
-        >
-      ).mockResolvedValue(undefined)
       await expect(
-        async () => await resolver.visitorsConnection('userId', 'teamId')
+        async () =>
+          await resolver.visitorsConnection('userId', 'differentTeamId')
       ).rejects.toThrow('User is not a member of the team.')
+    })
+  })
+
+  describe('visitor', () => {
+    it('returns visitor', async () => {
+      expect(await resolver.visitor('userId', 'visitorId')).toEqual({
+        id: 'visitorId',
+        teamId: 'teamId',
+        ...visitor
+      })
+    })
+
+    it('throws error when invalid visitor ID', async () => {
+      await expect(
+        async () => await resolver.visitor('userId', 'unknownVisitorId')
+      ).rejects.toThrow('Visitor with ID "unknownVisitorId" does not exist')
+    })
+
+    it('throws error when user is not member of visitors team', async () => {
+      await expect(
+        async () =>
+          await resolver.visitor('userId', 'visitorWithDifferentTeamId')
+      ).rejects.toThrow(
+        'User is not a member of the team the visitor belongs to'
+      )
+    })
+  })
+
+  describe('visitorUpdate', () => {
+    const input = {
+      email: 'abc@example.com',
+      messengerId: '021589083',
+      messengerNetwork: 'phone',
+      name: 'abc',
+      notes: 'this is a test',
+      status: 'star'
+    }
+    it('returns updated visitor', async () => {
+      expect(
+        await resolver.visitorUpdate('userId', 'visitorId', input)
+      ).toEqual({ ...visitor, ...input })
+    })
+
+    it('throws error when invalid visitor ID', async () => {
+      await expect(
+        async () =>
+          await resolver.visitorUpdate('userId', 'unknownVisitorId', input)
+      ).rejects.toThrow('Visitor with ID "unknownVisitorId" does not exist')
+    })
+
+    it('throws error when user is not member of visitors team', async () => {
+      await expect(
+        async () =>
+          await resolver.visitorUpdate(
+            'userId',
+            'visitorWithDifferentTeamId',
+            input
+          )
+      ).rejects.toThrow(
+        'User is not a member of the team the visitor belongs to'
+      )
     })
   })
 
