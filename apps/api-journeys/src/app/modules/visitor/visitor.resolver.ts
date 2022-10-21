@@ -1,6 +1,7 @@
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { Args, Resolver, Query } from '@nestjs/graphql'
+import { Args, Resolver, Query, ResolveField, Parent } from '@nestjs/graphql'
 import { ForbiddenError } from 'apollo-server'
+import { IResult, UAParser } from 'ua-parser-js'
 import { VisitorsConnection } from '../../__generated__/graphql'
 import { MemberService } from '../member/member.service'
 import { VisitorService } from './visitor.service'
@@ -32,5 +33,10 @@ export class VisitorResolver {
       first: first ?? 50,
       after
     })
+  }
+
+  @ResolveField()
+  userAgent(@Parent() visitor): IResult {
+    return new UAParser(visitor.userAgent).getResult()
   }
 }
