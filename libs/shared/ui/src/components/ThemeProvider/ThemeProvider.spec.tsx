@@ -44,8 +44,36 @@ describe('ThemeProvider', () => {
     expect(baseElement.parentElement?.innerHTML).toEqual(
       expect.stringContaining(
         `font-family:${
-          getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.light })
-            .typography.fontFamily ?? ''
+          getTheme({
+            themeName: ThemeName.base,
+            themeMode: ThemeMode.light,
+            rtl: true
+          }).typography.fontFamily ?? ''
+        };`
+      )
+    )
+  })
+
+  it('should apply urdu rtl theme', () => {
+    const { baseElement } = render(
+      <ThemeProvider
+        themeName={ThemeName.base}
+        themeMode={ThemeMode.light}
+        rtl
+        locale="ur"
+      >
+        Hello from ThemeProvider
+      </ThemeProvider>
+    )
+    expect(baseElement.parentElement?.innerHTML).toEqual(
+      expect.stringContaining(
+        `font-family:${
+          getTheme({
+            themeName: ThemeName.base,
+            themeMode: ThemeMode.light,
+            rtl: true,
+            locale: 'ur'
+          }).typography.fontFamily ?? ''
         };`
       )
     )

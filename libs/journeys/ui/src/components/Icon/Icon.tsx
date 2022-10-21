@@ -28,7 +28,7 @@ export function Icon({
   iconSize
 }: TreeBlock<IconBlock>): ReactElement | null {
   const { journey } = useJourney()
-  const rtl = getJourneyRTL(journey)
+  const { rtl } = getJourneyRTL(journey)
 
   const fontSize =
     iconSize === 'sm'
