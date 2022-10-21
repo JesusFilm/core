@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react'
-import { getTheme, ThemeName, ThemeMode } from '@core/shared/ui/themes'
+import { getTheme, ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import type { TreeBlock } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
@@ -120,7 +120,8 @@ describe('CardBlock', () => {
     expect(blurImage).not.toBeCalled()
     expect(getByTestId('card')).toHaveStyle(
       `background-color: ${
-        getTheme(ThemeName.base, ThemeMode.dark, false).palette.background.paper
+        getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.dark })
+          .palette.background.paper
       }`
     )
   })

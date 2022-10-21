@@ -6,7 +6,7 @@ import { baseComponents } from './tokens/components'
 import { baseSpacing } from './tokens/spacing'
 import {
   baseTypography as baseTypographyLTR,
-  baseTypographyRTL
+  baseTypographyArabic
 } from './tokens/typography'
 
 export const baseTheme = (
@@ -15,7 +15,7 @@ export const baseTheme = (
   ThemeOptions,
   'spacing' | 'components' | 'breakpoints' | 'typography' | 'direction'
 > => {
-  const baseTypography = rtl ? baseTypographyRTL : baseTypographyLTR
+  const baseTypography = rtl ? baseTypographyArabic : baseTypographyLTR
 
   return {
     ...baseSpacing,

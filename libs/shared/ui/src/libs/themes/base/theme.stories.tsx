@@ -382,7 +382,10 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
   )
 }
 
-const breakpoints = getTheme(ThemeName.base, ThemeMode.light, false).breakpoints
+const breakpoints = getTheme({
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light
+}).breakpoints
 
 export const Viewport = ViewportTemplate.bind({})
 Viewport.args = {

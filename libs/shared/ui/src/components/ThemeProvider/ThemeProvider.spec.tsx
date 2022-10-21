@@ -12,8 +12,8 @@ describe('ThemeProvider', () => {
     expect(baseElement.parentElement?.innerHTML).toEqual(
       expect.stringContaining(
         `background-color:${
-          getTheme(ThemeName.base, ThemeMode.light, false).palette.background
-            .default
+          getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.light })
+            .palette.background.default
         };`
       )
     )
@@ -28,8 +28,8 @@ describe('ThemeProvider', () => {
     expect(baseElement.parentElement?.innerHTML).toEqual(
       expect.stringContaining(
         `background-color:${
-          getTheme(ThemeName.base, ThemeMode.dark, false).palette.background
-            .default
+          getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.dark })
+            .palette.background.default
         };`
       )
     )
@@ -44,8 +44,8 @@ describe('ThemeProvider', () => {
     expect(baseElement.parentElement?.innerHTML).toEqual(
       expect.stringContaining(
         `font-family:${
-          getTheme(ThemeName.base, ThemeMode.light, true).typography
-            .fontFamily ?? ''
+          getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.light })
+            .typography.fontFamily ?? ''
         };`
       )
     )

@@ -19,7 +19,7 @@ export const ThemeProvider = ({
   rtl = false,
   nested
 }: ThemeProviderProps): ReactElement => {
-  const theme = getTheme(themeName, themeMode, rtl)
+  const theme = getTheme({ themeName, themeMode, rtl })
 
   return (
     <MuiThemeProvider theme={theme}>

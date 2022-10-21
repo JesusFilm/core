@@ -21,7 +21,10 @@ const ThemeContainer = ({
   children,
   rtl = false
 }: ThemeDecoratorProps): ReactElement => {
-  const theme = getTheme(ThemeName.base, ThemeMode[mode as ThemeMode], rtl)
+  const theme = getTheme({
+    themeName: ThemeName.base,
+    themeMode: ThemeMode[mode as ThemeMode]
+  })
 
   return (
     <div

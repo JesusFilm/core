@@ -53,7 +53,8 @@ describe('ColorDisplayIcon', () => {
     )
     expect(getByTestId('primary-display-icon')).toHaveStyle(
       `background-color: ${
-        getTheme(ThemeName.base, ThemeMode.dark, false).palette.primary.main
+        getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.dark })
+          .palette.primary.main
       }`
     )
   })
@@ -100,7 +101,8 @@ describe('ColorDisplayIcon', () => {
     )
     expect(getByTestId('secondary-display-icon')).toHaveStyle(
       `background-color: ${
-        getTheme(ThemeName.base, ThemeMode.dark, false).palette.secondary.main
+        getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.dark })
+          .palette.secondary.main
       }`
     )
   })

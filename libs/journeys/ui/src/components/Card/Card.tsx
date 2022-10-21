@@ -52,7 +52,7 @@ export function Card({
 
   const customCardTheme =
     themeName != null && themeMode != null
-      ? getTheme(themeName, themeMode, theme.direction === 'rtl')
+      ? getTheme({ themeName, themeMode })
       : undefined
 
   const cardColor =
