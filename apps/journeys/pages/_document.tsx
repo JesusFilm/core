@@ -8,18 +8,33 @@ import { getJourneyRTL } from '@core/journeys/ui/rtl'
 
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
-  isRTL: boolean
+  rtl: boolean
+  locale: string
 }> {
   render(): ReactElement {
     return (
-      <Html lang="en" dir={this.props.isRTL ? 'rtl' : ''}>
+      <Html lang="en" dir={this.props.rtl ? 'rtl' : ''}>
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
-          <link
-            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
-            rel="stylesheet"
-          />
+          {this.props.rtl ? (
+            this.props.locale === 'ur' ? (
+              <link
+                href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap"
+                rel="stylesheet"
+              />
+            ) : (
+              <link
+                href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
+                rel="stylesheet"
+              />
+            )
+          ) : (
+            <link
+              href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
+              rel="stylesheet"
+            />
+          )}
           <link
             rel="apple-touch-icon"
             sizes="180x180"
@@ -101,11 +116,12 @@ MyDocument.getInitialProps = async (ctx) => {
     />
   ))
 
-  const isRTL = getJourneyRTL(pageProps)
+  const { rtl, locale } = getJourneyRTL(pageProps)
 
   return {
     ...initialProps,
     emotionStyleTags,
-    isRTL
+    rtl,
+    locale
   }
 }

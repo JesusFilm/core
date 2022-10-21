@@ -16,7 +16,7 @@ export function handleAction(
     case 'NavigateToJourneyAction':
       if (action.journey != null) {
         const currentRTL = document.dir
-        const newRTL = getJourneyRTL(action.journey as Journey) ? 'rtl' : ''
+        const newRTL = getJourneyRTL(action.journey as Journey).rtl ? 'rtl' : ''
 
         if (newRTL === currentRTL) {
           void router.push(`/${action.journey.slug}`)

@@ -22,7 +22,6 @@ export default class MyDocument extends Document<{
             href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans&display=swap"
             rel="stylesheet"
           />
-
           <link
             rel="apple-touch-icon"
             sizes="180x180"

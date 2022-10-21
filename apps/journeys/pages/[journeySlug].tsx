@@ -24,6 +24,7 @@ interface JourneyPageProps {
 
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   const router = useRouter()
+  const { rtl, locale } = getJourneyRTL(journey)
   const isIframe = typeof window !== 'undefined' && window.self !== window.top
   if (isIframe) {
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
@@ -70,7 +71,8 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
         <ThemeProvider
           themeName={journey.themeName}
           themeMode={journey.themeMode}
-          rtl={getJourneyRTL(journey)}
+          rtl={rtl}
+          locale={locale}
         >
           {journey.blocks != null && (
             <Conductor blocks={transformer(journey.blocks)} />
