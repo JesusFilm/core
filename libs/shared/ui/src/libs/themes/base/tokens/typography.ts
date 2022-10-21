@@ -119,14 +119,14 @@ export const baseTypographyArabic: Pick<ThemeOptions, 'typography'> = {
       lineHeight: '24px'
     },
     subtitle1: {
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: 600,
-      lineHeight: '30px'
+      lineHeight: '28px'
     },
     subtitle2: {
       fontSize: 16,
       fontWeight: 600,
-      lineHeight: '24px'
+      lineHeight: '26px'
     },
     body1: {
       fontSize: 16,
@@ -140,7 +140,7 @@ export const baseTypographyArabic: Pick<ThemeOptions, 'typography'> = {
     },
     overline: {
       fontSize: 16,
-      fontWeight: 600,
+      fontWeight: 700,
       lineHeight: '24px'
       // marginBottom: '4px'
     },
