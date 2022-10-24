@@ -6,13 +6,46 @@ import { ThemeProvider } from '../ThemeProvider'
 import { VisitorListReport } from '.'
 
 describe('VisitorListReport', () => {
+  const input = [
+    {
+      id:"Jesse Ernst",
+      teamId: 56445,
+      userId: 84454,
+      createdAt: "This date"
+    },
+    {
+      id:"Tataihono Nikora",
+      teamId: 1111,
+      userId: 8465,
+      createdAt: "This date"
+    },
+    {
+      id:"Siyang Cao",
+      teamId: 2222,
+      userId: 32165,
+      createdAt: "This date"
+    },
+    {
+      id:"Steven Diller",
+      teamId: 33332,
+      userId: 5,
+      createdAt: "This date"
+    },
+    {
+      id:"Aaron Thompson",
+      teamId: 798654,
+      userId: 132465,
+      createdAt: "This date"
+    }
+  ]
+  
   it('should render DataGrid', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <MockedProvider>
           <FlagsProvider>
             <ThemeProvider>
-              <VisitorListReport input={[]} />
+              <VisitorListReport input={input} />
             </ThemeProvider>
           </FlagsProvider>
         </MockedProvider>
