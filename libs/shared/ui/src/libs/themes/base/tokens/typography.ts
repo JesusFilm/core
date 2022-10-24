@@ -154,66 +154,66 @@ export const baseTypographyArabic: Pick<ThemeOptions, 'typography'> = {
 
 export const baseTypographyUrdu: Pick<ThemeOptions, 'typography'> = {
   typography: {
-    fontFamily: ['"Noto Nastaliq Urdu","Arial",sans-serif'].join(','),
+    fontFamily: ['"Arial",sans-serif'].join(','),
     h1: {
-      fontSize: 32,
-      fontWeight: 600,
-      lineHeight: '70px'
+      fontSize: 36,
+      fontWeight: 700,
+      lineHeight: '46px'
     },
     h2: {
       fontSize: 28,
       fontWeight: 700,
-      lineHeight: '64px'
+      lineHeight: '38px'
     },
     h3: {
       fontSize: 24,
       fontWeight: 700,
-      lineHeight: '56px'
+      lineHeight: '34px'
     },
     h4: {
       fontSize: 22,
       fontWeight: 700,
-      lineHeight: '54px'
+      lineHeight: '32px'
     },
     h5: {
       fontSize: 18,
       fontWeight: 700,
-      lineHeight: '44px'
+      lineHeight: '28px'
     },
     h6: {
       fontSize: 16,
-      fontWeight: 600,
-      lineHeight: '38px'
+      fontWeight: 700,
+      lineHeight: '24px'
     },
     subtitle1: {
       fontSize: 18,
-      fontWeight: 600,
-      lineHeight: '48px'
+      fontWeight: 700,
+      lineHeight: '28px'
     },
     subtitle2: {
       fontSize: 16,
-      fontWeight: 600,
-      lineHeight: '38px'
+      fontWeight: 700,
+      lineHeight: '26px'
     },
     body1: {
       fontSize: 16,
       fontWeight: 400,
-      lineHeight: '44px'
+      lineHeight: '26px'
     },
     body2: {
       fontSize: 14,
       fontWeight: 400,
-      lineHeight: '40px'
+      lineHeight: '24px'
     },
     overline: {
       fontSize: 14,
       fontWeight: 700,
-      lineHeight: '38px'
+      lineHeight: '24px'
     },
     caption: {
       fontSize: 12,
       fontWeight: 400,
-      lineHeight: '28px'
+      lineHeight: '20px'
     }
   }
 }
