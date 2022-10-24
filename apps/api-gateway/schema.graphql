@@ -64,8 +64,12 @@ input ButtonBlockUpdateInput {
 
 type ButtonClickEvent implements Event {
   block: ButtonBlock
+  buttonLabel: String
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
+  stepName: String
+  teamId: ID!
   userId: ID!
 }
 
@@ -174,6 +178,8 @@ scalar DateTime
 interface Event {
   createdAt: DateTime!
   id: ID!
+  journeyId: ID
+  teamId: ID!
   userId: ID!
 }
 
@@ -427,8 +433,16 @@ input JourneyUpdateInput {
 
 type JourneyViewEvent implements Event {
   createdAt: DateTime!
+
+  """visitor user-agent info"""
+  deviceInfo: String
   id: ID!
   journey: Journey
+  journeyId: ID!
+
+  """visitor ip address"""
+  locationInfo: String
+  teamId: ID!
   userId: ID!
 }
 
@@ -670,7 +684,11 @@ type RadioQuestionSubmissionEvent implements Event {
   block: RadioQuestionBlock
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
   radioOptionBlockId: ID!
+  selectedOption: String
+  stepName: String
+  teamId: ID!
   userId: ID!
 }
 
@@ -720,7 +738,10 @@ type SignUpSubmissionEvent implements Event {
   createdAt: DateTime!
   email: String!
   id: ID!
+  journeyId: ID!
   name: String!
+  stepName: String
+  teamId: ID!
   userId: ID!
 }
 
@@ -772,6 +793,8 @@ type StepViewEvent implements Event {
   block: StepBlock
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
+  teamId: ID!
   userId: ID!
 }
 
@@ -787,6 +810,8 @@ input StepViewEventCreateInput {
 type TemplateLibraryViewEvent implements Event {
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
+  teamId: ID!
   userId: ID!
 }
 
@@ -794,6 +819,7 @@ type TemplatePreviewEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+  teamId: ID!
   userId: ID!
 }
 
@@ -805,6 +831,7 @@ type TemplateUseEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+  teamId: ID!
   userId: ID!
 }
 
@@ -846,6 +873,9 @@ type TextResponseSubmissionEvent implements Event {
   block: TextResponseBlock
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
+  stepName: String
+  teamId: ID!
   userId: ID!
   value: String!
 }
@@ -1175,8 +1205,13 @@ type VideoCollapseEvent implements Event {
   block: VideoBlock
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
   position: Float
+  stepName: String
+  teamId: ID!
   userId: ID!
+  videoSource: String
+  videoTitle: String
 }
 
 input VideoCollapseEventCreateInput {
@@ -1193,8 +1228,13 @@ type VideoCompleteEvent implements Event {
   block: VideoBlock
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
   position: Float
+  stepName: String
+  teamId: ID!
   userId: ID!
+  videoSource: String
+  videoTitle: String
 }
 
 input VideoCompleteEventCreateInput {
@@ -1211,8 +1251,13 @@ type VideoExpandEvent implements Event {
   block: VideoBlock
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
   position: Float
+  stepName: String
+  teamId: ID!
   userId: ID!
+  videoSource: String
+  videoTitle: String
 }
 
 input VideoExpandEventCreateInput {
@@ -1229,8 +1274,13 @@ type VideoPauseEvent implements Event {
   block: VideoBlock
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
   position: Float
+  stepName: String
+  teamId: ID!
   userId: ID!
+  videoSource: String
+  videoTitle: String
 }
 
 input VideoPauseEventCreateInput {
@@ -1247,8 +1297,13 @@ type VideoPlayEvent implements Event {
   block: VideoBlock
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
   position: Float
+  stepName: String
+  teamId: ID!
   userId: ID!
+  videoSource: String
+  videoTitle: String
 }
 
 input VideoPlayEventCreateInput {
@@ -1265,9 +1320,14 @@ type VideoProgressEvent implements Event {
   block: VideoBlock
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
   position: Float
   progress: Int!
+  stepName: String
+  teamId: ID!
   userId: ID!
+  videoSource: String
+  videoTitle: String
 }
 
 input VideoProgressEventCreateInput {
@@ -1294,8 +1354,13 @@ type VideoStartEvent implements Event {
   block: VideoBlock
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
   position: Float
+  stepName: String
+  teamId: ID!
   userId: ID!
+  videoSource: String
+  videoTitle: String
 }
 
 input VideoStartEventCreateInput {

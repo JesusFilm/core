@@ -723,14 +723,20 @@ input ButtonClickEventCreateInput {
 
 type ButtonClickEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
+  buttonLabel: String
   block: ButtonBlock
 }
 
 interface Event {
   id: ID!
+  journeyId: ID
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
 }
 
@@ -744,8 +750,16 @@ input JourneyViewEventCreateInput {
 
 type JourneyViewEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+
+  """visitor user-agent info"""
+  deviceInfo: String
+
+  """visitor ip address"""
+  locationInfo: String
   journey: Journey
 }
 
@@ -760,9 +774,13 @@ input RadioQuestionSubmissionEventCreateInput {
 
 type RadioQuestionSubmissionEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
   radioOptionBlockId: ID!
+  selectedOption: String
   block: RadioQuestionBlock
 }
 
@@ -778,8 +796,11 @@ input SignUpSubmissionEventCreateInput {
 
 type SignUpSubmissionEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
   name: String!
   email: String!
   block: SignUpBlock
@@ -795,14 +816,18 @@ input StepViewEventCreateInput {
 
 type StepViewEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
   block: StepBlock
 }
 
 type TemplateLibraryViewEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
 }
 
@@ -812,9 +837,10 @@ input TemplateUseEventInput {
 
 type TemplateUseEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
   journeyId: ID!
+  userId: ID!
+  teamId: ID!
+  createdAt: DateTime!
 }
 
 input TemplatePreviewEventInput {
@@ -823,9 +849,10 @@ input TemplatePreviewEventInput {
 
 type TemplatePreviewEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
   journeyId: ID!
+  userId: ID!
+  teamId: ID!
+  createdAt: DateTime!
 }
 
 input TextResponseSubmissionEventCreateInput {
@@ -839,8 +866,11 @@ input TextResponseSubmissionEventCreateInput {
 
 type TextResponseSubmissionEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
   value: String!
   block: TextResponseBlock
 }
@@ -860,6 +890,11 @@ type VideoStartEvent implements Event {
   createdAt: DateTime!
   position: Float
   block: VideoBlock
+  journeyId: ID!
+  teamId: ID!
+  stepName: String
+  videoTitle: String
+  videoSource: String
 }
 
 input VideoPlayEventCreateInput {
@@ -877,6 +912,11 @@ type VideoPlayEvent implements Event {
   createdAt: DateTime!
   position: Float
   block: VideoBlock
+  journeyId: ID!
+  teamId: ID!
+  stepName: String
+  videoTitle: String
+  videoSource: String
 }
 
 input VideoPauseEventCreateInput {
@@ -890,9 +930,14 @@ input VideoPauseEventCreateInput {
 
 type VideoPauseEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
   position: Float
+  videoTitle: String
+  videoSource: String
   block: VideoBlock
 }
 
@@ -907,9 +952,14 @@ input VideoCompleteEventCreateInput {
 
 type VideoCompleteEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
   position: Float
+  videoTitle: String
+  videoSource: String
   block: VideoBlock
 }
 
@@ -924,9 +974,14 @@ input VideoExpandEventCreateInput {
 
 type VideoExpandEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
   position: Float
+  videoTitle: String
+  videoSource: String
   block: VideoBlock
 }
 
@@ -941,9 +996,14 @@ input VideoCollapseEventCreateInput {
 
 type VideoCollapseEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
   position: Float
+  stepName: String
+  videoTitle: String
+  videoSource: String
   block: VideoBlock
 }
 
@@ -961,10 +1021,15 @@ input VideoProgressEventCreateInput {
 
 type VideoProgressEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
   position: Float
   progress: Int!
+  videoTitle: String
+  videoSource: String
   block: VideoBlock
 }
 

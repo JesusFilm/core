@@ -13,6 +13,11 @@ type VideoStartEvent implements Event {
   createdAt: DateTime!
   position: Float
   block: VideoBlock
+  journeyId: ID!
+  teamId: ID!
+  stepName: String
+  videoTitle: String
+  videoSource: String
 }
 
 input VideoPlayEventCreateInput {
@@ -30,6 +35,11 @@ type VideoPlayEvent implements Event {
   createdAt: DateTime!
   position: Float
   block: VideoBlock
+  journeyId: ID!
+  teamId: ID!
+  stepName: String
+  videoTitle: String
+  videoSource: String
 }
 
 input VideoPauseEventCreateInput {
@@ -43,9 +53,14 @@ input VideoPauseEventCreateInput {
 
 type VideoPauseEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
   position: Float
+  videoTitle: String
+  videoSource: String
   block: VideoBlock
 }
 
@@ -60,9 +75,14 @@ input VideoCompleteEventCreateInput {
 
 type VideoCompleteEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
   position: Float
+  videoTitle: String
+  videoSource: String
   block: VideoBlock
 }
 
@@ -77,9 +97,14 @@ input VideoExpandEventCreateInput {
 
 type VideoExpandEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
   position: Float
+  videoTitle: String
+  videoSource: String
   block: VideoBlock
 }
 
@@ -94,9 +119,14 @@ input VideoCollapseEventCreateInput {
 
 type VideoCollapseEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
   position: Float
+  stepName: String
+  videoTitle: String
+  videoSource: String
   block: VideoBlock
 }
 
@@ -115,10 +145,15 @@ input VideoProgressEventCreateInput {
 
 type VideoProgressEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
   position: Float
   progress: Int!
+  videoTitle: String
+  videoSource: String
   block: VideoBlock
 }
 

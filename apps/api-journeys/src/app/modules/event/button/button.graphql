@@ -8,8 +8,12 @@ input ButtonClickEventCreateInput {
 
 type ButtonClickEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
+  buttonLabel: String
   block: ButtonBlock
 }
 

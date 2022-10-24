@@ -1,6 +1,8 @@
 type TemplateLibraryViewEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
 }
 
@@ -10,9 +12,10 @@ input TemplateUseEventInput {
 
 type TemplateUseEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
   journeyId: ID!
+  userId: ID!
+  teamId: ID!
+  createdAt: DateTime!
 }
 
 input TemplatePreviewEventInput {
@@ -21,9 +24,10 @@ input TemplatePreviewEventInput {
 
 type TemplatePreviewEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
   journeyId: ID!
+  userId: ID!
+  teamId: ID!
+  createdAt: DateTime!
 }
 
 extend type Mutation {

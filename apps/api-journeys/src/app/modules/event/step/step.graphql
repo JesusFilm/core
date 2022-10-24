@@ -8,7 +8,9 @@ input StepViewEventCreateInput {
 
 type StepViewEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
   block: StepBlock
 }

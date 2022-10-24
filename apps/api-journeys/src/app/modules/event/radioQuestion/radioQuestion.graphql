@@ -9,9 +9,13 @@ input RadioQuestionSubmissionEventCreateInput {
 
 type RadioQuestionSubmissionEvent implements Event {
   id: ID!
+  journeyId: ID!
   userId: ID!
+  teamId: ID!
   createdAt: DateTime!
+  stepName: String
   radioOptionBlockId: ID!
+  selectedOption: String
   block: RadioQuestionBlock
 }
 
