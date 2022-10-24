@@ -67,7 +67,8 @@ describe('TemplateResolver', () => {
       ).toEqual({
         __typename: 'TemplateLibraryViewEvent',
         id: '1',
-        userId: 'userId'
+        userId: 'userId',
+        teamId: 'team.id'
       })
     })
   })
@@ -84,7 +85,8 @@ describe('TemplateResolver', () => {
         __typename: 'TemplateUseEvent',
         id: '1',
         userId: 'userId',
-        journeyId: 'journeyId'
+        journeyId: 'journeyId',
+        teamId: 'team.id'
       })
     })
   })
@@ -104,7 +106,8 @@ describe('TemplateResolver', () => {
         __typename: 'TemplatePreviewEvent',
         id: '1',
         userId: 'userId',
-        journeyId: 'journeyId'
+        journeyId: 'journeyId',
+        teamId: 'team.id'
       })
     })
   })
