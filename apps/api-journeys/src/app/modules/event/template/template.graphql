@@ -7,24 +7,24 @@ type TemplateLibraryViewEvent implements Event {
 }
 
 input TemplateUseEventInput {
-  journeyId: ID!
+  journeyId: ID @deprecated(reason: "never used")
 }
 
 type TemplateUseEvent implements Event {
   id: ID!
-  journeyId: ID!
+  journeyId: ID
   userId: ID!
   teamId: ID!
   createdAt: DateTime!
 }
 
 input TemplatePreviewEventInput {
-  journeyId: ID!
+  journeyId: ID @deprecated(reason: "never used")
 }
 
 type TemplatePreviewEvent implements Event {
   id: ID!
-  journeyId: ID!
+  journeyId: ID
   userId: ID!
   teamId: ID!
   createdAt: DateTime!

@@ -17,7 +17,7 @@ type SignUpSubmissionEvent implements Event {
   stepName: String
   name: String!
   email: String!
-  block: SignUpBlock
+  block: SignUpBlock @deprecated(reason: "never used")
 }
 
 extend type Mutation {

@@ -14,7 +14,7 @@ type ButtonClickEvent implements Event {
   createdAt: DateTime!
   stepName: String
   buttonLabel: String
-  block: ButtonBlock
+  block: ButtonBlock @deprecated(reason: "never used")
 }
 
 extend type Mutation {

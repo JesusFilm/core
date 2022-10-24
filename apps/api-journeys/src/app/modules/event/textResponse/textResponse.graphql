@@ -15,7 +15,7 @@ type TextResponseSubmissionEvent implements Event {
   createdAt: DateTime!
   stepName: String
   value: String!
-  block: TextResponseBlock
+  block: TextResponseBlock @deprecated(reason: "never used")
 }
 
 extend type Mutation {

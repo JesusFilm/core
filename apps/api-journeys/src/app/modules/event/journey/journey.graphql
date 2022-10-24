@@ -20,7 +20,7 @@ type JourneyViewEvent implements Event {
   visitor ip address
   """
   locationInfo: String
-  journey: Journey
+  journey: Journey @deprecated(reason: "never used")
 }
 
 extend type Mutation {

@@ -16,7 +16,7 @@ type RadioQuestionSubmissionEvent implements Event {
   stepName: String
   radioOptionBlockId: ID!
   selectedOption: String
-  block: RadioQuestionBlock
+  block: RadioQuestionBlock @deprecated(reason: "never used")
 }
 
 extend type Mutation {

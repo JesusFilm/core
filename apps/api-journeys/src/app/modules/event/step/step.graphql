@@ -12,7 +12,7 @@ type StepViewEvent implements Event {
   userId: ID!
   teamId: ID!
   createdAt: DateTime!
-  block: StepBlock
+  block: StepBlock @deprecated(reason: "never used")
 }
 
 extend type Mutation {

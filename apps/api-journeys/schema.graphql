@@ -729,7 +729,7 @@ type ButtonClickEvent implements Event {
   createdAt: DateTime!
   stepName: String
   buttonLabel: String
-  block: ButtonBlock
+  block: ButtonBlock @deprecated(reason: "never used")
 }
 
 interface Event {
@@ -760,7 +760,7 @@ type JourneyViewEvent implements Event {
 
   """visitor ip address"""
   locationInfo: String
-  journey: Journey
+  journey: Journey @deprecated(reason: "never used")
 }
 
 input RadioQuestionSubmissionEventCreateInput {
@@ -781,7 +781,7 @@ type RadioQuestionSubmissionEvent implements Event {
   stepName: String
   radioOptionBlockId: ID!
   selectedOption: String
-  block: RadioQuestionBlock
+  block: RadioQuestionBlock @deprecated(reason: "never used")
 }
 
 input SignUpSubmissionEventCreateInput {
@@ -803,7 +803,7 @@ type SignUpSubmissionEvent implements Event {
   stepName: String
   name: String!
   email: String!
-  block: SignUpBlock
+  block: SignUpBlock @deprecated(reason: "never used")
 }
 
 input StepViewEventCreateInput {
@@ -820,7 +820,7 @@ type StepViewEvent implements Event {
   userId: ID!
   teamId: ID!
   createdAt: DateTime!
-  block: StepBlock
+  block: StepBlock @deprecated(reason: "never used")
 }
 
 type TemplateLibraryViewEvent implements Event {
@@ -832,24 +832,24 @@ type TemplateLibraryViewEvent implements Event {
 }
 
 input TemplateUseEventInput {
-  journeyId: ID!
+  journeyId: ID @deprecated(reason: "never used")
 }
 
 type TemplateUseEvent implements Event {
   id: ID!
-  journeyId: ID!
+  journeyId: ID
   userId: ID!
   teamId: ID!
   createdAt: DateTime!
 }
 
 input TemplatePreviewEventInput {
-  journeyId: ID!
+  journeyId: ID @deprecated(reason: "never used")
 }
 
 type TemplatePreviewEvent implements Event {
   id: ID!
-  journeyId: ID!
+  journeyId: ID
   userId: ID!
   teamId: ID!
   createdAt: DateTime!
@@ -872,7 +872,7 @@ type TextResponseSubmissionEvent implements Event {
   createdAt: DateTime!
   stepName: String
   value: String!
-  block: TextResponseBlock
+  block: TextResponseBlock @deprecated(reason: "never used")
 }
 
 input VideoStartEventCreateInput {
@@ -886,15 +886,15 @@ input VideoStartEventCreateInput {
 
 type VideoStartEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  position: Float
-  block: VideoBlock
   journeyId: ID!
+  userId: ID!
   teamId: ID!
+  createdAt: DateTime!
   stepName: String
+  position: Float
   videoTitle: String
   videoSource: String
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 input VideoPlayEventCreateInput {
@@ -908,15 +908,15 @@ input VideoPlayEventCreateInput {
 
 type VideoPlayEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  position: Float
-  block: VideoBlock
   journeyId: ID!
+  userId: ID!
   teamId: ID!
+  createdAt: DateTime!
   stepName: String
+  position: Float
   videoTitle: String
   videoSource: String
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 input VideoPauseEventCreateInput {
@@ -938,7 +938,7 @@ type VideoPauseEvent implements Event {
   position: Float
   videoTitle: String
   videoSource: String
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 input VideoCompleteEventCreateInput {
@@ -960,7 +960,7 @@ type VideoCompleteEvent implements Event {
   position: Float
   videoTitle: String
   videoSource: String
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 input VideoExpandEventCreateInput {
@@ -982,7 +982,7 @@ type VideoExpandEvent implements Event {
   position: Float
   videoTitle: String
   videoSource: String
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 input VideoCollapseEventCreateInput {
@@ -1004,7 +1004,7 @@ type VideoCollapseEvent implements Event {
   stepName: String
   videoTitle: String
   videoSource: String
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 input VideoProgressEventCreateInput {
@@ -1030,7 +1030,7 @@ type VideoProgressEvent implements Event {
   progress: Int!
   videoTitle: String
   videoSource: String
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 enum IdType {

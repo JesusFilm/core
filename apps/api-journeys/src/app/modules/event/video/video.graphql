@@ -9,15 +9,15 @@ input VideoStartEventCreateInput {
 
 type VideoStartEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  position: Float
-  block: VideoBlock
   journeyId: ID!
+  userId: ID!
   teamId: ID!
+  createdAt: DateTime!
   stepName: String
+  position: Float
   videoTitle: String
   videoSource: String
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 input VideoPlayEventCreateInput {
@@ -31,15 +31,15 @@ input VideoPlayEventCreateInput {
 
 type VideoPlayEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  position: Float
-  block: VideoBlock
   journeyId: ID!
+  userId: ID!
   teamId: ID!
+  createdAt: DateTime!
   stepName: String
+  position: Float
   videoTitle: String
   videoSource: String
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 input VideoPauseEventCreateInput {
@@ -61,7 +61,7 @@ type VideoPauseEvent implements Event {
   position: Float
   videoTitle: String
   videoSource: String
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 input VideoCompleteEventCreateInput {
@@ -83,7 +83,7 @@ type VideoCompleteEvent implements Event {
   position: Float
   videoTitle: String
   videoSource: String
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 input VideoExpandEventCreateInput {
@@ -105,7 +105,7 @@ type VideoExpandEvent implements Event {
   position: Float
   videoTitle: String
   videoSource: String
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 input VideoCollapseEventCreateInput {
@@ -127,7 +127,7 @@ type VideoCollapseEvent implements Event {
   stepName: String
   videoTitle: String
   videoSource: String
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 input VideoProgressEventCreateInput {
@@ -154,7 +154,7 @@ type VideoProgressEvent implements Event {
   progress: Int!
   videoTitle: String
   videoSource: String
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
 }
 
 extend type Mutation {

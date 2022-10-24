@@ -63,7 +63,7 @@ input ButtonBlockUpdateInput {
 }
 
 type ButtonClickEvent implements Event {
-  block: ButtonBlock
+  block: ButtonBlock @deprecated(reason: "never used")
   buttonLabel: String
   createdAt: DateTime!
   id: ID!
@@ -437,7 +437,7 @@ type JourneyViewEvent implements Event {
   """visitor user-agent info"""
   deviceInfo: String
   id: ID!
-  journey: Journey
+  journey: Journey @deprecated(reason: "never used")
   journeyId: ID!
 
   """visitor ip address"""
@@ -681,7 +681,7 @@ input RadioQuestionBlockCreateInput {
 }
 
 type RadioQuestionSubmissionEvent implements Event {
-  block: RadioQuestionBlock
+  block: RadioQuestionBlock @deprecated(reason: "never used")
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
@@ -734,7 +734,7 @@ input SignUpBlockUpdateInput {
 }
 
 type SignUpSubmissionEvent implements Event {
-  block: SignUpBlock
+  block: SignUpBlock @deprecated(reason: "never used")
   createdAt: DateTime!
   email: String!
   id: ID!
@@ -790,7 +790,7 @@ input StepBlockUpdateInput {
 }
 
 type StepViewEvent implements Event {
-  block: StepBlock
+  block: StepBlock @deprecated(reason: "never used")
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
@@ -818,25 +818,25 @@ type TemplateLibraryViewEvent implements Event {
 type TemplatePreviewEvent implements Event {
   createdAt: DateTime!
   id: ID!
-  journeyId: ID!
+  journeyId: ID
   teamId: ID!
   userId: ID!
 }
 
 input TemplatePreviewEventInput {
-  journeyId: ID!
+  journeyId: ID
 }
 
 type TemplateUseEvent implements Event {
   createdAt: DateTime!
   id: ID!
-  journeyId: ID!
+  journeyId: ID
   teamId: ID!
   userId: ID!
 }
 
 input TemplateUseEventInput {
-  journeyId: ID!
+  journeyId: ID
 }
 
 type TextResponseBlock implements Block {
@@ -870,7 +870,7 @@ input TextResponseBlockUpdateInput {
 }
 
 type TextResponseSubmissionEvent implements Event {
-  block: TextResponseBlock
+  block: TextResponseBlock @deprecated(reason: "never used")
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
@@ -1202,7 +1202,7 @@ input VideoBlockUpdateInput {
 }
 
 type VideoCollapseEvent implements Event {
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
@@ -1225,7 +1225,7 @@ input VideoCollapseEventCreateInput {
 }
 
 type VideoCompleteEvent implements Event {
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
@@ -1248,7 +1248,7 @@ input VideoCompleteEventCreateInput {
 }
 
 type VideoExpandEvent implements Event {
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
@@ -1271,7 +1271,7 @@ input VideoExpandEventCreateInput {
 }
 
 type VideoPauseEvent implements Event {
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
@@ -1294,7 +1294,7 @@ input VideoPauseEventCreateInput {
 }
 
 type VideoPlayEvent implements Event {
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
@@ -1317,7 +1317,7 @@ input VideoPlayEventCreateInput {
 }
 
 type VideoProgressEvent implements Event {
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
@@ -1351,7 +1351,7 @@ input VideosFilter {
 }
 
 type VideoStartEvent implements Event {
-  block: VideoBlock
+  block: VideoBlock @deprecated(reason: "never used")
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
