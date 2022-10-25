@@ -20,12 +20,13 @@ import { GridContainer } from './GridContainer'
 const Demo = {
   ...journeyUiConfig,
   component: GridContainer,
-  title: 'Journeys-Ui/Grid/Container'
+  title: 'Journeys-Ui/Grid/Container',
+  parameters: {
+    chromatic: { disable: true }
+  }
 }
 
-const DefaultTemplate: Story<TreeBlock<GridContainerFields>> = ({
-  ...props
-}) => (
+const Template: Story<TreeBlock<GridContainerFields>> = ({ ...props }) => (
   <MockedProvider>
     <StoryCard>
       <GridContainer {...props} />
@@ -121,8 +122,7 @@ const childrenTwo: TreeBlock[] = [
   }
 ]
 
-export const Default: Story<TreeBlock<GridContainerFields>> =
-  DefaultTemplate.bind({})
+export const Default: Story<TreeBlock<GridContainerFields>> = Template.bind({})
 Default.args = {
   id: 'GridContainer',
   __typename: 'GridContainerBlock',
@@ -154,8 +154,9 @@ Default.args = {
   ]
 }
 
-export const OffsetRight: Story<TreeBlock<GridContainerFields>> =
-  DefaultTemplate.bind({})
+export const OffsetRight: Story<TreeBlock<GridContainerFields>> = Template.bind(
+  {}
+)
 OffsetRight.args = {
   id: 'GridContainer',
   __typename: 'GridContainerBlock',
@@ -177,8 +178,7 @@ OffsetRight.args = {
   ]
 }
 
-export const Center: Story<TreeBlock<GridContainerFields>> =
-  DefaultTemplate.bind({})
+export const Center: Story<TreeBlock<GridContainerFields>> = Template.bind({})
 Center.args = {
   id: 'GridContainer',
   __typename: 'GridContainerBlock',

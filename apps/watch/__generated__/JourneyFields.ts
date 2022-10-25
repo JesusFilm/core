@@ -18,6 +18,8 @@ export interface JourneyFields_language_name {
 export interface JourneyFields_language {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
+  iso3: string | null;
   name: JourneyFields_language_name[];
 }
 

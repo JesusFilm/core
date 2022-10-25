@@ -5,7 +5,7 @@ import MuiTextField, {
   OutlinedTextFieldProps as MuiTextFieldProps
 } from '@mui/material/TextField'
 
-export interface TextFieldProps
+interface TextFieldProps
   extends Omit<MuiTextFieldProps, 'variant' | 'error' | 'fullWidth'> {}
 
 // Use as subcomponent of form blocks (eg SignUp, TextResponse)

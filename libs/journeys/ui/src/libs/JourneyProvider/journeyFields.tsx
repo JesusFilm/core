@@ -13,6 +13,8 @@ export const JOURNEY_FIELDS = gql`
     status
     language {
       id
+      bcp47
+      iso3
       name {
         value
         primary

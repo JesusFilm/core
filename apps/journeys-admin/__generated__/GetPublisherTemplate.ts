@@ -18,6 +18,8 @@ export interface GetPublisherTemplate_publisherTemplate_language_name {
 export interface GetPublisherTemplate_publisherTemplate_language {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
+  iso3: string | null;
   name: GetPublisherTemplate_publisherTemplate_language_name[];
 }
 

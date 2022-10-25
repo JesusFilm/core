@@ -24,6 +24,7 @@ export function Video({
   video,
   source,
   videoId,
+  image,
   title,
   autoplay,
   startAt,
@@ -133,6 +134,8 @@ export function Video({
   const eventVideoTitle = video?.title[0].value ?? title
   const eventVideoId = video?.id ?? videoId
 
+  const videoImage = source === VideoBlockSource.internal ? video?.image : image
+
   return (
     <Box
       data-testid={`video-${blockId}`}
@@ -159,10 +162,7 @@ export function Video({
           },
           '> .vjs-loading-spinner': {
             zIndex: 1,
-            display:
-              autoplay !== true && source === VideoBlockSource.youTube
-                ? 'none'
-                : null
+            display: source === VideoBlockSource.youTube ? 'none' : 'block'
           },
           '> .vjs-big-play-button': {
             zIndex: 1
@@ -180,6 +180,16 @@ export function Video({
           '&:hover': {
             color: VIDEO_FOREGROUND_COLOR
           }
+        },
+        // renders big play button for youtube videos on iOS devices
+        'video::-webkit-media-controls-start-playback-button': {
+          display: 'none'
+        },
+        '> .video-js.vjs-controls-enabled .vjs-big-play-button': {
+          display: 'none'
+        },
+        '> .video-js.vjs-controls-enabled.vjs-paused .vjs-big-play-button': {
+          display: 'block'
         }
       }}
     >
@@ -256,13 +266,22 @@ export function Video({
           </Paper>
         </>
       )}
+      {/* Video Image  */}
+      {videoImage != null && posterBlock?.src == null && loading && (
+        <NextImage
+          src={videoImage}
+          alt="video image"
+          layout="fill"
+          objectFit="cover"
+        />
+      )}
       {/* Lazy load higher res poster */}
       {posterBlock?.src != null && loading && (
         <NextImage
           src={posterBlock.src}
           alt={posterBlock.alt}
           placeholder={blurBackground != null ? 'blur' : 'empty'}
-          blurDataURL={blurBackground ?? posterBlock.src}
+          blurDataURL={blurBackground}
           layout="fill"
           objectFit="cover"
         />

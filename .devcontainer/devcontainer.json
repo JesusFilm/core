@@ -34,6 +34,11 @@
     "kubectl-helm-minikube": "1.21",
     "git": "os-provided",
     "aws-cli": "latest",
-    "python": "os-provided"
+    "python": "os-provided",
+    "terraform": {
+      "version": "latest",
+      "tflint": "latest",
+      "terragrunt": "latest"
+    }
   }
 }

@@ -10,8 +10,6 @@ import {
 } from '../../../__generated__/globalTypes'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import type { TreeBlock } from '../../libs/block'
-import { IconFields } from './__generated__/IconFields'
 import { Icon } from '.'
 
 const IconDemo = {
@@ -21,11 +19,9 @@ const IconDemo = {
   title: 'Journeys-Ui/Icon'
 }
 
-interface IconStoryProps extends TreeBlock<IconFields> {
-  variants: string[]
-}
-
-const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
+const VariantTemplate: Story<
+  Parameters<typeof Icon>[0] & { variants: IconName[] }
+> = ({ ...args }) => (
   <Container>
     <Grid container spacing={6} columns={{ xs: 4, sm: 8, md: 12 }}>
       {args.variants.map((variant, i) => (
@@ -40,7 +36,7 @@ const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
           justifyContent="center"
           alignItems="center"
         >
-          <Icon {...args} iconName={variant as IconName} />
+          <Icon {...args} iconName={variant} />
           <Typography mt={1} variant="caption">{`${variant}`}</Typography>
         </Grid>
       ))}
@@ -72,7 +68,9 @@ Variant.args = {
   ]
 }
 
-const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
+const ColorTemplate: Story<
+  Parameters<typeof Icon>[0] & { variants: IconColor[] }
+> = ({ ...args }) => (
   <Container>
     {args.variants.map((variant, i) => (
       <Box
@@ -84,7 +82,7 @@ const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
         }}
       >
         <Typography>{`${variant}`}</Typography>
-        <Icon {...args} iconColor={variant as IconColor} />
+        <Icon {...args} iconColor={variant} />
       </Box>
     ))}
   </Container>
@@ -105,7 +103,9 @@ Color.args = {
   ]
 }
 
-const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
+const SizeTemplate: Story<
+  Parameters<typeof Icon>[0] & { variants: IconSize[] }
+> = ({ ...args }) => (
   <Container>
     {args.variants.map((variant, i) => (
       <Box
@@ -117,7 +117,7 @@ const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
         }}
       >
         <Typography>{`${variant}`}</Typography>
-        <Icon {...args} iconSize={variant as IconSize} />
+        <Icon {...args} iconSize={variant} />
       </Box>
     ))}
   </Container>

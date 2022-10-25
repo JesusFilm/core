@@ -9,10 +9,12 @@ enum IconName {
   FormatQuoteRounded
   LockOpenRounded
   ArrowForwardRounded
+  ArrowBackRounded
   ChatBubbleOutlineRounded
   LiveTvRounded
   MenuBookRounded
   ChevronRightRounded
+  ChevronLeftRounded
   BeenhereRounded
   SendRounded
   SubscriptionsRounded
