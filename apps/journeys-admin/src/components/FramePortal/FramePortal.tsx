@@ -23,7 +23,7 @@ function Content({ children, document }: ContentProps): ReactElement {
   const cache = useMemo(() => {
     document.head.innerHTML =
       window.document.head.innerHTML +
-      '<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap" rel="stylesheet" />, '
+      '<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&family=El+Messiri:wght@400;600;700&display=swap" rel="stylesheet" />, '
 
     return createCache({
       key: 'iframe',
@@ -56,6 +56,7 @@ interface FrameProps
 
 export const FramePortal = memo(function FramePortal({
   children,
+  dir,
   ...rest
 }: FrameProps): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
@@ -63,6 +64,9 @@ export const FramePortal = memo(function FramePortal({
   // content is dropped in firefox.
   const [iframeLoaded, dispatch] = useReducer(() => true, false)
   const document = frameRef.current?.contentDocument
+  if (document != null) {
+    document.dir = dir ?? ''
+  }
 
   useEffect(() => {
     // When we hydrate the iframe then the load event is already dispatched

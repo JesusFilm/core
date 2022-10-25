@@ -11,6 +11,7 @@ import {
   ActiveTab,
   ActiveFab
 } from '@core/journeys/ui/EditorProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -36,12 +37,15 @@ export function Canvas(): ReactElement {
     dispatch
   } = useEditor()
   const { journey } = useJourney()
+  const { rtl, locale } = getJourneyRTL(journey)
 
   useEffect(() => {
     if (swiper != null && selectedStep != null && steps != null) {
+      console.log('slide to step', selectedStep)
+      swiper.rtlTranslate = rtl
       swiper.slideTo(steps.findIndex(({ id }) => id === selectedStep.id))
     }
-  }, [steps, swiper, selectedStep])
+  }, [steps, swiper, selectedStep, rtl])
 
   useEffect(() => {
     const setSpaceBetweenOnResize = (): void => {
@@ -53,7 +57,7 @@ export function Canvas(): ReactElement {
           EDGE_SLIDE_WIDTH * 2) /
           2
       )
-
+      console.log('spaceBetween', spaceBetween)
       setSpaceBetween(spaceBetween)
     }
 
@@ -91,15 +95,17 @@ export function Canvas(): ReactElement {
       }}
     >
       <Swiper
+        dir={!rtl ? 'ltr' : 'rtl'}
         slidesPerView="auto"
         spaceBetween={spaceBetween}
         centeredSlides
+        // centeredSlidesBounds
         shortSwipes={false}
         slideToClickedSlide={steps != null}
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={(swiper) => {
           if (steps == null) return
-
+          console.log('swiper', swiper.activeIndex)
           dispatch({
             type: 'SetSelectedStepAction',
             step: steps[swiper.activeIndex]
@@ -108,7 +114,14 @@ export function Canvas(): ReactElement {
       >
         {steps != null ? (
           steps.map((step) => (
-            <SwiperSlide key={step.id} style={{ width: 362 }}>
+            <SwiperSlide
+              key={step.id}
+              style={{
+                width: 362,
+                marginRight: spaceBetween / 2,
+                marginLeft: spaceBetween / 2
+              }}
+            >
               <Box
                 data-testid={`step-${step.id}`}
                 sx={{
@@ -142,10 +155,12 @@ export function Canvas(): ReactElement {
                   }}
                 />
 
-                <FramePortal width={356} height={536}>
+                <FramePortal width={356} height={536} dir={rtl ? 'rtl' : 'ltr'}>
                   <ThemeProvider
                     themeName={journey?.themeName ?? ThemeName.base}
                     themeMode={journey?.themeMode ?? ThemeMode.light}
+                    rtl={rtl}
+                    locale={locale}
                   >
                     <Fade
                       in={selectedStep?.id === step.id}
@@ -191,7 +206,6 @@ export function Canvas(): ReactElement {
                 height={536}
                 sx={{
                   borderRadius: 5,
-
                   transform: 'scaleY(0.9)'
                 }}
               />
