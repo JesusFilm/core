@@ -730,8 +730,8 @@ type ButtonClickEvent implements Event {
 
 interface Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
 }
 
 input JourneyViewEventCreateInput {

@@ -192,9 +192,9 @@ enum DeviceType {
 }
 
 interface Event {
-  createdAt: DateTime!
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  userId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 enum GridAlignItems {
