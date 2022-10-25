@@ -158,7 +158,7 @@ describe('UserJourneyResolver', () => {
       await resolver.userJourneyApprove(userJourney.id, actorUserJourney.userId)
       expect(mService.save).toHaveBeenCalledWith(
         {
-          id: '2:jfp-team',
+          _key: '2:jfp-team',
           userId: '2',
           teamId: 'jfp-team'
         },

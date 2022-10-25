@@ -658,7 +658,7 @@ describe('JourneyResolver', () => {
       )
       expect(mService.save).toHaveBeenCalledWith(
         {
-          id: 'userId:jfp-team',
+          _key: 'userId:jfp-team',
           userId: 'userId',
           teamId: 'jfp-team'
         },

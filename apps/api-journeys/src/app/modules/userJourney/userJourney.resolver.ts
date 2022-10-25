@@ -92,7 +92,7 @@ export class UserJourneyResolver {
 
     await this.memberService.save(
       {
-        id: `${userId}:${journey.teamId}`,
+        _key: `${userId}:${journey.teamId}`,
         userId,
         teamId: journey.teamId
       },

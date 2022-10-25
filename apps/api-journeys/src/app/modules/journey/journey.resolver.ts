@@ -196,7 +196,7 @@ export class JourneyResolver {
         })
         await this.memberService.save(
           {
-            id: `${userId}:${team.id}`,
+            _key: `${userId}:${team.id}`,
             userId,
             teamId: team.id
           },
