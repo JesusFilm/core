@@ -153,6 +153,19 @@ export enum Role {
     publisher = "publisher"
 }
 
+export enum DeviceType {
+    console = "console",
+    mobile = "mobile",
+    tablet = "tablet",
+    smarttv = "smarttv",
+    wearable = "wearable",
+    embedded = "embedded"
+}
+
+export enum VisitorStatus {
+    star = "star"
+}
+
 export class NavigateActionInput {
     gtmEventName?: Nullable<string>;
 }
@@ -874,6 +887,66 @@ export class UserRole {
     roles?: Nullable<Role[]>;
 }
 
+export class Browser {
+    __typename?: 'Browser';
+    name?: Nullable<string>;
+    version?: Nullable<string>;
+}
+
+export class Device {
+    __typename?: 'Device';
+    model?: Nullable<string>;
+    type?: Nullable<DeviceType>;
+    vendor?: Nullable<string>;
+}
+
+export class OperatingSystem {
+    __typename?: 'OperatingSystem';
+    name?: Nullable<string>;
+    version?: Nullable<string>;
+}
+
+export class UserAgent {
+    __typename?: 'UserAgent';
+    browser: Browser;
+    device: Device;
+    os: OperatingSystem;
+}
+
+export class Visitor {
+    __typename?: 'Visitor';
+    id: string;
+    createdAt: DateTime;
+    lastChatStartedAt?: Nullable<DateTime>;
+    userAgent?: Nullable<UserAgent>;
+    countryCode?: Nullable<string>;
+    name?: Nullable<string>;
+    email?: Nullable<string>;
+    status?: Nullable<VisitorStatus>;
+    messengerNetwork?: Nullable<string>;
+    messengerId?: Nullable<string>;
+    notes?: Nullable<string>;
+}
+
+export class VisitorEdge {
+    __typename?: 'VisitorEdge';
+    cursor: string;
+    node: Visitor;
+}
+
+export class PageInfo {
+    __typename?: 'PageInfo';
+    hasNextPage: boolean;
+    startCursor?: Nullable<string>;
+    endCursor?: Nullable<string>;
+}
+
+export class VisitorsConnection {
+    __typename?: 'VisitorsConnection';
+    edges: VisitorEdge[];
+    pageInfo: PageInfo;
+}
+
 export abstract class IMutation {
     abstract blockDeleteAction(id: string, journeyId: string): Block | Promise<Block>;
 
@@ -1017,6 +1090,8 @@ export abstract class IQuery {
     abstract journey(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
+
+    abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
 }
 
 export class User {
