@@ -723,9 +723,9 @@ input ButtonClickEventCreateInput {
 
 type ButtonClickEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  block: ButtonBlock
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  block: ButtonBlock @deprecated(reason: "preparing for data structure change")
 }
 
 interface Event {
@@ -744,9 +744,9 @@ input JourneyViewEventCreateInput {
 
 type JourneyViewEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  journey: Journey
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  journey: Journey @deprecated(reason: "preparing for data structure change")
 }
 
 input RadioQuestionSubmissionEventCreateInput {
@@ -760,10 +760,10 @@ input RadioQuestionSubmissionEventCreateInput {
 
 type RadioQuestionSubmissionEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  radioOptionBlockId: ID!
-  block: RadioQuestionBlock
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  radioOptionBlockId: ID! @deprecated(reason: "preparing for data structure change")
+  block: RadioQuestionBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input SignUpSubmissionEventCreateInput {
@@ -778,11 +778,11 @@ input SignUpSubmissionEventCreateInput {
 
 type SignUpSubmissionEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  name: String!
-  email: String!
-  block: SignUpBlock
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  name: String! @deprecated(reason: "preparing for data structure change")
+  email: String! @deprecated(reason: "preparing for data structure change")
+  block: SignUpBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input StepViewEventCreateInput {
@@ -795,37 +795,37 @@ input StepViewEventCreateInput {
 
 type StepViewEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  block: StepBlock
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  block: StepBlock @deprecated(reason: "preparing for data structure change")
 }
 
 type TemplateLibraryViewEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
 }
 
 input TemplateUseEventInput {
-  journeyId: ID!
+  journeyId: ID @deprecated(reason: "preparing for data structure change")
 }
 
 type TemplateUseEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  journeyId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  journeyId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input TemplatePreviewEventInput {
-  journeyId: ID!
+  journeyId: ID @deprecated(reason: "preparing for data structure change")
 }
 
 type TemplatePreviewEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  journeyId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  journeyId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input TextResponseSubmissionEventCreateInput {
@@ -839,10 +839,10 @@ input TextResponseSubmissionEventCreateInput {
 
 type TextResponseSubmissionEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  value: String!
-  block: TextResponseBlock
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  value: String! @deprecated(reason: "preparing for data structure change")
+  block: TextResponseBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoStartEventCreateInput {
@@ -856,10 +856,10 @@ input VideoStartEventCreateInput {
 
 type VideoStartEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  position: Float
-  block: VideoBlock
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  position: Float @deprecated(reason: "preparing for data structure change")
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoPlayEventCreateInput {
@@ -873,10 +873,10 @@ input VideoPlayEventCreateInput {
 
 type VideoPlayEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  position: Float
-  block: VideoBlock
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  position: Float @deprecated(reason: "preparing for data structure change")
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoPauseEventCreateInput {
@@ -890,10 +890,10 @@ input VideoPauseEventCreateInput {
 
 type VideoPauseEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  position: Float
-  block: VideoBlock
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  position: Float @deprecated(reason: "preparing for data structure change")
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoCompleteEventCreateInput {
@@ -907,10 +907,10 @@ input VideoCompleteEventCreateInput {
 
 type VideoCompleteEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  position: Float
-  block: VideoBlock
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  position: Float @deprecated(reason: "preparing for data structure change")
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoExpandEventCreateInput {
@@ -924,10 +924,10 @@ input VideoExpandEventCreateInput {
 
 type VideoExpandEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  position: Float
-  block: VideoBlock
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  position: Float @deprecated(reason: "preparing for data structure change")
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoCollapseEventCreateInput {
@@ -941,10 +941,10 @@ input VideoCollapseEventCreateInput {
 
 type VideoCollapseEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  position: Float
-  block: VideoBlock
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  position: Float @deprecated(reason: "preparing for data structure change")
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoProgressEventCreateInput {
@@ -961,11 +961,11 @@ input VideoProgressEventCreateInput {
 
 type VideoProgressEvent implements Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
-  position: Float
-  progress: Int!
-  block: VideoBlock
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  position: Float @deprecated(reason: "preparing for data structure change")
+  progress: Int! @deprecated(reason: "preparing for data structure change")
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 enum IdType {

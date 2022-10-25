@@ -1,29 +1,32 @@
 type TemplateLibraryViewEvent implements Event {
   id: ID!
-  userId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
   createdAt: DateTime!
+    @deprecated(reason: "preparing for data structure change")
 }
 
 input TemplateUseEventInput {
-  journeyId: ID!
+  journeyId: ID @deprecated(reason: "preparing for data structure change")
 }
 
 type TemplateUseEvent implements Event {
   id: ID!
-  userId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
   createdAt: DateTime!
-  journeyId: ID!
+    @deprecated(reason: "preparing for data structure change")
+  journeyId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input TemplatePreviewEventInput {
-  journeyId: ID!
+  journeyId: ID @deprecated(reason: "preparing for data structure change")
 }
 
 type TemplatePreviewEvent implements Event {
   id: ID!
-  userId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
   createdAt: DateTime!
-  journeyId: ID!
+    @deprecated(reason: "preparing for data structure change")
+  journeyId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 extend type Mutation {
