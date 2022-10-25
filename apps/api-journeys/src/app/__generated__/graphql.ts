@@ -479,7 +479,7 @@ export interface Block {
 
 export interface Event {
     id: string;
-    journeyId?: Nullable<string>;
+    journeyId: string;
     userId: string;
     teamId: string;
     createdAt: DateTime;
@@ -783,7 +783,7 @@ export class TemplateLibraryViewEvent implements Event {
 export class TemplateUseEvent implements Event {
     __typename?: 'TemplateUseEvent';
     id: string;
-    journeyId?: Nullable<string>;
+    journeyId: string;
     userId: string;
     teamId: string;
     createdAt: DateTime;
@@ -792,7 +792,7 @@ export class TemplateUseEvent implements Event {
 export class TemplatePreviewEvent implements Event {
     __typename?: 'TemplatePreviewEvent';
     id: string;
-    journeyId?: Nullable<string>;
+    journeyId: string;
     userId: string;
     teamId: string;
     createdAt: DateTime;
