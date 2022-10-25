@@ -16,6 +16,7 @@ import { BlockService } from '../block/block.service'
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { UserRoleService } from '../userRole/userRole.service'
 import { UserRoleResolver } from '../userRole/userRole.resolver'
+import { MemberService } from '../member/member.service'
 import { JourneyResolver } from './journey.resolver'
 import { JourneyService } from './journey.service'
 
@@ -49,7 +50,8 @@ describe('JourneyResolver', () => {
     service: JourneyService,
     bService: BlockService,
     ujService: UserJourneyService,
-    urService: UserRoleService
+    urService: UserRoleService,
+    mService: MemberService
   const publishedAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
   const createdAt = new Date('2021-11-19T12:34:56.647Z').toISOString()
 
@@ -249,6 +251,13 @@ describe('JourneyResolver', () => {
     })
   }
 
+  const memberService = {
+    provide: MemberService,
+    useFactory: () => ({
+      save: jest.fn((member) => member)
+    })
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -258,7 +267,8 @@ describe('JourneyResolver', () => {
         BlockResolver,
         userJourneyService,
         UserRoleResolver,
-        userRoleService
+        userRoleService,
+        memberService
       ]
     }).compile()
     resolver = module.get<JourneyResolver>(JourneyResolver)
@@ -266,6 +276,7 @@ describe('JourneyResolver', () => {
     ujService = module.get<UserJourneyService>(UserJourneyService)
     bService = module.get<BlockService>(BlockService)
     urService = module.get<UserRoleService>(UserRoleService)
+    mService = module.get<MemberService>(MemberService)
   })
 
   describe('adminJourneysEmbed', () => {
@@ -621,7 +632,8 @@ describe('JourneyResolver', () => {
         languageId: '529',
         status: JourneyStatus.draft,
         slug: 'untitled-journey',
-        title: 'Untitled Journey'
+        title: 'Untitled Journey',
+        teamId: 'jfp-team'
       })
     })
 
@@ -636,6 +648,22 @@ describe('JourneyResolver', () => {
         journeyId: 'journeyId',
         role: UserJourneyRole.owner
       })
+    })
+
+    it('creates a Member', async () => {
+      mockUuidv4.mockReturnValueOnce('journeyId')
+      await resolver.journeyCreate(
+        { title: 'Untitled Journey', languageId: '529' },
+        'userId'
+      )
+      expect(mService.save).toHaveBeenCalledWith(
+        {
+          id: 'userId:jfp-team',
+          userId: 'userId',
+          teamId: 'jfp-team'
+        },
+        { overwriteMode: 'ignore' }
+      )
     })
 
     it('adds uuid if slug already taken', async () => {
@@ -655,7 +683,8 @@ describe('JourneyResolver', () => {
         languageId: '529',
         status: JourneyStatus.draft,
         slug: 'untitled-journey-journeyId',
-        title: 'Untitled Journey'
+        title: 'Untitled Journey',
+        teamId: 'jfp-team'
       })
     })
 
