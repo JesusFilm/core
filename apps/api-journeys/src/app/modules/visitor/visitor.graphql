@@ -168,4 +168,43 @@ extend type Query {
     """
     after: String
   ): VisitorsConnection!
+  """
+  Get a single visitor
+  """
+  visitor(id: ID!): Visitor!
+}
+
+"""
+A list of fields to update a visitor when calling the visitorUpdate mutation
+"""
+input VisitorUpdateInput {
+  """
+  The email address of the visitor (will prevent
+  SignUpEventSubmissionEventCreate mutation from updating this field
+  automatically)
+  """
+  email: String
+  messengerId: String
+  messengerNetwork: String
+  """
+  The name of the visitor (will prevent SignUpEventSubmissionEventCreate
+  mutation from updating this field automatically)
+  """
+  name: String
+  """
+  Private notes relating to the visitor. This information is never made public
+  and only accessible by team members.
+  """
+  notes: String
+  """
+  Status of the visitor.
+  """
+  status: VisitorStatus
+}
+
+extend type Mutation {
+  """
+  Update a visitor
+  """
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
 }
