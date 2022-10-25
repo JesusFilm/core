@@ -42,6 +42,7 @@ import {
 import { UserJourneyService } from '../userJourney/userJourney.service'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { UserRoleService } from '../userRole/userRole.service'
+import { MemberService } from '../member/member.service'
 import { JourneyService } from './journey.service'
 
 const ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED = 1210
@@ -52,7 +53,8 @@ export class JourneyResolver {
     private readonly journeyService: JourneyService,
     private readonly blockService: BlockService,
     private readonly userJourneyService: UserJourneyService,
-    private readonly userRoleService: UserRoleService
+    private readonly userRoleService: UserRoleService,
+    private readonly memberService: MemberService
   ) {}
 
   @Query()
@@ -177,11 +179,14 @@ export class JourneyResolver {
     let retry = true
     while (retry) {
       try {
+        // this should be removed when the UI can support team management
+        const team = { id: 'jfp-team' }
         const journey: Journey = await this.journeyService.save({
           themeName: ThemeName.base,
           themeMode: ThemeMode.light,
           createdAt: new Date().toISOString(),
           status: JourneyStatus.draft,
+          teamId: team.id,
           ...input
         })
         await this.userJourneyService.save({
@@ -189,6 +194,14 @@ export class JourneyResolver {
           journeyId: journey.id,
           role: UserJourneyRole.owner
         })
+        await this.memberService.save(
+          {
+            id: `${userId}:${team.id}`,
+            userId,
+            teamId: team.id
+          },
+          { overwriteMode: 'ignore' }
+        )
         retry = false
         return journey
       } catch (err) {
