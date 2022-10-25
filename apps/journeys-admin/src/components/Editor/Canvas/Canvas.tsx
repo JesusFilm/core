@@ -108,7 +108,7 @@ export function Canvas(): ReactElement {
       >
         {steps != null ? (
           steps.map((step) => (
-            <SwiperSlide key={step.id}>
+            <SwiperSlide key={step.id} style={{ width: 362 }}>
               <Box
                 data-testid={`step-${step.id}`}
                 sx={{
