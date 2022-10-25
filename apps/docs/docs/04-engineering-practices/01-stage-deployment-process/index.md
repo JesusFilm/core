@@ -25,8 +25,7 @@ In order to reset stage from your local environment follow these steps:
 1. Run `git branch -D stage` (This may fail if you don’t have a local ‘stage’ branch)
 1. Run `git checkout main`
 1. Run `git pull origin main`
-1. Run `git branch stage`
-1. Run `git checkout stage`
+1. Run `git checkout -b stage`
 1. Run `git push origin stage`
 1. You will then need to merge into stage each [PR's currently labelled "on stage"](https://github.com/JesusFilm/core/pulls?q=is%3Apr+is%3Aopen+sort%3Aupdated-desc+label%3A%22on+stage%22) by running `git merge origin/branch-name`
 1. Once you’ve merged all the required branches then run `git push origin stage`
