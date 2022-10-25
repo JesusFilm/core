@@ -41,8 +41,6 @@ export function Canvas(): ReactElement {
 
   useEffect(() => {
     if (swiper != null && selectedStep != null && steps != null) {
-      console.log('slide to step', selectedStep)
-      swiper.rtlTranslate = rtl
       swiper.slideTo(steps.findIndex(({ id }) => id === selectedStep.id))
     }
   }, [steps, swiper, selectedStep, rtl])
@@ -55,9 +53,8 @@ export function Canvas(): ReactElement {
           Number(smUp) * (DRAWER_WIDTH + TASKBAR_WIDTH) -
           362 -
           EDGE_SLIDE_WIDTH * 2) /
-          2
+        2
       )
-      console.log('spaceBetween', spaceBetween)
       setSpaceBetween(spaceBetween)
     }
 
@@ -95,7 +92,6 @@ export function Canvas(): ReactElement {
       }}
     >
       <Swiper
-        dir={!rtl ? 'ltr' : 'rtl'}
         slidesPerView="auto"
         spaceBetween={spaceBetween}
         centeredSlides
@@ -105,7 +101,6 @@ export function Canvas(): ReactElement {
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={(swiper) => {
           if (steps == null) return
-          console.log('swiper', swiper.activeIndex)
           dispatch({
             type: 'SetSelectedStepAction',
             step: steps[swiper.activeIndex]
@@ -114,14 +109,7 @@ export function Canvas(): ReactElement {
       >
         {steps != null ? (
           steps.map((step) => (
-            <SwiperSlide
-              key={step.id}
-              style={{
-                width: 362,
-                marginRight: spaceBetween / 2,
-                marginLeft: spaceBetween / 2
-              }}
-            >
+            <SwiperSlide key={step.id}>
               <Box
                 data-testid={`step-${step.id}`}
                 sx={{

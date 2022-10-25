@@ -1,6 +1,8 @@
 import { createPortal } from 'react-dom'
 import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
+import { prefixer } from 'stylis'
+import rtlPlugin from 'stylis-plugin-rtl'
 import {
   DetailedHTMLProps,
   IframeHTMLAttributes,
@@ -17,9 +19,10 @@ import { styled } from '@mui/material/styles'
 interface ContentProps {
   children: ReactNode
   document: Document
+  dir: string
 }
 
-function Content({ children, document }: ContentProps): ReactElement {
+function Content({ children, document, dir }: ContentProps): ReactElement {
   const cache = useMemo(() => {
     document.head.innerHTML =
       window.document.head.innerHTML +
@@ -28,9 +31,9 @@ function Content({ children, document }: ContentProps): ReactElement {
     return createCache({
       key: 'iframe',
       container: document.head,
-      prepend: true
+      stylisPlugins: dir === 'rtl' ? [prefixer, rtlPlugin] : []
     })
-  }, [document])
+  }, [document, dir])
 
   useEffect(() => {
     document.body.style.backgroundColor = 'transparent'
@@ -90,8 +93,11 @@ export const FramePortal = memo(function FramePortal({
       <StyledFrame onLoad={dispatch} ref={frameRef} {...rest} />
       {iframeLoaded &&
         document != null &&
+        dir != null &&
         createPortal(
-          <Content document={document}>{children}</Content>,
+          <Content document={document} dir={dir}>
+            {children}
+          </Content>,
           document.body
         )}
     </>

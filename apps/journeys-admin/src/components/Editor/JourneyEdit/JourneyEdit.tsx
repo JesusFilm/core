@@ -1,16 +1,11 @@
 import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { Canvas } from '../Canvas'
 import { ControlPanel } from '../ControlPanel'
 import { Drawer, DRAWER_WIDTH } from '../Drawer'
 
 // This component is tested in Editor
 export function JourneyEdit(): ReactElement {
-  const { journey } = useJourney()
-  const { rtl } = getJourneyRTL(journey)
-
   return (
     <>
       <Box
