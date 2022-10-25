@@ -43,7 +43,7 @@ export function Canvas(): ReactElement {
     if (swiper != null && selectedStep != null && steps != null) {
       swiper.slideTo(steps.findIndex(({ id }) => id === selectedStep.id))
     }
-  }, [steps, swiper, selectedStep, rtl])
+  }, [steps, swiper, selectedStep])
 
   useEffect(() => {
     const setSpaceBetweenOnResize = (): void => {
@@ -53,7 +53,7 @@ export function Canvas(): ReactElement {
           Number(smUp) * (DRAWER_WIDTH + TASKBAR_WIDTH) -
           362 -
           EDGE_SLIDE_WIDTH * 2) /
-        2
+          2
       )
       setSpaceBetween(spaceBetween)
     }
@@ -95,7 +95,6 @@ export function Canvas(): ReactElement {
         slidesPerView="auto"
         spaceBetween={spaceBetween}
         centeredSlides
-        // centeredSlidesBounds
         shortSwipes={false}
         slideToClickedSlide={steps != null}
         onSwiper={(swiper) => setSwiper(swiper)}

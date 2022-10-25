@@ -31,6 +31,7 @@ function Content({ children, document, dir }: ContentProps): ReactElement {
     return createCache({
       key: 'iframe',
       container: document.head,
+      prepend: true,
       stylisPlugins: dir === 'rtl' ? [prefixer, rtlPlugin] : []
     })
   }, [document, dir])
