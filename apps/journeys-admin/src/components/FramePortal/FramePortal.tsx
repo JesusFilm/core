@@ -19,10 +19,9 @@ import { styled } from '@mui/material/styles'
 interface ContentProps {
   children: ReactNode
   document: Document
-  dir: string
 }
 
-function Content({ children, document, dir }: ContentProps): ReactElement {
+function Content({ children, document }: ContentProps): ReactElement {
   const cache = useMemo(() => {
     document.head.innerHTML =
       window.document.head.innerHTML +
@@ -32,9 +31,9 @@ function Content({ children, document, dir }: ContentProps): ReactElement {
       key: 'iframe',
       container: document.head,
       prepend: true,
-      stylisPlugins: dir === 'rtl' ? [prefixer, rtlPlugin] : []
+      stylisPlugins: document.dir === 'rtl' ? [prefixer, rtlPlugin] : []
     })
-  }, [document, dir])
+  }, [document])
 
   useEffect(() => {
     document.body.style.backgroundColor = 'transparent'
@@ -94,11 +93,8 @@ export const FramePortal = memo(function FramePortal({
       <StyledFrame onLoad={dispatch} ref={frameRef} {...rest} />
       {iframeLoaded &&
         document != null &&
-        dir != null &&
         createPortal(
-          <Content document={document} dir={dir}>
-            {children}
-          </Content>,
+          <Content document={document}>{children}</Content>,
           document.body
         )}
     </>
