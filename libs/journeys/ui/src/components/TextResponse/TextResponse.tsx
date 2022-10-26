@@ -28,7 +28,6 @@ export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
   ) {
     textResponseSubmissionEventCreate(input: $input) {
       id
-      value
     }
   }
 `

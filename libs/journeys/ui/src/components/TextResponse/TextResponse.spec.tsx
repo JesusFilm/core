@@ -85,9 +85,7 @@ const submissionSuccess = {
   result: {
     data: {
       textResponseSubmissionEventCreate: {
-        id: 'uuid',
-        blockId: 'textResponse0.id',
-        value: 'My response'
+        id: 'uuid'
       }
     }
   }
@@ -170,9 +168,7 @@ describe('TextResponse', () => {
     const result = jest.fn(() => ({
       data: {
         textResponseSubmissionEventCreate: {
-          id: 'uuid',
-          blockId: 'textResponse0.id',
-          value: ' '
+          id: 'uuid'
         }
       }
     }))
@@ -196,9 +192,7 @@ describe('TextResponse', () => {
     const result = jest.fn(() => ({
       data: {
         textResponseSubmissionEventCreate: {
-          id: 'uuid',
-          blockId: 'textResponse0.id',
-          value: 'My response'
+          id: 'uuid'
         }
       }
     }))

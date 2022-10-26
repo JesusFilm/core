@@ -8,9 +8,10 @@ input StepViewEventCreateInput {
 
 type StepViewEvent implements Event {
   id: ID!
-  userId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
   createdAt: DateTime!
-  block: StepBlock
+    @deprecated(reason: "preparing for data structure change")
+  block: StepBlock @deprecated(reason: "preparing for data structure change")
 }
 
 extend type Mutation {

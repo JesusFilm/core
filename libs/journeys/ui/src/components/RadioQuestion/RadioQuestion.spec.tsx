@@ -80,8 +80,7 @@ describe('RadioQuestion', () => {
     const result = jest.fn(() => ({
       data: {
         radioQuestionSubmissionEventCreate: {
-          id: 'uuid',
-          radioOptionBlockId: 'RadioOption1'
+          id: 'uuid'
         }
       }
     }))
@@ -136,8 +135,7 @@ describe('RadioQuestion', () => {
             result: {
               data: {
                 radioQuestionSubmissionEventCreate: {
-                  id: 'uuid',
-                  radioOptionBlockId: 'RadioOption1'
+                  id: 'uuid'
                 }
               }
             }
@@ -213,8 +211,7 @@ describe('RadioQuestion', () => {
             result: {
               data: {
                 radioQuestionSubmissionEventCreate: {
-                  id: 'uuid',
-                  radioOptionBlockId: 'RadioOption1'
+                  id: 'uuid'
                 }
               }
             }
