@@ -730,8 +730,8 @@ type ButtonClickEvent implements Event {
 
 interface Event {
   id: ID!
-  userId: ID!
-  createdAt: DateTime!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
 }
 
 input JourneyViewEventCreateInput {
@@ -807,25 +807,25 @@ type TemplateLibraryViewEvent implements Event {
 }
 
 input TemplateUseEventInput {
-  journeyId: ID @deprecated(reason: "preparing for data structure change")
+  journeyId: ID
 }
 
 type TemplateUseEvent implements Event {
   id: ID!
   userId: ID! @deprecated(reason: "preparing for data structure change")
-  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
-  journeyId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime!
+  journeyId: ID!
 }
 
 input TemplatePreviewEventInput {
-  journeyId: ID @deprecated(reason: "preparing for data structure change")
+  journeyId: ID
 }
 
 type TemplatePreviewEvent implements Event {
   id: ID!
   userId: ID! @deprecated(reason: "preparing for data structure change")
-  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
-  journeyId: ID! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime!
+  journeyId: ID!
 }
 
 input TextResponseSubmissionEventCreateInput {
@@ -1298,9 +1298,9 @@ extend type Mutation {
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
-  templateLibraryViewEventCreate: TemplateLibraryViewEvent!
-  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent!
-  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent!
+  templateLibraryViewEventCreate: TemplateLibraryViewEvent! @deprecated(reason: "preparing for data structure change")
+  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @deprecated(reason: "preparing for data structure change")
+  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @deprecated(reason: "preparing for data structure change")
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent!
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
