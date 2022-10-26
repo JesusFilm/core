@@ -70,7 +70,10 @@ export class EventService extends BaseService {
   }
 
   @KeyAsId()
-  async getVisitorId(userId: string, journeyId: string): Promise<string> {
+  async getVisitorByUserIdAndTeamId(
+    userId: string,
+    journeyId: string
+  ): Promise<Visitor> {
     const res = await this.db.query(aql`
       FOR v in visitors
         FILTER v.key == ${userId}
@@ -79,8 +82,7 @@ export class EventService extends BaseService {
           LIMIT 1
           RETURN v
     `)
-    const visitor: Visitor = await res.next()
-    return visitor.id
+    return await res.next()
   }
 }
 

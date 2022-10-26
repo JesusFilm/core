@@ -111,9 +111,9 @@ describe('EventService', () => {
       const visitorWithId = keyAsId(visitor)
 
       db.query.mockReturnValueOnce(mockDbQueryResult(db, [visitorWithId]))
-      expect(await service.getVisitorId('user.id', 'team.id')).toEqual(
-        visitor._key
-      )
+      expect(
+        await service.getVisitorByUserIdAndTeamId('user.id', 'team.id')
+      ).toEqual(visitorWithId)
     })
   })
 })
