@@ -8,19 +8,9 @@ input JourneyViewEventCreateInput {
 
 type JourneyViewEvent implements Event {
   id: ID!
-  journeyId: ID!
   userId: ID!
-  teamId: ID!
   createdAt: DateTime!
-  """
-  visitor user-agent info
-  """
-  deviceInfo: String
-  """
-  visitor ip address
-  """
-  locationInfo: String
-  journey: Journey @deprecated(reason: "never used")
+  journey: Journey
 }
 
 extend type Mutation {

@@ -501,9 +501,7 @@ export interface Block {
 
 export interface Event {
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
 }
 
@@ -736,48 +734,33 @@ export class VideoTriggerBlock implements Block {
 export class ButtonClickEvent implements Event {
     __typename?: 'ButtonClickEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
-    stepName?: Nullable<string>;
-    buttonLabel?: Nullable<string>;
     block?: Nullable<ButtonBlock>;
 }
 
 export class JourneyViewEvent implements Event {
     __typename?: 'JourneyViewEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
-    deviceInfo?: Nullable<string>;
-    locationInfo?: Nullable<string>;
     journey?: Nullable<Journey>;
 }
 
 export class RadioQuestionSubmissionEvent implements Event {
     __typename?: 'RadioQuestionSubmissionEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
-    stepName?: Nullable<string>;
     radioOptionBlockId: string;
-    selectedOption?: Nullable<string>;
     block?: Nullable<RadioQuestionBlock>;
 }
 
 export class SignUpSubmissionEvent implements Event {
     __typename?: 'SignUpSubmissionEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
-    stepName?: Nullable<string>;
     name: string;
     email: string;
     block?: Nullable<SignUpBlock>;
@@ -786,9 +769,7 @@ export class SignUpSubmissionEvent implements Event {
 export class StepViewEvent implements Event {
     __typename?: 'StepViewEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
     block?: Nullable<StepBlock>;
 }
@@ -796,38 +777,29 @@ export class StepViewEvent implements Event {
 export class TemplateLibraryViewEvent implements Event {
     __typename?: 'TemplateLibraryViewEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
 }
 
 export class TemplateUseEvent implements Event {
     __typename?: 'TemplateUseEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
 }
 
 export class TemplatePreviewEvent implements Event {
     __typename?: 'TemplatePreviewEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
 }
 
 export class TextResponseSubmissionEvent implements Event {
     __typename?: 'TextResponseSubmissionEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
-    stepName?: Nullable<string>;
     value: string;
     block?: Nullable<TextResponseBlock>;
 }
@@ -835,99 +807,64 @@ export class TextResponseSubmissionEvent implements Event {
 export class VideoStartEvent implements Event {
     __typename?: 'VideoStartEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
-    stepName?: Nullable<string>;
     position?: Nullable<number>;
-    videoTitle?: Nullable<string>;
-    videoSource?: Nullable<string>;
     block?: Nullable<VideoBlock>;
 }
 
 export class VideoPlayEvent implements Event {
     __typename?: 'VideoPlayEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
-    stepName?: Nullable<string>;
     position?: Nullable<number>;
-    videoTitle?: Nullable<string>;
-    videoSource?: Nullable<string>;
     block?: Nullable<VideoBlock>;
 }
 
 export class VideoPauseEvent implements Event {
     __typename?: 'VideoPauseEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
-    stepName?: Nullable<string>;
     position?: Nullable<number>;
-    videoTitle?: Nullable<string>;
-    videoSource?: Nullable<string>;
     block?: Nullable<VideoBlock>;
 }
 
 export class VideoCompleteEvent implements Event {
     __typename?: 'VideoCompleteEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
-    stepName?: Nullable<string>;
     position?: Nullable<number>;
-    videoTitle?: Nullable<string>;
-    videoSource?: Nullable<string>;
     block?: Nullable<VideoBlock>;
 }
 
 export class VideoExpandEvent implements Event {
     __typename?: 'VideoExpandEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
-    stepName?: Nullable<string>;
     position?: Nullable<number>;
-    videoTitle?: Nullable<string>;
-    videoSource?: Nullable<string>;
     block?: Nullable<VideoBlock>;
 }
 
 export class VideoCollapseEvent implements Event {
     __typename?: 'VideoCollapseEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
     position?: Nullable<number>;
-    stepName?: Nullable<string>;
-    videoTitle?: Nullable<string>;
-    videoSource?: Nullable<string>;
     block?: Nullable<VideoBlock>;
 }
 
 export class VideoProgressEvent implements Event {
     __typename?: 'VideoProgressEvent';
     id: string;
-    journeyId: string;
     userId: string;
-    teamId: string;
     createdAt: DateTime;
-    stepName?: Nullable<string>;
     position?: Nullable<number>;
     progress: number;
-    videoTitle?: Nullable<string>;
-    videoSource?: Nullable<string>;
     block?: Nullable<VideoBlock>;
 }
 

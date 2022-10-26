@@ -1,7 +1,5 @@
 interface Event {
   id: ID!
-  journeyId: ID!
   userId: ID!
-  teamId: ID!
   createdAt: DateTime!
 }

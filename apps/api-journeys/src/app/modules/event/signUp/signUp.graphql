@@ -10,14 +10,11 @@ input SignUpSubmissionEventCreateInput {
 
 type SignUpSubmissionEvent implements Event {
   id: ID!
-  journeyId: ID!
   userId: ID!
-  teamId: ID!
   createdAt: DateTime!
-  stepName: String
   name: String!
   email: String!
-  block: SignUpBlock @deprecated(reason: "never used")
+  block: SignUpBlock
 }
 
 extend type Mutation {

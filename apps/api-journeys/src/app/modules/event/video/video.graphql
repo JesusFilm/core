@@ -9,15 +9,10 @@ input VideoStartEventCreateInput {
 
 type VideoStartEvent implements Event {
   id: ID!
-  journeyId: ID!
   userId: ID!
-  teamId: ID!
   createdAt: DateTime!
-  stepName: String
   position: Float
-  videoTitle: String
-  videoSource: String
-  block: VideoBlock @deprecated(reason: "never used")
+  block: VideoBlock
 }
 
 input VideoPlayEventCreateInput {
@@ -31,15 +26,10 @@ input VideoPlayEventCreateInput {
 
 type VideoPlayEvent implements Event {
   id: ID!
-  journeyId: ID!
   userId: ID!
-  teamId: ID!
   createdAt: DateTime!
-  stepName: String
   position: Float
-  videoTitle: String
-  videoSource: String
-  block: VideoBlock @deprecated(reason: "never used")
+  block: VideoBlock
 }
 
 input VideoPauseEventCreateInput {
@@ -53,15 +43,10 @@ input VideoPauseEventCreateInput {
 
 type VideoPauseEvent implements Event {
   id: ID!
-  journeyId: ID!
   userId: ID!
-  teamId: ID!
   createdAt: DateTime!
-  stepName: String
   position: Float
-  videoTitle: String
-  videoSource: String
-  block: VideoBlock @deprecated(reason: "never used")
+  block: VideoBlock
 }
 
 input VideoCompleteEventCreateInput {
@@ -75,15 +60,10 @@ input VideoCompleteEventCreateInput {
 
 type VideoCompleteEvent implements Event {
   id: ID!
-  journeyId: ID!
   userId: ID!
-  teamId: ID!
   createdAt: DateTime!
-  stepName: String
   position: Float
-  videoTitle: String
-  videoSource: String
-  block: VideoBlock @deprecated(reason: "never used")
+  block: VideoBlock
 }
 
 input VideoExpandEventCreateInput {
@@ -97,15 +77,10 @@ input VideoExpandEventCreateInput {
 
 type VideoExpandEvent implements Event {
   id: ID!
-  journeyId: ID!
   userId: ID!
-  teamId: ID!
   createdAt: DateTime!
-  stepName: String
   position: Float
-  videoTitle: String
-  videoSource: String
-  block: VideoBlock @deprecated(reason: "never used")
+  block: VideoBlock
 }
 
 input VideoCollapseEventCreateInput {
@@ -119,15 +94,10 @@ input VideoCollapseEventCreateInput {
 
 type VideoCollapseEvent implements Event {
   id: ID!
-  journeyId: ID!
   userId: ID!
-  teamId: ID!
   createdAt: DateTime!
   position: Float
-  stepName: String
-  videoTitle: String
-  videoSource: String
-  block: VideoBlock @deprecated(reason: "never used")
+  block: VideoBlock
 }
 
 input VideoProgressEventCreateInput {
@@ -145,16 +115,11 @@ input VideoProgressEventCreateInput {
 
 type VideoProgressEvent implements Event {
   id: ID!
-  journeyId: ID!
   userId: ID!
-  teamId: ID!
   createdAt: DateTime!
-  stepName: String
   position: Float
   progress: Int!
-  videoTitle: String
-  videoSource: String
-  block: VideoBlock @deprecated(reason: "never used")
+  block: VideoBlock
 }
 
 extend type Mutation {
