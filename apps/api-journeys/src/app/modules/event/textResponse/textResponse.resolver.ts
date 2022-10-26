@@ -27,6 +27,12 @@ export class TextResponseSubmissionEventResolver {
   ): Promise<TextResponseSubmissionEvent> {
     const block: TextResponseBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
+
+    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+      userId,
+      journeyId
+    )
+
     const stepName: string =
       block.parentBlockId != null
         ? await this.eventService.getStepHeader(block.parentBlockId)
@@ -35,11 +41,11 @@ export class TextResponseSubmissionEventResolver {
     return await this.eventService.save({
       ...input,
       __typename: 'TextResponseSubmissionEvent',
-      userId,
+      visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepName,
-      teamId: 'team.id' // TODO: update
+      stepId: 'step.id', // TODO
+      label: stepName
     })
   }
 }
