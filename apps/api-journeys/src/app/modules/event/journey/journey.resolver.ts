@@ -7,13 +7,19 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { CurrentUserInfo } from '@core/nest/decorators/CurrentUserInfo'
 import {
   JourneyViewEvent,
-  JourneyViewEventCreateInput
+  JourneyViewEventCreateInput,
+  Journey
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { JourneyService } from '../../journey/journey.service'
 
 @Resolver('JourneyViewEvent')
 export class JourneyViewEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly journeyService: JourneyService
+  ) {}
+
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async journeyViewEventCreate(
@@ -21,14 +27,21 @@ export class JourneyViewEventResolver {
     @CurrentUserInfo() userInfo,
     @Args('input') input: JourneyViewEventCreateInput
   ): Promise<JourneyViewEvent> {
-    // TODO:  check user info in visitorTeam and update if null
+    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+      userId,
+      input.journeyId
+    )
+
+    const journey: Journey = await this.journeyService.get(input.journeyId)
+
+    // TODO:  check user info in visitorTeam and update
+
     return await this.eventService.save({
       ...input,
-      ...userInfo,
       __typename: 'JourneyViewEvent',
-      userId,
+      visitorId: visitor.id,
       createdAt: new Date().toISOString(),
-      teamId: 'team.id' // TODO: update
+      language: journey.language // TODO: update to get language from language api
     })
   }
 }
