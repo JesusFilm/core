@@ -10,24 +10,23 @@ import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
-import Box from '@mui/material/Box'
-import { PageWrapper } from '../src/components/PageWrapper'
-import i18nConfig from '../next-i18next.config'
-import { MemoizedDynamicReport } from '../src/components/DynamicPowerBiReport'
-import { JourneysReportType } from '../__generated__/globalTypes'
+import { PageWrapper } from '../../../src/components/PageWrapper'
+import i18nConfig from '../../../next-i18next.config'
 
-function ReportsPage(): ReactElement {
+function SingleVisitorReportsPage(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const AuthUser = useAuthUser()
 
   return (
     <>
-      <NextSeo title={t('Reports')} />
-      <PageWrapper title={t('Reports')} authUser={AuthUser} router={router}>
-        <Box sx={{ height: 'calc(100vh - 48px)' }}>
-          <MemoizedDynamicReport reportType={JourneysReportType.multipleFull} />
-        </Box>
+      <NextSeo title={t('Visitor Report')} />
+      <PageWrapper
+        title={t('Visitor Report')}
+        authUser={AuthUser}
+        router={router}
+      >
+        Single Visitor report
       </PageWrapper>
     </>
   )
@@ -59,4 +58,4 @@ export const getServerSideProps = withAuthUserTokenSSR({
 
 export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(ReportsPage)
+})(SingleVisitorReportsPage)
