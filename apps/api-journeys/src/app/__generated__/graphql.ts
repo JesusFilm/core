@@ -391,11 +391,11 @@ export class StepViewEventCreateInput {
 }
 
 export class TemplateUseEventInput {
-    journeyId: string;
+    journeyId?: Nullable<string>;
 }
 
 export class TemplatePreviewEventInput {
-    journeyId: string;
+    journeyId?: Nullable<string>;
 }
 
 export class TextResponseSubmissionEventCreateInput {
