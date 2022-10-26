@@ -27,21 +27,25 @@ export class SignUpSubmissionEventResolver {
   ): Promise<SignUpSubmissionEvent> {
     const block: SignUpBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
-    const stepName: string =
-      block.parentBlockId != null
-        ? await this.eventService.getStepHeader(block.parentBlockId)
-        : 'Untitled'
+
+    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+      userId,
+      journeyId
+    )
 
     // TODO: check name and email in visitorTeam and update if null
 
     return await this.eventService.save({
-      ...input,
+      id: input.id,
+      blockId: input.blockId,
       __typename: 'SignUpSubmissionEvent',
-      userId,
+      visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepName,
-      teamId: 'team.id' // TODO: update
+      stepId: 'step.id', // TODO
+      label: null,
+      value: input.name,
+      email: input.email
     })
   }
 }

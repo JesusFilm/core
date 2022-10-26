@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
 import { SignUpSubmissionEventResolver } from './signUp.resolver'
@@ -15,18 +16,11 @@ describe('SignUpEventResolver', () => {
 
   let resolver: SignUpSubmissionEventResolver
 
-  const input = {
-    id: '1',
-    blockId: '2',
-    name: 'Robert Smith',
-    email: 'robert.smith@jesusfilm.org'
-  }
-
   const eventService = {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((input) => input),
-      getStepHeader: jest.fn(() => 'header')
+      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId)
     })
   }
 
@@ -37,11 +31,24 @@ describe('SignUpEventResolver', () => {
     })
   }
 
+  const input = {
+    id: '1',
+    blockId: '2',
+    name: 'Robert Smith',
+    email: 'robert.smith@jesusfilm.org'
+  }
+
   const block = {
     id: 'block.id',
     journeyId: 'journey.id',
     parentBlockId: 'parent.id'
   }
+
+  const visitor = {
+    _key: 'visitor.id'
+  }
+
+  const visitorWithId = keyAsId(visitor)
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -57,13 +64,16 @@ describe('SignUpEventResolver', () => {
       expect(
         await resolver.signUpSubmissionEventCreate('userId', input)
       ).toEqual({
-        ...input,
+        id: input.id,
+        blockId: input.blockId,
         __typename: 'SignUpSubmissionEvent',
-        userId: 'userId',
+        visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id',
-        stepName: 'header',
-        teamId: 'team.id' // TODO: update
+        journeyId: block.journeyId,
+        stepId: 'step.id', // TODO
+        label: null,
+        value: input.name,
+        email: input.email
       })
     })
   })
