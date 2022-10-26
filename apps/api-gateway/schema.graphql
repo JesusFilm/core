@@ -68,10 +68,10 @@ input ButtonBlockUpdateInput {
 }
 
 type ButtonClickEvent implements Event {
-  block: ButtonBlock
-  createdAt: DateTime!
+  block: ButtonBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  userId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input ButtonClickEventCreateInput {
@@ -192,9 +192,9 @@ enum DeviceType {
 }
 
 interface Event {
-  createdAt: DateTime!
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  userId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 enum GridAlignItems {
@@ -446,10 +446,10 @@ input JourneyUpdateInput {
 }
 
 type JourneyViewEvent implements Event {
-  createdAt: DateTime!
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  journey: Journey
-  userId: ID!
+  journey: Journey @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input JourneyViewEventCreateInput {
@@ -554,9 +554,9 @@ type Mutation {
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
-  templateLibraryViewEventCreate: TemplateLibraryViewEvent! @join__field(graph: JOURNEYS)
-  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @join__field(graph: JOURNEYS)
-  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @join__field(graph: JOURNEYS)
+  templateLibraryViewEventCreate: TemplateLibraryViewEvent! @deprecated(reason: "preparing for data structure change") @join__field(graph: JOURNEYS)
+  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @deprecated(reason: "preparing for data structure change") @join__field(graph: JOURNEYS)
+  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @deprecated(reason: "preparing for data structure change") @join__field(graph: JOURNEYS)
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
   textResponseBlockUpdate(id: ID!, input: TextResponseBlockUpdateInput!, journeyId: ID!): TextResponseBlock @join__field(graph: JOURNEYS)
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent! @join__field(graph: JOURNEYS)
@@ -722,11 +722,11 @@ input RadioQuestionBlockCreateInput {
 }
 
 type RadioQuestionSubmissionEvent implements Event {
-  block: RadioQuestionBlock
-  createdAt: DateTime!
+  block: RadioQuestionBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  radioOptionBlockId: ID!
-  userId: ID!
+  radioOptionBlockId: ID! @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input RadioQuestionSubmissionEventCreateInput {
@@ -771,12 +771,12 @@ input SignUpBlockUpdateInput {
 }
 
 type SignUpSubmissionEvent implements Event {
-  block: SignUpBlock
-  createdAt: DateTime!
-  email: String!
+  block: SignUpBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  email: String! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  name: String!
-  userId: ID!
+  name: String! @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input SignUpSubmissionEventCreateInput {
@@ -824,10 +824,10 @@ input StepBlockUpdateInput {
 }
 
 type StepViewEvent implements Event {
-  block: StepBlock
-  createdAt: DateTime!
+  block: StepBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  userId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input StepViewEventCreateInput {
@@ -896,11 +896,11 @@ input TextResponseBlockUpdateInput {
 }
 
 type TextResponseSubmissionEvent implements Event {
-  block: TextResponseBlock
-  createdAt: DateTime!
+  block: TextResponseBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  userId: ID!
-  value: String!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  value: String! @deprecated(reason: "preparing for data structure change")
 }
 
 input TextResponseSubmissionEventCreateInput {
@@ -1232,11 +1232,11 @@ input VideoBlockUpdateInput {
 }
 
 type VideoCollapseEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoCollapseEventCreateInput {
@@ -1250,11 +1250,11 @@ input VideoCollapseEventCreateInput {
 }
 
 type VideoCompleteEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoCompleteEventCreateInput {
@@ -1268,11 +1268,11 @@ input VideoCompleteEventCreateInput {
 }
 
 type VideoExpandEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoExpandEventCreateInput {
@@ -1286,11 +1286,11 @@ input VideoExpandEventCreateInput {
 }
 
 type VideoPauseEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoPauseEventCreateInput {
@@ -1304,11 +1304,11 @@ input VideoPauseEventCreateInput {
 }
 
 type VideoPlayEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoPlayEventCreateInput {
@@ -1322,12 +1322,12 @@ input VideoPlayEventCreateInput {
 }
 
 type VideoProgressEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  progress: Int!
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  progress: Int! @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoProgressEventCreateInput {
@@ -1351,11 +1351,11 @@ input VideosFilter {
 }
 
 type VideoStartEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoStartEventCreateInput {

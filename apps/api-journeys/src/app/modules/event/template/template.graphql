@@ -12,6 +12,8 @@ type TemplateUseEvent implements Event {
   id: ID!
   userId: ID!
   createdAt: DateTime!
+
+  journeyId: ID!
 }
 
 input TemplatePreviewEventInput {
@@ -22,12 +24,17 @@ type TemplatePreviewEvent implements Event {
   id: ID!
   userId: ID!
   createdAt: DateTime!
+
+  journeyId: ID!
 }
 
 extend type Mutation {
   templateLibraryViewEventCreate: TemplateLibraryViewEvent!
+    @deprecated(reason: "preparing for data structure change")
   templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent!
+    @deprecated(reason: "preparing for data structure change")
   templatePreviewEventCreate(
     input: TemplatePreviewEventInput!
   ): TemplatePreviewEvent!
+    @deprecated(reason: "preparing for data structure change")
 }
