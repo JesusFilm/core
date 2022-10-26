@@ -250,10 +250,12 @@ enum IconName {
   FormatQuoteRounded
   LockOpenRounded
   ArrowForwardRounded
+  ArrowBackRounded
   ChatBubbleOutlineRounded
   LiveTvRounded
   MenuBookRounded
   ChevronRightRounded
+  ChevronLeftRounded
   BeenhereRounded
   SendRounded
   SubscriptionsRounded
@@ -722,12 +724,14 @@ input ButtonClickEventCreateInput {
 type ButtonClickEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   block: ButtonBlock
 }
 
 interface Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
 }
 
 input JourneyViewEventCreateInput {
@@ -741,6 +745,7 @@ input JourneyViewEventCreateInput {
 type JourneyViewEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   journey: Journey
 }
 
@@ -756,6 +761,7 @@ input RadioQuestionSubmissionEventCreateInput {
 type RadioQuestionSubmissionEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   radioOptionBlockId: ID!
   block: RadioQuestionBlock
 }
@@ -773,6 +779,7 @@ input SignUpSubmissionEventCreateInput {
 type SignUpSubmissionEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   name: String!
   email: String!
   block: SignUpBlock
@@ -789,12 +796,14 @@ input StepViewEventCreateInput {
 type StepViewEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   block: StepBlock
 }
 
 type TemplateLibraryViewEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
 }
 
 input TemplateUseEventInput {
@@ -804,6 +813,7 @@ input TemplateUseEventInput {
 type TemplateUseEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   journeyId: ID!
 }
 
@@ -814,6 +824,7 @@ input TemplatePreviewEventInput {
 type TemplatePreviewEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   journeyId: ID!
 }
 
@@ -829,6 +840,7 @@ input TextResponseSubmissionEventCreateInput {
 type TextResponseSubmissionEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   value: String!
   block: TextResponseBlock
 }
@@ -845,6 +857,7 @@ input VideoStartEventCreateInput {
 type VideoStartEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -861,6 +874,7 @@ input VideoPlayEventCreateInput {
 type VideoPlayEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -877,6 +891,7 @@ input VideoPauseEventCreateInput {
 type VideoPauseEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -893,6 +908,7 @@ input VideoCompleteEventCreateInput {
 type VideoCompleteEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -909,6 +925,7 @@ input VideoExpandEventCreateInput {
 type VideoExpandEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -925,6 +942,7 @@ input VideoCollapseEventCreateInput {
 type VideoCollapseEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   block: VideoBlock
 }
@@ -944,6 +962,7 @@ input VideoProgressEventCreateInput {
 type VideoProgressEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   position: Float
   progress: Int!
   block: VideoBlock
@@ -1058,6 +1077,177 @@ enum Role {
   publisher
 }
 
+type Browser {
+  name: String
+  version: String
+}
+
+enum DeviceType {
+  console
+  mobile
+  tablet
+  smarttv
+  wearable
+  embedded
+}
+
+type Device {
+  model: String
+  type: DeviceType
+  vendor: String
+}
+
+type OperatingSystem {
+  name: String
+  version: String
+}
+
+"""These types are a subset provided by the @types/ua-parser-js library."""
+type UserAgent {
+  browser: Browser!
+  device: Device!
+  os: OperatingSystem!
+}
+
+"""
+The status of a visitor according to team members interacting with the
+visitor admin interface.
+"""
+enum VisitorStatus {
+  star
+}
+
+"""A visitor with attributes connected to a team."""
+type Visitor @key(fields: "id") {
+  id: ID!
+
+  """
+  The time when the visitor created their first event on a journey connected
+  to the requested team.
+  """
+  createdAt: DateTime!
+
+  """
+  The last time the visitor called the ButtonClickEvent mutation where the url
+  is in the format of a recognized chat platform.
+  """
+  lastChatStartedAt: DateTime
+
+  """
+  The user agent of the visitor as poulated by the visitor's user-agent string
+  detected in the JourneyViewEventCreate mutation. This field is enriched
+  by data from the ua-parser-js library. If this field is empty it is likely
+  that the JourneyViewEventCreate mutation was not called by the visitor.
+  """
+  userAgent: UserAgent
+
+  """
+  The country code of the visitor as poulated by visitor ip address detected in
+  the JourneyViewEventCreate mutation. This field country code is converted
+  from an IP address by the @maxmind/geoip2-node library. If this field is empty
+  it is likely that the JourneyViewEventCreate mutation was not called by the
+  visitor or that the country was not able to be determined based on the
+  visitor IP address.
+  """
+  countryCode: String
+
+  """
+  The name of the visitor as populated by mutation or otherwise via
+  SignUpEventSubmissionEventCreate mutation.
+  """
+  name: String
+
+  """
+  The email address of the visitor as populated by mutation or otherwise via
+  SignUpEventSubmissionEventCreate mutation.
+  """
+  email: String
+
+  """
+  Status of the visitor as set by any journeys-admin user via the VisitorUpdate
+  mutation.
+  """
+  status: VisitorStatus
+
+  """
+  Messenger network of the visitor as set by any journeys-admin user via the
+  VisitorUpdate mutation.
+  """
+  messengerNetwork: String
+
+  """
+  Messenger ID of the visitor as set by any journeys-admin user via the
+  VisitorUpdate mutation. This could be a phone number, user id or other
+  unique identifier provided by the messenger network.
+  """
+  messengerId: String
+
+  """
+  Private notes of the visitor as set by any journeys-admin user via the
+  VisitorUpdate mutation.
+  """
+  notes: String
+}
+
+"""An edge in a connection."""
+type VisitorEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: Visitor!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+"""A list of visitors connected with a team."""
+type VisitorsConnection {
+  """A list of edges."""
+  edges: [VisitorEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+"""
+A list of fields to update a visitor when calling the visitorUpdate mutation
+"""
+input VisitorUpdateInput {
+  """
+  The email address of the visitor (will prevent
+  SignUpEventSubmissionEventCreate mutation from updating this field
+  automatically)
+  """
+  email: String
+  messengerId: String
+  messengerNetwork: String
+
+  """
+  The name of the visitor (will prevent SignUpEventSubmissionEventCreate
+  mutation from updating this field automatically)
+  """
+  name: String
+
+  """
+  Private notes relating to the visitor. This information is never made public
+  and only accessible by team members.
+  """
+  notes: String
+
+  """Status of the visitor."""
+  status: VisitorStatus
+}
+
 extend type Mutation {
   blockDeleteAction(id: ID!, journeyId: ID!): Block!
   blockUpdateNavigateAction(id: ID!, journeyId: ID!, input: NavigateActionInput!): NavigateAction!
@@ -1147,6 +1337,9 @@ extend type Mutation {
   """Removes all userJourneys associated with a journeyId"""
   userJourneyRemoveAll(id: ID!): [UserJourney!]!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
+
+  """Update a visitor"""
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
 }
 
 extend type Video @key(fields: "id primaryLanguageId") {
@@ -1165,6 +1358,21 @@ extend type Query {
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
   getUserRole: UserRole
+
+  """A list of visitors that are connected with a specific team."""
+  visitorsConnection(
+    """Returns the visitor items related to a specific team."""
+    teamId: String!
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+  ): VisitorsConnection!
+
+  """Get a single visitor"""
+  visitor(id: ID!): Visitor!
 }
 
 extend type User @key(fields: "id") {

@@ -10,6 +10,7 @@ input TextResponseSubmissionEventCreateInput {
 type TextResponseSubmissionEvent implements Event {
   id: ID!
   userId: ID!
+  createdAt: DateTime!
   value: String!
   block: TextResponseBlock
 }

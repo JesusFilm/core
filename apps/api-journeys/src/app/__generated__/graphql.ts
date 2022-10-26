@@ -62,10 +62,12 @@ export enum IconName {
     FormatQuoteRounded = "FormatQuoteRounded",
     LockOpenRounded = "LockOpenRounded",
     ArrowForwardRounded = "ArrowForwardRounded",
+    ArrowBackRounded = "ArrowBackRounded",
     ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
     LiveTvRounded = "LiveTvRounded",
     MenuBookRounded = "MenuBookRounded",
     ChevronRightRounded = "ChevronRightRounded",
+    ChevronLeftRounded = "ChevronLeftRounded",
     BeenhereRounded = "BeenhereRounded",
     SendRounded = "SendRounded",
     SubscriptionsRounded = "SubscriptionsRounded",
@@ -149,6 +151,19 @@ export enum UserJourneyRole {
 
 export enum Role {
     publisher = "publisher"
+}
+
+export enum DeviceType {
+    console = "console",
+    mobile = "mobile",
+    tablet = "tablet",
+    smarttv = "smarttv",
+    wearable = "wearable",
+    embedded = "embedded"
+}
+
+export enum VisitorStatus {
+    star = "star"
 }
 
 export class NavigateActionInput {
@@ -463,6 +478,15 @@ export class JourneyTemplateInput {
     template?: Nullable<boolean>;
 }
 
+export class VisitorUpdateInput {
+    email?: Nullable<string>;
+    messengerId?: Nullable<string>;
+    messengerNetwork?: Nullable<string>;
+    name?: Nullable<string>;
+    notes?: Nullable<string>;
+    status?: Nullable<VisitorStatus>;
+}
+
 export interface Action {
     parentBlockId: string;
     gtmEventName?: Nullable<string>;
@@ -478,6 +502,7 @@ export interface Block {
 export interface Event {
     id: string;
     userId: string;
+    createdAt: DateTime;
 }
 
 export class NavigateAction implements Action {
@@ -710,6 +735,7 @@ export class ButtonClickEvent implements Event {
     __typename?: 'ButtonClickEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     block?: Nullable<ButtonBlock>;
 }
 
@@ -717,6 +743,7 @@ export class JourneyViewEvent implements Event {
     __typename?: 'JourneyViewEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     journey?: Nullable<Journey>;
 }
 
@@ -724,6 +751,7 @@ export class RadioQuestionSubmissionEvent implements Event {
     __typename?: 'RadioQuestionSubmissionEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     radioOptionBlockId: string;
     block?: Nullable<RadioQuestionBlock>;
 }
@@ -732,6 +760,7 @@ export class SignUpSubmissionEvent implements Event {
     __typename?: 'SignUpSubmissionEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     name: string;
     email: string;
     block?: Nullable<SignUpBlock>;
@@ -741,6 +770,7 @@ export class StepViewEvent implements Event {
     __typename?: 'StepViewEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     block?: Nullable<StepBlock>;
 }
 
@@ -748,12 +778,14 @@ export class TemplateLibraryViewEvent implements Event {
     __typename?: 'TemplateLibraryViewEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
 }
 
 export class TemplateUseEvent implements Event {
     __typename?: 'TemplateUseEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     journeyId: string;
 }
 
@@ -761,6 +793,7 @@ export class TemplatePreviewEvent implements Event {
     __typename?: 'TemplatePreviewEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     journeyId: string;
 }
 
@@ -768,6 +801,7 @@ export class TextResponseSubmissionEvent implements Event {
     __typename?: 'TextResponseSubmissionEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     value: string;
     block?: Nullable<TextResponseBlock>;
 }
@@ -776,6 +810,7 @@ export class VideoStartEvent implements Event {
     __typename?: 'VideoStartEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -784,6 +819,7 @@ export class VideoPlayEvent implements Event {
     __typename?: 'VideoPlayEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -792,6 +828,7 @@ export class VideoPauseEvent implements Event {
     __typename?: 'VideoPauseEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -800,6 +837,7 @@ export class VideoCompleteEvent implements Event {
     __typename?: 'VideoCompleteEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -808,6 +846,7 @@ export class VideoExpandEvent implements Event {
     __typename?: 'VideoExpandEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -816,6 +855,7 @@ export class VideoCollapseEvent implements Event {
     __typename?: 'VideoCollapseEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     position?: Nullable<number>;
     block?: Nullable<VideoBlock>;
 }
@@ -824,6 +864,7 @@ export class VideoProgressEvent implements Event {
     __typename?: 'VideoProgressEvent';
     id: string;
     userId: string;
+    createdAt: DateTime;
     position?: Nullable<number>;
     progress: number;
     block?: Nullable<VideoBlock>;
@@ -853,6 +894,66 @@ export class UserRole {
     id: string;
     userId: string;
     roles?: Nullable<Role[]>;
+}
+
+export class Browser {
+    __typename?: 'Browser';
+    name?: Nullable<string>;
+    version?: Nullable<string>;
+}
+
+export class Device {
+    __typename?: 'Device';
+    model?: Nullable<string>;
+    type?: Nullable<DeviceType>;
+    vendor?: Nullable<string>;
+}
+
+export class OperatingSystem {
+    __typename?: 'OperatingSystem';
+    name?: Nullable<string>;
+    version?: Nullable<string>;
+}
+
+export class UserAgent {
+    __typename?: 'UserAgent';
+    browser: Browser;
+    device: Device;
+    os: OperatingSystem;
+}
+
+export class Visitor {
+    __typename?: 'Visitor';
+    id: string;
+    createdAt: DateTime;
+    lastChatStartedAt?: Nullable<DateTime>;
+    userAgent?: Nullable<UserAgent>;
+    countryCode?: Nullable<string>;
+    name?: Nullable<string>;
+    email?: Nullable<string>;
+    status?: Nullable<VisitorStatus>;
+    messengerNetwork?: Nullable<string>;
+    messengerId?: Nullable<string>;
+    notes?: Nullable<string>;
+}
+
+export class VisitorEdge {
+    __typename?: 'VisitorEdge';
+    cursor: string;
+    node: Visitor;
+}
+
+export class PageInfo {
+    __typename?: 'PageInfo';
+    hasNextPage: boolean;
+    startCursor?: Nullable<string>;
+    endCursor?: Nullable<string>;
+}
+
+export class VisitorsConnection {
+    __typename?: 'VisitorsConnection';
+    edges: VisitorEdge[];
+    pageInfo: PageInfo;
 }
 
 export abstract class IMutation {
@@ -975,6 +1076,8 @@ export abstract class IMutation {
     abstract userJourneyRemoveAll(id: string): UserJourney[] | Promise<UserJourney[]>;
 
     abstract userJourneyRequest(journeyId: string, idType?: Nullable<IdType>): UserJourney | Promise<UserJourney>;
+
+    abstract visitorUpdate(id: string, input: VisitorUpdateInput): Visitor | Promise<Visitor>;
 }
 
 export class Video {
@@ -998,6 +1101,10 @@ export abstract class IQuery {
     abstract journey(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
+
+    abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
+
+    abstract visitor(id: string): Visitor | Promise<Visitor>;
 }
 
 export class User {

@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { DocumentCollection } from 'arangojs/collection'
+import {
+  CollectionInsertOptions,
+  DocumentCollection
+} from 'arangojs/collection'
 import { aql, Database } from 'arangojs'
 import { DeepMockProxy } from 'jest-mock-extended'
 import { DocumentData, Patch } from 'arangojs/documents'
@@ -65,8 +68,11 @@ export abstract class BaseService {
   }
 
   @IdAsKey()
-  async save<T, T2>(body: T2): Promise<T> {
-    const result = await this.collection.save(body, { returnNew: true })
+  async save<T, T2>(
+    body: T2,
+    options: CollectionInsertOptions = { returnNew: true }
+  ): Promise<T> {
+    const result = await this.collection.save(body, options)
     return result.new
   }
 
