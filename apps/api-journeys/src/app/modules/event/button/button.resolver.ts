@@ -27,21 +27,26 @@ export class ButtonClickEventResolver {
   ): Promise<ButtonClickEvent> {
     const block: ButtonBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
+
+    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+      userId,
+      journeyId
+    )
+
     const stepName: string =
       block.parentBlockId != null
         ? await this.eventService.getStepHeader(block.parentBlockId)
         : 'Untitled'
-    const buttonLabel: string = block.label
 
     return await this.eventService.save({
       ...input,
       __typename: 'ButtonClickEvent',
-      userId,
+      visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepName,
-      buttonLabel,
-      teamId: 'team.id' // TODO: update
+      stepId: 'step.id', // TODO
+      label: stepName,
+      value: block.label
     })
   }
 }
