@@ -840,16 +840,16 @@ input StepViewEventCreateInput {
 }
 
 type TemplateLibraryViewEvent implements Event {
-  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime!
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
+  userId: ID!
 }
 
 type TemplatePreviewEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
+  userId: ID!
 }
 
 input TemplatePreviewEventInput {
@@ -860,7 +860,7 @@ type TemplateUseEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
+  userId: ID!
 }
 
 input TemplateUseEventInput {

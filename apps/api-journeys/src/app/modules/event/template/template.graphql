@@ -1,8 +1,7 @@
 type TemplateLibraryViewEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
+  userId: ID!
   createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
 }
 
 input TemplateUseEventInput {
@@ -11,9 +10,8 @@ input TemplateUseEventInput {
 
 type TemplateUseEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
+  userId: ID!
   createdAt: DateTime!
-
   journeyId: ID!
 }
 
@@ -23,9 +21,8 @@ input TemplatePreviewEventInput {
 
 type TemplatePreviewEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
+  userId: ID!
   createdAt: DateTime!
-
   journeyId: ID!
 }
 
