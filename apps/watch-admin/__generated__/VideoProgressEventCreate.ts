@@ -12,7 +12,6 @@ import { VideoProgressEventCreateInput } from "./globalTypes";
 export interface VideoProgressEventCreate_videoProgressEventCreate {
   __typename: "VideoProgressEvent";
   id: string;
-  progress: number;
 }
 
 export interface VideoProgressEventCreate {

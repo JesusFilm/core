@@ -12,7 +12,6 @@ import { TextResponseSubmissionEventCreateInput } from "./../../../../__generate
 export interface TextResponseSubmissionEventCreate_textResponseSubmissionEventCreate {
   __typename: "TextResponseSubmissionEvent";
   id: string;
-  value: string;
 }
 
 export interface TextResponseSubmissionEventCreate {

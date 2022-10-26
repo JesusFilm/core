@@ -79,8 +79,7 @@ const submitEventMock: MockedResponse = {
   result: {
     data: {
       radioQuestionSubmissionEventCreate: {
-        id: 'uuid',
-        radioOptionBlockId: 'RadioOption1'
+        id: 'uuid'
       }
     }
   }
