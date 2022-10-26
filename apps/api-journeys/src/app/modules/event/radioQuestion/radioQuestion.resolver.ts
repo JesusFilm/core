@@ -32,20 +32,27 @@ export class RadioQuestionSubmissionEventResolver {
       input.radioOptionBlockId
     )
     const journeyId = block.journeyId
+
+    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+      userId,
+      journeyId
+    )
+
     const stepName: string =
       block.parentBlockId != null
         ? await this.eventService.getStepHeader(block.parentBlockId)
         : 'Untitled'
 
     return await this.eventService.save({
-      ...input,
+      id: input.id,
+      blockId: input.blockId,
       __typename: 'RadioQuestionSubmissionEvent',
-      userId,
+      visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepName,
-      selectedOption: radioOptionBlock.label,
-      teamId: 'team.id' // TODO: update
+      stepId: 'step.id', // TODO
+      label: stepName,
+      value: radioOptionBlock.label
     })
   }
 }
