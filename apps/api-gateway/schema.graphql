@@ -554,9 +554,9 @@ type Mutation {
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
-  templateLibraryViewEventCreate: TemplateLibraryViewEvent! @join__field(graph: JOURNEYS)
-  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @join__field(graph: JOURNEYS)
-  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @join__field(graph: JOURNEYS)
+  templateLibraryViewEventCreate: TemplateLibraryViewEvent! @deprecated(reason: "preparing for data structure change") @join__field(graph: JOURNEYS)
+  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @deprecated(reason: "preparing for data structure change") @join__field(graph: JOURNEYS)
+  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @deprecated(reason: "preparing for data structure change") @join__field(graph: JOURNEYS)
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
   textResponseBlockUpdate(id: ID!, input: TextResponseBlockUpdateInput!, journeyId: ID!): TextResponseBlock @join__field(graph: JOURNEYS)
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent! @join__field(graph: JOURNEYS)
@@ -840,16 +840,16 @@ input StepViewEventCreateInput {
 }
 
 type TemplateLibraryViewEvent implements Event {
-  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime!
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
+  userId: ID!
 }
 
 type TemplatePreviewEvent implements Event {
-  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime!
   id: ID!
-  journeyId: ID! @deprecated(reason: "preparing for data structure change")
-  userId: ID! @deprecated(reason: "preparing for data structure change")
+  journeyId: ID!
+  userId: ID!
 }
 
 input TemplatePreviewEventInput {
@@ -857,10 +857,10 @@ input TemplatePreviewEventInput {
 }
 
 type TemplateUseEvent implements Event {
-  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime!
   id: ID!
-  journeyId: ID! @deprecated(reason: "preparing for data structure change")
-  userId: ID! @deprecated(reason: "preparing for data structure change")
+  journeyId: ID!
+  userId: ID!
 }
 
 input TemplateUseEventInput {
