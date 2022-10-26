@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
 import { ButtonClickEventCreateInput } from '../../../__generated__/graphql'
+import { BlockService } from '../../block/block.service'
 import { ButtonClickEventResolver } from './button.resolver'
 
 describe('ButtonClickEventResolver', () => {
@@ -24,8 +25,14 @@ describe('ButtonClickEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((event) => event),
-      getBlockById: jest.fn(() => block),
       getStepHeader: jest.fn(() => 'header')
+    })
+  }
+
+  const blockService = {
+    provide: BlockService,
+    useFactory: () => ({
+      get: jest.fn(() => block)
     })
   }
 
@@ -38,7 +45,7 @@ describe('ButtonClickEventResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ButtonClickEventResolver, eventService]
+      providers: [ButtonClickEventResolver, eventService, blockService]
     }).compile()
     resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
   })

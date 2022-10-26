@@ -30,28 +30,6 @@ describe('EventService', () => {
     jest.restoreAllMocks()
   })
 
-  const block = {
-    _key: '1',
-    journeyId: 'journey.id',
-    __typename: 'CardBlock',
-    parentBlockId: '3',
-    parentOrder: 0,
-    backgroundColor: '#FFF',
-    coverBlockId: '4',
-    fullscreen: true
-  }
-
-  const blockWithId = keyAsId(block)
-
-  describe('getBlockById', () => {
-    beforeEach(() => {
-      db.query.mockReturnValueOnce(mockDbQueryResult(db, [block]))
-    })
-    it('should return block', async () => {
-      expect(await service.getBlockById('1')).toEqual(blockWithId)
-    })
-  })
-
   describe('getStepHeader', () => {
     const stepBlock = {
       _key: 'step1.id',

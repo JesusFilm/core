@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
+import { BlockService } from '../../block/block.service'
 import { TextResponseSubmissionEventResolver } from './textResponse.resolver'
 
 describe('TextResponseEventResolver', () => {
@@ -24,8 +25,14 @@ describe('TextResponseEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((input) => input),
-      getBlockById: jest.fn(() => block),
       getStepHeader: jest.fn(() => 'header')
+    })
+  }
+
+  const blockService = {
+    provide: BlockService,
+    useFactory: () => ({
+      get: jest.fn(() => block)
     })
   }
 
@@ -37,7 +44,11 @@ describe('TextResponseEventResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [TextResponseSubmissionEventResolver, eventService]
+      providers: [
+        TextResponseSubmissionEventResolver,
+        eventService,
+        blockService
+      ]
     }).compile()
     resolver = module.get<TextResponseSubmissionEventResolver>(
       TextResponseSubmissionEventResolver

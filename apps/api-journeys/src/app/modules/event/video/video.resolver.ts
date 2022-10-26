@@ -20,19 +20,22 @@ import {
   VideoBlock
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { BlockService } from '../../block/block.service'
 
 @Resolver('VideoStartEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoStartEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly blockService: BlockService
+  ) {}
+
   @Mutation()
   async videoStartEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: VideoStartEventCreateInput
   ): Promise<VideoStartEvent> {
-    const block = (await this.eventService.getBlockById(
-      input.blockId
-    )) as VideoBlock
+    const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null
@@ -57,15 +60,17 @@ export class VideoStartEventResolver {
 @Resolver('VideoPlayEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoPlayEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly blockService: BlockService
+  ) {}
+
   @Mutation()
   async videoPlayEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: VideoPlayEventCreateInput
   ): Promise<VideoPlayEvent> {
-    const block = (await this.eventService.getBlockById(
-      input.blockId
-    )) as VideoBlock
+    const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null
@@ -90,15 +95,17 @@ export class VideoPlayEventResolver {
 @Resolver('VideoPauseEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoPuaseEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly blockService: BlockService
+  ) {}
+
   @Mutation()
   async videoPauseEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: VideoPauseEventCreateInput
   ): Promise<VideoPauseEvent> {
-    const block = (await this.eventService.getBlockById(
-      input.blockId
-    )) as VideoBlock
+    const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null
@@ -123,15 +130,17 @@ export class VideoPuaseEventResolver {
 @Resolver('VideoCompleteEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoCompleteEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly blockService: BlockService
+  ) {}
+
   @Mutation()
   async videoCompleteEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: VideoCompleteEventCreateInput
   ): Promise<VideoCompleteEvent> {
-    const block = (await this.eventService.getBlockById(
-      input.blockId
-    )) as VideoBlock
+    const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null
@@ -156,15 +165,17 @@ export class VideoCompleteEventResolver {
 @Resolver('VideoExpandEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoExpandEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly blockService: BlockService
+  ) {}
+
   @Mutation()
   async videoExpandEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: VideoExpandEventCreateInput
   ): Promise<VideoExpandEvent> {
-    const block = (await this.eventService.getBlockById(
-      input.blockId
-    )) as VideoBlock
+    const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null
@@ -189,15 +200,17 @@ export class VideoExpandEventResolver {
 @Resolver('VideoCollapseEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoCollapseEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly blockService: BlockService
+  ) {}
+
   @Mutation()
   async videoCollapseEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: VideoCollapseEventCreateInput
   ): Promise<VideoCollapseEvent> {
-    const block = (await this.eventService.getBlockById(
-      input.blockId
-    )) as VideoBlock
+    const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null
@@ -222,15 +235,17 @@ export class VideoCollapseEventResolver {
 @Resolver('VideoProgressEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoProgressEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly blockService: BlockService
+  ) {}
+
   @Mutation()
   async videoProgressEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: VideoProgressEventCreateInput
   ): Promise<VideoProgressEvent> {
-    const block = (await this.eventService.getBlockById(
-      input.blockId
-    )) as VideoBlock
+    const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null

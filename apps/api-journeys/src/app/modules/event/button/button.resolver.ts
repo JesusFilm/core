@@ -10,19 +10,22 @@ import {
   ButtonBlock
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { BlockService } from '../../block/block.service'
 
 @Resolver('ButtonClickEvent')
 export class ButtonClickEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly blockService: BlockService
+  ) {}
+
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async buttonClickEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: ButtonClickEventCreateInput
   ): Promise<ButtonClickEvent> {
-    const block = (await this.eventService.getBlockById(
-      input.blockId
-    )) as ButtonBlock
+    const block: ButtonBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null

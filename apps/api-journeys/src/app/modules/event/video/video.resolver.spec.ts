@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { VideoBlockSource } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { BlockService } from '../../block/block.service'
 import {
   VideoStartEventResolver,
   VideoPlayEventResolver,
@@ -24,8 +25,14 @@ describe('VideoResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((input) => input),
-      getBlockById: jest.fn(() => block),
       getStepHeader: jest.fn(() => 'header')
+    })
+  }
+
+  const blockService = {
+    provide: BlockService,
+    useFactory: () => ({
+      get: jest.fn(() => block)
     })
   }
 
@@ -42,7 +49,7 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoStartEventResolver, eventService]
+        providers: [VideoStartEventResolver, eventService, blockService]
       }).compile()
       resolver = module.get<VideoStartEventResolver>(VideoStartEventResolver)
     })
@@ -73,7 +80,7 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoPlayEventResolver, eventService]
+        providers: [VideoPlayEventResolver, eventService, blockService]
       }).compile()
       resolver = module.get<VideoPlayEventResolver>(VideoPlayEventResolver)
     })
@@ -104,7 +111,7 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoPuaseEventResolver, eventService]
+        providers: [VideoPuaseEventResolver, eventService, blockService]
       }).compile()
       resolver = module.get<VideoPuaseEventResolver>(VideoPuaseEventResolver)
     })
@@ -135,7 +142,7 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoCompleteEventResolver, eventService]
+        providers: [VideoCompleteEventResolver, eventService, blockService]
       }).compile()
       resolver = module.get<VideoCompleteEventResolver>(
         VideoCompleteEventResolver
@@ -168,7 +175,7 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoExpandEventResolver, eventService]
+        providers: [VideoExpandEventResolver, eventService, blockService]
       }).compile()
       resolver = module.get<VideoExpandEventResolver>(VideoExpandEventResolver)
     })
@@ -199,7 +206,7 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoCollapseEventResolver, eventService]
+        providers: [VideoCollapseEventResolver, eventService, blockService]
       }).compile()
       resolver = module.get<VideoCollapseEventResolver>(
         VideoCollapseEventResolver
@@ -232,7 +239,7 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoProgressEventResolver, eventService]
+        providers: [VideoProgressEventResolver, eventService, blockService]
       }).compile()
       resolver = module.get<VideoProgressEventResolver>(
         VideoProgressEventResolver

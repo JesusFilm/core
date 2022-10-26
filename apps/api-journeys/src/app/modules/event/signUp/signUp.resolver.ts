@@ -7,20 +7,25 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   SignUpSubmissionEvent,
   SignUpSubmissionEventCreateInput,
-  Block
+  SignUpBlock
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { BlockService } from '../../block/block.service'
 
 @Resolver('SignUpSubmissionEvent')
 export class SignUpSubmissionEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly blockService: BlockService
+  ) {}
+
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async signUpSubmissionEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: SignUpSubmissionEventCreateInput
   ): Promise<SignUpSubmissionEvent> {
-    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const block: SignUpBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null

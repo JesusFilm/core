@@ -11,10 +11,15 @@ import {
   RadioOptionBlock
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { BlockService } from '../../block/block.service'
 
 @Resolver('RadioQuestionSubmissionEvent')
 export class RadioQuestionSubmissionEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly blockService: BlockService
+  ) {}
+
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async radioQuestionSubmissionEventCreate(
@@ -22,12 +27,10 @@ export class RadioQuestionSubmissionEventResolver {
     @Args('input')
     input: RadioQuestionSubmissionEventCreateInput
   ): Promise<RadioQuestionSubmissionEvent> {
-    const block = (await this.eventService.getBlockById(
-      input.blockId
-    )) as RadioQuestionBlock
-    const radioOptionBlock = (await this.eventService.getBlockById(
+    const block: RadioQuestionBlock = await this.blockService.get(input.blockId)
+    const radioOptionBlock: RadioOptionBlock = await this.blockService.get(
       input.radioOptionBlockId
-    )) as RadioOptionBlock
+    )
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null

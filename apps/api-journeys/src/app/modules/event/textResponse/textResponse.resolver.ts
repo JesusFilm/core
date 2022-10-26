@@ -7,20 +7,25 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   TextResponseSubmissionEvent,
   TextResponseSubmissionEventCreateInput,
-  Block
+  TextResponseBlock
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { BlockService } from '../../block/block.service'
 
 @Resolver('TextResponseSubmissionEvent')
 export class TextResponseSubmissionEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly blockService: BlockService
+  ) {}
+
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async textResponseSubmissionEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: TextResponseSubmissionEventCreateInput
   ): Promise<TextResponseSubmissionEvent> {
-    const block: Block = await this.eventService.getBlockById(input.blockId)
+    const block: TextResponseBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
     const stepName: string =
       block.parentBlockId != null
