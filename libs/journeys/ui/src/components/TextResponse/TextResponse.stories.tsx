@@ -66,9 +66,7 @@ const submitEventMock: MockedResponse = {
   result: {
     data: {
       textResponseSubmissionEventCreate: {
-        id: 'uuid',
-        blockId: 'textResponseBlockId1',
-        value: 'My response'
+        id: 'uuid'
       }
     }
   }
