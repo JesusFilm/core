@@ -99,4 +99,21 @@ describe('EventService', () => {
       expect(await service.getStepHeader('card2.id')).toEqual('Step number 2')
     })
   })
+
+  describe('getVisitorId', () => {
+    it('should return visitor id', async () => {
+      const visitor = {
+        _key: 'visitor.id',
+        userId: 'user.id',
+        teamId: 'team.id'
+      }
+
+      const visitorWithId = keyAsId(visitor)
+
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [visitorWithId]))
+      expect(await service.getVisitorId('user.id', 'team.id')).toEqual(
+        visitor._key
+      )
+    })
+  })
 })

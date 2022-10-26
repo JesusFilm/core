@@ -8,7 +8,8 @@ import {
   TypographyBlock,
   CardBlock,
   StepBlock,
-  TypographyVariant
+  TypographyVariant,
+  Visitor
 } from '../../__generated__/graphql'
 
 @Injectable()
@@ -66,6 +67,20 @@ export class EventService extends BaseService {
 
       return getStepNumber(stepBlock.id, steps)
     }
+  }
+
+  @KeyAsId()
+  async getVisitorId(userId: string, journeyId: string): Promise<string> {
+    const res = await this.db.query(aql`
+      FOR v in visitors
+        FILTER v.key == ${userId}
+        FOR j in journeys
+          FILTER j.key == ${journeyId} AND j.teamId == v.teamId
+          LIMIT 1
+          RETURN v
+    `)
+    const visitor: Visitor = await res.next()
+    return visitor.id
   }
 }
 
