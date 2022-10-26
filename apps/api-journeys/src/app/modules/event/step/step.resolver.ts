@@ -28,13 +28,25 @@ export class StepViewEventResolver {
     const block: StepBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
+    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+      userId,
+      journeyId
+    )
+
+    const stepName: string =
+      block.parentBlockId != null
+        ? await this.eventService.getStepHeader(block.parentBlockId)
+        : 'Untitled'
+
     return await this.eventService.save({
       ...input,
       __typename: 'StepViewEvent',
-      userId,
+      visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      teamId: 'team.id' // TODO: update
+      stepId: input.blockId,
+      label: null,
+      value: stepName
     })
   }
 }
