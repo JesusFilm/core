@@ -127,7 +127,7 @@ describe('Icon', () => {
     )
 
     fireEvent.mouseDown(getByRole('button', { name: 'icon-name' }))
-    fireEvent.click(getByRole('option', { name: 'Arrow Forward' }))
+    fireEvent.click(getByRole('option', { name: 'Arrow Right' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 

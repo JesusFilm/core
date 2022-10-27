@@ -47,4 +47,8 @@ Disabled.args = {
   disabled: true
 }
 
+export const RTL = Template.bind({})
+RTL.args = { ...Default.args }
+RTL.parameters = { rtl: true }
+
 export default Demo as Meta

@@ -20,9 +20,9 @@ spec:
       nodeSelector:
         type: api
       containers:
-        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-users:main
+        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-users-prod:latest
           imagePullPolicy: IfNotPresent
-          name: jfp-api-users
+          name: jfp-api-users-prod
           ports:
             - containerPort: 4002
           envFrom:
