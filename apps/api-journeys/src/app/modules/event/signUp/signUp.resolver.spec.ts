@@ -3,6 +3,7 @@ import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
 import { StepBlock } from '../../../__generated__/graphql'
+import { VisitorService } from '../../visitor/visitor.service'
 import { SignUpSubmissionEventResolver } from './signUp.resolver'
 
 describe('SignUpEventResolver', () => {
@@ -15,7 +16,7 @@ describe('SignUpEventResolver', () => {
     jest.useRealTimers()
   })
 
-  let resolver: SignUpSubmissionEventResolver
+  let resolver: SignUpSubmissionEventResolver, vService: VisitorService
 
   const eventService = {
     provide: EventService,
@@ -30,6 +31,13 @@ describe('SignUpEventResolver', () => {
     provide: BlockService,
     useFactory: () => ({
       get: jest.fn(() => block)
+    })
+  }
+
+  const visitorService = {
+    provide: VisitorService,
+    useFactory: () => ({
+      update: jest.fn(() => '')
     })
   }
 
@@ -55,18 +63,26 @@ describe('SignUpEventResolver', () => {
   }
 
   const visitor = {
-    _key: 'visitor.id'
+    _key: 'visitor.id',
+    name: 'Robert Smith',
+    email: 'robert.smith@jesusfilm.org'
   }
 
   const visitorWithId = keyAsId(visitor)
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SignUpSubmissionEventResolver, eventService, blockService]
+      providers: [
+        SignUpSubmissionEventResolver,
+        eventService,
+        blockService,
+        visitorService
+      ]
     }).compile()
     resolver = module.get<SignUpSubmissionEventResolver>(
       SignUpSubmissionEventResolver
     )
+    vService = module.get<VisitorService>(VisitorService)
   })
 
   describe('signUpSubmissionEventCreate', () => {
@@ -84,6 +100,22 @@ describe('SignUpEventResolver', () => {
         label: null,
         value: input.name,
         email: input.email
+      })
+      expect(vService.update).not.toHaveBeenCalled()
+    })
+
+    it('should update visitor with name and email if they have if input is different', async () => {
+      const updateInput = {
+        ...input,
+        name: 'John Doe',
+        email: 'john@email.com'
+      }
+
+      await resolver.signUpSubmissionEventCreate('userId', updateInput)
+
+      expect(vService.update).toHaveBeenCalledWith(visitorWithId.id, {
+        name: updateInput.name,
+        email: updateInput.email
       })
     })
   })

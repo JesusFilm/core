@@ -11,12 +11,14 @@ import {
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
+import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('SignUpSubmissionEvent')
 export class SignUpSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly blockService: BlockService
+    private readonly blockService: BlockService,
+    private readonly visitorSerice: VisitorService
   ) {}
 
   @Mutation()
@@ -37,7 +39,20 @@ export class SignUpSubmissionEventResolver {
       journeyId
     )
 
-    // TODO: check name and email in visitorTeam and update if null
+    if (visitor.name !== input.name || visitor.email !== input.email) {
+      const name =
+        visitor.name == null || visitor.name !== input.name
+          ? input.name
+          : visitor.name
+      const email =
+        visitor.email == null || visitor.email !== input.email
+          ? input.email
+          : visitor.email
+      await this.visitorSerice.update(visitor.id, {
+        name,
+        email
+      })
+    }
 
     return await this.eventService.save({
       id: input.id,
