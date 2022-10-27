@@ -41,7 +41,7 @@ export class JourneyViewEventResolver {
       __typename: 'JourneyViewEvent',
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
-      language: journey.language // TODO: update to get language from language api
+      language: journey.language
     })
   }
 }

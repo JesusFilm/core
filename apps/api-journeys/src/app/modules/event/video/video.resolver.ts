@@ -57,7 +57,7 @@ export class VideoStartEventResolver {
       journeyId,
       stepId: stepBlock?.id,
       label: block.source,
-      value: videoTitle, // TODO get correct title if arclight video with the video and language id
+      value: videoTitle,
       videoId: block.videoId,
       videoVariantLanguageId: block.videoVariantLanguageId
     })
