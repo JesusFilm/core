@@ -31,7 +31,7 @@ import {
 import { PageWrapper } from '../src/components/PageWrapper'
 import { darkTheme } from '../src/components/ThemeProvider/ThemeProvider'
 import { VideoListCarousel } from '../src/components/Videos/VideoList/Carousel/VideoListCarousel'
-import { Footer } from '../src/components/Footer/Footer'
+import { Footer } from '../src/components/Footer'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID) {

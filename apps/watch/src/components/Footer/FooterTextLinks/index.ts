@@ -1,0 +1,1 @@
+export { FooterTextLinks } from './FooterTextLinks'

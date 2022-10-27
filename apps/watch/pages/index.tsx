@@ -24,7 +24,7 @@ import {
   LanguageProvider,
   useLanguage
 } from '../src/libs/languageContext/LanguageContext'
-import { Footer } from '../src/components/Footer/Footer'
+import { Footer } from '../src/components/Footer'
 
 export const GET_VIDEO_TAG = gql`
   query GetVideoTag($id: ID!, $languageId: ID) {
@@ -243,7 +243,7 @@ function VideoPage(): ReactElement {
           </Grid>
         </Container>
       </Box>
-      <Footer isHome />
+      <Footer />
     </LanguageProvider>
   )
 }
