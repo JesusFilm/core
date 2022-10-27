@@ -5,6 +5,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -23,6 +24,7 @@ interface JourneyPageProps {
 
 function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   const router = useRouter()
+  const { rtl, locale } = getJourneyRTL(journey)
   const isIframe = typeof window !== 'undefined' && window.self !== window.top
   if (isIframe) {
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
@@ -69,6 +71,8 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
         <ThemeProvider
           themeName={journey.themeName}
           themeMode={journey.themeMode}
+          rtl={rtl}
+          locale={locale}
         >
           {journey.blocks != null && (
             <Conductor blocks={transformer(journey.blocks)} />

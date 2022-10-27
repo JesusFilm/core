@@ -11,6 +11,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import last from 'lodash/last'
 import { StepFields } from '../../../../../../../../../__generated__/StepFields'
 import { StepBlockNextBlockUpdate } from '../../../../../../../../../__generated__/StepBlockNextBlockUpdate'
@@ -42,6 +43,7 @@ export function SelectedCard(): ReactElement {
     state: { steps, selectedBlock }
   } = useEditor()
   const { journey } = useJourney()
+  const { rtl } = getJourneyRTL(journey)
   const { id, nextBlockId, locked, parentOrder } =
     selectedBlock as TreeBlock<StepFields>
   const [nextStep, setNextStep] = useState(
@@ -106,7 +108,7 @@ export function SelectedCard(): ReactElement {
               transformOrigin: 'top left'
             }}
           >
-            <FramePortal width={380} height={560}>
+            <FramePortal width={380} height={560} dir={rtl ? 'rtl' : 'ltr'}>
               <ThemeProvider
                 themeName={journey?.themeName ?? ThemeName.base}
                 themeMode={journey?.themeMode ?? ThemeMode.light}

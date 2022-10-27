@@ -14,6 +14,7 @@ import {
   DraggableProvided,
   DraggableStateSnapshot
 } from 'react-beautiful-dnd'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { FramePortal } from '../../FramePortal'
 import { ThemeName, ThemeMode } from '../../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../../HorizontalSelect'
@@ -117,6 +118,7 @@ const CardItem = ({
   isDraggable
 }: CardItemProps): ReactElement => {
   const { journey } = useJourney()
+  const { rtl, locale } = getJourneyRTL(journey)
 
   return (
     <Box
@@ -165,10 +167,12 @@ const CardItem = ({
             cursor: 'pointer'
           }}
         />
-        <FramePortal width={380} height={560}>
+        <FramePortal width={380} height={560} dir={rtl ? 'rtl' : 'ltr'}>
           <ThemeProvider
             themeName={journey?.themeName ?? ThemeName.base}
             themeMode={journey?.themeMode ?? ThemeMode.light}
+            rtl={rtl}
+            locale={locale}
           >
             <Box sx={{ p: 4, height: '100%' }}>
               <BlockRenderer

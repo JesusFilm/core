@@ -3,6 +3,7 @@ import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { MockedProvider } from '@apollo/client/testing'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journeysAdminConfig } from '../../libs/storybook'
 import { BlockFields as Block } from '../../../__generated__/BlockFields'
 import {
@@ -15,6 +16,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { FramePortal } from '.'
 
 const FramePortalStory = {
@@ -113,11 +115,28 @@ const block: TreeBlock<Block> = {
 
 const Template: Story = () => (
   <MockedProvider>
-    <FramePortal width={356} height={536}>
-      <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-        <BlockRenderer block={block} />
-      </ThemeProvider>
-    </FramePortal>
+    <JourneyProvider
+      value={{
+        journey: {
+          id: 'journeyId',
+          themeMode: ThemeMode.light,
+          themeName: ThemeName.base,
+          language: {
+            __typename: 'Language',
+            id: '529',
+            bcp47: 'en',
+            iso3: 'eng'
+          }
+        } as unknown as Journey,
+        admin: true
+      }}
+    >
+      <FramePortal width={356} height={536} dir="ltr">
+        <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
+          <BlockRenderer block={block} />
+        </ThemeProvider>
+      </FramePortal>
+    </JourneyProvider>
   </MockedProvider>
 )
 

@@ -87,7 +87,13 @@ describe('Action', () => {
             journey: {
               id: 'journeyId',
               themeMode: ThemeMode.light,
-              themeName: ThemeName.base
+              themeName: ThemeName.base,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
             } as unknown as Journey,
             admin: true
           }}
@@ -191,7 +197,15 @@ describe('Action', () => {
       >
         <JourneyProvider
           value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
+            journey: {
+              id: 'journeyId',
+              language: {
+                __typename: 'Language',
+                id: '529',
+                bcp47: 'en',
+                iso3: 'eng'
+              }
+            } as unknown as Journey,
             admin: true
           }}
         >

@@ -45,13 +45,13 @@ const journey: Journey = {
 
 describe('getJourneyRTL', () => {
   it('should return true for journey with rtl bcp47 and iso3', () => {
-    expect(getJourneyRTL(journey)).toBe(true)
+    expect(getJourneyRTL(journey)).toStrictEqual({ rtl: true, locale: 'ar' })
   })
 
   it('should return false for journey with rtl iso3 only', () => {
     expect(
       getJourneyRTL({ ...journey, language: { ...language, bcp47: null } })
-    ).toBe(false)
+    ).toStrictEqual({ rtl: false, locale: '' })
   })
 
   it('should return false for journey with no locale codes', () => {
@@ -60,10 +60,10 @@ describe('getJourneyRTL', () => {
         ...journey,
         language: { ...language, bcp47: null, iso3: null }
       })
-    ).toBe(false)
+    ).toStrictEqual({ rtl: false, locale: '' })
   })
 
   it('should return false for undefined journey', () => {
-    expect(getJourneyRTL(undefined)).toBe(false)
+    expect(getJourneyRTL(undefined)).toStrictEqual({ rtl: false, locale: '' })
   })
 })

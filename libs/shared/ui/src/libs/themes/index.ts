@@ -1,5 +1,5 @@
 import { Theme } from '@mui/material/styles'
-import { baseDark, baseLight } from './base/theme'
+import { getBaseLight, getBaseDark } from './base/theme'
 
 export enum ThemeMode {
   dark = 'dark',
@@ -11,13 +11,20 @@ export enum ThemeName {
 }
 
 interface ThemeProps {
-  themeMode: ThemeMode
   themeName: ThemeName
+  themeMode: ThemeMode
+  rtl?: boolean
+  locale?: string
 }
 
-export const getTheme = ({ themeName, themeMode }: ThemeProps): Theme => {
+export const getTheme = ({
+  themeName,
+  themeMode,
+  rtl = false,
+  locale = ''
+}: ThemeProps): Theme => {
   const themes = {
-    base: { light: baseLight, dark: baseDark }
+    base: { light: getBaseLight(rtl, locale), dark: getBaseDark(rtl, locale) }
   }
   return {
     ...themes[themeName][themeMode]

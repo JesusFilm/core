@@ -9,6 +9,8 @@ import { blurImage } from '../../libs/blurImage'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
+import { useJourney } from '../../libs/JourneyProvider'
+import { getJourneyRTL } from '../../libs/rtl'
 import { CardFields } from './__generated__/CardFields'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
@@ -28,6 +30,8 @@ export function Card({
   wrappers
 }: CardProps): ReactElement {
   const theme = useTheme()
+  const { journey } = useJourney()
+  const { rtl, locale } = getJourneyRTL(journey)
 
   const coverBlock = children.find(
     (block) =>
@@ -52,7 +56,7 @@ export function Card({
 
   const customCardTheme =
     themeName != null && themeMode != null
-      ? getTheme({ themeName, themeMode })
+      ? getTheme({ themeName, themeMode, rtl, locale })
       : undefined
 
   const cardColor =
@@ -122,6 +126,7 @@ export function CardWrapper({
       sx={{
         display: 'flex',
         flexDirection: { xs: 'column', sm: 'row' },
+        justifyContent: { md: 'flex-end' },
         borderRadius: (theme) => theme.spacing(4),
         backgroundColor,
         width: '100%',

@@ -9,6 +9,7 @@ import Videocam from '@mui/icons-material/Videocam'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import { getTheme, ThemeName, ThemeMode } from '@core/shared/ui/themes'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { Attribute } from '../..'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
@@ -31,6 +32,7 @@ export function Card({
 }: TreeBlock<CardBlock>): ReactElement {
   const { dispatch } = useEditor()
   const { journey } = useJourney()
+  const { rtl, locale } = getJourneyRTL(journey)
 
   const coverBlock = children.find((block) => block.id === coverBlockId) as
     | TreeBlock<ImageBlock | VideoBlock>
@@ -38,7 +40,9 @@ export function Card({
 
   const cardTheme = getTheme({
     themeName: themeName ?? journey?.themeName ?? ThemeName.base,
-    themeMode: themeMode ?? journey?.themeMode ?? ThemeMode.dark
+    themeMode: themeMode ?? journey?.themeMode ?? ThemeMode.dark,
+    rtl,
+    locale
   })
   const selectedCardColor =
     backgroundColor ?? cardTheme.palette.background.paper

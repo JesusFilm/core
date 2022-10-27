@@ -47,10 +47,16 @@ export interface ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockActio
   blockId: string;
 }
 
+export interface ButtonBlockCreate_buttonBlockUpdate_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface ButtonBlockCreate_buttonBlockUpdate_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: ButtonBlockCreate_buttonBlockUpdate_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface ButtonBlockCreate_buttonBlockUpdate_action_NavigateToJourneyAction {

@@ -5,6 +5,7 @@ import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import {
@@ -17,6 +18,7 @@ const CARD_WIDTH = 340
 
 export function EmbedCardPreview(): ReactElement {
   const { journey } = useJourney()
+  const { rtl } = getJourneyRTL(journey)
   const block = transformer(journey?.blocks as TreeBlock[])?.[0]
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
@@ -57,7 +59,7 @@ export function EmbedCardPreview(): ReactElement {
               borderRadius: '16px 16px 0 0'
             }}
           />
-          <FramePortal width={340} height={520}>
+          <FramePortal width={340} height={520} dir={rtl ? 'rtl' : 'ltr'}>
             <ThemeProvider
               themeName={journey?.themeName ?? ThemeName.base}
               themeMode={journey?.themeMode ?? ThemeMode.light}

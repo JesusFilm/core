@@ -11,6 +11,9 @@ export const ACTION_FIELDS = gql`
       journey {
         id
         slug
+        language {
+          bcp47
+        }
       }
     }
     ... on LinkAction {
