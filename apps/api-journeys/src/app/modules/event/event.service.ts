@@ -76,9 +76,9 @@ export class EventService extends BaseService {
   ): Promise<Visitor> {
     const res = await this.db.query(aql`
       FOR v in visitors
-        FILTER v.key == ${userId}
+        FILTER v.userId == ${userId}
         FOR j in journeys
-          FILTER j.key == ${journeyId} AND j.teamId == v.teamId
+          FILTER j._key == ${journeyId} AND j.teamId == v.teamId
           LIMIT 1
           RETURN v
     `)

@@ -5,6 +5,7 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { CurrentUserInfo } from '@core/nest/decorators/CurrentUserInfo'
+import { v4 as uuidv4 } from 'uuid'
 import {
   JourneyViewEvent,
   JourneyViewEventCreateInput,
@@ -38,6 +39,7 @@ export class JourneyViewEventResolver {
 
     if (visitor == null) {
       visitor = await this.visitorService.save({
+        id: uuidv4(),
         teamId: journey.teamId,
         userId,
         createdAt: new Date().toISOString()

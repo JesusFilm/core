@@ -1,10 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
+import { v4 as uuidv4 } from 'uuid'
 import { EventService } from '../event.service'
 import { JourneyViewEventCreateInput } from '../../../__generated__/graphql'
 import { JourneyService } from '../../journey/journey.service'
 import { VisitorService } from '../../visitor/visitor.service'
 import { JourneyViewEventResolver } from './journey.resolver'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('JourneyViewEventResolver', () => {
   beforeAll(() => {
@@ -107,9 +115,12 @@ describe('JourneyViewEventResolver', () => {
     })
 
     it('should create a new visitor if visitor doesnt exist', async () => {
+      mockUuidv4.mockReturnValueOnce('newVisitor.id')
+
       await resolver.journeyViewEventCreate('newUser.id', userInfo, input)
 
       expect(vService.save).toHaveBeenCalledWith({
+        id: 'newVisitor.id',
         teamId: journey.teamId,
         userId: 'newUser.id',
         createdAt: new Date().toISOString()
