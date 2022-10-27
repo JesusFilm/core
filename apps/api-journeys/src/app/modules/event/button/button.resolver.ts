@@ -28,6 +28,10 @@ export class ButtonClickEventResolver {
     const block: ButtonBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
+    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
+      input.blockId
+    )
+
     const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
       userId,
       journeyId
@@ -44,7 +48,7 @@ export class ButtonClickEventResolver {
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepId: 'step.id', // TODO
+      stepId: stepBlock?.id,
       label: stepName,
       value: block.label
     })

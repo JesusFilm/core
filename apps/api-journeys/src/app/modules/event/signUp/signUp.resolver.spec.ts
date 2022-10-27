@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
+import { StepBlock } from '../../../__generated__/graphql'
 import { SignUpSubmissionEventResolver } from './signUp.resolver'
 
 describe('SignUpEventResolver', () => {
@@ -20,7 +21,8 @@ describe('SignUpEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((input) => input),
-      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId)
+      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId),
+      getParentStepBlockByBlockId: jest.fn(() => stepBlock)
     })
   }
 
@@ -42,6 +44,14 @@ describe('SignUpEventResolver', () => {
     id: 'block.id',
     journeyId: 'journey.id',
     parentBlockId: 'parent.id'
+  }
+
+  const stepBlock: StepBlock = {
+    __typename: 'StepBlock',
+    id: 'stepBlock.id',
+    parentBlockId: null,
+    journeyId: 'journey.id',
+    locked: false
   }
 
   const visitor = {
@@ -70,7 +80,7 @@ describe('SignUpEventResolver', () => {
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId,
-        stepId: 'step.id', // TODO
+        stepId: stepBlock.id,
         label: null,
         value: input.name,
         email: input.email

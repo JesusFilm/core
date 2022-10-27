@@ -3,7 +3,8 @@ import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import {
   ButtonClickEventCreateInput,
-  ButtonBlock
+  ButtonBlock,
+  StepBlock
 } from '../../../__generated__/graphql'
 import { BlockService } from '../../block/block.service'
 import { ButtonClickEventResolver } from './button.resolver'
@@ -32,7 +33,8 @@ describe('ButtonClickEventResolver', () => {
             return 'Untitled'
         }
       }),
-      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId)
+      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId),
+      getParentStepBlockByBlockId: jest.fn(() => stepBlock)
     })
   }
 
@@ -73,6 +75,14 @@ describe('ButtonClickEventResolver', () => {
     parentBlockId: 'untitled'
   }
 
+  const stepBlock: StepBlock = {
+    __typename: 'StepBlock',
+    id: 'stepBlock.id',
+    parentBlockId: null,
+    journeyId: 'journey.id',
+    locked: false
+  }
+
   const visitor = {
     _key: 'visitor.id'
   }
@@ -94,7 +104,7 @@ describe('ButtonClickEventResolver', () => {
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId,
-        stepId: 'step.id', // TODO
+        stepId: stepBlock.id,
         label: 'header',
         value: block.label
       })
@@ -109,7 +119,7 @@ describe('ButtonClickEventResolver', () => {
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
         journeyId: untitledStepNameBlock.journeyId,
-        stepId: 'step.id', // TODO
+        stepId: stepBlock.id,
         label: 'Untitled',
         value: untitledStepNameBlock.label
       })

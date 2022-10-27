@@ -143,7 +143,6 @@ function findMostImportantTypographyBlock(
 
 function getStepNumber(stepId: string, steps: StepBlock[]): string {
   const index = findIndex(steps, { id: stepId })
-  console.log(index)
   if (index === -1) {
     return 'Untitled'
   } else {

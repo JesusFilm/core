@@ -5,7 +5,8 @@ import { BlockService } from '../../block/block.service'
 import {
   RadioOptionBlock,
   RadioQuestionBlock,
-  RadioQuestionSubmissionEventCreateInput
+  RadioQuestionSubmissionEventCreateInput,
+  StepBlock
 } from '../../../__generated__/graphql'
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion.resolver'
 
@@ -33,7 +34,8 @@ describe('RadioQuestionSubmissionEventResolver', () => {
             return 'Untitled'
         }
       }),
-      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId)
+      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId),
+      getParentStepBlockByBlockId: jest.fn(() => stepBlock)
     })
   }
 
@@ -82,6 +84,14 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     journeyId: 'journey.id'
   }
 
+  const stepBlock: StepBlock = {
+    __typename: 'StepBlock',
+    id: 'stepBlock.id',
+    parentBlockId: null,
+    journeyId: 'journey.id',
+    locked: false
+  }
+
   const visitor = {
     _key: 'visitor.id'
   }
@@ -112,7 +122,7 @@ describe('RadioQuestionSubmissionEventResolver', () => {
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
         journeyId: radioQuestionBlock.journeyId,
-        stepId: 'step.id', // TODO
+        stepId: stepBlock.id,
         label: 'header',
         value: radioOptionBlock.label
       })
@@ -131,7 +141,7 @@ describe('RadioQuestionSubmissionEventResolver', () => {
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
         journeyId: untitledStepNameBlock.journeyId,
-        stepId: 'step.id', // TODO
+        stepId: stepBlock.id,
         label: 'Untitled',
         value: radioOptionBlock.label
       })

@@ -38,6 +38,10 @@ export class VideoStartEventResolver {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
+    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
+      input.blockId
+    )
+
     const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
       userId,
       journeyId
@@ -51,7 +55,7 @@ export class VideoStartEventResolver {
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepId: 'step.id', // TODO
+      stepId: stepBlock?.id,
       label: block.source,
       value: videoTitle, // TODO get correct title if arclight video with the video and language id
       videoId: block.videoId,
@@ -75,6 +79,10 @@ export class VideoPlayEventResolver {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
+    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
+      input.blockId
+    )
+
     const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
       userId,
       journeyId
@@ -88,7 +96,7 @@ export class VideoPlayEventResolver {
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepId: 'step.id', // TODO
+      stepId: stepBlock?.id,
       label: block.source,
       value: videoTitle,
       videoId: block.videoId,
@@ -112,6 +120,10 @@ export class VideoPuaseEventResolver {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
+    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
+      input.blockId
+    )
+
     const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
       userId,
       journeyId
@@ -125,7 +137,7 @@ export class VideoPuaseEventResolver {
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepId: 'step.id', // TODO
+      stepId: stepBlock?.id,
       label: block.source,
       value: videoTitle,
       videoId: block.videoId,
@@ -149,6 +161,10 @@ export class VideoCompleteEventResolver {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
+    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
+      input.blockId
+    )
+
     const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
       userId,
       journeyId
@@ -162,7 +178,7 @@ export class VideoCompleteEventResolver {
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepId: 'step.id', // TODO
+      stepId: stepBlock?.id,
       label: block.source,
       value: videoTitle,
       videoId: block.videoId,
@@ -186,6 +202,10 @@ export class VideoExpandEventResolver {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
+    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
+      input.blockId
+    )
+
     const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
       userId,
       journeyId
@@ -199,7 +219,7 @@ export class VideoExpandEventResolver {
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepId: 'step.id', // TODO
+      stepId: stepBlock?.id,
       label: block.source,
       value: videoTitle,
       videoId: block.videoId,
@@ -223,6 +243,10 @@ export class VideoCollapseEventResolver {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
+    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
+      input.blockId
+    )
+
     const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
       userId,
       journeyId
@@ -236,7 +260,7 @@ export class VideoCollapseEventResolver {
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepId: 'step.id', // TODO
+      stepId: stepBlock?.id,
       label: block.source,
       value: videoTitle,
       videoId: block.videoId,
@@ -260,6 +284,10 @@ export class VideoProgressEventResolver {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
+    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
+      input.blockId
+    )
+
     const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
       userId,
       journeyId
@@ -273,7 +301,7 @@ export class VideoProgressEventResolver {
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepId: 'step.id', // TODO
+      stepId: stepBlock?.id,
       label: block.source,
       value: videoTitle,
       videoId: block.videoId,

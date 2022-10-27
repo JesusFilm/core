@@ -31,6 +31,11 @@ export class RadioQuestionSubmissionEventResolver {
     const radioOptionBlock: RadioOptionBlock = await this.blockService.get(
       input.radioOptionBlockId
     )
+
+    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
+      input.blockId
+    )
+
     const journeyId = block.journeyId
 
     const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
@@ -50,7 +55,7 @@ export class RadioQuestionSubmissionEventResolver {
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepId: 'step.id', // TODO
+      stepId: stepBlock?.id,
       label: stepName,
       value: radioOptionBlock.label
     })

@@ -3,6 +3,7 @@ import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
 import {
+  StepBlock,
   TextResponseBlock,
   TextResponseSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
@@ -32,7 +33,8 @@ describe('TextResponseEventResolver', () => {
             return 'Untitled'
         }
       }),
-      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId)
+      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId),
+      getParentStepBlockByBlockId: jest.fn(() => stepBlock)
     })
   }
 
@@ -75,6 +77,14 @@ describe('TextResponseEventResolver', () => {
     parentBlockId: 'untitled'
   }
 
+  const stepBlock: StepBlock = {
+    __typename: 'StepBlock',
+    id: 'stepBlock.id',
+    parentBlockId: null,
+    journeyId: 'journey.id',
+    locked: false
+  }
+
   const visitor = {
     _key: 'visitor.id'
   }
@@ -104,7 +114,7 @@ describe('TextResponseEventResolver', () => {
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId,
-        stepId: 'step.id', // TODO
+        stepId: stepBlock.id,
         label: 'header'
       })
     })
@@ -121,7 +131,7 @@ describe('TextResponseEventResolver', () => {
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
         journeyId: untitledStepNameBlock.journeyId,
-        stepId: 'step.id', // TODO
+        stepId: stepBlock.id,
         label: 'Untitled'
       })
     })

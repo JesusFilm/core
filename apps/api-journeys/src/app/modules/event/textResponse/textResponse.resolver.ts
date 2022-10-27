@@ -28,6 +28,10 @@ export class TextResponseSubmissionEventResolver {
     const block: TextResponseBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
+    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
+      input.blockId
+    )
+
     const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
       userId,
       journeyId
@@ -44,7 +48,7 @@ export class TextResponseSubmissionEventResolver {
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepId: 'step.id', // TODO
+      stepId: stepBlock?.id,
       label: stepName
     })
   }
