@@ -28,8 +28,6 @@ export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
   ) {
     signUpSubmissionEventCreate(input: $input) {
       id
-      name
-      email
     }
   }
 `

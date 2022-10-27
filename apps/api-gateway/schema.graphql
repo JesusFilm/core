@@ -28,6 +28,11 @@ interface Block {
   parentOrder: Int
 }
 
+type Browser {
+  name: String
+  version: String
+}
+
 type ButtonBlock implements Block {
   action: Action
   color: ButtonColor
@@ -63,10 +68,10 @@ input ButtonBlockUpdateInput {
 }
 
 type ButtonClickEvent implements Event {
-  block: ButtonBlock
-  createdAt: DateTime!
+  block: ButtonBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  userId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input ButtonClickEventCreateInput {
@@ -171,10 +176,25 @@ type Country
 """DateTime custom scalar"""
 scalar DateTime
 
+type Device {
+  model: String
+  type: DeviceType
+  vendor: String
+}
+
+enum DeviceType {
+  console
+  embedded
+  mobile
+  smarttv
+  tablet
+  wearable
+}
+
 interface Event {
-  createdAt: DateTime!
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  userId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 enum GridAlignItems {
@@ -258,10 +278,12 @@ enum IconColor {
 
 """IconName is equivalent to the icons found in @mui/icons-material"""
 enum IconName {
+  ArrowBackRounded
   ArrowForwardRounded
   BeenhereRounded
   ChatBubbleOutlineRounded
   CheckCircleRounded
+  ChevronLeftRounded
   ChevronRightRounded
   ContactSupportRounded
   FormatQuoteRounded
@@ -424,10 +446,10 @@ input JourneyUpdateInput {
 }
 
 type JourneyViewEvent implements Event {
-  createdAt: DateTime!
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  journey: Journey
-  userId: ID!
+  journey: Journey @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input JourneyViewEventCreateInput {
@@ -532,9 +554,9 @@ type Mutation {
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
-  templateLibraryViewEventCreate: TemplateLibraryViewEvent! @join__field(graph: JOURNEYS)
-  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @join__field(graph: JOURNEYS)
-  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @join__field(graph: JOURNEYS)
+  templateLibraryViewEventCreate: TemplateLibraryViewEvent! @deprecated(reason: "preparing for data structure change") @join__field(graph: JOURNEYS)
+  templatePreviewEventCreate(input: TemplatePreviewEventInput!): TemplatePreviewEvent! @deprecated(reason: "preparing for data structure change") @join__field(graph: JOURNEYS)
+  templateUseEventCreate(input: TemplateUseEventInput!): TemplateUseEvent! @deprecated(reason: "preparing for data structure change") @join__field(graph: JOURNEYS)
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
   textResponseBlockUpdate(id: ID!, input: TextResponseBlockUpdateInput!, journeyId: ID!): TextResponseBlock @join__field(graph: JOURNEYS)
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent! @join__field(graph: JOURNEYS)
@@ -556,6 +578,9 @@ type Mutation {
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent! @join__field(graph: JOURNEYS)
   videoProgressEventCreate(input: VideoProgressEventCreateInput!): VideoProgressEvent! @join__field(graph: JOURNEYS)
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent! @join__field(graph: JOURNEYS)
+
+  """Update a visitor"""
+  visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
 }
 
 """
@@ -594,6 +619,23 @@ input NavigateToJourneyActionInput {
   journeyId: String!
 }
 
+type OperatingSystem {
+  name: String
+  version: String
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+}
+
 type PowerBiEmbed {
   """The embed token"""
   accessToken: String!
@@ -628,6 +670,21 @@ type Query {
   videoTag(id: ID!): VideoTag @join__field(graph: VIDEOS)
   videoTags: [VideoTag!] @join__field(graph: VIDEOS)
   videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
+
+  """Get a single visitor"""
+  visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
+
+  """A list of visitors that are connected with a specific team."""
+  visitorsConnection(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the visitor items related to a specific team."""
+    teamId: String!
+  ): VisitorsConnection! @join__field(graph: JOURNEYS)
 }
 
 type RadioOptionBlock implements Block {
@@ -665,11 +722,11 @@ input RadioQuestionBlockCreateInput {
 }
 
 type RadioQuestionSubmissionEvent implements Event {
-  block: RadioQuestionBlock
-  createdAt: DateTime!
+  block: RadioQuestionBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  radioOptionBlockId: ID!
-  userId: ID!
+  radioOptionBlockId: ID! @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input RadioQuestionSubmissionEventCreateInput {
@@ -714,12 +771,12 @@ input SignUpBlockUpdateInput {
 }
 
 type SignUpSubmissionEvent implements Event {
-  block: SignUpBlock
-  createdAt: DateTime!
-  email: String!
+  block: SignUpBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
+  email: String! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  name: String!
-  userId: ID!
+  name: String! @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input SignUpSubmissionEventCreateInput {
@@ -767,10 +824,10 @@ input StepBlockUpdateInput {
 }
 
 type StepViewEvent implements Event {
-  block: StepBlock
-  createdAt: DateTime!
+  block: StepBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  userId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input StepViewEventCreateInput {
@@ -796,7 +853,7 @@ type TemplatePreviewEvent implements Event {
 }
 
 input TemplatePreviewEventInput {
-  journeyId: ID!
+  journeyId: ID
 }
 
 type TemplateUseEvent implements Event {
@@ -807,7 +864,7 @@ type TemplateUseEvent implements Event {
 }
 
 input TemplateUseEventInput {
-  journeyId: ID!
+  journeyId: ID
 }
 
 type TextResponseBlock implements Block {
@@ -841,11 +898,11 @@ input TextResponseBlockUpdateInput {
 }
 
 type TextResponseSubmissionEvent implements Event {
-  block: TextResponseBlock
-  createdAt: DateTime!
+  block: TextResponseBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  userId: ID!
-  value: String!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
+  value: String! @deprecated(reason: "preparing for data structure change")
 }
 
 input TextResponseSubmissionEventCreateInput {
@@ -939,6 +996,13 @@ type User
   id: ID! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
+}
+
+"""These types are a subset provided by the @types/ua-parser-js library."""
+type UserAgent {
+  browser: Browser!
+  device: Device!
+  os: OperatingSystem!
 }
 
 type UserJourney
@@ -1170,11 +1234,11 @@ input VideoBlockUpdateInput {
 }
 
 type VideoCollapseEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoCollapseEventCreateInput {
@@ -1188,11 +1252,11 @@ input VideoCollapseEventCreateInput {
 }
 
 type VideoCompleteEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoCompleteEventCreateInput {
@@ -1206,11 +1270,11 @@ input VideoCompleteEventCreateInput {
 }
 
 type VideoExpandEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoExpandEventCreateInput {
@@ -1224,11 +1288,11 @@ input VideoExpandEventCreateInput {
 }
 
 type VideoPauseEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoPauseEventCreateInput {
@@ -1242,11 +1306,11 @@ input VideoPauseEventCreateInput {
 }
 
 type VideoPlayEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoPlayEventCreateInput {
@@ -1260,12 +1324,12 @@ input VideoPlayEventCreateInput {
 }
 
 type VideoProgressEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  progress: Int!
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  progress: Int! @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoProgressEventCreateInput {
@@ -1289,11 +1353,11 @@ input VideosFilter {
 }
 
 type VideoStartEvent implements Event {
-  block: VideoBlock
-  createdAt: DateTime!
+  block: VideoBlock @deprecated(reason: "preparing for data structure change")
+  createdAt: DateTime! @deprecated(reason: "preparing for data structure change")
   id: ID!
-  position: Float
-  userId: ID!
+  position: Float @deprecated(reason: "preparing for data structure change")
+  userId: ID! @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoStartEventCreateInput {
@@ -1353,4 +1417,133 @@ type VideoVariantDownload {
 enum VideoVariantDownloadQuality {
   high
   low
+}
+
+"""A visitor with attributes connected to a team."""
+type Visitor
+  @join__owner(graph: JOURNEYS)
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  """
+  The country code of the visitor as poulated by visitor ip address detected in
+  the JourneyViewEventCreate mutation. This field country code is converted
+  from an IP address by the @maxmind/geoip2-node library. If this field is empty
+  it is likely that the JourneyViewEventCreate mutation was not called by the
+  visitor or that the country was not able to be determined based on the
+  visitor IP address.
+  """
+  countryCode: String @join__field(graph: JOURNEYS)
+
+  """
+  The time when the visitor created their first event on a journey connected
+  to the requested team.
+  """
+  createdAt: DateTime! @join__field(graph: JOURNEYS)
+
+  """
+  The email address of the visitor as populated by mutation or otherwise via
+  SignUpEventSubmissionEventCreate mutation.
+  """
+  email: String @join__field(graph: JOURNEYS)
+  id: ID! @join__field(graph: JOURNEYS)
+
+  """
+  The last time the visitor called the ButtonClickEvent mutation where the url
+  is in the format of a recognized chat platform.
+  """
+  lastChatStartedAt: DateTime @join__field(graph: JOURNEYS)
+
+  """
+  Messenger ID of the visitor as set by any journeys-admin user via the
+  VisitorUpdate mutation. This could be a phone number, user id or other
+  unique identifier provided by the messenger network.
+  """
+  messengerId: String @join__field(graph: JOURNEYS)
+
+  """
+  Messenger network of the visitor as set by any journeys-admin user via the
+  VisitorUpdate mutation.
+  """
+  messengerNetwork: String @join__field(graph: JOURNEYS)
+
+  """
+  The name of the visitor as populated by mutation or otherwise via
+  SignUpEventSubmissionEventCreate mutation.
+  """
+  name: String @join__field(graph: JOURNEYS)
+
+  """
+  Private notes of the visitor as set by any journeys-admin user via the
+  VisitorUpdate mutation.
+  """
+  notes: String @join__field(graph: JOURNEYS)
+
+  """
+  Status of the visitor as set by any journeys-admin user via the VisitorUpdate
+  mutation.
+  """
+  status: VisitorStatus @join__field(graph: JOURNEYS)
+
+  """
+  The user agent of the visitor as poulated by the visitor's user-agent string
+  detected in the JourneyViewEventCreate mutation. This field is enriched
+  by data from the ua-parser-js library. If this field is empty it is likely
+  that the JourneyViewEventCreate mutation was not called by the visitor.
+  """
+  userAgent: UserAgent @join__field(graph: JOURNEYS)
+}
+
+"""An edge in a connection."""
+type VisitorEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: Visitor!
+}
+
+"""A list of visitors connected with a team."""
+type VisitorsConnection {
+  """A list of edges."""
+  edges: [VisitorEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+"""
+The status of a visitor according to team members interacting with the
+visitor admin interface.
+"""
+enum VisitorStatus {
+  star
+}
+
+"""
+A list of fields to update a visitor when calling the visitorUpdate mutation
+"""
+input VisitorUpdateInput {
+  """
+  The email address of the visitor (will prevent
+  SignUpEventSubmissionEventCreate mutation from updating this field
+  automatically)
+  """
+  email: String
+  messengerId: String
+  messengerNetwork: String
+
+  """
+  The name of the visitor (will prevent SignUpEventSubmissionEventCreate
+  mutation from updating this field automatically)
+  """
+  name: String
+
+  """
+  Private notes relating to the visitor. This information is never made public
+  and only accessible by team members.
+  """
+  notes: String
+
+  """Status of the visitor."""
+  status: VisitorStatus
 }

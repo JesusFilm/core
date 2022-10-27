@@ -10,11 +10,12 @@ input SignUpSubmissionEventCreateInput {
 
 type SignUpSubmissionEvent implements Event {
   id: ID!
-  userId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
   createdAt: DateTime!
-  name: String!
-  email: String!
-  block: SignUpBlock
+    @deprecated(reason: "preparing for data structure change")
+  name: String! @deprecated(reason: "preparing for data structure change")
+  email: String! @deprecated(reason: "preparing for data structure change")
+  block: SignUpBlock @deprecated(reason: "preparing for data structure change")
 }
 
 extend type Mutation {
