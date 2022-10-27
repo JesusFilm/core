@@ -9,13 +9,6 @@ input RadioQuestionSubmissionEventCreateInput {
 
 type RadioQuestionSubmissionEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
-  createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
-  radioOptionBlockId: ID!
-    @deprecated(reason: "preparing for data structure change")
-  block: RadioQuestionBlock
-    @deprecated(reason: "preparing for data structure change")
 }
 
 extend type Mutation {

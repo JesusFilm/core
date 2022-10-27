@@ -9,12 +9,6 @@ input TextResponseSubmissionEventCreateInput {
 
 type TextResponseSubmissionEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
-  createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
-  value: String! @deprecated(reason: "preparing for data structure change")
-  block: TextResponseBlock
-    @deprecated(reason: "preparing for data structure change")
 }
 
 extend type Mutation {
