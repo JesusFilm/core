@@ -22,7 +22,7 @@ describe('SignUpEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((input) => input),
-      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId),
+      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId),
       getParentStepBlockByBlockId: jest.fn(() => stepBlock)
     })
   }

@@ -42,7 +42,7 @@ export class VideoStartEventResolver {
       input.blockId
     )
 
-    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       journeyId
     )
@@ -83,7 +83,7 @@ export class VideoPlayEventResolver {
       input.blockId
     )
 
-    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       journeyId
     )
@@ -124,7 +124,7 @@ export class VideoPuaseEventResolver {
       input.blockId
     )
 
-    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       journeyId
     )
@@ -165,7 +165,7 @@ export class VideoCompleteEventResolver {
       input.blockId
     )
 
-    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       journeyId
     )
@@ -206,7 +206,7 @@ export class VideoExpandEventResolver {
       input.blockId
     )
 
-    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       journeyId
     )
@@ -247,7 +247,7 @@ export class VideoCollapseEventResolver {
       input.blockId
     )
 
-    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       journeyId
     )
@@ -288,7 +288,7 @@ export class VideoProgressEventResolver {
       input.blockId
     )
 
-    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       journeyId
     )

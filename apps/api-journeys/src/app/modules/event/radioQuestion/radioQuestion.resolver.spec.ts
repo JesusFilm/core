@@ -34,7 +34,7 @@ describe('RadioQuestionSubmissionEventResolver', () => {
             return 'Untitled'
         }
       }),
-      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId),
+      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId),
       getParentStepBlockByBlockId: jest.fn(() => stepBlock)
     })
   }

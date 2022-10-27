@@ -112,7 +112,7 @@ describe('EventService', () => {
 
       db.query.mockReturnValueOnce(mockDbQueryResult(db, [visitorWithId]))
       expect(
-        await service.getVisitorByUserIdAndTeamId('user.id', 'team.id')
+        await service.getVisitorByUserIdAndJourneyId('user.id', 'team.id')
       ).toEqual(visitorWithId)
     })
   })

@@ -28,7 +28,7 @@ export class StepViewEventResolver {
     const block: StepBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
-    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       journeyId
     )

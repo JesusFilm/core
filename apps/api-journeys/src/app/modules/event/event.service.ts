@@ -69,8 +69,8 @@ export class EventService extends BaseService {
     }
   }
 
-  @KeyAsId() // TODO: update getVisitorByUserIdAndJourneyId
-  async getVisitorByUserIdAndTeamId(
+  @KeyAsId()
+  async getVisitorByUserIdAndJourneyId(
     userId: string,
     journeyId: string
   ): Promise<Visitor> {

@@ -32,7 +32,7 @@ export class ButtonClickEventResolver {
       input.blockId
     )
 
-    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       journeyId
     )

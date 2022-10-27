@@ -32,7 +32,7 @@ describe('StepViewEventResolver', () => {
             return 'Untitled'
         }
       }),
-      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId)
+      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId)
     })
   }
 

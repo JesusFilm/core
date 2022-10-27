@@ -26,7 +26,7 @@ describe('VideoResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((event) => event),
-      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId),
+      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId),
       getParentStepBlockByBlockId: jest.fn(() => stepBlock)
     })
   }

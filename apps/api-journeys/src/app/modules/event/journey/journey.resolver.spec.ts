@@ -22,7 +22,7 @@ describe('JourneyViewEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((event) => event),
-      getVisitorByUserIdAndTeamId: jest.fn((userId) => {
+      getVisitorByUserIdAndJourneyId: jest.fn((userId) => {
         switch (userId) {
           case visitor.userId:
             return visitorWithId

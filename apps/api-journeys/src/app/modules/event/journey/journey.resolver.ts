@@ -29,7 +29,7 @@ export class JourneyViewEventResolver {
     @CurrentUserInfo() userInfo,
     @Args('input') input: JourneyViewEventCreateInput
   ): Promise<JourneyViewEvent> {
-    let visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+    let visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       input.journeyId
     )
