@@ -84,6 +84,30 @@ export class EventService extends BaseService {
     `)
     return await res.next()
   }
+
+  @KeyAsId()
+  async getParentStepBlockByBlockId(blockId): Promise<StepBlock | null> {
+    let block = await (
+      await this.db.query(aql`
+        FOR block IN blocks
+          FILTER block._key == ${blockId}
+          LIMIT 1
+          RETURN block
+    `)
+    ).next()
+
+    while (block.__typename !== 'StepBlock' && block.parentBlockId != null) {
+      const res = await this.db.query(aql`
+          FOR block IN blocks
+            FILTER block._key == ${block.parentBlockId}
+            LIMIT 1
+            RETURN block
+        `)
+      block = await res.next()
+    }
+
+    return block.__typename === 'StepBlock' ? block : null
+  }
 }
 
 const orderedVariants: TypographyVariant[] = [

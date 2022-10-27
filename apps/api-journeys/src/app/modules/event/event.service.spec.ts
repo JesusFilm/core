@@ -116,4 +116,60 @@ describe('EventService', () => {
       ).toEqual(visitorWithId)
     })
   })
+
+  describe('getParentStepBlockByChildId', () => {
+    const block = {
+      _key: 'block.id',
+      parentBlockId: 'block2.id',
+      __typename: null
+    }
+
+    const block2 = {
+      ...block,
+      _key: 'block2.id',
+      parentBlockId: 'stepBlock.id'
+    }
+
+    const stepBlock = {
+      _key: 'stepblock.id',
+      __typename: 'StepBlock',
+      parentBlockId: null
+    }
+
+    const blockWithId = keyAsId(block)
+    const block2WithId = keyAsId(block2)
+    const stepBlockWithId = keyAsId(stepBlock)
+
+    it('should return parent step block', async () => {
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [blockWithId]))
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [block2WithId]))
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [stepBlockWithId]))
+
+      expect(await service.getParentStepBlockByBlockId(blockWithId.id)).toEqual(
+        stepBlockWithId
+      )
+    })
+
+    it('should return current block if already step block', async () => {
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [stepBlockWithId]))
+      expect(
+        await service.getParentStepBlockByBlockId(stepBlockWithId.id)
+      ).toEqual(stepBlockWithId)
+    })
+
+    it('should return undefined if there is no parentBlock that is a step block', async () => {
+      const noParentBlock = {
+        ...block,
+        id: 'noParentBlock.id',
+        parentBlockId: null
+      }
+
+      const noParentBlockWithId = keyAsId(noParentBlock)
+
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [noParentBlockWithId]))
+      expect(
+        await service.getParentStepBlockByBlockId(noParentBlockWithId.id)
+      ).toEqual(null)
+    })
+  })
 })
