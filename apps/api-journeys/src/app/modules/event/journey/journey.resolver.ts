@@ -12,12 +12,14 @@ import {
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { JourneyService } from '../../journey/journey.service'
+import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('JourneyViewEvent')
 export class JourneyViewEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly journeyService: JourneyService
+    private readonly journeyService: JourneyService,
+    private readonly visitorService: VisitorService
   ) {}
 
   @Mutation()
@@ -27,14 +29,26 @@ export class JourneyViewEventResolver {
     @CurrentUserInfo() userInfo,
     @Args('input') input: JourneyViewEventCreateInput
   ): Promise<JourneyViewEvent> {
-    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+    let visitor = await this.eventService.getVisitorByUserIdAndTeamId(
       userId,
       input.journeyId
     )
 
     const journey: Journey = await this.journeyService.get(input.journeyId)
 
-    // TODO:  check user info in visitorTeam and update
+    if (visitor == null) {
+      visitor = await this.visitorService.save({
+        teamId: journey.teamId,
+        userId,
+        createdAt: new Date().toISOString()
+      })
+    }
+
+    if (visitor.userAgent == null) {
+      await this.visitorService.update(visitor.id, {
+        userAgent: userInfo.userAgent
+      })
+    }
 
     return await this.eventService.save({
       ...input,

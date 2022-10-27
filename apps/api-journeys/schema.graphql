@@ -91,6 +91,7 @@ type Journey @key(fields: "id") {
   seoTitle: String
   seoDescription: String
   template: Boolean
+  teamId: String
   userJourneys: [UserJourney!]
 }
 
@@ -814,6 +815,7 @@ type TemplateUseEvent implements Event {
   id: ID!
   userId: ID!
   createdAt: DateTime!
+  journeyId: ID!
 }
 
 input TemplatePreviewEventInput {
@@ -824,6 +826,7 @@ type TemplatePreviewEvent implements Event {
   id: ID!
   userId: ID!
   createdAt: DateTime!
+  journeyId: ID!
 }
 
 input TextResponseSubmissionEventCreateInput {

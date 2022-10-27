@@ -555,6 +555,7 @@ export class Journey {
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
     template?: Nullable<boolean>;
+    teamId?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -786,6 +787,7 @@ export class TemplateUseEvent implements Event {
     id: string;
     userId: string;
     createdAt: DateTime;
+    journeyId: string;
 }
 
 export class TemplatePreviewEvent implements Event {
@@ -793,6 +795,7 @@ export class TemplatePreviewEvent implements Event {
     id: string;
     userId: string;
     createdAt: DateTime;
+    journeyId: string;
 }
 
 export class TextResponseSubmissionEvent implements Event {

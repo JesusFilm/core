@@ -3,6 +3,7 @@ import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import { JourneyViewEventCreateInput } from '../../../__generated__/graphql'
 import { JourneyService } from '../../journey/journey.service'
+import { VisitorService } from '../../visitor/visitor.service'
 import { JourneyViewEventResolver } from './journey.resolver'
 
 describe('JourneyViewEventResolver', () => {
@@ -15,13 +16,20 @@ describe('JourneyViewEventResolver', () => {
     jest.useRealTimers()
   })
 
-  let resolver: JourneyViewEventResolver
+  let resolver: JourneyViewEventResolver, vService: VisitorService
 
   const eventService = {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((event) => event),
-      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId)
+      getVisitorByUserIdAndTeamId: jest.fn((userId) => {
+        switch (userId) {
+          case visitor.userId:
+            return visitorWithId
+          case basicVisitor.userId:
+            return basicVisitorWithId
+        }
+      })
     })
   }
 
@@ -32,45 +40,87 @@ describe('JourneyViewEventResolver', () => {
     })
   }
 
+  const visitorService = {
+    provide: VisitorService,
+    useFactory: () => ({
+      save: jest.fn(() => ''),
+      update: jest.fn(() => '')
+    })
+  }
+
   const input: JourneyViewEventCreateInput = {
     id: '1',
     journeyId: 'journey.id'
   }
 
   const journey = {
-    language: 'english'
+    language: 'english',
+    teamId: 'team.id'
+  }
+
+  const userInfo = {
+    userAgent: 'device info',
+    ipAddress: '000.00.000.00'
   }
 
   const visitor = {
-    _key: 'visitor.id'
+    _key: 'visitor.id',
+    userId: 'user.id',
+    userAgent: '000'
+  }
+
+  const basicVisitor = {
+    _key: 'basicVisitor.id',
+    userId: 'basicUser.id'
   }
 
   const visitorWithId = keyAsId(visitor)
+  const basicVisitorWithId = keyAsId(basicVisitor)
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [JourneyViewEventResolver, eventService, journeyService]
+      providers: [
+        JourneyViewEventResolver,
+        eventService,
+        journeyService,
+        visitorService
+      ]
     }).compile()
     resolver = module.get<JourneyViewEventResolver>(JourneyViewEventResolver)
+    vService = module.get<VisitorService>(VisitorService)
   })
 
   describe('JourneyViewEventCreate', () => {
     it('returns journeyViewEvent', async () => {
-      const userInfo = {
-        deviceInfo: 'device info',
-        ipAddress: '000.00.000.00'
-      }
-
-      // TODO: add check for visitor update
-
       expect(
-        await resolver.journeyViewEventCreate('userId', userInfo, input)
+        await resolver.journeyViewEventCreate('user.id', userInfo, input)
       ).toEqual({
         ...input,
         __typename: 'JourneyViewEvent',
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        language: journey.language // TODO: update
+        language: journey.language
+      })
+
+      expect(vService.save).not.toHaveBeenCalled()
+      expect(vService.update).not.toHaveBeenCalled()
+    })
+
+    it('should create a new visitor if visitor doesnt exist', async () => {
+      await resolver.journeyViewEventCreate('newUser.id', userInfo, input)
+
+      expect(vService.save).toHaveBeenCalledWith({
+        teamId: journey.teamId,
+        userId: 'newUser.id',
+        createdAt: new Date().toISOString()
+      })
+    })
+
+    it('should update user agent on visitor if visitor does not have a user agent', async () => {
+      await resolver.journeyViewEventCreate('basicUser.id', userInfo, input)
+
+      expect(vService.update).toHaveBeenCalledWith('basicVisitor.id', {
+        userAgent: userInfo.userAgent
       })
     })
   })

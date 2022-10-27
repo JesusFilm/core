@@ -378,6 +378,7 @@ type Journey
   seoTitle: String @join__field(graph: JOURNEYS)
   slug: String! @join__field(graph: JOURNEYS)
   status: JourneyStatus! @join__field(graph: JOURNEYS)
+  teamId: String @join__field(graph: JOURNEYS)
   template: Boolean @join__field(graph: JOURNEYS)
   themeMode: ThemeMode! @join__field(graph: JOURNEYS)
   themeName: ThemeName! @join__field(graph: JOURNEYS)
@@ -848,6 +849,7 @@ type TemplateLibraryViewEvent implements Event {
 type TemplatePreviewEvent implements Event {
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
   userId: ID!
 }
 
@@ -858,6 +860,7 @@ input TemplatePreviewEventInput {
 type TemplateUseEvent implements Event {
   createdAt: DateTime!
   id: ID!
+  journeyId: ID!
   userId: ID!
 }
 
