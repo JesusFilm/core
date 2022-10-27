@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { VideoBlockSource } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
@@ -24,8 +25,8 @@ describe('VideoResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((input) => input),
-      getStepHeader: jest.fn(() => 'header')
+      save: jest.fn((event) => event),
+      getVisitorByUserIdAndTeamId: jest.fn(() => visitorWithId)
     })
   }
 
@@ -41,8 +42,16 @@ describe('VideoResolver', () => {
     journeyId: 'journey.id',
     parentBlockId: 'parent.id',
     title: 'title',
-    source: VideoBlockSource.internal
+    source: VideoBlockSource.internal,
+    videoId: 'video.id',
+    videoVariantLanguageId: '539'
   }
+
+  const visitor = {
+    _key: 'visitor.id'
+  }
+
+  const visitorWithId = keyAsId(visitor)
 
   describe('videoStartEventCreate', () => {
     let resolver: VideoStartEventResolver
@@ -64,13 +73,14 @@ describe('VideoResolver', () => {
       expect(await resolver.videoStartEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoStartEvent',
-        userId: 'userid',
+        visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id',
-        stepName: 'header',
-        videoTitle: 'title',
-        videoSource: VideoBlockSource.internal,
-        teamId: 'team.id' // TODO: update
+        journeyId: block.journeyId,
+        stepId: 'step.id', // TODO
+        label: block.source,
+        value: block.title, // TODO
+        videoId: block.videoId,
+        videoVariantLanguageId: block.videoVariantLanguageId
       })
     })
   })
@@ -95,13 +105,14 @@ describe('VideoResolver', () => {
       expect(await resolver.videoPlayEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoPlayEvent',
-        userId: 'userid',
+        visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id',
-        stepName: 'header',
-        videoTitle: 'title',
-        videoSource: VideoBlockSource.internal,
-        teamId: 'team.id' // TODO: update
+        journeyId: block.journeyId,
+        stepId: 'step.id', // TODO
+        label: block.source,
+        value: block.title, // TODO
+        videoId: block.videoId,
+        videoVariantLanguageId: block.videoVariantLanguageId
       })
     })
   })
@@ -126,13 +137,14 @@ describe('VideoResolver', () => {
       expect(await resolver.videoPauseEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoPauseEvent',
-        userId: 'userid',
+        visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id',
-        stepName: 'header',
-        videoTitle: 'title',
-        videoSource: VideoBlockSource.internal,
-        teamId: 'team.id' // TODO: update
+        journeyId: block.journeyId,
+        stepId: 'step.id', // TODO
+        label: block.source,
+        value: block.title, // TODO
+        videoId: block.videoId,
+        videoVariantLanguageId: block.videoVariantLanguageId
       })
     })
   })
@@ -159,13 +171,14 @@ describe('VideoResolver', () => {
       expect(await resolver.videoCompleteEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoCompleteEvent',
-        userId: 'userid',
+        visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id',
-        stepName: 'header',
-        videoTitle: 'title',
-        videoSource: VideoBlockSource.internal,
-        teamId: 'team.id' // TODO: update
+        journeyId: block.journeyId,
+        stepId: 'step.id', // TODO
+        label: block.source,
+        value: block.title, // TODO
+        videoId: block.videoId,
+        videoVariantLanguageId: block.videoVariantLanguageId
       })
     })
   })
@@ -190,13 +203,14 @@ describe('VideoResolver', () => {
       expect(await resolver.videoExpandEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoExpandEvent',
-        userId: 'userid',
+        visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id',
-        stepName: 'header',
-        videoTitle: 'title',
-        videoSource: VideoBlockSource.internal,
-        teamId: 'team.id' // TODO: update
+        journeyId: block.journeyId,
+        stepId: 'step.id', // TODO
+        label: block.source,
+        value: block.title, // TODO
+        videoId: block.videoId,
+        videoVariantLanguageId: block.videoVariantLanguageId
       })
     })
   })
@@ -223,13 +237,14 @@ describe('VideoResolver', () => {
       expect(await resolver.videoCollapseEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoCollapseEvent',
-        userId: 'userid',
+        visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id',
-        stepName: 'header',
-        videoTitle: 'title',
-        videoSource: VideoBlockSource.internal,
-        teamId: 'team.id' // TODO: update
+        journeyId: block.journeyId,
+        stepId: 'step.id', // TODO
+        label: block.source,
+        value: block.title, // TODO
+        videoId: block.videoId,
+        videoVariantLanguageId: block.videoVariantLanguageId
       })
     })
   })
@@ -257,13 +272,14 @@ describe('VideoResolver', () => {
       expect(await resolver.videoProgressEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoProgressEvent',
-        userId: 'userid',
+        visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id',
-        stepName: 'header',
-        videoTitle: 'title',
-        videoSource: VideoBlockSource.internal,
-        teamId: 'team.id' // TODO: update
+        journeyId: block.journeyId,
+        stepId: 'step.id', // TODO
+        label: block.source,
+        value: block.title, // TODO
+        videoId: block.videoId,
+        videoVariantLanguageId: block.videoVariantLanguageId
       })
     })
   })

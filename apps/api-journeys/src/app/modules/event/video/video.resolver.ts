@@ -37,23 +37,25 @@ export class VideoStartEventResolver {
   ): Promise<VideoStartEvent> {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
-    const stepName: string =
-      block.parentBlockId != null
-        ? await this.eventService.getStepHeader(block.parentBlockId)
-        : 'Untitled'
+
+    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+      userId,
+      journeyId
+    )
+
     const videoTitle = block.title ?? 'Untitled'
-    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
       __typename: 'VideoStartEvent',
-      userId,
+      visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepName,
-      videoTitle,
-      videoSource,
-      teamId: 'team.id' // TODO: update
+      stepId: 'step.id', // TODO
+      label: block.source,
+      value: videoTitle, // TODO get correct title if arclight video with the video and language id
+      videoId: block.videoId,
+      videoVariantLanguageId: block.videoVariantLanguageId
     })
   }
 }
@@ -72,23 +74,25 @@ export class VideoPlayEventResolver {
   ): Promise<VideoPlayEvent> {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
-    const stepName: string =
-      block.parentBlockId != null
-        ? await this.eventService.getStepHeader(block.parentBlockId)
-        : 'Untitled'
+
+    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+      userId,
+      journeyId
+    )
+
     const videoTitle = block.title ?? 'Untitled'
-    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
       __typename: 'VideoPlayEvent',
-      userId,
+      visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepName,
-      videoTitle,
-      videoSource,
-      teamId: 'team.id' // TODO: update
+      stepId: 'step.id', // TODO
+      label: block.source,
+      value: videoTitle,
+      videoId: block.videoId,
+      videoVariantLanguageId: block.videoVariantLanguageId
     })
   }
 }
@@ -107,23 +111,25 @@ export class VideoPuaseEventResolver {
   ): Promise<VideoPauseEvent> {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
-    const stepName: string =
-      block.parentBlockId != null
-        ? await this.eventService.getStepHeader(block.parentBlockId)
-        : 'Untitled'
+
+    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+      userId,
+      journeyId
+    )
+
     const videoTitle = block.title ?? 'Untitled'
-    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
       __typename: 'VideoPauseEvent',
-      userId,
+      visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepName,
-      videoTitle,
-      videoSource,
-      teamId: 'team.id' // TODO: update
+      stepId: 'step.id', // TODO
+      label: block.source,
+      value: videoTitle,
+      videoId: block.videoId,
+      videoVariantLanguageId: block.videoVariantLanguageId
     })
   }
 }
@@ -142,23 +148,25 @@ export class VideoCompleteEventResolver {
   ): Promise<VideoCompleteEvent> {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
-    const stepName: string =
-      block.parentBlockId != null
-        ? await this.eventService.getStepHeader(block.parentBlockId)
-        : 'Untitled'
+
+    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+      userId,
+      journeyId
+    )
+
     const videoTitle = block.title ?? 'Untitled'
-    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
       __typename: 'VideoCompleteEvent',
-      userId,
+      visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepName,
-      videoTitle,
-      videoSource,
-      teamId: 'team.id' // TODO: update
+      stepId: 'step.id', // TODO
+      label: block.source,
+      value: videoTitle,
+      videoId: block.videoId,
+      videoVariantLanguageId: block.videoVariantLanguageId
     })
   }
 }
@@ -177,23 +185,25 @@ export class VideoExpandEventResolver {
   ): Promise<VideoExpandEvent> {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
-    const stepName: string =
-      block.parentBlockId != null
-        ? await this.eventService.getStepHeader(block.parentBlockId)
-        : 'Untitled'
+
+    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+      userId,
+      journeyId
+    )
+
     const videoTitle = block.title ?? 'Untitled'
-    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
       __typename: 'VideoExpandEvent',
-      userId,
+      visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepName,
-      videoTitle,
-      videoSource,
-      teamId: 'team.id' // TODO: update
+      stepId: 'step.id', // TODO
+      label: block.source,
+      value: videoTitle,
+      videoId: block.videoId,
+      videoVariantLanguageId: block.videoVariantLanguageId
     })
   }
 }
@@ -212,23 +222,25 @@ export class VideoCollapseEventResolver {
   ): Promise<VideoCollapseEvent> {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
-    const stepName: string =
-      block.parentBlockId != null
-        ? await this.eventService.getStepHeader(block.parentBlockId)
-        : 'Untitled'
+
+    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+      userId,
+      journeyId
+    )
+
     const videoTitle = block.title ?? 'Untitled'
-    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
       __typename: 'VideoCollapseEvent',
-      userId,
+      visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepName,
-      videoTitle,
-      videoSource,
-      teamId: 'team.id' // TODO: update
+      stepId: 'step.id', // TODO
+      label: block.source,
+      value: videoTitle,
+      videoId: block.videoId,
+      videoVariantLanguageId: block.videoVariantLanguageId
     })
   }
 }
@@ -247,23 +259,25 @@ export class VideoProgressEventResolver {
   ): Promise<VideoProgressEvent> {
     const block: VideoBlock = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
-    const stepName: string =
-      block.parentBlockId != null
-        ? await this.eventService.getStepHeader(block.parentBlockId)
-        : 'Untitled'
+
+    const visitor = await this.eventService.getVisitorByUserIdAndTeamId(
+      userId,
+      journeyId
+    )
+
     const videoTitle = block.title ?? 'Untitled'
-    const videoSource = block.source
 
     return await this.eventService.save({
       ...input,
       __typename: 'VideoProgressEvent',
-      userId,
+      visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepName,
-      videoTitle,
-      videoSource,
-      teamId: 'team.id' // TODO: update
+      stepId: 'step.id', // TODO
+      label: block.source,
+      value: videoTitle,
+      videoId: block.videoId,
+      videoVariantLanguageId: block.videoVariantLanguageId
     })
   }
 }
