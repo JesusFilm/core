@@ -12,8 +12,6 @@ import { SignUpSubmissionEventCreateInput } from "./../../../../__generated__/gl
 export interface SignUpSubmissionEventCreate_signUpSubmissionEventCreate {
   __typename: "SignUpSubmissionEvent";
   id: string;
-  name: string;
-  email: string;
 }
 
 export interface SignUpSubmissionEventCreate {

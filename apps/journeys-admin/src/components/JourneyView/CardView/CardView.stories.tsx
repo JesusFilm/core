@@ -20,7 +20,11 @@ const Template: Story<Omit<CardViewProps, 'id'>> = ({ ...args }) => (
         journey: {
           id: 'journeyId',
           themeMode: ThemeMode.dark,
-          themeName: ThemeName.base
+          themeName: ThemeName.base,
+          language: {
+            __typename: 'Language',
+            bcp47: 'en'
+          }
         } as unknown as Journey,
         admin: true
       }}

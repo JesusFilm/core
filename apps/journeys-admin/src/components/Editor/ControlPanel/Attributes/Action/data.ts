@@ -80,7 +80,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               journey: {
                 __typename: 'Journey',
                 id: 'journeyId',
-                slug: 'my-journey'
+                slug: 'my-journey',
+                language: { __typename: 'Language', bcp47: 'en' }
               }
             },
             children: []

@@ -79,8 +79,7 @@ const submitEventMock: MockedResponse = {
   result: {
     data: {
       radioQuestionSubmissionEventCreate: {
-        id: 'uuid',
-        radioOptionBlockId: 'RadioOption1'
+        id: 'uuid'
       }
     }
   }
@@ -108,5 +107,9 @@ Default.args = {
   parentOrder: 1,
   parentBlockId: 'Step1'
 }
+
+export const RTL = Template.bind({})
+RTL.args = { ...Default.args }
+RTL.parameters = { rtl: true }
 
 export default Demo as Meta

@@ -21,7 +21,6 @@ export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
   ) {
     radioQuestionSubmissionEventCreate(input: $input) {
       id
-      radioOptionBlockId
     }
   }
 `

@@ -20,10 +20,16 @@ export interface VideoTriggerFields_triggerAction_NavigateToBlockAction {
   blockId: string;
 }
 
+export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: VideoTriggerFields_triggerAction_NavigateToJourneyAction_journey_language;
 }
 
 export interface VideoTriggerFields_triggerAction_NavigateToJourneyAction {

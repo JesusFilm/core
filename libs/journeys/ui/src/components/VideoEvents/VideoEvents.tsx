@@ -59,7 +59,6 @@ export const VIDEO_PROGRESS_EVENT_CREATE = gql`
   mutation VideoProgressEventCreate($input: VideoProgressEventCreateInput!) {
     videoProgressEventCreate(input: $input) {
       id
-      progress
     }
   }
 `
