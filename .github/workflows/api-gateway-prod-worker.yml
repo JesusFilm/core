@@ -13,12 +13,6 @@ on:
         required: true
         type: string
     secrets:
-      ARANGODB_URL:
-        required: true
-      ARANGODB_USER:
-        required: true
-      ARANGODB_PASS:
-        required: true
       AWS_ACCESS_KEY_ID:
         required: true
       AWS_SECRET_ACCESS_KEY:
@@ -26,8 +20,6 @@ on:
       AWS_DEFAULT_REGION:
         required: true
       KUBE_CONFIG_DATA:
-        required: true
-      ARCLIGHT_API_KEY:
         required: true
 
 jobs:
@@ -38,15 +30,12 @@ jobs:
       ECR_REPOSITORY: ${{ inputs.repository }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       IMAGE_TAG: ${{ github.sha }}
-      DATABASE_URL: ${{ secrets.ARANGODB_URL }}
-      DATABASE_USER: ${{ secrets.ARANGODB_USER }}
-      DATABASE_PASS: ${{ secrets.ARANGODB_PASS }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v2
         with:
-          fetch-depth: 2
+          fetch-depth: 1
 
       - uses: actions/setup-node@v2
         with:
@@ -67,19 +56,32 @@ jobs:
       - name: nx Install
         run: npm install -g nx --silent
 
-      - name: Get affected apps
-        run: echo "::set-output name=apps::$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)"
-        id: affected-apps
+      - name: rover Install
+        run: npm install -g @apollo/rover@0.2.1
 
       - name: Build ${{ inputs.name }}
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: build
           projects: ${{ inputs.name }}
+          args: --configuration="production"
+
+      - name: Build api-journeys-main schema
+        run: rover subgraph introspect https://api-journeys.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
+
+      - name: Build api-users-main schema
+        run: rover subgraph introspect https://api-users.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-users-schema.graphql
+
+      - name: Build api-languages-main schema
+        run: rover subgraph introspect https://api-languages.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-languages-schema.graphql
+
+      - name: Build api-videos-main schema
+        run: rover subgraph introspect https://api-videos.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-videos-schema.graphql
+
+      - name: Build api-gateway schema
+        run: rover supergraph compose --config apps/api-gateway/supergraph-$ENV_SUFFIX.yml > dist/apps/api-gateway/schema.graphql
 
       - name: Configure AWS credentials
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -87,24 +89,21 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Login to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push the image to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/${{ inputs.name }}/Dockerfile
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .  -f apps/${{ inputs.name }}/Dockerfile
           echo "Pushing image to ECR..."
           docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       - name: Deploy to Kubernetes cluster
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: kodermax/kubectl-aws-eks@master
         env:
           KUBECTL_VERSION: 'v1.21.12'
@@ -113,23 +112,8 @@ jobs:
           args: set image deployment/${{ inputs.name }}-$ENV_SUFFIX $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }}
 
       - name: Verify Kubernetes deployment
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: kodermax/kubectl-aws-eks@master
         env:
           KUBECTL_VERSION: 'v1.21.12'
         with:
           args: rollout status deploy ${{ inputs.name }}-$ENV_SUFFIX
-
-      - name: Get affected app seed
-        run: echo "::set-output name=dbs::$(git diff --name-only HEAD~1 HEAD | grep 'apps/${{ inputs.name }}/db/seed.ts')"
-        id: affected-dbs
-
-      - name: Seed Database
-        if: contains(steps.affected-dbs.outputs.dbs, inputs.name)
-        uses: mansagroup/nrwl-nx-action@v2
-        env:
-          DATABASE_DB: ${{ env.ENV_SUFFIX }}
-          ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
-        with:
-          targets: seed
-          projects: ${{ inputs.name }}

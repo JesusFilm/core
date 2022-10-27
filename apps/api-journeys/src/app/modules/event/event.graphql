@@ -1,5 +1,6 @@
 interface Event {
   id: ID!
-  userId: ID!
+  userId: ID! @deprecated(reason: "preparing for data structure change")
   createdAt: DateTime!
+    @deprecated(reason: "preparing for data structure change")
 }

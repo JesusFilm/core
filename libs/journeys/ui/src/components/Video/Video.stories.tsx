@@ -45,8 +45,7 @@ const startVideoMock = {
   },
   result: {
     data: {
-      id: 'uuid',
-      position: 30
+      id: 'uuid'
     }
   }
 }

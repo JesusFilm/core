@@ -70,10 +70,7 @@ const submitEventMock: MockedResponse = {
   result: {
     data: {
       signUpSubmissionEventCreate: {
-        id: 'uuid',
-        blockId: 'signUpBlockId1',
-        name: 'Anon',
-        email: '123abc@gmail.com'
+        id: 'uuid'
       }
     }
   }

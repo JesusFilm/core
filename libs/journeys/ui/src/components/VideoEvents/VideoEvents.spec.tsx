@@ -68,8 +68,7 @@ describe('VideoEvents', () => {
       data: {
         videoStartEventCreate: {
           id: 'uuid',
-          __typename: 'VideoStartEvent',
-          position: 0
+          __typename: 'VideoStartEvent'
         }
       }
     }))
@@ -114,8 +113,7 @@ describe('VideoEvents', () => {
               data: {
                 videoStartEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoStartEvent',
-                  position: 0
+                  __typename: 'VideoStartEvent'
                 }
               }
             }
@@ -149,8 +147,7 @@ describe('VideoEvents', () => {
       data: {
         videoPlayEventCreate: {
           id: 'uuid',
-          __typename: 'VideoPlayEvent',
-          position: 0.12
+          __typename: 'VideoPlayEvent'
         }
       }
     }))
@@ -194,8 +191,7 @@ describe('VideoEvents', () => {
               data: {
                 videoPlayEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoPlayEvent',
-                  position: 0.12
+                  __typename: 'VideoPlayEvent'
                 }
               }
             }
@@ -228,8 +224,7 @@ describe('VideoEvents', () => {
       data: {
         videoPauseEventCreate: {
           id: 'uuid',
-          __typename: 'VideoPauseEvent',
-          position: 0.34
+          __typename: 'VideoPauseEvent'
         }
       }
     }))
@@ -273,8 +268,7 @@ describe('VideoEvents', () => {
               data: {
                 videoPauseEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoPauseEvent',
-                  position: 0.34
+                  __typename: 'VideoPauseEvent'
                 }
               }
             }
@@ -307,8 +301,7 @@ describe('VideoEvents', () => {
       data: {
         videoExpandEventCreate: {
           id: 'uuid',
-          __typename: 'VideoExpandEvent',
-          position: 0.56
+          __typename: 'VideoExpandEvent'
         }
       }
     }))
@@ -352,8 +345,7 @@ describe('VideoEvents', () => {
               data: {
                 videoExpandEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoExpandEvent',
-                  position: 0.56
+                  __typename: 'VideoExpandEvent'
                 }
               }
             }
@@ -386,8 +378,7 @@ describe('VideoEvents', () => {
       data: {
         videoCollapseEventCreate: {
           id: 'uuid',
-          __typename: 'VideoCollapseEvent',
-          position: 0
+          __typename: 'VideoCollapseEvent'
         }
       }
     }))
@@ -406,8 +397,7 @@ describe('VideoEvents', () => {
               data: {
                 videoExpandEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoExpandEvent',
-                  position: 0.78
+                  __typename: 'VideoExpandEvent'
                 }
               }
             }
@@ -449,8 +439,7 @@ describe('VideoEvents', () => {
               data: {
                 videoExpandEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoExpandEvent',
-                  position: 0.78
+                  __typename: 'VideoExpandEvent'
                 }
               }
             }
@@ -466,8 +455,7 @@ describe('VideoEvents', () => {
               data: {
                 videoCollapseEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoCollapseEvent',
-                  position: 0
+                  __typename: 'VideoCollapseEvent'
                 }
               }
             }
@@ -501,8 +489,7 @@ describe('VideoEvents', () => {
       data: {
         videoStartEventCreate: {
           id: 'uuid',
-          __typename: 'VideoStartEvent',
-          position: 0
+          __typename: 'VideoStartEvent'
         }
       }
     }))
@@ -511,9 +498,7 @@ describe('VideoEvents', () => {
       data: {
         videoProgressEventCreate: {
           id: 'uuid',
-          __typename: 'VideoProgressEvent',
-          position: 25,
-          progress: 25
+          __typename: 'VideoProgressEvent'
         }
       }
     }))
@@ -522,9 +507,7 @@ describe('VideoEvents', () => {
       data: {
         videoProgressEventCreate: {
           id: 'uuid',
-          __typename: 'VideoProgressEvent',
-          position: 50,
-          progress: 50
+          __typename: 'VideoProgressEvent'
         }
       }
     }))
@@ -533,9 +516,7 @@ describe('VideoEvents', () => {
       data: {
         videoProgressEventCreate: {
           id: 'uuid',
-          __typename: 'VideoProgressEvent',
-          position: 75,
-          progress: 75
+          __typename: 'VideoProgressEvent'
         }
       }
     }))
@@ -544,8 +525,7 @@ describe('VideoEvents', () => {
       data: {
         videoCompleteEventCreate: {
           id: 'uuid',
-          __typename: 'VideoCompleteEvent',
-          position: 100
+          __typename: 'VideoCompleteEvent'
         }
       }
     }))
@@ -665,8 +645,7 @@ describe('VideoEvents', () => {
               data: {
                 videoStartEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoStartEvent',
-                  position: 0
+                  __typename: 'VideoStartEvent'
                 }
               }
             }
@@ -687,9 +666,7 @@ describe('VideoEvents', () => {
               data: {
                 videoProgressEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoProgressEvent',
-                  position: 25,
-                  progress: 25
+                  __typename: 'VideoProgressEvent'
                 }
               }
             }
@@ -710,9 +687,7 @@ describe('VideoEvents', () => {
               data: {
                 videoProgressEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoProgressEvent',
-                  position: 50,
-                  progress: 50
+                  __typename: 'VideoProgressEvent'
                 }
               }
             }
@@ -733,9 +708,7 @@ describe('VideoEvents', () => {
               data: {
                 videoProgressEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoProgressEvent',
-                  position: 75,
-                  progress: 75
+                  __typename: 'VideoProgressEvent'
                 }
               }
             }
@@ -751,8 +724,7 @@ describe('VideoEvents', () => {
               data: {
                 videoCompleteEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoCompleteEvent',
-                  position: 100
+                  __typename: 'VideoCompleteEvent'
                 }
               }
             }

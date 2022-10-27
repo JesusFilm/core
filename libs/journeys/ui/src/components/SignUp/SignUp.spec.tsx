@@ -170,10 +170,7 @@ describe('SignUp', () => {
         result: {
           data: {
             signUpSubmissionEventCreate: {
-              id: 'uuid',
-              blockId: 'signUp0.id',
-              name: 'Anon',
-              email: '123abc@gmail.com'
+              id: 'uuid'
             }
           }
         }
@@ -240,10 +237,7 @@ describe('SignUp', () => {
     const result = jest.fn(() => ({
       data: {
         signUpSubmissionEventCreate: {
-          id: 'uuid',
-          blockId: 'signUp0.id',
-          name: 'Anon',
-          email: '123abc@gmail.com'
+          id: 'uuid'
         }
       }
     }))
@@ -317,10 +311,7 @@ describe('SignUp', () => {
         result: {
           data: {
             signUpSubmissionEventCreate: {
-              id: 'uuid',
-              blockId: 'signUp0.id',
-              name: 'Anon',
-              email: '123abc@gmail.com'
+              id: 'uuid'
             }
           }
         }

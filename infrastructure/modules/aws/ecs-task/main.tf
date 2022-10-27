@@ -2,6 +2,30 @@ resource "aws_cloudwatch_log_group" "ecs_cw_log_group" {
   name = "${var.service_config.name}-${var.env}-logs"
 }
 
+resource "aws_ecr_repository" "ecr_repository" {
+  name = "jfp-${var.service_config.name}-${var.env}"
+}
+
+resource "aws_ecr_lifecycle_policy" "ecr_policy" {
+  repository = aws_ecr_repository.ecr_repository.name
+
+  policy = jsonencode({
+    rules = [
+      {
+        rulePriority = 1
+        description  = "Expire more than 10 images"
+        selection = {
+          tagStatus   = "any"
+          countType   = "imageCountMoreThan"
+          countNumber = 10
+        }
+        action = {
+          type = "expire"
+        }
+      }
+    ]
+  })
+}
 resource "aws_ssm_parameter" "parameters" {
   for_each = toset(var.environment_variables)
 
@@ -26,7 +50,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   container_definitions = jsonencode([
     {
       name      = var.service_config.name
-      image     = "${local.account}.dkr.ecr.${local.region}.amazonaws.com/jfp-${var.service_config.name}:${var.service_config.image_tag}"
+      image     = "${aws_ecr_repository.ecr_repository.repository_url}:latest"
       cpu       = var.service_config.cpu
       memory    = var.service_config.memory
       essential = true
@@ -46,7 +70,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         logDriver = "awslogs"
         options = {
           awslogs-group         = "${var.service_config.name}-${var.env}-logs"
-          awslogs-region        = local.region
+          awslogs-region        = data.aws_region.current.name
           awslogs-stream-prefix = "core"
         }
       }
@@ -101,7 +125,6 @@ resource "aws_ecs_service" "ecs_service" {
   }
 
   lifecycle {
-    ignore_changes        = [task_definition, desired_count]
     create_before_destroy = true
   }
 }

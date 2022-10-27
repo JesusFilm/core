@@ -12,7 +12,6 @@ import { RadioQuestionSubmissionEventCreateInput } from "./globalTypes";
 export interface RadioQuestionSubmissionEventCreate_radioQuestionSubmissionEventCreate {
   __typename: "RadioQuestionSubmissionEvent";
   id: string;
-  radioOptionBlockId: string;
 }
 
 export interface RadioQuestionSubmissionEventCreate {
