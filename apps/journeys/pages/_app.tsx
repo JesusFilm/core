@@ -12,16 +12,17 @@ import { SnackbarProvider } from 'notistack'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { appWithTranslation } from 'next-i18next'
 import { useTranslation } from 'react-i18next'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { useApollo } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
 import i18nConfig from '../next-i18next.config'
 
-const clientSideEmotionCache = createEmotionCache()
-
 function JourneysApp({
   Component,
   pageProps,
-  emotionCache = clientSideEmotionCache
+  emotionCache = createEmotionCache({
+    rtl: getJourneyRTL(pageProps.journey).rtl
+  })
 }: AppProps & { emotionCache?: EmotionCache }): ReactElement {
   const { t } = useTranslation('apps-journeys')
   useEffect(() => {

@@ -1,20 +1,27 @@
 import { Parameters } from '@storybook/react'
 import { ReactElement, ReactNode } from 'react'
+import { CacheProvider } from '@emotion/react'
+import { createEmotionCache } from '../../../src/libs/createEmotionCache'
 import { ThemeProvider } from '../../components/ThemeProvider'
 import { globalTypes } from '../../../../../../.storybook/preview'
 import { getTheme, ThemeMode, ThemeName } from '../../libs/themes'
 
-const themeMode = globalTypes.theme.toolbar.items
+const storybookMode = globalTypes.theme.toolbar.items
+type StorybookThemeMode = typeof storybookMode[number]
 
 interface ThemeDecoratorProps extends Pick<Parameters, 'layout'> {
-  mode: typeof themeMode[number]
+  mode: StorybookThemeMode
   children: ReactNode
+  rtl?: boolean
+  locale?: string
 }
 
 const ThemeContainer = ({
   mode,
   layout = 'padded',
-  children
+  children,
+  rtl = false,
+  locale = ''
 }: ThemeDecoratorProps): ReactElement => {
   const theme = getTheme({
     themeName: ThemeName.base,
@@ -29,13 +36,15 @@ const ThemeContainer = ({
         minHeight: '50vh',
         overflow: 'auto',
         padding: layout === 'padded' ? '1.5rem' : '0px',
-        background: theme.palette.background.default,
-        color: theme.palette.text.primary
+        background: `${theme.palette.background.default}`,
+        color: `${theme.palette.text.primary}`
       }}
     >
       <ThemeProvider
         themeName={ThemeName.base}
         themeMode={ThemeMode[mode as ThemeMode]}
+        rtl={rtl}
+        locale={locale}
       >
         {children}
       </ThemeProvider>
@@ -46,8 +55,12 @@ const ThemeContainer = ({
 export const ThemeDecorator = ({
   mode,
   layout,
-  children
+  children,
+  rtl = false,
+  locale = ''
 }: ThemeDecoratorProps): ReactElement => {
+  const storybookEmotionCache = createEmotionCache({ rtl, prepend: false })
+
   switch (mode) {
     case 'all':
       return (
@@ -59,13 +72,26 @@ export const ThemeDecorator = ({
             margin: layout === 'fullscreen' ? '0px' : '-16px',
             overflowX: 'hidden'
           }}
+          dir={rtl ? 'rtl' : 'ltr'}
         >
-          <ThemeContainer mode="light" layout={layout}>
-            {children}
-          </ThemeContainer>
-          <ThemeContainer mode="dark" layout={layout}>
-            {children}
-          </ThemeContainer>
+          <CacheProvider value={storybookEmotionCache}>
+            <ThemeContainer
+              mode="light"
+              layout={layout}
+              rtl={rtl}
+              locale={locale}
+            >
+              {children}
+            </ThemeContainer>
+            <ThemeContainer
+              mode="dark"
+              layout={layout}
+              rtl={rtl}
+              locale={locale}
+            >
+              {children}
+            </ThemeContainer>
+          </CacheProvider>
         </div>
       )
     default:
@@ -74,13 +100,18 @@ export const ThemeDecorator = ({
           style={{
             height: 'calc(100vh - 2rem)'
           }}
+          dir={rtl ? 'rtl' : 'ltr'}
         >
-          <ThemeProvider
-            themeName={ThemeName.base}
-            themeMode={ThemeMode[mode as ThemeMode]}
-          >
-            {children}
-          </ThemeProvider>
+          <CacheProvider value={storybookEmotionCache}>
+            <ThemeProvider
+              themeName={ThemeName.base}
+              themeMode={ThemeMode[mode as ThemeMode]}
+              rtl={rtl}
+              locale={locale}
+            >
+              {children}
+            </ThemeProvider>
+          </CacheProvider>
         </div>
       )
   }

@@ -12,7 +12,7 @@ import { ThemeProvider } from '../src/components/ThemeProvider'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
 
 initAuth()
-const clientSideEmotionCache = createEmotionCache()
+const clientSideEmotionCache = createEmotionCache({})
 
 export default function WatchAdminApp({
   Component,

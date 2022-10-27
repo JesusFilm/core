@@ -1,19 +1,40 @@
 import { deepmerge } from '@mui/utils'
-import { createTheme } from '@mui/material/styles'
+import { createTheme, Theme, ThemeOptions } from '@mui/material/styles'
 import { baseColorsLight, baseColorsDark } from './tokens/colors'
 import { baseBreakpoints } from './tokens/breakpoints'
 import { baseComponents } from './tokens/components'
 import { baseSpacing } from './tokens/spacing'
-import { baseTypography } from './tokens/typography'
+import {
+  baseTypography as baseTypographyLTR,
+  baseTypographyArabic,
+  baseTypographyUrdu
+} from './tokens/typography'
 
-export const baseTheme = {
-  ...baseTypography,
-  ...baseSpacing,
-  ...baseComponents,
-  ...baseBreakpoints
+export const baseTheme = (
+  rtl: boolean,
+  locale: string
+): Pick<
+  ThemeOptions,
+  'spacing' | 'components' | 'breakpoints' | 'typography' | 'direction'
+> => {
+  const baseTypography = rtl
+    ? locale === 'ur'
+      ? baseTypographyUrdu
+      : baseTypographyArabic
+    : baseTypographyLTR
+
+  return {
+    ...baseSpacing,
+    ...baseComponents,
+    ...baseBreakpoints,
+    ...baseTypography,
+    direction: rtl ? 'rtl' : 'ltr'
+  }
 }
 
 // DeepMerge no longer needed - remove or keep just in case for future?
-export const baseLight = createTheme(deepmerge(baseColorsLight(), baseTheme))
+export const getBaseLight = (rtl: boolean, locale: string): Theme =>
+  createTheme(deepmerge(baseColorsLight(), baseTheme(rtl, locale)))
 
-export const baseDark = createTheme(deepmerge(baseColorsDark(), baseTheme))
+export const getBaseDark = (rtl: boolean, locale: string): Theme =>
+  createTheme(deepmerge(baseColorsDark(), baseTheme(rtl, locale)))

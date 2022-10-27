@@ -6,7 +6,7 @@ describe('FramePortal', () => {
   it('should render children in iframe', async () => {
     const { baseElement } = render(
       <div>
-        <FramePortal>
+        <FramePortal dir="ltr">
           <Typography sx={{ fontFamily: 'sans-serif' }}>hello world</Typography>
         </FramePortal>
       </div>

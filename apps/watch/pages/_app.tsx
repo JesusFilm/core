@@ -15,7 +15,7 @@ import '../public/fonts/fonts.css'
 import '../public/styles/carousel.css'
 import '../public/styles/video-js.css'
 
-const clientSideEmotionCache = createEmotionCache()
+const clientSideEmotionCache = createEmotionCache({})
 
 export default function WatchApp({
   Component,
