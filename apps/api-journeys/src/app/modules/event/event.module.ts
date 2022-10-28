@@ -19,11 +19,6 @@ import {
   VideoProgressEventResolver
 } from './video/video.resolver'
 import { StepViewEventResolver } from './step/step.resolver'
-import {
-  TemplateLibraryViewEventResolver,
-  TemplateUseEventResolver,
-  TemplatePreviewEventResolver
-} from './template/template.resolver'
 
 @Module({
   imports: [DatabaseModule],
@@ -44,10 +39,7 @@ import {
     VideoCompleteEventResolver,
     VideoCollapseEventResolver,
     VideoExpandEventResolver,
-    VideoProgressEventResolver,
-    TemplateLibraryViewEventResolver,
-    TemplateUseEventResolver,
-    TemplatePreviewEventResolver
+    VideoProgressEventResolver
   ],
   exports: [EventService]
 })
