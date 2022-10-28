@@ -9,11 +9,17 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import ListIcon from '@mui/icons-material/List'
+import Box from '@mui/material/Box'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import Image from 'next/image'
 
 import logo from '../../../public/taskbar-icon.svg'
 import { useLanguage } from '../../libs/languageContext/LanguageContext'
-import { HeaderMenuPanel } from './HeaderMenuPanel'
 
 export function Header(): ReactElement {
   const languageContext = useLanguage()
@@ -24,7 +30,7 @@ export function Header(): ReactElement {
     right: false
   })
 
-  const toggleMenuPanel =
+  const toggleDrawer =
     (anchor: string, open: boolean) => (event: KeyboardEvent | MouseEvent) => {
       if (
         event.type === 'keydown' &&
@@ -36,6 +42,28 @@ export function Header(): ReactElement {
 
       setState({ ...state, [anchor]: open })
     }
+
+  const menuItems = ['About', 'Contact', 'Collections']
+
+  const list = (): ReactElement => (
+    <Box
+      sx={{ width: '240px' }}
+      role="presentation"
+      onClick={() => toggleDrawer('left', false)}
+      onKeyDown={() => toggleDrawer('left', false)}
+    >
+      <List>
+        {menuItems.map((text, index) => (
+          <ListItem button key={text}>
+            <ListItemIcon>
+              {index % 2 === 0 ? <PlayArrowIcon /> : <ListIcon />}
+            </ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  )
 
   // update header to design
   return (
@@ -51,7 +79,7 @@ export function Header(): ReactElement {
             <IconButton
               color="inherit"
               edge="start"
-              onClick={toggleMenuPanel('left', true)}
+              onClick={toggleDrawer('left', true)}
             >
               <SearchIcon />
             </IconButton>
@@ -66,7 +94,7 @@ export function Header(): ReactElement {
               color="inherit"
               aria-label="open drawer"
               edge="start"
-              onClick={toggleMenuPanel('left', true)}
+              onClick={toggleDrawer('left', true)}
             >
               <MenuIcon />
             </IconButton>
@@ -76,10 +104,10 @@ export function Header(): ReactElement {
       <SwipeableDrawer
         anchor="right"
         open={state.left}
-        onClose={toggleMenuPanel('left', false)}
-        onOpen={toggleMenuPanel('left', true)}
+        onClose={toggleDrawer('left', false)}
+        onOpen={toggleDrawer('left', true)}
       >
-        <HeaderMenuPanel toggleMenuPanel={toggleMenuPanel} />
+        {list()}
       </SwipeableDrawer>
     </>
   )
