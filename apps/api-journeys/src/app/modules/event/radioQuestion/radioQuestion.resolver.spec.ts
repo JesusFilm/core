@@ -2,12 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
-import {
-  RadioOptionBlock,
-  RadioQuestionBlock,
-  RadioQuestionSubmissionEventCreateInput,
-  StepBlock
-} from '../../../__generated__/graphql'
+import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/graphql'
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion.resolver'
 
 describe('RadioQuestionSubmissionEventResolver', () => {
@@ -66,25 +61,25 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     radioOptionBlockId: 'radioOptionBlock.id'
   }
 
-  const radioQuestionBlock: RadioQuestionBlock = {
+  const radioQuestionBlock = {
     id: 'block.id',
     journeyId: 'journey.id',
     parentBlockId: 'parent.id'
   }
 
-  const untitledStepNameBlock: RadioQuestionBlock = {
+  const untitledStepNameBlock = {
     ...radioQuestionBlock,
     id: 'untitledStepNameBlock.id',
     parentBlockId: 'untitled'
   }
 
-  const radioOptionBlock: RadioOptionBlock = {
+  const radioOptionBlock = {
     id: 'radioOptionBlock.id',
     label: 'option',
     journeyId: 'journey.id'
   }
 
-  const stepBlock: StepBlock = {
+  const stepBlock = {
     __typename: 'StepBlock',
     id: 'stepBlock.id',
     parentBlockId: null,

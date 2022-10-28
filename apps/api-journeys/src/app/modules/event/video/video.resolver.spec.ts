@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
-import { StepBlock, VideoBlockSource } from '../../../__generated__/graphql'
+import { VideoBlockSource } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
 import {
@@ -48,7 +48,7 @@ describe('VideoResolver', () => {
     videoVariantLanguageId: '539'
   }
 
-  const stepBlock: StepBlock = {
+  const stepBlock = {
     __typename: 'StepBlock',
     id: 'stepBlock.id',
     parentBlockId: null,

@@ -17,7 +17,7 @@ import {
   VideoCollapseEventCreateInput,
   VideoProgressEvent,
   VideoProgressEventCreateInput,
-  VideoBlock
+  VideoBlockSource
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
@@ -35,7 +35,13 @@ export class VideoStartEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoStartEventCreateInput
   ): Promise<VideoStartEvent> {
-    const block: VideoBlock = await this.blockService.get(input.blockId)
+    const block: {
+      journeyId: string
+      source: VideoBlockSource
+      title: string
+      videoId: string
+      videoVariantLanguageId: string
+    } = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
     const stepBlock = await this.eventService.getParentStepBlockByBlockId(
@@ -74,7 +80,13 @@ export class VideoPlayEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoPlayEventCreateInput
   ): Promise<VideoPlayEvent> {
-    const block: VideoBlock = await this.blockService.get(input.blockId)
+    const block: {
+      journeyId: string
+      source: VideoBlockSource
+      title: string
+      videoId: string
+      videoVariantLanguageId: string
+    } = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
     const stepBlock = await this.eventService.getParentStepBlockByBlockId(
@@ -113,7 +125,13 @@ export class VideoPuaseEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoPauseEventCreateInput
   ): Promise<VideoPauseEvent> {
-    const block: VideoBlock = await this.blockService.get(input.blockId)
+    const block: {
+      journeyId: string
+      source: VideoBlockSource
+      title: string
+      videoId: string
+      videoVariantLanguageId: string
+    } = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
     const stepBlock = await this.eventService.getParentStepBlockByBlockId(
@@ -152,7 +170,13 @@ export class VideoCompleteEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoCompleteEventCreateInput
   ): Promise<VideoCompleteEvent> {
-    const block: VideoBlock = await this.blockService.get(input.blockId)
+    const block: {
+      journeyId: string
+      source: VideoBlockSource
+      title: string
+      videoId: string
+      videoVariantLanguageId: string
+    } = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
     const stepBlock = await this.eventService.getParentStepBlockByBlockId(
@@ -191,7 +215,13 @@ export class VideoExpandEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoExpandEventCreateInput
   ): Promise<VideoExpandEvent> {
-    const block: VideoBlock = await this.blockService.get(input.blockId)
+    const block: {
+      journeyId: string
+      source: VideoBlockSource
+      title: string
+      videoId: string
+      videoVariantLanguageId: string
+    } = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
     const stepBlock = await this.eventService.getParentStepBlockByBlockId(
@@ -230,7 +260,13 @@ export class VideoCollapseEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoCollapseEventCreateInput
   ): Promise<VideoCollapseEvent> {
-    const block: VideoBlock = await this.blockService.get(input.blockId)
+    const block: {
+      journeyId: string
+      source: VideoBlockSource
+      title: string
+      videoId: string
+      videoVariantLanguageId: string
+    } = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
     const stepBlock = await this.eventService.getParentStepBlockByBlockId(
@@ -269,7 +305,13 @@ export class VideoProgressEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: VideoProgressEventCreateInput
   ): Promise<VideoProgressEvent> {
-    const block: VideoBlock = await this.blockService.get(input.blockId)
+    const block: {
+      journeyId: string
+      source: VideoBlockSource
+      title: string
+      videoId: string
+      videoVariantLanguageId: string
+    } = await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
     const stepBlock = await this.eventService.getParentStepBlockByBlockId(

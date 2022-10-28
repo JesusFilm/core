@@ -2,11 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
-import {
-  StepBlock,
-  TextResponseBlock,
-  TextResponseSubmissionEventCreateInput
-} from '../../../__generated__/graphql'
+import { TextResponseSubmissionEventCreateInput } from '../../../__generated__/graphql'
 import { TextResponseSubmissionEventResolver } from './textResponse.resolver'
 
 describe('TextResponseEventResolver', () => {
@@ -64,20 +60,20 @@ describe('TextResponseEventResolver', () => {
     value: 'My response'
   }
 
-  const block: TextResponseBlock = {
+  const block = {
     id: 'block.id',
     journeyId: 'journey.id',
     parentBlockId: 'parent.id',
     label: 'textResponse.label'
   }
 
-  const untitledStepNameBlock: TextResponseBlock = {
+  const untitledStepNameBlock = {
     ...block,
     id: 'untitledStepNameBlock.id',
     parentBlockId: 'untitled'
   }
 
-  const stepBlock: StepBlock = {
+  const stepBlock = {
     __typename: 'StepBlock',
     id: 'stepBlock.id',
     parentBlockId: null,

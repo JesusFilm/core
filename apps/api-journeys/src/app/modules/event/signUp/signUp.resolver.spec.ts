@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
-import { StepBlock } from '../../../__generated__/graphql'
 import { VisitorService } from '../../visitor/visitor.service'
 import { SignUpSubmissionEventResolver } from './signUp.resolver'
 
@@ -54,7 +53,7 @@ describe('SignUpEventResolver', () => {
     parentBlockId: 'parent.id'
   }
 
-  const stepBlock: StepBlock = {
+  const stepBlock = {
     __typename: 'StepBlock',
     id: 'stepBlock.id',
     parentBlockId: null,

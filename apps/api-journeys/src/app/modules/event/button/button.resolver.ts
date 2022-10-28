@@ -6,8 +6,7 @@ import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   ButtonClickEvent,
-  ButtonClickEventCreateInput,
-  ButtonBlock
+  ButtonClickEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
@@ -25,7 +24,8 @@ export class ButtonClickEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: ButtonClickEventCreateInput
   ): Promise<ButtonClickEvent> {
-    const block: ButtonBlock = await this.blockService.get(input.blockId)
+    const block: { journeyId: string; parentBlockId: string; label: string } =
+      await this.blockService.get(input.blockId)
     const journeyId = block.journeyId
 
     const stepBlock = await this.eventService.getParentStepBlockByBlockId(

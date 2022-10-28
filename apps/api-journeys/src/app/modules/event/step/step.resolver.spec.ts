@@ -2,10 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
-import {
-  StepBlock,
-  StepViewEventCreateInput
-} from '../../../__generated__/graphql'
+import { StepViewEventCreateInput } from '../../../__generated__/graphql'
 import { StepViewEventResolver } from './step.resolver'
 
 describe('StepViewEventResolver', () => {
@@ -60,14 +57,14 @@ describe('StepViewEventResolver', () => {
     blockId: 'untitledStepNameBlock.id'
   }
 
-  const block: StepBlock = {
+  const block = {
     id: 'block.id',
     journeyId: 'journey.id',
     parentBlockId: 'parent.id',
     locked: false
   }
 
-  const untitledStepNameBlock: StepBlock = {
+  const untitledStepNameBlock = {
     ...block,
     id: 'untitledStepNameBlock.id',
     parentBlockId: 'untitled',
@@ -95,7 +92,7 @@ describe('StepViewEventResolver', () => {
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId,
-        stepId: input.blockId, // TODO
+        stepId: input.blockId,
         label: null,
         value: 'header'
       })
@@ -110,7 +107,7 @@ describe('StepViewEventResolver', () => {
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
         journeyId: untitledStepNameBlock.journeyId,
-        stepId: untitledStepInput.blockId, // TODO
+        stepId: untitledStepInput.blockId,
         label: null,
         value: 'Untitled'
       })

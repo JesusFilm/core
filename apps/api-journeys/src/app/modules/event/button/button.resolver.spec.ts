@@ -1,11 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
-import {
-  ButtonClickEventCreateInput,
-  ButtonBlock,
-  StepBlock
-} from '../../../__generated__/graphql'
+import { ButtonClickEventCreateInput } from '../../../__generated__/graphql'
 import { BlockService } from '../../block/block.service'
 import { ButtonClickEventResolver } from './button.resolver'
 
@@ -62,20 +58,20 @@ describe('ButtonClickEventResolver', () => {
     blockId: 'untitledStepNameBlock.id'
   }
 
-  const block: ButtonBlock = {
+  const block = {
     id: 'block.id',
     journeyId: 'journey.id',
     parentBlockId: 'parent.id',
     label: 'label'
   }
 
-  const untitledStepNameBlock: ButtonBlock = {
+  const untitledStepNameBlock = {
     ...block,
     id: 'untitledStepNameBlock.id',
     parentBlockId: 'untitled'
   }
 
-  const stepBlock: StepBlock = {
+  const stepBlock = {
     __typename: 'StepBlock',
     id: 'stepBlock.id',
     parentBlockId: null,
