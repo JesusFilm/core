@@ -555,7 +555,6 @@ export class Journey {
     seoTitle?: Nullable<string>;
     seoDescription?: Nullable<string>;
     template?: Nullable<boolean>;
-    teamId?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 

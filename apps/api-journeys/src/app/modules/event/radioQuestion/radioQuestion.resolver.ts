@@ -43,6 +43,7 @@ export class RadioQuestionSubmissionEventResolver {
       journeyId
     )
 
+    // TODO: fix
     const stepName: string =
       block.parentBlockId != null
         ? await this.eventService.getStepHeader(block.parentBlockId)

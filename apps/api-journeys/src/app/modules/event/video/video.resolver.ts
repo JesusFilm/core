@@ -47,8 +47,6 @@ export class VideoStartEventResolver {
       journeyId
     )
 
-    const videoTitle = block.title ?? 'Untitled'
-
     return await this.eventService.save({
       ...input,
       __typename: 'VideoStartEvent',
@@ -57,7 +55,7 @@ export class VideoStartEventResolver {
       journeyId,
       stepId: stepBlock?.id,
       label: block.source,
-      value: videoTitle,
+      value: block.title,
       videoId: block.videoId,
       videoVariantLanguageId: block.videoVariantLanguageId
     })
@@ -88,8 +86,6 @@ export class VideoPlayEventResolver {
       journeyId
     )
 
-    const videoTitle = block.title ?? 'Untitled'
-
     return await this.eventService.save({
       ...input,
       __typename: 'VideoPlayEvent',
@@ -98,7 +94,7 @@ export class VideoPlayEventResolver {
       journeyId,
       stepId: stepBlock?.id,
       label: block.source,
-      value: videoTitle,
+      value: block.title,
       videoId: block.videoId,
       videoVariantLanguageId: block.videoVariantLanguageId
     })
@@ -129,8 +125,6 @@ export class VideoPuaseEventResolver {
       journeyId
     )
 
-    const videoTitle = block.title ?? 'Untitled'
-
     return await this.eventService.save({
       ...input,
       __typename: 'VideoPauseEvent',
@@ -139,7 +133,7 @@ export class VideoPuaseEventResolver {
       journeyId,
       stepId: stepBlock?.id,
       label: block.source,
-      value: videoTitle,
+      value: block.title,
       videoId: block.videoId,
       videoVariantLanguageId: block.videoVariantLanguageId
     })
@@ -170,8 +164,6 @@ export class VideoCompleteEventResolver {
       journeyId
     )
 
-    const videoTitle = block.title ?? 'Untitled'
-
     return await this.eventService.save({
       ...input,
       __typename: 'VideoCompleteEvent',
@@ -180,7 +172,7 @@ export class VideoCompleteEventResolver {
       journeyId,
       stepId: stepBlock?.id,
       label: block.source,
-      value: videoTitle,
+      value: block.title,
       videoId: block.videoId,
       videoVariantLanguageId: block.videoVariantLanguageId
     })
@@ -211,8 +203,6 @@ export class VideoExpandEventResolver {
       journeyId
     )
 
-    const videoTitle = block.title ?? 'Untitled'
-
     return await this.eventService.save({
       ...input,
       __typename: 'VideoExpandEvent',
@@ -221,7 +211,7 @@ export class VideoExpandEventResolver {
       journeyId,
       stepId: stepBlock?.id,
       label: block.source,
-      value: videoTitle,
+      value: block.title,
       videoId: block.videoId,
       videoVariantLanguageId: block.videoVariantLanguageId
     })
@@ -252,8 +242,6 @@ export class VideoCollapseEventResolver {
       journeyId
     )
 
-    const videoTitle = block.title ?? 'Untitled'
-
     return await this.eventService.save({
       ...input,
       __typename: 'VideoCollapseEvent',
@@ -262,7 +250,7 @@ export class VideoCollapseEventResolver {
       journeyId,
       stepId: stepBlock?.id,
       label: block.source,
-      value: videoTitle,
+      value: block.title,
       videoId: block.videoId,
       videoVariantLanguageId: block.videoVariantLanguageId
     })
@@ -293,8 +281,6 @@ export class VideoProgressEventResolver {
       journeyId
     )
 
-    const videoTitle = block.title ?? 'Untitled'
-
     return await this.eventService.save({
       ...input,
       __typename: 'VideoProgressEvent',
@@ -303,7 +289,7 @@ export class VideoProgressEventResolver {
       journeyId,
       stepId: stepBlock?.id,
       label: block.source,
-      value: videoTitle,
+      value: block.title,
       videoId: block.videoId,
       videoVariantLanguageId: block.videoVariantLanguageId
     })

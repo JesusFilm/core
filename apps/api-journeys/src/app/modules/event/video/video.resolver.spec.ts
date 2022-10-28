@@ -87,7 +87,7 @@ describe('VideoResolver', () => {
         journeyId: block.journeyId,
         stepId: stepBlock.id,
         label: block.source,
-        value: block.title, // TODO
+        value: block.title,
         videoId: block.videoId,
         videoVariantLanguageId: block.videoVariantLanguageId
       })
@@ -119,7 +119,7 @@ describe('VideoResolver', () => {
         journeyId: block.journeyId,
         stepId: stepBlock.id,
         label: block.source,
-        value: block.title, // TODO
+        value: block.title,
         videoId: block.videoId,
         videoVariantLanguageId: block.videoVariantLanguageId
       })
@@ -151,7 +151,7 @@ describe('VideoResolver', () => {
         journeyId: block.journeyId,
         stepId: stepBlock.id,
         label: block.source,
-        value: block.title, // TODO
+        value: block.title,
         videoId: block.videoId,
         videoVariantLanguageId: block.videoVariantLanguageId
       })
@@ -185,7 +185,7 @@ describe('VideoResolver', () => {
         journeyId: block.journeyId,
         stepId: stepBlock.id,
         label: block.source,
-        value: block.title, // TODO
+        value: block.title,
         videoId: block.videoId,
         videoVariantLanguageId: block.videoVariantLanguageId
       })
@@ -217,7 +217,7 @@ describe('VideoResolver', () => {
         journeyId: block.journeyId,
         stepId: stepBlock.id,
         label: block.source,
-        value: block.title, // TODO
+        value: block.title,
         videoId: block.videoId,
         videoVariantLanguageId: block.videoVariantLanguageId
       })
@@ -251,7 +251,7 @@ describe('VideoResolver', () => {
         journeyId: block.journeyId,
         stepId: stepBlock.id,
         label: block.source,
-        value: block.title, // TODO
+        value: block.title,
         videoId: block.videoId,
         videoVariantLanguageId: block.videoVariantLanguageId
       })
@@ -286,7 +286,7 @@ describe('VideoResolver', () => {
         journeyId: block.journeyId,
         stepId: stepBlock.id,
         label: block.source,
-        value: block.title, // TODO
+        value: block.title,
         videoId: block.videoId,
         videoVariantLanguageId: block.videoVariantLanguageId
       })

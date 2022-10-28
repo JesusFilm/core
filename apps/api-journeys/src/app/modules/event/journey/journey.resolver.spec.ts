@@ -62,7 +62,7 @@ describe('JourneyViewEventResolver', () => {
   }
 
   const journey = {
-    language: 'english',
+    languageId: 'english',
     teamId: 'team.id'
   }
 
@@ -107,7 +107,7 @@ describe('JourneyViewEventResolver', () => {
         __typename: 'JourneyViewEvent',
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        language: journey.language
+        languageId: journey.languageId
       })
 
       expect(vService.save).not.toHaveBeenCalled()

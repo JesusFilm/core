@@ -6,7 +6,6 @@ import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { orderBy, findIndex } from 'lodash'
 import {
   TypographyBlock,
-  CardBlock,
   StepBlock,
   TypographyVariant,
   Visitor
@@ -18,22 +17,34 @@ export class EventService extends BaseService {
 
   @KeyAsId()
   async getStepHeader(parentBlockId: string): Promise<string> {
-    const cardBlock: CardBlock = await (
+    let block = await (
       await this.db.query(aql`
-      FOR block in blocks
-        FILTER block._key == ${parentBlockId}
+        FOR block IN blocks
+          FILTER block._key == ${parentBlockId}
           LIMIT 1
-          return block
+          RETURN block
     `)
     ).next()
 
+    while (block.__typename !== 'CardBlock' && block.parentBlockId != null) {
+      const res = await this.db.query(aql`
+          FOR block IN blocks
+            FILTER block._key == ${block.parentBlockId}
+            LIMIT 1
+            RETURN block
+        `)
+      block = await res.next()
+    }
+
+    const cardBlock = block.__typename === 'CardBlock' ? block : null
+
     const typogsArray: TypographyBlock[] = await (
       await this.db.query(aql`
-    FOR block in blocks
-      FILTER block.__typename == "TypgoraphyBlock"
-      AND block.parentBlockId == ${cardBlock.id} 
-        return block
-    `)
+      FOR block in blocks
+        FILTER block.parentBlockId == ${cardBlock._key}
+        AND block.__typename == "TypographyBlock"
+        RETURN block
+      `)
     ).all()
 
     const typog =

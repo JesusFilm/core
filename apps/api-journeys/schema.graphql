@@ -91,7 +91,6 @@ type Journey @key(fields: "id") {
   seoTitle: String
   seoDescription: String
   template: Boolean
-  teamId: String
   userJourneys: [UserJourney!]
 }
 

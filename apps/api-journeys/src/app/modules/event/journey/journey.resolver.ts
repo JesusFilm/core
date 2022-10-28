@@ -8,8 +8,7 @@ import { CurrentUserInfo } from '@core/nest/decorators/CurrentUserInfo'
 import { v4 as uuidv4 } from 'uuid'
 import {
   JourneyViewEvent,
-  JourneyViewEventCreateInput,
-  Journey
+  JourneyViewEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { JourneyService } from '../../journey/journey.service'
@@ -35,7 +34,8 @@ export class JourneyViewEventResolver {
       input.journeyId
     )
 
-    const journey: Journey = await this.journeyService.get(input.journeyId)
+    const journey: { teamId: string; languageId: string } =
+      await this.journeyService.get(input.journeyId)
 
     if (visitor == null) {
       visitor = await this.visitorService.save({
@@ -57,7 +57,7 @@ export class JourneyViewEventResolver {
       __typename: 'JourneyViewEvent',
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
-      language: journey.language
+      languageId: journey.languageId
     })
   }
 }
