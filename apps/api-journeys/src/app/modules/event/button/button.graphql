@@ -10,6 +10,19 @@ type ButtonClickEvent implements Event {
   id: ID!
 }
 
+input ChatOpenedEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+}
+
+type ChatOpenedEvent implements Event {
+  id: ID!
+}
+
 extend type Mutation {
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
+  chatOpenedEventCreate(input: ChatOpenedEventCreateInput!): ChatOpenedEvent!
 }

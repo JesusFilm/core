@@ -1,11 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
-import { ButtonClickEventCreateInput } from '../../../__generated__/graphql'
+import {
+  ButtonClickEventCreateInput,
+  ChatOpenedEventCreateInput
+} from '../../../__generated__/graphql'
 import { BlockService } from '../../block/block.service'
-import { ButtonClickEventResolver } from './button.resolver'
+import {
+  ButtonClickEventResolver,
+  ChatOpenedEventResolver
+} from './button.resolver'
 
-describe('ButtonClickEventResolver', () => {
+describe('Button', () => {
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
@@ -14,8 +20,6 @@ describe('ButtonClickEventResolver', () => {
   afterAll(() => {
     jest.useRealTimers()
   })
-
-  let resolver: ButtonClickEventResolver
 
   const eventService = {
     provide: EventService,
@@ -43,6 +47,8 @@ describe('ButtonClickEventResolver', () => {
             return block
           case untitledStepNameBlock.id:
             return untitledStepNameBlock
+          case buttonBlock.id:
+            return buttonBlock
         }
       })
     })
@@ -58,6 +64,11 @@ describe('ButtonClickEventResolver', () => {
     blockId: 'untitledStepNameBlock.id'
   }
 
+  const linkButtonInput: ChatOpenedEventCreateInput = {
+    id: '3',
+    blockId: 'buttonBlock.id'
+  }
+
   const block = {
     id: 'block.id',
     journeyId: 'journey.id',
@@ -69,6 +80,14 @@ describe('ButtonClickEventResolver', () => {
     ...block,
     id: 'untitledStepNameBlock.id',
     parentBlockId: 'untitled'
+  }
+
+  const buttonBlock = {
+    ...block,
+    id: 'buttonBlock.id',
+    action: {
+      url: 'https://fb.me/some-user'
+    }
   }
 
   const stepBlock = {
@@ -84,40 +103,71 @@ describe('ButtonClickEventResolver', () => {
   }
 
   const visitorWithId = keyAsId(visitor)
+  describe('ButtonClickEventResolver', () => {
+    let resolver: ButtonClickEventResolver
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [ButtonClickEventResolver, eventService, blockService]
-    }).compile()
-    resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
-  })
-
-  describe('buttonClickEventCreate', () => {
-    it('returns ButtonClickEvent', async () => {
-      expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
-        ...input,
-        __typename: 'ButtonClickEvent',
-        visitorId: visitorWithId.id,
-        createdAt: new Date().toISOString(),
-        journeyId: block.journeyId,
-        stepId: stepBlock.id,
-        label: 'header',
-        value: block.label
-      })
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [ButtonClickEventResolver, eventService, blockService]
+      }).compile()
+      resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
     })
 
-    it('should return event with untitled label', async () => {
-      expect(
-        await resolver.buttonClickEventCreate('userId', untitledStepInput)
-      ).toEqual({
-        ...untitledStepInput,
-        __typename: 'ButtonClickEvent',
-        visitorId: visitorWithId.id,
-        createdAt: new Date().toISOString(),
-        journeyId: untitledStepNameBlock.journeyId,
-        stepId: stepBlock.id,
-        label: 'Untitled',
-        value: untitledStepNameBlock.label
+    describe('buttonClickEventCreate', () => {
+      it('returns ButtonClickEvent', async () => {
+        expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
+          ...input,
+          __typename: 'ButtonClickEvent',
+          visitorId: visitorWithId.id,
+          createdAt: new Date().toISOString(),
+          journeyId: block.journeyId,
+          stepId: stepBlock.id,
+          label: 'header',
+          value: block.label
+        })
+      })
+
+      it('should return event with untitled label', async () => {
+        expect(
+          await resolver.buttonClickEventCreate('userId', untitledStepInput)
+        ).toEqual({
+          ...untitledStepInput,
+          __typename: 'ButtonClickEvent',
+          visitorId: visitorWithId.id,
+          createdAt: new Date().toISOString(),
+          journeyId: untitledStepNameBlock.journeyId,
+          stepId: stepBlock.id,
+          label: 'Untitled',
+          value: untitledStepNameBlock.label
+        })
+      })
+    })
+  })
+
+  describe('ChatOpenedEventResolver', () => {
+    let resolver: ChatOpenedEventResolver
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [ChatOpenedEventResolver, eventService, blockService]
+      }).compile()
+      resolver = module.get<ChatOpenedEventResolver>(ChatOpenedEventResolver)
+    })
+
+    describe('chatOpenedEventCreate', () => {
+      it('returns ChatOpenedEvent', async () => {
+        expect(
+          await resolver.chatOpenedEventCreate('userId', linkButtonInput)
+        ).toEqual({
+          ...linkButtonInput,
+          __typename: 'ChatOpenedEvent',
+          visitorId: visitorWithId.id,
+          createdAt: new Date().toISOString(),
+          journeyId: buttonBlock.journeyId,
+          stepId: stepBlock.id,
+          label: null,
+          value: 'Facebook'
+        })
       })
     })
   })

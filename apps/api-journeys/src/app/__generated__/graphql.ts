@@ -367,6 +367,11 @@ export class ButtonClickEventCreateInput {
     blockId: string;
 }
 
+export class ChatOpenedEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+}
+
 export class JourneyViewEventCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -726,6 +731,11 @@ export class ButtonClickEvent implements Event {
     id: string;
 }
 
+export class ChatOpenedEvent implements Event {
+    __typename?: 'ChatOpenedEvent';
+    id: string;
+}
+
 export class JourneyViewEvent implements Event {
     __typename?: 'JourneyViewEvent';
     id: string;
@@ -934,6 +944,8 @@ export abstract class IMutation {
     abstract videoBlockUpdate(id: string, journeyId: string, input: VideoBlockUpdateInput): VideoBlock | Promise<VideoBlock>;
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
+
+    abstract chatOpenedEventCreate(input: ChatOpenedEventCreateInput): ChatOpenedEvent | Promise<ChatOpenedEvent>;
 
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): JourneyViewEvent | Promise<JourneyViewEvent>;
 
