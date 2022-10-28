@@ -21,7 +21,14 @@ describe('SignUpEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((input) => input),
-      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId),
+      getVisitorByUserIdAndJourneyId: jest.fn((userId) => {
+        switch (userId) {
+          case visitor.userId:
+            return visitorWithId
+          case newVisitor.userId:
+            return newVisitorWithId
+        }
+      }),
       getParentStepBlockByBlockId: jest.fn(() => stepBlock)
     })
   }
@@ -43,8 +50,8 @@ describe('SignUpEventResolver', () => {
   const input = {
     id: '1',
     blockId: '2',
-    name: 'Robert Smith',
-    email: 'robert.smith@jesusfilm.org'
+    name: 'John Doe',
+    email: 'john.doe@jesusfilm.org'
   }
 
   const block = {
@@ -63,11 +70,18 @@ describe('SignUpEventResolver', () => {
 
   const visitor = {
     _key: 'visitor.id',
+    userId: 'user.id',
     name: 'Robert Smith',
     email: 'robert.smith@jesusfilm.org'
   }
 
+  const newVisitor = {
+    _key: 'newVisitor.id',
+    userId: 'newUser.id'
+  }
+
   const visitorWithId = keyAsId(visitor)
+  const newVisitorWithId = keyAsId(newVisitor)
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -87,7 +101,7 @@ describe('SignUpEventResolver', () => {
   describe('signUpSubmissionEventCreate', () => {
     it('returns SignUpSubmissionEvent', async () => {
       expect(
-        await resolver.signUpSubmissionEventCreate('userId', input)
+        await resolver.signUpSubmissionEventCreate('user.id', input)
       ).toEqual({
         id: input.id,
         blockId: input.blockId,
@@ -104,17 +118,11 @@ describe('SignUpEventResolver', () => {
     })
 
     it('should update visitor with name and email if they have if input is different', async () => {
-      const updateInput = {
-        ...input,
-        name: 'John Doe',
-        email: 'john@email.com'
-      }
+      await resolver.signUpSubmissionEventCreate('newUser.id', input)
 
-      await resolver.signUpSubmissionEventCreate('userId', updateInput)
-
-      expect(vService.update).toHaveBeenCalledWith(visitorWithId.id, {
-        name: updateInput.name,
-        email: updateInput.email
+      expect(vService.update).toHaveBeenCalledWith(newVisitorWithId.id, {
+        name: input.name,
+        email: input.email
       })
     })
   })

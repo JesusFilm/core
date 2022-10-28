@@ -40,15 +40,9 @@ export class SignUpSubmissionEventResolver {
       journeyId
     )
 
-    if (visitor.name !== input.name || visitor.email !== input.email) {
-      const name =
-        visitor.name == null || visitor.name !== input.name
-          ? input.name
-          : visitor.name
-      const email =
-        visitor.email == null || visitor.email !== input.email
-          ? input.email
-          : visitor.email
+    if (visitor.name == null || visitor.email == null) {
+      const name = visitor.name == null ? input.name : visitor.name
+      const email = visitor.email == null ? input.email : visitor.email
       await this.visitorSerice.update(visitor.id, {
         name,
         email
