@@ -13,6 +13,8 @@ import {
 import { Countries } from '../../src/components/Countries/Countries'
 import { GetCountry } from '../../__generated__/GetCountry'
 import { routeParser } from '../../src/libs/routeParser/routeParser'
+import { Header } from '../../src/components/Header'
+import { Footer } from '../../src/components/Footer/Footer'
 
 export const GET_COUNTRY = gql`
   query GetCountry($id: ID!, $languageId: ID) {
@@ -56,31 +58,32 @@ function CountriesPage(): ReactElement {
   })
   return (
     <LanguageProvider>
-      <PageWrapper />
-      {data?.country != null && (
-        <Box>
-          <Typography variant="h2">{data.country.name[0]?.value}</Typography>
-          <Stack direction="row" justifyContent="space-between">
-            <Typography variant="caption">
-              Part of {data.country.continent[0]?.value}
-            </Typography>
-            <Typography variant="caption">
-              Population:{' '}
-              {data.country.population.toLocaleString(
-                router.locale ?? router.defaultLocale
-              )}
-            </Typography>
-          </Stack>
-          <Countries
-            coordinates={[data.country.latitude, data.country.longitude]}
-            zoom={5}
-          />
-          <Typography variant="h3">Available Languages</Typography>
-          {data.country.languages
-            .map((language) => language.name[0]?.value)
-            .join(', ')}
-        </Box>
-      )}
+      <PageWrapper header={<Header />} footer={<Footer />}>
+        {data?.country != null && (
+          <Box>
+            <Typography variant="h2">{data.country.name[0]?.value}</Typography>
+            <Stack direction="row" justifyContent="space-between">
+              <Typography variant="caption">
+                Part of {data.country.continent[0]?.value}
+              </Typography>
+              <Typography variant="caption">
+                Population:{' '}
+                {data.country.population.toLocaleString(
+                  router.locale ?? router.defaultLocale
+                )}
+              </Typography>
+            </Stack>
+            <Countries
+              coordinates={[data.country.latitude, data.country.longitude]}
+              zoom={5}
+            />
+            <Typography variant="h3">Available Languages</Typography>
+            {data.country.languages
+              .map((language) => language.name[0]?.value)
+              .join(', ')}
+          </Box>
+        )}
+      </PageWrapper>
     </LanguageProvider>
   )
 }
