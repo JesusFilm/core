@@ -7,7 +7,9 @@ import Error from 'next/error'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { secondsToMinutes } from '@core/shared/ui/timeFormat'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import Container from '@mui/material/Container'
 import Button from '@mui/material/Button'
 import PlayArrow from '@mui/icons-material/PlayArrow'
@@ -29,7 +31,6 @@ import {
   useLanguage
 } from '../src/libs/languageContext/LanguageContext'
 import { PageWrapper } from '../src/components/PageWrapper'
-import { darkTheme } from '../src/components/ThemeProvider/ThemeProvider'
 import { VideoListCarousel } from '../src/components/Videos/VideoList/Carousel/VideoListCarousel'
 import { Footer } from '../src/components/Footer/Footer'
 
@@ -217,157 +218,159 @@ export default function SeoFriendly(): ReactElement {
       {loading && <CircularProgress />}
       {data?.video != null && (
         <>
-          <Box
-            sx={{
-              backgroundImage: `url(${data.video.image as string})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              height: 776
-            }}
+          <ThemeProvider
+            nested
+            themeName={ThemeName.website}
+            themeMode={ThemeMode.dark}
           >
-            {data.video.variant?.hls != null && (
-              <video
-                ref={videoRef}
-                className="vjs-jfp video-js vjs-fill"
-                style={{
-                  alignSelf: 'center'
-                }}
-                playsInline
-              >
-                <source
-                  src={data.video.variant.hls}
-                  type="application/x-mpegURL"
-                />
-              </video>
-            )}
-            {!isPlaying && (
-              <>
-                <Container
-                  maxWidth="xl"
+            <Box
+              sx={{
+                backgroundImage: `url(${data.video.image as string})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                height: 776
+              }}
+            >
+              {data.video.variant?.hls != null && (
+                <video
+                  ref={videoRef}
+                  className="vjs-jfp video-js vjs-fill"
                   style={{
-                    position: 'absolute',
-                    top: 350,
-                    paddingLeft: 100,
-                    margin: 0,
-                    textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)'
+                    alignSelf: 'center'
                   }}
+                  playsInline
                 >
-                  <Typography
-                    variant="h2"
-                    sx={{
-                      maxWidth: '600px',
-                      color: darkTheme.palette.text.primary
+                  <source
+                    src={data.video.variant.hls}
+                    type="application/x-mpegURL"
+                  />
+                </video>
+              )}
+              {!isPlaying && (
+                <>
+                  <Container
+                    maxWidth="xl"
+                    style={{
+                      position: 'absolute',
+                      top: 350,
+                      paddingLeft: 100,
+                      margin: 0,
+                      textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)'
                     }}
                   >
-                    {data.video.title[0]?.value}
-                  </Typography>
-                </Container>
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: '520px'
-                  }}
-                  width="100%"
-                  height="133px"
-                >
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    px="100px"
-                    sx={{ color: darkTheme.palette.text.primary }}
+                    <Typography
+                      variant="h2"
+                      sx={{
+                        maxWidth: '600px'
+                      }}
+                    >
+                      {data.video.title[0]?.value}
+                    </Typography>
+                  </Container>
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: '520px'
+                    }}
+                    width="100%"
+                    height="133px"
                   >
-                    <Stack direction="row" spacing="20px">
-                      {data?.video.type === VideoType.playlist && (
-                        <Typography variant="subtitle1">
-                          {data.video.episodes.length} episodes
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      px="100px"
+                    >
+                      <Stack direction="row" spacing="20px">
+                        {data?.video.type === VideoType.playlist && (
+                          <Typography variant="subtitle1">
+                            {data.video.episodes.length} episodes
+                          </Typography>
+                        )}
+                        {data?.video.type !== VideoType.playlist && (
+                          <>
+                            <Button
+                              size="large"
+                              variant="contained"
+                              sx={{ height: 71, fontSize: '24px' }}
+                              onClick={playVideo}
+                            >
+                              <PlayArrow />
+                              &nbsp; Play Video
+                            </Button>
+                            <Stack height="71px" direction="row">
+                              <AccessTime sx={{ paddingTop: '23px' }} />
+                              <Typography
+                                variant="body2"
+                                sx={{ lineHeight: '71px', paddingLeft: '10px' }}
+                              >
+                                {secondsToMinutes(data.video.variant.duration)}{' '}
+                                min
+                              </Typography>
+                            </Stack>
+                            <Circle
+                              sx={{ fontSize: '10px', paddingTop: '30px' }}
+                            />
+                            <Stack height="71px" direction="row">
+                              <Subtitles sx={{ paddingTop: '23px' }} />
+                              <Typography
+                                variant="body2"
+                                sx={{ lineHeight: '71px', paddingLeft: '10px' }}
+                              >
+                                Subs
+                              </Typography>
+                            </Stack>
+                          </>
+                        )}
+                      </Stack>
+                      <Stack height="71px" direction="row">
+                        <Translate sx={{ paddingTop: '23px' }} />
+                        <Typography
+                          variant="body1"
+                          sx={{ paddingLeft: '10px', lineHeight: '71px' }}
+                        >
+                          {audioLanguageData?.language.name[0]?.value} +{' '}
+                          {data.video.variantLanguages.length - 1} Additional
+                          Languages
                         </Typography>
-                      )}
-                      {data?.video.type !== VideoType.playlist && (
-                        <>
-                          <Button
-                            size="large"
-                            variant="contained"
-                            sx={{ height: 71, fontSize: '24px' }}
-                            onClick={playVideo}
-                          >
-                            <PlayArrow />
-                            &nbsp; Play Video
-                          </Button>
-                          <Stack height="71px" direction="row">
-                            <AccessTime sx={{ paddingTop: '23px' }} />
-                            <Typography
-                              variant="body2"
-                              sx={{ lineHeight: '71px', paddingLeft: '10px' }}
-                            >
-                              {secondsToMinutes(data.video.variant.duration)}{' '}
-                              min
-                            </Typography>
-                          </Stack>
-                          <Circle
-                            sx={{ fontSize: '10px', paddingTop: '30px' }}
-                          />
-                          <Stack height="71px" direction="row">
-                            <Subtitles sx={{ paddingTop: '23px' }} />
-                            <Typography
-                              variant="body2"
-                              sx={{ lineHeight: '71px', paddingLeft: '10px' }}
-                            >
-                              Subs
-                            </Typography>
-                          </Stack>
-                        </>
-                      )}
+                      </Stack>
                     </Stack>
-                    <Stack height="71px" direction="row">
-                      <Translate sx={{ paddingTop: '23px' }} />
-                      <Typography
-                        variant="body1"
-                        sx={{ paddingLeft: '10px', lineHeight: '71px' }}
-                      >
-                        {audioLanguageData?.language.name[0]?.value} +{' '}
-                        {data.video.variantLanguages.length - 1} Additional
-                        Languages
-                      </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      backgroundColor: 'rgba(18, 17, 17, 0.25)',
+                      position: 'absolute',
+                      top: '643px'
+                    }}
+                    width="100%"
+                    height="133px"
+                  >
+                    <Stack pt="34px" mx="100px" width="100%" direction="row">
+                      <Stack direction="row">&nbsp;</Stack>
                     </Stack>
-                  </Stack>
-                </Box>
-                <Box
-                  sx={{
-                    backgroundColor: 'rgba(18, 17, 17, 0.25)',
-                    position: 'absolute',
-                    top: '643px'
-                  }}
-                  width="100%"
-                  height="133px"
-                >
-                  <Stack pt="34px" mx="100px" width="100%" direction="row">
-                    <Stack direction="row">&nbsp;</Stack>
-                  </Stack>
-                </Box>
-              </>
-            )}
-          </Box>
-          <Box
-            sx={{
-              paddingTop: '20px',
-              paddingX: '100px',
-              bgcolor: darkTheme.palette.background.default,
-              color: darkTheme.palette.text.primary
-            }}
-          >
-            {data.video.episodes.length > 0 && (
-              <VideoListCarousel
-                videos={data.video.episodes}
-                routePrefix={routes.join('/')}
-              />
-            )}
-            {siblingsData?.episodes?.length > 0 && (
-              <VideoListCarousel
-                videos={siblingsData.episodes}
-                routePrefix={siblingRoute(routes).join('/')}
-              />
-            )}
-          </Box>
+                  </Box>
+                </>
+              )}
+            </Box>
+            <Box
+              sx={{
+                paddingTop: '20px',
+                paddingX: '100px'
+              }}
+            >
+              {data.video.episodes.length > 0 && (
+                <VideoListCarousel
+                  videos={data.video.episodes}
+                  routePrefix={routes.join('/')}
+                />
+              )}
+              {siblingsData?.episodes?.length > 0 && (
+                <VideoListCarousel
+                  videos={siblingsData.episodes}
+                  routePrefix={siblingRoute(routes).join('/')}
+                />
+              )}
+            </Box>
+          </ThemeProvider>
           <Container
             style={{
               paddingLeft: 100,

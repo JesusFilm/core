@@ -10,10 +10,10 @@ import PlayArrow from '@mui/icons-material/PlayArrow'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import Link from 'next/link'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 
 import { VideoType } from '../../../../../__generated__/globalTypes'
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
-import { theme } from '../../../ThemeProvider/ThemeProvider'
 
 interface VideoListCardProps {
   video?: GetVideos_videos
@@ -26,6 +26,8 @@ export function VideoListCard({
   disabled = false,
   routePrefix = undefined
 }: VideoListCardProps): ReactElement {
+  const theme = useTheme()
+
   return (
     <>
       <Card sx={{ width: 338, height: 140, my: 5, mr: 20, mb: '14px', mt: 0 }}>

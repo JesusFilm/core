@@ -7,6 +7,7 @@ export const sharedUiConfig = {
   decorators: [
     (Story: Story, context: StoryContext) => (
       <ThemeDecorator
+        name={context.parameters.themeName}
         mode={context.parameters.theme ?? context.globals.theme}
         layout={context.parameters.layout}
         rtl={context.parameters.rtl}

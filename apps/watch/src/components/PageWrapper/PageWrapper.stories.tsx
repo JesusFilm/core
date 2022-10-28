@@ -1,8 +1,9 @@
 import { Meta, Story } from '@storybook/react'
-import { ThemeProvider } from '../ThemeProvider'
+import { watchConfig } from '../../libs/storybook'
 import { PageWrapper } from '.'
 
 const PageWrapperStory = {
+  ...watchConfig,
   component: PageWrapper,
   title: 'Watch/PageWrapper',
   parameters: {
@@ -10,11 +11,7 @@ const PageWrapperStory = {
   }
 }
 
-const Template: Story = () => (
-  <ThemeProvider>
-    <PageWrapper />
-  </ThemeProvider>
-)
+const Template: Story = () => <PageWrapper />
 
 export const Default = Template.bind({})
 

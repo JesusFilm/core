@@ -2,12 +2,11 @@ import { ReactElement } from 'react'
 import Grid from '@mui/material/Grid'
 import AddRounded from '@mui/icons-material/AddRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles'
 import { deepmerge } from '@mui/utils'
 
 import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
 import { VideoListCard } from '../Card/VideoListCard'
-import { theme } from '../../../ThemeProvider/ThemeProvider'
 
 interface VideoListGridProps {
   videos: GetVideos_videos[]
@@ -26,6 +25,7 @@ export function VideoListGrid({
   videos,
   routePrefix = undefined
 }: VideoListGridProps): ReactElement {
+  const theme = useTheme()
   const gridTheme = createTheme(
     deepmerge(theme, {
       breakpoints: {
