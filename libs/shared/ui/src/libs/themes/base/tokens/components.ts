@@ -122,15 +122,6 @@ export const baseComponents: Required<Pick<ThemeOptions, 'components'>> = {
           }
         }
       }
-    },
-    MuiButtonBase: {
-      styleOverrides: {
-        root: {
-          '&.MuiTab-root': {
-            backgroundColor: 'blue'
-          }
-        }
-      }
     }
   }
 }

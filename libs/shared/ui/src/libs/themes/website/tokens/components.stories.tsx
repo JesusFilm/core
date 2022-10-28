@@ -10,8 +10,8 @@ import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import MenuItem from '@mui/material/MenuItem'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
+import { TabPanel, tabA11yProps } from '../../../../components/TabPanel'
 import { simpleComponentConfig } from '../../../simpleComponentConfig'
 import { ThemeName } from '../..'
 
