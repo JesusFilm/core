@@ -9,7 +9,7 @@ describe('VideosGrid', () => {
     const { getByText, getAllByTestId } = render(
       <VideosGrid videos={[]} loading onLoadMore={onLoadMore} />
     )
-    expect(getAllByTestId('video-list-grid-placeholder')).toHaveLength(8)
+    expect(getAllByTestId('videos-grid-placeholder')).toHaveLength(8)
     expect(getByText('Loading...')).toBeInTheDocument()
   })
   it('should request more videos', async () => {

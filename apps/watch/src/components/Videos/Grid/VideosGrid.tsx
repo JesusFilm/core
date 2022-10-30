@@ -41,7 +41,7 @@ export function VideosGrid({
   )
   return (
     <ThemeProvider theme={gridTheme}>
-      <Grid container spacing={4} data-testid="video-list-grid">
+      <Grid container spacing={4} data-testid="videos-grid">
         {(videos.length ?? 0) > 0 &&
           videos.map((video, index) => (
             <Grid item key={index} md={4} sm={6} xs={12} lg={3}>
@@ -56,7 +56,7 @@ export function VideosGrid({
               md={4}
               sm={6}
               xs={12}
-              data-testid="video-list-grid-placeholder"
+              data-testid="videos-grid-placeholder"
               mr="16px"
             >
               <VideoCard />

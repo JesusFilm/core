@@ -9,7 +9,7 @@ describe('VideosList', () => {
     const { getByText, getAllByTestId } = render(
       <VideosList videos={[]} loading onLoadMore={onLoadMore} isEnd={false} />
     )
-    expect(getAllByTestId('video-list-placeholder')).toHaveLength(8)
+    expect(getAllByTestId('videos-list-placeholder')).toHaveLength(8)
     expect(getByText('Loading...')).toBeInTheDocument()
   })
   it('should request more videos', async () => {
@@ -34,7 +34,7 @@ describe('VideosList', () => {
         isEnd={false}
       />
     )
-    expect(getAllByTestId('video-list-image-small')[0]).toBeInTheDocument()
+    expect(getAllByTestId('videos-list-image-small')[0]).toBeInTheDocument()
   })
   it('should render large variant', () => {
     const { getAllByTestId } = render(
@@ -46,6 +46,6 @@ describe('VideosList', () => {
         isEnd={false}
       />
     )
-    expect(getAllByTestId('video-list-image-large')[0]).toBeInTheDocument()
+    expect(getAllByTestId('videos-list-image-large')[0]).toBeInTheDocument()
   })
 })

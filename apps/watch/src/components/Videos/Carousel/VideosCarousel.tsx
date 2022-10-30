@@ -41,7 +41,7 @@ export function VideosCarousel({
 }: VideosCarouselProps): ReactElement {
   const [isMoving, setIsMoving] = useState(false)
   return (
-    <Box data-testid="video-carousel">
+    <Box data-testid="videos-carousel">
       <Carousel
         responsive={responsive}
         autoPlay={false}
