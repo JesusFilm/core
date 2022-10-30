@@ -15,7 +15,7 @@ import Place from '@mui/icons-material/Place'
 import Link from 'next/link'
 import Chip from '@mui/material/Chip'
 
-import { VideoList } from '../src/components/Videos/VideoList/VideoList'
+import { Videos } from '../src/components/Videos/Videos'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { GetVideoTag } from '../__generated__/GetVideoTag'
 import { VideoType } from '../__generated__/globalTypes'
@@ -170,7 +170,7 @@ function VideoPage(): ReactElement {
               <Typography variant="h4">Series</Typography>
               <Button variant="outlined">See All</Button>
             </Stack>
-            <VideoList
+            <Videos
               filter={{
                 availableVariantLanguageIds: ['529'],
                 types: [VideoType.playlist]
@@ -198,7 +198,7 @@ function VideoPage(): ReactElement {
               </Typography>
               <Button variant="outlined">See All</Button>
             </Stack>
-            <VideoList
+            <Videos
               filter={{
                 availableVariantLanguageIds: ['529'],
                 types: [VideoType.playlist, VideoType.standalone],

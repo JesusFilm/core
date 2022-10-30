@@ -4,10 +4,10 @@ import AddRounded from '@mui/icons-material/AddRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { deepmerge } from '@mui/utils'
-import { getTheme, ThemeName, ThemeMode } from '@core/shared/ui/themes'
 
 import { GetVideos_videos } from '../../../../__generated__/GetVideos'
-import { VideoCard } from '../../Video/Card/VideoCard'
+import { VideoCard } from '../../Video'
+import { theme } from '../../ThemeProvider/ThemeProvider'
 
 interface VideosGridProps {
   videos: GetVideos_videos[]
@@ -27,24 +27,21 @@ export function VideosGrid({
   routePrefix = undefined
 }: VideosGridProps): ReactElement {
   const gridTheme = createTheme(
-    deepmerge(
-      getTheme({ themeName: ThemeName.website, themeMode: ThemeMode.light }),
-      {
-        breakpoints: {
-          values: {
-            xs: 0,
-            sm: 725,
-            md: 1043,
-            lg: 1450,
-            xl: 1765
-          }
+    deepmerge(theme, {
+      breakpoints: {
+        values: {
+          xs: 0,
+          sm: 725,
+          md: 1043,
+          lg: 1450,
+          xl: 1765
         }
       }
-    )
+    })
   )
   return (
     <ThemeProvider theme={gridTheme}>
-      <Grid container spacing={4} data-testid="video-grid">
+      <Grid container spacing={4} data-testid="video-list-grid">
         {(videos.length ?? 0) > 0 &&
           videos.map((video, index) => (
             <Grid item key={index} md={4} sm={6} xs={12} lg={3}>
@@ -59,7 +56,7 @@ export function VideosGrid({
               md={4}
               sm={6}
               xs={12}
-              data-testid="video-grid-placeholder"
+              data-testid="video-list-grid-placeholder"
               mr="16px"
             >
               <VideoCard />
