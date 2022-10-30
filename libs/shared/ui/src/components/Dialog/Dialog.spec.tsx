@@ -1,10 +1,10 @@
 import Typography from '@mui/material/Typography'
 import { fireEvent } from '@storybook/testing-library'
 import { render } from '@testing-library/react'
-import { Dialog, DialogProps } from './Dialog'
+import { Dialog } from './Dialog'
 
 describe('Dialog', () => {
-  const dialogProps: DialogProps = {
+  const dialogProps: Parameters<typeof Dialog>[0] = {
     open: true,
     handleClose: jest.fn(),
     dialogTitle: {
@@ -30,7 +30,7 @@ describe('Dialog', () => {
   })
 
   it('should show the custom labels for buttons', () => {
-    const input: DialogProps = {
+    const input: Parameters<typeof Dialog>[0] = {
       ...dialogProps,
       dialogAction: {
         onSubmit: jest.fn(),
@@ -44,7 +44,7 @@ describe('Dialog', () => {
   })
 
   it('should close the dialog when cancel is clicked', () => {
-    const input: DialogProps = {
+    const input: Parameters<typeof Dialog>[0] = {
       ...dialogProps,
       dialogAction: {
         onSubmit: jest.fn(),
