@@ -395,6 +395,12 @@ export class StepViewEventCreateInput {
     blockId: string;
 }
 
+export class StepNextEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    nextStepId: string;
+}
+
 export class TextResponseSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -756,6 +762,11 @@ export class StepViewEvent implements Event {
     id: string;
 }
 
+export class StepNextEvent implements Event {
+    __typename?: 'StepNextEvent';
+    id: string;
+}
+
 export class TextResponseSubmissionEvent implements Event {
     __typename?: 'TextResponseSubmissionEvent';
     id: string;
@@ -954,6 +965,8 @@ export abstract class IMutation {
     abstract signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput): SignUpSubmissionEvent | Promise<SignUpSubmissionEvent>;
 
     abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
+
+    abstract stepNextEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
 
     abstract textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput): TextResponseSubmissionEvent | Promise<TextResponseSubmissionEvent>;
 
