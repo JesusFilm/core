@@ -218,39 +218,39 @@ export default function SeoFriendly(): ReactElement {
       {loading && <CircularProgress />}
       {data?.video != null && (
         <>
-          <ThemeProvider
-            nested
-            themeName={ThemeName.website}
-            themeMode={ThemeMode.dark}
+          <Box
+            sx={{
+              backgroundImage: `url(${data.video.image as string})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              height: 776
+            }}
           >
-            <Box
-              sx={{
-                backgroundImage: `url(${data.video.image as string})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                height: 776
-              }}
+            {data.video.variant?.hls != null && (
+              <video
+                ref={videoRef}
+                className="vjs-jfp video-js vjs-fill"
+                style={{
+                  alignSelf: 'center'
+                }}
+                playsInline
+              >
+                <source
+                  src={data.video.variant.hls}
+                  type="application/x-mpegURL"
+                />
+              </video>
+            )}
+            <ThemeProvider
+              nested
+              themeName={ThemeName.website}
+              themeMode={ThemeMode.dark}
             >
-              {data.video.variant?.hls != null && (
-                <video
-                  ref={videoRef}
-                  className="vjs-jfp video-js vjs-fill"
-                  style={{
-                    alignSelf: 'center'
-                  }}
-                  playsInline
-                >
-                  <source
-                    src={data.video.variant.hls}
-                    type="application/x-mpegURL"
-                  />
-                </video>
-              )}
               {!isPlaying && (
                 <>
                   <Container
                     maxWidth="xl"
-                    style={{
+                    sx={{
                       position: 'absolute',
                       top: 350,
                       paddingLeft: 100,
@@ -261,6 +261,7 @@ export default function SeoFriendly(): ReactElement {
                     <Typography
                       variant="h2"
                       sx={{
+                        color: 'text.primary',
                         maxWidth: '600px'
                       }}
                     >
@@ -301,7 +302,11 @@ export default function SeoFriendly(): ReactElement {
                               <AccessTime sx={{ paddingTop: '23px' }} />
                               <Typography
                                 variant="body2"
-                                sx={{ lineHeight: '71px', paddingLeft: '10px' }}
+                                sx={{
+                                  lineHeight: '71px',
+                                  paddingLeft: '10px',
+                                  color: 'text.primary'
+                                }}
                               >
                                 {secondsToMinutes(data.video.variant.duration)}{' '}
                                 min
@@ -350,27 +355,27 @@ export default function SeoFriendly(): ReactElement {
                   </Box>
                 </>
               )}
-            </Box>
-            <Box
-              sx={{
-                paddingTop: '20px',
-                paddingX: '100px'
-              }}
-            >
-              {data.video.episodes.length > 0 && (
-                <VideoListCarousel
-                  videos={data.video.episodes}
-                  routePrefix={routes.join('/')}
-                />
-              )}
-              {siblingsData?.episodes?.length > 0 && (
-                <VideoListCarousel
-                  videos={siblingsData.episodes}
-                  routePrefix={siblingRoute(routes).join('/')}
-                />
-              )}
-            </Box>
-          </ThemeProvider>
+            </ThemeProvider>
+          </Box>
+          <Box
+            sx={{
+              paddingTop: '20px',
+              paddingX: '100px'
+            }}
+          >
+            {data.video.episodes.length > 0 && (
+              <VideoListCarousel
+                videos={data.video.episodes}
+                routePrefix={routes.join('/')}
+              />
+            )}
+            {siblingsData?.episodes?.length > 0 && (
+              <VideoListCarousel
+                videos={siblingsData.episodes}
+                routePrefix={siblingRoute(routes).join('/')}
+              />
+            )}
+          </Box>
           <Container
             style={{
               paddingLeft: 100,

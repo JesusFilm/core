@@ -3,6 +3,7 @@ import {
   // SimplePaletteColorOptions
 } from '@mui/material/styles'
 
+// TODO: clarify palette with UX
 const palette = {
   0: '#FFFFFF'
 }
@@ -50,7 +51,7 @@ export const websiteColorsDark: Required<Pick<ThemeOptions, 'palette'>> = {
     error: websiteColorsLight.palette.error,
     // TODO: Check this
     text: {
-      primary: '#FFFFFF',
+      primary: palette[0],
       secondary: '#4D4D4D',
       disabled: '#4D4D4D'
     }
