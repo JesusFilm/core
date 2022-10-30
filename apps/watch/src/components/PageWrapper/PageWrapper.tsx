@@ -21,7 +21,7 @@ export function PageWrapper({
         flexDirection: 'column',
         height: '100vh',
         width: '100%',
-        backgroundColor: isStory ? '#EFEFEF' : ''
+        backgroundColor: isStory ? '#c9cfd4' : ''
       }}
     >
       <Box
