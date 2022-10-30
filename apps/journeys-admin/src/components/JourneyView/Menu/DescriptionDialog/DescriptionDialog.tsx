@@ -1,11 +1,11 @@
 import { ReactElement } from 'react'
 import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneyDescUpdate } from '../../../../../__generated__/JourneyDescUpdate'
-import { Dialog } from '../../../Dialog'
 
 export const JOURNEY_DESC_UPDATE = gql`
   mutation JourneyDescUpdate($id: ID!, $input: JourneyUpdateInput!) {

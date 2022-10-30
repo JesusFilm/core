@@ -1,4 +1,4 @@
-import { Story, Meta } from '@storybook/react'
+import { ComponentStory, Meta } from '@storybook/react'
 import { noop } from 'lodash'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
@@ -6,16 +6,19 @@ import MuiListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Skeleton from '@mui/material/Skeleton'
 import ListItemText from '@mui/material/ListItemText'
-import { journeysAdminConfig } from '../../libs/storybook'
-import { Dialog, DialogProps } from './Dialog'
+import { sharedUiConfig } from '../../libs/sharedUiConfig'
+import { Dialog } from './Dialog'
 
 const DialogStory = {
-  ...journeysAdminConfig,
+  ...sharedUiConfig,
   component: Dialog,
-  title: 'Journeys-Admin/Dialog'
+  title: 'Shared-ui/Dialog',
+  parameters: {
+    theme: 'light'
+  }
 }
 
-const Template: Story = ({ ...args }: DialogProps) => {
+const Template: ComponentStory<typeof Dialog> = ({ ...args }) => {
   return <Dialog {...args} />
 }
 
@@ -152,7 +155,7 @@ FullScreen.args = {
     closeButton: true
   },
   fullscreen: true,
-  dividers: true,
+  divider: true,
   children: (
     <>
       <Typography>This is the content for the information</Typography>
