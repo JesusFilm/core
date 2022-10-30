@@ -3,21 +3,21 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
-import { VideoList, GET_VIDEOS } from './VideoList'
+import { Videos, GET_VIDEOS } from './Videos'
 import { videos } from './testData'
 
-describe('VideoList', () => {
+describe('Videos', () => {
   describe('carousel', () => {
     it('should render a carousel', async () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <VideoList
+          <Videos
             filter={{ availableVariantLanguageIds: ['529'] }}
             layout="carousel"
           />
         </MockedProvider>
       )
-      expect(getByTestId('video-list-carousel')).toBeInTheDocument()
+      expect(getByTestId('videos-carousel')).toBeInTheDocument()
     })
     // skip this test becuase the carousel doesn't render properly in jest
     xit('should display videos', async () => {
@@ -44,7 +44,7 @@ describe('VideoList', () => {
             }
           ]}
         >
-          <VideoList
+          <Videos
             filter={{ availableVariantLanguageIds: ['529'] }}
             layout="carousel"
           />
@@ -60,13 +60,13 @@ describe('VideoList', () => {
     it('should render a grid', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <VideoList
+          <Videos
             filter={{ availableVariantLanguageIds: ['529'] }}
             layout="grid"
           />
         </MockedProvider>
       )
-      expect(getByTestId('video-list-grid')).toBeInTheDocument()
+      expect(getByTestId('videos-grid')).toBeInTheDocument()
     })
     it('should display videos', async () => {
       const { getByText } = render(
@@ -92,7 +92,7 @@ describe('VideoList', () => {
             }
           ]}
         >
-          <VideoList
+          <Videos
             filter={{ availableVariantLanguageIds: ['529'] }}
             layout="grid"
           />
@@ -108,13 +108,13 @@ describe('VideoList', () => {
     it('should render a list', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <VideoList
+          <Videos
             filter={{ availableVariantLanguageIds: ['529'] }}
             layout="list"
           />
         </MockedProvider>
       )
-      expect(getByTestId('video-list-list')).toBeInTheDocument()
+      expect(getByTestId('videos-list')).toBeInTheDocument()
     })
     it('should display videos', async () => {
       const { getByText } = render(
@@ -140,7 +140,7 @@ describe('VideoList', () => {
             }
           ]}
         >
-          <VideoList
+          <Videos
             filter={{ availableVariantLanguageIds: ['529'] }}
             layout="list"
           />

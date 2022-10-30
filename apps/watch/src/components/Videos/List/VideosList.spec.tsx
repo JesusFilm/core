@@ -1,25 +1,20 @@
 import { fireEvent, render } from '@testing-library/react'
 
 import { videos } from '../testData'
-import { VideoListList } from './VideoListList'
+import { VideosList } from './VideosList'
 
-describe('VideoListList', () => {
+describe('VideosList', () => {
   const onLoadMore = jest.fn()
   it('should display loading placeholders', async () => {
     const { getByText, getAllByTestId } = render(
-      <VideoListList
-        videos={[]}
-        loading
-        onLoadMore={onLoadMore}
-        isEnd={false}
-      />
+      <VideosList videos={[]} loading onLoadMore={onLoadMore} isEnd={false} />
     )
-    expect(getAllByTestId('video-list-list-placeholder')).toHaveLength(8)
+    expect(getAllByTestId('video-list-placeholder')).toHaveLength(8)
     expect(getByText('Loading...')).toBeInTheDocument()
   })
   it('should request more videos', async () => {
     const { getByText } = render(
-      <VideoListList
+      <VideosList
         videos={videos}
         loading={false}
         onLoadMore={onLoadMore}
@@ -31,7 +26,7 @@ describe('VideoListList', () => {
   })
   it('should render small variant', () => {
     const { getAllByTestId } = render(
-      <VideoListList
+      <VideosList
         videos={videos}
         loading={false}
         onLoadMore={onLoadMore}
@@ -39,11 +34,11 @@ describe('VideoListList', () => {
         isEnd={false}
       />
     )
-    expect(getAllByTestId('video-list-list-image-small')[0]).toBeInTheDocument()
+    expect(getAllByTestId('video-list-image-small')[0]).toBeInTheDocument()
   })
   it('should render large variant', () => {
     const { getAllByTestId } = render(
-      <VideoListList
+      <VideosList
         videos={videos}
         loading={false}
         onLoadMore={onLoadMore}
@@ -51,6 +46,6 @@ describe('VideoListList', () => {
         isEnd={false}
       />
     )
-    expect(getAllByTestId('video-list-list-image-large')[0]).toBeInTheDocument()
+    expect(getAllByTestId('video-list-image-large')[0]).toBeInTheDocument()
   })
 })

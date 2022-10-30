@@ -11,10 +11,10 @@ import AddRounded from '@mui/icons-material/AddRounded'
 import ListItem from '@mui/material/ListItem'
 import Link from 'next/link'
 
-import { VideoType } from '../../../../../__generated__/globalTypes'
-import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
+import { VideoType } from '../../../../__generated__/globalTypes'
+import { GetVideos_videos } from '../../../../__generated__/GetVideos'
 
-interface VideoListListProps {
+interface VideosListProps {
   videos: GetVideos_videos[]
   variant?: 'small' | 'large' | undefined
   loading?: boolean | undefined
@@ -23,16 +23,16 @@ interface VideoListListProps {
   onLoadMore?: () => Promise<void> | undefined
 }
 
-export function VideoListList({
+export function VideosList({
   videos,
   loading = false,
   variant = 'large',
   isEnd = false,
   onLoadMore = undefined,
   routePrefix = undefined
-}: VideoListListProps): ReactElement {
+}: VideosListProps): ReactElement {
   return (
-    <List data-testid="video-list-list">
+    <List data-testid="videos-list">
       {(videos.length ?? 0) > 0 &&
         videos.map((video, index) => {
           const snippet = video.snippet[0]?.value
@@ -59,7 +59,7 @@ export function VideoListList({
                 {video.image != null && (
                   <Box>
                     <Box
-                      data-testid={`video-list-list-image-${variant}`}
+                      data-testid={`videos-list-image-${variant}`}
                       sx={{
                         justifySelf: 'end',
                         display: 'flex',
@@ -97,7 +97,7 @@ export function VideoListList({
         })}
       {loading &&
         [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
-          <ListItemButton key={index} data-testid="video-list-list-placeholder">
+          <ListItemButton key={index} data-testid="videos-list-placeholder">
             <LinearProgress />
             <Box>
               <Box
@@ -119,7 +119,7 @@ export function VideoListList({
         ))}
       {onLoadMore != null && (
         <LoadingButton
-          data-testid="VideoListLoadMore"
+          data-testid="VideosListLoadMore"
           variant="outlined"
           onClick={onLoadMore}
           loading={loading}
