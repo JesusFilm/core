@@ -21,7 +21,7 @@ class AuthenticatedDataSource extends RemoteGraphQLDataSource {
       request.http.headers.set('user-id', context.userId)
     }
     if (context.ipAddress != null) {
-      request.http.headers.set('ip-address', context.ipAddress)
+      request.http.headers.set('X-Forwarded-For', context.ipAddress)
     }
     if (context.userAgent != null) {
       request.http.headers.set('user-agent', context.userAgent)

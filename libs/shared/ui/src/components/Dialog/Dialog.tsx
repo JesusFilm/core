@@ -8,7 +8,7 @@ import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 
-export interface DialogProps {
+interface DialogProps {
   open: boolean
   handleClose: () => void
   dialogTitle?: DialogTitle

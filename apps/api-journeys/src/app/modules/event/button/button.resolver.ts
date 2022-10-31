@@ -26,33 +26,23 @@ export class ButtonClickEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: ButtonClickEventCreateInput
   ): Promise<ButtonClickEvent> {
-    const block: { journeyId: string; parentBlockId: string; label: string } =
-      await this.blockService.get(input.blockId)
-    const journeyId = block.journeyId
-
-    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
+    const block: { journeyId: string } = await this.blockService.get(
       input.blockId
     )
+
+    const journeyId = block.journeyId
 
     const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       journeyId
     )
 
-    const stepName: string =
-      block.parentBlockId != null
-        ? await this.eventService.getStepHeader(block.parentBlockId)
-        : 'Untitled'
-
     return await this.eventService.save({
       ...input,
       __typename: 'ButtonClickEvent',
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
-      journeyId,
-      stepId: stepBlock?.id,
-      label: stepName,
-      value: block.label
+      journeyId
     })
   }
 }

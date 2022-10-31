@@ -1,12 +1,12 @@
 import { ReactElement } from 'react'
 import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues, FormikHelpers } from 'formik'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTranslation } from 'react-i18next'
 import { JourneySlugUpdate } from '../../../../../__generated__/JourneySlugUpdate'
-import { Dialog } from '../../../Dialog'
 
 export const JOURNEY_SLUG_UPDATE = gql`
   mutation JourneySlugUpdate($id: ID!, $input: JourneyUpdateInput!) {

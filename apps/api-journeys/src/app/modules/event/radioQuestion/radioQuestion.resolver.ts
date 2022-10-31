@@ -25,13 +25,7 @@ export class RadioQuestionSubmissionEventResolver {
     @Args('input')
     input: RadioQuestionSubmissionEventCreateInput
   ): Promise<RadioQuestionSubmissionEvent> {
-    const block: { journeyId: string; parentBlockId: string } =
-      await this.blockService.get(input.blockId)
-    const radioOptionBlock: { label: string } = await this.blockService.get(
-      input.radioOptionBlockId
-    )
-
-    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
+    const block: { journeyId: string } = await this.blockService.get(
       input.blockId
     )
 
@@ -41,21 +35,13 @@ export class RadioQuestionSubmissionEventResolver {
       userId,
       journeyId
     )
-    const stepName: string =
-      block.parentBlockId != null
-        ? await this.eventService.getStepHeader(block.parentBlockId)
-        : 'Untitled'
 
     return await this.eventService.save({
-      id: input.id,
-      blockId: input.blockId,
+      ...input,
       __typename: 'RadioQuestionSubmissionEvent',
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
-      journeyId,
-      stepId: stepBlock?.id,
-      label: stepName,
-      value: radioOptionBlock.label
+      journeyId
     })
   }
 }

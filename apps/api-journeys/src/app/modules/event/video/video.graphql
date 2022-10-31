@@ -4,7 +4,16 @@ input VideoStartEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
+  """
+  Label should be the source of the video
+  """
+  label: VideoBlockSource
+  """
+  Value should be the title of the video
+  """
+  value: String
 }
 
 type VideoStartEvent implements Event {
@@ -17,7 +26,16 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
+  """
+  Label should be the source of the video
+  """
+  label: VideoBlockSource
+  """
+  Value should be the title of the video
+  """
+  value: String
 }
 
 type VideoPlayEvent implements Event {
@@ -30,7 +48,16 @@ input VideoPauseEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
+  """
+  Label should be the source of the video
+  """
+  label: VideoBlockSource
+  """
+  Value should be the title of the video
+  """
+  value: String
 }
 
 type VideoPauseEvent implements Event {
@@ -43,7 +70,16 @@ input VideoCompleteEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
+  """
+  Label should be the source of the video
+  """
+  label: VideoBlockSource
+  """
+  Value should be the title of the video
+  """
+  value: String
 }
 
 type VideoCompleteEvent implements Event {
@@ -56,7 +92,16 @@ input VideoExpandEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
+  """
+  Label should be the source of the video
+  """
+  label: VideoBlockSource
+  """
+  Value should be the title of the video
+  """
+  value: String
 }
 
 type VideoExpandEvent implements Event {
@@ -69,7 +114,16 @@ input VideoCollapseEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
+  """
+  Label should be the source of the video
+  """
+  label: VideoBlockSource
+  """
+  Value should be the title of the video
+  """
+  value: String
 }
 
 type VideoCollapseEvent implements Event {
@@ -82,11 +136,20 @@ input VideoProgressEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
   """
   Progress of the video based on the startAt and endAt values of video
   """
   progress: Int!
+  """
+  Label should be the source of the video
+  """
+  label: VideoBlockSource
+  """
+  Value should be the title of the video
+  """
+  value: String
 }
 
 type VideoProgressEvent implements Event {

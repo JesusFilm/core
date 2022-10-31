@@ -58,18 +58,15 @@ describe('JourneyViewEventResolver', () => {
 
   const input: JourneyViewEventCreateInput = {
     id: '1',
-    journeyId: 'journey.id'
+    journeyId: 'journey.id',
+    language: 'English'
   }
 
   const journey = {
-    languageId: 'english',
     teamId: 'team.id'
   }
 
-  const userInfo = {
-    userAgent: 'device info',
-    ipAddress: '000.00.000.00'
-  }
+  const userAgent = 'device info'
 
   const visitor = {
     _key: 'visitor.id',
@@ -101,13 +98,12 @@ describe('JourneyViewEventResolver', () => {
   describe('JourneyViewEventCreate', () => {
     it('returns journeyViewEvent', async () => {
       expect(
-        await resolver.journeyViewEventCreate('user.id', userInfo, input)
+        await resolver.journeyViewEventCreate('user.id', userAgent, input)
       ).toEqual({
         ...input,
         __typename: 'JourneyViewEvent',
         visitorId: visitorWithId.id,
-        createdAt: new Date().toISOString(),
-        languageId: journey.languageId
+        createdAt: new Date().toISOString()
       })
 
       expect(vService.save).not.toHaveBeenCalled()
@@ -117,7 +113,7 @@ describe('JourneyViewEventResolver', () => {
     it('should create a new visitor if visitor doesnt exist', async () => {
       mockUuidv4.mockReturnValueOnce('newVisitor.id')
 
-      await resolver.journeyViewEventCreate('newUser.id', userInfo, input)
+      await resolver.journeyViewEventCreate('newUser.id', userAgent, input)
 
       expect(vService.save).toHaveBeenCalledWith({
         id: 'newVisitor.id',
@@ -128,10 +124,10 @@ describe('JourneyViewEventResolver', () => {
     })
 
     it('should update user agent on visitor if visitor does not have a user agent', async () => {
-      await resolver.journeyViewEventCreate('basicUser.id', userInfo, input)
+      await resolver.journeyViewEventCreate('basicUser.id', userAgent, input)
 
       expect(vService.update).toHaveBeenCalledWith('basicVisitor.id', {
-        userAgent: userInfo.userAgent
+        userAgent
       })
     })
   })

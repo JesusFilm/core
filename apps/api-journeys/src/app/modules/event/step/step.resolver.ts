@@ -26,8 +26,9 @@ export class StepViewEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: StepViewEventCreateInput
   ): Promise<StepViewEvent> {
-    const block: { journeyId: string; parentBlockId: string } =
-      await this.blockService.get(input.blockId)
+    const block: { journeyId: string } = await this.blockService.get(
+      input.blockId
+    )
     const journeyId = block.journeyId
 
     const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
@@ -35,20 +36,13 @@ export class StepViewEventResolver {
       journeyId
     )
 
-    const stepName: string =
-      block.parentBlockId != null
-        ? await this.eventService.getStepHeader(block.parentBlockId)
-        : 'Untitled'
-
     return await this.eventService.save({
       ...input,
       __typename: 'StepViewEvent',
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepId: input.blockId,
-      label: null,
-      value: stepName
+      stepId: input.blockId
     })
   }
 }

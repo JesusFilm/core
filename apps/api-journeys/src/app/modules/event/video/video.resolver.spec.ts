@@ -26,8 +26,7 @@ describe('VideoResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((event) => event),
-      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId),
-      getParentStepBlockByBlockId: jest.fn(() => stepBlock)
+      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId)
     })
   }
 
@@ -39,21 +38,7 @@ describe('VideoResolver', () => {
   }
 
   const block = {
-    id: 'block.id',
-    journeyId: 'journey.id',
-    parentBlockId: 'parent.id',
-    title: 'title',
-    source: VideoBlockSource.internal,
-    videoId: 'video.id',
-    videoVariantLanguageId: '539'
-  }
-
-  const stepBlock = {
-    __typename: 'StepBlock',
-    id: 'stepBlock.id',
-    parentBlockId: null,
-    journeyId: 'journey.id',
-    locked: false
+    journeyId: 'journey.id'
   }
 
   const visitor = {
@@ -76,7 +61,10 @@ describe('VideoResolver', () => {
       const input = {
         id: '1',
         blockId: '2',
-        position: 30.1
+        position: 30.1,
+        stepId: 'step.id',
+        label: VideoBlockSource.internal,
+        value: 'Video title'
       }
 
       expect(await resolver.videoStartEventCreate('userid', input)).toEqual({
@@ -84,12 +72,7 @@ describe('VideoResolver', () => {
         __typename: 'VideoStartEvent',
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: block.journeyId,
-        stepId: stepBlock.id,
-        label: block.source,
-        value: block.title,
-        videoId: block.videoId,
-        videoVariantLanguageId: block.videoVariantLanguageId
+        journeyId: block.journeyId
       })
     })
   })
@@ -108,7 +91,10 @@ describe('VideoResolver', () => {
       const input = {
         id: '1',
         blockId: '2',
-        position: 30.1
+        position: 30.1,
+        stepId: 'step.id',
+        label: VideoBlockSource.youTube,
+        value: 'Video title'
       }
 
       expect(await resolver.videoPlayEventCreate('userid', input)).toEqual({
@@ -116,12 +102,7 @@ describe('VideoResolver', () => {
         __typename: 'VideoPlayEvent',
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: block.journeyId,
-        stepId: stepBlock.id,
-        label: block.source,
-        value: block.title,
-        videoId: block.videoId,
-        videoVariantLanguageId: block.videoVariantLanguageId
+        journeyId: block.journeyId
       })
     })
   })
@@ -140,7 +121,10 @@ describe('VideoResolver', () => {
       const input = {
         id: '1',
         blockId: '2',
-        position: 30.1
+        position: 30.1,
+        stepId: 'step.id',
+        label: VideoBlockSource.internal,
+        value: 'Video title'
       }
 
       expect(await resolver.videoPauseEventCreate('userid', input)).toEqual({
@@ -148,12 +132,7 @@ describe('VideoResolver', () => {
         __typename: 'VideoPauseEvent',
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: block.journeyId,
-        stepId: stepBlock.id,
-        label: block.source,
-        value: block.title,
-        videoId: block.videoId,
-        videoVariantLanguageId: block.videoVariantLanguageId
+        journeyId: block.journeyId
       })
     })
   })
@@ -174,7 +153,10 @@ describe('VideoResolver', () => {
       const input = {
         id: '1',
         blockId: '2',
-        position: 30.1
+        position: 30.1,
+        stepId: 'step.id',
+        label: VideoBlockSource.internal,
+        value: 'Video title'
       }
 
       expect(await resolver.videoCompleteEventCreate('userid', input)).toEqual({
@@ -182,12 +164,7 @@ describe('VideoResolver', () => {
         __typename: 'VideoCompleteEvent',
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: block.journeyId,
-        stepId: stepBlock.id,
-        label: block.source,
-        value: block.title,
-        videoId: block.videoId,
-        videoVariantLanguageId: block.videoVariantLanguageId
+        journeyId: block.journeyId
       })
     })
   })
@@ -206,7 +183,10 @@ describe('VideoResolver', () => {
       const input = {
         id: '1',
         blockId: '2',
-        position: 30.1
+        position: 30.1,
+        stepId: 'step.id',
+        label: VideoBlockSource.internal,
+        value: 'Video title'
       }
 
       expect(await resolver.videoExpandEventCreate('userid', input)).toEqual({
@@ -214,12 +194,7 @@ describe('VideoResolver', () => {
         __typename: 'VideoExpandEvent',
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: block.journeyId,
-        stepId: stepBlock.id,
-        label: block.source,
-        value: block.title,
-        videoId: block.videoId,
-        videoVariantLanguageId: block.videoVariantLanguageId
+        journeyId: block.journeyId
       })
     })
   })
@@ -240,7 +215,10 @@ describe('VideoResolver', () => {
       const input = {
         id: '1',
         blockId: '2',
-        position: 30.1
+        position: 30.1,
+        stepId: 'step.id',
+        label: VideoBlockSource.internal,
+        value: 'Video title'
       }
 
       expect(await resolver.videoCollapseEventCreate('userid', input)).toEqual({
@@ -248,12 +226,7 @@ describe('VideoResolver', () => {
         __typename: 'VideoCollapseEvent',
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: block.journeyId,
-        stepId: stepBlock.id,
-        label: block.source,
-        value: block.title,
-        videoId: block.videoId,
-        videoVariantLanguageId: block.videoVariantLanguageId
+        journeyId: block.journeyId
       })
     })
   })
@@ -275,7 +248,10 @@ describe('VideoResolver', () => {
         id: '1',
         blockId: '2',
         position: 30.1,
-        progress: 25
+        progress: 25,
+        stepId: 'step.id',
+        label: VideoBlockSource.internal,
+        value: 'Video title'
       }
 
       expect(await resolver.videoProgressEventCreate('userid', input)).toEqual({
@@ -283,12 +259,7 @@ describe('VideoResolver', () => {
         __typename: 'VideoProgressEvent',
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: block.journeyId,
-        stepId: stepBlock.id,
-        label: block.source,
-        value: block.title,
-        videoId: block.videoId,
-        videoVariantLanguageId: block.videoVariantLanguageId
+        journeyId: block.journeyId
       })
     })
   })
