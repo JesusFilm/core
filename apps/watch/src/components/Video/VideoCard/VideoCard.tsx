@@ -62,7 +62,7 @@ export function VideoCard({
                     bottom: 5,
                     right: 5,
                     bgcolor: 'rgba(0, 0, 0, 0.5)',
-                    color: theme.palette.primary.contrastText,
+                    color: 'primary.contrastText',
                     borderRadius: '8px',
                     padding: '5px'
                   }}
