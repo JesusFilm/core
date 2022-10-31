@@ -7,7 +7,7 @@ import { GET_VIDEOS, Videos } from './Videos'
 const VideosStory = {
   ...watchConfig,
   component: Videos,
-  title: 'Watch/Videos/Videos'
+  title: 'Watch/Videos'
 }
 
 const Template: Story = ({ ...args }) => {
@@ -52,20 +52,6 @@ export const Grid = Template.bind({})
 Grid.args = {
   layout: 'grid',
   limit: 20
-}
-
-export const ListSmall = Template.bind({})
-ListSmall.args = {
-  layout: 'list',
-  variant: 'small',
-  limit: 8
-}
-
-export const ListLarge = Template.bind({})
-ListLarge.args = {
-  layout: 'list',
-  variant: 'large',
-  limit: 8
 }
 
 export default VideosStory as Meta
