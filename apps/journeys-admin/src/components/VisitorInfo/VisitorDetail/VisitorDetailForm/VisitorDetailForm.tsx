@@ -15,10 +15,24 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { useTranslation } from 'react-i18next'
 import { format, parseISO } from 'date-fns'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
-import { GetCountry } from '../../../__generated__/GetCountry'
-import { GetVisitor_visitor as Visitor } from '../../../__generated__/GetVisitor'
-import { VisitorStatus } from '../../../__generated__/globalTypes'
-import { VisitorUpdate } from '../../../__generated__/VisitorUpdate'
+import { GetVisitor } from '../../../../../__generated__/GetVisitor'
+import { VisitorStatus } from '../../../../../__generated__/globalTypes'
+import { VisitorUpdate } from '../../../../../__generated__/VisitorUpdate'
+
+export const GET_VISITOR = gql`
+  query GetVisitor($id: ID!) {
+    visitor(id: $id) {
+      countryCode
+      id
+      lastChatStartedAt
+      messengerId
+      messengerNetwork
+      name
+      notes
+      status
+    }
+  }
+`
 
 export const VISITOR_UPDATE = gql`
   mutation VisitorUpdate($id: ID!, $input: VisitorUpdateInput!) {
@@ -33,27 +47,16 @@ export const VISITOR_UPDATE = gql`
   }
 `
 
-export const GET_COUNTRY = gql`
-  query GetCountry($id: ID!, $languageId: ID!) {
-    country(id: $id, idType: slug) {
-      id
-      name(languageId: $languageId) {
-        value
-      }
-    }
-  }
-`
-
-interface VisitorDetailProps {
-  visitor: Visitor
+interface Props {
+  id: string
 }
 
-export function VisitorDetail({ visitor }: VisitorDetailProps): ReactElement {
+export function VisitorDetailForm({ id }: Props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [visitorUpdate] = useMutation<VisitorUpdate>(VISITOR_UPDATE)
   // 529 (english) should be changed when adding internalization
-  const { data } = useQuery<GetCountry>(GET_COUNTRY, {
-    variables: { id: visitor.countryCode, languageId: 529 }
+  const { data } = useQuery<GetVisitor>(GET_VISITOR, {
+    variables: { id }
   })
 
   async function handleSubmit(values): Promise<void> {
@@ -63,7 +66,7 @@ export function VisitorDetail({ visitor }: VisitorDetailProps): ReactElement {
     }, {})
     await visitorUpdate({
       variables: {
-        id: visitor.id,
+        id,
         input: formattedValues
       }
     })
@@ -72,7 +75,7 @@ export function VisitorDetail({ visitor }: VisitorDetailProps): ReactElement {
   return (
     <Container maxWidth="xs" sx={{ p: 4 }}>
       <Formik
-        initialValues={pick(visitor, [
+        initialValues={pick(data?.visitor, [
           'messengerId',
           'messengerNetwork',
           'name',
@@ -80,6 +83,7 @@ export function VisitorDetail({ visitor }: VisitorDetailProps): ReactElement {
           'status'
         ])}
         onSubmit={handleSubmit}
+        enableReinitialize
       >
         {({ values, errors, touched, handleChange, handleBlur }) => (
           <Form>
@@ -115,10 +119,10 @@ export function VisitorDetail({ visitor }: VisitorDetailProps): ReactElement {
                     </MenuItem>
                   </Select>
                 </FormControl>
-                {visitor.lastChatStartedAt !== null && (
+                {data?.visitor?.lastChatStartedAt != null && (
                   <Box>
                     {t('Last Chat')}{' '}
-                    {format(parseISO(visitor.lastChatStartedAt), 'PPpp')}
+                    {format(parseISO(data.visitor.lastChatStartedAt), 'PPpp')}
                   </Box>
                 )}
               </Stack>
@@ -184,7 +188,7 @@ export function VisitorDetail({ visitor }: VisitorDetailProps): ReactElement {
                 variant="filled"
                 label={t('Location')}
                 fullWidth
-                value={data?.country.name[0].value}
+                value="ADD COUNTRY NAME TO API"
                 InputProps={{
                   readOnly: true
                 }}
