@@ -3,10 +3,10 @@ import { ReactElement, useState } from 'react'
 import Carousel from 'react-multi-carousel'
 import 'react-multi-carousel/lib/styles.css'
 
-import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
-import { VideoListCard } from '../Card/VideoListCard'
+import { GetVideos_videos } from '../../../../__generated__/GetVideos'
+import { VideoCard } from '../../Video'
 
-interface VideoListCarouselProps {
+interface VideosCarouselProps {
   videos: GetVideos_videos[]
   loading?: boolean
   routePrefix?: string | undefined
@@ -33,15 +33,15 @@ const responsive = {
   }
 }
 
-export function VideoListCarousel({
+export function VideosCarousel({
   loading = false,
   onLoadMore,
   videos,
   routePrefix = undefined
-}: VideoListCarouselProps): ReactElement {
+}: VideosCarouselProps): ReactElement {
   const [isMoving, setIsMoving] = useState(false)
   return (
-    <Box data-testid="video-list-carousel">
+    <Box data-testid="videos-carousel">
       <Carousel
         responsive={responsive}
         autoPlay={false}
@@ -63,7 +63,7 @@ export function VideoListCarousel({
       >
         {(videos.length ?? 0) > 0 &&
           videos.map((video, index) => (
-            <VideoListCard
+            <VideoCard
               video={video}
               key={index}
               disabled={isMoving}
@@ -71,9 +71,7 @@ export function VideoListCarousel({
             />
           ))}
         {loading &&
-          [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
-            <VideoListCard key={index} />
-          ))}
+          [1, 2, 3, 4, 5, 6, 7, 8].map((index) => <VideoCard key={index} />)}
       </Carousel>
     </Box>
   )
