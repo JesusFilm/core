@@ -25,6 +25,15 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum DeviceType {
+  console = "console",
+  embedded = "embedded",
+  mobile = "mobile",
+  smarttv = "smarttv",
+  tablet = "tablet",
+  wearable = "wearable",
+}
+
 export enum GridAlignItems {
   baseline = "baseline",
   center = "center",
@@ -155,6 +164,24 @@ export enum VideoType {
   episode = "episode",
   playlist = "playlist",
   standalone = "standalone",
+}
+
+/**
+ * The status of a visitor according to team members interacting with the
+ * visitor admin interface. This enum should map to an emoji when displayed
+ * (names here match Apple's emoji name)
+ */
+export enum VisitorStatus {
+  checkMarkSymbol = "checkMarkSymbol",
+  partyPopper = "partyPopper",
+  prohibited = "prohibited",
+  redExclamationMark = "redExclamationMark",
+  redQuestionMark = "redQuestionMark",
+  robotFace = "robotFace",
+  star = "star",
+  thumbsDown = "thumbsDown",
+  thumbsUp = "thumbsUp",
+  warning = "warning",
 }
 
 export interface ButtonBlockCreateInput {
@@ -429,6 +456,18 @@ export interface VideosFilter {
   tagId?: string | null;
   title?: string | null;
   types?: VideoType[] | null;
+}
+
+/**
+ * A list of fields to update a visitor when calling the visitorUpdate mutation
+ */
+export interface VisitorUpdateInput {
+  email?: string | null;
+  messengerId?: string | null;
+  messengerNetwork?: string | null;
+  name?: string | null;
+  notes?: string | null;
+  status?: VisitorStatus | null;
 }
 
 //==============================================================
