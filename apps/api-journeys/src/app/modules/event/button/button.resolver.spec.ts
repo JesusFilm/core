@@ -3,7 +3,8 @@ import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import {
   ButtonClickEventCreateInput,
-  ChatOpenedEventCreateInput
+  ChatOpenedEventCreateInput,
+  MessagePlatform
 } from '../../../__generated__/graphql'
 import { BlockService } from '../../block/block.service'
 import {
@@ -53,16 +54,6 @@ describe('Button', () => {
     value: 'Button label'
   }
 
-  const linkButtonInput: ChatOpenedEventCreateInput = {
-    id: '3',
-    blockId: 'buttonBlock.id'
-  }
-  
-  const errorInput: ButtonClickEventCreateInput = {
-    ...input,
-    stepId: 'errorStep.id'
-  }
-
   const block = {
     id: 'block.id',
     journeyId: 'journey.id'
@@ -83,6 +74,7 @@ describe('Button', () => {
   }
 
   const visitorWithId = keyAsId(visitor)
+
   describe('ButtonClickEventResolver', () => {
     let resolver: ButtonClickEventResolver
 
@@ -93,6 +85,11 @@ describe('Button', () => {
       resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
     })
 
+    const errorInput: ButtonClickEventCreateInput = {
+      ...input,
+      stepId: 'errorStep.id'
+    }
+
     describe('buttonClickEventCreate', () => {
       it('returns ButtonClickEvent', async () => {
         expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
@@ -100,18 +97,47 @@ describe('Button', () => {
           __typename: 'ButtonClickEvent',
           visitorId: visitorWithId.id,
           createdAt: new Date().toISOString(),
-          journeyId: block.journeyId,
-          stepId: stepBlock.id,
-          label: 'header',
-          value: block.label
+          journeyId: block.journeyId
         })
       })
 
-  describe('buttonClickEventCreate', () => {
-    it('returns ButtonClickEvent', async () => {
-      expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
+      it('should throw error when step id does not belong to the same journey as block id', async () => {
+        await expect(
+          async () =>
+            await resolver.buttonClickEventCreate('userId', errorInput)
+        ).rejects.toThrow(
+          `Step ID ${
+            errorInput.stepId as string
+          } does not exist on Journey with ID ${block.journeyId}`
+        )
+      })
+    })
+  })
+
+  describe('chatOpenedEventCreate', () => {
+    let resolver: ChatOpenedEventResolver
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [ChatOpenedEventResolver, eventService, blockService]
+      }).compile()
+      resolver = module.get<ChatOpenedEventResolver>(ChatOpenedEventResolver)
+    })
+
+    it('should return ChatOpenedEvent', async () => {
+      const chatOpenInput: ChatOpenedEventCreateInput = {
         ...input,
-        __typename: 'ButtonClickEvent',
+        id: '3',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        value: MessagePlatform.facebook
+      }
+
+      expect(
+        await resolver.chatOpenedEventCreate('userId', chatOpenInput)
+      ).toEqual({
+        ...chatOpenInput,
+        __typename: 'ChatOpenedEvent',
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId
@@ -119,11 +145,20 @@ describe('Button', () => {
     })
 
     it('should throw error when step id does not belong to the same journey as block id', async () => {
+      const chatErrorInput: ChatOpenedEventCreateInput = {
+        ...input,
+        id: '3',
+        blockId: 'block.id',
+        stepId: 'anotherStep.id',
+        value: MessagePlatform.facebook
+      }
+
       await expect(
-        async () => await resolver.buttonClickEventCreate('userId', errorInput)
+        async () =>
+          await resolver.chatOpenedEventCreate('userId', chatErrorInput)
       ).rejects.toThrow(
         `Step ID ${
-          errorInput.stepId as string
+          chatErrorInput.stepId as string
         } does not exist on Journey with ID ${block.journeyId}`
       )
     })
