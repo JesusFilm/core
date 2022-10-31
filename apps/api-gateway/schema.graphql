@@ -1298,8 +1298,14 @@ input VideoPlayEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
   position: Float
   stepId: ID
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 type VideoProgressEvent implements Event {

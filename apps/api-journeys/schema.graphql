@@ -846,6 +846,12 @@ input VideoPlayEventCreateInput {
   blockId: ID!
   stepId: ID
   position: Float
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 type VideoPlayEvent implements Event {

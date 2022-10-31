@@ -410,44 +410,65 @@ export class TextResponseSubmissionEventCreateInput {
 export class VideoStartEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
+    label?: Nullable<VideoBlockSource>;
+    value?: Nullable<string>;
 }
 
 export class VideoPlayEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
+    label?: Nullable<VideoBlockSource>;
+    value?: Nullable<string>;
 }
 
 export class VideoPauseEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
+    label?: Nullable<VideoBlockSource>;
+    value?: Nullable<string>;
 }
 
 export class VideoCompleteEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
+    label?: Nullable<VideoBlockSource>;
+    value?: Nullable<string>;
 }
 
 export class VideoExpandEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
+    label?: Nullable<VideoBlockSource>;
+    value?: Nullable<string>;
 }
 
 export class VideoCollapseEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
+    label?: Nullable<VideoBlockSource>;
+    value?: Nullable<string>;
 }
 
 export class VideoProgressEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
     progress: number;
+    label?: Nullable<VideoBlockSource>;
+    value?: Nullable<string>;
 }
 
 export class JourneysFilter {
