@@ -4,10 +4,10 @@ import AddRounded from '@mui/icons-material/AddRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { deepmerge } from '@mui/utils'
+import { getTheme, ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { GetVideos_videos } from '../../../../__generated__/GetVideos'
 import { VideoCard } from '../../Video'
-import { theme } from '../../ThemeProvider/ThemeProvider'
 
 interface VideosGridProps {
   videos: GetVideos_videos[]
@@ -27,17 +27,20 @@ export function VideosGrid({
   routePrefix = undefined
 }: VideosGridProps): ReactElement {
   const gridTheme = createTheme(
-    deepmerge(theme, {
-      breakpoints: {
-        values: {
-          xs: 0,
-          sm: 725,
-          md: 1043,
-          lg: 1450,
-          xl: 1765
+    deepmerge(
+      getTheme({ themeName: ThemeName.website, themeMode: ThemeMode.light }),
+      {
+        breakpoints: {
+          values: {
+            xs: 0,
+            sm: 725,
+            md: 1043,
+            lg: 1450,
+            xl: 1765
+          }
         }
       }
-    })
+    )
   )
   return (
     <ThemeProvider theme={gridTheme}>
