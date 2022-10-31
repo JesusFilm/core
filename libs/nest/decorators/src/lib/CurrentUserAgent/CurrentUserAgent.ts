@@ -5,7 +5,5 @@ import { GqlExecutionContext } from '@nestjs/graphql'
 export const CurrentUserAgent = createParamDecorator((data, context) => {
   const ctx = GqlExecutionContext.create(context).getContext()
   const userAgent = get(ctx.headers, 'user-agent')
-  // const ipAddress = get(ctx.headers, 'X-Forwarded-For')
-  // return { userAgent, ipAddress }
   return userAgent
 })
