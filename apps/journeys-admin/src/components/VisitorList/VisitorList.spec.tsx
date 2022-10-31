@@ -3,41 +3,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '../ThemeProvider'
+import { edges } from './VisitorListData'
 import { VisitorList } from '.'
 
-describe('VisitorList', () => {
-  const input = [
-    {
-      id:"Jesse Ernst",
-      teamId: 56445,
-      userId: 84454,
-      createdAt: "This date"
-    },
-    {
-      id:"Tataihono Nikora",
-      teamId: 1111,
-      userId: 8465,
-      createdAt: "This date"
-    },
-    {
-      id:"Siyang Cao",
-      teamId: 2222,
-      userId: 32165,
-      createdAt: "This date"
-    },
-    {
-      id:"Steven Diller",
-      teamId: 33332,
-      userId: 5,
-      createdAt: "This date"
-    },
-    {
-      id:"Aaron Thompson",
-      teamId: 798654,
-      userId: 132465,
-      createdAt: "This date"
-    }
-  ]
+describe('VisitorList', () => { 
   
   it('should render DataGrid', () => {
     const { getByRole } = render(
@@ -45,12 +14,32 @@ describe('VisitorList', () => {
         <MockedProvider>
           <FlagsProvider>
             <ThemeProvider>
-              <VisitorList input={input} />
+              <VisitorList input={edges} />
             </ThemeProvider>
           </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
     expect(getByRole('grid')).toBeInTheDocument()
+  })
+
+  it('should have name', () => {
+    const { getByText } = render(
+      <VisitorList input={edges} />
+    )
+    expect(getByText('Jesse Ernst')).toBeInTheDocument()
+  })
+
+  it('should have TeamId', () => {
+    const { getByText } = render(
+      <VisitorList input={edges} />
+    )
+    expect(getByText('56,445')).toBeInTheDocument()
+  })
+  it('should have UserId', () => {
+    const { getByText } = render(
+      <VisitorList input={edges} />
+    )
+    expect(getByText('84454')).toBeInTheDocument()
   })
 })
