@@ -28,8 +28,7 @@ describe('SignUpEventResolver', () => {
           case newVisitor.userId:
             return newVisitorWithId
         }
-      }),
-      getParentStepBlockByBlockId: jest.fn(() => stepBlock)
+      })
     })
   }
 
@@ -50,6 +49,7 @@ describe('SignUpEventResolver', () => {
   const input = {
     id: '1',
     blockId: '2',
+    stepId: 'step.id',
     name: 'John Doe',
     email: 'john.doe@jesusfilm.org'
   }
@@ -58,14 +58,6 @@ describe('SignUpEventResolver', () => {
     id: 'block.id',
     journeyId: 'journey.id',
     parentBlockId: 'parent.id'
-  }
-
-  const stepBlock = {
-    __typename: 'StepBlock',
-    id: 'stepBlock.id',
-    parentBlockId: null,
-    journeyId: 'journey.id',
-    locked: false
   }
 
   const visitor = {
@@ -109,7 +101,7 @@ describe('SignUpEventResolver', () => {
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId,
-        stepId: stepBlock.id,
+        stepId: input.stepId,
         label: null,
         value: input.name,
         email: input.email
@@ -117,7 +109,7 @@ describe('SignUpEventResolver', () => {
       expect(vService.update).not.toHaveBeenCalled()
     })
 
-    it('should update visitor with name and email if they have if input is different', async () => {
+    it('should update visitor with name and email if input is different', async () => {
       await resolver.signUpSubmissionEventCreate('newUser.id', input)
 
       expect(vService.update).toHaveBeenCalledWith(newVisitorWithId.id, {

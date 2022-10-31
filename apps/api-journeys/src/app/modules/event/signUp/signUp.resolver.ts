@@ -31,10 +31,6 @@ export class SignUpSubmissionEventResolver {
     )
     const journeyId = block.journeyId
 
-    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
-      input.blockId
-    )
-
     const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       journeyId
@@ -56,7 +52,7 @@ export class SignUpSubmissionEventResolver {
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId,
-      stepId: stepBlock?.id,
+      stepId: input.stepId,
       label: null,
       value: input.name,
       email: input.email
