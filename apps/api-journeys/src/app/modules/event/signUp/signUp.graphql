@@ -4,6 +4,7 @@ input SignUpSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   name: String!
   email: String!
 }

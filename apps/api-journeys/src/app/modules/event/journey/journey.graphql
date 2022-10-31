@@ -4,6 +4,7 @@ input JourneyViewEventCreateInput {
   """
   id: ID
   journeyId: ID!
+  language: String
 }
 
 type JourneyViewEvent implements Event {

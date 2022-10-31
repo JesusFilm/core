@@ -4,6 +4,14 @@ input TextResponseSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
+  """
+  Label should be the stepName of the textResponse block
+  """
+  label: String
+  """
+  Value should be the response text from the user
+  """
   value: String!
 }
 

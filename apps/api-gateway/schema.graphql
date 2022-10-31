@@ -457,6 +457,7 @@ input JourneyViewEventCreateInput {
   """
   id: ID
   journeyId: ID!
+  language: String
 }
 
 type Language
@@ -728,7 +729,14 @@ input RadioQuestionSubmissionEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Label should be the stepName of the radioQuestion block"""
+  label: String
   radioOptionBlockId: ID!
+  stepId: ID
+
+  """Value should be the label of the option block selected"""
+  value: String
 }
 
 enum Role {
@@ -775,6 +783,7 @@ input SignUpSubmissionEventCreateInput {
   """
   id: ID
   name: String!
+  stepId: ID
 }
 
 type StepBlock implements Block {
@@ -821,6 +830,9 @@ input StepViewEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Value should be the stepName of the step block"""
+  value: String
 }
 
 type TextResponseBlock implements Block {
@@ -864,6 +876,12 @@ input TextResponseSubmissionEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Label should be the stepName of the textResponse block"""
+  label: String
+  stepId: ID
+
+  """Value should be the response text from the user"""
   value: String!
 }
 
@@ -1196,7 +1214,14 @@ input VideoCollapseEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
   position: Float
+  stepId: ID
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 type VideoCompleteEvent implements Event {
@@ -1210,7 +1235,14 @@ input VideoCompleteEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
   position: Float
+  stepId: ID
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 type VideoExpandEvent implements Event {
@@ -1224,7 +1256,14 @@ input VideoExpandEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
   position: Float
+  stepId: ID
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 type VideoPauseEvent implements Event {
@@ -1238,7 +1277,14 @@ input VideoPauseEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
   position: Float
+  stepId: ID
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 type VideoPlayEvent implements Event {
@@ -1253,6 +1299,7 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   position: Float
+  stepId: ID
 }
 
 type VideoProgressEvent implements Event {
@@ -1266,10 +1313,17 @@ input VideoProgressEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
   position: Float
 
   """Progress of the video based on the startAt and endAt values of video"""
   progress: Int!
+  stepId: ID
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 input VideosFilter {
@@ -1290,7 +1344,14 @@ input VideoStartEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
   position: Float
+  stepId: ID
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 type VideoTag {

@@ -373,17 +373,22 @@ export class ButtonClickEventCreateInput {
 export class JourneyViewEventCreateInput {
     id?: Nullable<string>;
     journeyId: string;
+    language?: Nullable<string>;
 }
 
 export class RadioQuestionSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
     radioOptionBlockId: string;
+    stepId?: Nullable<string>;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class SignUpSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     name: string;
     email: string;
 }
@@ -391,11 +396,14 @@ export class SignUpSubmissionEventCreateInput {
 export class StepViewEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    value?: Nullable<string>;
 }
 
 export class TextResponseSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
+    label?: Nullable<string>;
     value: string;
 }
 

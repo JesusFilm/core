@@ -742,6 +742,7 @@ input JourneyViewEventCreateInput {
   """
   id: ID
   journeyId: ID!
+  language: String
 }
 
 type JourneyViewEvent implements Event {
@@ -755,6 +756,13 @@ input RadioQuestionSubmissionEventCreateInput {
   id: ID
   blockId: ID!
   radioOptionBlockId: ID!
+  stepId: ID
+
+  """Label should be the stepName of the radioQuestion block"""
+  label: String
+
+  """Value should be the label of the option block selected"""
+  value: String
 }
 
 type RadioQuestionSubmissionEvent implements Event {
@@ -767,6 +775,7 @@ input SignUpSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   name: String!
   email: String!
 }
@@ -781,6 +790,9 @@ input StepViewEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """Value should be the stepName of the step block"""
+  value: String
 }
 
 type StepViewEvent implements Event {
@@ -793,6 +805,12 @@ input TextResponseSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
+
+  """Label should be the stepName of the textResponse block"""
+  label: String
+
+  """Value should be the response text from the user"""
   value: String!
 }
 
@@ -806,7 +824,14 @@ input VideoStartEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 type VideoStartEvent implements Event {
@@ -819,6 +844,7 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
 }
 
@@ -832,7 +858,14 @@ input VideoPauseEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 type VideoPauseEvent implements Event {
@@ -845,7 +878,14 @@ input VideoCompleteEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 type VideoCompleteEvent implements Event {
@@ -858,7 +898,14 @@ input VideoExpandEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 type VideoExpandEvent implements Event {
@@ -871,7 +918,14 @@ input VideoCollapseEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 type VideoCollapseEvent implements Event {
@@ -884,10 +938,17 @@ input VideoProgressEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   position: Float
 
   """Progress of the video based on the startAt and endAt values of video"""
   progress: Int!
+
+  """Label should be the source of the video"""
+  label: VideoBlockSource
+
+  """Value should be the title of the video"""
+  value: String
 }
 
 type VideoProgressEvent implements Event {
