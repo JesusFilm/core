@@ -4,20 +4,30 @@ import createEmotionServer from '@emotion/server/create-instance'
 import type { EmotionCache } from '@emotion/cache'
 import type { Enhancer, AppType } from 'next/dist/shared/lib/utils'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
+  rtl: boolean
+  locale: string
 }> {
   render(): ReactElement {
     return (
-      <Html lang="en">
+      <Html lang="en" dir={this.props.rtl ? 'rtl' : ''}>
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
-          <link
-            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
-            rel="stylesheet"
-          />
+          {this.props.rtl && this.props.locale !== 'ur' ? (
+            <link
+              href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;600;700&family=Tajawal:wght@400;700&display=swap"
+              rel="stylesheet"
+            />
+          ) : (
+            <link
+              href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
+              rel="stylesheet"
+            />
+          )}
           <link
             rel="apple-touch-icon"
             sizes="180x180"
@@ -71,13 +81,16 @@ MyDocument.getInitialProps = async (ctx) => {
 
   // You can consider sharing the same emotion cache between all the SSR requests to speed up performance.
   // However, be aware that it can have global side effects.
-  const cache = createEmotionCache()
+  const cache = createEmotionCache({})
   const { extractCriticalToChunks } = createEmotionServer(cache)
+
+  let pageProps
 
   ctx.renderPage = () =>
     originalRenderPage({
       enhanceApp: ((App: FunctionComponent<{ emotionCache: EmotionCache }>) => {
         return function EnhanceApp(props) {
+          pageProps = props.pageProps.journey
           return <App emotionCache={cache} {...props} />
         }
       }) as unknown as Enhancer<AppType>
@@ -96,8 +109,12 @@ MyDocument.getInitialProps = async (ctx) => {
     />
   ))
 
+  const { rtl, locale } = getJourneyRTL(pageProps)
+
   return {
     ...initialProps,
-    emotionStyleTags
+    emotionStyleTags,
+    rtl,
+    locale
   }
 }
