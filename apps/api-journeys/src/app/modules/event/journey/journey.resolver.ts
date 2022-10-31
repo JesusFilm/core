@@ -4,7 +4,7 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { CurrentUserInfo } from '@core/nest/decorators/CurrentUserInfo'
+import { CurrentUserAgent } from '@core/nest/decorators/CurrentUserAgent'
 import { v4 as uuidv4 } from 'uuid'
 import {
   JourneyViewEvent,
@@ -26,7 +26,7 @@ export class JourneyViewEventResolver {
   @UseGuards(GqlAuthGuard)
   async journeyViewEventCreate(
     @CurrentUserId() userId: string,
-    @CurrentUserInfo() userInfo,
+    @CurrentUserAgent() userAgent: string,
     @Args('input') input: JourneyViewEventCreateInput
   ): Promise<JourneyViewEvent> {
     let visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
@@ -48,7 +48,7 @@ export class JourneyViewEventResolver {
 
     if (visitor.userAgent == null) {
       await this.visitorService.update(visitor.id, {
-        userAgent: userInfo.userAgent
+        userAgent
       })
     }
 
