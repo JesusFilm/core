@@ -4,6 +4,7 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { UserInputError } from 'apollo-server'
 import {
   TextResponseSubmissionEvent,
   TextResponseSubmissionEventCreateInput
@@ -29,6 +30,15 @@ export class TextResponseSubmissionEventResolver {
     )
 
     const journeyId = block.journeyId
+
+    const stepBlock: { journeyId: string } | null =
+      input.stepId != null ? await this.blockService.get(input.stepId) : null
+    if (stepBlock == null || stepBlock.journeyId !== journeyId)
+      throw new UserInputError(
+        `Step ID ${
+          input.stepId as string
+        } does not exist on Journey with ID ${journeyId}`
+      )
 
     const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,

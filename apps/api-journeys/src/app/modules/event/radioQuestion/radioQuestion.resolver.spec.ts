@@ -28,7 +28,16 @@ describe('RadioQuestionSubmissionEventResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block)
+      get: jest.fn((blockId) => {
+        switch (blockId) {
+          case block.id:
+            return block
+          case step.id:
+            return step
+          case errorStep.id:
+            return errorStep
+        }
+      })
     })
   }
 
@@ -41,10 +50,25 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     value: 'radioOption.label'
   }
 
+  const errorInput: RadioQuestionSubmissionEventCreateInput = {
+    ...input,
+    stepId: 'errorStep.id'
+  }
+
   const block = {
     id: 'block.id',
     journeyId: 'journey.id',
     parentBlockId: 'parent.id'
+  }
+
+  const step = {
+    id: 'step.id',
+    journeyId: 'journey.id'
+  }
+
+  const errorStep = {
+    id: 'errorStep.id',
+    journeyId: 'another journey'
   }
 
   const visitor = {
@@ -77,6 +101,20 @@ describe('RadioQuestionSubmissionEventResolver', () => {
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId
       })
+    })
+
+    it('should throw error when step id does not belong to the same journey as block id', async () => {
+      await expect(
+        async () =>
+          await resolver.radioQuestionSubmissionEventCreate(
+            'userId',
+            errorInput
+          )
+      ).rejects.toThrow(
+        `Step ID ${
+          errorInput.stepId as string
+        } does not exist on Journey with ID ${block.journeyId}`
+      )
     })
   })
 })
