@@ -50,11 +50,8 @@ describe('ButtonClickEventResolver', () => {
   }
 
   const errorInput: ButtonClickEventCreateInput = {
-    id: '1',
-    blockId: 'block.id',
-    stepId: 'errorStep.id',
-    label: 'Step name',
-    value: 'Button label'
+    ...input,
+    stepId: 'errorStep.id'
   }
 
   const block = {

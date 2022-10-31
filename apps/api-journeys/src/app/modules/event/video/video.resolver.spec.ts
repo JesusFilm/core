@@ -33,12 +33,32 @@ describe('VideoResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block)
+      get: jest.fn((blockId) => {
+        switch (blockId) {
+          case block.id:
+            return block
+          case step.id:
+            return step
+          case errorStep.id:
+            return errorStep
+        }
+      })
     })
   }
 
   const block = {
+    id: 'block.id',
     journeyId: 'journey.id'
+  }
+
+  const step = {
+    id: 'step.id',
+    journeyId: 'journey.id'
+  }
+
+  const errorStep = {
+    id: 'errorStep.id',
+    journeyId: 'another journey'
   }
 
   const visitor = {
@@ -57,16 +77,16 @@ describe('VideoResolver', () => {
       resolver = module.get<VideoStartEventResolver>(VideoStartEventResolver)
     })
 
-    it('returns VideoStartEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1,
-        stepId: 'step.id',
-        label: VideoBlockSource.internal,
-        value: 'Video title'
-      }
+    const input = {
+      id: '1',
+      blockId: block.id,
+      position: 30.1,
+      stepId: 'step.id',
+      label: VideoBlockSource.internal,
+      value: 'Video title'
+    }
 
+    it('returns VideoStartEvent', async () => {
       expect(await resolver.videoStartEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoStartEvent',
@@ -74,6 +94,19 @@ describe('VideoResolver', () => {
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId
       })
+    })
+
+    it('should throw error when step id does not belong to the same journey as block id', async () => {
+      const errorInput = {
+        ...input,
+        stepId: 'errorStep.id'
+      }
+
+      await expect(
+        async () => await resolver.videoStartEventCreate('userId', errorInput)
+      ).rejects.toThrow(
+        `Step ID ${errorInput.stepId} does not exist on Journey with ID ${block.journeyId}`
+      )
     })
   })
 
@@ -87,16 +120,16 @@ describe('VideoResolver', () => {
       resolver = module.get<VideoPlayEventResolver>(VideoPlayEventResolver)
     })
 
-    it('returns VideoPlayEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1,
-        stepId: 'step.id',
-        label: VideoBlockSource.youTube,
-        value: 'Video title'
-      }
+    const input = {
+      id: '1',
+      blockId: block.id,
+      position: 30.1,
+      stepId: 'step.id',
+      label: VideoBlockSource.youTube,
+      value: 'Video title'
+    }
 
+    it('returns VideoPlayEvent', async () => {
       expect(await resolver.videoPlayEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoPlayEvent',
@@ -104,6 +137,19 @@ describe('VideoResolver', () => {
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId
       })
+    })
+
+    it('should throw error when step id does not belong to the same journey as block id', async () => {
+      const errorInput = {
+        ...input,
+        stepId: 'errorStep.id'
+      }
+
+      await expect(
+        async () => await resolver.videoPlayEventCreate('userId', errorInput)
+      ).rejects.toThrow(
+        `Step ID ${errorInput.stepId} does not exist on Journey with ID ${block.journeyId}`
+      )
     })
   })
 
@@ -117,16 +163,16 @@ describe('VideoResolver', () => {
       resolver = module.get<VideoPuaseEventResolver>(VideoPuaseEventResolver)
     })
 
-    it('returns VideoPauseEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1,
-        stepId: 'step.id',
-        label: VideoBlockSource.internal,
-        value: 'Video title'
-      }
+    const input = {
+      id: '1',
+      blockId: block.id,
+      position: 30.1,
+      stepId: 'step.id',
+      label: VideoBlockSource.internal,
+      value: 'Video title'
+    }
 
+    it('returns VideoPauseEvent', async () => {
       expect(await resolver.videoPauseEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoPauseEvent',
@@ -134,6 +180,19 @@ describe('VideoResolver', () => {
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId
       })
+    })
+
+    it('should throw error when step id does not belong to the same journey as block id', async () => {
+      const errorInput = {
+        ...input,
+        stepId: 'errorStep.id'
+      }
+
+      await expect(
+        async () => await resolver.videoPauseEventCreate('userId', errorInput)
+      ).rejects.toThrow(
+        `Step ID ${errorInput.stepId} does not exist on Journey with ID ${block.journeyId}`
+      )
     })
   })
 
@@ -149,16 +208,16 @@ describe('VideoResolver', () => {
       )
     })
 
-    it('returns VideoCompleteEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1,
-        stepId: 'step.id',
-        label: VideoBlockSource.internal,
-        value: 'Video title'
-      }
+    const input = {
+      id: '1',
+      blockId: block.id,
+      position: 30.1,
+      stepId: 'step.id',
+      label: VideoBlockSource.internal,
+      value: 'Video title'
+    }
 
+    it('returns VideoCompleteEvent', async () => {
       expect(await resolver.videoCompleteEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoCompleteEvent',
@@ -166,6 +225,20 @@ describe('VideoResolver', () => {
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId
       })
+    })
+
+    it('should throw error when step id does not belong to the same journey as block id', async () => {
+      const errorInput = {
+        ...input,
+        stepId: 'errorStep.id'
+      }
+
+      await expect(
+        async () =>
+          await resolver.videoCompleteEventCreate('userId', errorInput)
+      ).rejects.toThrow(
+        `Step ID ${errorInput.stepId} does not exist on Journey with ID ${block.journeyId}`
+      )
     })
   })
 
@@ -179,16 +252,16 @@ describe('VideoResolver', () => {
       resolver = module.get<VideoExpandEventResolver>(VideoExpandEventResolver)
     })
 
-    it('returns VideoExpandEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1,
-        stepId: 'step.id',
-        label: VideoBlockSource.internal,
-        value: 'Video title'
-      }
+    const input = {
+      id: '1',
+      blockId: block.id,
+      position: 30.1,
+      stepId: 'step.id',
+      label: VideoBlockSource.internal,
+      value: 'Video title'
+    }
 
+    it('returns VideoExpandEvent', async () => {
       expect(await resolver.videoExpandEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoExpandEvent',
@@ -196,6 +269,19 @@ describe('VideoResolver', () => {
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId
       })
+    })
+
+    it('should throw error when step id does not belong to the same journey as block id', async () => {
+      const errorInput = {
+        ...input,
+        stepId: 'errorStep.id'
+      }
+
+      await expect(
+        async () => await resolver.videoExpandEventCreate('userId', errorInput)
+      ).rejects.toThrow(
+        `Step ID ${errorInput.stepId} does not exist on Journey with ID ${block.journeyId}`
+      )
     })
   })
 
@@ -211,16 +297,16 @@ describe('VideoResolver', () => {
       )
     })
 
-    it('returns VideoCollapseEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1,
-        stepId: 'step.id',
-        label: VideoBlockSource.internal,
-        value: 'Video title'
-      }
+    const input = {
+      id: '1',
+      blockId: block.id,
+      position: 30.1,
+      stepId: 'step.id',
+      label: VideoBlockSource.internal,
+      value: 'Video title'
+    }
 
+    it('returns VideoCollapseEvent', async () => {
       expect(await resolver.videoCollapseEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoCollapseEvent',
@@ -228,6 +314,20 @@ describe('VideoResolver', () => {
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId
       })
+    })
+
+    it('should throw error when step id does not belong to the same journey as block id', async () => {
+      const errorInput = {
+        ...input,
+        stepId: 'errorStep.id'
+      }
+
+      await expect(
+        async () =>
+          await resolver.videoCollapseEventCreate('userId', errorInput)
+      ).rejects.toThrow(
+        `Step ID ${errorInput.stepId} does not exist on Journey with ID ${block.journeyId}`
+      )
     })
   })
 
@@ -243,17 +343,17 @@ describe('VideoResolver', () => {
       )
     })
 
-    it('returns VideoProgressEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1,
-        progress: 25,
-        stepId: 'step.id',
-        label: VideoBlockSource.internal,
-        value: 'Video title'
-      }
+    const input = {
+      id: '1',
+      blockId: block.id,
+      position: 30.1,
+      progress: 25,
+      stepId: 'step.id',
+      label: VideoBlockSource.internal,
+      value: 'Video title'
+    }
 
+    it('returns VideoProgressEvent', async () => {
       expect(await resolver.videoProgressEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoProgressEvent',
@@ -261,6 +361,20 @@ describe('VideoResolver', () => {
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId
       })
+    })
+
+    it('should throw error when step id does not belong to the same journey as block id', async () => {
+      const errorInput = {
+        ...input,
+        stepId: 'errorStep.id'
+      }
+
+      await expect(
+        async () =>
+          await resolver.videoProgressEventCreate('userId', errorInput)
+      ).rejects.toThrow(
+        `Step ID ${errorInput.stepId} does not exist on Journey with ID ${block.journeyId}`
+      )
     })
   })
 })
