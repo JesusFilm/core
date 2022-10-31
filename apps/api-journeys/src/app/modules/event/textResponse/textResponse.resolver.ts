@@ -24,32 +24,23 @@ export class TextResponseSubmissionEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: TextResponseSubmissionEventCreateInput
   ): Promise<TextResponseSubmissionEvent> {
-    const block: { journeyId: string; parentBlockId: string } =
-      await this.blockService.get(input.blockId)
-    const journeyId = block.journeyId
-
-    const stepBlock = await this.eventService.getParentStepBlockByBlockId(
+    const block: { journeyId: string } = await this.blockService.get(
       input.blockId
     )
+
+    const journeyId = block.journeyId
 
     const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       journeyId
     )
 
-    const stepName: string =
-      block.parentBlockId != null
-        ? await this.eventService.getStepHeader(block.parentBlockId)
-        : 'Untitled'
-
     return await this.eventService.save({
       ...input,
       __typename: 'TextResponseSubmissionEvent',
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
-      journeyId,
-      stepId: stepBlock?.id,
-      label: stepName
+      journeyId
     })
   }
 }
