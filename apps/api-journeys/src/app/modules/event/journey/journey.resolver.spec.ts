@@ -58,11 +58,11 @@ describe('JourneyViewEventResolver', () => {
 
   const input: JourneyViewEventCreateInput = {
     id: '1',
-    journeyId: 'journey.id'
+    journeyId: 'journey.id',
+    language: 'English'
   }
 
   const journey = {
-    languageId: 'english',
     teamId: 'team.id'
   }
 
@@ -106,8 +106,7 @@ describe('JourneyViewEventResolver', () => {
         ...input,
         __typename: 'JourneyViewEvent',
         visitorId: visitorWithId.id,
-        createdAt: new Date().toISOString(),
-        languageId: journey.languageId
+        createdAt: new Date().toISOString()
       })
 
       expect(vService.save).not.toHaveBeenCalled()

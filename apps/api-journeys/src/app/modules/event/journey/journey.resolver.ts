@@ -56,8 +56,7 @@ export class JourneyViewEventResolver {
       ...input,
       __typename: 'JourneyViewEvent',
       visitorId: visitor.id,
-      createdAt: new Date().toISOString(),
-      languageId: journey.languageId
+      createdAt: new Date().toISOString()
     })
   }
 }
