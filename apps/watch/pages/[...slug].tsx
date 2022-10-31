@@ -30,7 +30,7 @@ import {
 } from '../src/libs/languageContext/LanguageContext'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { darkTheme } from '../src/components/ThemeProvider/ThemeProvider'
-import { VideosCarousel } from '../src/components/Videos/Carousel/VideosCarousel'
+import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCarousel'
 import { Footer } from '../src/components/Footer/Footer'
 import { Header } from '../src/components/Header'
 
