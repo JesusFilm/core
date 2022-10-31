@@ -4,9 +4,8 @@ import { ReactElement, useEffect, useState } from 'react'
 import { useLanguage } from '../../libs/languageContext/LanguageContext'
 import { GetVideos } from '../../../__generated__/GetVideos'
 import { VideosFilter } from '../../../__generated__/globalTypes'
-import { VideosCarousel } from './Carousel/VideosCarousel'
-import { VideosGrid } from './Grid/VideosGrid'
-import { VideosList } from './List/VideosList'
+import { VideosCarousel } from './VideosCarousel/VideosCarousel'
+import { VideosGrid } from './VideosGrid/VideosGrid'
 
 export const GET_VIDEOS = gql`
   query GetVideos(
@@ -38,7 +37,7 @@ export const GET_VIDEOS = gql`
 
 interface VideosProps {
   filter?: VideosFilter
-  layout?: 'grid' | 'carousel' | 'list'
+  layout?: 'grid' | 'carousel'
   variant?: 'small' | 'large'
   limit?: number
   showLoadMore?: boolean
@@ -50,7 +49,7 @@ function isAtEnd(count: number, limit: number, previousCount: number): boolean {
 }
 
 export function Videos({
-  layout = 'list',
+  layout = 'grid',
   filter = {},
   variant = 'large',
   limit = 8,
@@ -99,15 +98,6 @@ export function Videos({
           showLoadMore={showLoadMore}
           loading={loading}
           isEnd={isEnd}
-        />
-      )}
-      {layout === 'list' && (
-        <VideosList
-          videos={data?.videos ?? []}
-          onLoadMore={handleLoadMore}
-          loading={loading}
-          isEnd={isEnd}
-          variant={variant}
         />
       )}
     </>

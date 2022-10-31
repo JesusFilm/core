@@ -1,1 +1,1 @@
-export { VideoCard } from './Card/VideoCard'
+export { VideoCard } from './VideoCard/VideoCard'
