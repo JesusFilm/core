@@ -47,13 +47,6 @@ describe('Step', () => {
     value: 'stepName'
   }
 
-  const stepNextInput: StepNextEventCreateInput = {
-    ...input,
-    nextStepId: 'step.id',
-    label: 'step name',
-    value: 'next step name'
-  }
-
   const block = {
     id: 'block.id',
     journeyId: 'journey.id',
@@ -113,6 +106,13 @@ describe('Step', () => {
     })
 
     describe('stepNextEventCreate', () => {
+      const stepNextInput: StepNextEventCreateInput = {
+        ...input,
+        nextStepId: 'step.id',
+        label: 'step name',
+        value: 'next step name'
+      }
+
       it('should return step next event', async () => {
         expect(
           await resolver.stepNextEventCreate('userId', stepNextInput)
