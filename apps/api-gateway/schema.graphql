@@ -78,6 +78,13 @@ input ButtonClickEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Label should be the stepName of the button block"""
+  label: String
+  stepId: ID
+
+  """Value should be the label of the button block"""
+  value: String
 }
 
 enum ButtonColor {

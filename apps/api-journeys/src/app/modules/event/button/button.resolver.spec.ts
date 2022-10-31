@@ -21,62 +21,28 @@ describe('ButtonClickEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((event) => event),
-      getStepHeader: jest.fn((parentBlockId) => {
-        switch (parentBlockId) {
-          case block.parentBlockId:
-            return 'header'
-          case untitledStepNameBlock.parentBlockId:
-            return 'Untitled'
-        }
-      }),
-      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId),
-      getParentStepBlockByBlockId: jest.fn(() => stepBlock)
+      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId)
     })
   }
 
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn((blockId) => {
-        switch (blockId) {
-          case block.id:
-            return block
-          case untitledStepNameBlock.id:
-            return untitledStepNameBlock
-        }
-      })
+      get: jest.fn(() => block)
     })
   }
 
   const input: ButtonClickEventCreateInput = {
     id: '1',
-    blockId: 'block.id'
-  }
-
-  const untitledStepInput: ButtonClickEventCreateInput = {
-    id: '2',
-    blockId: 'untitledStepNameBlock.id'
+    blockId: 'block.id',
+    stepId: 'step.id',
+    label: 'Step name',
+    value: 'Button label'
   }
 
   const block = {
     id: 'block.id',
-    journeyId: 'journey.id',
-    parentBlockId: 'parent.id',
-    label: 'label'
-  }
-
-  const untitledStepNameBlock = {
-    ...block,
-    id: 'untitledStepNameBlock.id',
-    parentBlockId: 'untitled'
-  }
-
-  const stepBlock = {
-    __typename: 'StepBlock',
-    id: 'stepBlock.id',
-    parentBlockId: null,
-    journeyId: 'journey.id',
-    locked: false
+    journeyId: 'journey.id'
   }
 
   const visitor = {
@@ -99,25 +65,7 @@ describe('ButtonClickEventResolver', () => {
         __typename: 'ButtonClickEvent',
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: block.journeyId,
-        stepId: stepBlock.id,
-        label: 'header',
-        value: block.label
-      })
-    })
-
-    it('should return event with untitled label', async () => {
-      expect(
-        await resolver.buttonClickEventCreate('userId', untitledStepInput)
-      ).toEqual({
-        ...untitledStepInput,
-        __typename: 'ButtonClickEvent',
-        visitorId: visitorWithId.id,
-        createdAt: new Date().toISOString(),
-        journeyId: untitledStepNameBlock.journeyId,
-        stepId: stepBlock.id,
-        label: 'Untitled',
-        value: untitledStepNameBlock.label
+        journeyId: block.journeyId
       })
     })
   })

@@ -719,6 +719,13 @@ input ButtonClickEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
+
+  """Label should be the stepName of the button block"""
+  label: String
+
+  """Value should be the label of the button block"""
+  value: String
 }
 
 type ButtonClickEvent implements Event {
