@@ -116,7 +116,7 @@ const messageNetworks = [
   },
   {
     link: 't.me',
-    platform: 'Facebook'
+    platform: 'Telegram'
   },
   {
     link: 'wa.me',
