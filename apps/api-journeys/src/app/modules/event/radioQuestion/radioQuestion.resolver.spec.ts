@@ -20,71 +20,31 @@ describe('RadioQuestionSubmissionEventResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((input) => input),
-      getStepHeader: jest.fn((parentBlockId) => {
-        switch (parentBlockId) {
-          case radioQuestionBlock.parentBlockId:
-            return 'header'
-          case untitledStepNameBlock.parentBlockId:
-            return 'Untitled'
-        }
-      }),
-      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId),
-      getParentStepBlockByBlockId: jest.fn(() => stepBlock)
+      save: jest.fn((event) => event),
+      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId)
     })
   }
 
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn((blockId) => {
-        switch (blockId) {
-          case radioQuestionBlock.id:
-            return radioQuestionBlock
-          case radioOptionBlock.id:
-            return radioOptionBlock
-          case untitledStepNameBlock.id:
-            return untitledStepNameBlock
-        }
-      })
+      get: jest.fn(() => block)
     })
   }
 
   const input: RadioQuestionSubmissionEventCreateInput = {
     id: '1',
     blockId: 'block.id',
-    radioOptionBlockId: 'radioOptionBlock.id'
-  }
-  const untitledStepInput: RadioQuestionSubmissionEventCreateInput = {
-    id: '2',
-    blockId: 'untitledStepNameBlock.id',
-    radioOptionBlockId: 'radioOptionBlock.id'
+    radioOptionBlockId: 'radioOptionBlock.id',
+    stepId: 'step.id',
+    label: 'stepName',
+    value: 'radioOption.label'
   }
 
-  const radioQuestionBlock = {
+  const block = {
     id: 'block.id',
     journeyId: 'journey.id',
     parentBlockId: 'parent.id'
-  }
-
-  const untitledStepNameBlock = {
-    ...radioQuestionBlock,
-    id: 'untitledStepNameBlock.id',
-    parentBlockId: 'untitled'
-  }
-
-  const radioOptionBlock = {
-    id: 'radioOptionBlock.id',
-    label: 'option',
-    journeyId: 'journey.id'
-  }
-
-  const stepBlock = {
-    __typename: 'StepBlock',
-    id: 'stepBlock.id',
-    parentBlockId: null,
-    journeyId: 'journey.id',
-    locked: false
   }
 
   const visitor = {
@@ -111,34 +71,11 @@ describe('RadioQuestionSubmissionEventResolver', () => {
       expect(
         await resolver.radioQuestionSubmissionEventCreate('userId', input)
       ).toEqual({
-        id: input.id,
-        blockId: input.blockId,
+        ...input,
         __typename: 'RadioQuestionSubmissionEvent',
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
-        journeyId: radioQuestionBlock.journeyId,
-        stepId: stepBlock.id,
-        label: 'header',
-        value: radioOptionBlock.label
-      })
-    })
-
-    it('shoudl return event with untitled label', async () => {
-      expect(
-        await resolver.radioQuestionSubmissionEventCreate(
-          'userId',
-          untitledStepInput
-        )
-      ).toEqual({
-        id: untitledStepInput.id,
-        blockId: untitledStepInput.blockId,
-        __typename: 'RadioQuestionSubmissionEvent',
-        visitorId: visitorWithId.id,
-        createdAt: new Date().toISOString(),
-        journeyId: untitledStepNameBlock.journeyId,
-        stepId: stepBlock.id,
-        label: 'Untitled',
-        value: radioOptionBlock.label
+        journeyId: block.journeyId
       })
     })
   })

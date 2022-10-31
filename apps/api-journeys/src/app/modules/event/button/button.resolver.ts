@@ -24,8 +24,9 @@ export class ButtonClickEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: ButtonClickEventCreateInput
   ): Promise<ButtonClickEvent> {
-    const block: { journeyId: string; parentBlockId: string; label: string } =
-      await this.blockService.get(input.blockId)
+    const block: { journeyId: string } = await this.blockService.get(
+      input.blockId
+    )
 
     const journeyId = block.journeyId
 
