@@ -169,6 +169,10 @@ input ChatOpenedEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+  stepId: ID
+
+  """Value should be the message platform"""
+  value: MessagePlatform
 }
 
 type Country
@@ -501,6 +505,19 @@ input LinkActionInput {
   gtmEventName: String
   target: String
   url: String!
+}
+
+enum MessagePlatform {
+  facebook
+  instagram
+  line
+  skype
+  snapchat
+  telegram
+  tiktok
+  viber
+  vk
+  whatAapp
 }
 
 type Mutation {
@@ -845,7 +862,14 @@ input StepNextEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """Label should be the stepName of the step block"""
+  label: String
   nextStepId: ID!
+  stepId: ID
+
+  """Value should be the stepName of the next step block"""
+  value: String
 }
 
 type StepViewEvent implements Event {

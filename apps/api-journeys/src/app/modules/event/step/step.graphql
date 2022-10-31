@@ -20,7 +20,16 @@ input StepNextEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   nextStepId: ID!
+  """
+  Label should be the stepName of the step block
+  """
+  label: String
+  """
+  Value should be the stepName of the next step block
+  """
+  value: String
 }
 
 type StepNextEvent implements Event {

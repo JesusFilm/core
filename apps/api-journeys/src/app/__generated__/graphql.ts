@@ -123,6 +123,19 @@ export enum VideoBlockSource {
     youTube = "youTube"
 }
 
+export enum MessagePlatform {
+    facebook = "facebook",
+    telegram = "telegram",
+    whatAapp = "whatAapp",
+    instagram = "instagram",
+    viber = "viber",
+    vk = "vk",
+    snapchat = "snapchat",
+    skype = "skype",
+    line = "line",
+    tiktok = "tiktok"
+}
+
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"
@@ -373,6 +386,8 @@ export class ButtonClickEventCreateInput {
 export class ChatOpenedEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
+    value?: Nullable<MessagePlatform>;
 }
 
 export class JourneyViewEventCreateInput {
@@ -407,7 +422,10 @@ export class StepViewEventCreateInput {
 export class StepNextEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     nextStepId: string;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class TextResponseSubmissionEventCreateInput {

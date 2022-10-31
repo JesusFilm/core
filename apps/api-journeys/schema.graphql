@@ -732,12 +732,29 @@ type ButtonClickEvent implements Event {
   id: ID!
 }
 
+enum MessagePlatform {
+  facebook
+  telegram
+  whatAapp
+  instagram
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tiktok
+}
+
 input ChatOpenedEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
   blockId: ID!
+  stepId: ID
+
+  """Value should be the message platform"""
+  value: MessagePlatform
 }
 
 type ChatOpenedEvent implements Event {
@@ -817,7 +834,14 @@ input StepNextEventCreateInput {
   """
   id: ID
   blockId: ID!
+  stepId: ID
   nextStepId: ID!
+
+  """Label should be the stepName of the step block"""
+  label: String
+
+  """Value should be the stepName of the next step block"""
+  value: String
 }
 
 type StepNextEvent implements Event {
