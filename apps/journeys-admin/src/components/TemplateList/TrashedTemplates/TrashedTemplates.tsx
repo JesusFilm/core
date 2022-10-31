@@ -2,11 +2,11 @@ import { ReactElement, useState, useEffect, useRef } from 'react'
 import { AuthUser } from 'next-firebase-auth'
 import Typography from '@mui/material/Typography'
 import { gql, useMutation, useQuery } from '@apollo/client'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { useSnackbar } from 'notistack'
 import Card from '@mui/material/Card'
 import { useTranslation } from 'react-i18next'
 import { SortOrder } from '../../JourneyList/JourneySort'
-import { Dialog } from '../../Dialog'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import {
   RESTORE_TRASHED_JOURNEYS,

@@ -11,21 +11,21 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import Link from 'next/link'
 import Stack from '@mui/material/Stack'
 
-import { VideoType } from '../../../../../__generated__/globalTypes'
-import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
-import { theme } from '../../../ThemeProvider/ThemeProvider'
+import { VideoType } from '../../../../__generated__/globalTypes'
+import { GetVideos_videos } from '../../../../__generated__/GetVideos'
+import { theme } from '../../ThemeProvider/ThemeProvider'
 
-interface VideoListCardProps {
+interface VideoCardProps {
   video?: GetVideos_videos
   disabled?: boolean
   routePrefix?: string | undefined
 }
 
-export function VideoListCard({
+export function VideoCard({
   video,
   disabled = false,
   routePrefix = undefined
-}: VideoListCardProps): ReactElement {
+}: VideoCardProps): ReactElement {
   return (
     <>
       <Card sx={{ width: 338, height: 140, my: 5, mr: 20, mb: '14px', mt: 0 }}>

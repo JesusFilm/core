@@ -1,5 +1,5 @@
-import { VideoType } from '../../../../__generated__/globalTypes'
-import { GetVideos_videos } from '../../../../__generated__/GetVideos'
+import { VideoType } from '../../../__generated__/globalTypes'
+import { GetVideos_videos } from '../../../__generated__/GetVideos'
 
 export const videos: GetVideos_videos[] = [
   {
