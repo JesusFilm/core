@@ -21,14 +21,6 @@ describe('StepViewEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((input) => input),
-      getStepHeader: jest.fn((parentBlockId) => {
-        switch (parentBlockId) {
-          case block.parentBlockId:
-            return 'header'
-          case untitledStepNameBlock.parentBlockId:
-            return 'Untitled'
-        }
-      }),
       getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId)
     })
   }
@@ -36,38 +28,20 @@ describe('StepViewEventResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn((blockId) => {
-        switch (blockId) {
-          case block.id:
-            return block
-          case untitledStepNameBlock.id:
-            return untitledStepNameBlock
-        }
-      })
+      get: jest.fn(() => block)
     })
   }
 
   const input: StepViewEventCreateInput = {
     id: '1',
-    blockId: 'block.id'
-  }
-
-  const untitledStepInput: StepViewEventCreateInput = {
-    id: '2',
-    blockId: 'untitledStepNameBlock.id'
+    blockId: 'block.id',
+    value: 'stepName'
   }
 
   const block = {
     id: 'block.id',
     journeyId: 'journey.id',
     parentBlockId: 'parent.id',
-    locked: false
-  }
-
-  const untitledStepNameBlock = {
-    ...block,
-    id: 'untitledStepNameBlock.id',
-    parentBlockId: 'untitled',
     locked: false
   }
 
@@ -92,24 +66,7 @@ describe('StepViewEventResolver', () => {
         visitorId: visitorWithId.id,
         createdAt: new Date().toISOString(),
         journeyId: block.journeyId,
-        stepId: input.blockId,
-        label: null,
-        value: 'header'
-      })
-    })
-
-    it('should return event with untitled label', async () => {
-      expect(
-        await resolver.stepViewEventCreate('userId', untitledStepInput)
-      ).toEqual({
-        ...untitledStepInput,
-        __typename: 'StepViewEvent',
-        visitorId: visitorWithId.id,
-        createdAt: new Date().toISOString(),
-        journeyId: untitledStepNameBlock.journeyId,
-        stepId: untitledStepInput.blockId,
-        label: null,
-        value: 'Untitled'
+        stepId: input.blockId
       })
     })
   })
