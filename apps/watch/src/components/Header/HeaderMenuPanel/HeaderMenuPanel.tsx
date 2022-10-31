@@ -1,4 +1,4 @@
-import { ReactElement, ReactEventHandler } from 'react'
+import { ReactElement, KeyboardEvent, MouseEvent } from 'react'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
@@ -17,7 +17,10 @@ import NextLink from 'next/link'
 import logo from '../../../../public/taskbar-icon.svg'
 
 interface HeaderMenuPanelProps {
-  toggleDrawer: (anchor: string, open: boolean) => ReactEventHandler
+  toggleDrawer: (
+    anchor: string,
+    open: boolean
+  ) => (event: KeyboardEvent | MouseEvent) => void
 }
 
 export function HeaderMenuPanel({
