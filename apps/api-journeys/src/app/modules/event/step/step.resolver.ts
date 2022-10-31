@@ -4,6 +4,7 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { UserInputError } from 'apollo-server'
 import {
   StepNextEvent,
   StepNextEventCreateInput,
@@ -65,18 +66,18 @@ export class StepNextEventResolver {
 
     const journeyId = block.journeyId
 
+    const stepBlock: { journeyId: string } | null =
+      input.nextStepId != null
+        ? await this.blockService.get(input.nextStepId)
+        : null
+    if (stepBlock == null || stepBlock.journeyId !== journeyId)
+      throw new UserInputError(
+        `Next step ID ${input.nextStepId} does not exist on Journey with ID ${journeyId}`
+      )
+
     const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
       userId,
       journeyId
-    )
-
-    const stepName: string =
-      block.parentBlockId != null
-        ? await this.eventService.getStepHeader(block.parentBlockId)
-        : 'Untitled'
-
-    const nextStepName: string = await this.eventService.getStepHeader(
-      input.nextStepId
     )
 
     return await this.eventService.save({
@@ -84,10 +85,7 @@ export class StepNextEventResolver {
       __typename: 'StepNextEvent',
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
-      journeyId,
-      stepId: input.blockId,
-      label: stepName,
-      value: nextStepName
+      journeyId
     })
   }
 }

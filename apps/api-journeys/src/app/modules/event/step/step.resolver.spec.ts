@@ -20,7 +20,7 @@ describe('Step', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((input) => input),
+      save: jest.fn((event) => event),
       getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId)
     })
   }
@@ -28,7 +28,16 @@ describe('Step', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn(() => block)
+      get: jest.fn((blockId) => {
+        switch (blockId) {
+          case block.id:
+            return block
+          case stepBlock.id:
+            return stepBlock
+          case errorStep.id:
+            return errorStep
+        }
+      })
     })
   }
 
@@ -39,9 +48,10 @@ describe('Step', () => {
   }
 
   const stepNextInput: StepNextEventCreateInput = {
-    id: '3',
-    blockId: 'stepNextBlock.id',
-    nextStepId: 'nextStep.id'
+    ...input,
+    nextStepId: 'step.id',
+    label: 'step name',
+    value: 'next step name'
   }
 
   const block = {
@@ -51,11 +61,23 @@ describe('Step', () => {
     locked: false
   }
 
+  const stepBlock = {
+    ...block,
+    id: 'step.id'
+  }
+
+  const errorStep = {
+    ...block,
+    id: 'anotherStep.id',
+    journeyId: 'anotherJourney.id'
+  }
+
   const visitor = {
     _key: 'visitor.id'
   }
 
   const visitorWithId = keyAsId(visitor)
+
   describe('StepViewEventResolver', () => {
     let resolver: StepViewEventResolver
 
@@ -66,15 +88,53 @@ describe('Step', () => {
       resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
     })
 
-  describe('stepViewEventCreate', () => {
-    it('returns StepViewEvent', async () => {
-      expect(await resolver.stepViewEventCreate('userId', input)).toEqual({
-        ...input,
-        __typename: 'StepViewEvent',
-        visitorId: visitorWithId.id,
-        createdAt: new Date().toISOString(),
-        journeyId: block.journeyId,
-        stepId: input.blockId
+    describe('stepViewEventCreate', () => {
+      it('returns StepViewEvent', async () => {
+        expect(await resolver.stepViewEventCreate('userId', input)).toEqual({
+          ...input,
+          __typename: 'StepViewEvent',
+          visitorId: visitorWithId.id,
+          createdAt: new Date().toISOString(),
+          journeyId: block.journeyId,
+          stepId: input.blockId
+        })
+      })
+    })
+  })
+
+  describe('StepNextEventResolver', () => {
+    let resolver: StepNextEventResolver
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [StepNextEventResolver, eventService, blockService]
+      }).compile()
+      resolver = module.get<StepNextEventResolver>(StepNextEventResolver)
+    })
+
+    describe('stepNextEventCreate', () => {
+      it('should return step next event', async () => {
+        expect(
+          await resolver.stepNextEventCreate('userId', stepNextInput)
+        ).toEqual({
+          ...stepNextInput,
+          __typename: 'StepNextEvent',
+          visitorId: visitorWithId.id,
+          createdAt: new Date().toISOString(),
+          journeyId: block.journeyId
+        })
+      })
+
+      it('should throw error when next step id does not belong to the same journey as block id', async () => {
+        const errorInput = {
+          ...stepNextInput,
+          nextStepId: errorStep.id
+        }
+        await expect(
+          async () => await resolver.stepNextEventCreate('userId', errorInput)
+        ).rejects.toThrow(
+          `Next step ID ${errorInput.nextStepId} does not exist on Journey with ID ${stepBlock.journeyId}`
+        )
       })
     })
   })
