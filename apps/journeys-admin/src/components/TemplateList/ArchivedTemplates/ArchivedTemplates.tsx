@@ -6,7 +6,7 @@ import { useSnackbar } from 'notistack'
 import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import { Dialog } from '../../Dialog'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { SortOrder } from '../../JourneyList/JourneySort'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import {

@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import Typography from '@mui/material/Typography'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
 import { AuthUser } from 'next-firebase-auth'
@@ -12,7 +13,6 @@ import {
 } from '../../../../__generated__/GetTrashedJourneys'
 import { JourneyCard } from '../JourneyCard'
 import { SortOrder } from '../JourneySort'
-import { Dialog } from '../../Dialog'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 
 export const GET_TRASHED_JOURNEYS = gql`
