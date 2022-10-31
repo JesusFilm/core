@@ -4,7 +4,6 @@ import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { watchConfig } from '../../libs/storybook'
-import { ThemeProvider } from '../ThemeProvider'
 import { Header } from '../Header'
 import { PageWrapper } from '.'
 
@@ -50,15 +49,13 @@ const MuiContainer = ({
 )
 
 const Template: Story = () => (
-  <ThemeProvider>
-    <PageWrapper
-      isStory
-      header={<Header />}
-      footer={<MuiContainer height="100%" label="Footer" />}
-    >
-      <MuiContainer height="600px" label="Body" />
-    </PageWrapper>
-  </ThemeProvider>
+  <PageWrapper
+    isStory
+    header={<Header />}
+    footer={<MuiContainer height="100%" label="Footer" />}
+  >
+    <MuiContainer height="600px" label="Body" />
+  </PageWrapper>
 )
 
 export const Default = Template.bind({})
