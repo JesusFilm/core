@@ -1,13 +1,13 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { watchConfig } from '../../../libs/storybook'
+import { watchConfig } from '../../libs/storybook'
 import { videos } from './testData'
-import { GET_VIDEOS, VideoList } from './VideoList'
+import { GET_VIDEOS, Videos } from './Videos'
 
-const VideoListStory = {
+const VideosStory = {
   ...watchConfig,
-  component: VideoList,
-  title: 'Watch/Videos/VideoList'
+  component: Videos,
+  title: 'Watch/Videos'
 }
 
 const Template: Story = ({ ...args }) => {
@@ -33,7 +33,7 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <VideoList
+      <Videos
         filter={{ availableVariantLanguageIds: ['529'] }}
         layout={args.layout}
         variant={args.variant}
@@ -54,18 +54,4 @@ Grid.args = {
   limit: 20
 }
 
-export const ListSmall = Template.bind({})
-ListSmall.args = {
-  layout: 'list',
-  variant: 'small',
-  limit: 8
-}
-
-export const ListLarge = Template.bind({})
-ListLarge.args = {
-  layout: 'list',
-  variant: 'large',
-  limit: 8
-}
-
-export default VideoListStory as Meta
+export default VideosStory as Meta
