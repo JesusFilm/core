@@ -2,13 +2,14 @@ import { ReactElement } from 'react'
 import Grid from '@mui/material/Grid'
 import AddRounded from '@mui/icons-material/AddRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
-import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { deepmerge } from '@mui/utils'
+import { getTheme, ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
-import { VideoListCard } from '../Card/VideoListCard'
+import { GetVideos_videos } from '../../../../__generated__/GetVideos'
+import { VideoCard } from '../../Video'
 
-interface VideoListGridProps {
+interface VideosGridProps {
   videos: GetVideos_videos[]
   loading?: boolean
   isEnd?: boolean
@@ -17,35 +18,37 @@ interface VideoListGridProps {
   onLoadMore: () => Promise<void>
 }
 
-export function VideoListGrid({
+export function VideosGrid({
   loading = false,
   isEnd = false,
   onLoadMore,
   showLoadMore = true,
   videos,
   routePrefix = undefined
-}: VideoListGridProps): ReactElement {
-  const theme = useTheme()
+}: VideosGridProps): ReactElement {
   const gridTheme = createTheme(
-    deepmerge(theme, {
-      breakpoints: {
-        values: {
-          xs: 0,
-          sm: 725,
-          md: 1043,
-          lg: 1450,
-          xl: 1765
+    deepmerge(
+      getTheme({ themeName: ThemeName.website, themeMode: ThemeMode.light }),
+      {
+        breakpoints: {
+          values: {
+            xs: 0,
+            sm: 725,
+            md: 1043,
+            lg: 1450,
+            xl: 1765
+          }
         }
       }
-    })
+    )
   )
   return (
     <ThemeProvider theme={gridTheme}>
-      <Grid container spacing={4} data-testid="video-list-grid">
+      <Grid container spacing={4} data-testid="videos-grid">
         {(videos.length ?? 0) > 0 &&
           videos.map((video, index) => (
             <Grid item key={index} md={4} sm={6} xs={12} lg={3}>
-              <VideoListCard video={video} />
+              <VideoCard video={video} />
             </Grid>
           ))}
         {loading &&
@@ -56,10 +59,10 @@ export function VideoListGrid({
               md={4}
               sm={6}
               xs={12}
-              data-testid="video-list-grid-placeholder"
+              data-testid="videos-grid-placeholder"
               mr="16px"
             >
-              <VideoListCard />
+              <VideoCard />
             </Grid>
           ))}
         {!isEnd && showLoadMore && (

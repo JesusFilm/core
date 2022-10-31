@@ -31,7 +31,7 @@ import {
   useLanguage
 } from '../src/libs/languageContext/LanguageContext'
 import { PageWrapper } from '../src/components/PageWrapper'
-import { VideoListCarousel } from '../src/components/Videos/VideoList/Carousel/VideoListCarousel'
+import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCarousel'
 import { Footer } from '../src/components/Footer/Footer'
 import { Header } from '../src/components/Header'
 
@@ -370,13 +370,13 @@ export default function SeoFriendly(): ReactElement {
               }}
             >
               {data.video.episodes.length > 0 && (
-                <VideoListCarousel
+                <VideosCarousel
                   videos={data.video.episodes}
                   routePrefix={routes.join('/')}
                 />
               )}
               {siblingsData?.episodes?.length > 0 && (
-                <VideoListCarousel
+                <VideosCarousel
                   videos={siblingsData.episodes}
                   routePrefix={siblingRoute(routes).join('/')}
                 />
