@@ -192,6 +192,24 @@ interface Event {
   id: ID!
 }
 
+enum EventType {
+  ButtonClickEvent
+  ChatOpenedEvent
+  JourneyViewEvent
+  RadioQuestionSubmissionEvent
+  SignUpEventSubmissionEvent
+  StepNextEvent
+  StepViewEvent
+  TextResponseSubmissionEvent
+  VideoCollapseEvent
+  VideoCompleteEvent
+  VideoExpandEvent
+  VideoPauseEvent
+  VideoPlayEvent
+  VideoProgressEvent
+  VideoStartEvent
+}
+
 enum GridAlignItems {
   baseline
   center
@@ -662,6 +680,7 @@ type Query {
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
+  visitorEvents(eventTypes: [EventType!], visitorId: String!): [VisitorEvent!]! @join__field(graph: JOURNEYS)
 
   """A list of visitors that are connected with a specific team."""
   visitorsConnection(
@@ -1416,6 +1435,44 @@ type VisitorEdge {
 
   """The item at the end of the edge."""
   node: Visitor!
+}
+
+type VisitorEvent {
+  blockId: ID
+  createdAt: DateTime!
+
+  """
+  Email field used to return the user submited email for SignUpSubmissionEvent
+  """
+  email: String
+  id: ID!
+  journeyId: ID!
+  label: String
+
+  """
+  Language field used to return language of a journey for JourneyViewEvent
+  """
+  language: String
+
+  """
+  Position field used to return the position of the video for all VideoEvents
+  """
+  position: Float
+
+  """
+  Progress field used to represent percentage of completion of a video block for VideoProgressEvent
+  """
+  progress: Int
+
+  """
+  RadioOptionBlockId field used to return the selected option for RadioQuestionSubmissionEvent
+  """
+  radioOptionBlockId: ID
+  stepId: ID
+
+  """TODO: check if VideoBlockSource enum can be type String"""
+  value: String
+  visitorId: ID!
 }
 
 """A list of visitors connected with a team."""

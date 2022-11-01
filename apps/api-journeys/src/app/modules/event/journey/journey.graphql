@@ -6,8 +6,20 @@ input JourneyViewEventCreateInput {
   journeyId: ID!
 }
 
+extend type Language @key(fields: "id") {
+  id: ID! @external
+}
+
 type JourneyViewEvent implements Event {
   id: ID!
+  visitorId: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  blockId: ID
+  stepId: ID
+  label: String
+  value: String
+  language: Language
 }
 
 extend type Mutation {
