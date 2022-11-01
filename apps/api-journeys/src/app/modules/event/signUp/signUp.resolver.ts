@@ -18,7 +18,7 @@ export class SignUpSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
     private readonly blockService: BlockService,
-    private readonly visitorSerice: VisitorService
+    private readonly visitorService: VisitorService
   ) {}
 
   @Mutation()
@@ -32,24 +32,29 @@ export class SignUpSubmissionEventResolver {
     )
     const journeyId = block.journeyId
 
-    const stepBlock: { journeyId: string } | null =
-      input.stepId != null ? await this.blockService.get(input.stepId) : null
-    if (stepBlock == null || stepBlock.journeyId !== journeyId)
+    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+      userId,
+      journeyId
+    )
+
+    const validStep = await this.blockService.validateBlock(
+      input.stepId ?? null,
+      'journeyId',
+      journeyId
+    )
+
+    if (!validStep) {
       throw new UserInputError(
         `Step ID ${
           input.stepId as string
         } does not exist on Journey with ID ${journeyId}`
       )
-
-    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
-      userId,
-      journeyId
-    )
+    }
 
     if (visitor.name == null || visitor.email == null) {
       const name = visitor.name == null ? input.name : visitor.name
       const email = visitor.email == null ? input.email : visitor.email
-      await this.visitorSerice.update(visitor.id, {
+      await this.visitorService.update(visitor.id, {
         name,
         email
       })
