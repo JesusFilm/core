@@ -43,7 +43,10 @@ const allStories = [
 ]
 
 module.exports = {
-  staticDirs: ['./static'],
+  staticDirs: [
+    './static',
+    { from: '../apps/watch/public/fonts', to: '/fonts' }
+  ],
   stories: allStories,
   addons: [
     '@storybook/addon-essentials',
