@@ -742,7 +742,7 @@ input JourneyViewEventCreateInput {
   """
   id: ID
   journeyId: ID!
-  language: String
+  languageId: String
 }
 
 type JourneyViewEvent implements Event {

@@ -373,7 +373,7 @@ export class ButtonClickEventCreateInput {
 export class JourneyViewEventCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    language?: Nullable<string>;
+    languageId?: Nullable<string>;
 }
 
 export class RadioQuestionSubmissionEventCreateInput {
