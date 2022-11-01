@@ -44,4 +44,20 @@ describe('JourneyViewEventResolver', () => {
       })
     })
   })
+
+  describe('language', () => {
+    it('returns object for federation', () => {
+      expect(resolver.language({ value: 'languageId' })).toEqual({
+        __typename: 'Language',
+        id: 'languageId'
+      })
+    })
+
+    it('when no languageId returns object for federation with default', () => {
+      expect(resolver.language({})).toEqual({
+        __typename: 'Language',
+        id: '529'
+      })
+    })
+  })
 })

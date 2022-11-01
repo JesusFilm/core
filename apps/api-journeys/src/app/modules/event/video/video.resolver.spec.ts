@@ -3,7 +3,7 @@ import { EventService } from '../event.service'
 import {
   VideoStartEventResolver,
   VideoPlayEventResolver,
-  VideoPuaseEventResolver,
+  VideoPauseEventResolver,
   VideoCompleteEventResolver,
   VideoCollapseEventResolver,
   VideoExpandEventResolver,
@@ -86,7 +86,7 @@ describe('VideoResolver', () => {
   })
 
   describe('videoPauseEventCreate', () => {
-    let resolver: VideoPuaseEventResolver
+    let resolver: VideoPauseEventResolver
 
     const eventService = {
       provide: EventService,
@@ -97,9 +97,9 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoPuaseEventResolver, eventService]
+        providers: [VideoPauseEventResolver, eventService]
       }).compile()
-      resolver = module.get<VideoPuaseEventResolver>(VideoPuaseEventResolver)
+      resolver = module.get<VideoPauseEventResolver>(VideoPauseEventResolver)
     })
 
     it('returns VideoPauseEvent', async () => {
