@@ -121,7 +121,7 @@
     "@babel/core": "7.12.13",
     "@babel/preset-typescript": "7.12.13",
     "@commitlint/cli": "^16.1.0",
-    "@docusaurus/module-type-aliases": "^2.0.1",
+    "@docusaurus/module-type-aliases": "^2.2.0",
     "@emotion/babel-plugin": "11.3.0",
     "@graphql-codegen/add": "^3.0.0",
     "@graphql-codegen/cli": "^2.0.1",
