@@ -87,11 +87,6 @@ describe('Button', () => {
       resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
     })
 
-    const errorInput: ButtonClickEventCreateInput = {
-      ...input,
-      stepId: 'errorStep.id'
-    }
-
     describe('buttonClickEventCreate', () => {
       it('returns ButtonClickEvent', async () => {
         expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
@@ -104,6 +99,11 @@ describe('Button', () => {
       })
 
       it('should throw error when step id does not belong to the same journey as block id', async () => {
+        const errorInput: ButtonClickEventCreateInput = {
+          ...input,
+          stepId: 'errorStep.id'
+        }
+
         await expect(
           async () =>
             await resolver.buttonClickEventCreate('userId', errorInput)
@@ -121,7 +121,12 @@ describe('Button', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [ChatOpenedEventResolver, eventService, blockService]
+        providers: [
+          ChatOpenedEventResolver,
+          eventService,
+          blockService,
+          visitorService
+        ]
       }).compile()
       resolver = module.get<ChatOpenedEventResolver>(ChatOpenedEventResolver)
     })
@@ -129,9 +134,6 @@ describe('Button', () => {
     it('should return ChatOpenedEvent', async () => {
       const chatOpenInput: ChatOpenedEventCreateInput = {
         ...input,
-        id: '3',
-        blockId: 'block.id',
-        stepId: 'step.id',
         value: MessagePlatform.facebook
       }
 
@@ -149,8 +151,6 @@ describe('Button', () => {
     it('should throw error when step id does not belong to the same journey as block id', async () => {
       const chatErrorInput: ChatOpenedEventCreateInput = {
         ...input,
-        id: '3',
-        blockId: 'block.id',
         stepId: 'anotherStep.id',
         value: MessagePlatform.facebook
       }

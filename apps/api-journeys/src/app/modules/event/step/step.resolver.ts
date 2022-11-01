@@ -54,7 +54,8 @@ export class StepViewEventResolver {
 export class StepNextEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly blockService: BlockService
+    private readonly blockService: BlockService,
+    private readonly visitorService: VisitorService
   ) {}
 
   @Mutation()
@@ -65,22 +66,26 @@ export class StepNextEventResolver {
   ): Promise<StepNextEvent> {
     const block: { journeyId: string; parentBlockId: string } =
       await this.blockService.get(input.blockId)
-
     const journeyId = block.journeyId
 
-    const stepBlock: { journeyId: string } | null =
-      input.nextStepId != null
-        ? await this.blockService.get(input.nextStepId)
-        : null
-    if (stepBlock == null || stepBlock.journeyId !== journeyId)
-      throw new UserInputError(
-        `Next step ID ${input.nextStepId} does not exist on Journey with ID ${journeyId}`
-      )
-
-    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
+    const visitor = await this.visitorService.getByUserIdAndJourneyId(
       userId,
       journeyId
     )
+
+    const validStep = await this.blockService.validateBlock(
+      input.nextStepId ?? null,
+      'journeyId',
+      journeyId
+    )
+
+    if (!validStep) {
+      throw new UserInputError(
+        `Next step ID ${
+          input.nextStepId as string
+        } does not exist on Journey with ID ${journeyId}`
+      )
+    }
 
     return await this.eventService.save({
       ...input,

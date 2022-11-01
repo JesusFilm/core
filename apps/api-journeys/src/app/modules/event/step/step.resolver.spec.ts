@@ -28,14 +28,13 @@ describe('Step', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn((blockId) => {
-        switch (blockId) {
-          case block.id:
-            return block
-          case stepBlock.id:
-            return stepBlock
-          case errorStep.id:
-            return errorStep
+      get: jest.fn(() => block),
+      validateBlock: jest.fn((id) => {
+        switch (id) {
+          case 'step.id':
+            return true
+          default:
+            return false
         }
       })
     })
@@ -59,17 +58,6 @@ describe('Step', () => {
     journeyId: 'journey.id',
     parentBlockId: 'parent.id',
     locked: false
-  }
-
-  const stepBlock = {
-    ...block,
-    id: 'step.id'
-  }
-
-  const errorStep = {
-    ...block,
-    id: 'anotherStep.id',
-    journeyId: 'anotherJourney.id'
   }
 
   const visitor = {
@@ -112,7 +100,12 @@ describe('Step', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [StepNextEventResolver, eventService, blockService]
+        providers: [
+          StepNextEventResolver,
+          eventService,
+          blockService,
+          visitorService
+        ]
       }).compile()
       resolver = module.get<StepNextEventResolver>(StepNextEventResolver)
     })
@@ -140,12 +133,14 @@ describe('Step', () => {
       it('should throw error when next step id does not belong to the same journey as block id', async () => {
         const errorInput = {
           ...stepNextInput,
-          nextStepId: errorStep.id
+          nextStepId: 'anotherStep.id'
         }
         await expect(
           async () => await resolver.stepNextEventCreate('userId', errorInput)
         ).rejects.toThrow(
-          `Next step ID ${errorInput.nextStepId} does not exist on Journey with ID ${stepBlock.journeyId}`
+          `Next step ID ${
+            errorInput.nextStepId as string
+          } does not exist on Journey with ID ${block.journeyId}`
         )
       })
     })
