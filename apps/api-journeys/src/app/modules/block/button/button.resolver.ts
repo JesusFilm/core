@@ -64,6 +64,7 @@ export class ButtonBlockResolver {
     if (input.startIconId != null) {
       const startIcon = await this.blockService.validateBlock(
         input.startIconId,
+        'parentBlockId',
         id
       )
       if (!startIcon) {
@@ -72,7 +73,11 @@ export class ButtonBlockResolver {
     }
 
     if (input.endIconId != null) {
-      const endIcon = await this.blockService.validateBlock(input.endIconId, id)
+      const endIcon = await this.blockService.validateBlock(
+        input.endIconId,
+        'parentBlockId',
+        id
+      )
       if (!endIcon) {
         throw new UserInputError('End icon does not exist')
       }

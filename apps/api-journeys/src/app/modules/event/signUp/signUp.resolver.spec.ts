@@ -20,29 +20,20 @@ describe('SignUpEventResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((input) => input),
-      getVisitorByUserIdAndJourneyId: jest.fn((userId) => {
-        switch (userId) {
-          case visitor.userId:
-            return visitorWithId
-          case newVisitor.userId:
-            return newVisitorWithId
-        }
-      })
+      save: jest.fn((input) => input)
     })
   }
 
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn((blockId) => {
-        switch (blockId) {
-          case block.id:
-            return block
-          case step.id:
-            return step
-          case errorStep.id:
-            return errorStep
+      get: jest.fn(() => block),
+      validateBlock: jest.fn((id) => {
+        switch (id) {
+          case 'step.id':
+            return true
+          default:
+            return false
         }
       })
     })
@@ -51,6 +42,14 @@ describe('SignUpEventResolver', () => {
   const visitorService = {
     provide: VisitorService,
     useFactory: () => ({
+      getByUserIdAndJourneyId: jest.fn((userId) => {
+        switch (userId) {
+          case visitor.userId:
+            return visitorWithId
+          case newVisitor.userId:
+            return newVisitorWithId
+        }
+      }),
       update: jest.fn(() => '')
     })
   }
@@ -72,16 +71,6 @@ describe('SignUpEventResolver', () => {
     id: 'block.id',
     journeyId: 'journey.id',
     parentBlockId: 'parent.id'
-  }
-
-  const step = {
-    id: 'step.id',
-    journeyId: 'journey.id'
-  }
-
-  const errorStep = {
-    id: 'errorStep.id',
-    journeyId: 'another journey'
   }
 
   const visitor = {

@@ -3,6 +3,7 @@ import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
 import { StepViewEventCreateInput } from '../../../__generated__/graphql'
+import { VisitorService } from '../../visitor/visitor.service'
 import { StepViewEventResolver } from './step.resolver'
 
 describe('StepViewEventResolver', () => {
@@ -20,8 +21,7 @@ describe('StepViewEventResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((input) => input),
-      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId)
+      save: jest.fn((input) => input)
     })
   }
 
@@ -29,6 +29,13 @@ describe('StepViewEventResolver', () => {
     provide: BlockService,
     useFactory: () => ({
       get: jest.fn(() => block)
+    })
+  }
+
+  const visitorService = {
+    provide: VisitorService,
+    useFactory: () => ({
+      getByUserIdAndJourneyId: jest.fn(() => visitorWithId)
     })
   }
 
@@ -53,7 +60,12 @@ describe('StepViewEventResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [StepViewEventResolver, eventService, blockService]
+      providers: [
+        StepViewEventResolver,
+        eventService,
+        blockService,
+        visitorService
+      ]
     }).compile()
     resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
   })

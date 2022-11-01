@@ -2,12 +2,26 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Database } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { mockDbQueryResult } from '@core/nest/database/mock'
+import { v4 as uuidv4 } from 'uuid'
 import { DocumentCollection } from 'arangojs/collection'
 import { AqlQuery } from 'arangojs/aql'
+import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { VisitorService } from './visitor.service'
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('VisitorService', () => {
   let service: VisitorService, db: DeepMockProxy<Database>
+
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,7 +38,11 @@ describe('VisitorService', () => {
     db = service.db as DeepMockProxy<Database>
     service.collection = mockDeep<DocumentCollection>()
   })
-  afterAll(() => jest.resetAllMocks())
+
+  afterAll(() => {
+    jest.resetAllMocks()
+    jest.useRealTimers()
+  })
 
   describe('getList', () => {
     const connection = {
@@ -103,6 +121,49 @@ describe('VisitorService', () => {
         first: 50,
         filter: { teamId: 'jfp-team' },
         sortOrder: 'DESC'
+      })
+    })
+  })
+
+  describe('getVisitorId', () => {
+    it('should return visitor id', async () => {
+      const visitor = {
+        _key: 'visitor.id',
+        userId: 'user.id',
+        teamId: 'team.id'
+      }
+
+      const visitorWithId = keyAsId(visitor)
+
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [visitorWithId]))
+      expect(
+        await service.getByUserIdAndJourneyId('user.id', 'team.id')
+      ).toEqual(visitorWithId)
+    })
+
+    it('should create a new visitor if visitor doest exist', async () => {
+      const visitor = {
+        _key: 'visitor.id',
+        userId: 'user.id',
+        teamId: 'team.id'
+      }
+
+      const visitorWithId = keyAsId(visitor)
+
+      const journey = {
+        teamId: 'team.id'
+      }
+
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [])) // mock failing to find existing visitor
+      db.query.mockReturnValueOnce(mockDbQueryResult(db, [journey]))
+
+      mockUuidv4.mockReturnValueOnce('newVisitor.id')
+
+      await service.getByUserIdAndJourneyId('user.id', 'team.id')
+      expect(service.collection.save).toHaveBeenCalledWith({
+        ...visitorWithId,
+        id: 'newVisitor.id',
+        createdAt: new Date().toISOString()
       })
     })
   })
