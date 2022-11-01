@@ -171,7 +171,7 @@ input ChatOpenedEventCreateInput {
   id: ID
   stepId: ID
 
-  """Value should be the message platform"""
+  """value is the messagePlatform of the link used for chat"""
   value: MessagePlatform
 }
 
@@ -873,12 +873,12 @@ input StepNextEventCreateInput {
   """
   id: ID
 
-  """Label should be the stepName of the step block"""
+  """label is the stepName of the parent stepBlock"""
   label: String
   nextStepId: ID!
   stepId: ID
 
-  """Value should be the stepName of the next step block"""
+  """value is the stepName of the next stepBlock"""
   value: String
 }
 
@@ -894,7 +894,7 @@ input StepViewEventCreateInput {
   """
   id: ID
 
-  """value is the stepName of the stepBlock"""
+  """value is the stepName of the parent stepBlock"""
   value: String
 }
 

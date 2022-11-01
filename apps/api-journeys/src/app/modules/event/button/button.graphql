@@ -40,7 +40,7 @@ input ChatOpenedEventCreateInput {
   blockId: ID!
   stepId: ID
   """
-  Value should be the message platform
+  value is the messagePlatform of the link used for chat
   """
   value: MessagePlatform
 }
