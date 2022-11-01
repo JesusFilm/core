@@ -56,7 +56,7 @@ iframe.style.zIndex="auto"
   return (
     <Dialog
       open={open}
-      handleClose={onClose}
+      onClose={onClose}
       dialogTitle={{
         title: 'Embed journey'
       }}

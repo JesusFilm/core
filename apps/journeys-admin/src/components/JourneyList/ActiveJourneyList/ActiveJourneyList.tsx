@@ -240,7 +240,7 @@ export function ActiveJourneyList({
       )}
       <Dialog
         open={openArchiveAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: t('Archive Journeys'),
           closeButton: true
@@ -259,7 +259,7 @@ export function ActiveJourneyList({
       </Dialog>
       <Dialog
         open={openTrashAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: t('Trash Journeys'),
           closeButton: true
