@@ -13,7 +13,6 @@ import Stack from '@mui/material/Stack'
 
 import { VideoType } from '../../../../__generated__/globalTypes'
 import { GetVideos_videos } from '../../../../__generated__/GetVideos'
-import { theme } from '../../ThemeProvider/ThemeProvider'
 
 interface VideoCardProps {
   video?: GetVideos_videos
@@ -63,7 +62,7 @@ export function VideoCard({
                     bottom: 5,
                     right: 5,
                     bgcolor: 'rgba(0, 0, 0, 0.5)',
-                    color: theme.palette.primary.contrastText,
+                    color: 'primary.contrastText',
                     borderRadius: '8px',
                     padding: '5px'
                   }}
