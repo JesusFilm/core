@@ -1,8 +1,6 @@
 import { ReactElement } from 'react'
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import Image from 'next/image'
-import MuiLink from '@mui/material/Link'
+import { FooterLink } from '../FooterLink'
 
 import Facebook from '../../../../public/icons/facebook.svg'
 import Twitter from '../../../../public/icons/twitter.svg'
@@ -11,43 +9,27 @@ import Instagram from '../../../../public/icons/instagram.svg'
 
 export function FooterSocials(): ReactElement {
   return (
-    <Stack direction="row" pt={3} spacing="29px">
-      <FooterSocial
+    <Stack direction="row" pt={3} spacing={7}>
+      <FooterLink
         url="https://www.facebook.com/jesusfilm"
+        label="Facebook"
         src={Facebook}
-        alt="Facebook"
       />
-      <FooterSocial
+      <FooterLink
         url="https://twitter.com/jesusfilm"
+        label="Twitter"
         src={Twitter}
-        alt="Twitter"
       />
-      <FooterSocial
+      <FooterLink
         url="https://www.youtube.com/user/jesusfilm"
+        label="Youtube"
         src={Youtube}
-        alt="Youtube"
       />
-      <FooterSocial
+      <FooterLink
         url="https://www.instagram.com/jesusfilm"
+        label="Instagram"
         src={Instagram}
-        alt="Instagram"
       />
     </Stack>
-  )
-}
-
-interface FooterSocialProps {
-  url: string
-  src: string
-  alt: string
-}
-
-function FooterSocial({ url, src, alt }: FooterSocialProps): ReactElement {
-  return (
-    <Box>
-      <MuiLink href={url} underline="none" target="_blank" rel="noopener">
-        <Image src={src} width={32} height={32} alt={alt} />
-      </MuiLink>
-    </Box>
   )
 }

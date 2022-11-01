@@ -1,12 +1,11 @@
 import { ReactElement } from 'react'
-import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import MuiLink from '@mui/material/Link'
 import { FooterLogos } from './FooterLogos'
 import { FooterSocials } from './FooterSocials'
 import { FooterLinks } from './FooterLinks'
+import { FooterLink } from './FooterLink'
 
 export function Footer(): ReactElement {
   return (
@@ -19,30 +18,19 @@ export function Footer(): ReactElement {
           height: '350px'
         }}
       >
-        <Stack
-          direction="column"
-          justifyContent="space-between"
-          height="100%"
-          sx={{ py: 4 }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between'
-            }}
-          >
+        <Stack justifyContent="space-between" height="100%" sx={{ py: 4 }}>
+          <Stack direction="row" justifyContent="space-between">
             <FooterLinks />
             <Stack width="220px">
               <FooterLogos />
               <FooterSocials />
             </Stack>
-          </Box>
+          </Stack>
           <Stack
             direction="row"
             spacing={4}
             justifyContent="space-between"
-            mb="62px"
+            mb={15.5}
           >
             <Stack direction="row" spacing={10} justifyContent="space-between">
               <Typography variant="body2">Copyright © 1995-2022</Typography>
@@ -71,21 +59,16 @@ export function Footer(): ReactElement {
           px: 2
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'flex-end'
-          }}
-        >
+        <Stack alignItems="end">
           <FooterSocials />
-        </Box>
+        </Stack>
         <Stack
           direction="row"
           justifyContent="space-between"
           alignItems="center"
           pt={7}
         >
-          <Stack direction="column">
+          <Stack>
             <Typography variant="body2">Copyright © 1995-2022</Typography>
             <Typography variant="body2">Jesus Film Project®</Typography>
           </Stack>
@@ -109,18 +92,5 @@ export function Footer(): ReactElement {
         </Stack>
       </Container>
     </>
-  )
-}
-
-interface FooterLinkProps {
-  url: string
-  label: string
-}
-
-function FooterLink({ url, label }: FooterLinkProps): ReactElement {
-  return (
-    <MuiLink href={url} target="_blank" rel="noopener" color="text.primary">
-      <Typography variant="body1">{label}</Typography>
-    </MuiLink>
   )
 }

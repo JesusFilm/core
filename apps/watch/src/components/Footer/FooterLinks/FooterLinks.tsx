@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import MuiLink from '@mui/material/Link'
+import { FooterLink } from '../FooterLink'
 
 export function FooterLinks(): ReactElement {
   return (
@@ -10,11 +10,20 @@ export function FooterLinks(): ReactElement {
         <Typography variant="h6" sx={{ textTransform: 'uppercase' }}>
           About
         </Typography>
-        <FooterLink label="About Us" url="https://www.jesusfilm.org/about/" />
-        <FooterLink label="Contact" url="https://www.jesusfilm.org/contact/" />
+        <FooterLink
+          label="About Us"
+          url="https://www.jesusfilm.org/about/"
+          underline="none"
+        />
+        <FooterLink
+          label="Contact"
+          url="https://www.jesusfilm.org/contact/"
+          underline="none"
+        />
         <FooterLink
           label="Ways to Give"
           url="https://www.jesusfilm.org/give/"
+          underline="none"
         />
       </Stack>
       <Stack direction="column" spacing={3}>
@@ -24,11 +33,17 @@ export function FooterLinks(): ReactElement {
         <FooterLink
           label="Strategies and Tools"
           url="https://www.jesusfilm.org/partners/mission-trips/"
+          underline="none"
         />
-        <FooterLink label="Blog" url="https://www.jesusfilm.org/blog/" />
+        <FooterLink
+          label="Blog"
+          url="https://www.jesusfilm.org/blog/"
+          underline="none"
+        />
         <FooterLink
           label="How to Help"
           url="https://www.jesusfilm.org/partners/"
+          underline="none"
         />
       </Stack>
       <Stack direction="column" spacing={3}>
@@ -38,31 +53,14 @@ export function FooterLinks(): ReactElement {
         <FooterLink
           label="Android"
           url="https://play.google.com/store/apps/details?id=com.jesusfilmmedia.android.jesusfilm"
+          underline="none"
         />
         <FooterLink
           label="iPhone"
           url="https://apps.apple.com/us/app/jesus-film-media/id550525738"
+          underline="none"
         />
       </Stack>
     </Stack>
-  )
-}
-
-interface FooterLinkProps {
-  url: string
-  label: string
-}
-
-function FooterLink({ url, label }: FooterLinkProps): ReactElement {
-  return (
-    <MuiLink
-      href={url}
-      underline="none"
-      target="_blank"
-      rel="noopener"
-      color="text.primary"
-    >
-      <Typography variant="body1">{label}</Typography>
-    </MuiLink>
   )
 }
