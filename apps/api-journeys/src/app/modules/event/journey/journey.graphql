@@ -15,10 +15,25 @@ type JourneyViewEvent implements Event {
   visitorId: ID!
   journeyId: ID!
   createdAt: DateTime!
+  """
+  blockId will be null for journeyViewEvent
+  """
   blockId: ID
+  """
+  stepId will be null for journeyViewEvent
+  """
   stepId: ID
+  """
+  label is the title of the journey
+  """
   label: String
+  """
+  value is the journey languageId
+  """
   value: String
+  """
+  langauge is the language of the journey resolved from the languageId in value
+  """
   language: Language
 }
 

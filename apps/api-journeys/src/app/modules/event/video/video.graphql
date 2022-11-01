@@ -14,9 +14,22 @@ type VideoStartEvent implements Event {
   createdAt: DateTime!
   blockId: ID
   stepId: ID
+  """
+  label is the title of the video
+  """
   label: String
+  """
+  value is the source of the video
+  """
   value: String
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
+  """
+  source is the source of the video resolved from the video source in value
+  """
+  source: VideoBlockSource
 }
 
 input VideoPlayEventCreateInput {
@@ -35,8 +48,17 @@ type VideoPlayEvent implements Event {
   createdAt: DateTime!
   blockId: ID
   stepId: ID
+  """
+  label is the title of the video
+  """
   label: String
+  """
+  value is the source of the video
+  """
   value: String
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
 }
 
@@ -56,9 +78,22 @@ type VideoPauseEvent implements Event {
   createdAt: DateTime!
   blockId: ID
   stepId: ID
+  """
+  label is the title of the video
+  """
   label: String
+  """
+  value is the source of the video
+  """
   value: String
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
+  """
+  source is the source of the video resolved from the video source in value
+  """
+  source: VideoBlockSource
 }
 
 input VideoCompleteEventCreateInput {
@@ -77,9 +112,22 @@ type VideoCompleteEvent implements Event {
   createdAt: DateTime!
   blockId: ID
   stepId: ID
+  """
+  label is the title of the video
+  """
   label: String
+  """
+  value is the source of the video
+  """
   value: String
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
+  """
+  source is the source of the video resolved from the video source in value
+  """
+  source: VideoBlockSource
 }
 
 input VideoExpandEventCreateInput {
@@ -98,9 +146,22 @@ type VideoExpandEvent implements Event {
   createdAt: DateTime!
   blockId: ID
   stepId: ID
+  """
+  label is the title of the video
+  """
   label: String
+  """
+  value is the source of the video
+  """
   value: String
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
+  """
+  source is the source of the video resolved from the video source in value
+  """
+  source: VideoBlockSource
 }
 
 input VideoCollapseEventCreateInput {
@@ -119,9 +180,22 @@ type VideoCollapseEvent implements Event {
   createdAt: DateTime!
   blockId: ID
   stepId: ID
+  """
+  label is the title of the video
+  """
   label: String
+  """
+  value is the source of the video
+  """
   value: String
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
+  """
+  source is the source of the video resolved from the video source in value
+  """
+  source: VideoBlockSource
 }
 
 input VideoProgressEventCreateInput {
@@ -144,9 +218,25 @@ type VideoProgressEvent implements Event {
   createdAt: DateTime!
   blockId: ID
   stepId: ID
+  """
+  label is the title of the video
+  """
   label: String
+  """
+  value is the source of the video
+  """
   value: String
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
+  """
+  source is the source of the video resolved from the video source in value
+  """
+  source: VideoBlockSource
+  """
+  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
+  """
   progress: Int!
 }
 

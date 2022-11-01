@@ -13,7 +13,13 @@ type StepViewEvent implements Event {
   createdAt: DateTime!
   blockId: ID
   stepId: ID
+  """
+  label will be null for stepViewEvent
+  """
   label: String
+  """
+  value is the stepName of the stepBlock
+  """
   value: String
 }
 

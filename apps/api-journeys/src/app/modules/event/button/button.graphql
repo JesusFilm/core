@@ -13,7 +13,13 @@ type ButtonClickEvent implements Event {
   createdAt: DateTime!
   blockId: ID
   stepId: ID
+  """
+  label is the stepName of the parent stepBlock
+  """
   label: String
+  """
+  value is the label of the button
+  """
   value: String
 }
 

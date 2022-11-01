@@ -72,8 +72,12 @@ type ButtonClickEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+
+  """label is the stepName of the parent stepBlock"""
   label: String
   stepId: ID
+
+  """value is the label of the button"""
   value: String
   visitorId: ID!
 }
@@ -455,13 +459,24 @@ input JourneyUpdateInput {
 }
 
 type JourneyViewEvent implements Event {
+  """blockId will be null for journeyViewEvent"""
   blockId: ID
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+
+  """label is the title of the journey"""
   label: String
+
+  """
+  langauge is the language of the journey resolved from the languageId in value
+  """
   language: Language
+
+  """stepId will be null for journeyViewEvent"""
   stepId: ID
+
+  """value is the journey languageId"""
   value: String
   visitorId: ID!
 }
@@ -737,8 +752,12 @@ type RadioQuestionSubmissionEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+
+  """label is the stepName of the parent stepBlock"""
   label: String
   stepId: ID
+
+  """value is the label of the selected radioOption label"""
   value: String
   visitorId: ID!
 }
@@ -787,11 +806,17 @@ input SignUpBlockUpdateInput {
 type SignUpSubmissionEvent implements Event {
   blockId: ID
   createdAt: DateTime!
+
+  """email is the email from the submission"""
   email: String
   id: ID!
   journeyId: ID!
+
+  """label will be null for signUpSubmissionEvent"""
   label: String
   stepId: ID
+
+  """value is the name from the submission"""
   value: String
   visitorId: ID!
 }
@@ -845,8 +870,12 @@ type StepViewEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+
+  """label will be null for stepViewEvent"""
   label: String
   stepId: ID
+
+  """value is the stepName of the stepBlock"""
   value: String
   visitorId: ID!
 }
@@ -895,8 +924,12 @@ type TextResponseSubmissionEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+
+  """label is the stepName of the parent stepBlock"""
   label: String
   stepId: ID
+
+  """value is the response from the submission"""
   value: String
   visitorId: ID!
 }
@@ -1234,9 +1267,22 @@ type VideoCollapseEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+
+  """label is the title of the video"""
   label: String
+
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
+
+  """
+  source is the source of the video resolved from the video source in value
+  """
+  source: VideoBlockSource
   stepId: ID
+
+  """value is the source of the video"""
   value: String
   visitorId: ID!
 }
@@ -1256,9 +1302,22 @@ type VideoCompleteEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+
+  """label is the title of the video"""
   label: String
+
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
+
+  """
+  source is the source of the video resolved from the video source in value
+  """
+  source: VideoBlockSource
   stepId: ID
+
+  """value is the source of the video"""
   value: String
   visitorId: ID!
 }
@@ -1278,9 +1337,22 @@ type VideoExpandEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+
+  """label is the title of the video"""
   label: String
+
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
+
+  """
+  source is the source of the video resolved from the video source in value
+  """
+  source: VideoBlockSource
   stepId: ID
+
+  """value is the source of the video"""
   value: String
   visitorId: ID!
 }
@@ -1300,9 +1372,22 @@ type VideoPauseEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+
+  """label is the title of the video"""
   label: String
+
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
+
+  """
+  source is the source of the video resolved from the video source in value
+  """
+  source: VideoBlockSource
   stepId: ID
+
+  """value is the source of the video"""
   value: String
   visitorId: ID!
 }
@@ -1322,9 +1407,17 @@ type VideoPlayEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+
+  """label is the title of the video"""
   label: String
+
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
   stepId: ID
+
+  """value is the source of the video"""
   value: String
   visitorId: ID!
 }
@@ -1344,10 +1437,27 @@ type VideoProgressEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+
+  """label is the title of the video"""
   label: String
+
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
+
+  """
+  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
+  """
   progress: Int!
+
+  """
+  source is the source of the video resolved from the video source in value
+  """
+  source: VideoBlockSource
   stepId: ID
+
+  """value is the source of the video"""
   value: String
   visitorId: ID!
 }
@@ -1377,9 +1487,22 @@ type VideoStartEvent implements Event {
   createdAt: DateTime!
   id: ID!
   journeyId: ID!
+
+  """label is the title of the video"""
   label: String
+
+  """
+  position is the duration of the video played when the videoEvent is triggered
+  """
   position: Float
+
+  """
+  source is the source of the video resolved from the video source in value
+  """
+  source: VideoBlockSource
   stepId: ID
+
+  """value is the source of the video"""
   value: String
   visitorId: ID!
 }

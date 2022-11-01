@@ -813,6 +813,7 @@ export class VideoStartEvent implements Event {
     label?: Nullable<string>;
     value?: Nullable<string>;
     position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
 }
 
 export class VideoPlayEvent implements Event {
@@ -839,6 +840,7 @@ export class VideoPauseEvent implements Event {
     label?: Nullable<string>;
     value?: Nullable<string>;
     position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
 }
 
 export class VideoCompleteEvent implements Event {
@@ -852,6 +854,7 @@ export class VideoCompleteEvent implements Event {
     label?: Nullable<string>;
     value?: Nullable<string>;
     position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
 }
 
 export class VideoExpandEvent implements Event {
@@ -865,6 +868,7 @@ export class VideoExpandEvent implements Event {
     label?: Nullable<string>;
     value?: Nullable<string>;
     position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
 }
 
 export class VideoCollapseEvent implements Event {
@@ -878,6 +882,7 @@ export class VideoCollapseEvent implements Event {
     label?: Nullable<string>;
     value?: Nullable<string>;
     position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
 }
 
 export class VideoProgressEvent implements Event {
@@ -891,6 +896,7 @@ export class VideoProgressEvent implements Event {
     label?: Nullable<string>;
     value?: Nullable<string>;
     position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
     progress: number;
 }
 
