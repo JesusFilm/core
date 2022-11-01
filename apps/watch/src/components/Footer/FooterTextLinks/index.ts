@@ -1,1 +1,0 @@
-export { FooterTextLinks } from './FooterTextLinks'

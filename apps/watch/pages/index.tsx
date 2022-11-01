@@ -250,7 +250,7 @@ function VideoPage(): ReactElement {
           </Container>
         </Box>
       </PageWrapper>
-    </LanguageProvider >
+    </LanguageProvider>
   )
 }
 

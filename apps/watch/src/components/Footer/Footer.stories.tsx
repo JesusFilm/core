@@ -1,7 +1,9 @@
 import { Meta, Story } from '@storybook/react'
+import { watchConfig } from '../../libs/storybook'
 import { Footer } from '.'
 
 const FooterStory = {
+  ...watchConfig,
   component: Footer,
   title: 'Watch/Footer',
   parameters: {
