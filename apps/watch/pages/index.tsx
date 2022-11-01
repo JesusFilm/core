@@ -12,6 +12,7 @@ import Search from '@mui/icons-material/Search'
 import Button from '@mui/material/Button'
 import Language from '@mui/icons-material/Language'
 import Place from '@mui/icons-material/Place'
+import { useTheme } from '@mui/material/styles'
 import Link from 'next/link'
 import Chip from '@mui/material/Chip'
 
@@ -19,7 +20,6 @@ import { Videos } from '../src/components/Videos/Videos'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { GetVideoTag } from '../__generated__/GetVideoTag'
 import { VideoType } from '../__generated__/globalTypes'
-import { theme } from '../src/components/ThemeProvider/ThemeProvider'
 import {
   LanguageProvider,
   useLanguage
@@ -52,6 +52,9 @@ function VideoPage(): ReactElement {
       languageId: languageContext?.id ?? '529'
     }
   })
+  // Temp - should not need to reference with correct themiing
+  const theme = useTheme()
+
   return (
     <LanguageProvider>
       <PageWrapper header={<Header />} footer={<Footer isHome />}>
