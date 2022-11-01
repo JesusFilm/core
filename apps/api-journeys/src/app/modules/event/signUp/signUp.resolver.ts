@@ -51,12 +51,15 @@ export class SignUpSubmissionEventResolver {
       )
     }
 
-    if (visitor.name == null || visitor.email == null) {
-      const name = visitor.name == null ? input.name : visitor.name
-      const email = visitor.email == null ? input.email : visitor.email
+    if (visitor.name == null) {
       await this.visitorService.update(visitor.id, {
-        name,
-        email
+        name: input.name
+      })
+    }
+
+    if (visitor.email == null) {
+      await this.visitorService.update(visitor.id, {
+        email: input.email
       })
     }
 

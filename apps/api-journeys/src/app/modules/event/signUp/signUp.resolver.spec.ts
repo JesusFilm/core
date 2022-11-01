@@ -122,11 +122,18 @@ describe('SignUpEventResolver', () => {
       expect(vService.update).not.toHaveBeenCalled()
     })
 
-    it('should update visitor with name and email if input is different', async () => {
+    it('should update visitor name', async () => {
       await resolver.signUpSubmissionEventCreate('newUser.id', input)
 
       expect(vService.update).toHaveBeenCalledWith(newVisitorWithId.id, {
-        name: input.name,
+        name: input.name
+      })
+    })
+
+    it('should update visitor email', async () => {
+      await resolver.signUpSubmissionEventCreate('newUser.id', input)
+
+      expect(vService.update).toHaveBeenCalledWith(newVisitorWithId.id, {
         email: input.email
       })
     })
