@@ -6,11 +6,11 @@ input TextResponseSubmissionEventCreateInput {
   blockId: ID!
   stepId: ID
   """
-  Label should be the stepName of the textResponse block
+  label is the stepName of the parent stepBlock
   """
   label: String
   """
-  Value should be the response text from the user
+  value is the response from the submission
   """
   value: String!
 }

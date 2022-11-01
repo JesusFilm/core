@@ -7,11 +7,11 @@ input RadioQuestionSubmissionEventCreateInput {
   radioOptionBlockId: ID!
   stepId: ID
   """
-  Label should be the stepName of the radioQuestion block
+  label is the stepName of the parent stepBlock
   """
   label: String
   """
-  Value should be the label of the option block selected
+  value is the label of the selected radioOption label
   """
   value: String
 }
