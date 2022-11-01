@@ -13,7 +13,7 @@ export function Footer(): ReactElement {
     <>
       {/* desktop view */}
       <Container
-        maxWidth='xl'
+        maxWidth="xl"
         sx={{
           display: { xs: 'none', sm: 'block' },
           height: '350px'
@@ -50,22 +50,14 @@ export function Footer(): ReactElement {
               <Typography variant="body2">All rights reserved</Typography>
             </Stack>
             <Stack direction="row" spacing={4} justifyContent="space-between">
-              <MuiLink
-                href="https://www.jesusfilm.org/terms/"
-                target="_blank"
-                rel="noopener"
-                color="#26262E"
-              >
-                <Typography variant="body2">Terms of use</Typography>
-              </MuiLink>
-              <MuiLink
-                href="https://www.jesusfilm.org/legal/"
-                target="_blank"
-                rel="noopener"
-                color="#26262E"
-              >
-                <Typography variant="body2">Legal Statement</Typography>
-              </MuiLink>
+              <FooterLink
+                url="https://www.jesusfilm.org/terms/"
+                label="Terms of use"
+              />
+              <FooterLink
+                url="https://www.jesusfilm.org/legal/"
+                label="Legal Statement"
+              />
             </Stack>
           </Stack>
         </Stack>
@@ -73,7 +65,7 @@ export function Footer(): ReactElement {
 
       {/* mobile view */}
       <Container
-        maxWidth='xl'
+        maxWidth="xl"
         sx={{
           display: { xs: 'block', sm: 'none' },
           px: 2
@@ -105,25 +97,38 @@ export function Footer(): ReactElement {
           justifyContent="space-between"
           pt={6}
         >
-          <MuiLink
-            href="https://www.jesusfilm.org/legal/"
-            target="_blank"
-            rel="noopener"
-            color="text.primary"
-          >
-            <Typography variant="body2">Legal Statement</Typography>
-          </MuiLink>
+          <FooterLink
+            url="https://www.jesusfilm.org/legal/"
+            label="Legal Statement"
+          />
           <Typography variant="body2">All rights reserved</Typography>
-          <MuiLink
-            href="https://www.jesusfilm.org/terms/"
-            target="_blank"
-            rel="noopener"
-            color="text.primary"
-          >
-            <Typography variant="body2">Terms of use</Typography>
-          </MuiLink>
+          <FooterLink
+            url="https://www.jesusfilm.org/terms/"
+            label="Terms of use"
+          />
         </Stack>
       </Container>
     </>
+  )
+}
+
+interface FooterLinkProps {
+  url: string
+  label: string
+}
+
+function FooterLink({ url, label }: FooterLinkProps): ReactElement {
+  return (
+    <MuiLink
+      href={url}
+      underline="none"
+      target="_blank"
+      rel="noopener"
+      style={{
+        color: '#26262E'
+      }}
+    >
+      <Typography variant="body1">{label}</Typography>
+    </MuiLink>
   )
 }
