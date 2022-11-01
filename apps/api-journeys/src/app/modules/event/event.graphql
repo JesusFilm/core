@@ -1,3 +1,59 @@
 interface Event {
   id: ID!
 }
+
+enum EventType {
+  ButtonClickEvent
+  ChatOpenedEvent
+  JourneyViewEvent
+  RadioQuestionSubmissionEvent
+  SignUpEventSubmissionEvent
+  StepViewEvent
+  StepNextEvent
+  TextResponseSubmissionEvent
+  VideoStartEvent
+  VideoPlayEvent
+  VideoPauseEvent
+  VideoCompleteEvent
+  VideoExpandEvent
+  VideoCollapseEvent
+  VideoProgressEvent
+}
+
+type VisitorEvent {
+  id: ID!
+  visitorId: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  blockId: ID
+  stepId: ID
+  label: String
+  """
+  TODO: check if VideoBlockSource enum can be type String
+  """
+  value: String
+  """
+  Language field used to return language of a journey for JourneyViewEvent
+  """
+  language: String
+  """
+  RadioOptionBlockId field used to return the selected option for RadioQuestionSubmissionEvent
+  """
+  radioOptionBlockId: ID
+  """
+  Email field used to return the user submited email for SignUpSubmissionEvent
+  """
+  email: String
+  """
+  Position field used to return the position of the video for all VideoEvents
+  """
+  position: Float
+  """
+  Progress field used to represent percentage of completion of a video block for VideoProgressEvent
+  """
+  progress: Int
+}
+
+extend type Query {
+  visitorEvents(visitorId: String!, eventTypes: [EventType!]): [VisitorEvent!]!
+}

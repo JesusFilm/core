@@ -123,6 +123,24 @@ export enum VideoBlockSource {
     youTube = "youTube"
 }
 
+export enum EventType {
+    ButtonClickEvent = "ButtonClickEvent",
+    ChatOpenedEvent = "ChatOpenedEvent",
+    JourneyViewEvent = "JourneyViewEvent",
+    RadioQuestionSubmissionEvent = "RadioQuestionSubmissionEvent",
+    SignUpEventSubmissionEvent = "SignUpEventSubmissionEvent",
+    StepViewEvent = "StepViewEvent",
+    StepNextEvent = "StepNextEvent",
+    TextResponseSubmissionEvent = "TextResponseSubmissionEvent",
+    VideoStartEvent = "VideoStartEvent",
+    VideoPlayEvent = "VideoPlayEvent",
+    VideoPauseEvent = "VideoPauseEvent",
+    VideoCompleteEvent = "VideoCompleteEvent",
+    VideoExpandEvent = "VideoExpandEvent",
+    VideoCollapseEvent = "VideoCollapseEvent",
+    VideoProgressEvent = "VideoProgressEvent"
+}
+
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"
@@ -726,6 +744,23 @@ export class ButtonClickEvent implements Event {
     id: string;
 }
 
+export class VisitorEvent {
+    __typename?: 'VisitorEvent';
+    id: string;
+    visitorId: string;
+    journeyId: string;
+    createdAt: DateTime;
+    blockId?: Nullable<string>;
+    stepId?: Nullable<string>;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    language?: Nullable<string>;
+    radioOptionBlockId?: Nullable<string>;
+    email?: Nullable<string>;
+    position?: Nullable<number>;
+    progress?: Nullable<number>;
+}
+
 export class JourneyViewEvent implements Event {
     __typename?: 'JourneyViewEvent';
     id: string;
@@ -995,11 +1030,9 @@ export class Video {
     primaryLanguageId: string;
 }
 
-export class Language {
-    id: string;
-}
-
 export abstract class IQuery {
+    abstract visitorEvents(visitorId: string, eventTypes?: Nullable<EventType[]>): VisitorEvent[] | Promise<VisitorEvent[]>;
+
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
 
     abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
@@ -1015,6 +1048,10 @@ export abstract class IQuery {
     abstract visitorsConnection(teamId: string, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
 
     abstract visitor(id: string): Visitor | Promise<Visitor>;
+}
+
+export class Language {
+    id: string;
 }
 
 export class User {
