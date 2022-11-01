@@ -6,12 +6,5 @@ interface Event {
   blockId: ID
   stepId: ID
   label: String
-  """
-  TODO: check if VideoBlockSource enum can be type String
-  """
   value: String
-}
-
-extend type Query {
-  visitorEvents(visitorId: String!): [Event!]!
 }

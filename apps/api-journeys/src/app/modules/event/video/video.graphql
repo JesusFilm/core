@@ -9,6 +9,14 @@ input VideoStartEventCreateInput {
 
 type VideoStartEvent implements Event {
   id: ID!
+  visitorId: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  blockId: ID
+  stepId: ID
+  label: String
+  value: String
+  position: Float
 }
 
 input VideoPlayEventCreateInput {
@@ -22,6 +30,14 @@ input VideoPlayEventCreateInput {
 
 type VideoPlayEvent implements Event {
   id: ID!
+  visitorId: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  blockId: ID
+  stepId: ID
+  label: String
+  value: String
+  position: Float
 }
 
 input VideoPauseEventCreateInput {
@@ -35,6 +51,14 @@ input VideoPauseEventCreateInput {
 
 type VideoPauseEvent implements Event {
   id: ID!
+  visitorId: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  blockId: ID
+  stepId: ID
+  label: String
+  value: String
+  position: Float
 }
 
 input VideoCompleteEventCreateInput {
@@ -48,6 +72,14 @@ input VideoCompleteEventCreateInput {
 
 type VideoCompleteEvent implements Event {
   id: ID!
+  visitorId: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  blockId: ID
+  stepId: ID
+  label: String
+  value: String
+  position: Float
 }
 
 input VideoExpandEventCreateInput {
@@ -61,6 +93,14 @@ input VideoExpandEventCreateInput {
 
 type VideoExpandEvent implements Event {
   id: ID!
+  visitorId: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  blockId: ID
+  stepId: ID
+  label: String
+  value: String
+  position: Float
 }
 
 input VideoCollapseEventCreateInput {
@@ -74,6 +114,14 @@ input VideoCollapseEventCreateInput {
 
 type VideoCollapseEvent implements Event {
   id: ID!
+  visitorId: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  blockId: ID
+  stepId: ID
+  label: String
+  value: String
+  position: Float
 }
 
 input VideoProgressEventCreateInput {
@@ -91,6 +139,15 @@ input VideoProgressEventCreateInput {
 
 type VideoProgressEvent implements Event {
   id: ID!
+  visitorId: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  blockId: ID
+  stepId: ID
+  label: String
+  value: String
+  position: Float
+  progress: Int!
 }
 
 extend type Mutation {
