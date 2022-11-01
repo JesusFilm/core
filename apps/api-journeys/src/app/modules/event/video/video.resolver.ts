@@ -21,13 +21,15 @@ import {
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
+import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('VideoStartEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoStartEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly blockService: BlockService
+    private readonly blockService: BlockService,
+    private readonly visitorService: VisitorService
   ) {}
 
   @Mutation()
@@ -40,19 +42,24 @@ export class VideoStartEventResolver {
     )
     const journeyId = block.journeyId
 
-    const stepBlock: { journeyId: string } | null =
-      input.stepId != null ? await this.blockService.get(input.stepId) : null
-    if (stepBlock == null || stepBlock.journeyId !== journeyId)
+    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+      userId,
+      journeyId
+    )
+
+    const validStep = await this.blockService.validateBlock(
+      input.stepId ?? null,
+      'journeyId',
+      journeyId
+    )
+
+    if (!validStep) {
       throw new UserInputError(
         `Step ID ${
           input.stepId as string
         } does not exist on Journey with ID ${journeyId}`
       )
-
-    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
-      userId,
-      journeyId
-    )
+    }
 
     return await this.eventService.save({
       ...input,
@@ -68,7 +75,8 @@ export class VideoStartEventResolver {
 export class VideoPlayEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly blockService: BlockService
+    private readonly blockService: BlockService,
+    private readonly visitorService: VisitorService
   ) {}
 
   @Mutation()
@@ -81,19 +89,24 @@ export class VideoPlayEventResolver {
     )
     const journeyId = block.journeyId
 
-    const stepBlock: { journeyId: string } | null =
-      input.stepId != null ? await this.blockService.get(input.stepId) : null
-    if (stepBlock == null || stepBlock.journeyId !== journeyId)
+    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+      userId,
+      journeyId
+    )
+
+    const validStep = await this.blockService.validateBlock(
+      input.stepId ?? null,
+      'journeyId',
+      journeyId
+    )
+
+    if (!validStep) {
       throw new UserInputError(
         `Step ID ${
           input.stepId as string
         } does not exist on Journey with ID ${journeyId}`
       )
-
-    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
-      userId,
-      journeyId
-    )
+    }
 
     return await this.eventService.save({
       ...input,
@@ -109,7 +122,8 @@ export class VideoPlayEventResolver {
 export class VideoPuaseEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly blockService: BlockService
+    private readonly blockService: BlockService,
+    private readonly visitorService: VisitorService
   ) {}
 
   @Mutation()
@@ -122,19 +136,24 @@ export class VideoPuaseEventResolver {
     )
     const journeyId = block.journeyId
 
-    const stepBlock: { journeyId: string } | null =
-      input.stepId != null ? await this.blockService.get(input.stepId) : null
-    if (stepBlock == null || stepBlock.journeyId !== journeyId)
+    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+      userId,
+      journeyId
+    )
+
+    const validStep = await this.blockService.validateBlock(
+      input.stepId ?? null,
+      'journeyId',
+      journeyId
+    )
+
+    if (!validStep) {
       throw new UserInputError(
         `Step ID ${
           input.stepId as string
         } does not exist on Journey with ID ${journeyId}`
       )
-
-    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
-      userId,
-      journeyId
-    )
+    }
 
     return await this.eventService.save({
       ...input,
@@ -150,7 +169,8 @@ export class VideoPuaseEventResolver {
 export class VideoCompleteEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly blockService: BlockService
+    private readonly blockService: BlockService,
+    private readonly visitorService: VisitorService
   ) {}
 
   @Mutation()
@@ -163,19 +183,24 @@ export class VideoCompleteEventResolver {
     )
     const journeyId = block.journeyId
 
-    const stepBlock: { journeyId: string } | null =
-      input.stepId != null ? await this.blockService.get(input.stepId) : null
-    if (stepBlock == null || stepBlock.journeyId !== journeyId)
+    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+      userId,
+      journeyId
+    )
+
+    const validStep = await this.blockService.validateBlock(
+      input.stepId ?? null,
+      'journeyId',
+      journeyId
+    )
+
+    if (!validStep) {
       throw new UserInputError(
         `Step ID ${
           input.stepId as string
         } does not exist on Journey with ID ${journeyId}`
       )
-
-    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
-      userId,
-      journeyId
-    )
+    }
 
     return await this.eventService.save({
       ...input,
@@ -191,7 +216,8 @@ export class VideoCompleteEventResolver {
 export class VideoExpandEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly blockService: BlockService
+    private readonly blockService: BlockService,
+    private readonly visitorService: VisitorService
   ) {}
 
   @Mutation()
@@ -205,19 +231,24 @@ export class VideoExpandEventResolver {
 
     const journeyId = block.journeyId
 
-    const stepBlock: { journeyId: string } | null =
-      input.stepId != null ? await this.blockService.get(input.stepId) : null
-    if (stepBlock == null || stepBlock.journeyId !== journeyId)
+    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+      userId,
+      journeyId
+    )
+
+    const validStep = await this.blockService.validateBlock(
+      input.stepId ?? null,
+      'journeyId',
+      journeyId
+    )
+
+    if (!validStep) {
       throw new UserInputError(
         `Step ID ${
           input.stepId as string
         } does not exist on Journey with ID ${journeyId}`
       )
-
-    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
-      userId,
-      journeyId
-    )
+    }
 
     return await this.eventService.save({
       ...input,
@@ -233,7 +264,8 @@ export class VideoExpandEventResolver {
 export class VideoCollapseEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly blockService: BlockService
+    private readonly blockService: BlockService,
+    private readonly visitorService: VisitorService
   ) {}
 
   @Mutation()
@@ -246,19 +278,24 @@ export class VideoCollapseEventResolver {
     )
     const journeyId = block.journeyId
 
-    const stepBlock: { journeyId: string } | null =
-      input.stepId != null ? await this.blockService.get(input.stepId) : null
-    if (stepBlock == null || stepBlock.journeyId !== journeyId)
+    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+      userId,
+      journeyId
+    )
+
+    const validStep = await this.blockService.validateBlock(
+      input.stepId ?? null,
+      'journeyId',
+      journeyId
+    )
+
+    if (!validStep) {
       throw new UserInputError(
         `Step ID ${
           input.stepId as string
         } does not exist on Journey with ID ${journeyId}`
       )
-
-    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
-      userId,
-      journeyId
-    )
+    }
 
     return await this.eventService.save({
       ...input,
@@ -274,7 +311,8 @@ export class VideoCollapseEventResolver {
 export class VideoProgressEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly blockService: BlockService
+    private readonly blockService: BlockService,
+    private readonly visitorService: VisitorService
   ) {}
 
   @Mutation()
@@ -287,19 +325,24 @@ export class VideoProgressEventResolver {
     )
     const journeyId = block.journeyId
 
-    const stepBlock: { journeyId: string } | null =
-      input.stepId != null ? await this.blockService.get(input.stepId) : null
-    if (stepBlock == null || stepBlock.journeyId !== journeyId)
+    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+      userId,
+      journeyId
+    )
+
+    const validStep = await this.blockService.validateBlock(
+      input.stepId ?? null,
+      'journeyId',
+      journeyId
+    )
+
+    if (!validStep) {
       throw new UserInputError(
         `Step ID ${
           input.stepId as string
         } does not exist on Journey with ID ${journeyId}`
       )
-
-    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
-      userId,
-      journeyId
-    )
+    }
 
     return await this.eventService.save({
       ...input,

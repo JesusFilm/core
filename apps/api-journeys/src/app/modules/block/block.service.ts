@@ -294,11 +294,12 @@ export class BlockService extends BaseService {
 
   async validateBlock(
     id: string | null,
-    parentBlockId: string | null
+    type: string,
+    value: string | null
   ): Promise<boolean> {
     const block: Block | null = id != null ? await this.get(id) : null
 
-    return block != null ? block.parentBlockId === parentBlockId : false
+    return block != null ? block[type] === value : false
   }
 
   collection: DocumentCollection = this.db.collection('blocks')

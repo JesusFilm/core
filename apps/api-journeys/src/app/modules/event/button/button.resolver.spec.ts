@@ -7,6 +7,7 @@ import {
   MessagePlatform
 } from '../../../__generated__/graphql'
 import { BlockService } from '../../block/block.service'
+import { VisitorService } from '../../visitor/visitor.service'
 import {
   ButtonClickEventResolver,
   ChatOpenedEventResolver
@@ -25,24 +26,29 @@ describe('Button', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((event) => event),
-      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId)
+      save: jest.fn((event) => event)
     })
   }
 
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn((blockId) => {
-        switch (blockId) {
-          case block.id:
-            return block
-          case step.id:
-            return step
-          case errorStep.id:
-            return errorStep
+      get: jest.fn(() => block),
+      validateBlock: jest.fn((id) => {
+        switch (id) {
+          case 'step.id':
+            return true
+          default:
+            return false
         }
       })
+    })
+  }
+
+  const visitorService = {
+    provide: VisitorService,
+    useFactory: () => ({
+      getByUserIdAndJourneyId: jest.fn(() => visitorWithId)
     })
   }
 
@@ -56,17 +62,8 @@ describe('Button', () => {
 
   const block = {
     id: 'block.id',
+    _key: 'block.id',
     journeyId: 'journey.id'
-  }
-
-  const step = {
-    id: 'step.id',
-    journeyId: 'journey.id'
-  }
-
-  const errorStep = {
-    id: 'errorStep.id',
-    journeyId: 'another journey'
   }
 
   const visitor = {
@@ -80,7 +77,12 @@ describe('Button', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [ButtonClickEventResolver, eventService, blockService]
+        providers: [
+          ButtonClickEventResolver,
+          eventService,
+          blockService,
+          visitorService
+        ]
       }).compile()
       resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
     })

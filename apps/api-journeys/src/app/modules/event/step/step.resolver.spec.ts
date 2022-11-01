@@ -6,6 +6,7 @@ import {
   StepNextEventCreateInput,
   StepViewEventCreateInput
 } from '../../../__generated__/graphql'
+import { VisitorService } from '../../visitor/visitor.service'
 import { StepNextEventResolver, StepViewEventResolver } from './step.resolver'
 
 describe('Step', () => {
@@ -20,8 +21,7 @@ describe('Step', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((event) => event),
-      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId)
+      save: jest.fn((event) => event)
     })
   }
 
@@ -38,6 +38,13 @@ describe('Step', () => {
             return errorStep
         }
       })
+    })
+  }
+
+  const visitorService = {
+    provide: VisitorService,
+    useFactory: () => ({
+      getByUserIdAndJourneyId: jest.fn(() => visitorWithId)
     })
   }
 
@@ -76,7 +83,12 @@ describe('Step', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [StepViewEventResolver, eventService, blockService]
+        providers: [
+          StepViewEventResolver,
+          eventService,
+          blockService,
+          visitorService
+        ]
       }).compile()
       resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
     })

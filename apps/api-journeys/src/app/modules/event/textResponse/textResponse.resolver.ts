@@ -11,12 +11,14 @@ import {
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
+import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('TextResponseSubmissionEvent')
 export class TextResponseSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly blockService: BlockService
+    private readonly blockService: BlockService,
+    private readonly visitorService: VisitorService
   ) {}
 
   @Mutation()
@@ -28,22 +30,26 @@ export class TextResponseSubmissionEventResolver {
     const block: { journeyId: string } = await this.blockService.get(
       input.blockId
     )
-
     const journeyId = block.journeyId
 
-    const stepBlock: { journeyId: string } | null =
-      input.stepId != null ? await this.blockService.get(input.stepId) : null
-    if (stepBlock == null || stepBlock.journeyId !== journeyId)
+    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+      userId,
+      journeyId
+    )
+
+    const validStep = await this.blockService.validateBlock(
+      input.stepId ?? null,
+      'journeyId',
+      journeyId
+    )
+
+    if (!validStep) {
       throw new UserInputError(
         `Step ID ${
           input.stepId as string
         } does not exist on Journey with ID ${journeyId}`
       )
-
-    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
-      userId,
-      journeyId
-    )
+    }
 
     return await this.eventService.save({
       ...input,

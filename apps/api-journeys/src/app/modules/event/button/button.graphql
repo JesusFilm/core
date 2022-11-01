@@ -6,11 +6,11 @@ input ButtonClickEventCreateInput {
   blockId: ID!
   stepId: ID
   """
-  Label should be the stepName of the button block
+  label is the stepName of the parent stepBlock
   """
   label: String
   """
-  Value should be the label of the button block
+  value is the label of the button
   """
   value: String
 }

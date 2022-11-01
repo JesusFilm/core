@@ -3,6 +3,7 @@ import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
 import { TextResponseSubmissionEventCreateInput } from '../../../__generated__/graphql'
+import { VisitorService } from '../../visitor/visitor.service'
 import { TextResponseSubmissionEventResolver } from './textResponse.resolver'
 
 describe('TextResponseEventResolver', () => {
@@ -20,24 +21,29 @@ describe('TextResponseEventResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((input) => input),
-      getVisitorByUserIdAndJourneyId: jest.fn(() => visitorWithId)
+      save: jest.fn((input) => input)
     })
   }
 
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn((blockId) => {
-        switch (blockId) {
-          case block.id:
-            return block
-          case step.id:
-            return step
-          case errorStep.id:
-            return errorStep
+      get: jest.fn(() => block),
+      validateBlock: jest.fn((id) => {
+        switch (id) {
+          case 'step.id':
+            return true
+          default:
+            return false
         }
       })
+    })
+  }
+
+  const visitorService = {
+    provide: VisitorService,
+    useFactory: () => ({
+      getByUserIdAndJourneyId: jest.fn(() => visitorWithId)
     })
   }
 
@@ -61,16 +67,6 @@ describe('TextResponseEventResolver', () => {
     label: 'textResponse.label'
   }
 
-  const step = {
-    id: 'step.id',
-    journeyId: 'journey.id'
-  }
-
-  const errorStep = {
-    id: 'errorStep.id',
-    journeyId: 'another journey'
-  }
-
   const visitor = {
     _key: 'visitor.id'
   }
@@ -82,7 +78,8 @@ describe('TextResponseEventResolver', () => {
       providers: [
         TextResponseSubmissionEventResolver,
         eventService,
-        blockService
+        blockService,
+        visitorService
       ]
     }).compile()
     resolver = module.get<TextResponseSubmissionEventResolver>(

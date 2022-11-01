@@ -13,12 +13,14 @@ import {
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
+import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('StepViewEvent')
 export class StepViewEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly blockService: BlockService
+    private readonly blockService: BlockService,
+    private readonly visitorService: VisitorService
   ) {}
 
   @Mutation()
@@ -32,7 +34,7 @@ export class StepViewEventResolver {
     )
     const journeyId = block.journeyId
 
-    const visitor = await this.eventService.getVisitorByUserIdAndJourneyId(
+    const visitor = await this.visitorService.getByUserIdAndJourneyId(
       userId,
       journeyId
     )
