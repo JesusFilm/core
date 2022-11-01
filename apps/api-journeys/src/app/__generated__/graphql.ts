@@ -747,6 +747,7 @@ export class ButtonClickEvent implements Event {
 export class VisitorEvent {
     __typename?: 'VisitorEvent';
     id: string;
+    __typename: string;
     visitorId: string;
     journeyId: string;
     createdAt: DateTime;
