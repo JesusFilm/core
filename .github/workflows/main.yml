@@ -160,5 +160,5 @@ jobs:
           autoAcceptChanges: 'main'
           onlyChanged: '!(main)'
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
-          untraced: 'package.json,package-lock.json,main.js,preview.js'
+          untraced: 'package.json,package-lock.json,main.js,preview.js, preview-head.html,.storybook/static/*.js, manager.js'
           traceChanged: 'expanded'
