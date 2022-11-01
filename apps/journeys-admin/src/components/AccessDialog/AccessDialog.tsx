@@ -14,7 +14,7 @@ import Skeleton from '@mui/material/Skeleton'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
-import { Dialog } from '../Dialog'
+import { Dialog } from '@core/shared/ui/Dialog'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney

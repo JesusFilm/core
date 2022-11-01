@@ -24,7 +24,13 @@ const NavigateNextStory = {
 const journeyTheme = {
   id: 'journeyId',
   themeMode: ThemeMode.light,
-  themeName: ThemeName.base
+  themeName: ThemeName.base,
+  language: {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'en',
+    iso3: 'eng'
+  }
 } as unknown as Journey
 
 export const Navigate: Story = () => {

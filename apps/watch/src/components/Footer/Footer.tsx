@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
-import Container from '@mui/material/Container'
-import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import MuiLink from '@mui/material/Link'
 import { FooterTextLinks } from './FooterTextLinks'
@@ -9,7 +8,7 @@ import { FooterLogos } from './FooterLogos'
 
 export function Footer(): ReactElement {
   return (
-    <Container
+    <Box
       sx={{
         maxWidth: '100%',
         height: '350px'
@@ -63,6 +62,6 @@ export function Footer(): ReactElement {
           </Stack>
         </Stack>
       </Stack>
-    </Container>
+    </Box>
   )
 }

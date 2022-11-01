@@ -1,27 +1,26 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
+import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { PageWrapper } from '../../src/components/PageWrapper'
-import {
-  darkTheme,
-  DarkThemeProvider
-} from '../../src/components/ThemeProvider/ThemeProvider'
 import { Videos } from '../../src/components/Videos/Videos'
 import { LanguageProvider } from '../../src/libs/languageContext/LanguageContext'
 import { routeParser } from '../../src/libs/routeParser/routeParser'
+import { Header } from '../../src/components/Header'
+import { Footer } from '../../src/components/Footer/Footer'
 
 function VideoPage(): ReactElement {
   const router = useRouter()
   const locale = router.locale ?? router.defaultLocale
   const { tag } = router.query
   const { routes, tags, audioLanguage, subtitleLanguage } = routeParser(tag)
+  const theme = useTheme()
 
   return (
-    <DarkThemeProvider>
-      <LanguageProvider>
-        <PageWrapper />
+    <LanguageProvider>
+      <PageWrapper header={<Header />} footer={<Footer />}>
         <Container
           maxWidth="xl"
           style={{
@@ -34,8 +33,8 @@ function VideoPage(): ReactElement {
         >
           <style jsx global>{`
             body {
-              background: ${darkTheme.palette.background.default};
-              color: ${darkTheme.palette.text.primary};
+              background: ${theme.palette.background.default};
+              color: ${theme.palette.text.primary};
             }
           `}</style>
 
@@ -49,8 +48,8 @@ function VideoPage(): ReactElement {
             <div>SubtitleLanguage - {subtitleLanguage}</div>
           </Box>
         </Container>
-      </LanguageProvider>
-    </DarkThemeProvider>
+      </PageWrapper>
+    </LanguageProvider>
   )
 }
 

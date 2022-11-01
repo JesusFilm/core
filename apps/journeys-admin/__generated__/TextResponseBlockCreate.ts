@@ -22,10 +22,16 @@ export interface TextResponseBlockCreate_textResponseBlockCreate_action_Navigate
   blockId: string;
 }
 
+export interface TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface TextResponseBlockCreate_textResponseBlockCreate_action_NavigateToJourneyAction {
@@ -80,10 +86,16 @@ export interface TextResponseBlockCreate_textResponseBlockUpdate_action_Navigate
   blockId: string;
 }
 
+export interface TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface TextResponseBlockCreate_textResponseBlockUpdate_action_NavigateToJourneyAction {
