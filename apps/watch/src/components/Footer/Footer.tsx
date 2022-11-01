@@ -119,15 +119,7 @@ interface FooterLinkProps {
 
 function FooterLink({ url, label }: FooterLinkProps): ReactElement {
   return (
-    <MuiLink
-      href={url}
-      underline="none"
-      target="_blank"
-      rel="noopener"
-      style={{
-        color: '#26262E'
-      }}
-    >
+    <MuiLink href={url} target="_blank" rel="noopener" color="text.primary">
       <Typography variant="body1">{label}</Typography>
     </MuiLink>
   )

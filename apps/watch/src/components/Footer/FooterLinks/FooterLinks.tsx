@@ -60,9 +60,7 @@ function FooterLink({ url, label }: FooterLinkProps): ReactElement {
       underline="none"
       target="_blank"
       rel="noopener"
-      style={{
-        color: '#26262E'
-      }}
+      color="text.primary"
     >
       <Typography variant="body1">{label}</Typography>
     </MuiLink>
