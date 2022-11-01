@@ -56,7 +56,7 @@ export class VideoPlayEventResolver {
 }
 @Resolver('VideoPauseEvent')
 @UseGuards(GqlAuthGuard)
-export class VideoPuaseEventResolver {
+export class VideoPauseEventResolver {
   constructor(private readonly eventService: EventService) {}
   @Mutation()
   async videoPauseEventCreate(
