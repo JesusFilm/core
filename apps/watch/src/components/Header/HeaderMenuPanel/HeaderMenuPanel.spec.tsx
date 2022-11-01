@@ -14,7 +14,7 @@ describe('HeaderMenuPanel', () => {
     const { getByRole } = render(
       <HeaderMenuPanel toggleDrawer={toggleDrawer} />
     )
-    expect(getByRole('link', { name: 'About' }).closest('a')).toHaveAttribute(
+    expect(getByRole('link', { name: 'About' })).toHaveAttribute(
       'href',
       'https://www.jesusfilm.org/about'
     )
@@ -23,7 +23,7 @@ describe('HeaderMenuPanel', () => {
     const { getByRole } = render(
       <HeaderMenuPanel toggleDrawer={toggleDrawer} />
     )
-    expect(getByRole('link', { name: 'Give' }).closest('a')).toHaveAttribute(
+    expect(getByRole('link', { name: 'Give' })).toHaveAttribute(
       'href',
       'https://www.jesusfilm.org/give'
     )
@@ -32,7 +32,7 @@ describe('HeaderMenuPanel', () => {
     const { getByRole } = render(
       <HeaderMenuPanel toggleDrawer={toggleDrawer} />
     )
-    expect(getByRole('link', { name: 'Partner' }).closest('a')).toHaveAttribute(
+    expect(getByRole('link', { name: 'Partner' })).toHaveAttribute(
       'href',
       'https://www.jesusfilm.org/partners'
     )
@@ -41,7 +41,7 @@ describe('HeaderMenuPanel', () => {
     const { getByRole } = render(
       <HeaderMenuPanel toggleDrawer={toggleDrawer} />
     )
-    expect(getByRole('link', { name: 'Tools' }).closest('a')).toHaveAttribute(
+    expect(getByRole('link', { name: 'Tools' })).toHaveAttribute(
       'href',
       'https://www.jesusfilm.org/tools'
     )
@@ -50,7 +50,7 @@ describe('HeaderMenuPanel', () => {
     const { getByRole } = render(
       <HeaderMenuPanel toggleDrawer={toggleDrawer} />
     )
-    expect(getByRole('link', { name: 'Blog' }).closest('a')).toHaveAttribute(
+    expect(getByRole('link', { name: 'Blog' })).toHaveAttribute(
       'href',
       'https://www.jesusfilm.org/blog'
     )
@@ -59,9 +59,7 @@ describe('HeaderMenuPanel', () => {
     const { getByRole } = render(
       <HeaderMenuPanel toggleDrawer={toggleDrawer} />
     )
-    expect(
-      getByRole('link', { name: 'Give Now' }).closest('a')
-    ).toHaveAttribute(
+    expect(getByRole('link', { name: 'Give Now' })).toHaveAttribute(
       'href',
       'https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html'
     )
