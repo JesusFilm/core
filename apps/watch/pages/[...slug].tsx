@@ -1,38 +1,31 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Error from 'next/error'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import { secondsToMinutes } from '@core/shared/ui/timeFormat'
 import Container from '@mui/material/Container'
 import Button from '@mui/material/Button'
-import PlayArrow from '@mui/icons-material/PlayArrow'
-import AccessTime from '@mui/icons-material/AccessTime'
-import Subtitles from '@mui/icons-material/Subtitles'
-import Translate from '@mui/icons-material/Translate'
 import SaveAlt from '@mui/icons-material/SaveAlt'
 import Share from '@mui/icons-material/Share'
-import Circle from '@mui/icons-material/Circle'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
-import videojs from 'video.js'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
+import 'video.js/dist/video-js.css'
 
 import { routeParser } from '../src/libs/routeParser/routeParser'
-import { VideoType } from '../__generated__/globalTypes'
-import 'video.js/dist/video-js.css'
 import {
   LanguageProvider,
   useLanguage
 } from '../src/libs/languageContext/LanguageContext'
 import { PageWrapper } from '../src/components/PageWrapper'
-import { darkTheme } from '../src/components/ThemeProvider/ThemeProvider'
 import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCarousel'
 import { Footer } from '../src/components/Footer/Footer'
 import { Header } from '../src/components/Header'
+import { VideoHero, SimpleHero } from '../src/components/Hero'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID) {
@@ -52,6 +45,7 @@ export const GET_VIDEO = gql`
       }
       episodes {
         id
+        type
         title(languageId: $languageId, primary: true) {
           value
         }
@@ -90,6 +84,9 @@ export const GET_VIDEO_SIBLINGS = gql`
       id
       type
       image
+      imageAlt(languageId: $languageId, primary: true) {
+        value
+      }
       snippet(languageId: $languageId, primary: true) {
         value
       }
@@ -108,29 +105,15 @@ export const GET_VIDEO_SIBLINGS = gql`
   }
 `
 
-export const GET_LANGUAGE = gql`
-  query GetLanguage($id: ID!, $languageId: ID) {
-    language(id: $id) {
-      id
-      name(languageId: $languageId, primary: true) {
-        value
-      }
-    }
-  }
-`
-
 export const throw404 = (): ReactElement => {
   return <Error statusCode={404} />
 }
 
 export default function SeoFriendly(): ReactElement {
   const router = useRouter()
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
   const { slug } = router.query
-  const { routes, audioLanguage, subtitleLanguage } = routeParser(slug)
+  const { routes } = routeParser(slug)
   const languageContext = useLanguage()
-  const [isPlaying, setIsPlaying] = useState(false)
   const [tabValue, setTabValue] = useState(0)
 
   const handleTabChange = (_event, newValue): void => {
@@ -144,20 +127,6 @@ export default function SeoFriendly(): ReactElement {
     }
   })
 
-  const { data: audioLanguageData } = useQuery(GET_LANGUAGE, {
-    variables: {
-      id: audioLanguage,
-      languageId: router.locale ?? router.defaultLocale
-    }
-  })
-
-  const { data: subtitleLanguageData } = useQuery(GET_LANGUAGE, {
-    variables: {
-      id: subtitleLanguage,
-      languageId: router.locale ?? router.defaultLocale
-    }
-  })
-
   const playlistId = routes?.[routes.length - 2]
   const { data: siblingsData } = useQuery(GET_VIDEO_SIBLINGS, {
     skip: playlistId == null,
@@ -167,193 +136,37 @@ export default function SeoFriendly(): ReactElement {
     }
   })
 
-  useEffect(() => {
-    if (videoRef.current != null) {
-      playerRef.current = videojs(videoRef.current, {
-        autoplay: false,
-        controls: true,
-        userActions: {
-          hotkeys: true,
-          doubleClick: true
-        },
-        controlBar: {
-          playToggle: true,
-          captionsButton: true,
-          subtitlesButton: true,
-          remainingTimeDisplay: true,
-          progressControl: {
-            seekBar: true
-          },
-          fullscreenToggle: true,
-          volumePanel: {
-            inline: false
-          }
-        },
-        responsive: true,
-        poster: data.video?.image
-      })
-      playerRef.current.on('pause', pauseVideo)
-      playerRef.current.on('play', playVideo)
-    }
-  })
-
   if (routes == null) return throw404()
 
-  const siblingRoute = (routes: string[]): string[] => {
+  const getSiblingRoute = (routes: string[]): string[] => {
     return routes.filter((route, index) => index !== routes.length - 1)
-  }
-
-  function playVideo(): void {
-    setIsPlaying(true)
-    videoRef?.current?.play()
-  }
-
-  function pauseVideo(): void {
-    setIsPlaying(false)
   }
 
   return (
     <LanguageProvider>
       <PageWrapper header={<Header />} footer={<Footer />}>
-        {loading && <CircularProgress />}
         {data?.video != null && (
           <>
-            <Box
-              sx={{
-                backgroundImage: `url(${data.video.image as string})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                height: 776
-              }}
+            <ThemeProvider
+              nested
+              themeName={ThemeName.website}
+              themeMode={ThemeMode.dark}
             >
-              {data.video.variant?.hls != null && (
-                <video
-                  ref={videoRef}
-                  className="vjs-jfp video-js vjs-fill"
-                  style={{
-                    alignSelf: 'center'
-                  }}
-                  playsInline
-                >
-                  <source
-                    src={data.video.variant.hls}
-                    type="application/x-mpegURL"
-                  />
-                </video>
+              {siblingsData != null ? (
+                <VideoHero
+                  loading={loading}
+                  video={data.video}
+                  siblingVideos={siblingsData}
+                  routes={routes}
+                />
+              ) : (
+                <SimpleHero loading={loading} video={data.video} />
               )}
-              {!isPlaying && (
-                <>
-                  <Container
-                    maxWidth="xl"
-                    style={{
-                      position: 'absolute',
-                      top: 350,
-                      paddingLeft: 100,
-                      margin: 0,
-                      textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)'
-                    }}
-                  >
-                    <Typography
-                      variant="h2"
-                      sx={{
-                        maxWidth: '600px',
-                        color: darkTheme.palette.text.primary
-                      }}
-                    >
-                      {data.video.title[0]?.value}
-                    </Typography>
-                  </Container>
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: '520px'
-                    }}
-                    width="100%"
-                    height="133px"
-                  >
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      px="100px"
-                      sx={{ color: darkTheme.palette.text.primary }}
-                    >
-                      <Stack direction="row" spacing="20px">
-                        {data?.video.type === VideoType.playlist && (
-                          <Typography variant="subtitle1">
-                            {data.video.episodes.length} episodes
-                          </Typography>
-                        )}
-                        {data?.video.type !== VideoType.playlist && (
-                          <>
-                            <Button
-                              size="large"
-                              variant="contained"
-                              sx={{ height: 71, fontSize: '24px' }}
-                              onClick={playVideo}
-                            >
-                              <PlayArrow />
-                              &nbsp; Play Video
-                            </Button>
-                            <Stack height="71px" direction="row">
-                              <AccessTime sx={{ paddingTop: '23px' }} />
-                              <Typography
-                                variant="body2"
-                                sx={{ lineHeight: '71px', paddingLeft: '10px' }}
-                              >
-                                {secondsToMinutes(data.video.variant.duration)}{' '}
-                                min
-                              </Typography>
-                            </Stack>
-                            <Circle
-                              sx={{ fontSize: '10px', paddingTop: '30px' }}
-                            />
-                            <Stack height="71px" direction="row">
-                              <Subtitles sx={{ paddingTop: '23px' }} />
-                              <Typography
-                                variant="body2"
-                                sx={{ lineHeight: '71px', paddingLeft: '10px' }}
-                              >
-                                Subs
-                              </Typography>
-                            </Stack>
-                          </>
-                        )}
-                      </Stack>
-                      <Stack height="71px" direction="row">
-                        <Translate sx={{ paddingTop: '23px' }} />
-                        <Typography
-                          variant="body1"
-                          sx={{ paddingLeft: '10px', lineHeight: '71px' }}
-                        >
-                          {audioLanguageData?.language.name[0]?.value} +{' '}
-                          {data.video.variantLanguages.length - 1} Additional
-                          Languages
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                  </Box>
-                  <Box
-                    sx={{
-                      backgroundColor: 'rgba(18, 17, 17, 0.25)',
-                      position: 'absolute',
-                      top: '643px'
-                    }}
-                    width="100%"
-                    height="133px"
-                  >
-                    <Stack pt="34px" mx="100px" width="100%" direction="row">
-                      <Stack direction="row">&nbsp;</Stack>
-                    </Stack>
-                  </Box>
-                </>
-              )}
-            </Box>
+            </ThemeProvider>
             <Box
               sx={{
                 paddingTop: '20px',
-                paddingX: '100px',
-                bgcolor: darkTheme.palette.background.default,
-                color: darkTheme.palette.text.primary
+                paddingX: '100px'
               }}
             >
               {data.video.episodes.length > 0 && (
@@ -365,7 +178,7 @@ export default function SeoFriendly(): ReactElement {
               {siblingsData?.episodes?.length > 0 && (
                 <VideosCarousel
                   videos={siblingsData.episodes}
-                  routePrefix={siblingRoute(routes).join('/')}
+                  routePrefix={getSiblingRoute(routes).join('/')}
                 />
               )}
             </Box>
@@ -393,16 +206,6 @@ export default function SeoFriendly(): ReactElement {
                       label="Description"
                       {...tabA11yProps('video-description', 0)}
                     />
-                    {data?.video.type !== VideoType.playlist && (
-                      <Tab
-                        label="Transcript"
-                        {...tabA11yProps('video-transcript', 1)}
-                      />
-                    )}
-                    <Tab
-                      label="Strategy"
-                      {...tabA11yProps('video-strategy', 1)}
-                    />
                   </Tabs>
                   <TabPanel name="video-description" value={tabValue} index={0}>
                     <Typography variant="body1">
@@ -427,20 +230,6 @@ export default function SeoFriendly(): ReactElement {
                       <Share />
                       &nbsp; Share
                     </Button>
-                  </Stack>
-                  <Stack
-                    justifyContent="center"
-                    direction="column"
-                    width="336px"
-                  >
-                    {data.video.type !== VideoType.playlist && (
-                      <Stack justifyContent="center" direction="row">
-                        <Typography variant="subtitle1">
-                          Subtitle:
-                          {subtitleLanguageData?.language.name[0]?.value}
-                        </Typography>
-                      </Stack>
-                    )}
                   </Stack>
                 </Box>
               </Stack>

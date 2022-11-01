@@ -10,6 +10,7 @@ const storybookMode = globalTypes.theme.toolbar.items
 type StorybookThemeMode = typeof storybookMode[number]
 
 interface ThemeDecoratorProps extends Pick<Parameters, 'layout'> {
+  name?: ThemeName
   mode: StorybookThemeMode
   children: ReactNode
   rtl?: boolean
@@ -17,6 +18,7 @@ interface ThemeDecoratorProps extends Pick<Parameters, 'layout'> {
 }
 
 const ThemeContainer = ({
+  name = ThemeName.base,
   mode,
   layout = 'padded',
   children,
@@ -24,7 +26,7 @@ const ThemeContainer = ({
   locale = ''
 }: ThemeDecoratorProps): ReactElement => {
   const theme = getTheme({
-    themeName: ThemeName.base,
+    themeName: ThemeName[name],
     themeMode: ThemeMode[mode as ThemeMode]
   })
 
@@ -41,7 +43,7 @@ const ThemeContainer = ({
       }}
     >
       <ThemeProvider
-        themeName={ThemeName.base}
+        themeName={ThemeName[name]}
         themeMode={ThemeMode[mode as ThemeMode]}
         rtl={rtl}
         locale={locale}
@@ -53,6 +55,7 @@ const ThemeContainer = ({
 }
 
 export const ThemeDecorator = ({
+  name = ThemeName.base,
   mode,
   layout,
   children,
@@ -76,6 +79,7 @@ export const ThemeDecorator = ({
         >
           <CacheProvider value={storybookEmotionCache}>
             <ThemeContainer
+              name={name}
               mode="light"
               layout={layout}
               rtl={rtl}
@@ -84,6 +88,7 @@ export const ThemeDecorator = ({
               {children}
             </ThemeContainer>
             <ThemeContainer
+              name={name}
               mode="dark"
               layout={layout}
               rtl={rtl}
@@ -104,7 +109,7 @@ export const ThemeDecorator = ({
         >
           <CacheProvider value={storybookEmotionCache}>
             <ThemeProvider
-              themeName={ThemeName.base}
+              themeName={ThemeName[name]}
               themeMode={ThemeMode[mode as ThemeMode]}
               rtl={rtl}
               locale={locale}
