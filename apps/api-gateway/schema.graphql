@@ -460,7 +460,6 @@ input JourneyViewEventCreateInput {
 
   """label is the title of the journey"""
   label: String
-  languageId: String
 
   """value is the journey languageId"""
   value: String

@@ -373,7 +373,6 @@ export class ButtonClickEventCreateInput {
 export class JourneyViewEventCreateInput {
     id?: Nullable<string>;
     journeyId: string;
-    languageId?: Nullable<string>;
     label?: Nullable<string>;
     value?: Nullable<string>;
 }
