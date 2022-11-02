@@ -3,10 +3,12 @@ import MuiLink from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 
+type ValueOf<T> = T[keyof T]
+
 interface FooterLinkProps {
   url: string
   label: string
-  underline?: 'none' | undefined
+  underline?: ValueOf<{ MuiLink; underline }>
   src?: string
   width?: string
   height?: string
@@ -15,7 +17,7 @@ interface FooterLinkProps {
 export function FooterLink({
   url,
   label,
-  underline,
+  underline = 'none',
   src,
   width,
   height

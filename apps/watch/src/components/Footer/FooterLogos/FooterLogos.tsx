@@ -10,7 +10,6 @@ export function FooterLogos(): ReactElement {
       <FooterLink
         url="https://www.cru.org/"
         label="Cru logo"
-        underline="none"
         src={CruLogo}
         width="72"
         height="52"
@@ -18,7 +17,6 @@ export function FooterLogos(): ReactElement {
       <FooterLink
         url="https://www.jesusfilm.org"
         label="Jesus Film logo"
-        underline="none"
         src={JFLogo}
         width="60"
         height="60"

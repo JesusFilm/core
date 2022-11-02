@@ -4,9 +4,10 @@ import { FooterLink } from './FooterLink'
 
 describe('FooterLink', () => {
   it('should have text link', () => {
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <FooterLink url="https://www.jesusfilm.org/about/" label="About Us" />
     )
+    expect(getByText('About Us')).toBeInTheDocument()
     expect(getByRole('link', { name: 'About Us' })).toHaveAttribute(
       'href',
       'https://www.jesusfilm.org/about/'
@@ -14,7 +15,7 @@ describe('FooterLink', () => {
   })
 
   it('should have image link', () => {
-    const { getByRole } = render(
+    const { getByRole, getByAltText } = render(
       <FooterLink
         url="https://www.facebook.com/jesusfilm"
         label="Facebook"
@@ -23,6 +24,8 @@ describe('FooterLink', () => {
         height="72"
       />
     )
+    expect(getByAltText('Facebook')).toBeInTheDocument()
+    expect(getByRole('img')).toHaveAttribute('src', 'facebook.svg')
     expect(getByRole('link', { name: 'Facebook' })).toHaveAttribute(
       'href',
       'https://www.facebook.com/jesusfilm'
