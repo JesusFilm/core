@@ -29,6 +29,8 @@ const video: Video = {
   variantLanguages: []
 }
 
+const routes = ['the-story-of-jesus-for-children']
+
 const Template: ComponentStory<typeof ShareDialog> = ({ ...args }) => {
   return <ShareDialog {...args} />
 }
@@ -37,7 +39,8 @@ export const ShareLink = Template.bind({})
 ShareLink.args = {
   open: true,
   onClose: noop,
-  video
+  video,
+  routes
 }
 ShareLink.play = () => {
   userEvent.click(screen.getByRole('button', { name: 'Copy Link' }))
@@ -47,7 +50,8 @@ export const EmbedCode = Template.bind({})
 EmbedCode.args = {
   open: true,
   onClose: noop,
-  video
+  video,
+  routes
 }
 EmbedCode.play = () => {
   userEvent.click(screen.getByRole('tab', { name: 'Embed Code' }))

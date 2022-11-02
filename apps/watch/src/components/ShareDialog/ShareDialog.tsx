@@ -1,7 +1,7 @@
 import { ReactElement, useState, SyntheticEvent } from 'react'
 import { useSnackbar } from 'notistack'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
+// import { useRouter } from 'next/router'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -17,22 +17,24 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetVideo_video } from '../../../__generated__/GetVideo'
 import { VideoType } from '../../../__generated__/globalTypes'
-import { routeParser } from '../../libs/routeParser/routeParser'
+// import { routeParser } from '../../libs/routeParser/routeParser'
 
 interface ShareDialogProps
   extends Pick<Parameters<typeof Dialog>[0], 'open' | 'onClose'> {
   video: GetVideo_video
+  routes: string[]
 }
 
 export function ShareDialog({
   video,
+  routes,
   ...dialogProps
 }: ShareDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const [value, setValue] = useState(0)
-  const router = useRouter()
-  const { slug } = router.query
-  const { routes } = routeParser(slug)
+  // const router = useRouter()
+  // const { slug } = router.query
+  // const { routes } = routeParser(slug)
 
   const handleChange = (e: SyntheticEvent, newValue: number): void => {
     setValue(newValue)
@@ -96,6 +98,29 @@ export function ShareDialog({
       fill="#47ACDF"
     />,
     'TwitterIcon'
+  )
+
+  const ShareLink = (): ReactElement => (
+    <Stack>
+      <TextField
+        fullWidth
+        id="shareLink"
+        defaultValue={shareLink}
+        variant="outlined"
+        InputProps={{
+          readOnly: true
+        }}
+        sx={{ mb: 4 }}
+      />
+      <Button
+        variant="contained"
+        startIcon={<ContentCopyIcon />}
+        onClick={handleShareLinkClick}
+        sx={{ alignSelf: 'flex-end' }}
+      >
+        Copy Link
+      </Button>
+    </Stack>
   )
 
   return (
@@ -165,67 +190,48 @@ export function ShareDialog({
               <TwitterIcon sx={{ fontSize: 46 }} />
             </IconButton>
           </Stack>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              variant="fullWidth"
-              aria-label="share and embed"
-            >
-              <Tab label="Share Link" {...tabA11yProps('share', 0)} />
-              {video.type !== VideoType.playlist && (
-                <Tab label="Embed Code" {...tabA11yProps('embed', 1)} />
-              )}
-            </Tabs>
-          </Box>
-
-          <TabPanel name="share" value={value} index={0} sx={{ mt: 4 }}>
-            <Stack>
-              <TextField
-                fullWidth
-                id="shareLink"
-                defaultValue={shareLink}
-                variant="outlined"
-                InputProps={{
-                  readOnly: true
-                }}
-                sx={{ mb: 4 }}
-              />
-              <Button
-                variant="contained"
-                startIcon={<ContentCopyIcon />}
-                onClick={handleShareLinkClick}
-                sx={{ alignSelf: 'flex-end' }}
-              >
-                Copy Link
-              </Button>
-            </Stack>
-          </TabPanel>
-
-          {video.type !== VideoType.playlist && (
-            <TabPanel name="embed" value={value} index={1} sx={{ mt: 4 }}>
-              <Stack>
-                <TextField
-                  fullWidth
-                  multiline
-                  id="embedCode"
-                  defaultValue={getEmbedCode()}
-                  variant="outlined"
-                  InputProps={{
-                    readOnly: true
-                  }}
-                  sx={{ mb: 4 }}
-                />
-                <Button
-                  variant="contained"
-                  startIcon={<ContentCopyIcon />}
-                  onClick={handleEmbedCodeClick}
-                  sx={{ alignSelf: 'flex-end' }}
+          {video.type === VideoType.playlist ? (
+            <ShareLink />
+          ) : (
+            <>
+              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <Tabs
+                  value={value}
+                  onChange={handleChange}
+                  variant="fullWidth"
+                  aria-label="share and embed"
                 >
-                  Copy Embed Code
-                </Button>
-              </Stack>
-            </TabPanel>
+                  <Tab label="Share Link" {...tabA11yProps('share', 0)} />
+                  <Tab label="Embed Code" {...tabA11yProps('embed', 1)} />
+                </Tabs>
+              </Box>
+              <TabPanel name="share" value={value} index={0} sx={{ mt: 4 }}>
+                <ShareLink />
+              </TabPanel>
+              <TabPanel name="embed" value={value} index={1} sx={{ mt: 4 }}>
+                <Stack>
+                  <TextField
+                    fullWidth
+                    multiline
+                    id="embedCode"
+                    defaultValue={getEmbedCode()}
+                    variant="outlined"
+                    InputProps={{
+                      readOnly: true
+                    }}
+                    sx={{ mb: 4 }}
+                  />
+                  <Button
+                    variant="contained"
+                    startIcon={<ContentCopyIcon />}
+                    onClick={handleEmbedCodeClick}
+                    sx={{ alignSelf: 'flex-end' }}
+                  >
+                    Copy Embed Code
+                  </Button>
+                </Stack>
+              </TabPanel>
+            </>
           )}
         </>
       </>

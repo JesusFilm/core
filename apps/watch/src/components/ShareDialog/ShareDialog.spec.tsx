@@ -16,6 +16,7 @@ const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 const onClose = jest.fn()
 const originalEnv = process.env
+const routes = ['the-story-of-jesus-for-children']
 
 const video: Video = {
   ...videos[0],
@@ -39,7 +40,7 @@ describe('ShareDialog', () => {
   it('closes the modal on cancel icon click', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
-        <ShareDialog video={video} open onClose={onClose} />
+        <ShareDialog video={video} open routes={routes} onClose={onClose} />
       </SnackbarProvider>
     )
     fireEvent.click(getByTestId('dialog-close-button'))
@@ -51,6 +52,7 @@ describe('ShareDialog', () => {
       <SnackbarProvider>
         <ShareDialog
           video={{ ...video, type: VideoType.playlist }}
+          routes={routes}
           open
           onClose={onClose}
         />
@@ -81,7 +83,7 @@ describe('ShareDialog', () => {
 
       const { getByRole } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} open onClose={onClose} />
+          <ShareDialog video={video} routes={routes} open onClose={onClose} />
         </SnackbarProvider>
       )
 
@@ -102,7 +104,7 @@ describe('ShareDialog', () => {
 
       const { getByRole } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} open onClose={onClose} />
+          <ShareDialog video={video} routes={routes} open onClose={onClose} />
         </SnackbarProvider>
       )
 
@@ -134,7 +136,7 @@ describe('ShareDialog', () => {
 
       const { getByRole } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} open onClose={onClose} />
+          <ShareDialog video={video} routes={routes} open onClose={onClose} />
         </SnackbarProvider>
       )
 
@@ -153,7 +155,7 @@ describe('ShareDialog', () => {
 
       const { getByRole } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} open onClose={onClose} />
+          <ShareDialog video={video} routes={routes} open onClose={onClose} />
         </SnackbarProvider>
       )
 
@@ -195,7 +197,7 @@ describe('ShareDialog', () => {
         'https://www.jesusfilm.org/watch/the-story-of-jesus-for-children'
       const { getByRole, getByText } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} open onClose={onClose} />
+          <ShareDialog video={video} routes={routes} open onClose={onClose} />
         </SnackbarProvider>
       )
       expect(getByRole('textbox')).toHaveValue(link)
@@ -213,7 +215,7 @@ describe('ShareDialog', () => {
 
       const { getByRole, getByText } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} open onClose={onClose} />
+          <ShareDialog video={video} routes={routes} open onClose={onClose} />
         </SnackbarProvider>
       )
 

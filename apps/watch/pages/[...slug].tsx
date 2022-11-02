@@ -242,6 +242,7 @@ export default function SeoFriendly(): ReactElement {
             <ShareDialog
               open={openShare}
               video={data.video}
+              routes={routes}
               onClose={() => setOpenShare(false)}
             />
           </>
