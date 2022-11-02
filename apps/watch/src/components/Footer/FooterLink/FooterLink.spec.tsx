@@ -15,7 +15,7 @@ describe('FooterLink', () => {
   })
 
   it('should have image link', () => {
-    const { getByRole, getByAltText } = render(
+    const { getByRole } = render(
       <FooterLink
         url="https://www.facebook.com/jesusfilm"
         label="Facebook"
