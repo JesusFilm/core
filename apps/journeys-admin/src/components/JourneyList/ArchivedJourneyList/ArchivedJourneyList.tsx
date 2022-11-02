@@ -238,7 +238,7 @@ export function ArchivedJourneyList({
       )}
       <Dialog
         open={openRestoreAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: t('Unarchive Journeys'),
           closeButton: true
@@ -257,7 +257,7 @@ export function ArchivedJourneyList({
       </Dialog>
       <Dialog
         open={openTrashAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: t('Trash Journeys'),
           closeButton: true
