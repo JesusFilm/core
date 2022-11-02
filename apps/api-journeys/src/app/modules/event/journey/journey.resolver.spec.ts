@@ -42,7 +42,7 @@ describe('JourneyViewEventResolver', () => {
   const input: JourneyViewEventCreateInput = {
     id: '1',
     journeyId: 'journey.id',
-    language: 'English'
+    languageId: '503'
   }
 
   const userAgent = 'device info'
