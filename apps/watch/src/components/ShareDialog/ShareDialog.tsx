@@ -1,7 +1,6 @@
 import { ReactElement, useState, SyntheticEvent } from 'react'
 import { useSnackbar } from 'notistack'
 import Image from 'next/image'
-// import { useRouter } from 'next/router'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -17,7 +16,6 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetVideo_video } from '../../../__generated__/GetVideo'
 import { VideoType } from '../../../__generated__/globalTypes'
-// import { routeParser } from '../../libs/routeParser/routeParser'
 
 interface ShareDialogProps
   extends Pick<Parameters<typeof Dialog>[0], 'open' | 'onClose'> {
@@ -32,9 +30,6 @@ export function ShareDialog({
 }: ShareDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const [value, setValue] = useState(0)
-  // const router = useRouter()
-  // const { slug } = router.query
-  // const { routes } = routeParser(slug)
 
   const handleChange = (e: SyntheticEvent, newValue: number): void => {
     setValue(newValue)

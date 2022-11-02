@@ -1,18 +1,10 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { NextRouter, useRouter } from 'next/router'
 
 import { GetVideo_video as Video } from '../../../__generated__/GetVideo'
 import { VideoType } from '../../../__generated__/globalTypes'
 import { videos } from '../Videos/testData'
 import { ShareDialog } from './ShareDialog'
-
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: jest.fn()
-}))
-
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 const onClose = jest.fn()
 const originalEnv = process.env
@@ -30,12 +22,6 @@ const video: Video = {
   variantLanguages: []
 }
 
-beforeEach(() => {
-  mockUseRouter.mockReturnValue({
-    query: { slug: ['the-story-of-jesus-for-children'] }
-  } as unknown as NextRouter)
-})
-
 describe('ShareDialog', () => {
   it('closes the modal on cancel icon click', () => {
     const { getByTestId } = render(
@@ -47,8 +33,8 @@ describe('ShareDialog', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('hides embed code tab on playlist video', () => {
-    const { getAllByRole, queryByRole } = render(
+  it('only shows share link on playlist video', () => {
+    const { getByRole, queryAllByRole } = render(
       <SnackbarProvider>
         <ShareDialog
           video={{ ...video, type: VideoType.playlist }}
@@ -59,9 +45,11 @@ describe('ShareDialog', () => {
       </SnackbarProvider>
     )
 
-    expect(getAllByRole('tab')).toHaveLength(1)
-    expect(queryByRole('tab', { name: 'Share Link' })).toBeInTheDocument()
-    expect(queryByRole('tab', { name: 'Embed Code' })).not.toBeInTheDocument()
+    const link =
+      'https://www.jesusfilm.org/watch/the-story-of-jesus-for-children'
+    expect(getByRole('textbox')).toHaveValue(link)
+    expect(getByRole('button', { name: 'Copy Link' })).toBeInTheDocument()
+    expect(queryAllByRole('tab')).toHaveLength(0)
   })
 
   describe('development', () => {
