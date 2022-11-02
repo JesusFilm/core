@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
 
-import logo from '../../../../public/taskbar-icon.svg'
+import logo from '../../../../public/header-logo.svg'
 
 interface HeaderMenuPanelProps {
   toggleDrawer: (
@@ -56,7 +56,7 @@ export function HeaderMenuPanel({
         <NextLink href="/" passHref>
           <Image
             src={logo}
-            width="60"
+            width="160"
             height="40"
             alt="Watch Logo"
             style={{ cursor: 'pointer' }}

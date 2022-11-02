@@ -8,7 +8,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Image from 'next/image'
 import NextLink from 'next/link'
 
-import logo from '../../../public/taskbar-icon.svg'
+import logo from '../../../public/header-logo.svg'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 
 export function Header(): ReactElement {
@@ -42,7 +42,7 @@ export function Header(): ReactElement {
           <NextLink href="/" passHref>
             <Image
               src={logo}
-              width="60"
+              width="160"
               height="40"
               alt="Watch Logo"
               style={{ cursor: 'pointer' }}
