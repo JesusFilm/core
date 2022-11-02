@@ -139,8 +139,6 @@ export default function SeoFriendly(): ReactElement {
     return routes.filter((route, index) => index !== routes.length - 1)
   }
 
-  console.log(data, siblingsData)
-
   return (
     <LanguageProvider>
       <PageWrapper
