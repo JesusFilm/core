@@ -8,6 +8,7 @@ type ValueOf<T> = T[keyof T]
 interface FooterLinkProps {
   url: string
   label: string
+  variant?: ValueOf<{ MuiLink; variant }>
   underline?: ValueOf<{ MuiLink; underline }>
   src?: string
   width?: string
@@ -17,6 +18,7 @@ interface FooterLinkProps {
 export function FooterLink({
   url,
   label,
+  variant = 'body1',
   underline = 'none',
   src,
   width,
@@ -31,7 +33,7 @@ export function FooterLink({
       color="text.primary"
     >
       {src == null ? (
-        <Typography variant="body1">{label}</Typography>
+        <Typography variant={variant}>{label}</Typography>
       ) : (
         <Image
           src={src}

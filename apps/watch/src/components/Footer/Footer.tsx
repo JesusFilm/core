@@ -42,11 +42,13 @@ export function Footer(): ReactElement {
                 url="https://www.jesusfilm.org/terms/"
                 label="Terms of use"
                 underline="always"
+                variant="body2"
               />
               <FooterLink
                 url="https://www.jesusfilm.org/legal/"
                 label="Legal Statement"
                 underline="always"
+                variant="body2"
               />
             </Stack>
           </Stack>
@@ -86,12 +88,14 @@ export function Footer(): ReactElement {
             url="https://www.jesusfilm.org/legal/"
             label="Legal Statement"
             underline="always"
+            variant="body2"
           />
           <Typography variant="body2">All rights reserved</Typography>
           <FooterLink
             url="https://www.jesusfilm.org/terms/"
             label="Terms of use"
             underline="always"
+            variant="body2"
           />
         </Stack>
       </Container>
