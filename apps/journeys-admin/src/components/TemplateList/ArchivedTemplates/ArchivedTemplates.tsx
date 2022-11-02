@@ -231,7 +231,7 @@ export function ArchivedTemplates({
 
       <Dialog
         open={openRestoreAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: t('Unarchive Templates'),
           closeButton: true
@@ -250,7 +250,7 @@ export function ArchivedTemplates({
       </Dialog>
       <Dialog
         open={openTrashAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: t('Trash Templates'),
           closeButton: true

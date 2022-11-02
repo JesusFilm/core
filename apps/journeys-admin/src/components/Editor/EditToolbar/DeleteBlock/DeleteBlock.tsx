@@ -94,7 +94,7 @@ export function DeleteBlock({
     <>
       <Dialog
         open={openDialog}
-        handleClose={handleCloseDialog}
+        onClose={handleCloseDialog}
         dialogTitle={{ title: 'Delete Card?' }}
         dialogAction={{
           onSubmit: handleDeleteBlock,

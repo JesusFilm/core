@@ -268,7 +268,7 @@ export function ImageEdit(): ReactElement {
 
       <Dialog
         open={open}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{ title: 'Social media image', closeButton: true }}
       >
         <ImageBlockEditor
