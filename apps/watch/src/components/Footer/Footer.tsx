@@ -4,21 +4,21 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import Image from 'next/image'
 import Typography from '@mui/material/Typography'
+import { useTheme } from '@mui/material/styles'
 
-import Logo from '../../../public/taskbar-icon.svg'
 import JFLogo from '../../../public/images/jf-logo@2x.png'
 import CruLogo from '../../../public/images/cru-logo.png'
 import Facebook from '../../../public/icons/facebook.svg'
 import Twitter from '../../../public/icons/twitter.svg'
 import Youtube from '../../../public/icons/youtube.svg'
 import Instagram from '../../../public/icons/instagram.svg'
-import { theme } from '../ThemeProvider/ThemeProvider'
 
 interface FooterProps {
   isHome?: boolean
 }
 
 export function Footer({ isHome = false }: FooterProps): ReactElement {
+  const theme = useTheme()
   return (
     <Container
       sx={{
@@ -45,9 +45,6 @@ export function Footer({ isHome = false }: FooterProps): ReactElement {
           justifyContent="space-between"
           justifyItems="start"
         >
-          <Box>
-            <Image src={Logo} width="60" height="40" alt="Watch Logo" />
-          </Box>
           <Stack
             sx={{ margin: 'auto' }}
             direction="row"

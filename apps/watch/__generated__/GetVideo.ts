@@ -62,6 +62,7 @@ export interface GetVideo_video_episodes_variant {
 export interface GetVideo_video_episodes {
   __typename: "Video";
   id: string;
+  type: VideoType;
   title: GetVideo_video_episodes_title[];
   image: string | null;
   imageAlt: GetVideo_video_episodes_imageAlt[];

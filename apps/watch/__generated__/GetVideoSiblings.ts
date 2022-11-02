@@ -9,6 +9,11 @@ import { VideoType } from "./globalTypes";
 // GraphQL query operation: GetVideoSiblings
 // ====================================================
 
+export interface GetVideoSiblings_episodes_imageAlt {
+  __typename: "Translation";
+  value: string;
+}
+
 export interface GetVideoSiblings_episodes_snippet {
   __typename: "Translation";
   value: string;
@@ -35,6 +40,7 @@ export interface GetVideoSiblings_episodes {
   id: string;
   type: VideoType;
   image: string | null;
+  imageAlt: GetVideoSiblings_episodes_imageAlt[];
   snippet: GetVideoSiblings_episodes_snippet[];
   title: GetVideoSiblings_episodes_title[];
   variant: GetVideoSiblings_episodes_variant | null;

@@ -9,11 +9,6 @@ input VideoStartEventCreateInput {
 
 type VideoStartEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
-  createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
-  position: Float @deprecated(reason: "preparing for data structure change")
-  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoPlayEventCreateInput {
@@ -27,11 +22,6 @@ input VideoPlayEventCreateInput {
 
 type VideoPlayEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
-  createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
-  position: Float @deprecated(reason: "preparing for data structure change")
-  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoPauseEventCreateInput {
@@ -45,11 +35,6 @@ input VideoPauseEventCreateInput {
 
 type VideoPauseEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
-  createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
-  position: Float @deprecated(reason: "preparing for data structure change")
-  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoCompleteEventCreateInput {
@@ -63,11 +48,6 @@ input VideoCompleteEventCreateInput {
 
 type VideoCompleteEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
-  createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
-  position: Float @deprecated(reason: "preparing for data structure change")
-  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoExpandEventCreateInput {
@@ -81,11 +61,6 @@ input VideoExpandEventCreateInput {
 
 type VideoExpandEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
-  createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
-  position: Float @deprecated(reason: "preparing for data structure change")
-  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoCollapseEventCreateInput {
@@ -99,11 +74,6 @@ input VideoCollapseEventCreateInput {
 
 type VideoCollapseEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
-  createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
-  position: Float @deprecated(reason: "preparing for data structure change")
-  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 input VideoProgressEventCreateInput {
@@ -121,12 +91,6 @@ input VideoProgressEventCreateInput {
 
 type VideoProgressEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
-  createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
-  position: Float @deprecated(reason: "preparing for data structure change")
-  progress: Int! @deprecated(reason: "preparing for data structure change")
-  block: VideoBlock @deprecated(reason: "preparing for data structure change")
 }
 
 extend type Mutation {

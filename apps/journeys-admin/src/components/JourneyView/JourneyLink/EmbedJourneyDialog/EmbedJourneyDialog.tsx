@@ -10,10 +10,10 @@ import TextField from '@mui/material/TextField'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useSnackbar } from 'notistack'
 import { useTranslation } from 'react-i18next'
-import { Dialog } from '../../../Dialog'
 import { EmbedCardPreview } from './EmbedCardPreview'
 
 interface EmbedJourneyDialogProps {
@@ -56,7 +56,7 @@ iframe.style.zIndex="auto"
   return (
     <Dialog
       open={open}
-      handleClose={onClose}
+      onClose={onClose}
       dialogTitle={{
         title: 'Embed journey'
       }}

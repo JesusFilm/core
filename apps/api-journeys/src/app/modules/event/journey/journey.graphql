@@ -8,10 +8,6 @@ input JourneyViewEventCreateInput {
 
 type JourneyViewEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
-  createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
-  journey: Journey @deprecated(reason: "preparing for data structure change")
 }
 
 extend type Mutation {
