@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import MuiLink from '@mui/material/Link'
+import MuiLink, { LinkProps } from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 
@@ -8,8 +8,8 @@ type ValueOf<T> = T[keyof T]
 interface FooterLinkProps {
   url: string
   label: string
-  variant?: ValueOf<{ MuiLink; variant }>
-  underline?: ValueOf<{ MuiLink; underline }>
+  variant?: ValueOf<Pick<LinkProps, 'variant'>>
+  underline?: ValueOf<Pick<LinkProps, 'underline'>>
   src?: string
   width?: string
   height?: string
