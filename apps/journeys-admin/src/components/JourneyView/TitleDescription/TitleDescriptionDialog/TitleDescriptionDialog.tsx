@@ -98,7 +98,7 @@ export function TitleDescriptionDialog({
           {({ values, handleChange, handleSubmit, resetForm }) => (
             <Dialog
               open={open}
-              handleClose={handleClose(resetForm)}
+              onClose={handleClose(resetForm)}
               dialogTitle={{ title: 'Edit Title and Description' }}
               dialogAction={{
                 onSubmit: handleSubmit,
