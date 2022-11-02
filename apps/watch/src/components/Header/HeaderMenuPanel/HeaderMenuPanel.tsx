@@ -38,7 +38,7 @@ export function HeaderMenuPanel({
       underline="none"
       target="_blank"
       rel="noopener"
-      color="#26262E"
+      color="text.primary"
       variant="overline2"
       onClick={toggleDrawer('top', false)}
       onKeyDown={toggleDrawer('top', false)}
