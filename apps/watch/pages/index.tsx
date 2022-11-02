@@ -14,15 +14,12 @@ import {
   useLanguage
 } from '../src/libs/languageContext/LanguageContext'
 import { Footer } from '../src/components/Footer/Footer'
-import {
-  HomeVideo,
-  HomeVideoList
-} from '../src/components/HomeVideoList/HomeVideoList'
+import { HomeVideo, HomeVideos } from '../src/components/HomeVideos/HomeVideos'
 import { GetVideos } from '../__generated__/GetVideos'
-import { designationTypes } from '../src/components/HomeVideoList/Card/HomeVideoCard'
+import { designationTypes } from '../src/components/HomeVideos/Card/HomeVideoCard'
 import { Header } from '../src/components/Header'
 
-const videos: HomeVideo[] = [
+export const videos: HomeVideo[] = [
   {
     id: '1_jf-0-0',
     designation: designationTypes.feature
@@ -70,7 +67,7 @@ function HomePage(): ReactElement {
             paddingRight: '100px !important'
           }}
         >
-          <HomeVideoList data={data?.videos} videos={videos} />
+          <HomeVideos data={data?.videos} videos={videos} />
         </Container>
       </Box>
       <Footer isHome />

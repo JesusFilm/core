@@ -16,7 +16,7 @@ interface VideoListGridProps {
   loading?: boolean
 }
 
-export function HomeVideoList({
+export function HomeVideos({
   loading = false,
   data,
   videos

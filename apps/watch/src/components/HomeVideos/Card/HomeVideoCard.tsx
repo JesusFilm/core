@@ -82,16 +82,14 @@ export function HomeVideoCard({
                   height="160"
                   sx={{
                     borderRadius: '8px',
-                    border: '1px solid rgba(255, 255, 255, 0.18)',
-                    filter:
-                      'drop-shadow(0px 3px 4px rgba(0, 0, 0, 0.14)) drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.12)) drop-shadow(0px 1px 8px rgba(0, 0, 0, 0.2))'
+                    border: '1px solid rgba(255, 255, 255, 0.18)'
                   }}
                 />
                 <Box
                   sx={{
                     position: 'absolute',
                     left: 14,
-                    bottom: 50,
+                    bottom: 42,
                     display: 'flex',
                     flexDirection: 'row',
                     justifyContent: 'space-between',
@@ -128,8 +126,7 @@ export function HomeVideoCard({
                     }}
                   >
                     <Typography
-                      variant="overline"
-                      sx={{ fontSize: '14px', lineHeight: '14px' }}
+                      variant="overline2"
                       color={designationColors[designation?.toString() ?? '']}
                     >
                       {designation}
