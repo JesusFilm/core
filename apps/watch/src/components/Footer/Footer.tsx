@@ -45,9 +45,6 @@ export function Footer({ isHome = false }: FooterProps): ReactElement {
           justifyContent="space-between"
           justifyItems="start"
         >
-          <Box>
-            <Image src={Logo} width="60" height="40" alt="Watch Logo" />
-          </Box>
           <Stack
             sx={{ margin: 'auto' }}
             direction="row"
