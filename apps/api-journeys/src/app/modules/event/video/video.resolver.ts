@@ -49,8 +49,8 @@ export class VideoStartEventResolver {
 
     const validStep = await this.blockService.validateBlock(
       input.stepId ?? null,
-      'journeyId',
-      journeyId
+      journeyId,
+      'journeyId'
     )
 
     if (!validStep) {
@@ -96,8 +96,8 @@ export class VideoPlayEventResolver {
 
     const validStep = await this.blockService.validateBlock(
       input.stepId ?? null,
-      'journeyId',
-      journeyId
+      journeyId,
+      'journeyId'
     )
 
     if (!validStep) {
@@ -143,8 +143,8 @@ export class VideoPuaseEventResolver {
 
     const validStep = await this.blockService.validateBlock(
       input.stepId ?? null,
-      'journeyId',
-      journeyId
+      journeyId,
+      'journeyId'
     )
 
     if (!validStep) {
@@ -190,8 +190,8 @@ export class VideoCompleteEventResolver {
 
     const validStep = await this.blockService.validateBlock(
       input.stepId ?? null,
-      'journeyId',
-      journeyId
+      journeyId,
+      'journeyId'
     )
 
     if (!validStep) {
@@ -238,8 +238,8 @@ export class VideoExpandEventResolver {
 
     const validStep = await this.blockService.validateBlock(
       input.stepId ?? null,
-      'journeyId',
-      journeyId
+      journeyId,
+      'journeyId'
     )
 
     if (!validStep) {
@@ -285,8 +285,8 @@ export class VideoCollapseEventResolver {
 
     const validStep = await this.blockService.validateBlock(
       input.stepId ?? null,
-      'journeyId',
-      journeyId
+      journeyId,
+      'journeyId'
     )
 
     if (!validStep) {
@@ -332,8 +332,8 @@ export class VideoProgressEventResolver {
 
     const validStep = await this.blockService.validateBlock(
       input.stepId ?? null,
-      'journeyId',
-      journeyId
+      journeyId,
+      'journeyId'
     )
 
     if (!validStep) {

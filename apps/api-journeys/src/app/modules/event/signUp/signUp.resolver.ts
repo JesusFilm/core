@@ -39,8 +39,8 @@ export class SignUpSubmissionEventResolver {
 
     const validStep = await this.blockService.validateBlock(
       input.stepId ?? null,
-      'journeyId',
-      journeyId
+      journeyId,
+      'journeyId'
     )
 
     if (!validStep) {
