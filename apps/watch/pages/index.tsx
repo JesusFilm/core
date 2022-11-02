@@ -1,18 +1,13 @@
 import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
 import { useQuery } from '@apollo/client'
-import Stack from '@mui/material/Stack'
-import Button from '@mui/material/Button'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 
 import { HomeHero } from '../src/components/Hero'
-import { Videos } from '../src/components/Videos'
-import { GET_VIDEOS } from '../src/components/Videos/VideoList/VideoList'
+import { GET_VIDEOS } from '../src/components/Videos/Videos'
 import { PageWrapper } from '../src/components/PageWrapper'
-import { VideoType } from '../__generated__/globalTypes'
 
 import {
   LanguageProvider,

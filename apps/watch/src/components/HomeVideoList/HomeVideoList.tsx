@@ -1,9 +1,8 @@
 import { ReactElement } from 'react'
 import Grid from '@mui/material/Grid'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
-import { deepmerge } from '@mui/utils'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { GetVideos_videos } from '../../../__generated__/GetVideos'
-import { darkTheme } from '../ThemeProvider/ThemeProvider'
 import { designationTypes, HomeVideoCard } from './Card/HomeVideoCard'
 
 export interface HomeVideo {
@@ -22,21 +21,8 @@ export function HomeVideoList({
   data,
   videos
 }: VideoListGridProps): ReactElement {
-  const gridTheme = createTheme(
-    deepmerge(darkTheme, {
-      breakpoints: {
-        values: {
-          xs: 0,
-          sm: 725,
-          md: 1043,
-          lg: 1600,
-          xl: 1600
-        }
-      }
-    })
-  )
   return (
-    <ThemeProvider theme={gridTheme}>
+    <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
       <Grid
         container
         spacing="14px"

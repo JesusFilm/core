@@ -13,7 +13,6 @@ import Stack from '@mui/material/Stack'
 
 import { VideoType } from '../../../../__generated__/globalTypes'
 import { GetVideos_videos } from '../../../../__generated__/GetVideos'
-import { theme } from '../../ThemeProvider/ThemeProvider'
 
 export enum designationTypes {
   animation = 'Animation',
@@ -125,7 +124,7 @@ export function HomeVideoCard({
                       padding: 0,
                       gap: '2px',
                       height: '29px',
-                      color: theme.palette.primary.contrastText
+                      color: (theme) => theme.palette.primary.contrastText
                     }}
                   >
                     <Typography
@@ -146,7 +145,7 @@ export function HomeVideoCard({
                       borderRadius: '8px',
                       height: '29px',
                       bgcolor: 'rgba(0, 0, 0, 0.5)',
-                      color: theme.palette.primary.contrastText
+                      color: (theme) => theme.palette.primary.contrastText
                     }}
                   >
                     {video.type !== VideoType.playlist && (
