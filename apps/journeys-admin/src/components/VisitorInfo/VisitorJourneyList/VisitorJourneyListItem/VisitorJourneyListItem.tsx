@@ -9,19 +9,41 @@ import Typography from '@mui/material/Typography'
 import { format, parseISO } from 'date-fns'
 import { VisitorJourneyTimeline } from '../../VisitorJourneyTimeline'
 import { JourneyWithEvents } from '../../transformVisitorEvents'
+import { useVisitorInfo } from '../../VisitorInfoProvider'
+
+interface Props {
+  journey: JourneyWithEvents
+  selected: boolean
+}
 
 export function VisitorJourneyListItem({
-  title,
-  subtitle,
-  createdAt,
-  events
-}: JourneyWithEvents): ReactElement {
+  journey,
+  selected
+}: Props): ReactElement {
+  const { dispatch } = useVisitorInfo()
+  const { title, subtitle, createdAt, events } = journey
+
+  function handleClick(): void {
+    dispatch({
+      type: 'SetJourneyAction',
+      journey: journey
+    })
+  }
   return (
-    <Card>
-      <CardContent>
+    <Card
+      variant="outlined"
+      sx={{
+        borderColor: { sm: selected ? 'primary.main' : undefined }
+      }}
+    >
+      <CardContent sx={{ pb: 0 }}>
         <Stack direction="row">
           <Box flex={1}>
-            <Typography variant="h5" component="div">
+            <Typography
+              variant="h5"
+              component="div"
+              sx={{ color: { sm: selected ? 'primary.main' : undefined } }}
+            >
               {title}
             </Typography>
 
@@ -43,7 +65,7 @@ export function VisitorJourneyListItem({
         />
       </CardContent>
       <CardActions>
-        <Button>View Timeline</Button>
+        <Button onClick={handleClick}>View Timeline</Button>
       </CardActions>
     </Card>
   )

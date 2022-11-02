@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
-  __typename: "ButtonClickEvent" | "RadioQuestionSubmissionEvent" | "SignUpSubmissionEvent" | "StepViewEvent" | "TextResponseSubmissionEvent" | "VideoCollapseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoPauseEvent" | "VideoPlayEvent" | "VideoProgressEvent" | "VideoStartEvent";
+  __typename: "ButtonClickEvent" | "RadioQuestionSubmissionEvent" | "StepViewEvent" | "TextResponseSubmissionEvent" | "VideoCollapseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoPauseEvent" | "VideoPlayEvent" | "VideoProgressEvent" | "VideoStartEvent";
   id: string;
   journeyId: string;
   label: string | null;
@@ -37,7 +37,17 @@ export interface GetVisitorEvents_visitor_events_JourneyViewEvent {
   language: GetVisitorEvents_visitor_events_JourneyViewEvent_language | null;
 }
 
-export type GetVisitorEvents_visitor_events = GetVisitorEvents_visitor_events_ButtonClickEvent | GetVisitorEvents_visitor_events_JourneyViewEvent;
+export interface GetVisitorEvents_visitor_events_SignUpSubmissionEvent {
+  __typename: "SignUpSubmissionEvent";
+  id: string;
+  journeyId: string;
+  label: string | null;
+  value: string | null;
+  createdAt: any;
+  email: string | null;
+}
+
+export type GetVisitorEvents_visitor_events = GetVisitorEvents_visitor_events_ButtonClickEvent | GetVisitorEvents_visitor_events_JourneyViewEvent | GetVisitorEvents_visitor_events_SignUpSubmissionEvent;
 
 export interface GetVisitorEvents_visitor {
   __typename: "Visitor";

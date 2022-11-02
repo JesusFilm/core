@@ -3,6 +3,13 @@ import { palette } from './colors'
 
 export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: '12px'
+        }
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {

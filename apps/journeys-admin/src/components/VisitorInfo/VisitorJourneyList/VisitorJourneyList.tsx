@@ -1,8 +1,9 @@
 import { gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { GetVisitorEvents } from '../../../../__generated__/GetVisitorEvents'
 import { transformVisitorEvents } from '../transformVisitorEvents'
+import { useVisitorInfo } from '../VisitorInfoProvider'
 import { VisitorJourneyListItem } from './VisitorJourneyListItem'
 
 interface Props {
@@ -28,21 +29,38 @@ export const GET_VISITOR_EVENTS = gql`
             }
           }
         }
+        ... on SignUpSubmissionEvent {
+          email
+        }
       }
     }
   }
 `
 
 export function VisitorJourneyList({ id, limit }: Props): ReactElement {
+  const {
+    state: { journey },
+    dispatch
+  } = useVisitorInfo()
   const { data } = useQuery<GetVisitorEvents>(GET_VISITOR_EVENTS, {
     variables: { id }
   })
   const journeys = transformVisitorEvents(data?.visitor.events, limit)
 
+  useEffect(() => {
+    if (journey == null && journeys[0] != null) {
+      dispatch({ type: 'SetJourneyAction', journey: journeys[0], open: false })
+    }
+  }, [dispatch, journey, journeys])
+
   return (
     <Stack spacing={4} sx={{ p: 4 }}>
       {journeys.map((item) => (
-        <VisitorJourneyListItem key={item.id} {...item} />
+        <VisitorJourneyListItem
+          key={item.id}
+          journey={item}
+          selected={journey?.id === item.id}
+        />
       ))}
     </Stack>
   )

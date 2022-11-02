@@ -12,7 +12,11 @@ import { VisitorInfo } from '.'
 const VisitorInfoDemo = {
   ...simpleComponentConfig,
   component: VisitorInfo,
-  title: 'Journeys-Admin/VisitorInfo'
+  title: 'Journeys-Admin/VisitorInfo',
+  parameters: {
+    ...simpleComponentConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const getVisitor: GetVisitor = {
@@ -23,8 +27,8 @@ const getVisitor: GetVisitor = {
     lastChatStartedAt: '2022-11-02T03:20:26.368Z',
     messengerId: '0800123456',
     messengerNetwork: 'WhatsApp',
-    name: 'Bob Jones',
-    notes: 'Is interested in meeting',
+    name: 'Bilbo Baggins',
+    notes: 'Has a ring to give you.',
     status: VisitorStatus.partyPopper
   }
 }
@@ -35,8 +39,16 @@ const getVisitorEvents: GetVisitorEvents = {
     id: 'visitorId',
     events: [
       {
+        __typename: 'ButtonClickEvent',
+        id: 'eventId8',
+        journeyId: 'journeyId1',
+        label: 'How will you remember the journey?',
+        value: 'Write a book',
+        createdAt: '2022-11-02T03:20:26.368Z'
+      },
+      {
         __typename: 'TextResponseSubmissionEvent',
-        id: 'eventId5',
+        id: 'eventId7',
         journeyId: 'journeyId1',
         label: 'How do you feel at the end of the journey?',
         value:
@@ -45,10 +57,27 @@ const getVisitorEvents: GetVisitorEvents = {
       },
       {
         __typename: 'RadioQuestionSubmissionEvent',
-        id: 'eventId4',
+        id: 'eventId6',
         journeyId: 'journeyId1',
         label: 'How do you feel about your journey?',
         value: '10/10 would do it again',
+        createdAt: '2022-11-02T03:20:26.368Z'
+      },
+      {
+        __typename: 'ButtonClickEvent',
+        id: 'eventId5',
+        journeyId: 'journeyId1',
+        label: 'Are you fond of Orcs?',
+        value: 'No',
+        createdAt: '2022-11-02T03:20:26.368Z'
+      },
+      {
+        __typename: 'SignUpSubmissionEvent',
+        id: 'eventId4',
+        journeyId: 'journeyId1',
+        label: 'How do you feel at the end of the journey?',
+        email: 'bilbo.baggins@example.com',
+        value: 'Bilbo Baggins',
         createdAt: '2022-11-02T03:20:26.368Z'
       },
       {

@@ -1,43 +1,67 @@
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import TimelineItem from '@mui/lab/TimelineItem'
 import TimelineSeparator from '@mui/lab/TimelineSeparator'
 import TimelineConnector from '@mui/lab/TimelineConnector'
 import TimelineContent from '@mui/lab/TimelineContent'
-import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent'
 import TimelineDot from '@mui/lab/TimelineDot'
 import Typography from '@mui/material/Typography'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
-import { GetVisitorEvents_visitor_events as Event } from '../../../../../../__generated__/GetVisitorEvents'
+import { format, parseISO } from 'date-fns'
 
 interface Props {
-  event: Event
+  createdAt?: string
+  label?: string | null
+  value?: string | ReactNode | null
   variant?: 'compact'
-  icon?: ReactElement
+  icon: ReactElement
+  activity?: string
 }
 
-export function GenericEvent({ icon, event, variant }: Props): ReactElement {
+export function GenericEvent({
+  icon,
+  createdAt,
+  label,
+  value,
+  variant,
+  activity
+}: Props): ReactElement {
   return (
-    <TimelineItem>
-      {variant !== 'compact' && (
-        <TimelineOppositeContent
-          sx={{ m: 'auto 0' }}
-          align="right"
-          variant="body2"
-          color="text.secondary"
-        >
-          9:30 am
-        </TimelineOppositeContent>
-      )}
-
+    <TimelineItem
+      sx={{
+        '&:before': {
+          flex: 0,
+          padding: 0
+        }
+      }}
+    >
       <TimelineSeparator>
-        {variant !== 'compact' && <TimelineConnector />}
-        <TimelineDot>{icon ?? <RadioButtonUncheckedIcon />}</TimelineDot>
-        {variant !== 'compact' && <TimelineConnector />}
+        <TimelineDot
+          sx={{
+            color: 'text.primary',
+            backgroundColor: 'transparent',
+            boxShadow: 'none',
+            m: 0
+          }}
+        >
+          {icon}
+        </TimelineDot>
+        <TimelineConnector />
       </TimelineSeparator>
-
-      <TimelineContent sx={{ py: '12px', px: 2 }}>
-        <Typography>{event.label}</Typography>
-        <Typography variant="h6">{event.value}</Typography>
+      <TimelineContent sx={{ p: 2, pb: 4 }}>
+        {variant !== 'compact' && createdAt != null && (
+          <Typography variant="body2" gutterBottom>
+            {format(parseISO(createdAt), 'p')}
+          </Typography>
+        )}
+        <Typography variant="body2" gutterBottom>
+          {label}
+        </Typography>
+        <Typography sx={{ fontWeight: 'bold' }} gutterBottom>
+          {value}
+        </Typography>
+        {variant !== 'compact' && activity != null && (
+          <Typography variant="body2">{activity}</Typography>
+        )}
       </TimelineContent>
     </TimelineItem>
   )

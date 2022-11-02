@@ -5,6 +5,9 @@ import { ReactElement, SyntheticEvent, useState } from 'react'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { VisitorDetail } from './VisitorDetail'
 import { VisitorJourneyList } from './VisitorJourneyList'
+import { VisitorInfoProvider } from './VisitorInfoProvider'
+import { VisitorJourneyDrawer } from './VisitorJourneyDrawer'
+import { DRAWER_WIDTH } from './VisitorJourneyDrawer/VisitorJourneyDrawer'
 
 interface Props {
   id: string
@@ -18,37 +21,37 @@ export function VisitorInfo({ id }: Props): ReactElement {
   }
 
   return (
-    <Box sx={{ width: '100%', position: 'relative' }}>
+    <VisitorInfoProvider>
       <Box
         sx={{
-          borderBottom: 1,
-          borderColor: 'divider',
-          backgroundColor: (theme) => theme.palette.background.paper
+          marginRight: { sm: `${DRAWER_WIDTH}px` },
+          backgroundColor: 'white'
         }}
       >
-        <Tabs
-          value={activeTab}
-          onChange={handleChange}
-          aria-label="visitor info tabs"
+        <Box
+          sx={{
+            borderBottom: 1,
+            borderColor: 'divider',
+            backgroundColor: (theme) => theme.palette.background.paper
+          }}
         >
-          <Tab
-            label="Details"
-            {...tabA11yProps('visitor-info', 0)}
-            sx={{ flexGrow: 1 }}
-          />
-          <Tab
-            label="Journeys"
-            {...tabA11yProps('visitor-info', 1)}
-            sx={{ flexGrow: 1 }}
-          />
-        </Tabs>
+          <Tabs
+            value={activeTab}
+            onChange={handleChange}
+            aria-label="visitor info tabs"
+          >
+            <Tab label="Details" {...tabA11yProps('visitor-info', 0)} />
+            <Tab label="Journeys" {...tabA11yProps('visitor-info', 1)} />
+          </Tabs>
+        </Box>
+        <TabPanel name="visitor-info" value={activeTab} index={0}>
+          <VisitorDetail id={id} />
+        </TabPanel>
+        <TabPanel name="visitor-info" value={activeTab} index={1}>
+          <VisitorJourneyList id={id} />
+        </TabPanel>
       </Box>
-      <TabPanel name="visitor-info" value={activeTab} index={0}>
-        <VisitorDetail id={id} />
-      </TabPanel>
-      <TabPanel name="visitor-info" value={activeTab} index={1}>
-        <VisitorJourneyList id={id} />
-      </TabPanel>
-    </Box>
+      <VisitorJourneyDrawer />
+    </VisitorInfoProvider>
   )
 }
