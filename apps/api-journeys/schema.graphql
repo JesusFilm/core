@@ -719,6 +719,8 @@ input ButtonClickEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """label is the stepName of the parent stepBlock"""
@@ -747,7 +749,7 @@ input JourneyViewEventCreateInput {
   label: String
 
   """value is the journey languageId"""
-  value: String
+  value: ID
 }
 
 type JourneyViewEvent implements Event {
@@ -761,6 +763,8 @@ input RadioQuestionSubmissionEventCreateInput {
   id: ID
   blockId: ID!
   radioOptionBlockId: ID!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """label is the stepName of the parent stepBlock"""
@@ -780,6 +784,8 @@ input SignUpSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """name is the name from the submission"""
@@ -814,6 +820,8 @@ input TextResponseSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """label is the stepName of the parent stepBlock"""
@@ -833,6 +841,8 @@ input VideoStartEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """
@@ -857,6 +867,8 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """
@@ -881,6 +893,8 @@ input VideoPauseEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """
@@ -905,6 +919,8 @@ input VideoCompleteEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
   position: Float
 
@@ -925,6 +941,8 @@ input VideoExpandEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
   position: Float
 
@@ -945,6 +963,8 @@ input VideoCollapseEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """
@@ -969,6 +989,8 @@ input VideoProgressEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """

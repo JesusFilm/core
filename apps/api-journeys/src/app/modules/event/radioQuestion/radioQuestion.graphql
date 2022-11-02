@@ -5,6 +5,9 @@ input RadioQuestionSubmissionEventCreateInput {
   id: ID
   blockId: ID!
   radioOptionBlockId: ID!
+  """
+  stepId is the id of the parent stepBlock
+  """
   stepId: ID
   """
   label is the stepName of the parent stepBlock

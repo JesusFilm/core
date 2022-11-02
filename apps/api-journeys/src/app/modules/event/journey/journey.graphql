@@ -11,7 +11,7 @@ input JourneyViewEventCreateInput {
   """
   value is the journey languageId
   """
-  value: String
+  value: ID
 }
 
 type JourneyViewEvent implements Event {

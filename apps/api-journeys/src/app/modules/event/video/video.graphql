@@ -4,6 +4,9 @@ input VideoStartEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  stepId is the id of the parent stepBlock
+  """
   stepId: ID
   """
   position is the duration of the video played when the videoEvent is triggered
@@ -29,6 +32,9 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  stepId is the id of the parent stepBlock
+  """
   stepId: ID
   """
   position is the duration of the video played when the videoEvent is triggered
@@ -54,6 +60,9 @@ input VideoPauseEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  stepId is the id of the parent stepBlock
+  """
   stepId: ID
   """
   position is the duration of the video played when the videoEvent is triggered
@@ -79,6 +88,9 @@ input VideoCompleteEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  stepId is the id of the parent stepBlock
+  """
   stepId: ID
   position: Float
   """
@@ -101,6 +113,9 @@ input VideoExpandEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  stepId is the id of the parent stepBlock
+  """
   stepId: ID
   position: Float
   """
@@ -123,6 +138,9 @@ input VideoCollapseEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  stepId is the id of the parent stepBlock
+  """
   stepId: ID
   """
   position is the duration of the video played when the videoEvent is triggered
@@ -148,6 +166,9 @@ input VideoProgressEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  stepId is the id of the parent stepBlock
+  """
   stepId: ID
   """
   position is the duration of the video played when the videoEvent is triggered

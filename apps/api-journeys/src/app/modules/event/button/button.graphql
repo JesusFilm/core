@@ -4,6 +4,9 @@ input ButtonClickEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  stepId is the id of the parent stepBlock
+  """
   stepId: ID
   """
   label is the stepName of the parent stepBlock

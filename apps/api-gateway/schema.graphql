@@ -81,6 +81,8 @@ input ButtonClickEventCreateInput {
 
   """label is the stepName of the parent stepBlock"""
   label: String
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """value is the label of the button"""
@@ -462,7 +464,7 @@ input JourneyViewEventCreateInput {
   label: String
 
   """value is the journey languageId"""
-  value: String
+  value: ID
 }
 
 type Language
@@ -738,6 +740,8 @@ input RadioQuestionSubmissionEventCreateInput {
   """label is the stepName of the parent stepBlock"""
   label: String
   radioOptionBlockId: ID!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """value is the label of the selected radioOption label"""
@@ -792,6 +796,8 @@ input SignUpSubmissionEventCreateInput {
 
   """name is the name from the submission"""
   name: String!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 }
 
@@ -888,6 +894,8 @@ input TextResponseSubmissionEventCreateInput {
 
   """label is the stepName of the parent stepBlock"""
   label: String
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """value is the response from the submission"""
@@ -1231,6 +1239,8 @@ input VideoCollapseEventCreateInput {
   position is the duration of the video played when the videoEvent is triggered
   """
   position: Float
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """value is the source of the video"""
@@ -1252,6 +1262,8 @@ input VideoCompleteEventCreateInput {
   """label is the title of the video"""
   label: String
   position: Float
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """value is the source of the video"""
@@ -1273,6 +1285,8 @@ input VideoExpandEventCreateInput {
   """label is the title of the video"""
   label: String
   position: Float
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """value is the source of the video"""
@@ -1298,6 +1312,8 @@ input VideoPauseEventCreateInput {
   position is the duration of the video played when the videoEvent is triggered
   """
   position: Float
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """value is the source of the video"""
@@ -1323,6 +1339,8 @@ input VideoPlayEventCreateInput {
   position is the duration of the video played when the videoEvent is triggered
   """
   position: Float
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """value is the source of the video"""
@@ -1353,6 +1371,8 @@ input VideoProgressEventCreateInput {
   progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
   """
   progress: Int!
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """value is the source of the video"""
@@ -1385,6 +1405,8 @@ input VideoStartEventCreateInput {
   position is the duration of the video played when the videoEvent is triggered
   """
   position: Float
+
+  """stepId is the id of the parent stepBlock"""
   stepId: ID
 
   """value is the source of the video"""
