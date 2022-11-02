@@ -182,65 +182,65 @@ export interface TextResponseSubmissionEventCreateInput {
 export interface VideoCollapseEventCreateInput {
   blockId: string;
   id?: string | null;
-  label?: VideoBlockSource | null;
+  label?: string | null;
   position?: number | null;
   stepId?: string | null;
-  value?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoCompleteEventCreateInput {
   blockId: string;
   id?: string | null;
-  label?: VideoBlockSource | null;
+  label?: string | null;
   position?: number | null;
   stepId?: string | null;
-  value?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoExpandEventCreateInput {
   blockId: string;
   id?: string | null;
-  label?: VideoBlockSource | null;
+  label?: string | null;
   position?: number | null;
   stepId?: string | null;
-  value?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoPauseEventCreateInput {
   blockId: string;
   id?: string | null;
-  label?: VideoBlockSource | null;
+  label?: string | null;
   position?: number | null;
   stepId?: string | null;
-  value?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoPlayEventCreateInput {
   blockId: string;
   id?: string | null;
-  label?: VideoBlockSource | null;
+  label?: string | null;
   position?: number | null;
   stepId?: string | null;
-  value?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoProgressEventCreateInput {
   blockId: string;
   id?: string | null;
-  label?: VideoBlockSource | null;
+  label?: string | null;
   position?: number | null;
   progress: number;
   stepId?: string | null;
-  value?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoStartEventCreateInput {
   blockId: string;
   id?: string | null;
-  label?: VideoBlockSource | null;
+  label?: string | null;
   position?: number | null;
   stepId?: string | null;
-  value?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 //==============================================================
