@@ -78,7 +78,7 @@ export function RestoreJourneyDialog({
   return (
     <Dialog
       open={open}
-      handleClose={handleClose}
+      onClose={handleClose}
       dialogTitle={{ title: 'Restore Journey?', closeButton: true }}
       dialogAction={{
         onSubmit: handleRestore,

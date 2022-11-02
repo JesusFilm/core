@@ -228,7 +228,7 @@ export function VideoBlockEditorSettingsPosterDialog({
   return (
     <Dialog
       open={open}
-      handleClose={onClose}
+      onClose={onClose}
       dialogTitle={{
         title: 'Cover Image',
         closeButton: true
