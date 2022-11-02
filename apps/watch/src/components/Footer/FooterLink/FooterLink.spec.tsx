@@ -26,6 +26,7 @@ describe('FooterLink', () => {
     )
     expect(getByAltText('Facebook')).toBeInTheDocument()
     expect(getByRole('img')).toHaveAttribute('src', 'facebook.svg')
+    expect(getByRole('img')).toHaveAccessibleName('Facebook')
     expect(getByRole('link', { name: 'Facebook' })).toHaveAttribute(
       'href',
       'https://www.facebook.com/jesusfilm'
