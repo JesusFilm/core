@@ -6,7 +6,7 @@ import { Dialog } from './Dialog'
 describe('Dialog', () => {
   const dialogProps: Parameters<typeof Dialog>[0] = {
     open: true,
-    handleClose: jest.fn(),
+    onClose: jest.fn(),
     dialogTitle: {
       title: 'Title',
       closeButton: true
@@ -26,7 +26,7 @@ describe('Dialog', () => {
   it('should close the dialog when the close button is clicked', () => {
     const { getByTestId } = render(<Dialog {...dialogProps} />)
     fireEvent.click(getByTestId('CloseRoundedIcon'))
-    expect(dialogProps.handleClose).toHaveBeenCalled()
+    expect(dialogProps.onClose).toHaveBeenCalled()
   })
 
   it('should show the custom labels for buttons', () => {
@@ -53,7 +53,7 @@ describe('Dialog', () => {
     }
     const { getByRole } = render(<Dialog {...input} />)
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
-    expect(dialogProps.handleClose).toHaveBeenCalled()
+    expect(dialogProps.onClose).toHaveBeenCalled()
   })
 
   it('should call the submit function', () => {

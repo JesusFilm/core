@@ -122,7 +122,7 @@ export function LanguageDialog({
           {({ values, handleSubmit, resetForm, setFieldValue }) => (
             <Dialog
               open={open}
-              handleClose={handleClose(resetForm)}
+              onClose={handleClose(resetForm)}
               dialogTitle={{ title: 'Edit Language' }}
               dialogAction={{
                 onSubmit: handleSubmit,
