@@ -25,15 +25,6 @@ export enum ButtonVariant {
   text = "text",
 }
 
-export enum DeviceType {
-  console = "console",
-  embedded = "embedded",
-  mobile = "mobile",
-  smarttv = "smarttv",
-  tablet = "tablet",
-  wearable = "wearable",
-}
-
 export enum GridAlignItems {
   baseline = "baseline",
   center = "center",

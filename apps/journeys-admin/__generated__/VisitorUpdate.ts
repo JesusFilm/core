@@ -13,11 +13,6 @@ export interface VisitorUpdate_visitorUpdate {
   __typename: "Visitor";
   id: string;
   /**
-   * The email address of the visitor as populated by mutation or otherwise via
-   * SignUpEventSubmissionEventCreate mutation.
-   */
-  email: string | null;
-  /**
    * Messenger ID of the visitor as set by any journeys-admin user via the
    * VisitorUpdate mutation. This could be a phone number, user id or other
    * unique identifier provided by the messenger network.

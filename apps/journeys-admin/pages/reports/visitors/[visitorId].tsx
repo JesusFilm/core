@@ -27,7 +27,7 @@ function SingleVisitorReportsPage(): ReactElement {
         authUser={AuthUser}
         router={router}
       >
-        <VisitorInfo id={router.query.visitorId} />
+        <VisitorInfo id={router.query.visitorId as string} />
       </PageWrapper>
     </>
   )

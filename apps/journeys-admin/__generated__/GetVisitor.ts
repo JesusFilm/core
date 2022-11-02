@@ -3,37 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VisitorStatus, DeviceType } from "./globalTypes";
+import { VisitorStatus } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetVisitor
 // ====================================================
-
-export interface GetVisitor_visitor_userAgent_browser {
-  __typename: "Browser";
-  name: string | null;
-  version: string | null;
-}
-
-export interface GetVisitor_visitor_userAgent_device {
-  __typename: "Device";
-  model: string | null;
-  type: DeviceType | null;
-  vendor: string | null;
-}
-
-export interface GetVisitor_visitor_userAgent_os {
-  __typename: "OperatingSystem";
-  name: string | null;
-  version: string | null;
-}
-
-export interface GetVisitor_visitor_userAgent {
-  __typename: "UserAgent";
-  browser: GetVisitor_visitor_userAgent_browser;
-  device: GetVisitor_visitor_userAgent_device;
-  os: GetVisitor_visitor_userAgent_os;
-}
 
 export interface GetVisitor_visitor {
   __typename: "Visitor";
@@ -46,11 +20,6 @@ export interface GetVisitor_visitor {
    * visitor IP address.
    */
   countryCode: string | null;
-  /**
-   * The email address of the visitor as populated by mutation or otherwise via
-   * SignUpEventSubmissionEventCreate mutation.
-   */
-  email: string | null;
   id: string;
   /**
    * The last time the visitor called the ButtonClickEvent mutation where the url
@@ -83,13 +52,6 @@ export interface GetVisitor_visitor {
    * mutation.
    */
   status: VisitorStatus | null;
-  /**
-   * The user agent of the visitor as poulated by the visitor's user-agent string
-   * detected in the JourneyViewEventCreate mutation. This field is enriched
-   * by data from the ua-parser-js library. If this field is empty it is likely
-   * that the JourneyViewEventCreate mutation was not called by the visitor.
-   */
-  userAgent: GetVisitor_visitor_userAgent | null;
 }
 
 export interface GetVisitor {

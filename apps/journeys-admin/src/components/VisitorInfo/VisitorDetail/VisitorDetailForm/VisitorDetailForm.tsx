@@ -7,6 +7,7 @@ import TextField from '@mui/material/TextField'
 import Stack from '@mui/material/Stack'
 import Container from '@mui/material/Container'
 import ListItemIcon from '@mui/material/ListItemIcon'
+import Typography from '@mui/material/Typography'
 import pick from 'lodash/pick'
 import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
@@ -73,7 +74,7 @@ export function VisitorDetailForm({ id }: Props): ReactElement {
   }
 
   return (
-    <Container maxWidth="xs" sx={{ p: 4 }}>
+    <Container maxWidth="xs">
       <Formik
         initialValues={pick(data?.visitor, [
           'messengerId',
@@ -88,7 +89,7 @@ export function VisitorDetailForm({ id }: Props): ReactElement {
         {({ values, errors, touched, handleChange, handleBlur }) => (
           <Form>
             <Stack spacing={4}>
-              <Stack spacing={4} direction="row">
+              <Stack spacing={4} direction="row" alignItems="center">
                 <FormControl sx={{ width: 80 }}>
                   <InputLabel id="status-label">{t('Status')}</InputLabel>
                   <Select
@@ -121,8 +122,10 @@ export function VisitorDetailForm({ id }: Props): ReactElement {
                 </FormControl>
                 {data?.visitor?.lastChatStartedAt != null && (
                   <Box>
-                    {t('Last Chat')}{' '}
-                    {format(parseISO(data.visitor.lastChatStartedAt), 'PPpp')}
+                    <Typography variant="body2">{t('Last Chat')}</Typography>
+                    <Typography>
+                      {format(parseISO(data.visitor.lastChatStartedAt), 'PPp')}
+                    </Typography>
                   </Box>
                 )}
               </Stack>
