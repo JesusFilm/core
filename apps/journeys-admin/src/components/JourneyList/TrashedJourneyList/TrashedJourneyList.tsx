@@ -243,7 +243,7 @@ export function TrashedJourneyList({
       )}
       <Dialog
         open={openRestoreAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: t('Restore Journeys'),
           closeButton: true
@@ -262,7 +262,7 @@ export function TrashedJourneyList({
       </Dialog>
       <Dialog
         open={openDeleteAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: t('Delete Journeys Forever'),
           closeButton: true

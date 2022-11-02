@@ -220,7 +220,7 @@ export function ActiveTemplates({
 
       <Dialog
         open={openArchiveAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: 'Archive Templates',
           closeButton: true
@@ -239,7 +239,7 @@ export function ActiveTemplates({
       </Dialog>
       <Dialog
         open={openTrashAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: t('Trash Templates'),
           closeButton: true
