@@ -81,6 +81,44 @@ describe('Button', () => {
   it('should create a buttonClickEvent onClick', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 
+    const activeBlock: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'step.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: true,
+      nextBlockId: null,
+      children: [
+        {
+          __typename: 'CardBlock',
+          id: 'card.id',
+          parentBlockId: null,
+          parentOrder: null,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: [
+            {
+              __typename: 'TypographyBlock',
+              id: 'typog.id',
+              content: 'stepName',
+              parentBlockId: null,
+              align: null,
+              color: null,
+              variant: null,
+              parentOrder: 0,
+              children: []
+            }
+          ]
+        }
+      ]
+    }
+
+    activeBlockVar(activeBlock)
+    treeBlocksVar([activeBlock])
+
     const result = jest.fn(() => ({
       data: {
         buttonClickEventCreate: {
@@ -99,7 +137,10 @@ describe('Button', () => {
               variables: {
                 input: {
                   id: 'uuid',
-                  blockId: 'button'
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  label: 'stepName',
+                  value: block.label
                 }
               }
             },
@@ -120,12 +161,25 @@ describe('Button', () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     const activeBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
-      id: 'Step1',
+      id: 'step.id',
       parentBlockId: null,
       parentOrder: 0,
       locked: true,
       nextBlockId: null,
-      children: []
+      children: [
+        {
+          __typename: 'CardBlock',
+          id: 'card.id',
+          parentBlockId: null,
+          parentOrder: null,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: []
+        }
+      ]
     }
     activeBlockVar(activeBlock)
     treeBlocksVar([activeBlock])
@@ -139,7 +193,10 @@ describe('Button', () => {
               variables: {
                 input: {
                   id: 'uuid',
-                  blockId: 'button'
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  label: 'Step {{number}}',
+                  value: block.label
                 }
               }
             },

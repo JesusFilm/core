@@ -69,7 +69,10 @@ export function Button({
         variables: {
           input: {
             id,
-            blockId
+            blockId,
+            stepId: activeBlock?.id,
+            label: heading,
+            value: label
           }
         }
       })
