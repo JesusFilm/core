@@ -83,8 +83,8 @@ describe('VideoResolver', () => {
       blockId: block.id,
       position: 30.1,
       stepId: 'step.id',
-      label: VideoBlockSource.internal,
-      value: 'Video title'
+      label: 'Video title',
+      value: VideoBlockSource.internal
     }
 
     it('returns VideoStartEvent', async () => {
@@ -131,8 +131,8 @@ describe('VideoResolver', () => {
       blockId: block.id,
       position: 30.1,
       stepId: 'step.id',
-      label: VideoBlockSource.youTube,
-      value: 'Video title'
+      label: 'Video title',
+      value: VideoBlockSource.youTube
     }
 
     it('returns VideoPlayEvent', async () => {
@@ -179,8 +179,8 @@ describe('VideoResolver', () => {
       blockId: block.id,
       position: 30.1,
       stepId: 'step.id',
-      label: VideoBlockSource.internal,
-      value: 'Video title'
+      label: 'Video title',
+      value: VideoBlockSource.internal
     }
 
     it('returns VideoPauseEvent', async () => {
@@ -229,8 +229,8 @@ describe('VideoResolver', () => {
       blockId: block.id,
       position: 30.1,
       stepId: 'step.id',
-      label: VideoBlockSource.internal,
-      value: 'Video title'
+      label: 'Video title',
+      value: VideoBlockSource.internal
     }
 
     it('returns VideoCompleteEvent', async () => {
@@ -278,8 +278,8 @@ describe('VideoResolver', () => {
       blockId: block.id,
       position: 30.1,
       stepId: 'step.id',
-      label: VideoBlockSource.internal,
-      value: 'Video title'
+      label: 'Video title',
+      value: VideoBlockSource.internal
     }
 
     it('returns VideoExpandEvent', async () => {
@@ -328,8 +328,8 @@ describe('VideoResolver', () => {
       blockId: block.id,
       position: 30.1,
       stepId: 'step.id',
-      label: VideoBlockSource.internal,
-      value: 'Video title'
+      label: 'Video title',
+      value: VideoBlockSource.internal
     }
 
     it('returns VideoCollapseEvent', async () => {
@@ -380,8 +380,8 @@ describe('VideoResolver', () => {
       position: 30.1,
       progress: 25,
       stepId: 'step.id',
-      label: VideoBlockSource.internal,
-      value: 'Video title'
+      label: 'Video title',
+      value: VideoBlockSource.internal
     }
 
     it('returns VideoProgressEvent', async () => {
