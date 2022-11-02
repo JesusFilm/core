@@ -146,6 +146,11 @@ export enum VideoType {
   standalone = "standalone",
 }
 
+export enum VideoVariantDownloadQuality {
+  high = "high",
+  low = "low",
+}
+
 export interface ButtonClickEventCreateInput {
   blockId: string;
   id?: string | null;
@@ -220,6 +225,7 @@ export interface VideoStartEventCreateInput {
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
+  ids?: string[] | null;
   tagId?: string | null;
   title?: string | null;
   types?: VideoType[] | null;

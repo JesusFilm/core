@@ -1,9 +1,8 @@
 import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
-import { useQuery, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -13,44 +12,51 @@ import Button from '@mui/material/Button'
 import Language from '@mui/icons-material/Language'
 import Place from '@mui/icons-material/Place'
 import Link from 'next/link'
-import Chip from '@mui/material/Chip'
 
-import { VideoList } from '../src/components/Videos/VideoList/VideoList'
+import { GET_VIDEOS } from '../src/components/Videos/VideoList/VideoList'
 import { PageWrapper } from '../src/components/PageWrapper'
-import { GetVideoTag } from '../__generated__/GetVideoTag'
-import { VideoType } from '../__generated__/globalTypes'
 import { theme } from '../src/components/ThemeProvider/ThemeProvider'
 import {
   LanguageProvider,
   useLanguage
 } from '../src/libs/languageContext/LanguageContext'
 import { Footer } from '../src/components/Footer/Footer'
+import {
+  HomeVideo,
+  HomeVideoList
+} from '../src/components/HomeVideoList/HomeVideoList'
+import { GetVideos } from '../__generated__/GetVideos'
+import { designationTypes } from '../src/components/HomeVideoList/Card/HomeVideoCard'
 
-export const GET_VIDEO_TAG = gql`
-  query GetVideoTag($id: ID!, $languageId: ID) {
-    videoTag(id: $id) {
-      id
-      title(languageId: $languageId, primary: true) {
-        value
-      }
-    }
-    videoTags {
-      id
-      title(languageId: $languageId, primary: true) {
-        value
-      }
-    }
-  }
-`
+const videos: HomeVideo[] = [
+  {
+    id: '1_jf-0-0',
+    designation: designationTypes.feature
+  },
+  { id: '2_ChosenWitness', designation: designationTypes.animation },
+  { id: '2_GOJ-0-0', designation: designationTypes.feature },
+  { id: 'MAG1', designation: designationTypes.feature },
+  { id: '1_fj-0-0', designation: designationTypes.series },
+  {
+    id: '1_riv-0-0',
+    designation: designationTypes.series
+  },
+  { id: '1_wjv-0-0', designation: designationTypes.series },
+  { id: '2_Acts-0-0', designation: designationTypes.feature },
+  { id: '1_cl-0-0', designation: designationTypes.series },
+  { id: '3_0-40DWJ', designation: designationTypes.collection },
+  { id: '1_wl7-0-0', designation: designationTypes.series }
+]
 
 function VideoPage(): ReactElement {
   const languageContext = useLanguage()
-  const { data: jfm1Data } = useQuery<GetVideoTag>(GET_VIDEO_TAG, {
+  const { data, loading, error } = useQuery<GetVideos>(GET_VIDEOS, {
     variables: {
-      id: 'JFM1',
+      where: { ids: videos.map((video) => video.id) },
       languageId: languageContext?.id ?? '529'
     }
   })
+
   return (
     <LanguageProvider>
       <PageWrapper />
@@ -153,7 +159,7 @@ function VideoPage(): ReactElement {
         </Box>
       </Box>
 
-      <Box sx={{ paddingY: '4rem' }}>
+      <Box sx={{ paddingY: '4rem', backgroundColor: '#131111' }}>
         <Container
           sx={{
             maxWidth: '100% !important',
@@ -163,84 +169,7 @@ function VideoPage(): ReactElement {
             paddingRight: '100px !important'
           }}
         >
-          <Stack direction="row" justifyContent="space-between" mb={3}>
-            <Typography variant="h4">Series</Typography>
-            <Button variant="outlined">See All</Button>
-          </Stack>
-          <VideoList
-            filter={{
-              availableVariantLanguageIds: ['529'],
-              types: [VideoType.playlist]
-            }}
-            limit={6}
-            showLoadMore={false}
-            layout="carousel"
-          />
-        </Container>
-      </Box>
-
-      <Box sx={{ paddingY: '3rem' }}>
-        <Container
-          sx={{
-            maxWidth: '100% !important',
-            width: '100%',
-            margin: 0,
-            paddingLeft: '100px !important',
-            paddingRight: '100px !important'
-          }}
-        >
-          <Stack direction="row" justifyContent="space-between" mb={3}>
-            <Typography variant="h4">
-              {jfm1Data?.videoTag?.title[0]?.value}
-            </Typography>
-            <Button variant="outlined">See All</Button>
-          </Stack>
-          <VideoList
-            filter={{
-              availableVariantLanguageIds: ['529'],
-              types: [VideoType.playlist, VideoType.standalone],
-              tagId: 'JFM1'
-            }}
-            limit={6}
-            showLoadMore={false}
-            layout="carousel"
-          />
-        </Container>
-      </Box>
-
-      <Box sx={{ bgcolor: theme.palette.secondary.light, paddingY: '3rem' }}>
-        <Container
-          sx={{
-            maxWidth: '100% !important',
-            width: '100%',
-            margin: 0,
-            paddingLeft: '100px !important',
-            paddingRight: '100px !important'
-          }}
-        >
-          <Typography variant="h4" color="secondary">
-            Collections
-          </Typography>
-          <Grid
-            container
-            spacing={2}
-            direction="row"
-            justifyContent="start"
-            alignItems="center"
-            sx={{ paddingY: '1rem' }}
-          >
-            {jfm1Data?.videoTags?.map((item) => (
-              <Grid item key={item.id}>
-                <Link href={`/videos/t/${item.id}`} passHref>
-                  <Chip
-                    label={item.title[0]?.value}
-                    variant="outlined"
-                    color="primary"
-                  />
-                </Link>
-              </Grid>
-            ))}
-          </Grid>
+          <HomeVideoList data={data?.videos} videos={videos} />
         </Container>
       </Box>
       <Footer isHome />

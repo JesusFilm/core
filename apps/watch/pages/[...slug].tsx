@@ -68,6 +68,11 @@ export const GET_VIDEO = gql`
         variant {
           duration
           hls
+          downloads {
+            quality
+            size
+            url
+          }
         }
       }
       slug(languageId: $languageId, primary: true) {

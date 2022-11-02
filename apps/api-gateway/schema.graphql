@@ -1347,6 +1347,7 @@ input VideoProgressEventCreateInput {
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
+  ids: [ID!]
   tagId: String
   title: String
   types: [VideoType!]
