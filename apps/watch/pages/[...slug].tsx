@@ -23,7 +23,7 @@ import {
 } from '../src/libs/languageContext/LanguageContext'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCarousel'
-import { Footer } from '../src/components/Footer/Footer'
+import { Footer } from '../src/components/Footer'
 import { Header } from '../src/components/Header'
 import { VideoHero, SimpleHero } from '../src/components/Hero'
 import { ShareDialog } from '../src/components/ShareDialog'

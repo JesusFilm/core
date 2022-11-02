@@ -17,7 +17,7 @@ import { Header } from '../src/components/Header'
 
 function HomePage(): ReactElement {
   return (
-    <PageWrapper header={<Header />} footer={<Footer isHome />}>
+    <PageWrapper header={<Header />} footer={<Footer />}>
       <ThemeProvider
         nested
         themeName={ThemeName.website}
