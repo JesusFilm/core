@@ -3,6 +3,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { noop } from 'lodash'
 
 import { GetVideo_video as Video } from '../../../__generated__/GetVideo'
+import { VideoType } from '../../../__generated__/globalTypes'
 
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/testData'
@@ -35,12 +36,18 @@ const Template: ComponentStory<typeof ShareDialog> = ({ ...args }) => {
   return <ShareDialog {...args} />
 }
 
-export const ShareLink = Template.bind({})
-ShareLink.args = {
+export const Basic = Template.bind({})
+Basic.args = {
   open: true,
   onClose: noop,
-  video,
+  video: { ...video, type: VideoType.playlist },
   routes
+}
+
+export const ShareLink = Template.bind({})
+ShareLink.args = {
+  ...Basic.args,
+  video
 }
 ShareLink.play = () => {
   userEvent.click(screen.getByRole('button', { name: 'Copy Link' }))
@@ -48,10 +55,7 @@ ShareLink.play = () => {
 
 export const EmbedCode = Template.bind({})
 EmbedCode.args = {
-  open: true,
-  onClose: noop,
-  video,
-  routes
+  ...ShareLink.args
 }
 EmbedCode.play = () => {
   userEvent.click(screen.getByRole('tab', { name: 'Embed Code' }))

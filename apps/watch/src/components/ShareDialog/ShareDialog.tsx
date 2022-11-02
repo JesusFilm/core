@@ -12,6 +12,7 @@ import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { createSvgIcon } from '@mui/material/utils'
+import { useTheme } from '@mui/material/styles'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetVideo_video } from '../../../__generated__/GetVideo'
@@ -30,6 +31,7 @@ export function ShareDialog({
 }: ShareDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const [value, setValue] = useState(0)
+  const theme = useTheme()
 
   const handleChange = (e: SyntheticEvent, newValue: number): void => {
     setValue(newValue)
@@ -142,6 +144,7 @@ export function ShareDialog({
                 width={240}
                 height={115}
                 objectFit="cover"
+                style={{ borderRadius: theme.spacing(2) }}
               />
             </Box>
           )}
@@ -149,7 +152,12 @@ export function ShareDialog({
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
               {video.title[0].value}
             </Typography>
-            <Typography>{video.description[0].value}</Typography>
+            <Typography>
+              {`${video.description[0].value
+                .split(' ')
+                .slice(0, 18)
+                .join(' ')}...`}
+            </Typography>
           </Stack>
         </Stack>
         <>
