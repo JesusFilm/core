@@ -86,7 +86,7 @@ export function AccessDialog({
   return (
     <Dialog
       open={open ?? false}
-      handleClose={onClose}
+      onClose={onClose}
       dialogTitle={{
         title: 'Invite Other Editors',
         closeButton: true
