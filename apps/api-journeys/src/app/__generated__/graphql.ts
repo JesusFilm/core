@@ -163,7 +163,16 @@ export enum DeviceType {
 }
 
 export enum VisitorStatus {
-    star = "star"
+    star = "star",
+    prohibited = "prohibited",
+    checkMarkSymbol = "checkMarkSymbol",
+    thumbsUp = "thumbsUp",
+    thumbsDown = "thumbsDown",
+    partyPopper = "partyPopper",
+    warning = "warning",
+    robotFace = "robotFace",
+    redExclamationMark = "redExclamationMark",
+    redQuestionMark = "redQuestionMark"
 }
 
 export class NavigateActionInput {
