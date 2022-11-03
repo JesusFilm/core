@@ -32,7 +32,7 @@ export function PageWrapper({
       >
         {header}
       </Box>
-      <Box>{children}</Box>
+      <Box sx={{ width: '100%' }}>{children}</Box>
       <Box
         sx={{
           height: 380

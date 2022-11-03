@@ -1,46 +1,73 @@
+import { ReactElement } from 'react'
 import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
-import Container from '@mui/material/Container'
-import 'video.js/dist/video-js.css'
+import Image from 'next/image'
+
+import JesusHeader from '../../../../public/images/jesus-header.svg'
 
 export function HomeHero(): ReactElement {
   return (
-    <Box sx={{ backgroundImage: 'url(/images/jesus-header.png)', height: 776 }}>
+    <Box
+      sx={{
+        height: 777,
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        position: 'relative'
+      }}
+    >
+      <Image
+        src={JesusHeader}
+        alt="Home Hero"
+        layout="fill"
+        objectFit="cover"
+        style={{
+          zIndex: -1
+        }}
+      />
+      <Box
+        style={{
+          zIndex: 0,
+          position: 'absolute',
+          height: '100%',
+          width: '100%',
+          background:
+            'radial-gradient(circle, rgba(255,255,255,0) 0%, rgba(0,0,0,1) 100%)'
+        }}
+      />
       <Container
         maxWidth="xl"
-        style={{
-          paddingTop: 350,
-          textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)',
-          paddingLeft: 100,
-          paddingRight: 100,
-          margin: 0
-        }}
+        sx={{ display: 'flex', justifyContent: 'center' }}
       >
-        <Stack direction="row" justifyContent="space-between" width="100%">
-          <Box>
-            <Typography
-              variant="h2"
-              color="secondary.contrastText"
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              Until Everyone
-            </Typography>
-            <Typography
-              variant="h2"
-              color="secondary.contrastText"
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              <u style={{ textDecorationColor: 'primary.main' }}>Sees Jesus</u>.
-            </Typography>
-          </Box>
+        <Stack
+          direction={{ xs: 'column', sm: 'column', md: 'column', lg: 'row' }}
+          alignContent="center"
+        >
           <Typography
-            variant="h6"
+            variant="h1"
             color="secondary.contrastText"
-            sx={{ opacity: 0.7, whiteSpace: 'nowrap' }}
+            sx={{ zIndex: 1 }}
           >
-            The story of the gospel in 78 videos in 1800 languages.
+            Free Gospel Video{' '}
+            <span
+              style={{
+                textDecoration: 'underline',
+                textDecorationColor: '#EF3340',
+                textUnderlineOffset: 10
+              }}
+            >
+              Streaming
+            </span>{' '}
+            Library
+          </Typography>
+          <Typography
+            variant="h5"
+            color="secondary.contrastText"
+            sx={{ opacity: 0.7, pt: 8 }}
+          >
+            Watch, learn and share the gospel in over 2000 languages
           </Typography>
         </Stack>
       </Container>

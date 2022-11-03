@@ -36,7 +36,7 @@ export function Header(): ReactElement {
     <>
       <AppBar
         position="relative"
-        sx={{ background: 'transparent', boxShadow: 'none', p: 4 }}
+        sx={{ background: 'transparent', boxShadow: 'none', p: 4, zIndex: 1 }}
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <NextLink href="/" passHref>
