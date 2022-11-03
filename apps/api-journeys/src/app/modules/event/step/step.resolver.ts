@@ -9,16 +9,10 @@ import {
   StepViewEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
-import { BlockService } from '../../block/block.service'
-import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('StepViewEvent')
 export class StepViewEventResolver {
-  constructor(
-    private readonly eventService: EventService,
-    private readonly blockService: BlockService,
-    private readonly visitorService: VisitorService
-  ) {}
+  constructor(private readonly eventService: EventService) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
@@ -26,14 +20,10 @@ export class StepViewEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: StepViewEventCreateInput
   ): Promise<StepViewEvent> {
-    const block: { journeyId: string } = await this.blockService.get(
-      input.blockId
-    )
-    const journeyId = block.journeyId
-
-    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
       userId,
-      journeyId
+      input.blockId,
+      input.blockId
     )
 
     return await this.eventService.save({

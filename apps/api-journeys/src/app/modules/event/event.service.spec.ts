@@ -82,7 +82,7 @@ describe('EventService', () => {
       expect(
         await service.validateBlockEvent('user.id', 'block.id', 'step.id')
       ).toEqual({
-        visitorId: 'visitor.id',
+        visitor,
         journeyId: 'journey.id'
       })
     })

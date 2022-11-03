@@ -1,7 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
-import { BlockService } from '../../block/block.service'
 import { VisitorService } from '../../visitor/visitor.service'
 import { SignUpSubmissionEventResolver } from './signUp.resolver'
 
@@ -20,20 +18,13 @@ describe('SignUpEventResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((input) => input)
-    })
-  }
-
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      get: jest.fn(() => block),
-      validateBlock: jest.fn((id) => {
-        switch (id) {
-          case 'step.id':
-            return true
+      save: jest.fn((input) => input),
+      validateBlockEvent: jest.fn((userId) => {
+        switch (userId) {
+          case 'user.id':
+            return response
           default:
-            return false
+            return newVisitorResponse
         }
       })
     })
@@ -42,60 +33,23 @@ describe('SignUpEventResolver', () => {
   const visitorService = {
     provide: VisitorService,
     useFactory: () => ({
-      getByUserIdAndJourneyId: jest.fn((userId) => {
-        switch (userId) {
-          case visitor.userId:
-            return visitorWithId
-          case newVisitor.userId:
-            return newVisitorWithId
-        }
-      }),
-      update: jest.fn(() => '')
+      update: jest.fn(() => null)
     })
   }
 
-  const input = {
-    id: '1',
-    blockId: 'block.id',
-    stepId: 'step.id',
-    name: 'John Doe',
-    email: 'john.doe@jesusfilm.org'
+  const response = {
+    visitor: { id: 'visitor.id', name: 'test name', email: 'test@email.com' },
+    journeyId: 'journey.id'
   }
 
-  const errorInput = {
-    ...input,
-    stepId: 'errorStep.id'
+  const newVisitorResponse = {
+    visitor: { id: 'newVisitor.id' },
+    journeyId: 'journey.id'
   }
-
-  const block = {
-    id: 'block.id',
-    journeyId: 'journey.id',
-    parentBlockId: 'parent.id'
-  }
-
-  const visitor = {
-    _key: 'visitor.id',
-    userId: 'user.id',
-    name: 'Robert Smith',
-    email: 'robert.smith@jesusfilm.org'
-  }
-
-  const newVisitor = {
-    _key: 'newVisitor.id',
-    userId: 'newUser.id'
-  }
-
-  const visitorWithId = keyAsId(visitor)
-  const newVisitorWithId = keyAsId(newVisitor)
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        SignUpSubmissionEventResolver,
-        eventService,
-        blockService,
-        visitorService
-      ]
+      providers: [SignUpSubmissionEventResolver, eventService, visitorService]
     }).compile()
     resolver = module.get<SignUpSubmissionEventResolver>(
       SignUpSubmissionEventResolver
@@ -104,6 +58,14 @@ describe('SignUpEventResolver', () => {
   })
 
   describe('signUpSubmissionEventCreate', () => {
+    const input = {
+      id: '1',
+      blockId: 'block.id',
+      stepId: 'step.id',
+      name: 'John Doe',
+      email: 'john.doe@jesusfilm.org'
+    }
+
     it('returns SignUpSubmissionEvent', async () => {
       expect(
         await resolver.signUpSubmissionEventCreate('user.id', input)
@@ -111,9 +73,9 @@ describe('SignUpEventResolver', () => {
         id: input.id,
         blockId: input.blockId,
         __typename: 'SignUpSubmissionEvent',
-        visitorId: visitorWithId.id,
+        visitorId: 'visitor.id',
         createdAt: new Date().toISOString(),
-        journeyId: block.journeyId,
+        journeyId: 'journey.id',
         stepId: input.stepId,
         label: null,
         value: input.name,
@@ -123,28 +85,19 @@ describe('SignUpEventResolver', () => {
     })
 
     it('should update visitor name', async () => {
-      await resolver.signUpSubmissionEventCreate('newUser.id', input)
+      await resolver.signUpSubmissionEventCreate('newVisitor.id', input)
 
-      expect(vService.update).toHaveBeenCalledWith(newVisitorWithId.id, {
+      expect(vService.update).toHaveBeenCalledWith('newVisitor.id', {
         name: input.name
       })
     })
 
     it('should update visitor email', async () => {
-      await resolver.signUpSubmissionEventCreate('newUser.id', input)
+      await resolver.signUpSubmissionEventCreate('newVisitor.id', input)
 
-      expect(vService.update).toHaveBeenCalledWith(newVisitorWithId.id, {
+      expect(vService.update).toHaveBeenCalledWith('newVisitor.id', {
         email: input.email
       })
-    })
-
-    it('should throw error when step id does not belong to the same journey as block id', async () => {
-      await expect(
-        async () =>
-          await resolver.signUpSubmissionEventCreate('userId', errorInput)
-      ).rejects.toThrow(
-        `Step ID ${errorInput.stepId} does not exist on Journey with ID ${block.journeyId}`
-      )
     })
   })
 })

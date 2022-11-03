@@ -5,6 +5,7 @@ import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { UserInputError } from 'apollo-server'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
+import { Visitor } from '../../__generated__/graphql'
 
 @Injectable()
 export class EventService extends BaseService {
@@ -20,8 +21,11 @@ export class EventService extends BaseService {
   async validateBlockEvent(
     userId: string,
     blockId: string,
-    stepId: string
-  ): Promise<{ visitorId: string; journeyId: string }> {
+    stepId: string | null = null
+  ): Promise<{
+    visitor: Visitor
+    journeyId: string
+  }> {
     const block: { journeyId: string; _key: string } | undefined =
       await this.blockService.get(blockId)
 
@@ -30,8 +34,10 @@ export class EventService extends BaseService {
     }
     const journeyId = block.journeyId
 
-    const visitor: { id: string } =
-      await this.visitorService.getByUserIdAndJourneyId(userId, journeyId)
+    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+      userId,
+      journeyId
+    )
 
     const validStep = await this.blockService.validateBlock(
       stepId,
@@ -41,10 +47,12 @@ export class EventService extends BaseService {
 
     if (!validStep) {
       throw new UserInputError(
-        `Step ID ${stepId} does not exist on Journey with ID ${journeyId}`
+        `Step ID ${
+          stepId as string
+        } does not exist on Journey with ID ${journeyId}`
       )
     }
 
-    return { visitorId: visitor.id, journeyId }
+    return { visitor, journeyId }
   }
 }
