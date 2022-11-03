@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
@@ -16,7 +16,8 @@ import {
   VideoCollapseEvent,
   VideoCollapseEventCreateInput,
   VideoProgressEvent,
-  VideoProgressEventCreateInput
+  VideoProgressEventCreateInput,
+  VideoBlockSource
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
@@ -44,6 +45,11 @@ export class VideoStartEventResolver {
       journeyId
     })
   }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
+  }
 }
 @Resolver('VideoPlayEvent')
 @UseGuards(GqlAuthGuard)
@@ -69,10 +75,16 @@ export class VideoPlayEventResolver {
       journeyId
     })
   }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
+  }
 }
+
 @Resolver('VideoPauseEvent')
 @UseGuards(GqlAuthGuard)
-export class VideoPuaseEventResolver {
+export class VideoPauseEventResolver {
   constructor(private readonly eventService: EventService) {}
 
   @Mutation()
@@ -94,7 +106,13 @@ export class VideoPuaseEventResolver {
       journeyId
     })
   }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
+  }
 }
+
 @Resolver('VideoCompleteEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoCompleteEventResolver {
@@ -119,7 +137,13 @@ export class VideoCompleteEventResolver {
       journeyId
     })
   }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
+  }
 }
+
 @Resolver('VideoExpandEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoExpandEventResolver {
@@ -144,7 +168,13 @@ export class VideoExpandEventResolver {
       journeyId
     })
   }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
+  }
 }
+
 @Resolver('VideoCollapseEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoCollapseEventResolver {
@@ -168,7 +198,13 @@ export class VideoCollapseEventResolver {
       journeyId
     })
   }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
+  }
 }
+
 @Resolver('VideoProgressEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoProgressEventResolver {
@@ -192,5 +228,10 @@ export class VideoProgressEventResolver {
       createdAt: new Date().toISOString(),
       journeyId
     })
+  }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
   }
 }

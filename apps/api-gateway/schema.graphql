@@ -68,7 +68,18 @@ input ButtonBlockUpdateInput {
 }
 
 type ButtonClickEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the buttonBlock belongs to"""
+  journeyId: ID!
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """label of the button"""
+  value: String
 }
 
 input ButtonClickEventCreateInput {
@@ -198,7 +209,11 @@ enum DeviceType {
 }
 
 interface Event {
+  createdAt: DateTime!
   id: ID!
+  journeyId: ID!
+  label: String
+  value: String
 }
 
 enum GridAlignItems {
@@ -450,7 +465,23 @@ input JourneyUpdateInput {
 }
 
 type JourneyViewEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey being viewed"""
+  journeyId: ID!
+
+  """title of the journey being viewed"""
+  label: String
+
+  """
+  language of the journey being viewed (based on the ID in the value field)
+  """
+  language: Language
+
+  """languageId of the journey being viewed"""
+  value: String
 }
 
 input JourneyViewEventCreateInput {
@@ -726,7 +757,18 @@ input RadioQuestionBlockCreateInput {
 }
 
 type RadioQuestionSubmissionEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the radioQuestionBlock belongs to"""
+  journeyId: ID!
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """label of the selected radioOptionBlock"""
+  value: String
 }
 
 input RadioQuestionSubmissionEventCreateInput {
@@ -780,7 +822,21 @@ input SignUpBlockUpdateInput {
 }
 
 type SignUpSubmissionEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
+
+  """email from the signUpBlock form"""
+  email: String
   id: ID!
+
+  """ID of the journey that the block belongs to"""
+  journeyId: ID!
+
+  """null for signUpSubmissionEvent"""
+  label: String
+
+  """name from the signUpBlock form"""
+  value: String
 }
 
 input SignUpSubmissionEventCreateInput {
@@ -835,7 +891,18 @@ input StepBlockUpdateInput {
 }
 
 type StepViewEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the stepBlock belongs to"""
+  journeyId: ID!
+
+  """null for stepViewEvent"""
+  label: String
+
+  """stepName of the stepBlock"""
+  value: String
 }
 
 input StepViewEventCreateInput {
@@ -881,7 +948,18 @@ input TextResponseBlockUpdateInput {
 }
 
 type TextResponseSubmissionEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the buttonBlock belongs to"""
+  journeyId: ID!
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """response from the TextResponseBlock form"""
+  value: String
 }
 
 input TextResponseSubmissionEventCreateInput {
@@ -1221,7 +1299,24 @@ input VideoBlockUpdateInput {
 }
 
 type VideoCollapseEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoCollapseEvent is triggered"""
+  position: Float
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoCollapseEventCreateInput {
@@ -1246,7 +1341,24 @@ input VideoCollapseEventCreateInput {
 }
 
 type VideoCompleteEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoCompleteEvent is triggered"""
+  position: Float
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoCompleteEventCreateInput {
@@ -1269,7 +1381,24 @@ input VideoCompleteEventCreateInput {
 }
 
 type VideoExpandEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoExpandEvent is triggered"""
+  position: Float
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoExpandEventCreateInput {
@@ -1292,7 +1421,24 @@ input VideoExpandEventCreateInput {
 }
 
 type VideoPauseEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoPauseEvent is triggered"""
+  position: Float
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoPauseEventCreateInput {
@@ -1317,7 +1463,24 @@ input VideoPauseEventCreateInput {
 }
 
 type VideoPlayEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoPlayEvent is triggered"""
+  position: Float
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoPlayEventCreateInput {
@@ -1342,7 +1505,29 @@ input VideoPlayEventCreateInput {
 }
 
 type VideoProgressEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoProgressEvent is triggered"""
+  position: Float
+
+  """
+  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
+  """
+  progress: Int!
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoProgressEventCreateInput {
@@ -1379,7 +1564,24 @@ input VideosFilter {
 }
 
 type VideoStartEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoStartEvent is triggered"""
+  position: Float
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoStartEventCreateInput {
@@ -1478,6 +1680,7 @@ type Visitor
   SignUpEventSubmissionEventCreate mutation.
   """
   email: String @join__field(graph: JOURNEYS)
+  events: [Event!]! @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
 
   """
@@ -1546,10 +1749,20 @@ type VisitorsConnection {
 
 """
 The status of a visitor according to team members interacting with the
-visitor admin interface.
+visitor admin interface. This enum should map to an emoji when displayed
+(names here match Apple's emoji name)
 """
 enum VisitorStatus {
+  checkMarkSymbol
+  partyPopper
+  prohibited
+  redExclamationMark
+  redQuestionMark
+  robotFace
   star
+  thumbsDown
+  thumbsUp
+  warning
 }
 
 """

@@ -13,7 +13,7 @@ import { TextResponseSubmissionEventResolver } from './textResponse/textResponse
 import {
   VideoStartEventResolver,
   VideoPlayEventResolver,
-  VideoPuaseEventResolver,
+  VideoPauseEventResolver,
   VideoCompleteEventResolver,
   VideoCollapseEventResolver,
   VideoExpandEventResolver,
@@ -37,7 +37,7 @@ import { StepViewEventResolver } from './step/step.resolver'
     TextResponseSubmissionEventResolver,
     VideoStartEventResolver,
     VideoPlayEventResolver,
-    VideoPuaseEventResolver,
+    VideoPauseEventResolver,
     VideoCompleteEventResolver,
     VideoCollapseEventResolver,
     VideoExpandEventResolver,
