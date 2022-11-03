@@ -46,7 +46,7 @@ describe('ShareDialog', () => {
     )
 
     const link =
-      'https://www.jesusfilm.org/watch/the-story-of-jesus-for-children'
+      'https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children'
     expect(getByRole('textbox')).toHaveValue(link)
     expect(getByRole('button', { name: 'Copy Link' })).toBeInTheDocument()
     expect(queryAllByRole('tab')).toHaveLength(0)
@@ -120,7 +120,7 @@ describe('ShareDialog', () => {
     })
 
     it('should share video to facebook', () => {
-      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=https://www.jesusfilm.org/watch/the-story-of-jesus-for-children`
+      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children`
 
       const { getByRole } = render(
         <SnackbarProvider>
@@ -139,7 +139,7 @@ describe('ShareDialog', () => {
     })
 
     it('should share video to twitter', () => {
-      const facebookUrl = `https://twitter.com/intent/tweet?url=https://www.jesusfilm.org/watch/the-story-of-jesus-for-children`
+      const facebookUrl = `https://twitter.com/intent/tweet?url=https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children`
 
       const { getByRole } = render(
         <SnackbarProvider>
@@ -182,7 +182,7 @@ describe('ShareDialog', () => {
       }
 
       const link =
-        'https://www.jesusfilm.org/watch/the-story-of-jesus-for-children'
+        'https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children'
       const { getByRole, getByText } = render(
         <SnackbarProvider>
           <ShareDialog video={video} routes={routes} open onClose={onClose} />

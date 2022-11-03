@@ -40,7 +40,8 @@ export function ShareDialog({
   const shareLink =
     routes != null
       ? `${
-          process.env.NEXT_PUBLIC_WATCH_URL ?? 'https://www.jesusfilm.org/watch'
+          process.env.NEXT_PUBLIC_WATCH_URL ??
+          'https://watch-jesusfilm.vercel.app'
         }/${routes?.join('/')}`.trim()
       : ''
 
@@ -164,14 +165,7 @@ export function ShareDialog({
           <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
             <IconButton
               aria-label="Share to Facebook"
-              href={
-                routes != null
-                  ? `https://www.facebook.com/sharer/sharer.php?u=${
-                      process.env.NEXT_PUBLIC_WATCH_URL ??
-                      'https://www.jesusfilm.org/watch'
-                    }/${routes?.join('/')}`.trim()
-                  : ''
-              }
+              href={`https://www.facebook.com/sharer/sharer.php?u=${shareLink}`}
               target="_blank"
               rel="noopener"
             >
@@ -179,14 +173,7 @@ export function ShareDialog({
             </IconButton>
             <IconButton
               aria-label="Share to Twitter"
-              href={
-                routes != null
-                  ? `https://twitter.com/intent/tweet?url=${
-                      process.env.NEXT_PUBLIC_WATCH_URL ??
-                      'https://www.jesusfilm.org/watch'
-                    }/${routes?.join('/')}`.trim()
-                  : ''
-              }
+              href={`https://twitter.com/intent/tweet?url=${shareLink}`}
               target="_blank"
               rel="noopener"
             >
