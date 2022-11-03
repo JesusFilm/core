@@ -647,8 +647,16 @@ describe('BlockService', () => {
       it('should return false with incorrect parent id', async () => {
         expect(await service.validateBlock('1', 'wrongParent')).toEqual(false)
       })
-      it('should validate block', async () => {
-        expect(await service.validateBlock('1', '3')).toEqual(true)
+      it('should validate block against parentBlockId', async () => {
+        expect(await service.validateBlock('1', '3', 'parentBlockId')).toEqual(
+          true
+        )
+      })
+
+      it('should validate block against journeyId', async () => {
+        expect(
+          await service.validateBlock('1', journey.id, 'journeyId')
+        ).toEqual(true)
       })
     })
   })
