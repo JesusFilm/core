@@ -1,12 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { VisitorsConnection } from '../../__generated__/graphql'
+import { EventService } from '../event/event.service'
 import { MemberService } from '../member/member.service'
 
 import { VisitorResolver } from './visitor.resolver'
 import { VisitorService } from './visitor.service'
 
 describe('VisitorResolver', () => {
-  let resolver: VisitorResolver, vService: VisitorService
+  let resolver: VisitorResolver,
+    vService: VisitorService,
+    eService: EventService
 
   const connection: VisitorsConnection = {
     edges: [],
@@ -67,12 +70,24 @@ describe('VisitorResolver', () => {
     })
   }
 
+  const event = {
+    id: 'eventId'
+  }
+
+  const eventService = {
+    provide: EventService,
+    useFactory: () => ({
+      getAllByVisitorId: jest.fn(() => [event])
+    })
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VisitorResolver, visitorService, memberService]
+      providers: [VisitorResolver, visitorService, memberService, eventService]
     }).compile()
     resolver = module.get<VisitorResolver>(VisitorResolver)
     vService = module.get<VisitorService>(VisitorService)
+    eService = module.get<EventService>(EventService)
   })
 
   describe('visitorsConnection', () => {
@@ -160,6 +175,17 @@ describe('VisitorResolver', () => {
     })
   })
 
+  describe('events', () => {
+    it('returns visitor events', async () => {
+      expect(await resolver.events({ id: 'visitorId' })).toEqual([event])
+    })
+
+    it('calls event service with visitorId', async () => {
+      await resolver.events({ id: 'visitorId' })
+      expect(eService.getAllByVisitorId).toHaveBeenCalledWith('visitorId')
+    })
+  })
+
   describe('userAgent', () => {
     it('parses empty case', () => {
       expect(resolver.userAgent({})).toBeUndefined()
@@ -177,18 +203,18 @@ describe('VisitorResolver', () => {
         os: { name: 'Mac OS', version: '10.15.7' }
       })
     })
-  })
 
-  it('parses mobile user-agent', () => {
-    expect(
-      resolver.userAgent({
-        userAgent:
-          'Mozilla/5.0 (iPhone; U; CPU iPhone OS 5_1_1 like Mac OS X; en) AppleWebKit/534.46.0 (KHTML, like Gecko) CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3'
+    it('parses mobile user-agent', () => {
+      expect(
+        resolver.userAgent({
+          userAgent:
+            'Mozilla/5.0 (iPhone; U; CPU iPhone OS 5_1_1 like Mac OS X; en) AppleWebKit/534.46.0 (KHTML, like Gecko) CriOS/19.0.1084.60 Mobile/9B206 Safari/7534.48.3'
+        })
+      ).toMatchObject({
+        browser: { major: '19', name: 'Chrome', version: '19.0.1084.60' },
+        device: { model: 'iPhone', type: 'mobile', vendor: 'Apple' },
+        os: { name: 'iOS', version: '5.1.1' }
       })
-    ).toMatchObject({
-      browser: { major: '19', name: 'Chrome', version: '19.0.1084.60' },
-      device: { model: 'iPhone', type: 'mobile', vendor: 'Apple' },
-      os: { name: 'iOS', version: '5.1.1' }
     })
   })
 })

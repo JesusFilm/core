@@ -502,6 +502,10 @@ export interface Block {
 
 export interface Event {
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class NavigateAction implements Action {
@@ -733,66 +737,135 @@ export class VideoTriggerBlock implements Block {
 export class ButtonClickEvent implements Event {
     __typename?: 'ButtonClickEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class JourneyViewEvent implements Event {
     __typename?: 'JourneyViewEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    language?: Nullable<Language>;
 }
 
 export class RadioQuestionSubmissionEvent implements Event {
     __typename?: 'RadioQuestionSubmissionEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class SignUpSubmissionEvent implements Event {
     __typename?: 'SignUpSubmissionEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    email?: Nullable<string>;
 }
 
 export class StepViewEvent implements Event {
     __typename?: 'StepViewEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class TextResponseSubmissionEvent implements Event {
     __typename?: 'TextResponseSubmissionEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class VideoStartEvent implements Event {
     __typename?: 'VideoStartEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
 }
 
 export class VideoPlayEvent implements Event {
     __typename?: 'VideoPlayEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
 }
 
 export class VideoPauseEvent implements Event {
     __typename?: 'VideoPauseEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
 }
 
 export class VideoCompleteEvent implements Event {
     __typename?: 'VideoCompleteEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
 }
 
 export class VideoExpandEvent implements Event {
     __typename?: 'VideoExpandEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
 }
 
 export class VideoCollapseEvent implements Event {
     __typename?: 'VideoCollapseEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
 }
 
 export class VideoProgressEvent implements Event {
     __typename?: 'VideoProgressEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
+    progress: number;
 }
 
 export class PowerBiEmbed {
@@ -860,6 +933,7 @@ export class Visitor {
     messengerNetwork?: Nullable<string>;
     messengerId?: Nullable<string>;
     notes?: Nullable<string>;
+    events: Event[];
 }
 
 export class VisitorEdge {

@@ -25,7 +25,7 @@ const Template: ComponentStory<typeof Dialog> = ({ ...args }) => {
 export const Basic = Template.bind({})
 Basic.args = {
   open: true,
-  handleClose: noop,
+  onClose: noop,
   dialogTitle: { title: 'Simple Dialog' },
   dialogAction: {
     onSubmit: noop,
@@ -37,7 +37,7 @@ Basic.args = {
 export const Form = Template.bind({})
 Form.args = {
   open: true,
-  handleClose: noop,
+  onClose: noop,
   dialogTitle: {
     title: 'Edit Form',
     closeButton: true
@@ -53,7 +53,7 @@ Form.args = {
 export const MinHeight = Template.bind({})
 MinHeight.args = {
   open: true,
-  handleClose: noop,
+  onClose: noop,
   dialogTitle: {
     title: 'Minimum Height Dialog',
     closeButton: true
@@ -64,7 +64,7 @@ MinHeight.args = {
 export const Info = Template.bind({})
 Info.args = {
   open: true,
-  handleClose: noop,
+  onClose: noop,
   dialogTitle: {
     title: 'Info Dialog',
     closeButton: true
@@ -98,7 +98,7 @@ Info.args = {
 export const ExcessText = Template.bind({})
 ExcessText.args = {
   open: true,
-  handleClose: noop,
+  onClose: noop,
   dialogTitle: {
     title: 'Excess text',
     closeButton: true
@@ -149,7 +149,7 @@ ExcessText.args = {
 export const FullScreen = Template.bind({})
 FullScreen.args = {
   open: true,
-  handleClose: noop,
+  onClose: noop,
   dialogTitle: {
     title: 'Full Screen Dialog',
     closeButton: true

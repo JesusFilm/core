@@ -78,7 +78,7 @@ export function SlugDialog({ open, onClose }: SlugDialogProps): ReactElement {
           {({ values, handleChange, handleSubmit, resetForm }) => (
             <Dialog
               open={open}
-              handleClose={handleClose(resetForm)}
+              onClose={handleClose(resetForm)}
               dialogTitle={{ title: t('Edit URL') }}
               dialogAction={{
                 onSubmit: handleSubmit,

@@ -1,7 +1,7 @@
 // Block resolver tests are in individual block type spec files
 
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
@@ -25,5 +25,11 @@ export class JourneyViewEventResolver {
       userId,
       createdAt: new Date().toISOString()
     })
+  }
+
+  @ResolveField('language')
+  language(@Parent() journeyViewEvent): { __typename: 'Language'; id: string } {
+    // 529 (english) is default if not set
+    return { __typename: 'Language', id: journeyViewEvent.value ?? '529' }
   }
 }
