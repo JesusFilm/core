@@ -141,7 +141,7 @@ describe('VisitorService', () => {
       ).toEqual(visitorWithId)
     })
 
-    it('should create a new visitor if visitor doest exist', async () => {
+    it('should create a new visitor if visitor does not exist', async () => {
       const visitor = {
         _key: 'visitor.id',
         userId: 'user.id',

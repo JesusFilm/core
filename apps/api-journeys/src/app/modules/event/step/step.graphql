@@ -5,13 +5,29 @@ input StepViewEventCreateInput {
   id: ID
   blockId: ID!
   """
-  value is the stepName of the parent stepBlock
+  stepName of the stepBlock
   """
   value: String
 }
 
 type StepViewEvent implements Event {
   id: ID!
+  """
+  ID of the journey that the stepBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  null for stepViewEvent
+  """
+  label: String
+  """
+  stepName of the stepBlock
+  """
+  value: String
 }
 
 input StepNextEventCreateInput {
@@ -20,20 +36,38 @@ input StepNextEventCreateInput {
   """
   id: ID
   blockId: ID!
-  stepId: ID
+  """
+  id of the mext stepBlock
+  """
   nextStepId: ID!
   """
-  label is the stepName of the parent stepBlock
+  stepName of the stepBlock
   """
   label: String
   """
-  value is the stepName of the next stepBlock
+  stepName of the next stepBlock
   """
   value: String
 }
 
 type StepNextEvent implements Event {
   id: ID!
+  """
+  ID of the journey that the stepBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  stepName of the stepBlock
+  """
+  label: String
+  """
+  stepName of the next stepBlock
+  """
+  value: String
 }
 
 extend type Mutation {

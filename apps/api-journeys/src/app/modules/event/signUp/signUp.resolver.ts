@@ -4,20 +4,17 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { UserInputError } from 'apollo-server'
 import {
   SignUpSubmissionEvent,
   SignUpSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
-import { BlockService } from '../../block/block.service'
 import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('SignUpSubmissionEvent')
 export class SignUpSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly blockService: BlockService,
     private readonly visitorService: VisitorService
   ) {}
 
@@ -27,38 +24,20 @@ export class SignUpSubmissionEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: SignUpSubmissionEventCreateInput
   ): Promise<SignUpSubmissionEvent> {
-    const block: { journeyId: string } = await this.blockService.get(
-      input.blockId
-    )
-    const journeyId = block.journeyId
-
-    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
       userId,
-      journeyId
+      input.blockId,
+      input.stepId
     )
-
-    const validStep = await this.blockService.validateBlock(
-      input.stepId ?? null,
-      'journeyId',
-      journeyId
-    )
-
-    if (!validStep) {
-      throw new UserInputError(
-        `Step ID ${
-          input.stepId as string
-        } does not exist on Journey with ID ${journeyId}`
-      )
-    }
 
     if (visitor.name == null) {
-      await this.visitorService.update(visitor.id, {
+      void this.visitorService.update(visitor.id, {
         name: input.name
       })
     }
 
     if (visitor.email == null) {
-      await this.visitorService.update(visitor.id, {
+      void this.visitorService.update(visitor.id, {
         email: input.email
       })
     }
