@@ -79,7 +79,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
           {({ values, handleChange, handleSubmit, resetForm }) => (
             <Dialog
               open={open}
-              handleClose={handleClose(resetForm)}
+              onClose={handleClose(resetForm)}
               dialogTitle={{ title: 'Edit Title' }}
               dialogAction={{
                 onSubmit: handleSubmit,
