@@ -9,17 +9,20 @@ input TextResponseSubmissionEventCreateInput {
 
 type TextResponseSubmissionEvent implements Event {
   id: ID!
-  visitorId: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  blockId: ID
-  stepId: ID
   """
-  label is the stepName of the parent stepBlock
+  ID of the journey that the buttonBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  stepName of the parent stepBlock
   """
   label: String
   """
-  value is the response from the submission
+  response from the TextResponseBlock form
   """
   value: String
 }

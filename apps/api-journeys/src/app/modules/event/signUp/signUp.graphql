@@ -10,21 +10,24 @@ input SignUpSubmissionEventCreateInput {
 
 type SignUpSubmissionEvent implements Event {
   id: ID!
-  visitorId: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  blockId: ID
-  stepId: ID
   """
-  label will be null for signUpSubmissionEvent
+  ID of the journey that the block belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  null for signUpSubmissionEvent
   """
   label: String
   """
-  value is the name from the submission
+  name from the signUpBlock form
   """
   value: String
   """
-  email is the email from the submission
+  email from the signUpBlock form
   """
   email: String
 }

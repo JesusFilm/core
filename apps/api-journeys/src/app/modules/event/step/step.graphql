@@ -8,17 +8,20 @@ input StepViewEventCreateInput {
 
 type StepViewEvent implements Event {
   id: ID!
-  visitorId: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  blockId: ID
-  stepId: ID
   """
-  label will be null for stepViewEvent
+  ID of the journey that the stepBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  null for stepViewEvent
   """
   label: String
   """
-  value is the stepName of the stepBlock
+  stepName of the stepBlock
   """
   value: String
 }

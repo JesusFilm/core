@@ -9,25 +9,28 @@ input VideoStartEventCreateInput {
 
 type VideoStartEvent implements Event {
   id: ID!
-  visitorId: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  blockId: ID
-  stepId: ID
   """
-  label is the title of the video
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: String
   """
-  position is the duration of the video played when the videoEvent is triggered
+  duration of the video played when the VideoStartEvent is triggered
   """
   position: Float
   """
-  source is the source of the video resolved from the video source in value
+  source of the video (based on the source in the value field)
   """
   source: VideoBlockSource
 }
@@ -43,23 +46,30 @@ input VideoPlayEventCreateInput {
 
 type VideoPlayEvent implements Event {
   id: ID!
-  visitorId: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  blockId: ID
-  stepId: ID
   """
-  label is the title of the video
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: String
   """
-  position is the duration of the video played when the videoEvent is triggered
+  duration of the video played when the VideoPlayEvent is triggered
   """
   position: Float
+  """
+  source of the video (based on the source in the value field)
+  """
+  source: VideoBlockSource
 }
 
 input VideoPauseEventCreateInput {
@@ -73,25 +83,28 @@ input VideoPauseEventCreateInput {
 
 type VideoPauseEvent implements Event {
   id: ID!
-  visitorId: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  blockId: ID
-  stepId: ID
   """
-  label is the title of the video
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: String
   """
-  position is the duration of the video played when the videoEvent is triggered
+  duration of the video played when the VideoPauseEvent is triggered
   """
   position: Float
   """
-  source is the source of the video resolved from the video source in value
+  source of the video (based on the source in the value field)
   """
   source: VideoBlockSource
 }
@@ -107,25 +120,28 @@ input VideoCompleteEventCreateInput {
 
 type VideoCompleteEvent implements Event {
   id: ID!
-  visitorId: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  blockId: ID
-  stepId: ID
   """
-  label is the title of the video
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: String
   """
-  position is the duration of the video played when the videoEvent is triggered
+  duration of the video played when the VideoCompleteEvent is triggered
   """
   position: Float
   """
-  source is the source of the video resolved from the video source in value
+  source of the video (based on the source in the value field)
   """
   source: VideoBlockSource
 }
@@ -141,25 +157,28 @@ input VideoExpandEventCreateInput {
 
 type VideoExpandEvent implements Event {
   id: ID!
-  visitorId: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  blockId: ID
-  stepId: ID
   """
-  label is the title of the video
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: String
   """
-  position is the duration of the video played when the videoEvent is triggered
+  duration of the video played when the VideoExpandEvent is triggered
   """
   position: Float
   """
-  source is the source of the video resolved from the video source in value
+  source of the video (based on the source in the value field)
   """
   source: VideoBlockSource
 }
@@ -175,25 +194,28 @@ input VideoCollapseEventCreateInput {
 
 type VideoCollapseEvent implements Event {
   id: ID!
-  visitorId: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  blockId: ID
-  stepId: ID
   """
-  label is the title of the video
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: String
   """
-  position is the duration of the video played when the videoEvent is triggered
+  duration of the video played when the VideoCollapseEvent is triggered
   """
   position: Float
   """
-  source is the source of the video resolved from the video source in value
+  source of the video (based on the source in the value field)
   """
   source: VideoBlockSource
 }
@@ -213,25 +235,28 @@ input VideoProgressEventCreateInput {
 
 type VideoProgressEvent implements Event {
   id: ID!
-  visitorId: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  blockId: ID
-  stepId: ID
   """
-  label is the title of the video
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: String
   """
-  position is the duration of the video played when the videoEvent is triggered
+  duration of the video played when the VideoProgressEvent is triggered
   """
   position: Float
   """
-  source is the source of the video resolved from the video source in value
+  source of the video (based on the source in the value field)
   """
   source: VideoBlockSource
   """
