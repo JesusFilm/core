@@ -10,11 +10,10 @@ import { HomeHero } from '../src/components/Hero'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { Footer } from '../src/components/Footer/Footer'
 import { HomeVideo, HomeVideos } from '../src/components/HomeVideos/HomeVideos'
-import { GetVideos } from '../__generated__/GetVideos'
 import { designationTypes } from '../src/components/HomeVideos/Card/HomeVideoCard'
 import { Header } from '../src/components/Header'
-
 import { createApolloClient } from '../src/libs/client'
+import { GetHomeVideos } from '../__generated__/GetHomeVideos'
 
 export const videos: HomeVideo[] = [
   {
@@ -37,7 +36,7 @@ export const videos: HomeVideo[] = [
 ]
 
 interface HomePageProps {
-  data: GetVideos
+  data: GetHomeVideos
 }
 
 function HomePage({ data }: HomePageProps): ReactElement {
@@ -69,9 +68,9 @@ function HomePage({ data }: HomePageProps): ReactElement {
 
 export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
   const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<GetVideos>({
+  const { data } = await apolloClient.query<GetHomeVideos>({
     query: gql`
-      query GetVideos($where: VideosFilter, $languageId: ID) {
+      query GetHomeVideos($where: VideosFilter, $languageId: ID) {
         videos(where: $where) {
           id
           type

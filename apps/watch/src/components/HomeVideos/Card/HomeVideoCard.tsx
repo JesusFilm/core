@@ -12,7 +12,7 @@ import Link from 'next/link'
 import Stack from '@mui/material/Stack'
 
 import { VideoType } from '../../../../__generated__/globalTypes'
-import { GetVideos_videos } from '../../../../__generated__/GetVideos'
+import { GetHomeVideos_videos } from '../../../../__generated__/GetHomeVideos'
 
 export enum designationTypes {
   animation = 'Animation',
@@ -29,7 +29,7 @@ const designationColors = {
 }
 
 interface VideoListCardProps {
-  video?: GetVideos_videos
+  video?: GetHomeVideos_videos
   designation?: designationTypes
   disabled?: boolean
   routePrefix?: string | undefined
