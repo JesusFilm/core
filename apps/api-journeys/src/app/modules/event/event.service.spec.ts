@@ -89,7 +89,7 @@ describe('EventService', () => {
       })
     })
 
-    it('should throw user input error if block doesnt exist', async () => {
+    it('should throw user input error if block does not exist', async () => {
       await expect(
         async () =>
           await service.validateBlockEvent(

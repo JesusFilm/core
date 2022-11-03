@@ -9,11 +9,11 @@ input SignUpSubmissionEventCreateInput {
   """
   stepId: ID
   """
-  name from the submission
+  name from the signUpBlock form
   """
   name: String!
   """
-  email from the submission
+  email from the signUpBlock form
   """
   email: String!
 }

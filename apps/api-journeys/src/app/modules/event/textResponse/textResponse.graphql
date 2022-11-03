@@ -13,7 +13,7 @@ input TextResponseSubmissionEventCreateInput {
   """
   label: String
   """
-  response from the submission
+  response from the TextResponseBlock form
   """
   value: String!
 }

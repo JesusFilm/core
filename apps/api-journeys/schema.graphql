@@ -761,10 +761,10 @@ input JourneyViewEventCreateInput {
   id: ID
   journeyId: ID!
 
-  """title of the journey"""
+  """title of the journey being viewed"""
   label: String
 
-  """journey languageId"""
+  """languageId of the journey being viewed"""
   value: ID
 }
 
@@ -803,7 +803,7 @@ input RadioQuestionSubmissionEventCreateInput {
   """stepName of the parent stepBlock"""
   label: String
 
-  """selected radioOption label"""
+  """label of the selected radioOption block"""
   value: String
 }
 
@@ -833,10 +833,10 @@ input SignUpSubmissionEventCreateInput {
   """id of the parent stepBlock"""
   stepId: ID
 
-  """name from the submission"""
+  """name from the signUpBlock form"""
   name: String!
 
-  """email from the submission"""
+  """email from the signUpBlock form"""
   email: String!
 }
 
@@ -899,7 +899,7 @@ input TextResponseSubmissionEventCreateInput {
   """stepName of the parent stepBlock"""
   label: String
 
-  """response from the submission"""
+  """response from the TextResponseBlock form"""
   value: String!
 }
 
@@ -929,7 +929,7 @@ input VideoStartEventCreateInput {
   """id of the parent stepBlock"""
   stepId: ID
 
-  """duration of the video played when the videoEvent is triggered"""
+  """duration of the video played when the VideoStartEvent is triggered"""
   position: Float
 
   """title of the video"""
@@ -971,7 +971,7 @@ input VideoPlayEventCreateInput {
   """id of the parent stepBlock"""
   stepId: ID
 
-  """duration of the video played when the videoEvent is triggered"""
+  """duration of the video played when the VideoPlayEvent is triggered"""
   position: Float
 
   """title of the video"""
@@ -1013,7 +1013,7 @@ input VideoPauseEventCreateInput {
   """id of the parent stepBlock"""
   stepId: ID
 
-  """duration of the video played when the videoEvent is triggered"""
+  """duration of the video played when the VideoPauseEvent is triggered"""
   position: Float
 
   """title of the video"""
@@ -1054,6 +1054,8 @@ input VideoCompleteEventCreateInput {
 
   """id of the parent stepBlock"""
   stepId: ID
+
+  """duration of the video played when the VideoCompleteEvent is triggered"""
   position: Float
 
   """title of the video"""
@@ -1094,6 +1096,8 @@ input VideoExpandEventCreateInput {
 
   """id of the parent stepBlock"""
   stepId: ID
+
+  """duration of the video played when the VideoExpandEvent is triggered"""
   position: Float
 
   """title of the video"""
@@ -1135,7 +1139,7 @@ input VideoCollapseEventCreateInput {
   """id of the parent stepBlock"""
   stepId: ID
 
-  """duration of the video played when the videoEvent is triggered"""
+  """duration of the video played when the VideoCollapseEvent is triggered"""
   position: Float
 
   """title of the video"""
@@ -1177,7 +1181,7 @@ input VideoProgressEventCreateInput {
   """id of the parent stepBlock"""
   stepId: ID
 
-  """duration of the video played when the videoEvent is triggered"""
+  """duration of the video played when the VideoProgressEvent is triggered"""
   position: Float
 
   """

@@ -14,7 +14,7 @@ input RadioQuestionSubmissionEventCreateInput {
   """
   label: String
   """
-  selected radioOption label
+  label of the selected radioOption block
   """
   value: String
 }

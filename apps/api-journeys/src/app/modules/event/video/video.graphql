@@ -9,7 +9,7 @@ input VideoStartEventCreateInput {
   """
   stepId: ID
   """
-  duration of the video played when the videoEvent is triggered
+  duration of the video played when the VideoStartEvent is triggered
   """
   position: Float
   """
@@ -61,7 +61,7 @@ input VideoPlayEventCreateInput {
   """
   stepId: ID
   """
-  duration of the video played when the videoEvent is triggered
+  duration of the video played when the VideoPlayEvent is triggered
   """
   position: Float
   """
@@ -113,7 +113,7 @@ input VideoPauseEventCreateInput {
   """
   stepId: ID
   """
-  duration of the video played when the videoEvent is triggered
+  duration of the video played when the VideoPauseEvent is triggered
   """
   position: Float
   """
@@ -164,6 +164,9 @@ input VideoCompleteEventCreateInput {
   id of the parent stepBlock
   """
   stepId: ID
+  """
+  duration of the video played when the VideoCompleteEvent is triggered
+  """
   position: Float
   """
   title of the video
@@ -213,6 +216,9 @@ input VideoExpandEventCreateInput {
   id of the parent stepBlock
   """
   stepId: ID
+  """
+  duration of the video played when the VideoExpandEvent is triggered
+  """
   position: Float
   """
   title of the video
@@ -263,7 +269,7 @@ input VideoCollapseEventCreateInput {
   """
   stepId: ID
   """
-  duration of the video played when the videoEvent is triggered
+  duration of the video played when the VideoCollapseEvent is triggered
   """
   position: Float
   """
@@ -315,7 +321,7 @@ input VideoProgressEventCreateInput {
   """
   stepId: ID
   """
-  duration of the video played when the videoEvent is triggered
+  duration of the video played when the VideoProgressEvent is triggered
   """
   position: Float
   """
