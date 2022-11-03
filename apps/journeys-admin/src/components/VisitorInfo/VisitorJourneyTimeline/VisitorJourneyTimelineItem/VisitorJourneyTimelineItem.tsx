@@ -33,6 +33,7 @@ export function VisitorJourneyTimelineItem({
       break
     case 'TextResponseSubmissionEvent':
       icon = <HelpIcon />
+      activity = t('Response submitted')
       break
     case 'VideoCompleteEvent':
       icon = <MovieIcon />

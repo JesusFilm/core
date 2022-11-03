@@ -14,7 +14,7 @@ import { useVisitorInfo } from '../../VisitorInfoProvider'
 
 interface Props {
   journey: JourneyWithEvents
-  selected: boolean
+  selected?: boolean
 }
 
 export function VisitorJourneyListItem({
@@ -31,11 +31,12 @@ export function VisitorJourneyListItem({
       journey: journey
     })
   }
+
   return (
     <Card
       variant="outlined"
       sx={{
-        borderColor: { sm: selected ? 'primary.main' : undefined }
+        borderColor: { sm: selected === true ? 'primary.main' : undefined }
       }}
     >
       <CardContent sx={{ pb: 0 }}>
@@ -44,7 +45,9 @@ export function VisitorJourneyListItem({
             <Typography
               variant="h5"
               component="div"
-              sx={{ color: { sm: selected ? 'primary.main' : undefined } }}
+              sx={{
+                color: { sm: selected === true ? 'primary.main' : undefined }
+              }}
             >
               {title}
             </Typography>

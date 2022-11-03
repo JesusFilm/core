@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
-import { getVisitorMock } from './VisitorDetailFormData'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { getVisitorMock, visitorUpdateMock } from './VisitorDetailFormData'
 import { VisitorDetailForm } from '.'
 
 describe('VisitorDetailForm', () => {
@@ -20,5 +20,26 @@ describe('VisitorDetailForm', () => {
     expect(getByRole('textbox', { name: 'Notes' })).toHaveValue(
       'Has a ring to give you.'
     )
+  })
+
+  it('submits data when form updated', async () => {
+    const visitorUpdateResult = jest.fn(() => visitorUpdateMock.result)
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          getVisitorMock,
+          { ...visitorUpdateMock, result: visitorUpdateResult }
+        ]}
+      >
+        <VisitorDetailForm id="visitorId" />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Status 🎉' })).toBeInTheDocument()
+    )
+    fireEvent.mouseDown(getByRole('button', { name: 'Status 🎉' }))
+    fireEvent.click(screen.getByRole('option', { name: '⚪️' }))
+    jest.runAllTimers()
+    await waitFor(() => expect(visitorUpdateResult).toHaveBeenCalled())
   })
 })
