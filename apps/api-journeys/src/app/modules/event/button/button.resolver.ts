@@ -1,14 +1,15 @@
 // Block resolver tests are in individual block type spec files
 
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   ButtonClickEvent,
   ButtonClickEventCreateInput,
   ChatOpenedEventCreateInput,
-  ChatOpenedEvent
+  ChatOpenedEvent,
+  MessagePlatform
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
@@ -61,5 +62,10 @@ export class ChatOpenedEventResolver {
       createdAt: new Date().toISOString(),
       journeyId
     })
+  }
+
+  @ResolveField('messagePlatform')
+  messagePlatform(@Parent() event): MessagePlatform | undefined {
+    return MessagePlatform[event.value]
   }
 }

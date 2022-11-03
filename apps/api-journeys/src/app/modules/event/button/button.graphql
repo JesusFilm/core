@@ -41,7 +41,7 @@ type ButtonClickEvent implements Event {
 enum MessagePlatform {
   facebook
   telegram
-  whatAapp
+  whatsApp
   instagram
   viber
   vk
@@ -85,6 +85,10 @@ type ChatOpenedEvent implements Event {
   messagePlatform of the link used for chat
   """
   value: String
+  """
+  messagePlatform of the link used for chat (based on the messagePlatform in the value field)
+  """
+  messagePlatform: MessagePlatform
 }
 
 extend type Mutation {

@@ -126,7 +126,7 @@ export enum VideoBlockSource {
 export enum MessagePlatform {
     facebook = "facebook",
     telegram = "telegram",
-    whatAapp = "whatAapp",
+    whatsApp = "whatsApp",
     instagram = "instagram",
     viber = "viber",
     vk = "vk",
@@ -811,6 +811,7 @@ export class ChatOpenedEvent implements Event {
     createdAt: DateTime;
     label?: Nullable<string>;
     value?: Nullable<string>;
+    messagePlatform?: Nullable<MessagePlatform>;
 }
 
 export class JourneyViewEvent implements Event {

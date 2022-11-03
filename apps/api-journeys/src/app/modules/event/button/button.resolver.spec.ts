@@ -88,5 +88,11 @@ describe('Button', () => {
         journeyId: 'journey.id'
       })
     })
+
+    it('returns object for federation', () => {
+      expect(
+        resolver.messagePlatform({ value: MessagePlatform.facebook })
+      ).toEqual(MessagePlatform.facebook)
+    })
   })
 })

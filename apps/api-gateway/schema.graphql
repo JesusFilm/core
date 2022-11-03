@@ -182,6 +182,11 @@ type ChatOpenedEvent implements Event {
   """null for ChatOpenedEvent"""
   label: String
 
+  """
+  messagePlatform of the link used for chat (based on the messagePlatform in the value field)
+  """
+  messagePlatform: MessagePlatform
+
   """messagePlatform of the link used for chat"""
   value: String
 }
@@ -568,7 +573,7 @@ enum MessagePlatform {
   tiktok
   viber
   vk
-  whatAapp
+  whatsApp
 }
 
 type Mutation {
