@@ -79,13 +79,13 @@ input ButtonClickEventCreateInput {
   """
   id: ID
 
-  """label is the stepName of the parent stepBlock"""
+  """stepName of the parent stepBlock"""
   label: String
 
-  """stepId is the id of the parent stepBlock"""
+  """id of the parent stepBlock"""
   stepId: ID
 
-  """value is the label of the button"""
+  """label of the button"""
   value: String
 }
 
@@ -460,10 +460,10 @@ input JourneyViewEventCreateInput {
   id: ID
   journeyId: ID!
 
-  """label is the title of the journey"""
+  """title of the journey"""
   label: String
 
-  """value is the journey languageId"""
+  """journey languageId"""
   value: ID
 }
 
@@ -737,14 +737,14 @@ input RadioQuestionSubmissionEventCreateInput {
   """
   id: ID
 
-  """label is the stepName of the parent stepBlock"""
+  """stepName of the parent stepBlock"""
   label: String
   radioOptionBlockId: ID!
 
-  """stepId is the id of the parent stepBlock"""
+  """id of the parent stepBlock"""
   stepId: ID
 
-  """value is the label of the selected radioOption label"""
+  """selected radioOption label"""
   value: String
 }
 
@@ -786,7 +786,7 @@ type SignUpSubmissionEvent implements Event {
 input SignUpSubmissionEventCreateInput {
   blockId: ID!
 
-  """email is the email from the submission"""
+  """email from the submission"""
   email: String!
 
   """
@@ -794,10 +794,10 @@ input SignUpSubmissionEventCreateInput {
   """
   id: ID
 
-  """name is the name from the submission"""
+  """name from the submission"""
   name: String!
 
-  """stepId is the id of the parent stepBlock"""
+  """id of the parent stepBlock"""
   stepId: ID
 }
 
@@ -846,7 +846,7 @@ input StepViewEventCreateInput {
   """
   id: ID
 
-  """value is the stepName of the stepBlock"""
+  """stepName of the stepBlock"""
   value: String
 }
 
@@ -892,13 +892,13 @@ input TextResponseSubmissionEventCreateInput {
   """
   id: ID
 
-  """label is the stepName of the parent stepBlock"""
+  """stepName of the parent stepBlock"""
   label: String
 
-  """stepId is the id of the parent stepBlock"""
+  """id of the parent stepBlock"""
   stepId: ID
 
-  """value is the response from the submission"""
+  """response from the submission"""
   value: String!
 }
 
@@ -1232,18 +1232,16 @@ input VideoCollapseEventCreateInput {
   """
   id: ID
 
-  """label is the title of the video"""
+  """title of the video"""
   label: String
 
-  """
-  position is the duration of the video played when the videoEvent is triggered
-  """
+  """duration of the video played when the videoEvent is triggered"""
   position: Float
 
-  """stepId is the id of the parent stepBlock"""
+  """id of the parent stepBlock"""
   stepId: ID
 
-  """value is the source of the video"""
+  """source of the video"""
   value: VideoBlockSource
 }
 
@@ -1259,14 +1257,14 @@ input VideoCompleteEventCreateInput {
   """
   id: ID
 
-  """label is the title of the video"""
+  """title of the video"""
   label: String
   position: Float
 
-  """stepId is the id of the parent stepBlock"""
+  """id of the parent stepBlock"""
   stepId: ID
 
-  """value is the source of the video"""
+  """source of the video"""
   value: VideoBlockSource
 }
 
@@ -1282,14 +1280,14 @@ input VideoExpandEventCreateInput {
   """
   id: ID
 
-  """label is the title of the video"""
+  """title of the video"""
   label: String
   position: Float
 
-  """stepId is the id of the parent stepBlock"""
+  """id of the parent stepBlock"""
   stepId: ID
 
-  """value is the source of the video"""
+  """source of the video"""
   value: VideoBlockSource
 }
 
@@ -1305,18 +1303,16 @@ input VideoPauseEventCreateInput {
   """
   id: ID
 
-  """label is the title of the video"""
+  """title of the video"""
   label: String
 
-  """
-  position is the duration of the video played when the videoEvent is triggered
-  """
+  """duration of the video played when the videoEvent is triggered"""
   position: Float
 
-  """stepId is the id of the parent stepBlock"""
+  """id of the parent stepBlock"""
   stepId: ID
 
-  """value is the source of the video"""
+  """source of the video"""
   value: VideoBlockSource
 }
 
@@ -1332,18 +1328,16 @@ input VideoPlayEventCreateInput {
   """
   id: ID
 
-  """label is the title of the video"""
+  """title of the video"""
   label: String
 
-  """
-  position is the duration of the video played when the videoEvent is triggered
-  """
+  """duration of the video played when the videoEvent is triggered"""
   position: Float
 
-  """stepId is the id of the parent stepBlock"""
+  """id of the parent stepBlock"""
   stepId: ID
 
-  """value is the source of the video"""
+  """source of the video"""
   value: VideoBlockSource
 }
 
@@ -1359,12 +1353,10 @@ input VideoProgressEventCreateInput {
   """
   id: ID
 
-  """label is the title of the video"""
+  """title of the video"""
   label: String
 
-  """
-  position is the duration of the video played when the videoEvent is triggered
-  """
+  """duration of the video played when the videoEvent is triggered"""
   position: Float
 
   """
@@ -1372,10 +1364,10 @@ input VideoProgressEventCreateInput {
   """
   progress: Int!
 
-  """stepId is the id of the parent stepBlock"""
+  """id of the parent stepBlock"""
   stepId: ID
 
-  """value is the source of the video"""
+  """source of the video"""
   value: VideoBlockSource
 }
 
@@ -1398,18 +1390,16 @@ input VideoStartEventCreateInput {
   """
   id: ID
 
-  """label is the title of the video"""
+  """title of the video"""
   label: String
 
-  """
-  position is the duration of the video played when the videoEvent is triggered
-  """
+  """duration of the video played when the videoEvent is triggered"""
   position: Float
 
-  """stepId is the id of the parent stepBlock"""
+  """id of the parent stepBlock"""
   stepId: ID
 
-  """value is the source of the video"""
+  """source of the video"""
   value: VideoBlockSource
 }
 

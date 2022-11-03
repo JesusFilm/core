@@ -6,15 +6,15 @@ input RadioQuestionSubmissionEventCreateInput {
   blockId: ID!
   radioOptionBlockId: ID!
   """
-  stepId is the id of the parent stepBlock
+  id of the parent stepBlock
   """
   stepId: ID
   """
-  label is the stepName of the parent stepBlock
+  stepName of the parent stepBlock
   """
   label: String
   """
-  value is the label of the selected radioOption label
+  selected radioOption label
   """
   value: String
 }

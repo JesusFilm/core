@@ -5,11 +5,11 @@ input JourneyViewEventCreateInput {
   id: ID
   journeyId: ID!
   """
-  label is the title of the journey
+  title of the journey
   """
   label: String
   """
-  value is the journey languageId
+  journey languageId
   """
   value: ID
 }

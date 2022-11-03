@@ -5,15 +5,15 @@ input SignUpSubmissionEventCreateInput {
   id: ID
   blockId: ID!
   """
-  stepId is the id of the parent stepBlock
+  id of the parent stepBlock
   """
   stepId: ID
   """
-  name is the name from the submission
+  name from the submission
   """
   name: String!
   """
-  email is the email from the submission
+  email from the submission
   """
   email: String!
 }

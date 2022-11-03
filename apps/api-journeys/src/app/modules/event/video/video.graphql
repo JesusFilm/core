@@ -5,19 +5,19 @@ input VideoStartEventCreateInput {
   id: ID
   blockId: ID!
   """
-  stepId is the id of the parent stepBlock
+  id of the parent stepBlock
   """
   stepId: ID
   """
-  position is the duration of the video played when the videoEvent is triggered
+  duration of the video played when the videoEvent is triggered
   """
   position: Float
   """
-  label is the title of the video
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: VideoBlockSource
 }
@@ -33,19 +33,19 @@ input VideoPlayEventCreateInput {
   id: ID
   blockId: ID!
   """
-  stepId is the id of the parent stepBlock
+  id of the parent stepBlock
   """
   stepId: ID
   """
-  position is the duration of the video played when the videoEvent is triggered
+  duration of the video played when the videoEvent is triggered
   """
   position: Float
   """
-  label is the title of the video
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: VideoBlockSource
 }
@@ -61,19 +61,19 @@ input VideoPauseEventCreateInput {
   id: ID
   blockId: ID!
   """
-  stepId is the id of the parent stepBlock
+  id of the parent stepBlock
   """
   stepId: ID
   """
-  position is the duration of the video played when the videoEvent is triggered
+  duration of the video played when the videoEvent is triggered
   """
   position: Float
   """
-  label is the title of the video
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: VideoBlockSource
 }
@@ -89,16 +89,16 @@ input VideoCompleteEventCreateInput {
   id: ID
   blockId: ID!
   """
-  stepId is the id of the parent stepBlock
+  id of the parent stepBlock
   """
   stepId: ID
   position: Float
   """
-  label is the title of the video
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: VideoBlockSource
 }
@@ -114,16 +114,16 @@ input VideoExpandEventCreateInput {
   id: ID
   blockId: ID!
   """
-  stepId is the id of the parent stepBlock
+  id of the parent stepBlock
   """
   stepId: ID
   position: Float
   """
-  label is the title of the video
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: VideoBlockSource
 }
@@ -139,19 +139,19 @@ input VideoCollapseEventCreateInput {
   id: ID
   blockId: ID!
   """
-  stepId is the id of the parent stepBlock
+  id of the parent stepBlock
   """
   stepId: ID
   """
-  position is the duration of the video played when the videoEvent is triggered
+  duration of the video played when the videoEvent is triggered
   """
   position: Float
   """
-  label is the title of the video
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: VideoBlockSource
 }
@@ -167,11 +167,11 @@ input VideoProgressEventCreateInput {
   id: ID
   blockId: ID!
   """
-  stepId is the id of the parent stepBlock
+  id of the parent stepBlock
   """
   stepId: ID
   """
-  position is the duration of the video played when the videoEvent is triggered
+  duration of the video played when the videoEvent is triggered
   """
   position: Float
   """
@@ -179,11 +179,11 @@ input VideoProgressEventCreateInput {
   """
   progress: Int!
   """
-  label is the title of the video
+  title of the video
   """
   label: String
   """
-  value is the source of the video
+  source of the video
   """
   value: VideoBlockSource
 }

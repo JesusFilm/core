@@ -5,15 +5,15 @@ input TextResponseSubmissionEventCreateInput {
   id: ID
   blockId: ID!
   """
-  stepId is the id of the parent stepBlock
+  id of the parent stepBlock
   """
   stepId: ID
   """
-  label is the stepName of the parent stepBlock
+  stepName of the parent stepBlock
   """
   label: String
   """
-  value is the response from the submission
+  response from the submission
   """
   value: String!
 }
