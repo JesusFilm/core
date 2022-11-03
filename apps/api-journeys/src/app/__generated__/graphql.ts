@@ -123,6 +123,19 @@ export enum VideoBlockSource {
     youTube = "youTube"
 }
 
+export enum MessagePlatform {
+    facebook = "facebook",
+    telegram = "telegram",
+    whatsApp = "whatsApp",
+    instagram = "instagram",
+    viber = "viber",
+    vk = "vk",
+    snapchat = "snapchat",
+    skype = "skype",
+    line = "line",
+    tikTok = "tikTok"
+}
+
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"
@@ -374,22 +387,38 @@ export class VideoBlockUpdateInput {
 export class ButtonClickEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+}
+
+export class ChatOpenedEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    stepId?: Nullable<string>;
+    value?: Nullable<MessagePlatform>;
 }
 
 export class JourneyViewEventCreateInput {
     id?: Nullable<string>;
     journeyId: string;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class RadioQuestionSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
     radioOptionBlockId: string;
+    stepId?: Nullable<string>;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class SignUpSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     name: string;
     email: string;
 }
@@ -397,55 +426,87 @@ export class SignUpSubmissionEventCreateInput {
 export class StepViewEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    value?: Nullable<string>;
+}
+
+export class StepNextEventCreateInput {
+    id?: Nullable<string>;
+    blockId: string;
+    nextStepId: string;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class TextResponseSubmissionEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
+    label?: Nullable<string>;
     value: string;
 }
 
 export class VideoStartEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
+    label?: Nullable<string>;
+    value?: Nullable<VideoBlockSource>;
 }
 
 export class VideoPlayEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
+    label?: Nullable<string>;
+    value?: Nullable<VideoBlockSource>;
 }
 
 export class VideoPauseEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
+    label?: Nullable<string>;
+    value?: Nullable<VideoBlockSource>;
 }
 
 export class VideoCompleteEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
+    label?: Nullable<string>;
+    value?: Nullable<VideoBlockSource>;
 }
 
 export class VideoExpandEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
+    label?: Nullable<string>;
+    value?: Nullable<VideoBlockSource>;
 }
 
 export class VideoCollapseEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
+    label?: Nullable<string>;
+    value?: Nullable<VideoBlockSource>;
 }
 
 export class VideoProgressEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
+    stepId?: Nullable<string>;
     position?: Nullable<number>;
     progress: number;
+    label?: Nullable<string>;
+    value?: Nullable<VideoBlockSource>;
 }
 
 export class JourneysFilter {
@@ -743,6 +804,16 @@ export class ButtonClickEvent implements Event {
     value?: Nullable<string>;
 }
 
+export class ChatOpenedEvent implements Event {
+    __typename?: 'ChatOpenedEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    messagePlatform?: Nullable<MessagePlatform>;
+}
+
 export class JourneyViewEvent implements Event {
     __typename?: 'JourneyViewEvent';
     id: string;
@@ -774,6 +845,15 @@ export class SignUpSubmissionEvent implements Event {
 
 export class StepViewEvent implements Event {
     __typename?: 'StepViewEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+}
+
+export class StepNextEvent implements Event {
+    __typename?: 'StepNextEvent';
     id: string;
     journeyId: string;
     createdAt: DateTime;
@@ -1018,6 +1098,8 @@ export abstract class IMutation {
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
+    abstract chatOpenedEventCreate(input: ChatOpenedEventCreateInput): ChatOpenedEvent | Promise<ChatOpenedEvent>;
+
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): JourneyViewEvent | Promise<JourneyViewEvent>;
 
     abstract radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput): RadioQuestionSubmissionEvent | Promise<RadioQuestionSubmissionEvent>;
@@ -1025,6 +1107,8 @@ export abstract class IMutation {
     abstract signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput): SignUpSubmissionEvent | Promise<SignUpSubmissionEvent>;
 
     abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
+
+    abstract stepNextEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
 
     abstract textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput): TextResponseSubmissionEvent | Promise<TextResponseSubmissionEvent>;
 

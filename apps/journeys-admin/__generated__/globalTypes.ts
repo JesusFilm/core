@@ -198,6 +198,9 @@ export interface ButtonBlockUpdateInput {
 export interface ButtonClickEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
+  stepId?: string | null;
+  value?: string | null;
 }
 
 export interface CardBlockUpdateInput {
@@ -296,7 +299,10 @@ export interface RadioQuestionBlockCreateInput {
 export interface RadioQuestionSubmissionEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   radioOptionBlockId: string;
+  stepId?: string | null;
+  value?: string | null;
 }
 
 export interface SignUpBlockCreateInput {
@@ -317,6 +323,7 @@ export interface SignUpSubmissionEventCreateInput {
   email: string;
   id?: string | null;
   name: string;
+  stepId?: string | null;
 }
 
 export interface StepBlockUpdateInput {
@@ -327,6 +334,7 @@ export interface StepBlockUpdateInput {
 export interface StepViewEventCreateInput {
   blockId: string;
   id?: string | null;
+  value?: string | null;
 }
 
 export interface TextResponseBlockCreateInput {
@@ -349,6 +357,8 @@ export interface TextResponseBlockUpdateInput {
 export interface TextResponseSubmissionEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
+  stepId?: string | null;
   value: string;
 }
 
@@ -402,44 +412,65 @@ export interface VideoBlockUpdateInput {
 export interface VideoCollapseEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoCompleteEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoExpandEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoPauseEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoPlayEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoProgressEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
   progress: number;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoStartEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideosFilter {
