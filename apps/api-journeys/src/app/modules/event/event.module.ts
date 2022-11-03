@@ -22,7 +22,10 @@ import {
   VideoExpandEventResolver,
   VideoProgressEventResolver
 } from './video/video.resolver'
-import { StepViewEventResolver } from './step/step.resolver'
+import {
+  StepNextEventResolver,
+  StepViewEventResolver
+} from './step/step.resolver'
 
 @Module({
   imports: [DatabaseModule],
@@ -38,6 +41,7 @@ import { StepViewEventResolver } from './step/step.resolver'
     RadioQuestionSubmissionEventResolver,
     SignUpSubmissionEventResolver,
     StepViewEventResolver,
+    StepNextEventResolver,
     TextResponseSubmissionEventResolver,
     VideoStartEventResolver,
     VideoPlayEventResolver,
