@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VisitorStatus } from "./globalTypes";
+import { MessagePlatform, VisitorStatus } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetVisitor
@@ -27,29 +27,26 @@ export interface GetVisitor_visitor {
    */
   lastChatStartedAt: any | null;
   /**
-   * Messenger ID of the visitor as set by any journeys-admin user via the
-   * VisitorUpdate mutation. This could be a phone number, user id or other
-   * unique identifier provided by the messenger network.
+   * ID of the visitor as set by VisitorUpdate mutation. This could be a phone
+   * number, user id or other unique identifier provided by the message platform.
    */
-  messengerId: string | null;
+  messagePlatformId: string | null;
   /**
-   * Messenger network of the visitor as set by any journeys-admin user via the
-   * VisitorUpdate mutation.
+   * Message platform the visitor wishes to be connected to us on as populated by
+   * VisitorUpdate mutation or ChatOpenedEventCreate mutation.
    */
-  messengerNetwork: string | null;
+  messagePlatform: MessagePlatform | null;
   /**
-   * The name of the visitor as populated by mutation or otherwise via
+   * The name of the visitor as populated by VisitorUpdate mutation or
    * SignUpEventSubmissionEventCreate mutation.
    */
   name: string | null;
   /**
-   * Private notes of the visitor as set by any journeys-admin user via the
-   * VisitorUpdate mutation.
+   * Private notes of the visitor as set by VisitorUpdate mutation.
    */
   notes: string | null;
   /**
-   * Status of the visitor as set by any journeys-admin user via the VisitorUpdate
-   * mutation.
+   * Status of the visitor as populated by VisitorUpdate mutation.
    */
   status: VisitorStatus | null;
 }

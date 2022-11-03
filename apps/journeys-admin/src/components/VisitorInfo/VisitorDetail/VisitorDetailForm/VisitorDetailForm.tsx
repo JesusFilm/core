@@ -6,18 +6,19 @@ import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 import Stack from '@mui/material/Stack'
 import Container from '@mui/material/Container'
-import ListItemIcon from '@mui/material/ListItemIcon'
 import Typography from '@mui/material/Typography'
 import pick from 'lodash/pick'
 import { ReactElement } from 'react'
 import { Formik, Form } from 'formik'
-import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { useTranslation } from 'react-i18next'
 import { format, parseISO } from 'date-fns'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 import { GetVisitor } from '../../../../../__generated__/GetVisitor'
-import { VisitorStatus } from '../../../../../__generated__/globalTypes'
+import {
+  MessagePlatform,
+  VisitorStatus
+} from '../../../../../__generated__/globalTypes'
 import { VisitorUpdate } from '../../../../../__generated__/VisitorUpdate'
 
 export const GET_VISITOR = gql`
@@ -26,8 +27,8 @@ export const GET_VISITOR = gql`
       countryCode
       id
       lastChatStartedAt
-      messengerId
-      messengerNetwork
+      messagePlatformId
+      messagePlatform
       name
       notes
       status
@@ -39,8 +40,8 @@ export const VISITOR_UPDATE = gql`
   mutation VisitorUpdate($id: ID!, $input: VisitorUpdateInput!) {
     visitorUpdate(id: $id, input: $input) {
       id
-      messengerId
-      messengerNetwork
+      messagePlatformId
+      messagePlatform
       name
       notes
       status
@@ -73,137 +74,195 @@ export function VisitorDetailForm({ id }: Props): ReactElement {
     })
   }
 
+  function messagePlatformToLabel(messagePlatform: MessagePlatform): string {
+    switch (messagePlatform) {
+      case MessagePlatform.facebook:
+        return t('Facebook')
+      case MessagePlatform.instagram:
+        return t('Instagram')
+      case MessagePlatform.line:
+        return t('LINE')
+      case MessagePlatform.skype:
+        return t('Skype')
+      case MessagePlatform.snapchat:
+        return t('Snapchat')
+      case MessagePlatform.tikTok:
+        return t('TikTok')
+      case MessagePlatform.viber:
+        return t('Viber')
+      case MessagePlatform.vk:
+        return t('VK')
+      case MessagePlatform.whatsApp:
+        return t('WhatsApp')
+    }
+  }
+
   return (
     <Container maxWidth="xs">
-      <Formik
-        initialValues={pick(data?.visitor, [
-          'messengerId',
-          'messengerNetwork',
-          'name',
-          'notes',
-          'status'
-        ])}
-        onSubmit={handleSubmit}
-        enableReinitialize
-      >
-        {({ values, errors, touched, handleChange, handleBlur }) => (
-          <Form>
-            <Stack spacing={4}>
-              <Stack spacing={4} direction="row" alignItems="center">
-                <FormControl sx={{ width: 80 }}>
-                  <InputLabel id="status-label">{t('Status')}</InputLabel>
-                  <Select
-                    labelId="status-label"
-                    id="status"
-                    name="status"
-                    value={values.status ?? ''}
-                    label={t('Status')}
-                    onChange={handleChange}
+      {data?.visitor != null && (
+        <Formik
+          initialValues={pick(data.visitor, [
+            'messagePlatformId',
+            'messagePlatform',
+            'name',
+            'notes',
+            'status'
+          ])}
+          onSubmit={handleSubmit}
+          enableReinitialize
+        >
+          {({ values, errors, touched, handleChange, handleBlur }) => (
+            <Form>
+              <Stack spacing={4}>
+                <Stack spacing={4} direction="row" alignItems="center">
+                  <FormControl sx={{ width: 80 }}>
+                    <InputLabel id="status-label">{t('Status')}</InputLabel>
+                    <Select
+                      labelId="status-label"
+                      id="status"
+                      name="status"
+                      value={values.status ?? ''}
+                      label={t('Status')}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    >
+                      <MenuItem value="">⚪️</MenuItem>
+                      <MenuItem value={VisitorStatus.star}>⭐</MenuItem>
+                      <MenuItem value={VisitorStatus.prohibited}>🚫</MenuItem>
+                      <MenuItem value={VisitorStatus.checkMarkSymbol}>
+                        ✅
+                      </MenuItem>
+                      <MenuItem value={VisitorStatus.thumbsUp}>👍</MenuItem>
+                      <MenuItem value={VisitorStatus.thumbsDown}>👎</MenuItem>
+                      <MenuItem value={VisitorStatus.partyPopper}>🎉</MenuItem>
+                      <MenuItem value={VisitorStatus.warning}>⚠</MenuItem>
+                      <MenuItem value={VisitorStatus.robotFace}>🤖</MenuItem>
+                      <MenuItem value={VisitorStatus.redExclamationMark}>
+                        ❗
+                      </MenuItem>
+                      <MenuItem value={VisitorStatus.redQuestionMark}>
+                        ❓
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                  {data?.visitor?.lastChatStartedAt != null && (
+                    <Box>
+                      <Typography variant="body2">{t('Last Chat')}</Typography>
+                      <Typography>
+                        {format(
+                          parseISO(data.visitor.lastChatStartedAt),
+                          'PPp'
+                        )}
+                      </Typography>
+                    </Box>
+                  )}
+                </Stack>
+                <Stack spacing={4} direction="row">
+                  <TextField
+                    id="messagePlatformId"
+                    name="messagePlatformId"
+                    variant="filled"
+                    label={
+                      values.messagePlatform != null &&
+                      values.messagePlatform !== ''
+                        ? messagePlatformToLabel(values.messagePlatform)
+                        : t('Contact')
+                    }
+                    fullWidth
+                    value={values.messagePlatformId ?? ''}
+                    error={
+                      touched.messagePlatformId === true &&
+                      Boolean(errors.messagePlatformId)
+                    }
+                    helperText={
+                      touched.messagePlatformId === true &&
+                      errors.messagePlatformId
+                    }
                     onBlur={handleBlur}
-                  >
-                    <MenuItem value="">⚪️</MenuItem>
-                    <MenuItem value={VisitorStatus.star}>⭐</MenuItem>
-                    <MenuItem value={VisitorStatus.prohibited}>🚫</MenuItem>
-                    <MenuItem value={VisitorStatus.checkMarkSymbol}>
-                      ✅
-                    </MenuItem>
-                    <MenuItem value={VisitorStatus.thumbsUp}>👍</MenuItem>
-                    <MenuItem value={VisitorStatus.thumbsDown}>👎</MenuItem>
-                    <MenuItem value={VisitorStatus.partyPopper}>🎉</MenuItem>
-                    <MenuItem value={VisitorStatus.warning}>⚠</MenuItem>
-                    <MenuItem value={VisitorStatus.robotFace}>🤖</MenuItem>
-                    <MenuItem value={VisitorStatus.redExclamationMark}>
-                      ❗
-                    </MenuItem>
-                    <MenuItem value={VisitorStatus.redQuestionMark}>
-                      ❓
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-                {data?.visitor?.lastChatStartedAt != null && (
-                  <Box>
-                    <Typography variant="body2">{t('Last Chat')}</Typography>
-                    <Typography>
-                      {format(parseISO(data.visitor.lastChatStartedAt), 'PPp')}
-                    </Typography>
-                  </Box>
-                )}
-              </Stack>
-              <Stack spacing={4} direction="row">
+                    onChange={handleChange}
+                  />
+                  <FormControl sx={{ width: 200 }}>
+                    <InputLabel id="message-platform-label">
+                      {t('Platform')}
+                    </InputLabel>
+                    <Select
+                      labelId="message-platform-label"
+                      id="messagePlatform"
+                      name="messagePlatform"
+                      value={values.messagePlatform ?? ''}
+                      label={t('Platform')}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      sx={{
+                        '.MuiSelect-select': {
+                          height: 23
+                        }
+                      }}
+                    >
+                      <MenuItem value="">{t('None')}</MenuItem>
+                      <MenuItem value={MessagePlatform.facebook}>
+                        {t('Facebook')}
+                      </MenuItem>
+                      <MenuItem value={MessagePlatform.instagram}>
+                        {t('Instagram')}
+                      </MenuItem>
+                      <MenuItem value={MessagePlatform.line}>
+                        {t('LINE')}
+                      </MenuItem>
+                      <MenuItem value={MessagePlatform.skype}>
+                        {t('Skype')}
+                      </MenuItem>
+                      <MenuItem value={MessagePlatform.snapchat}>
+                        {t('Snapchat')}
+                      </MenuItem>
+                      <MenuItem value={MessagePlatform.telegram}>
+                        {t('Telegram')}
+                      </MenuItem>
+                      <MenuItem value={MessagePlatform.tikTok}>
+                        {t('TikTok')}
+                      </MenuItem>
+                      <MenuItem value={MessagePlatform.viber}>
+                        {t('Viber')}
+                      </MenuItem>
+                      <MenuItem value={MessagePlatform.vk}>{t('VK')}</MenuItem>
+                      <MenuItem value={MessagePlatform.whatsApp}>
+                        {t('WhatsApp')}
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </Stack>
                 <TextField
-                  id="messengerId"
-                  name="messengerId"
+                  id="name"
+                  name="name"
                   variant="filled"
-                  label={values.messengerNetwork}
+                  label={t('Name')}
                   fullWidth
-                  value={values.messengerId ?? ''}
-                  error={
-                    touched.messengerId === true && Boolean(errors.messengerId)
-                  }
-                  helperText={
-                    touched.messengerId === true && errors.messengerId
-                  }
+                  value={values.name ?? ''}
+                  error={touched.name === true && Boolean(errors.name)}
+                  helperText={touched.name === true && errors.name}
                   onBlur={handleBlur}
                   onChange={handleChange}
                 />
-                <FormControl sx={{ width: 145 }}>
-                  <InputLabel id="messenger-network-label">
-                    {t('Network')}
-                  </InputLabel>
-                  <Select
-                    labelId="messenger-network-label"
-                    id="messengerNetwork"
-                    name="messengerNetwork"
-                    value={values.messengerNetwork ?? ''}
-                    label={t('Network')}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    sx={{
-                      '.MuiSelect-select': {
-                        height: 23
-                      }
-                    }}
-                  >
-                    <MenuItem value="">{t('None')}</MenuItem>
-                    <MenuItem value="WhatsApp">
-                      <ListItemIcon>
-                        <WhatsAppIcon />
-                      </ListItemIcon>
-                    </MenuItem>
-                  </Select>
-                </FormControl>
+                <TextField
+                  id="notes"
+                  name="notes"
+                  variant="filled"
+                  label={t('Notes')}
+                  fullWidth
+                  value={values.notes ?? ''}
+                  error={touched.notes === true && Boolean(errors.notes)}
+                  helperText={touched.notes === true && errors.notes}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  multiline
+                  minRows={2}
+                />
               </Stack>
-              <TextField
-                id="name"
-                name="name"
-                variant="filled"
-                label={t('Name')}
-                fullWidth
-                value={values.name ?? ''}
-                error={touched.name === true && Boolean(errors.name)}
-                helperText={touched.name === true && errors.name}
-                onBlur={handleBlur}
-                onChange={handleChange}
-              />
-              <TextField
-                id="notes"
-                name="notes"
-                variant="filled"
-                label={t('Notes')}
-                fullWidth
-                value={values.notes ?? ''}
-                error={touched.notes === true && Boolean(errors.notes)}
-                helperText={touched.notes === true && errors.notes}
-                onBlur={handleBlur}
-                onChange={handleChange}
-                multiline
-                minRows={2}
-              />
-            </Stack>
-            <SubmitListener />
-          </Form>
-        )}
-      </Formik>
+              <SubmitListener />
+            </Form>
+          )}
+        </Formik>
+      )}
     </Container>
   )
 }

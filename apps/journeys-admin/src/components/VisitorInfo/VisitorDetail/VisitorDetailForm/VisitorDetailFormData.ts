@@ -1,6 +1,7 @@
 import { VisitorUpdate } from '../../../../../__generated__/VisitorUpdate'
 import { GetVisitor } from '../../../../../__generated__/GetVisitor'
 import {
+  MessagePlatform,
   VisitorStatus,
   VisitorUpdateInput
 } from '../../../../../__generated__/globalTypes'
@@ -12,8 +13,8 @@ const getVisitor: GetVisitor = {
     id: 'visitorId',
     countryCode: 'NZ',
     lastChatStartedAt: '2022-11-02T03:20:26.368Z',
-    messengerId: '0800123456',
-    messengerNetwork: 'WhatsApp',
+    messagePlatformId: '0800123456',
+    messagePlatform: MessagePlatform.whatsApp,
     name: 'Bilbo Baggins',
     notes: 'Has a ring to give you.',
     status: VisitorStatus.partyPopper
@@ -36,8 +37,8 @@ const visitorUpdate: VisitorUpdate = {
   visitorUpdate: {
     __typename: 'Visitor',
     id: 'visitorId',
-    messengerId: '0800123456',
-    messengerNetwork: 'WhatsApp',
+    messagePlatformId: '0800123456',
+    messagePlatform: MessagePlatform.whatsApp,
     name: 'Bilbo Baggins',
     notes: 'Has a ring to give you.',
     status: null
@@ -45,8 +46,8 @@ const visitorUpdate: VisitorUpdate = {
 }
 
 const visitorUpdateInput: VisitorUpdateInput = {
-  messengerId: '0800123456',
-  messengerNetwork: 'WhatsApp',
+  messagePlatformId: '0800123456',
+  messagePlatform: MessagePlatform.whatsApp,
   name: 'Bilbo Baggins',
   notes: 'Has a ring to give you.',
   status: null

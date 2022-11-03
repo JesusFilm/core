@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
-  __typename: "ButtonClickEvent" | "RadioQuestionSubmissionEvent" | "StepViewEvent" | "TextResponseSubmissionEvent" | "VideoCollapseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoPauseEvent" | "VideoPlayEvent" | "VideoProgressEvent" | "VideoStartEvent";
+  __typename: "ButtonClickEvent" | "ChatOpenedEvent" | "RadioQuestionSubmissionEvent" | "StepNextEvent" | "StepViewEvent" | "TextResponseSubmissionEvent" | "VideoCollapseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoPauseEvent" | "VideoPlayEvent" | "VideoProgressEvent" | "VideoStartEvent";
   id: string;
   journeyId: string;
   label: string | null;
@@ -30,20 +30,50 @@ export interface GetVisitorEvents_visitor_events_JourneyViewEvent_language {
 export interface GetVisitorEvents_visitor_events_JourneyViewEvent {
   __typename: "JourneyViewEvent";
   id: string;
+  /**
+   * ID of the journey being viewed
+   */
   journeyId: string;
+  /**
+   * title of the journey being viewed
+   */
   label: string | null;
+  /**
+   * languageId of the journey being viewed
+   */
   value: string | null;
+  /**
+   * time event was created
+   */
   createdAt: any;
+  /**
+   * language of the journey being viewed (based on the ID in the value field)
+   */
   language: GetVisitorEvents_visitor_events_JourneyViewEvent_language | null;
 }
 
 export interface GetVisitorEvents_visitor_events_SignUpSubmissionEvent {
   __typename: "SignUpSubmissionEvent";
   id: string;
+  /**
+   * ID of the journey that the block belongs to
+   */
   journeyId: string;
+  /**
+   * null for signUpSubmissionEvent
+   */
   label: string | null;
+  /**
+   * name from the signUpBlock form
+   */
   value: string | null;
+  /**
+   * time event was created
+   */
   createdAt: any;
+  /**
+   * email from the signUpBlock form
+   */
   email: string | null;
 }
 

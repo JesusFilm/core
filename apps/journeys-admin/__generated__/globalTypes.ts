@@ -100,6 +100,19 @@ export enum JourneysReportType {
   singleSummary = "singleSummary",
 }
 
+export enum MessagePlatform {
+  facebook = "facebook",
+  instagram = "instagram",
+  line = "line",
+  skype = "skype",
+  snapchat = "snapchat",
+  telegram = "telegram",
+  tikTok = "tikTok",
+  viber = "viber",
+  vk = "vk",
+  whatsApp = "whatsApp",
+}
+
 export enum Role {
   publisher = "publisher",
 }
@@ -485,8 +498,8 @@ export interface VideosFilter {
  */
 export interface VisitorUpdateInput {
   email?: string | null;
-  messengerId?: string | null;
-  messengerNetwork?: string | null;
+  messagePlatform?: MessagePlatform | null;
+  messagePlatformId?: string | null;
   name?: string | null;
   notes?: string | null;
   status?: VisitorStatus | null;
