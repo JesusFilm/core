@@ -186,17 +186,6 @@ export function VisitorDetailForm({ id }: Props): ReactElement {
                 onChange={handleChange}
               />
               <TextField
-                id="countryCode"
-                name="countryCode"
-                variant="filled"
-                label={t('Location')}
-                fullWidth
-                value="ADD COUNTRY NAME TO API"
-                InputProps={{
-                  readOnly: true
-                }}
-              />
-              <TextField
                 id="notes"
                 name="notes"
                 variant="filled"
