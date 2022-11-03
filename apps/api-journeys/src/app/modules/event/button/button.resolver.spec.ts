@@ -5,8 +5,6 @@ import {
   ChatOpenedEventCreateInput,
   MessagePlatform
 } from '../../../__generated__/graphql'
-import { BlockService } from '../../block/block.service'
-import { VisitorService } from '../../visitor/visitor.service'
 import {
   ButtonClickEventResolver,
   ChatOpenedEventResolver
@@ -43,23 +41,23 @@ describe('Button', () => {
         providers: [ButtonClickEventResolver, eventService]
       }).compile()
       resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
+    })
 
-      it('returns ButtonClickEvent', async () => {
-        const input: ButtonClickEventCreateInput = {
-          id: '1',
-          blockId: 'block.id',
-          stepId: 'step.id',
-          label: 'Step name',
-          value: 'Button label'
-        }
+    it('returns ButtonClickEvent', async () => {
+      const input: ButtonClickEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        label: 'Step name',
+        value: 'Button label'
+      }
 
-        expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
-          ...input,
-          __typename: 'ButtonClickEvent',
-          visitorId: 'visitor.id',
-          createdAt: new Date().toISOString(),
-          journeyId: 'journey.id'
-        })
+      expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
+        ...input,
+        __typename: 'ButtonClickEvent',
+        visitorId: 'visitor.id',
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })
@@ -75,35 +73,20 @@ describe('Button', () => {
     })
 
     it('should return ChatOpenedEvent', async () => {
-      const chatOpenInput: ChatOpenedEventCreateInput = {
-        ...input,
+      const input: ChatOpenedEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
         value: MessagePlatform.facebook
       }
 
-      expect(
-        await resolver.chatOpenedEventCreate('userId', chatOpenInput)
-      ).toEqual({
-        ...chatOpenInput,
+      expect(await resolver.chatOpenedEventCreate('userId', input)).toEqual({
+        ...input,
         __typename: 'ChatOpenedEvent',
-        visitorId: visitorWithId.id
+        visitorId: 'visitor.id',
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
-    })
-
-    it('should throw error when step id does not belong to the same journey as block id', async () => {
-      const chatErrorInput: ChatOpenedEventCreateInput = {
-        ...input,
-        stepId: 'anotherStep.id',
-        value: MessagePlatform.facebook
-      }
-
-      await expect(
-        async () =>
-          await resolver.chatOpenedEventCreate('userId', chatErrorInput)
-      ).rejects.toThrow(
-        `Step ID ${
-          chatErrorInput.stepId as string
-        } does not exist on Journey with ID ${block.journeyId}`
-      )
     })
   })
 })

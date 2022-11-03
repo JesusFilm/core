@@ -4,7 +4,6 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { UserInputError } from 'apollo-server'
 import {
   StepNextEvent,
   StepNextEventCreateInput,
@@ -42,11 +41,7 @@ export class StepViewEventResolver {
 
 @Resolver('StepNextEvent')
 export class StepNextEventResolver {
-  constructor(
-    private readonly eventService: EventService,
-    private readonly blockService: BlockService,
-    private readonly visitorService: VisitorService
-  ) {}
+  constructor(private readonly eventService: EventService) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
@@ -54,28 +49,11 @@ export class StepNextEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: StepNextEventCreateInput
   ): Promise<StepNextEvent> {
-    const block: { journeyId: string; parentBlockId: string } =
-      await this.blockService.get(input.blockId)
-    const journeyId = block.journeyId
-
-    const visitor = await this.visitorService.getByUserIdAndJourneyId(
+    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
       userId,
-      journeyId
+      input.blockId,
+      input.blockId
     )
-
-    const validStep = await this.blockService.validateBlock(
-      input.nextStepId ?? null,
-      'journeyId',
-      journeyId
-    )
-
-    if (!validStep) {
-      throw new UserInputError(
-        `Next step ID ${
-          input.nextStepId as string
-        } does not exist on Journey with ID ${journeyId}`
-      )
-    }
 
     return await this.eventService.save({
       ...input,

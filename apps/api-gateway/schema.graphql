@@ -172,7 +172,18 @@ input CardBlockUpdateInput {
 }
 
 type ChatOpenedEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the buttonBlock belongs to"""
+  journeyId: ID!
+
+  """null for ChatOpenedEvent"""
+  label: String
+
+  """messagePlatform of the link used for chat"""
+  value: String
 }
 
 input ChatOpenedEventCreateInput {
@@ -182,9 +193,11 @@ input ChatOpenedEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """id of the parent stepBlock"""
   stepId: ID
 
-  """value is the messagePlatform of the link used for chat"""
+  """messagePlatform of the link used for chat"""
   value: MessagePlatform
 }
 
@@ -923,7 +936,18 @@ input StepBlockUpdateInput {
 }
 
 type StepNextEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the stepBlock belongs to"""
+  journeyId: ID!
+
+  """stepName of the stepBlock"""
+  label: String
+
+  """stepName of the next stepBlock"""
+  value: String
 }
 
 input StepNextEventCreateInput {
@@ -934,12 +958,13 @@ input StepNextEventCreateInput {
   """
   id: ID
 
-  """label is the stepName of the parent stepBlock"""
+  """stepName of the stepBlock"""
   label: String
-  nextStepId: ID!
-  stepId: ID
 
-  """value is the stepName of the next stepBlock"""
+  """id of the mext stepBlock"""
+  nextStepId: ID!
+
+  """stepName of the next stepBlock"""
   value: String
 }
 

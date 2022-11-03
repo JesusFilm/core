@@ -432,7 +432,6 @@ export class StepViewEventCreateInput {
 export class StepNextEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
-    stepId?: Nullable<string>;
     nextStepId: string;
     label?: Nullable<string>;
     value?: Nullable<string>;
@@ -808,6 +807,10 @@ export class ButtonClickEvent implements Event {
 export class ChatOpenedEvent implements Event {
     __typename?: 'ChatOpenedEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class JourneyViewEvent implements Event {
@@ -851,6 +854,10 @@ export class StepViewEvent implements Event {
 export class StepNextEvent implements Event {
     __typename?: 'StepNextEvent';
     id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class TextResponseSubmissionEvent implements Event {

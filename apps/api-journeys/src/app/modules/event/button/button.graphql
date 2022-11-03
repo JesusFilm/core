@@ -57,15 +57,34 @@ input ChatOpenedEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
   stepId: ID
   """
-  value is the messagePlatform of the link used for chat
+  messagePlatform of the link used for chat
   """
   value: MessagePlatform
 }
 
 type ChatOpenedEvent implements Event {
   id: ID!
+  """
+  ID of the journey that the buttonBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  null for ChatOpenedEvent
+  """
+  label: String
+  """
+  messagePlatform of the link used for chat
+  """
+  value: String
 }
 
 extend type Mutation {
