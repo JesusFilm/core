@@ -12,13 +12,25 @@ extend type Language @key(fields: "id") {
 
 type JourneyViewEvent implements Event {
   id: ID!
-  visitorId: ID!
+  """
+  ID of the journey being viewed
+  """
   journeyId: ID!
+  """
+  time event was created
+  """
   createdAt: DateTime!
-  blockId: ID
-  stepId: ID
+  """
+  title of the journey being viewed
+  """
   label: String
+  """
+  languageId of the journey being viewed
+  """
   value: String
+  """
+  language of the journey being viewed (based on the ID in the value field)
+  """
   language: Language
 }
 

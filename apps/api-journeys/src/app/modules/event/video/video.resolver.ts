@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
@@ -16,7 +16,8 @@ import {
   VideoCollapseEvent,
   VideoCollapseEventCreateInput,
   VideoProgressEvent,
-  VideoProgressEventCreateInput
+  VideoProgressEventCreateInput,
+  VideoBlockSource
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 
@@ -36,6 +37,11 @@ export class VideoStartEventResolver {
       createdAt: new Date().toISOString()
     })
   }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
+  }
 }
 @Resolver('VideoPlayEvent')
 @UseGuards(GqlAuthGuard)
@@ -53,7 +59,13 @@ export class VideoPlayEventResolver {
       createdAt: new Date().toISOString()
     })
   }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
+  }
 }
+
 @Resolver('VideoPauseEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoPauseEventResolver {
@@ -70,7 +82,13 @@ export class VideoPauseEventResolver {
       createdAt: new Date().toISOString()
     })
   }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
+  }
 }
+
 @Resolver('VideoCompleteEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoCompleteEventResolver {
@@ -87,7 +105,13 @@ export class VideoCompleteEventResolver {
       createdAt: new Date().toISOString()
     })
   }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
+  }
 }
+
 @Resolver('VideoExpandEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoExpandEventResolver {
@@ -104,7 +128,13 @@ export class VideoExpandEventResolver {
       createdAt: new Date().toISOString()
     })
   }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
+  }
 }
+
 @Resolver('VideoCollapseEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoCollapseEventResolver {
@@ -121,7 +151,13 @@ export class VideoCollapseEventResolver {
       createdAt: new Date().toISOString()
     })
   }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
+  }
 }
+
 @Resolver('VideoProgressEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoProgressEventResolver {
@@ -137,5 +173,10 @@ export class VideoProgressEventResolver {
       userId,
       createdAt: new Date().toISOString()
     })
+  }
+
+  @ResolveField('source')
+  source(@Parent() event): VideoBlockSource | undefined {
+    return VideoBlockSource[event.value]
   }
 }

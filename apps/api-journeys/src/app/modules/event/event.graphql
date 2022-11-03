@@ -1,10 +1,7 @@
 interface Event {
   id: ID!
-  visitorId: ID!
   journeyId: ID!
   createdAt: DateTime!
-  blockId: ID
-  stepId: ID
   label: String
   value: String
 }

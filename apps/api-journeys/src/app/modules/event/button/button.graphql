@@ -8,12 +8,21 @@ input ButtonClickEventCreateInput {
 
 type ButtonClickEvent implements Event {
   id: ID!
-  visitorId: ID!
+  """
+  ID of the journey that the buttonBlock belongs to
+  """
   journeyId: ID!
+  """
+  time event was created
+  """
   createdAt: DateTime!
-  blockId: ID
-  stepId: ID
+  """
+  stepName of the parent stepBlock
+  """
   label: String
+  """
+  label of the button
+  """
   value: String
 }
 
