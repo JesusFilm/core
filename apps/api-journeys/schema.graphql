@@ -795,7 +795,7 @@ type RadioQuestionSubmissionEvent implements Event {
   """stepName of the parent stepBlock"""
   label: String
 
-  """label of the selected radioOptionBlock label"""
+  """label of the selected radioOptionBlock"""
   value: String
 }
 
