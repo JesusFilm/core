@@ -1,9 +1,11 @@
 import { ComponentProps, ReactElement } from 'react'
-import HelpIcon from '@mui/icons-material/Help'
-import ListIcon from '@mui/icons-material/List'
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
+import HelpIcon from '@mui/icons-material/HelpRounded'
+import ListIcon from '@mui/icons-material/ListRounded'
+import MarkEmailReadIcon from '@mui/icons-material/MarkEmailReadRounded'
+import PlayArrowIcon from '@mui/icons-material/PlayArrowRounded'
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
+import MovieIcon from '@mui/icons-material/MovieRounded'
 import { useTranslation } from 'react-i18next'
-import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead'
 import { GetVisitorEvents_visitor_events as Event } from '../../../../../__generated__/GetVisitorEvents'
 import { GenericEvent } from './GenericEvent'
 
@@ -32,6 +34,14 @@ export function VisitorJourneyTimelineItem({
     case 'TextResponseSubmissionEvent':
       icon = <HelpIcon />
       break
+    case 'VideoCompleteEvent':
+      icon = <MovieIcon />
+      activity = t('Video completed')
+      break
+    case 'VideoStartEvent':
+      icon = <PlayArrowIcon />
+      activity = t('Video started')
+      break
     case 'SignUpSubmissionEvent':
       icon = <MarkEmailReadIcon />
       label = t('Sign Up')
@@ -42,7 +52,7 @@ export function VisitorJourneyTimelineItem({
           {event.email}
         </>
       )
-      activity = t('Button clicked')
+      activity = t('Form submitted')
       break
     case 'ButtonClickEvent':
       activity = t('Button clicked')

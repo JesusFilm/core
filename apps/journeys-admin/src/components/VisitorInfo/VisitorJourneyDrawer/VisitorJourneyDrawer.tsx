@@ -45,7 +45,7 @@ export function VisitorJourneyDrawer(): ReactElement {
       {journey != null && (
         <>
           <AppBar position="static" color="default">
-            <Toolbar>
+            <Toolbar sx={{ boxSizing: 'content-box' }}>
               <Typography
                 variant="subtitle1"
                 noWrap

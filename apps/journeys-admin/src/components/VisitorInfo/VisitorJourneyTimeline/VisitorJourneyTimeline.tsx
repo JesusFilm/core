@@ -6,14 +6,24 @@ import { VisitorJourneyTimelineItem } from './VisitorJourneyTimelineItem'
 interface Props {
   events: Event[]
   variant?: 'compact'
-  filter?: Array<Event['__typename']>
 }
 
 export function VisitorJourneyTimeline({
   events,
-  variant,
-  filter
+  variant
 }: Props): ReactElement {
+  let filter: Array<Event['__typename']> = [
+    'ButtonClickEvent',
+    'RadioQuestionSubmissionEvent',
+    'TextResponseSubmissionEvent',
+    'VideoCompleteEvent',
+    'VideoStartEvent',
+    'SignUpSubmissionEvent'
+  ]
+  if (variant === 'compact') {
+    filter = ['TextResponseSubmissionEvent', 'RadioQuestionSubmissionEvent']
+  }
+
   return (
     <Timeline
       sx={{

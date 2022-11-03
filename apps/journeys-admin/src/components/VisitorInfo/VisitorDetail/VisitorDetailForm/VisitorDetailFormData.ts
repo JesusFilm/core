@@ -40,7 +40,7 @@ const visitorUpdate: VisitorUpdate = {
     messengerNetwork: 'WhatsApp',
     name: 'Bilbo Baggins',
     notes: 'Has a ring to give you.',
-    status: VisitorStatus.partyPopper
+    status: null
   }
 }
 
@@ -49,7 +49,7 @@ const visitorUpdateInput: VisitorUpdateInput = {
   messengerNetwork: 'WhatsApp',
   name: 'Bilbo Baggins',
   notes: 'Has a ring to give you.',
-  status: VisitorStatus.partyPopper
+  status: null
 }
 
 export const visitorUpdateMock = {

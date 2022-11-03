@@ -7,6 +7,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { format, parseISO } from 'date-fns'
+import { useTranslation } from 'react-i18next'
 import { VisitorJourneyTimeline } from '../../VisitorJourneyTimeline'
 import { JourneyWithEvents } from '../../transformVisitorEvents'
 import { useVisitorInfo } from '../../VisitorInfoProvider'
@@ -20,6 +21,7 @@ export function VisitorJourneyListItem({
   journey,
   selected
 }: Props): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useVisitorInfo()
   const { title, subtitle, createdAt, events } = journey
 
@@ -55,17 +57,10 @@ export function VisitorJourneyListItem({
             <Typography>{format(parseISO(createdAt), 'MMM d')}</Typography>
           )}
         </Stack>
-        <VisitorJourneyTimeline
-          events={events}
-          variant="compact"
-          filter={[
-            'TextResponseSubmissionEvent',
-            'RadioQuestionSubmissionEvent'
-          ]}
-        />
+        <VisitorJourneyTimeline events={events} variant="compact" />
       </CardContent>
       <CardActions>
-        <Button onClick={handleClick}>View Timeline</Button>
+        <Button onClick={handleClick}>{t('View Timeline')}</Button>
       </CardActions>
     </Card>
   )
