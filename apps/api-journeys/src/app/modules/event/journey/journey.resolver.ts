@@ -5,18 +5,21 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { CurrentUserAgent } from '@core/nest/decorators/CurrentUserAgent'
+import { UserInputError } from 'apollo-server'
 import {
   JourneyViewEvent,
   JourneyViewEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import { VisitorService } from '../../visitor/visitor.service'
+import { JourneyService } from '../../journey/journey.service'
 
 @Resolver('JourneyViewEvent')
 export class JourneyViewEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly visitorService: VisitorService
+    private readonly visitorService: VisitorService,
+    private readonly journeyService: JourneyService
   ) {}
 
   @Mutation()
@@ -26,6 +29,10 @@ export class JourneyViewEventResolver {
     @CurrentUserAgent() userAgent: string,
     @Args('input') input: JourneyViewEventCreateInput
   ): Promise<JourneyViewEvent> {
+    const journey = await this.journeyService.get(input.journeyId)
+    if (journey == null) {
+      throw new UserInputError('Journey does not exist')
+    }
     const visitor = await this.visitorService.getByUserIdAndJourneyId(
       userId,
       input.journeyId
