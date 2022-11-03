@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
+import { StepViewEventCreateInput } from '../../../__generated__/graphql'
 import { StepViewEventResolver } from './step.resolver'
 
 describe('StepViewEventResolver', () => {
@@ -14,18 +15,17 @@ describe('StepViewEventResolver', () => {
 
   let resolver: StepViewEventResolver
 
-  const input = {
-    id: '1',
-    blockId: 'block.id',
-    previousBlockId: 'previousBlock.id',
-    journeyId: 'journey.id'
-  }
-
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((input) => input)
+      save: jest.fn((event) => event),
+      validateBlockEvent: jest.fn(() => response)
     })
+  }
+
+  const response = {
+    visitor: { id: 'visitor.id' },
+    journeyId: 'journey.id'
   }
 
   beforeEach(async () => {
@@ -37,11 +37,19 @@ describe('StepViewEventResolver', () => {
 
   describe('stepViewEventCreate', () => {
     it('returns StepViewEvent', async () => {
+      const input: StepViewEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        value: 'stepName'
+      }
+
       expect(await resolver.stepViewEventCreate('userId', input)).toEqual({
         ...input,
         __typename: 'StepViewEvent',
-        userId: 'userId',
-        createdAt: new Date().toISOString()
+        visitorId: 'visitor.id',
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id',
+        stepId: input.blockId
       })
     })
   })

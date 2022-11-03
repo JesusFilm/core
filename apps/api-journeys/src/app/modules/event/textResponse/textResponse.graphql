@@ -4,6 +4,17 @@ input TextResponseSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  stepName of the parent stepBlock
+  """
+  label: String
+  """
+  response from the TextResponseBlock form
+  """
   value: String!
 }
 

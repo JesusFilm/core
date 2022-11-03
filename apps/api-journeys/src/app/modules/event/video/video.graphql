@@ -4,7 +4,22 @@ input VideoStartEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoStartEvent is triggered
+  """
   position: Float
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoStartEvent implements Event {
@@ -41,7 +56,22 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoPlayEvent is triggered
+  """
   position: Float
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoPlayEvent implements Event {
@@ -78,7 +108,22 @@ input VideoPauseEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoPauseEvent is triggered
+  """
   position: Float
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoPauseEvent implements Event {
@@ -115,7 +160,22 @@ input VideoCompleteEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoCompleteEvent is triggered
+  """
   position: Float
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoCompleteEvent implements Event {
@@ -152,7 +212,22 @@ input VideoExpandEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoExpandEvent is triggered
+  """
   position: Float
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoExpandEvent implements Event {
@@ -189,7 +264,22 @@ input VideoCollapseEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoCollapseEvent is triggered
+  """
   position: Float
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoCollapseEvent implements Event {
@@ -226,11 +316,26 @@ input VideoProgressEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoProgressEvent is triggered
+  """
   position: Float
   """
-  Progress of the video based on the startAt and endAt values of video
+  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
   """
   progress: Int!
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoProgressEvent implements Event {

@@ -4,6 +4,14 @@ input JourneyViewEventCreateInput {
   """
   id: ID
   journeyId: ID!
+  """
+  title of the journey being viewed
+  """
+  label: String
+  """
+  languageId of the journey being viewed
+  """
+  value: ID
 }
 
 extend type Language @key(fields: "id") {

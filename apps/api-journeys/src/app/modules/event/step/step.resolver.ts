@@ -13,17 +13,26 @@ import { EventService } from '../event.service'
 @Resolver('StepViewEvent')
 export class StepViewEventResolver {
   constructor(private readonly eventService: EventService) {}
+
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async stepViewEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: StepViewEventCreateInput
   ): Promise<StepViewEvent> {
+    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
+      userId,
+      input.blockId,
+      input.blockId
+    )
+
     return await this.eventService.save({
       ...input,
       __typename: 'StepViewEvent',
-      userId,
-      createdAt: new Date().toISOString()
+      visitorId: visitor.id,
+      createdAt: new Date().toISOString(),
+      journeyId,
+      stepId: input.blockId
     })
   }
 }

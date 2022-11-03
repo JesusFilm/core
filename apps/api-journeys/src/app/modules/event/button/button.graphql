@@ -4,6 +4,18 @@ input ButtonClickEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  stepName of the parent stepBlock
+  """
+  label: String
+  """
+  label of the button
+  """
+  value: String
 }
 
 type ButtonClickEvent implements Event {

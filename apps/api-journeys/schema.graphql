@@ -719,6 +719,15 @@ input ButtonClickEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """label of the button"""
+  value: String
 }
 
 type ButtonClickEvent implements Event {
@@ -751,6 +760,12 @@ input JourneyViewEventCreateInput {
   """
   id: ID
   journeyId: ID!
+
+  """title of the journey being viewed"""
+  label: String
+
+  """languageId of the journey being viewed"""
+  value: ID
 }
 
 type JourneyViewEvent implements Event {
@@ -781,6 +796,15 @@ input RadioQuestionSubmissionEventCreateInput {
   id: ID
   blockId: ID!
   radioOptionBlockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """label of the selected radioOption block"""
+  value: String
 }
 
 type RadioQuestionSubmissionEvent implements Event {
@@ -805,7 +829,14 @@ input SignUpSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """name from the signUpBlock form"""
   name: String!
+
+  """email from the signUpBlock form"""
   email: String!
 }
 
@@ -834,6 +865,9 @@ input StepViewEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """stepName of the stepBlock"""
+  value: String
 }
 
 type StepViewEvent implements Event {
@@ -858,6 +892,14 @@ input TextResponseSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """response from the TextResponseBlock form"""
   value: String!
 }
 
@@ -883,7 +925,18 @@ input VideoStartEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoStartEvent is triggered"""
   position: Float
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoStartEvent implements Event {
@@ -914,7 +967,18 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoPlayEvent is triggered"""
   position: Float
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoPlayEvent implements Event {
@@ -945,7 +1009,18 @@ input VideoPauseEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoPauseEvent is triggered"""
   position: Float
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoPauseEvent implements Event {
@@ -976,7 +1051,18 @@ input VideoCompleteEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoCompleteEvent is triggered"""
   position: Float
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoCompleteEvent implements Event {
@@ -1007,7 +1093,18 @@ input VideoExpandEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoExpandEvent is triggered"""
   position: Float
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoExpandEvent implements Event {
@@ -1038,7 +1135,18 @@ input VideoCollapseEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoCollapseEvent is triggered"""
   position: Float
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoCollapseEvent implements Event {
@@ -1069,10 +1177,23 @@ input VideoProgressEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoProgressEvent is triggered"""
   position: Float
 
-  """Progress of the video based on the startAt and endAt values of video"""
+  """
+  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
+  """
   progress: Int!
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoProgressEvent implements Event {
