@@ -39,7 +39,7 @@ export class JourneyViewEventResolver {
     )
 
     if (visitor.userAgent == null) {
-      await this.visitorService.update(visitor.id, {
+      void this.visitorService.update(visitor.id, {
         userAgent
       })
     }

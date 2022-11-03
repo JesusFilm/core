@@ -52,13 +52,13 @@ export class SignUpSubmissionEventResolver {
     }
 
     if (visitor.name == null) {
-      await this.visitorService.update(visitor.id, {
+      void this.visitorService.update(visitor.id, {
         name: input.name
       })
     }
 
     if (visitor.email == null) {
-      await this.visitorService.update(visitor.id, {
+      void this.visitorService.update(visitor.id, {
         email: input.email
       })
     }
