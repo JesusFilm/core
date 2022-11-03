@@ -1,9 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
-import { StepViewEventCreateInput } from '../../../__generated__/graphql'
-import { StepViewEventResolver } from './step.resolver'
+import {
+  StepNextEventCreateInput,
+  StepViewEventCreateInput
+} from '../../../__generated__/graphql'
+import { StepNextEventResolver, StepViewEventResolver } from './step.resolver'
 
-describe('StepViewEventResolver', () => {
+describe('Step', () => {
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
@@ -12,9 +15,6 @@ describe('StepViewEventResolver', () => {
   afterAll(() => {
     jest.useRealTimers()
   })
-
-  let resolver: StepViewEventResolver
-
   const eventService = {
     provide: EventService,
     useFactory: () => ({
@@ -28,14 +28,16 @@ describe('StepViewEventResolver', () => {
     journeyId: 'journey.id'
   }
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [StepViewEventResolver, eventService]
-    }).compile()
-    resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
-  })
-
   describe('stepViewEventCreate', () => {
+    let resolver: StepViewEventResolver
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [StepViewEventResolver, eventService]
+      }).compile()
+      resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
+    })
+
     it('returns StepViewEvent', async () => {
       const input: StepViewEventCreateInput = {
         id: '1',
@@ -50,6 +52,37 @@ describe('StepViewEventResolver', () => {
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id',
         stepId: input.blockId
+      })
+    })
+  })
+
+  describe('StepNextEventResolver', () => {
+    let resolver: StepNextEventResolver
+
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [StepNextEventResolver, eventService]
+      }).compile()
+      resolver = module.get<StepNextEventResolver>(StepNextEventResolver)
+    })
+
+    describe('stepNextEventCreate', () => {
+      const input: StepNextEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        nextStepId: 'step.id',
+        label: 'step name',
+        value: 'next step name'
+      }
+
+      it('should return step next event', async () => {
+        expect(await resolver.stepNextEventCreate('userId', input)).toEqual({
+          ...input,
+          __typename: 'StepNextEvent',
+          visitorId: 'visitor.id',
+          createdAt: new Date().toISOString(),
+          journeyId: 'journey.id'
+        })
       })
     })
   })
