@@ -18,10 +18,6 @@ extend type Language @key(fields: "id") {
   id: ID! @external
 }
 
-extend type Language @key(fields: "id") {
-  id: ID! @external
-}
-
 type JourneyViewEvent implements Event {
   id: ID!
   """
