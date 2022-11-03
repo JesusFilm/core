@@ -102,6 +102,7 @@ type Visitor @key(fields: "id") {
   VisitorUpdate mutation.
   """
   notes: String
+  events: [Event!]!
 }
 
 """
