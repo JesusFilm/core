@@ -6,7 +6,7 @@ import { useSnackbar } from 'notistack'
 import { useTranslation } from 'react-i18next'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import { Dialog } from '../../Dialog'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { SortOrder } from '../../JourneyList/JourneySort'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import {
@@ -231,7 +231,7 @@ export function ArchivedTemplates({
 
       <Dialog
         open={openRestoreAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: t('Unarchive Templates'),
           closeButton: true
@@ -250,7 +250,7 @@ export function ArchivedTemplates({
       </Dialog>
       <Dialog
         open={openTrashAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: t('Trash Templates'),
           closeButton: true

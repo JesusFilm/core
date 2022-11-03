@@ -1,6 +1,7 @@
 interface Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
+  journeyId: ID!
   createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
+  label: String
+  value: String
 }

@@ -43,13 +43,19 @@ const allStories = [
 ]
 
 module.exports = {
-  staticDirs: ['./static'],
+  staticDirs: [
+    './static',
+    { from: '../apps/watch/public/fonts', to: '/fonts' }
+  ],
   stories: allStories,
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     '@storybook/addon-a11y'
   ],
+  features: {
+    interactionsDebugger: true
+  },
   core: {
     builder: 'webpack5'
   },

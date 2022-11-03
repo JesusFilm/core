@@ -41,10 +41,16 @@ export interface VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction 
   blockId: string;
 }
 
+export interface VideoBlockCreate_videoBlockCreate_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface VideoBlockCreate_videoBlockCreate_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: VideoBlockCreate_videoBlockCreate_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface VideoBlockCreate_videoBlockCreate_action_NavigateToJourneyAction {

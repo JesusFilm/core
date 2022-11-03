@@ -4,14 +4,42 @@ input JourneyViewEventCreateInput {
   """
   id: ID
   journeyId: ID!
+  """
+  title of the journey being viewed
+  """
+  label: String
+  """
+  languageId of the journey being viewed
+  """
+  value: ID
+}
+
+extend type Language @key(fields: "id") {
+  id: ID! @external
 }
 
 type JourneyViewEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
+  """
+  ID of the journey being viewed
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
   createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
-  journey: Journey @deprecated(reason: "preparing for data structure change")
+  """
+  title of the journey being viewed
+  """
+  label: String
+  """
+  languageId of the journey being viewed
+  """
+  value: String
+  """
+  language of the journey being viewed (based on the ID in the value field)
+  """
+  language: Language
 }
 
 extend type Mutation {

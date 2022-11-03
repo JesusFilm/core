@@ -4,18 +4,42 @@ input SignUpSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  name from the signUpBlock form
+  """
   name: String!
+  """
+  email from the signUpBlock form
+  """
   email: String!
 }
 
 type SignUpSubmissionEvent implements Event {
   id: ID!
-  userId: ID! @deprecated(reason: "preparing for data structure change")
+  """
+  ID of the journey that the block belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
   createdAt: DateTime!
-    @deprecated(reason: "preparing for data structure change")
-  name: String! @deprecated(reason: "preparing for data structure change")
-  email: String! @deprecated(reason: "preparing for data structure change")
-  block: SignUpBlock @deprecated(reason: "preparing for data structure change")
+  """
+  null for signUpSubmissionEvent
+  """
+  label: String
+  """
+  name from the signUpBlock form
+  """
+  value: String
+  """
+  email from the signUpBlock form
+  """
+  email: String
 }
 
 extend type Mutation {

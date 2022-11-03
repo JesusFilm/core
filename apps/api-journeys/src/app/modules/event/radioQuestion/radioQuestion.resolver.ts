@@ -13,6 +13,7 @@ import { EventService } from '../event.service'
 @Resolver('RadioQuestionSubmissionEvent')
 export class RadioQuestionSubmissionEventResolver {
   constructor(private readonly eventService: EventService) {}
+
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async radioQuestionSubmissionEventCreate(
@@ -20,11 +21,18 @@ export class RadioQuestionSubmissionEventResolver {
     @Args('input')
     input: RadioQuestionSubmissionEventCreateInput
   ): Promise<RadioQuestionSubmissionEvent> {
+    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
+      userId,
+      input.blockId,
+      input.stepId
+    )
+
     return await this.eventService.save({
       ...input,
       __typename: 'RadioQuestionSubmissionEvent',
-      userId,
-      createdAt: new Date().toISOString()
+      visitorId: visitor.id,
+      createdAt: new Date().toISOString(),
+      journeyId
     })
   }
 }

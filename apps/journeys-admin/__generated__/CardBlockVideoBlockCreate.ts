@@ -41,10 +41,16 @@ export interface CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToBlo
   blockId: string;
 }
 
+export interface CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToJourneyAction {

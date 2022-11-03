@@ -2,11 +2,11 @@ import { ReactElement } from 'react'
 import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TitleDescriptionUpdate } from '../../../../../__generated__/TitleDescriptionUpdate'
-import { Dialog } from '../../../Dialog'
 
 export const TITLE_DESCRIPTION_UPDATE = gql`
   mutation TitleDescriptionUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -98,7 +98,7 @@ export function TitleDescriptionDialog({
           {({ values, handleChange, handleSubmit, resetForm }) => (
             <Dialog
               open={open}
-              handleClose={handleClose(resetForm)}
+              onClose={handleClose(resetForm)}
               dialogTitle={{ title: 'Edit Title and Description' }}
               dialogAction={{
                 onSubmit: handleSubmit,

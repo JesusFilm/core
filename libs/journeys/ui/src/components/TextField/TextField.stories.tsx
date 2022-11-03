@@ -112,6 +112,17 @@ export const States = Template.bind({})
 
 export const Textarea = TextareaTemplate.bind({})
 
+export const RTL = Template.bind({})
+RTL.parameters = { rtl: true }
+
+export const Urdu = Template.bind({})
+Urdu.args = { ...RTL.args }
+Urdu.parameters = {
+  rtl: true,
+  locale: 'ur',
+  // Disable until we get i18n translations in SB
+  chromatic: { disableSnapshot: true }
+}
 // TODO: Future variants
 
 // export const Size = Template.bind({})
