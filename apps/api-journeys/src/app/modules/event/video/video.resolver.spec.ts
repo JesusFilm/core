@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { VideoBlockSource } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import {
   VideoStartEventResolver,
   VideoPlayEventResolver,
-  VideoPuaseEventResolver,
+  VideoPauseEventResolver,
   VideoCompleteEventResolver,
   VideoCollapseEventResolver,
   VideoExpandEventResolver,
@@ -50,6 +51,12 @@ describe('VideoResolver', () => {
         createdAt: new Date().toISOString()
       })
     })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.youTube })).toEqual(
+        VideoBlockSource.youTube
+      )
+    })
   })
 
   describe('videoPlayEventCreate', () => {
@@ -83,10 +90,16 @@ describe('VideoResolver', () => {
         createdAt: new Date().toISOString()
       })
     })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.internal })).toEqual(
+        VideoBlockSource.internal
+      )
+    })
   })
 
   describe('videoPauseEventCreate', () => {
-    let resolver: VideoPuaseEventResolver
+    let resolver: VideoPauseEventResolver
 
     const eventService = {
       provide: EventService,
@@ -97,9 +110,9 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoPuaseEventResolver, eventService]
+        providers: [VideoPauseEventResolver, eventService]
       }).compile()
-      resolver = module.get<VideoPuaseEventResolver>(VideoPuaseEventResolver)
+      resolver = module.get<VideoPauseEventResolver>(VideoPauseEventResolver)
     })
 
     it('returns VideoPauseEvent', async () => {
@@ -115,6 +128,12 @@ describe('VideoResolver', () => {
         userId: 'userid',
         createdAt: new Date().toISOString()
       })
+    })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.youTube })).toEqual(
+        VideoBlockSource.youTube
+      )
     })
   })
 
@@ -151,6 +170,12 @@ describe('VideoResolver', () => {
         createdAt: new Date().toISOString()
       })
     })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.youTube })).toEqual(
+        VideoBlockSource.youTube
+      )
+    })
   })
 
   describe('videoExpandEventCreate', () => {
@@ -183,6 +208,12 @@ describe('VideoResolver', () => {
         userId: 'userid',
         createdAt: new Date().toISOString()
       })
+    })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.youTube })).toEqual(
+        VideoBlockSource.youTube
+      )
     })
   })
 
@@ -219,6 +250,12 @@ describe('VideoResolver', () => {
         createdAt: new Date().toISOString()
       })
     })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.youTube })).toEqual(
+        VideoBlockSource.youTube
+      )
+    })
   })
 
   describe('videoProgressEventCreate', () => {
@@ -254,6 +291,12 @@ describe('VideoResolver', () => {
         userId: 'userid',
         createdAt: new Date().toISOString()
       })
+    })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.youTube })).toEqual(
+        VideoBlockSource.youTube
+      )
     })
   })
 })
