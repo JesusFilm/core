@@ -68,7 +68,18 @@ input ButtonBlockUpdateInput {
 }
 
 type ButtonClickEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the buttonBlock belongs to"""
+  journeyId: ID!
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """label of the button"""
+  value: String
 }
 
 input ButtonClickEventCreateInput {
@@ -78,6 +89,15 @@ input ButtonClickEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """label of the button"""
+  value: String
 }
 
 enum ButtonColor {
@@ -151,6 +171,41 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
+type ChatOpenedEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
+  id: ID!
+
+  """ID of the journey that the buttonBlock belongs to"""
+  journeyId: ID!
+
+  """null for ChatOpenedEvent"""
+  label: String
+
+  """
+  messagePlatform of the link used for chat (based on the messagePlatform in the value field)
+  """
+  messagePlatform: MessagePlatform
+
+  """messagePlatform of the link used for chat"""
+  value: String
+}
+
+input ChatOpenedEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """messagePlatform of the link used for chat"""
+  value: MessagePlatform
+}
+
 type Country
   @join__owner(graph: LANGUAGES)
   @join__type(graph: LANGUAGES, key: "id")
@@ -189,7 +244,11 @@ enum DeviceType {
 }
 
 interface Event {
+  createdAt: DateTime!
   id: ID!
+  journeyId: ID!
+  label: String
+  value: String
 }
 
 enum GridAlignItems {
@@ -441,7 +500,23 @@ input JourneyUpdateInput {
 }
 
 type JourneyViewEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey being viewed"""
+  journeyId: ID!
+
+  """title of the journey being viewed"""
+  label: String
+
+  """
+  language of the journey being viewed (based on the ID in the value field)
+  """
+  language: Language
+
+  """languageId of the journey being viewed"""
+  value: String
 }
 
 input JourneyViewEventCreateInput {
@@ -450,6 +525,12 @@ input JourneyViewEventCreateInput {
   """
   id: ID
   journeyId: ID!
+
+  """title of the journey being viewed"""
+  label: String
+
+  """languageId of the journey being viewed"""
+  value: ID
 }
 
 type Language
@@ -482,6 +563,19 @@ input LinkActionInput {
   url: String!
 }
 
+enum MessagePlatform {
+  facebook
+  instagram
+  line
+  skype
+  snapchat
+  telegram
+  tikTok
+  viber
+  vk
+  whatsApp
+}
+
 type Mutation {
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]! @join__field(graph: JOURNEYS)
@@ -509,6 +603,7 @@ type Mutation {
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
+  chatOpenedEventCreate(input: ChatOpenedEventCreateInput!): ChatOpenedEvent! @join__field(graph: JOURNEYS)
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
   iconBlockUpdate(id: ID!, input: IconBlockUpdateInput!, journeyId: ID!): IconBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
@@ -545,6 +640,7 @@ type Mutation {
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent! @join__field(graph: JOURNEYS)
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
   textResponseBlockUpdate(id: ID!, input: TextResponseBlockUpdateInput!, journeyId: ID!): TextResponseBlock @join__field(graph: JOURNEYS)
@@ -711,7 +807,18 @@ input RadioQuestionBlockCreateInput {
 }
 
 type RadioQuestionSubmissionEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the radioQuestionBlock belongs to"""
+  journeyId: ID!
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """label of the selected radioOptionBlock"""
+  value: String
 }
 
 input RadioQuestionSubmissionEventCreateInput {
@@ -721,7 +828,16 @@ input RadioQuestionSubmissionEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
   radioOptionBlockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """label of the selected radioOption block"""
+  value: String
 }
 
 enum Role {
@@ -756,18 +872,39 @@ input SignUpBlockUpdateInput {
 }
 
 type SignUpSubmissionEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
+
+  """email from the signUpBlock form"""
+  email: String
   id: ID!
+
+  """ID of the journey that the block belongs to"""
+  journeyId: ID!
+
+  """null for signUpSubmissionEvent"""
+  label: String
+
+  """name from the signUpBlock form"""
+  value: String
 }
 
 input SignUpSubmissionEventCreateInput {
   blockId: ID!
+
+  """email from the signUpBlock form"""
   email: String!
 
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """name from the signUpBlock form"""
   name: String!
+
+  """id of the parent stepBlock"""
+  stepId: ID
 }
 
 type StepBlock implements Block {
@@ -803,8 +940,52 @@ input StepBlockUpdateInput {
   nextBlockId: ID
 }
 
-type StepViewEvent implements Event {
+type StepNextEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the stepBlock belongs to"""
+  journeyId: ID!
+
+  """stepName of the stepBlock"""
+  label: String
+
+  """stepName of the next stepBlock"""
+  value: String
+}
+
+input StepNextEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+
+  """stepName of the stepBlock"""
+  label: String
+
+  """id of the mext stepBlock"""
+  nextStepId: ID!
+
+  """stepName of the next stepBlock"""
+  value: String
+}
+
+type StepViewEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
+  id: ID!
+
+  """ID of the journey that the stepBlock belongs to"""
+  journeyId: ID!
+
+  """null for stepViewEvent"""
+  label: String
+
+  """stepName of the stepBlock"""
+  value: String
 }
 
 input StepViewEventCreateInput {
@@ -814,6 +995,9 @@ input StepViewEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """stepName of the stepBlock"""
+  value: String
 }
 
 type TextResponseBlock implements Block {
@@ -847,7 +1031,18 @@ input TextResponseBlockUpdateInput {
 }
 
 type TextResponseSubmissionEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the buttonBlock belongs to"""
+  journeyId: ID!
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """response from the TextResponseBlock form"""
+  value: String
 }
 
 input TextResponseSubmissionEventCreateInput {
@@ -857,6 +1052,14 @@ input TextResponseSubmissionEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """response from the TextResponseBlock form"""
   value: String!
 }
 
@@ -1179,7 +1382,24 @@ input VideoBlockUpdateInput {
 }
 
 type VideoCollapseEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoCollapseEvent is triggered"""
+  position: Float
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoCollapseEventCreateInput {
@@ -1189,11 +1409,39 @@ input VideoCollapseEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoCollapseEvent is triggered"""
   position: Float
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoCompleteEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoCompleteEvent is triggered"""
+  position: Float
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoCompleteEventCreateInput {
@@ -1203,11 +1451,39 @@ input VideoCompleteEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoCompleteEvent is triggered"""
   position: Float
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoExpandEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoExpandEvent is triggered"""
+  position: Float
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoExpandEventCreateInput {
@@ -1217,11 +1493,39 @@ input VideoExpandEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoExpandEvent is triggered"""
   position: Float
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoPauseEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoPauseEvent is triggered"""
+  position: Float
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoPauseEventCreateInput {
@@ -1231,11 +1535,39 @@ input VideoPauseEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoPauseEvent is triggered"""
   position: Float
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoPlayEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoPlayEvent is triggered"""
+  position: Float
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoPlayEventCreateInput {
@@ -1245,11 +1577,44 @@ input VideoPlayEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoPlayEvent is triggered"""
   position: Float
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoProgressEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoProgressEvent is triggered"""
+  position: Float
+
+  """
+  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
+  """
+  progress: Int!
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoProgressEventCreateInput {
@@ -1259,10 +1624,23 @@ input VideoProgressEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoProgressEvent is triggered"""
   position: Float
 
-  """Progress of the video based on the startAt and endAt values of video"""
+  """
+  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
+  """
   progress: Int!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 input VideosFilter {
@@ -1273,7 +1651,24 @@ input VideosFilter {
 }
 
 type VideoStartEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
   id: ID!
+
+  """ID of the journey that the videoBlock belongs to"""
+  journeyId: ID!
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoStartEvent is triggered"""
+  position: Float
+
+  """source of the video (based on the source in the value field)"""
+  source: VideoBlockSource
+
+  """source of the video"""
+  value: String
 }
 
 input VideoStartEventCreateInput {
@@ -1283,7 +1678,18 @@ input VideoStartEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoStartEvent is triggered"""
   position: Float
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoTag {
@@ -1361,6 +1767,7 @@ type Visitor
   SignUpEventSubmissionEventCreate mutation.
   """
   email: String @join__field(graph: JOURNEYS)
+  events: [Event!]! @join__field(graph: JOURNEYS)
   id: ID! @join__field(graph: JOURNEYS)
 
   """
@@ -1429,10 +1836,20 @@ type VisitorsConnection {
 
 """
 The status of a visitor according to team members interacting with the
-visitor admin interface.
+visitor admin interface. This enum should map to an emoji when displayed
+(names here match Apple's emoji name)
 """
 enum VisitorStatus {
+  checkMarkSymbol
+  partyPopper
+  prohibited
+  redExclamationMark
+  redQuestionMark
+  robotFace
   star
+  thumbsDown
+  thumbsUp
+  warning
 }
 
 """

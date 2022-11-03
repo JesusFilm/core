@@ -1,10 +1,8 @@
-// Block resolver tests are in individual block type spec files
-
 import { ResolveField, Resolver } from '@nestjs/graphql'
 import { Event } from '../../__generated__/graphql' // change
 import { EventService } from './event.service'
 
-interface DbEvent extends Event {
+export interface DbEvent extends Event {
   __typename: string
 }
 @Resolver('Event')
