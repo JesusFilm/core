@@ -152,7 +152,6 @@ export interface JourneyViewEventCreateInput {
   id?: string | null;
   journeyId: string;
   label?: string | null;
-  languageId?: string | null;
   value?: string | null;
 }
 

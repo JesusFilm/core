@@ -65,7 +65,6 @@ export class TextResponseBlockResolver {
     if (input.submitIconId != null) {
       const submitIcon = await this.blockService.validateBlock(
         input.submitIconId,
-        'parentBlockId',
         id
       )
       if (!submitIcon) {

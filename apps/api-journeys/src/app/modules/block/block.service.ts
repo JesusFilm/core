@@ -293,9 +293,9 @@ export class BlockService extends BaseService {
   }
 
   async validateBlock(
-    id: string | null,
-    type: string,
-    value: string | null
+    id: string | null | undefined,
+    value: string | null,
+    type: 'parentBlockId' | 'journeyId' = 'parentBlockId'
   ): Promise<boolean> {
     const block: Block | null = id != null ? await this.get(id) : null
 

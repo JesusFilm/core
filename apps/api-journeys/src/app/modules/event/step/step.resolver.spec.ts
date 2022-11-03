@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
 import { BlockService } from '../../block/block.service'
 import {
@@ -21,76 +20,38 @@ describe('Step', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((event) => event)
+      save: jest.fn((event) => event),
+      validateBlockEvent: jest.fn(() => response)
     })
   }
 
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      get: jest.fn(() => block),
-      validateBlock: jest.fn((id) => {
-        switch (id) {
-          case 'step.id':
-            return true
-          default:
-            return false
-        }
-      })
-    })
+  const response = {
+    visitor: { id: 'visitor.id' },
+    journeyId: 'journey.id'
   }
 
-  const visitorService = {
-    provide: VisitorService,
-    useFactory: () => ({
-      getByUserIdAndJourneyId: jest.fn(() => visitorWithId)
-    })
-  }
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [StepViewEventResolver, eventService]
+    }).compile()
+    resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
+  })
 
-  const input: StepViewEventCreateInput = {
-    id: '1',
-    blockId: 'block.id',
-    value: 'stepName'
-  }
+  describe('stepViewEventCreate', () => {
+    it('returns StepViewEvent', async () => {
+      const input: StepViewEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        value: 'stepName'
+      }
 
-  const block = {
-    id: 'block.id',
-    journeyId: 'journey.id',
-    parentBlockId: 'parent.id',
-    locked: false
-  }
-
-  const visitor = {
-    _key: 'visitor.id'
-  }
-
-  const visitorWithId = keyAsId(visitor)
-
-  describe('StepViewEventResolver', () => {
-    let resolver: StepViewEventResolver
-
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          StepViewEventResolver,
-          eventService,
-          blockService,
-          visitorService
-        ]
-      }).compile()
-      resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
-    })
-
-    describe('stepViewEventCreate', () => {
-      it('returns StepViewEvent', async () => {
-        expect(await resolver.stepViewEventCreate('userId', input)).toEqual({
-          ...input,
-          __typename: 'StepViewEvent',
-          visitorId: visitorWithId.id,
-          createdAt: new Date().toISOString(),
-          journeyId: block.journeyId,
-          stepId: input.blockId
-        })
+      expect(await resolver.stepViewEventCreate('userId', input)).toEqual({
+        ...input,
+        __typename: 'StepViewEvent',
+        visitorId: 'visitor.id',
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id',
+        stepId: input.blockId
       })
     })
   })

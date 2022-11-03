@@ -1,9 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { EventService } from '../event.service'
-import { BlockService } from '../../block/block.service'
 import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/graphql'
-import { VisitorService } from '../../visitor/visitor.service'
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion.resolver'
 
 describe('RadioQuestionSubmissionEventResolver', () => {
@@ -21,30 +18,14 @@ describe('RadioQuestionSubmissionEventResolver', () => {
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((event) => event)
+      save: jest.fn((event) => event),
+      validateBlockEvent: jest.fn(() => response)
     })
   }
 
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      get: jest.fn(() => block),
-      validateBlock: jest.fn((id) => {
-        switch (id) {
-          case input.stepId:
-            return true
-          default:
-            return false
-        }
-      })
-    })
-  }
-
-  const visitorService = {
-    provide: VisitorService,
-    useFactory: () => ({
-      getByUserIdAndJourneyId: jest.fn(() => visitorWithId)
-    })
+  const response = {
+    visitor: { id: 'visitor.id' },
+    journeyId: 'journey.id'
   }
 
   const input: RadioQuestionSubmissionEventCreateInput = {
@@ -56,31 +37,9 @@ describe('RadioQuestionSubmissionEventResolver', () => {
     value: 'radioOption.label'
   }
 
-  const errorInput: RadioQuestionSubmissionEventCreateInput = {
-    ...input,
-    stepId: 'errorStep.id'
-  }
-
-  const block = {
-    id: 'block.id',
-    journeyId: 'journey.id',
-    parentBlockId: 'parent.id'
-  }
-
-  const visitor = {
-    _key: 'visitor.id'
-  }
-
-  const visitorWithId = keyAsId(visitor)
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        RadioQuestionSubmissionEventResolver,
-        eventService,
-        blockService,
-        visitorService
-      ]
+      providers: [RadioQuestionSubmissionEventResolver, eventService]
     }).compile()
     resolver = module.get<RadioQuestionSubmissionEventResolver>(
       RadioQuestionSubmissionEventResolver
@@ -94,24 +53,10 @@ describe('RadioQuestionSubmissionEventResolver', () => {
       ).toEqual({
         ...input,
         __typename: 'RadioQuestionSubmissionEvent',
-        visitorId: visitorWithId.id,
+        visitorId: 'visitor.id',
         createdAt: new Date().toISOString(),
-        journeyId: block.journeyId
+        journeyId: 'journey.id'
       })
-    })
-
-    it('should throw error when step id does not belong to the same journey as block id', async () => {
-      await expect(
-        async () =>
-          await resolver.radioQuestionSubmissionEventCreate(
-            'userId',
-            errorInput
-          )
-      ).rejects.toThrow(
-        `Step ID ${
-          errorInput.stepId as string
-        } does not exist on Journey with ID ${block.journeyId}`
-      )
     })
   })
 })

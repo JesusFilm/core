@@ -4,6 +4,5 @@ import { GqlExecutionContext } from '@nestjs/graphql'
 
 export const CurrentIPAddress = createParamDecorator((data, context) => {
   const ctx = GqlExecutionContext.create(context).getContext()
-  const ipAddress = get(ctx.headers, 'X-Forwarded-For')
-  return ipAddress
+  return get(ctx.headers, 'X-Forwarded-For')
 })
