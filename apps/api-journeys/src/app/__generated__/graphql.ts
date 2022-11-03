@@ -133,7 +133,7 @@ export enum MessagePlatform {
     snapchat = "snapchat",
     skype = "skype",
     line = "line",
-    tiktok = "tiktok"
+    tikTok = "tikTok"
 }
 
 export enum IdType {

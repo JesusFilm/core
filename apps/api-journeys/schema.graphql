@@ -756,7 +756,7 @@ enum MessagePlatform {
   snapchat
   skype
   line
-  tiktok
+  tikTok
 }
 
 input ChatOpenedEventCreateInput {
