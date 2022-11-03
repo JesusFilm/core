@@ -34,10 +34,20 @@ type UserAgent {
 
 """
 The status of a visitor according to team members interacting with the
-visitor admin interface.
+visitor admin interface. This enum should map to an emoji when displayed
+(names here match Apple's emoji name)
 """
 enum VisitorStatus {
   star
+  prohibited
+  checkMarkSymbol
+  thumbsUp
+  thumbsDown
+  partyPopper
+  warning
+  robotFace
+  redExclamationMark
+  redQuestionMark
 }
 
 """
@@ -102,6 +112,7 @@ type Visitor @key(fields: "id") {
   VisitorUpdate mutation.
   """
   notes: String
+  events: [Event!]!
 }
 
 """

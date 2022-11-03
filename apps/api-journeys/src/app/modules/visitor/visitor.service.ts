@@ -5,7 +5,8 @@ import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { GeneratedAqlQuery } from 'arangojs/aql'
 import { forEach } from 'lodash'
-import { VisitorsConnection } from '../../__generated__/graphql'
+import { v4 as uuidv4 } from 'uuid'
+import { VisitorsConnection, Visitor } from '../../__generated__/graphql'
 
 interface ListParams {
   after?: string | null
@@ -53,5 +54,42 @@ export class VisitorService extends BaseService {
     }
     `)
     return await result.next()
+  }
+
+  @KeyAsId()
+  async getByUserIdAndJourneyId(
+    userId: string,
+    journeyId: string
+  ): Promise<Visitor> {
+    let visitor = await (
+      await this.db.query(aql`
+    FOR v in visitors
+      FILTER v.userId == ${userId}
+      FOR j in journeys
+        FILTER j._key == ${journeyId} AND j.teamId == v.teamId
+        LIMIT 1
+        RETURN v
+  `)
+    ).next()
+
+    if (visitor == null) {
+      const journey: { teamId: string } = await (
+        await this.db.query(aql`
+        FOR j in journeys
+          FILTER j._key == ${journeyId}
+          LIMIT 1
+          RETURN j
+      `)
+      ).next()
+
+      visitor = await this.collection.save({
+        id: uuidv4(),
+        teamId: journey.teamId,
+        userId,
+        createdAt: new Date().toISOString()
+      })
+    }
+
+    return visitor
   }
 }
