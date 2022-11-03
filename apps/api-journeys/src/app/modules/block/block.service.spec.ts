@@ -658,6 +658,12 @@ describe('BlockService', () => {
           await service.validateBlock('1', journey.id, 'journeyId')
         ).toEqual(true)
       })
+
+      it('should return false with incorrect journey id', async () => {
+        expect(
+          await service.validateBlock('1', 'wrongJourney', 'journeyId')
+        ).toEqual(false)
+      })
     })
   })
 })
