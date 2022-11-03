@@ -1,23 +1,20 @@
 import { ReactElement } from 'react'
+import { GetStaticProps } from 'next'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import { useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 
 import { HomeHero } from '../src/components/Hero'
-import { GET_VIDEOS } from '../src/components/Videos/Videos'
 import { PageWrapper } from '../src/components/PageWrapper'
-
-import {
-  LanguageProvider,
-  useLanguage
-} from '../src/libs/languageContext/LanguageContext'
 import { Footer } from '../src/components/Footer/Footer'
 import { HomeVideo, HomeVideos } from '../src/components/HomeVideos/HomeVideos'
 import { GetVideos } from '../__generated__/GetVideos'
 import { designationTypes } from '../src/components/HomeVideos/Card/HomeVideoCard'
 import { Header } from '../src/components/Header'
+
+import { createApolloClient } from '../src/libs/client'
 
 export const videos: HomeVideo[] = [
   {
@@ -39,15 +36,11 @@ export const videos: HomeVideo[] = [
   { id: '1_wl7-0-0', designation: designationTypes.series }
 ]
 
-function HomePage(): ReactElement {
-  const languageContext = useLanguage()
-  const { data, loading, error } = useQuery<GetVideos>(GET_VIDEOS, {
-    variables: {
-      where: { ids: videos.map((video) => video.id) },
-      languageId: languageContext?.id ?? '529'
-    }
-  })
+interface HomePageProps {
+  data: GetVideos
+}
 
+function HomePage({ data }: HomePageProps): ReactElement {
   return (
     <PageWrapper header={<Header />} footer={<Footer isHome />}>
       <ThemeProvider
@@ -75,4 +68,52 @@ function HomePage(): ReactElement {
   )
 }
 
+export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
+  const apolloClient = createApolloClient()
+  const { data } = await apolloClient.query<GetVideos>({
+    query: gql`
+      query GetVideos($where: VideosFilter, $languageId: ID) {
+        videos(where: $where) {
+          id
+          type
+          image
+          snippet(languageId: $languageId, primary: true) {
+            value
+          }
+          title(languageId: $languageId, primary: true) {
+            value
+          }
+          variant {
+            duration
+          }
+          episodeIds
+          slug(languageId: $languageId, primary: true) {
+            value
+          }
+        }
+      }
+    `,
+    variables: {
+      where: {
+        ids: videos.map((video) => video.id)
+      },
+      languageId: '529'
+    }
+  })
+
+  if (data.videos === null) {
+    return {
+      props: {},
+      notFound: true,
+      revalidate: 60
+    }
+  } else {
+    return {
+      props: {
+        data
+      },
+      revalidate: 60
+    }
+  }
+}
 export default HomePage
