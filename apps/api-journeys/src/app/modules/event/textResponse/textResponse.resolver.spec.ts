@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
+import { TextResponseSubmissionEventCreateInput } from '../../../__generated__/graphql'
 import { TextResponseSubmissionEventResolver } from './textResponse.resolver'
 
 describe('TextResponseEventResolver', () => {
@@ -14,17 +15,17 @@ describe('TextResponseEventResolver', () => {
 
   let resolver: TextResponseSubmissionEventResolver
 
-  const input = {
-    id: '1',
-    blockId: '2',
-    value: 'My response'
-  }
-
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((input) => input)
+      save: jest.fn((input) => input),
+      validateBlockEvent: jest.fn(() => response)
     })
+  }
+
+  const response = {
+    visitor: { id: 'visitor.id' },
+    journeyId: 'journey.id'
   }
 
   beforeEach(async () => {
@@ -38,13 +39,22 @@ describe('TextResponseEventResolver', () => {
 
   describe('textResponseSubmissionEventCreate', () => {
     it('returns TextResponseSubmissionEvent', async () => {
+      const input: TextResponseSubmissionEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        label: 'stepName',
+        value: 'My response'
+      }
+
       expect(
         await resolver.textResponseSubmissionEventCreate('userId', input)
       ).toEqual({
         ...input,
         __typename: 'TextResponseSubmissionEvent',
-        userId: 'userId',
-        createdAt: new Date().toISOString()
+        visitorId: 'visitor.id',
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })

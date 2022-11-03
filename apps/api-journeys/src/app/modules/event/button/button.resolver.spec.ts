@@ -15,16 +15,17 @@ describe('ButtonClickEventResolver', () => {
 
   let resolver: ButtonClickEventResolver
 
-  const input: ButtonClickEventCreateInput = {
-    id: '1',
-    blockId: 'block.id'
-  }
-
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((event) => event)
+      save: jest.fn((event) => event),
+      validateBlockEvent: jest.fn(() => response)
     })
+  }
+
+  const response = {
+    visitor: { id: 'visitor.id' },
+    journeyId: 'journey.id'
   }
 
   beforeEach(async () => {
@@ -36,11 +37,20 @@ describe('ButtonClickEventResolver', () => {
 
   describe('buttonClickEventCreate', () => {
     it('returns ButtonClickEvent', async () => {
+      const input: ButtonClickEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        label: 'Step name',
+        value: 'Button label'
+      }
+
       expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
         ...input,
         __typename: 'ButtonClickEvent',
-        userId: 'userId',
-        createdAt: new Date().toISOString()
+        visitorId: 'visitor.id',
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })

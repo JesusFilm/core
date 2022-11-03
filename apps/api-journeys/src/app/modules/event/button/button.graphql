@@ -4,10 +4,38 @@ input ButtonClickEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  stepName of the parent stepBlock
+  """
+  label: String
+  """
+  label of the button
+  """
+  value: String
 }
 
 type ButtonClickEvent implements Event {
   id: ID!
+  """
+  ID of the journey that the buttonBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  stepName of the parent stepBlock
+  """
+  label: String
+  """
+  label of the button
+  """
+  value: String
 }
 
 extend type Mutation {

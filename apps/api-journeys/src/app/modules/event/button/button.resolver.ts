@@ -13,17 +13,25 @@ import { EventService } from '../event.service'
 @Resolver('ButtonClickEvent')
 export class ButtonClickEventResolver {
   constructor(private readonly eventService: EventService) {}
+
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async buttonClickEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: ButtonClickEventCreateInput
   ): Promise<ButtonClickEvent> {
+    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
+      userId,
+      input.blockId,
+      input.stepId
+    )
+
     return await this.eventService.save({
       ...input,
       __typename: 'ButtonClickEvent',
-      userId,
-      createdAt: new Date().toISOString()
+      visitorId: visitor.id,
+      createdAt: new Date().toISOString(),
+      journeyId
     })
   }
 }
