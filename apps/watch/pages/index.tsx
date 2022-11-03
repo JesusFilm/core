@@ -55,7 +55,6 @@ function HomePage({ data }: HomePageProps): ReactElement {
           sx={{
             maxWidth: '100% !important',
             width: '100%',
-            margin: 0,
             paddingLeft: '100px !important',
             paddingRight: '100px !important'
           }}

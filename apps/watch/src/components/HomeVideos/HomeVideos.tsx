@@ -16,42 +16,39 @@ interface VideoListGridProps {
   loading?: boolean
 }
 
-export function HomeVideos({
-  loading = false,
-  data,
-  videos
-}: VideoListGridProps): ReactElement {
+export function HomeVideos({ data, videos }: VideoListGridProps): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
       <Grid
         container
         spacing="14px"
         data-testid="video-list-grid"
+        justifyContent="center"
         mb={0}
         mr={0}
         pt={0}
+        columns={{ xs: 12, sm: 12, md: 6, lg: 4, xl: 3 }}
       >
         {(data?.length ?? 0) > 0 &&
           videos?.map((item, index) => (
-            <Grid item key={index} md={6} sm={12} xs={12} lg={4} xl={3} pt={0}>
+            <Grid
+              item
+              key={index}
+              pt={0}
+              sx={{
+                display: {
+                  xs: index > 5 ? 'none' : '',
+                  sm: index > 5 ? 'none' : '',
+                  md: 'inherit',
+                  lg: 'inherit',
+                  xl: 'inherit'
+                }
+              }}
+            >
               <HomeVideoCard
                 video={data?.find((video) => video.id === item.id)}
                 designation={item?.designation}
               />
-            </Grid>
-          ))}
-        {loading &&
-          [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
-            <Grid
-              item
-              key={index}
-              md={4}
-              sm={6}
-              xs={12}
-              data-testid="video-list-grid-placeholder"
-              mr="16px"
-            >
-              <HomeVideoCard />
             </Grid>
           ))}
       </Grid>
