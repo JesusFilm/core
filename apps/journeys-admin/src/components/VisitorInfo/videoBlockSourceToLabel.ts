@@ -3,7 +3,7 @@ import { VideoBlockSource } from '../../../__generated__/globalTypes'
 
 export function videoBlockSourceToLabel(
   source: VideoBlockSource,
-  t: TFunction
+  t: TFunction<'apps-journeys-admin', undefined>
 ): string {
   switch (source) {
     case VideoBlockSource.internal:

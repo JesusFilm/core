@@ -3,7 +3,7 @@ import { MessagePlatform } from '../../../__generated__/globalTypes'
 
 export function messagePlatformToLabel(
   messagePlatform: MessagePlatform,
-  t: TFunction
+  t: TFunction<'apps-journeys-admin', undefined>
 ): string {
   switch (messagePlatform) {
     case MessagePlatform.facebook:
