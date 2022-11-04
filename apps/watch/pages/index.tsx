@@ -41,7 +41,7 @@ interface HomePageProps {
 
 function HomePage({ data }: HomePageProps): ReactElement {
   return (
-    <PageWrapper header={<Header />} footer={<Footer isHome />}>
+    <PageWrapper header={<Header />} footer={<Footer />}>
       <ThemeProvider
         nested
         themeName={ThemeName.website}

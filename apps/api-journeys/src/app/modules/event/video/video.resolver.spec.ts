@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { VideoBlockSource } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
 import {
   VideoStartEventResolver,
   VideoPlayEventResolver,
-  VideoPuaseEventResolver,
+  VideoPauseEventResolver,
   VideoCompleteEventResolver,
   VideoCollapseEventResolver,
   VideoExpandEventResolver,
@@ -19,15 +20,31 @@ describe('VideoResolver', () => {
   afterAll(() => {
     jest.useRealTimers()
   })
+  const eventService = {
+    provide: EventService,
+    useFactory: () => ({
+      save: jest.fn((event) => event),
+      validateBlockEvent: jest.fn(() => response)
+    })
+  }
+
+  const response = {
+    visitor: { id: 'visitor.id' },
+    journeyId: 'journey.id'
+  }
+  const input = {
+    id: '1',
+    blockId: 'block.id',
+    position: 30.1,
+    stepId: 'step.id',
+    label: 'Video title',
+    value: VideoBlockSource.internal,
+    visitorId: 'visitor.id',
+    journeyId: 'journey.id'
+  }
+
   describe('videoStartEventCreate', () => {
     let resolver: VideoStartEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -37,30 +54,22 @@ describe('VideoResolver', () => {
     })
 
     it('returns VideoStartEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1
-      }
-
       expect(await resolver.videoStartEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoStartEvent',
-        userId: 'userid',
         createdAt: new Date().toISOString()
       })
+    })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.youTube })).toEqual(
+        VideoBlockSource.youTube
+      )
     })
   })
 
   describe('videoPlayEventCreate', () => {
     let resolver: VideoPlayEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -70,63 +79,47 @@ describe('VideoResolver', () => {
     })
 
     it('returns VideoPlayEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1
-      }
-
       expect(await resolver.videoPlayEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoPlayEvent',
-        userId: 'userid',
         createdAt: new Date().toISOString()
       })
+    })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.internal })).toEqual(
+        VideoBlockSource.internal
+      )
     })
   })
 
   describe('videoPauseEventCreate', () => {
-    let resolver: VideoPuaseEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
+    let resolver: VideoPauseEventResolver
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoPuaseEventResolver, eventService]
+        providers: [VideoPauseEventResolver, eventService]
       }).compile()
-      resolver = module.get<VideoPuaseEventResolver>(VideoPuaseEventResolver)
+      resolver = module.get<VideoPauseEventResolver>(VideoPauseEventResolver)
     })
 
     it('returns VideoPauseEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1
-      }
-
       expect(await resolver.videoPauseEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoPauseEvent',
-        userId: 'userid',
         createdAt: new Date().toISOString()
       })
+    })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.youTube })).toEqual(
+        VideoBlockSource.youTube
+      )
     })
   })
 
   describe('videoCompleteEventCreate', () => {
     let resolver: VideoCompleteEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -138,30 +131,22 @@ describe('VideoResolver', () => {
     })
 
     it('returns VideoCompleteEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1
-      }
-
       expect(await resolver.videoCompleteEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoCompleteEvent',
-        userId: 'userid',
         createdAt: new Date().toISOString()
       })
+    })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.youTube })).toEqual(
+        VideoBlockSource.youTube
+      )
     })
   })
 
   describe('videoExpandEventCreate', () => {
     let resolver: VideoExpandEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -171,30 +156,22 @@ describe('VideoResolver', () => {
     })
 
     it('returns VideoExpandEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1
-      }
-
       expect(await resolver.videoExpandEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoExpandEvent',
-        userId: 'userid',
         createdAt: new Date().toISOString()
       })
+    })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.youTube })).toEqual(
+        VideoBlockSource.youTube
+      )
     })
   })
 
   describe('videoCollapseEventCreate', () => {
     let resolver: VideoCollapseEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -206,30 +183,22 @@ describe('VideoResolver', () => {
     })
 
     it('returns VideoCollapseEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1
-      }
-
       expect(await resolver.videoCollapseEventCreate('userid', input)).toEqual({
         ...input,
         __typename: 'VideoCollapseEvent',
-        userId: 'userid',
         createdAt: new Date().toISOString()
       })
+    })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.youTube })).toEqual(
+        VideoBlockSource.youTube
+      )
     })
   })
 
   describe('videoProgressEventCreate', () => {
     let resolver: VideoProgressEventResolver
-
-    const eventService = {
-      provide: EventService,
-      useFactory: () => ({
-        save: jest.fn((input) => input)
-      })
-    }
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -240,20 +209,25 @@ describe('VideoResolver', () => {
       )
     })
 
-    it('returns VideoProgressEvent', async () => {
-      const input = {
-        id: '1',
-        blockId: '2',
-        position: 30.1,
-        progress: 25
-      }
+    const progressInput = {
+      ...input,
+      progress: 25
+    }
 
-      expect(await resolver.videoProgressEventCreate('userid', input)).toEqual({
-        ...input,
+    it('returns VideoProgressEvent', async () => {
+      expect(
+        await resolver.videoProgressEventCreate('userid', progressInput)
+      ).toEqual({
+        ...progressInput,
         __typename: 'VideoProgressEvent',
-        userId: 'userid',
         createdAt: new Date().toISOString()
       })
+    })
+
+    it('returns object for federation', () => {
+      expect(resolver.source({ value: VideoBlockSource.youTube })).toEqual(
+        VideoBlockSource.youTube
+      )
     })
   })
 })
