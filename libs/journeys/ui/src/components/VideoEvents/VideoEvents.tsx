@@ -3,6 +3,8 @@ import { ReactElement, useEffect } from 'react'
 import videojs from 'video.js'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
+import { useBlocks } from '../../libs/block'
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
 import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
 import { VideoPauseEventCreate } from './__generated__/VideoPauseEventCreate'
@@ -67,6 +69,7 @@ export interface VideoEventsProps {
   player: videojs.Player
   blockId: string
   videoTitle: string
+  source: VideoBlockSource
   videoId: string
   startAt: number | null
   endAt: number | null
@@ -76,6 +79,7 @@ export function VideoEvents({
   player,
   blockId,
   videoTitle,
+  source,
   videoId,
   startAt,
   endAt
@@ -94,6 +98,9 @@ export function VideoEvents({
   const [videoCollapseEventCreate] = useMutation<VideoCollapseEventCreate>(
     VIDEO_COLLAPSE_EVENT_CREATE
   )
+
+  const { activeBlock } = useBlocks()
+  const stepId = activeBlock?.id
 
   const start = startAt ?? 0
   const end = endAt ?? player.duration()
@@ -121,7 +128,10 @@ export function VideoEvents({
             input: {
               id,
               blockId,
-              position: player.currentTime()
+              position: player.currentTime(),
+              stepId,
+              label: videoTitle,
+              value: source
             }
           }
         })
@@ -139,7 +149,16 @@ export function VideoEvents({
     }
     player.on('play', playListener)
     return () => player.off('play', playListener)
-  }, [player, videoPlayEventCreate, blockId, start, videoTitle, videoId])
+  }, [
+    player,
+    videoPlayEventCreate,
+    blockId,
+    start,
+    videoTitle,
+    videoId,
+    stepId,
+    source
+  ])
 
   // PAUSE event
   useEffect(() => {
@@ -151,7 +170,10 @@ export function VideoEvents({
           input: {
             id,
             blockId,
-            position: currentPosition
+            position: currentPosition,
+            stepId,
+            label: videoTitle,
+            value: source
           }
         }
       })
@@ -168,7 +190,15 @@ export function VideoEvents({
     }
     player.on('pause', pauseListener)
     return () => player.off('pause', pauseListener)
-  }, [player, videoPauseEventCreate, blockId, videoTitle, videoId])
+  }, [
+    player,
+    videoPauseEventCreate,
+    blockId,
+    videoTitle,
+    videoId,
+    source,
+    stepId
+  ])
 
   // EXPAND event
   useEffect(() => {
@@ -181,7 +211,10 @@ export function VideoEvents({
             input: {
               id,
               blockId,
-              position: currentPosition
+              position: currentPosition,
+              stepId,
+              label: videoTitle,
+              value: source
             }
           }
         })
@@ -199,7 +232,15 @@ export function VideoEvents({
     }
     player.on('fullscreenchange', expandListener)
     return () => player.off('fullscreenchange', expandListener)
-  }, [player, videoExpandEventCreate, blockId, videoTitle, videoId])
+  }, [
+    player,
+    videoExpandEventCreate,
+    blockId,
+    videoTitle,
+    videoId,
+    stepId,
+    source
+  ])
 
   // COLLAPSE event
   useEffect(() => {
@@ -212,7 +253,10 @@ export function VideoEvents({
             input: {
               id,
               blockId,
-              position: currentPosition
+              position: currentPosition,
+              stepId,
+              label: videoTitle,
+              value: source
             }
           }
         })
@@ -230,7 +274,15 @@ export function VideoEvents({
     }
     player.on('fullscreenchange', collapseListener)
     return () => player.off('fullscreenchange', collapseListener)
-  }, [player, videoCollapseEventCreate, blockId, videoTitle, videoId])
+  }, [
+    player,
+    videoCollapseEventCreate,
+    blockId,
+    videoTitle,
+    videoId,
+    stepId,
+    source
+  ])
 
   // START event
   useEffect(() => {
@@ -243,7 +295,10 @@ export function VideoEvents({
             input: {
               id,
               blockId,
-              position: currentPosition
+              position: currentPosition,
+              stepId,
+              label: videoTitle,
+              value: source
             }
           }
         })
@@ -268,7 +323,9 @@ export function VideoEvents({
     videoStartEventCreate,
     start,
     videoTitle,
-    videoId
+    videoId,
+    stepId,
+    source
   ])
 
   // PROGRESS 25% event
@@ -283,7 +340,10 @@ export function VideoEvents({
               id,
               blockId,
               position: position25,
-              progress: 25
+              progress: 25,
+              stepId,
+              label: videoTitle,
+              value: source
             }
           }
         })
@@ -309,7 +369,9 @@ export function VideoEvents({
     called25,
     videoProgressEventCreate25,
     videoTitle,
-    videoId
+    videoId,
+    stepId,
+    source
   ])
 
   // PROGRESS 50% event
@@ -324,7 +386,10 @@ export function VideoEvents({
               id,
               blockId,
               position: position50,
-              progress: 50
+              progress: 50,
+              stepId,
+              label: videoTitle,
+              value: source
             }
           }
         })
@@ -350,7 +415,9 @@ export function VideoEvents({
     called50,
     videoProgressEventCreate50,
     videoTitle,
-    videoId
+    videoId,
+    stepId,
+    source
   ])
 
   // PROGRESS 75% event
@@ -365,7 +432,10 @@ export function VideoEvents({
               id,
               blockId,
               position: position75,
-              progress: 75
+              progress: 75,
+              stepId,
+              label: videoTitle,
+              value: source
             }
           }
         })
@@ -392,7 +462,9 @@ export function VideoEvents({
     called75,
     videoProgressEventCreate75,
     videoTitle,
-    videoId
+    videoId,
+    stepId,
+    source
   ])
 
   // COMPLETE event
@@ -406,7 +478,10 @@ export function VideoEvents({
             input: {
               id,
               blockId,
-              position: currentPosition
+              position: currentPosition,
+              stepId,
+              label: videoTitle,
+              value: source
             }
           }
         })
@@ -431,7 +506,9 @@ export function VideoEvents({
     videoCompleteEventCreate,
     blockId,
     videoTitle,
-    videoId
+    videoId,
+    stepId,
+    source
   ])
 
   return <></>

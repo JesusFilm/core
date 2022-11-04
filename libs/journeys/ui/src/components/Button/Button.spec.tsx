@@ -8,14 +8,15 @@ import {
   ButtonSize,
   IconColor,
   IconName,
-  IconSize
+  IconSize,
+  MessagePlatform
 } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { TreeBlock, activeBlockVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import { ButtonFields } from './__generated__/ButtonFields'
-import { BUTTON_CLICK_EVENT_CREATE } from './Button'
+import { ButtonFields_action, ButtonFields } from './__generated__/ButtonFields'
+import { BUTTON_CLICK_EVENT_CREATE, CHAT_OPEN_EVENT_CREATE } from './Button'
 import { Button } from '.'
 
 jest.mock('uuid', () => ({
@@ -77,9 +78,47 @@ const block: TreeBlock<ButtonFields> = {
   children: []
 }
 
+const activeBlock: TreeBlock<StepBlock> = {
+  __typename: 'StepBlock',
+  id: 'step.id',
+  parentBlockId: null,
+  parentOrder: 0,
+  locked: true,
+  nextBlockId: null,
+  children: [
+    {
+      __typename: 'CardBlock',
+      id: 'card.id',
+      parentBlockId: null,
+      parentOrder: null,
+      backgroundColor: null,
+      coverBlockId: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: [
+        {
+          __typename: 'TypographyBlock',
+          id: 'typog.id',
+          content: 'stepName',
+          parentBlockId: null,
+          align: null,
+          color: null,
+          variant: null,
+          parentOrder: 0,
+          children: []
+        }
+      ]
+    }
+  ]
+}
+
 describe('Button', () => {
   it('should create a buttonClickEvent onClick', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
+
+    activeBlockVar(activeBlock)
+    treeBlocksVar([activeBlock])
 
     const result = jest.fn(() => ({
       data: {
@@ -99,7 +138,10 @@ describe('Button', () => {
               variables: {
                 input: {
                   id: 'uuid',
-                  blockId: 'button'
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  label: 'stepName',
+                  value: block.label
                 }
               }
             },
@@ -120,12 +162,25 @@ describe('Button', () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     const activeBlock: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
-      id: 'Step1',
+      id: 'step.id',
       parentBlockId: null,
       parentOrder: 0,
       locked: true,
       nextBlockId: null,
-      children: []
+      children: [
+        {
+          __typename: 'CardBlock',
+          id: 'card.id',
+          parentBlockId: null,
+          parentOrder: null,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: []
+        }
+      ]
     }
     activeBlockVar(activeBlock)
     treeBlocksVar([activeBlock])
@@ -139,7 +194,10 @@ describe('Button', () => {
               variables: {
                 input: {
                   id: 'uuid',
-                  blockId: 'button'
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  label: 'Step {{number}}',
+                  value: block.label
                 }
               }
             },
@@ -170,6 +228,61 @@ describe('Button', () => {
         }
       })
     )
+  })
+
+  it('should create a chatOpenEvent onClick', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+
+    const action: ButtonFields_action = {
+      __typename: 'LinkAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      url: 'https://m.me/some-user'
+    }
+
+    const buttonBlock = {
+      ...block,
+      action
+    }
+
+    activeBlockVar(activeBlock)
+    treeBlocksVar([activeBlock])
+
+    const result = jest.fn(() => ({
+      data: {
+        chatOpenEventCreate: {
+          __typename: 'ChatOpenEvent',
+          id: 'uuiid'
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CHAT_OPEN_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  value: MessagePlatform.facebook
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(result).toBeCalled())
   })
 
   it('should render the button successfully', () => {
@@ -238,6 +351,7 @@ describe('Button', () => {
       'MuiButton-startIcon'
     )
   })
+
   it('should render the end icon', () => {
     const iconBlock: TreeBlock<ButtonFields> = {
       ...block,

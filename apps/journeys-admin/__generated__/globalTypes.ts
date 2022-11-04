@@ -224,6 +224,13 @@ export interface CardBlockUpdateInput {
   themeName?: ThemeName | null;
 }
 
+export interface ChatOpenEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  stepId?: string | null;
+  value?: MessagePlatform | null;
+}
+
 export interface IconBlockCreateInput {
   color?: IconColor | null;
   id?: string | null;
