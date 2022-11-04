@@ -100,6 +100,19 @@ export enum JourneysReportType {
   singleSummary = "singleSummary",
 }
 
+export enum MessagePlatform {
+  facebook = "facebook",
+  instagram = "instagram",
+  line = "line",
+  skype = "skype",
+  snapchat = "snapchat",
+  telegram = "telegram",
+  tikTok = "tikTok",
+  viber = "viber",
+  vk = "vk",
+  whatsApp = "whatsApp",
+}
+
 export enum Role {
   publisher = "publisher",
 }
@@ -191,6 +204,13 @@ export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+}
+
+export interface ChatOpenEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  stepId?: string | null;
+  value?: MessagePlatform | null;
 }
 
 export interface IconBlockCreateInput {
@@ -457,7 +477,6 @@ export interface VideoStartEventCreateInput {
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
-  ids?: string[] | null;
   tagId?: string | null;
   title?: string | null;
   types?: VideoType[] | null;
