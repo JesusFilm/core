@@ -9,19 +9,17 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
-import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 import {
   GetJourney_journey as Journey,
   GetJourney_journey_language as Language
 } from '../../../__generated__/GetJourney'
-import { StepFields as StepBlock } from '../../../__generated__/StepFields'
 import {
   ThemeName,
   ThemeMode,
   JourneyStatus
 } from '../../../__generated__/globalTypes'
 import { basic } from '../../libs/testData/storyData'
-import { JOURNEY_VIEW_EVENT_CREATE, STEP_NEXT_EVENT_CREATE } from './Conductor'
+import { JOURNEY_VIEW_EVENT_CREATE } from './Conductor'
 import { Conductor } from '.'
 
 jest.mock('@core/shared/ui/useBreakpoints', () => ({
@@ -46,15 +44,6 @@ jest.mock('react-gtm-module', () => ({
 const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
-
-jest.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => {
-    return {
-      t: (str: string) => str
-    }
-  }
-}))
 
 beforeEach(() => {
   const useBreakpointsMock = useBreakpoints as jest.Mock
@@ -197,160 +186,6 @@ describe('Conductor', () => {
         }
       })
     )
-  })
-
-  it('should create a stepNextEvent', async () => {
-    mockUuidv4.mockReturnValue('uuid')
-
-    const mocks = [
-      {
-        request: {
-          query: JOURNEY_VIEW_EVENT_CREATE,
-          variables: {
-            input: {
-              id: 'uuid',
-              journeyId: 'journeyId',
-              label: 'my journey',
-              value: '529'
-            }
-          }
-        },
-        result: {
-          data: {
-            journeyViewEventCreate: {
-              id: 'uuid',
-              __typename: 'JourneyViewEvent'
-            }
-          }
-        }
-      },
-      {
-        request: {
-          query: STEP_VIEW_EVENT_CREATE,
-          variables: {
-            input: {
-              id: 'uuid',
-              blockId: 'step.id',
-              value: 'step heading'
-            }
-          }
-        },
-        result: {
-          data: {
-            stepViewEventCreate: {
-              id: 'uuid',
-              __typename: 'StepViewEvent'
-            }
-          }
-        }
-      },
-      {
-        request: {
-          query: STEP_VIEW_EVENT_CREATE,
-          variables: {
-            input: {
-              id: 'uuid',
-              blockId: 'nextStep.id',
-              value: 'next step heading'
-            }
-          }
-        },
-        result: {
-          data: {
-            stepViewEventCreate: {
-              id: 'uuid',
-              __typename: 'StepViewEvent'
-            }
-          }
-        }
-      }
-    ]
-
-    const step: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'step.id',
-      nextBlockId: 'nextStep.id',
-      parentBlockId: null,
-      parentOrder: 0,
-      locked: false,
-      children: [
-        {
-          __typename: 'TypographyBlock',
-          id: 'typog1.id',
-          parentBlockId: 'step.id',
-          parentOrder: 0,
-          content: 'step heading',
-          variant: null,
-          color: null,
-          align: null,
-          children: []
-        }
-      ]
-    }
-
-    const nextStep: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'nextStep.id',
-      nextBlockId: null,
-      parentBlockId: null,
-      parentOrder: 0,
-      locked: false,
-      children: [
-        {
-          __typename: 'TypographyBlock',
-          id: 'typog2.id',
-          parentBlockId: 'nextStep.id',
-          parentOrder: 0,
-          content: 'next step heading',
-          variant: null,
-          color: null,
-          align: null,
-          children: []
-        }
-      ]
-    }
-
-    activeBlockVar(step)
-    treeBlocksVar([step, nextStep])
-
-    const result = jest.fn(() => ({
-      data: {
-        stepNextEventCreate: {
-          id: 'uuid',
-          __typename: 'StepNextEvent'
-        }
-      }
-    }))
-
-    const { getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          ...mocks,
-          {
-            request: {
-              query: STEP_NEXT_EVENT_CREATE,
-              variables: {
-                input: {
-                  id: 'uuid',
-                  blockId: 'step.id',
-                  nextStepId: 'nextStep.id',
-                  label: 'step heading',
-                  value: 'next step heading'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <Conductor blocks={[step, nextStep]} />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByTestId('conductorRightButton'))
-    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('should not throw error if no blocks', () => {
