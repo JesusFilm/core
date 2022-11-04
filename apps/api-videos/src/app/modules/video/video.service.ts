@@ -7,9 +7,6 @@ import { AqlQuery } from 'arangojs/aql'
 import { IdType, VideosFilter } from '../../__generated__/graphql'
 
 interface ExtendedVideosFilter extends VideosFilter {
-  title?: string
-  tagId?: string
-  availableVariantLanguageIds?: string[]
   variantLanguageId?: string
   offset?: number
   limit?: number
