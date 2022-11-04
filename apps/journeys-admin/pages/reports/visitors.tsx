@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import i18nConfig from '../../next-i18next.config'
+import { ReportButtons } from '../../src/components/ReportButtons'
 
 function ReportsVisitorsPage(): ReactElement {
   const router = useRouter()
@@ -26,6 +27,7 @@ function ReportsVisitorsPage(): ReactElement {
         authUser={AuthUser}
         router={router}
       >
+        <ReportButtons pageName="journeys" />
         Visitors report list
       </PageWrapper>
     </>
