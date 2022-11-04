@@ -6,13 +6,13 @@ import { ReportButtons } from "./ReportButtons"
 const ReportButtonsStory = {
   ...journeysAdminConfig,
   component: ReportButtons,
-  title: 'Journeys-Admin/reportButtons'
+  title: 'Journeys-Admin/ReportButtons'
   
 }
 
-const Template: Story = ({ ...args }) => (
+const Template: Story = () => (
   <MockedProvider>
-    <ReportButtons pageName="reports" />
+    <ReportButtons pageName="journeys" />
   </MockedProvider>
 )
 

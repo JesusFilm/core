@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 
 interface ReportButtonProps {
   pageName: string
@@ -15,37 +16,51 @@ export function ReportButtons({ pageName }: ReportButtonProps): ReactElement {
     <Box
       sx={{
         width: '100%',
-        backgroundColor: 'background.paper'
+        backgroundColor: 'background.paper',
+        borderTop: 1, 
+        borderBottom: 1
       }}
     >
-      <Container maxWidth="lg" sx={{ px: { xs: 6, sm: 8 } }}>
+      <Container maxWidth="lg" sx={{ px: { xs: 6, sm: 8 }, marginLeft: 0}}>
         {
-          pageName === "reports" ?
-            <Stack direction="row" spacing={4} sx={{ py: 2 }}>
+          pageName === "journeys" ?
+            <Stack direction="row" spacing={16} sx={{ py: 2 }}>
+              <Button id="journeys" onClick={
+                async () => await router.push(`/journeys-admin/journeys`, undefined, {
+                    shallow: true
+                  }
+                )}
+              >                
+                <Typography color="red">
+                  <strong>Journeys</strong>
+                </Typography></Button> 
               <Button onClick={
                 async () => await router.push(`/journeys-admin/visitors`, undefined, {
                   shallow: true
-                })}
-              > Visitors </Button>
-              <Button onClick={
-                async () => await router.push(`/journeys-admin/reports`, undefined, {
-                  shallow: true
-                })}> Reports </Button>              
+                })}>
+                <Typography color="secondary.main">
+                  <strong>Visitors</strong>
+                </Typography></Button>             
             </Stack>
           :
-            <Stack direction="row" spacing={4} sx={{ py: 2 }}>
+            <Stack direction="row" spacing={16} sx={{ py: 2 }}>
+              <Button onClick={
+                async () => await router.push(`/journeys-admin/journeys`, undefined, {
+                  shallow: true
+                })}
+              >                
+                <Typography color="secondary.main">
+                  <strong>Journeys</strong>
+                </Typography></Button> 
               <Button onClick={
                 async () => await router.push(`/journeys-admin/visitors`, undefined, {
                   shallow: true
-                })}
-              > Visitors </Button>
-              <Button onClick={
-                async () => await router.push(`/journeys-admin/reports`, undefined, {
-                  shallow: true
-                })}> Reports </Button> 
+                })}>
+                <Typography color="red">
+                  <strong>Visitors</strong>
+                </Typography></Button> 
             </Stack>
-        }  
-        <div/>
+        }
       </Container>
     </Box>
   )
