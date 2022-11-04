@@ -542,8 +542,8 @@ export class JourneyTemplateInput {
 
 export class VisitorUpdateInput {
     email?: Nullable<string>;
-    messengerId?: Nullable<string>;
-    messengerNetwork?: Nullable<string>;
+    messagePlatformId?: Nullable<string>;
+    messagePlatform?: Nullable<MessagePlatform>;
     name?: Nullable<string>;
     notes?: Nullable<string>;
     status?: Nullable<VisitorStatus>;
@@ -1010,8 +1010,8 @@ export class Visitor {
     name?: Nullable<string>;
     email?: Nullable<string>;
     status?: Nullable<VisitorStatus>;
-    messengerNetwork?: Nullable<string>;
-    messengerId?: Nullable<string>;
+    messagePlatform?: Nullable<MessagePlatform>;
+    messagePlatformId?: Nullable<string>;
     notes?: Nullable<string>;
     events: Event[];
 }
