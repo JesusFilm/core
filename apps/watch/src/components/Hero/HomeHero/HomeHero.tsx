@@ -23,13 +23,10 @@ export function HomeHero(): ReactElement {
         alt="Home Hero"
         layout="fill"
         objectFit="cover"
-        style={{
-          zIndex: -1
-        }}
       />
       <Box
-        style={{
-          zIndex: 0,
+        sx={{
+          zIndex: 1,
           position: 'absolute',
           height: '100%',
           width: '100%',
@@ -44,6 +41,7 @@ export function HomeHero(): ReactElement {
         <Stack
           direction={{ xs: 'column', sm: 'column', md: 'column', lg: 'row' }}
           alignContent="center"
+          sx={{ zIndex: 2 }}
         >
           <Typography
             variant="h1"
