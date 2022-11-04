@@ -1,3 +1,4 @@
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { GetVisitorEvents } from '../../../../__generated__/GetVisitorEvents'
 import { GET_VISITOR_EVENTS } from './VisitorJourneyList'
 
@@ -47,6 +48,24 @@ const getVisitorEvents: GetVisitorEvents = {
         email: 'bilbo.baggins@example.com',
         value: 'Bilbo Baggins',
         createdAt: '2022-11-02T03:20:26.368Z'
+      },
+      {
+        __typename: 'VideoCompleteEvent',
+        id: 'VideoCompleteEventId',
+        journeyId: 'journeyId1',
+        label: 'The Hobbit',
+        value: 'youTube',
+        createdAt: '2022-11-02T03:20:26.368Z',
+        source: VideoBlockSource.youTube
+      },
+      {
+        __typename: 'VideoStartEvent',
+        id: 'VideoStartEventId',
+        journeyId: 'journeyId1',
+        label: 'The Hobbit',
+        value: 'youTube',
+        createdAt: '2022-11-02T03:20:26.368Z',
+        source: VideoBlockSource.youTube
       },
       {
         __typename: 'JourneyViewEvent',

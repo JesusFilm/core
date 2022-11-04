@@ -6,6 +6,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrowRounded'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUncheckedRounded'
 import MovieIcon from '@mui/icons-material/MovieRounded'
 import { useTranslation } from 'react-i18next'
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { GetVisitorEvents_visitor_events as Event } from '../../../../../__generated__/GetVisitorEvents'
 import { GenericEvent } from './GenericEvent'
 
@@ -26,6 +27,17 @@ export function VisitorJourneyTimelineItem({
   let value: GenericEventProps['value'] = event.value
   let activity: GenericEventProps['activity']
 
+  function videoBlockSourceToLabel(source: VideoBlockSource | null): string {
+    switch (source) {
+      case VideoBlockSource.internal:
+        return t('Jesus Film Library')
+      case VideoBlockSource.youTube:
+        return t('YouTube')
+      default:
+        return t('Video')
+    }
+  }
+
   switch (event.__typename) {
     case 'RadioQuestionSubmissionEvent':
       icon = <ListIcon />
@@ -37,10 +49,14 @@ export function VisitorJourneyTimelineItem({
       break
     case 'VideoCompleteEvent':
       icon = <MovieIcon />
+      label = videoBlockSourceToLabel(event.source)
+      value = event.label
       activity = t('Video completed')
       break
     case 'VideoStartEvent':
       icon = <PlayArrowIcon />
+      label = videoBlockSourceToLabel(event.source)
+      value = event.label
       activity = t('Video started')
       break
     case 'SignUpSubmissionEvent':

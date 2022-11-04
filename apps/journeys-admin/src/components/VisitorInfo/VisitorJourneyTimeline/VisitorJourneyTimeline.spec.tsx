@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { GetVisitorEvents_visitor_events as Event } from '../../../../__generated__/GetVisitorEvents'
 import { VisitorJourneyTimeline } from './VisitorJourneyTimeline'
 
@@ -33,17 +34,19 @@ describe('VisitorJourneyTimeline', () => {
       __typename: 'VideoCompleteEvent',
       id: 'VideoCompleteEventId',
       journeyId: 'journeyId',
-      label: null,
-      value: null,
-      createdAt: '2022-11-02T03:20:26.368Z'
+      label: 'JESUS',
+      value: 'youTube',
+      createdAt: '2022-11-02T03:20:26.368Z',
+      source: VideoBlockSource.youTube
     },
     {
       __typename: 'VideoStartEvent',
       id: 'VideoStartEventId',
       journeyId: 'journeyId',
-      label: null,
-      value: null,
-      createdAt: '2022-11-02T03:20:26.368Z'
+      label: 'JESUS',
+      value: 'youTube',
+      createdAt: '2022-11-02T03:20:26.368Z',
+      source: VideoBlockSource.youTube
     },
     {
       __typename: 'SignUpSubmissionEvent',

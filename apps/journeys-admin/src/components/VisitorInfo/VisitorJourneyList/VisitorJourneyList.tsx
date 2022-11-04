@@ -32,6 +32,12 @@ export const GET_VISITOR_EVENTS = gql`
         ... on SignUpSubmissionEvent {
           email
         }
+        ... on VideoStartEvent {
+          source
+        }
+        ... on VideoCompleteEvent {
+          source
+        }
       }
     }
   }

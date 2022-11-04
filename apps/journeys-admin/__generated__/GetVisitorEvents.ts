@@ -3,12 +3,14 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { VideoBlockSource } from "./globalTypes";
+
 // ====================================================
 // GraphQL query operation: GetVisitorEvents
 // ====================================================
 
 export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
-  __typename: "ButtonClickEvent" | "ChatOpenedEvent" | "RadioQuestionSubmissionEvent" | "StepNextEvent" | "StepViewEvent" | "TextResponseSubmissionEvent" | "VideoCollapseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoPauseEvent" | "VideoPlayEvent" | "VideoProgressEvent" | "VideoStartEvent";
+  __typename: "ButtonClickEvent" | "ChatOpenedEvent" | "RadioQuestionSubmissionEvent" | "StepNextEvent" | "StepViewEvent" | "TextResponseSubmissionEvent" | "VideoCollapseEvent" | "VideoExpandEvent" | "VideoPauseEvent" | "VideoPlayEvent" | "VideoProgressEvent";
   id: string;
   journeyId: string;
   label: string | null;
@@ -77,7 +79,57 @@ export interface GetVisitorEvents_visitor_events_SignUpSubmissionEvent {
   email: string | null;
 }
 
-export type GetVisitorEvents_visitor_events = GetVisitorEvents_visitor_events_ButtonClickEvent | GetVisitorEvents_visitor_events_JourneyViewEvent | GetVisitorEvents_visitor_events_SignUpSubmissionEvent;
+export interface GetVisitorEvents_visitor_events_VideoStartEvent {
+  __typename: "VideoStartEvent";
+  id: string;
+  /**
+   * ID of the journey that the videoBlock belongs to
+   */
+  journeyId: string;
+  /**
+   * title of the video
+   */
+  label: string | null;
+  /**
+   * source of the video
+   */
+  value: string | null;
+  /**
+   * time event was created
+   */
+  createdAt: any;
+  /**
+   * source of the video (based on the source in the value field)
+   */
+  source: VideoBlockSource | null;
+}
+
+export interface GetVisitorEvents_visitor_events_VideoCompleteEvent {
+  __typename: "VideoCompleteEvent";
+  id: string;
+  /**
+   * ID of the journey that the videoBlock belongs to
+   */
+  journeyId: string;
+  /**
+   * title of the video
+   */
+  label: string | null;
+  /**
+   * source of the video
+   */
+  value: string | null;
+  /**
+   * time event was created
+   */
+  createdAt: any;
+  /**
+   * source of the video (based on the source in the value field)
+   */
+  source: VideoBlockSource | null;
+}
+
+export type GetVisitorEvents_visitor_events = GetVisitorEvents_visitor_events_ButtonClickEvent | GetVisitorEvents_visitor_events_JourneyViewEvent | GetVisitorEvents_visitor_events_SignUpSubmissionEvent | GetVisitorEvents_visitor_events_VideoStartEvent | GetVisitorEvents_visitor_events_VideoCompleteEvent;
 
 export interface GetVisitorEvents_visitor {
   __typename: "Visitor";

@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { simpleComponentConfig } from '../../../../libs/storybook'
 import { GetVisitorEvents_visitor_events as Event } from '../../../../../__generated__/GetVisitorEvents'
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { VisitorJourneyTimelineItem } from '.'
 
 const VisitorJourneyTimelineItemDemo = {
@@ -41,17 +42,19 @@ const videoCompleteEvent: Event = {
   __typename: 'VideoCompleteEvent',
   id: 'VideoCompleteEventId',
   journeyId: 'journeyId',
-  label: null,
-  value: null,
-  createdAt: '2022-11-02T03:20:26.368Z'
+  label: 'JESUS',
+  value: 'youTube',
+  createdAt: '2022-11-02T03:20:26.368Z',
+  source: VideoBlockSource.youTube
 }
 const videoStartEvent: Event = {
   __typename: 'VideoStartEvent',
   id: 'VideoStartEventId',
   journeyId: 'journeyId',
-  label: null,
-  value: null,
-  createdAt: '2022-11-02T03:20:26.368Z'
+  label: 'JESUS',
+  value: 'youTube',
+  createdAt: '2022-11-02T03:20:26.368Z',
+  source: VideoBlockSource.youTube
 }
 const signUpSubmissionEvent: Event = {
   __typename: 'SignUpSubmissionEvent',

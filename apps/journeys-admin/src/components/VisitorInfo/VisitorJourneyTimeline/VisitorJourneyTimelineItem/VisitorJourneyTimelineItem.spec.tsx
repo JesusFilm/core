@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { GetVisitorEvents_visitor_events as Event } from '../../../../../__generated__/GetVisitorEvents'
 import { VisitorJourneyTimelineItem } from './VisitorJourneyTimelineItem'
 
@@ -48,11 +49,14 @@ describe('VisitorJourneyTimelineItem', () => {
       __typename: 'VideoCompleteEvent',
       id: 'VideoCompleteEventId',
       journeyId: 'journeyId',
-      label: null,
-      value: null,
-      createdAt: '2022-11-02T03:20:26.368Z'
+      label: 'JESUS',
+      value: 'youTube',
+      createdAt: '2022-11-02T03:20:26.368Z',
+      source: VideoBlockSource.youTube
     }
     const { getByText } = render(<VisitorJourneyTimelineItem event={event} />)
+    expect(getByText('JESUS')).toBeInTheDocument()
+    expect(getByText('YouTube')).toBeInTheDocument()
     expect(getByText('Video completed')).toBeInTheDocument()
   })
   it('shows videoStartEvent', () => {
@@ -60,11 +64,29 @@ describe('VisitorJourneyTimelineItem', () => {
       __typename: 'VideoStartEvent',
       id: 'VideoStartEventId',
       journeyId: 'journeyId',
-      label: null,
-      value: null,
-      createdAt: '2022-11-02T03:20:26.368Z'
+      label: 'JESUS',
+      value: 'internal',
+      createdAt: '2022-11-02T03:20:26.368Z',
+      source: VideoBlockSource.internal
     }
     const { getByText } = render(<VisitorJourneyTimelineItem event={event} />)
+    expect(getByText('JESUS')).toBeInTheDocument()
+    expect(getByText('Jesus Film Library')).toBeInTheDocument()
+    expect(getByText('Video started')).toBeInTheDocument()
+  })
+  it('shows videoStartEvent with null source', () => {
+    const event: Event = {
+      __typename: 'VideoStartEvent',
+      id: 'VideoStartEventId',
+      journeyId: 'journeyId',
+      label: 'JESUS',
+      value: null,
+      createdAt: '2022-11-02T03:20:26.368Z',
+      source: null
+    }
+    const { getByText } = render(<VisitorJourneyTimelineItem event={event} />)
+    expect(getByText('JESUS')).toBeInTheDocument()
+    expect(getByText('Video')).toBeInTheDocument()
     expect(getByText('Video started')).toBeInTheDocument()
   })
   it('shows signUpSubmissionEvent', () => {

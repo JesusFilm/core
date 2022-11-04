@@ -1,4 +1,5 @@
 import { Meta, Story } from '@storybook/react'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { VisitorInfoProvider } from '../VisitorInfoProvider'
 import { JourneyWithEvents } from '../transformVisitorEvents'
@@ -52,23 +53,24 @@ const journey: JourneyWithEvents = {
       __typename: 'VideoCollapseEvent',
       id: 'VideoCollapseEventId',
       journeyId: 'journeyId',
-      label: null,
-      value: null,
+      label: 'JESUS',
+      value: 'youTube',
       createdAt: '2022-11-02T03:20:26.368Z'
     },
     {
       __typename: 'VideoCompleteEvent',
       id: 'VideoCompleteEventId',
       journeyId: 'journeyId',
-      label: null,
-      value: null,
-      createdAt: '2022-11-02T03:20:26.368Z'
+      label: 'JESUS',
+      value: 'youTube',
+      createdAt: '2022-11-02T03:20:26.368Z',
+      source: VideoBlockSource.youTube
     },
     {
       __typename: 'VideoExpandEvent',
       id: 'VideoExpandEventId',
       journeyId: 'journeyId',
-      label: null,
+      label: 'JESUS',
       value: null,
       createdAt: '2022-11-02T03:20:26.368Z'
     },
@@ -76,33 +78,34 @@ const journey: JourneyWithEvents = {
       __typename: 'VideoPauseEvent',
       id: 'VideoPauseEventId',
       journeyId: 'journeyId',
-      label: null,
-      value: null,
+      label: 'JESUS',
+      value: 'youTube',
       createdAt: '2022-11-02T03:20:26.368Z'
     },
     {
       __typename: 'VideoPlayEvent',
       id: 'VideoPlayEventId',
       journeyId: 'journeyId',
-      label: null,
-      value: null,
+      label: 'JESUS',
+      value: 'youTube',
       createdAt: '2022-11-02T03:20:26.368Z'
     },
     {
       __typename: 'VideoProgressEvent',
       id: 'VideoProgressEventId',
       journeyId: 'journeyId',
-      label: null,
-      value: null,
+      label: 'JESUS',
+      value: 'youTube',
       createdAt: '2022-11-02T03:20:26.368Z'
     },
     {
       __typename: 'VideoStartEvent',
       id: 'VideoStartEventId',
       journeyId: 'journeyId',
-      label: null,
-      value: null,
-      createdAt: '2022-11-02T03:20:26.368Z'
+      label: 'JESUS',
+      value: 'youTube',
+      createdAt: '2022-11-02T03:20:26.368Z',
+      source: VideoBlockSource.youTube
     },
     {
       __typename: 'SignUpSubmissionEvent',
