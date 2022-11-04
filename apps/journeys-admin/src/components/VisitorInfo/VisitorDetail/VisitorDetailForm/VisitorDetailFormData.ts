@@ -33,6 +33,32 @@ export const getVisitorMock = {
   }
 }
 
+const getVisitorUnfilled: GetVisitor = {
+  visitor: {
+    __typename: 'Visitor',
+    id: 'visitorId',
+    countryCode: null,
+    lastChatStartedAt: null,
+    messagePlatformId: null,
+    messagePlatform: null,
+    name: null,
+    notes: null,
+    status: null
+  }
+}
+
+export const getVisitorUnfilledMock = {
+  request: {
+    query: GET_VISITOR,
+    variables: {
+      id: 'visitorId'
+    }
+  },
+  result: {
+    data: getVisitorUnfilled
+  }
+}
+
 const visitorUpdate: VisitorUpdate = {
   visitorUpdate: {
     __typename: 'Visitor',
