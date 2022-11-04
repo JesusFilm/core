@@ -29,7 +29,6 @@ export class VideoResolver {
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
     return await this.videoService.filterEpisodes({
-      ids: where?.ids,
       playlistId,
       idType,
       title: where?.title ?? undefined,
@@ -53,8 +52,8 @@ export class VideoResolver {
     const variantLanguageId = info.fieldNodes[0].selectionSet.selections
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
+
     return await this.videoService.filterAll({
-      ids: where?.ids,
       title: where?.title ?? undefined,
       tagId: where?.tagId ?? undefined,
       availableVariantLanguageIds:
@@ -64,6 +63,11 @@ export class VideoResolver {
       offset,
       limit
     })
+  }
+
+  @Query()
+  async videosById(@Info() info, @Args('ids') ids: string[]): Promise<Video[]> {
+    return await this.videoService.getByIds(ids)
   }
 
   @Query()

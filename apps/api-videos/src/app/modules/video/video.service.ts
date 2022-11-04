@@ -25,7 +25,6 @@ export class VideoService extends BaseService {
 
   videoFilter(filter?: VideosFilter): AqlQuery {
     const {
-      ids,
       title,
       tagId = null,
       availableVariantLanguageIds = [],
@@ -44,8 +43,7 @@ export class VideoService extends BaseService {
         (availableVariantLanguageIds?.length ?? 0) > 0 &&
           aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
         types != null && aql`FILTER item.type IN ${types}`,
-        tagId != null && aql`FILTER ${tagId} IN item.tagIds`,
-        ids != null && aql`FILTER item._key IN ${ids}`
+        tagId != null && aql`FILTER ${tagId} IN item.tagIds`
       ].filter((x) => x !== false)
     )
   }
