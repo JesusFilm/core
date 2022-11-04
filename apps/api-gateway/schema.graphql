@@ -1764,7 +1764,7 @@ type Visitor
   createdAt: DateTime! @join__field(graph: JOURNEYS)
 
   """
-  The email address of the visitor as populated by mutation or otherwise via
+  The email address of the visitor as populated by VisitorUpdate mutation or
   SignUpEventSubmissionEventCreate mutation.
   """
   email: String @join__field(graph: JOURNEYS)
@@ -1778,34 +1778,27 @@ type Visitor
   lastChatStartedAt: DateTime @join__field(graph: JOURNEYS)
 
   """
-  Messenger ID of the visitor as set by any journeys-admin user via the
-  VisitorUpdate mutation. This could be a phone number, user id or other
-  unique identifier provided by the messenger network.
+  Message platform the visitor wishes to be connected to us on as populated by
+  VisitorUpdate mutation or ChatOpenedEventCreate mutation.
   """
-  messengerId: String @join__field(graph: JOURNEYS)
+  messagePlatform: MessagePlatform @join__field(graph: JOURNEYS)
 
   """
-  Messenger network of the visitor as set by any journeys-admin user via the
-  VisitorUpdate mutation.
+  ID of the visitor as set by VisitorUpdate mutation. This could be a phone
+  number, user id or other unique identifier provided by the message platform.
   """
-  messengerNetwork: String @join__field(graph: JOURNEYS)
+  messagePlatformId: String @join__field(graph: JOURNEYS)
 
   """
-  The name of the visitor as populated by mutation or otherwise via
+  The name of the visitor as populated by VisitorUpdate mutation or
   SignUpEventSubmissionEventCreate mutation.
   """
   name: String @join__field(graph: JOURNEYS)
 
-  """
-  Private notes of the visitor as set by any journeys-admin user via the
-  VisitorUpdate mutation.
-  """
+  """Private notes of the visitor as set by VisitorUpdate mutation."""
   notes: String @join__field(graph: JOURNEYS)
 
-  """
-  Status of the visitor as set by any journeys-admin user via the VisitorUpdate
-  mutation.
-  """
+  """Status of the visitor as populated by VisitorUpdate mutation."""
   status: VisitorStatus @join__field(graph: JOURNEYS)
 
   """
@@ -1863,8 +1856,18 @@ input VisitorUpdateInput {
   automatically)
   """
   email: String
-  messengerId: String
-  messengerNetwork: String
+
+  """
+  Message platform the visitor wishes to be connected to us on (will prevent
+  ChatOpenedEventCreate mutation from updating this field automatically)
+  """
+  messagePlatform: MessagePlatform
+
+  """
+  ID of the visitor. This could be a phone number, user id or other unique
+  identifier provided by the message platform.
+  """
+  messagePlatformId: String
 
   """
   The name of the visitor (will prevent SignUpEventSubmissionEventCreate
