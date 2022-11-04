@@ -1,11 +1,10 @@
-import { render, fireEvent,waitFor } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { NextRouter, useRouter } from 'next/router'
 import { ReportButtons } from './ReportButtons'
-
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -22,7 +21,7 @@ describe('ReportButtons', () => {
         <FlagsProvider>
           <SnackbarProvider>
             <JourneyProvider value={{ admin: true }}>
-              <ReportButtons pageName='journeys'/>
+              <ReportButtons pageName="journeys" />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>
@@ -30,11 +29,9 @@ describe('ReportButtons', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Journeys' }))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        '/reports/journeys',
-        undefined,
-        { shallow: true }
-      )
+      expect(push).toHaveBeenCalledWith('/reports/journeys', undefined, {
+        shallow: true
+      })
     })
   })
 
@@ -46,7 +43,7 @@ describe('ReportButtons', () => {
         <FlagsProvider>
           <SnackbarProvider>
             <JourneyProvider value={{ admin: true }}>
-              <ReportButtons pageName='journeys'/>
+              <ReportButtons pageName="journeys" />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>
@@ -54,11 +51,9 @@ describe('ReportButtons', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Visitors' }))
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        '/reports/visitors',
-        undefined,
-        { shallow: true }
-      )
+      expect(push).toHaveBeenCalledWith('/reports/visitors', undefined, {
+        shallow: true
+      })
     })
   })
 })

@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../libs/storybook'
-import { ReportButtons } from "./ReportButtons"
+import { ReportButtons } from './ReportButtons'
 
 const ReportButtonsStory = {
   ...simpleComponentConfig,

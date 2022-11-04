@@ -7,7 +7,7 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 
 interface ReportButtonProps {
-  pageName: "journeys" | "visitor"
+  pageName: 'journeys' | 'visitor'
 }
 
 export function ReportButtons({ pageName }: ReportButtonProps): ReactElement {
@@ -17,29 +17,36 @@ export function ReportButtons({ pageName }: ReportButtonProps): ReactElement {
       sx={{
         width: '100%',
         backgroundColor: 'background.paper',
-        borderTop: 1, 
+        borderTop: 1,
         borderBottom: 1
       }}
     >
-      <Container maxWidth="lg" sx={{ px: { xs: 6, sm: 8 }, marginLeft: 0}}>                 
+      <Container maxWidth="lg" sx={{ px: { xs: 6, sm: 8 }, marginLeft: 0 }}>
         <Stack direction="row" spacing={16} sx={{ py: 2 }}>
-          <Button id="journeys" onClick={
-            async () => await router.push('/reports/journeys', undefined, {
+          <Button
+            id="journeys"
+            onClick={async () =>
+              await router.push('/reports/journeys', undefined, {
                 shallow: true
-              }
-            )}
-          >                
+              })
+            }
+          >
             <Typography color={pageName === 'journeys' ? 'primary' : 'divider'}>
               <strong>Journeys</strong>
-            </Typography></Button> 
-          <Button onClick={
-            async () => await router.push('/reports/visitors', undefined, {
-              shallow: true
-            })}>
+            </Typography>
+          </Button>
+          <Button
+            onClick={async () =>
+              await router.push('/reports/visitors', undefined, {
+                shallow: true
+              })
+            }
+          >
             <Typography color={pageName === 'visitor' ? 'primary' : 'divider'}>
               <strong>Visitors</strong>
-            </Typography></Button>             
-        </Stack>       
+            </Typography>
+          </Button>
+        </Stack>
       </Container>
     </Box>
   )
