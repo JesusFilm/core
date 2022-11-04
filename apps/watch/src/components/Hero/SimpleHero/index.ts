@@ -1,0 +1,1 @@
+export { SimpleHero } from './SimpleHero'
