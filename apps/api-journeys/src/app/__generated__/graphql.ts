@@ -392,7 +392,7 @@ export class ButtonClickEventCreateInput {
     value?: Nullable<string>;
 }
 
-export class ChatOpenedEventCreateInput {
+export class ChatOpenEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
     stepId?: Nullable<string>;
@@ -804,8 +804,8 @@ export class ButtonClickEvent implements Event {
     value?: Nullable<string>;
 }
 
-export class ChatOpenedEvent implements Event {
-    __typename?: 'ChatOpenedEvent';
+export class ChatOpenEvent implements Event {
+    __typename?: 'ChatOpenEvent';
     id: string;
     journeyId: string;
     createdAt: DateTime;
@@ -1098,7 +1098,7 @@ export abstract class IMutation {
 
     abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
-    abstract chatOpenedEventCreate(input: ChatOpenedEventCreateInput): ChatOpenedEvent | Promise<ChatOpenedEvent>;
+    abstract chatOpenEventCreate(input: ChatOpenEventCreateInput): ChatOpenEvent | Promise<ChatOpenEvent>;
 
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): JourneyViewEvent | Promise<JourneyViewEvent>;
 

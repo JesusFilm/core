@@ -759,7 +759,7 @@ enum MessagePlatform {
   tikTok
 }
 
-input ChatOpenedEventCreateInput {
+input ChatOpenEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
@@ -773,7 +773,7 @@ input ChatOpenedEventCreateInput {
   value: MessagePlatform
 }
 
-type ChatOpenedEvent implements Event {
+type ChatOpenEvent implements Event {
   id: ID!
 
   """ID of the journey that the buttonBlock belongs to"""
@@ -782,7 +782,7 @@ type ChatOpenedEvent implements Event {
   """time event was created"""
   createdAt: DateTime!
 
-  """null for ChatOpenedEvent"""
+  """null for ChatOpenEvent"""
   label: String
 
   """messagePlatform of the link used for chat"""
@@ -1514,7 +1514,7 @@ type Visitor @key(fields: "id") {
 
   """
   Message platform the visitor wishes to be connected to us on as populated by
-  VisitorUpdate mutation or ChatOpenedEventCreate mutation.
+  VisitorUpdate mutation or ChatOpenEventCreate mutation.
   """
   messagePlatform: MessagePlatform
 
@@ -1578,7 +1578,7 @@ input VisitorUpdateInput {
 
   """
   Message platform the visitor wishes to be connected to us on (will prevent
-  ChatOpenedEventCreate mutation from updating this field automatically)
+  ChatOpenEventCreate mutation from updating this field automatically)
   """
   messagePlatform: MessagePlatform
 
@@ -1644,7 +1644,7 @@ extend type Mutation {
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
-  chatOpenedEventCreate(input: ChatOpenedEventCreateInput!): ChatOpenedEvent!
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!

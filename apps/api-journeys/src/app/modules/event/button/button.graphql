@@ -51,7 +51,7 @@ enum MessagePlatform {
   tikTok
 }
 
-input ChatOpenedEventCreateInput {
+input ChatOpenEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
@@ -67,7 +67,7 @@ input ChatOpenedEventCreateInput {
   value: MessagePlatform
 }
 
-type ChatOpenedEvent implements Event {
+type ChatOpenEvent implements Event {
   id: ID!
   """
   ID of the journey that the buttonBlock belongs to
@@ -78,7 +78,7 @@ type ChatOpenedEvent implements Event {
   """
   createdAt: DateTime!
   """
-  null for ChatOpenedEvent
+  null for ChatOpenEvent
   """
   label: String
   """
@@ -93,5 +93,5 @@ type ChatOpenedEvent implements Event {
 
 extend type Mutation {
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
-  chatOpenedEventCreate(input: ChatOpenedEventCreateInput!): ChatOpenedEvent!
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
 }
