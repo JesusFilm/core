@@ -104,7 +104,7 @@ export function Button({
 
   function createChatEvent(): void {
     if (!admin) {
-      const id = uuidv4
+      const id = uuidv4()
       void chatOpenEventCreate({
         variables: {
           input: {
