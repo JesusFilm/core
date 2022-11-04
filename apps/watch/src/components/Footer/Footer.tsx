@@ -1,134 +1,104 @@
 import { ReactElement } from 'react'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import Box from '@mui/material/Box'
-import Image from 'next/image'
 import Typography from '@mui/material/Typography'
-import { useTheme } from '@mui/material/styles'
+import { FooterLogos } from './FooterLogos'
+import { FooterSocials } from './FooterSocials'
+import { FooterLinks } from './FooterLinks'
+import { FooterLink } from './FooterLink'
 
-import Logo from '../../../public/taskbar-icon.svg'
-import JFLogo from '../../../public/images/jf-logo@2x.png'
-import CruLogo from '../../../public/images/cru-logo.png'
-import Facebook from '../../../public/icons/facebook.svg'
-import Twitter from '../../../public/icons/twitter.svg'
-import Youtube from '../../../public/icons/youtube.svg'
-import Instagram from '../../../public/icons/instagram.svg'
-
-interface FooterProps {
-  isHome?: boolean
-}
-
-export function Footer({ isHome = false }: FooterProps): ReactElement {
-  const theme = useTheme()
+export function Footer(): ReactElement {
   return (
-    <Container
-      sx={{
-        maxWidth: '100% !important',
-        width: '100%',
-        margin: 0,
-        paddingLeft: '100px !important',
-        paddingRight: '100px !important',
-        backgroundImage: isHome ? 'url(/images/jesus-footer.png)' : '',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        height: isHome ? 883 : 'inherit'
-      }}
-    >
-      <Stack
-        direction="column"
-        justifyContent="space-between"
-        height="100%"
-        sx={{ minHeight: '350px' }}
+    <>
+      {/* desktop view */}
+      <Container
+        maxWidth="xl"
+        sx={{
+          display: { xs: 'none', sm: 'block' },
+          height: '350px'
+        }}
       >
-        <Stack
-          direction="row"
-          width="100%"
-          justifyContent="space-between"
-          justifyItems="start"
-        >
-          <Box>
-            <Image src={Logo} width="60" height="40" alt="Watch Logo" />
-          </Box>
-          <Stack
-            sx={{ margin: 'auto' }}
-            direction="row"
-            justifyContent="space-evenly"
-            width="100%"
-          >
-            <Stack direction="column" spacing="12px">
-              <Typography variant="overline">Site</Typography>
-              <Typography variant="body1">Home</Typography>
-              <Typography variant="body1">About</Typography>
-              <Typography variant="body1">Contact Us</Typography>
-            </Stack>
-            <Stack direction="column" spacing="12px">
-              <Typography variant="overline">Apps</Typography>
-              <Typography variant="body1">Android</Typography>
-              <Typography variant="body1">iPhone</Typography>
-            </Stack>
-            <Stack direction="column" spacing="12px">
-              <Typography variant="overline">Sections</Typography>
-              <Typography variant="body1">Strategies and Tools</Typography>
-              <Typography variant="body1">How to Help</Typography>
-              <Typography variant="body1">Need Help?</Typography>
-              <Typography variant="body1">Ways to Donate</Typography>
+        <Stack justifyContent="space-between" height="100%" sx={{ py: 4 }}>
+          <Stack direction="row" justifyContent="space-between">
+            <FooterLinks />
+            <Stack width="220px">
+              <FooterLogos />
+              <FooterSocials />
             </Stack>
           </Stack>
-          <Box width="220px">
-            <Stack
-              direction="row"
-              spacing="40px"
-              width="220px"
-              justifyContent="space-evenly"
-            >
-              <Box>
-                <Image
-                  src={JFLogo}
-                  width="60"
-                  height="60"
-                  alt="Jesus Film logo"
-                />
-              </Box>
-              <Box>
-                <Image src={CruLogo} width="72" height="52" alt="Cru logo" />
-              </Box>
+          <Stack
+            direction="row"
+            spacing={4}
+            justifyContent="space-between"
+            mb={15.5}
+          >
+            <Stack direction="row" spacing={10} justifyContent="space-between">
+              <Typography variant="body2">Copyright © 1995-2022</Typography>
+              <Typography variant="body2">Jesus Film Project®</Typography>
+              <Typography variant="body2">All rights reserved</Typography>
             </Stack>
-            <Stack direction="row" mt="63px" spacing="29px">
-              <Box>
-                <Image src={Facebook} width="32" height="32" alt="Facebook" />
-              </Box>
-              <Box>
-                <Image src={Twitter} width="32" height="32" alt="Twitter" />
-              </Box>
-              <Box>
-                <Image src={Youtube} width="32" height="32" alt="Youtube" />
-              </Box>
-              <Box>
-                <Image src={Instagram} width="32" height="32" alt="Instagram" />
-              </Box>
+            <Stack direction="row" spacing={4} justifyContent="space-between">
+              <FooterLink
+                url="https://www.jesusfilm.org/terms/"
+                label="Terms of use"
+                underline="always"
+                variant="body2"
+              />
+              <FooterLink
+                url="https://www.jesusfilm.org/legal/"
+                label="Legal Statement"
+                underline="always"
+                variant="body2"
+              />
             </Stack>
-          </Box>
+          </Stack>
+        </Stack>
+      </Container>
+
+      {/* mobile view */}
+      <Container
+        maxWidth="xl"
+        sx={{
+          display: { xs: 'block', sm: 'none' },
+          px: 2
+        }}
+      >
+        <Stack alignItems="end">
+          <FooterSocials />
         </Stack>
         <Stack
           direction="row"
           justifyContent="space-between"
-          mb="62px"
-          sx={{
-            color: isHome ? theme.palette.primary.contrastText : 'inherit'
-          }}
+          alignItems="center"
+          pt={7}
         >
-          <Stack direction="row" spacing="100px">
+          <Stack>
             <Typography variant="body2">Copyright © 1995-2022</Typography>
             <Typography variant="body2">Jesus Film Project®</Typography>
-            <Typography variant="body2">All rights reserved</Typography>
           </Stack>
-
-          <Stack direction="row" spacing="100px">
-            <Typography variant="subtitle2">Terms of Use</Typography>
-            <Typography variant="subtitle2">Legal Statement</Typography>
-          </Stack>
+          <FooterLogos />
         </Stack>
-      </Stack>
-    </Container>
+        <Stack
+          direction="row"
+          spacing={4}
+          justifyContent="space-between"
+          pt={6}
+        >
+          <FooterLink
+            url="https://www.jesusfilm.org/legal/"
+            label="Legal Statement"
+            underline="always"
+            variant="body2"
+          />
+          <Typography variant="body2">All rights reserved</Typography>
+          <FooterLink
+            url="https://www.jesusfilm.org/terms/"
+            label="Terms of use"
+            underline="always"
+            variant="body2"
+          />
+        </Stack>
+      </Container>
+    </>
   )
 }

@@ -1,0 +1,1 @@
+export { FooterSocials } from './FooterSocials'

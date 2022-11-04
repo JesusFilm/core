@@ -10,7 +10,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 
 interface DialogProps {
   open: boolean
-  handleClose: () => void
+  onClose: () => void
   dialogTitle?: DialogTitle
   dialogAction?: DialogAction
   divider?: boolean
@@ -64,7 +64,7 @@ const StyledDialog = styled(MuiDialog)({
 
 export function Dialog({
   open,
-  handleClose,
+  onClose,
   dialogTitle,
   dialogAction,
   divider,
@@ -77,7 +77,7 @@ export function Dialog({
       fullScreen={fullscreen}
       maxWidth="sm"
       fullWidth
-      onClose={handleClose}
+      onClose={onClose}
     >
       {dialogTitle != null && (
         <MuiDialogTitle>
@@ -85,7 +85,7 @@ export function Dialog({
           {dialogTitle.closeButton != null && dialogTitle.closeButton && (
             <IconButton
               size="medium"
-              onClick={handleClose}
+              onClick={onClose}
               data-testid="dialog-close-button"
             >
               <CloseRoundedIcon />
@@ -97,7 +97,7 @@ export function Dialog({
       {dialogAction != null && (
         <DialogActions>
           {dialogAction.closeLabel != null && (
-            <Button onClick={handleClose}>{dialogAction.closeLabel}</Button>
+            <Button onClick={onClose}>{dialogAction.closeLabel}</Button>
           )}
           <Button onClick={dialogAction?.onSubmit}>
             {dialogAction.submitLabel ?? 'Save'}

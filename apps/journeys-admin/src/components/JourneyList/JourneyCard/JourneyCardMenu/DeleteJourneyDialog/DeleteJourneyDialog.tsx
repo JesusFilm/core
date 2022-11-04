@@ -72,7 +72,7 @@ export function DeleteJourneyDialog({
   return (
     <Dialog
       open={open}
-      handleClose={handleClose}
+      onClose={handleClose}
       dialogTitle={{ title: 'Delete Forever?', closeButton: true }}
       dialogAction={{
         onSubmit: handleDelete,

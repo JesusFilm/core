@@ -9,7 +9,8 @@ import {
 } from '@nestjs/graphql'
 import { ForbiddenError, UserInputError } from 'apollo-server'
 import { IResult, UAParser } from 'ua-parser-js'
-import { Visitor, VisitorsConnection } from '../../__generated__/graphql'
+import { Event, Visitor, VisitorsConnection } from '../../__generated__/graphql'
+import { EventService } from '../event/event.service'
 import { MemberService } from '../member/member.service'
 import { VisitorService } from './visitor.service'
 
@@ -17,7 +18,8 @@ import { VisitorService } from './visitor.service'
 export class VisitorResolver {
   constructor(
     private readonly visitorService: VisitorService,
-    private readonly memberService: MemberService
+    private readonly memberService: MemberService,
+    private readonly eventService: EventService
   ) {}
 
   @Query()
@@ -91,6 +93,11 @@ export class VisitorResolver {
       )
 
     return await this.visitorService.update(id, input)
+  }
+
+  @ResolveField()
+  async events(@Parent() visitor): Promise<Event[]> {
+    return await this.eventService.getAllByVisitorId(visitor.id)
   }
 
   @ResolveField()
