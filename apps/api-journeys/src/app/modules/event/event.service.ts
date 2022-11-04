@@ -3,6 +3,7 @@ import { BaseService } from '@core/nest/database/BaseService'
 import { DocumentCollection } from 'arangojs/collection'
 import { UserInputError } from 'apollo-server'
 import { aql } from 'arangojs'
+import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
 import { Visitor, Event } from '../../__generated__/graphql'
@@ -55,6 +56,7 @@ export class EventService extends BaseService {
     return { visitor, journeyId }
   }
 
+  @KeyAsId()
   async getAllByVisitorId(visitorId: string): Promise<Event[]> {
     const res = await this.db.query(aql`
       FOR event IN ${this.collection}
