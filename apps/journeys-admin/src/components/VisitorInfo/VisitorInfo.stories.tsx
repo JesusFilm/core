@@ -1,17 +1,17 @@
 import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { ComponentProps } from 'react'
-import { simpleComponentConfig } from '../../libs/storybook'
+import { journeysAdminConfig } from '../../libs/storybook'
 import { getVisitorMock } from './VisitorDetail/VisitorDetailForm/VisitorDetailFormData'
 import { getVisitorEventsMock } from './VisitorJourneyList/VisitorJourneyListData'
 import { VisitorInfo } from '.'
 
 const VisitorInfoDemo = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: VisitorInfo,
   title: 'Journeys-Admin/VisitorInfo',
   parameters: {
-    ...simpleComponentConfig.parameters,
+    ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }

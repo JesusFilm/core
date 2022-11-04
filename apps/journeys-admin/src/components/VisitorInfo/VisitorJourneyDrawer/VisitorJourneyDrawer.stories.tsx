@@ -3,13 +3,13 @@ import {
   MessagePlatform,
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 import { VisitorInfoProvider } from '../VisitorInfoProvider'
 import { JourneyWithEvents } from '../transformVisitorEvents'
 import { VisitorJourneyDrawer } from '.'
 
 const VisitorJourneyDrawerDemo = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: VisitorJourneyDrawer,
   title: 'Journeys-Admin/VisitorInfo/VisitorJourneyDrawer'
 }
