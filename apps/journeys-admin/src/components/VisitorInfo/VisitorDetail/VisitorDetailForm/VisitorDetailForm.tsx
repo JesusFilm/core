@@ -178,34 +178,11 @@ export function VisitorDetailForm({ id }: Props): ReactElement {
                       }}
                     >
                       <MenuItem value="">{t('None')}</MenuItem>
-                      <MenuItem value={MessagePlatform.facebook}>
-                        {t('Facebook')}
-                      </MenuItem>
-                      <MenuItem value={MessagePlatform.instagram}>
-                        {t('Instagram')}
-                      </MenuItem>
-                      <MenuItem value={MessagePlatform.line}>
-                        {t('LINE')}
-                      </MenuItem>
-                      <MenuItem value={MessagePlatform.skype}>
-                        {t('Skype')}
-                      </MenuItem>
-                      <MenuItem value={MessagePlatform.snapchat}>
-                        {t('Snapchat')}
-                      </MenuItem>
-                      <MenuItem value={MessagePlatform.telegram}>
-                        {t('Telegram')}
-                      </MenuItem>
-                      <MenuItem value={MessagePlatform.tikTok}>
-                        {t('TikTok')}
-                      </MenuItem>
-                      <MenuItem value={MessagePlatform.viber}>
-                        {t('Viber')}
-                      </MenuItem>
-                      <MenuItem value={MessagePlatform.vk}>{t('VK')}</MenuItem>
-                      <MenuItem value={MessagePlatform.whatsApp}>
-                        {t('WhatsApp')}
-                      </MenuItem>
+                      {Object.values(MessagePlatform).map((value) => (
+                        <MenuItem key={value} value={value}>
+                          {messagePlatformToLabel(value, t)}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </Stack>
