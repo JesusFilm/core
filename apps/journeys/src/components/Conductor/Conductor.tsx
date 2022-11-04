@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton'
 import { useTheme, styled } from '@mui/material/styles'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useBlocks } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { CardWrapper } from '@core/journeys/ui/Card'
@@ -18,17 +19,27 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { gql, useMutation } from '@apollo/client'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { useTranslation } from 'react-i18next'
 // Used to resolve dynamic viewport height on Safari
 import Div100vh from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
 import last from 'lodash/last'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
+import { StepNextEventCreate } from '../../../__generated__/StepNextEventCreate'
 import { Footer } from '../Footer'
 
 export const JOURNEY_VIEW_EVENT_CREATE = gql`
   mutation JourneyViewEventCreate($input: JourneyViewEventCreateInput!) {
     journeyViewEventCreate(input: $input) {
+      id
+    }
+  }
+`
+
+export const STEP_NEXT_EVENT_CREATE = gql`
+  mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
+    stepNextEventCreate(input: $input) {
       id
     }
   }
@@ -55,6 +66,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const theme = useTheme()
   const { journey, admin } = useJourney()
   const { rtl } = getJourneyRTL(journey)
+  const { t } = useTranslation('apps-journeys')
 
   const onFirstStep = activeBlock === treeBlocks[0]
   const onLastStep = activeBlock === last(treeBlocks)
@@ -65,6 +77,9 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
+  )
+  const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
+    STEP_NEXT_EVENT_CREATE
   )
 
   useEffect(() => {
@@ -103,8 +118,50 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
   }, [swiper, activeBlock, treeBlocks])
 
+  function createStepNextEvent(): void {
+    if (activeBlock == null) return
+
+    const nextStep =
+      activeBlock.nextBlockId != null
+        ? treeBlocks.find(({ id }) => id === activeBlock.nextBlockId)
+        : treeBlocks[(activeBlock.parentOrder as number) + 1]
+
+    if (nextStep == null) return
+
+    const heading = getStepHeading(
+      activeBlock.id,
+      activeBlock.children,
+      treeBlocks,
+      t
+    )
+
+    const nextStepHeading = getStepHeading(
+      nextStep.id,
+      nextStep.children,
+      treeBlocks,
+      t
+    )
+
+    const id = uuidv4()
+
+    void stepNextEventCreate({
+      variables: {
+        input: {
+          id,
+          blockId: activeBlock.id,
+          nextStepId: nextStep.id,
+          label: heading,
+          value: nextStepHeading
+        }
+      }
+    })
+  }
+
   function handleNext(): void {
-    if (activeBlock != null && !activeBlock.locked) nextActiveBlock()
+    if (activeBlock != null && !activeBlock.locked) {
+      nextActiveBlock()
+      createStepNextEvent()
+    }
   }
 
   const [windowWidth, setWindowWidth] = useState(theme.breakpoints.values.xl)
