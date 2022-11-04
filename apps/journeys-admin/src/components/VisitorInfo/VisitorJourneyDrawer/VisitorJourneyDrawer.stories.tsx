@@ -1,5 +1,8 @@
 import { Meta, Story } from '@storybook/react'
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import {
+  MessagePlatform,
+  VideoBlockSource
+} from '../../../../__generated__/globalTypes'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { VisitorInfoProvider } from '../VisitorInfoProvider'
 import { JourneyWithEvents } from '../transformVisitorEvents'
@@ -16,6 +19,15 @@ const journey: JourneyWithEvents = {
   title: 'A Journey: There and Back Again',
   createdAt: '2022-11-02T03:20:26.368Z',
   events: [
+    {
+      __typename: 'ChatOpenEvent',
+      id: 'ChatOpenEventId',
+      journeyId: 'journeyId',
+      label: null,
+      value: 'facebook',
+      createdAt: '2022-11-02T03:20:26.368Z',
+      messagePlatform: MessagePlatform.facebook
+    },
     {
       __typename: 'ButtonClickEvent',
       id: 'ButtonClickEventId',

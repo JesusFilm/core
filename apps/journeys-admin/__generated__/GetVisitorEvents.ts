@@ -3,14 +3,14 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockSource } from "./globalTypes";
+import { VideoBlockSource, MessagePlatform } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetVisitorEvents
 // ====================================================
 
 export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
-  __typename: "ButtonClickEvent" | "ChatOpenedEvent" | "RadioQuestionSubmissionEvent" | "StepNextEvent" | "StepViewEvent" | "TextResponseSubmissionEvent" | "VideoCollapseEvent" | "VideoExpandEvent" | "VideoPauseEvent" | "VideoPlayEvent" | "VideoProgressEvent";
+  __typename: "ButtonClickEvent" | "RadioQuestionSubmissionEvent" | "StepNextEvent" | "StepViewEvent" | "TextResponseSubmissionEvent" | "VideoCollapseEvent" | "VideoExpandEvent" | "VideoPauseEvent" | "VideoPlayEvent" | "VideoProgressEvent";
   id: string;
   journeyId: string;
   label: string | null;
@@ -129,7 +129,32 @@ export interface GetVisitorEvents_visitor_events_VideoCompleteEvent {
   source: VideoBlockSource | null;
 }
 
-export type GetVisitorEvents_visitor_events = GetVisitorEvents_visitor_events_ButtonClickEvent | GetVisitorEvents_visitor_events_JourneyViewEvent | GetVisitorEvents_visitor_events_SignUpSubmissionEvent | GetVisitorEvents_visitor_events_VideoStartEvent | GetVisitorEvents_visitor_events_VideoCompleteEvent;
+export interface GetVisitorEvents_visitor_events_ChatOpenEvent {
+  __typename: "ChatOpenEvent";
+  id: string;
+  /**
+   * ID of the journey that the buttonBlock belongs to
+   */
+  journeyId: string;
+  /**
+   * null for ChatOpenEvent
+   */
+  label: string | null;
+  /**
+   * messagePlatform of the link used for chat
+   */
+  value: string | null;
+  /**
+   * time event was created
+   */
+  createdAt: any;
+  /**
+   * messagePlatform of the link used for chat (based on the messagePlatform in the value field)
+   */
+  messagePlatform: MessagePlatform | null;
+}
+
+export type GetVisitorEvents_visitor_events = GetVisitorEvents_visitor_events_ButtonClickEvent | GetVisitorEvents_visitor_events_JourneyViewEvent | GetVisitorEvents_visitor_events_SignUpSubmissionEvent | GetVisitorEvents_visitor_events_VideoStartEvent | GetVisitorEvents_visitor_events_VideoCompleteEvent | GetVisitorEvents_visitor_events_ChatOpenEvent;
 
 export interface GetVisitorEvents_visitor {
   __typename: "Visitor";

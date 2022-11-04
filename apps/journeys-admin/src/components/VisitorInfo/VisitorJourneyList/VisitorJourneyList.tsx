@@ -38,6 +38,9 @@ export const GET_VISITOR_EVENTS = gql`
         ... on VideoCompleteEvent {
           source
         }
+        ... on ChatOpenEvent {
+          messagePlatform
+        }
       }
     }
   }

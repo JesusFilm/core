@@ -19,7 +19,7 @@ export interface VisitorUpdate_visitorUpdate {
   messagePlatformId: string | null;
   /**
    * Message platform the visitor wishes to be connected to us on as populated by
-   * VisitorUpdate mutation or ChatOpenedEventCreate mutation.
+   * VisitorUpdate mutation or ChatOpenEventCreate mutation.
    */
   messagePlatform: MessagePlatform | null;
   /**

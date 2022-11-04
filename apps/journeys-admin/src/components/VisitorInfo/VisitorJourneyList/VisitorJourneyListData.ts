@@ -1,4 +1,7 @@
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import {
+  MessagePlatform,
+  VideoBlockSource
+} from '../../../../__generated__/globalTypes'
 import { GetVisitorEvents } from '../../../../__generated__/GetVisitorEvents'
 import { GET_VISITOR_EVENTS } from './VisitorJourneyList'
 
@@ -7,6 +10,15 @@ const getVisitorEvents: GetVisitorEvents = {
     __typename: 'Visitor',
     id: 'visitorId',
     events: [
+      {
+        __typename: 'ChatOpenEvent',
+        id: 'eventId9',
+        journeyId: 'journeyId1',
+        label: null,
+        value: 'facebook',
+        createdAt: '2022-11-02T03:20:26.368Z',
+        messagePlatform: MessagePlatform.facebook
+      },
       {
         __typename: 'ButtonClickEvent',
         id: 'eventId8',

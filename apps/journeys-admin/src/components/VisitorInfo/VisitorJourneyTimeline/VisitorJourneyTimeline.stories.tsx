@@ -3,7 +3,10 @@ import { ComponentProps } from 'react'
 import Typography from '@mui/material/Typography'
 import { simpleComponentConfig } from '../../../libs/storybook'
 import { GetVisitorEvents_visitor_events as Event } from '../../../../__generated__/GetVisitorEvents'
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import {
+  MessagePlatform,
+  VideoBlockSource
+} from '../../../../__generated__/globalTypes'
 import { VisitorJourneyTimeline } from '.'
 
 const VisitorJourneyTimelineDemo = {
@@ -13,6 +16,15 @@ const VisitorJourneyTimelineDemo = {
 }
 
 const events: Event[] = [
+  {
+    __typename: 'ChatOpenEvent',
+    id: 'ChatOpenEventId',
+    journeyId: 'journeyId',
+    label: null,
+    value: 'facebook',
+    createdAt: '2022-11-02T03:20:26.368Z',
+    messagePlatform: MessagePlatform.facebook
+  },
   {
     __typename: 'ButtonClickEvent',
     id: 'ButtonClickEventId',

@@ -20,6 +20,7 @@ import {
   VisitorStatus
 } from '../../../../../__generated__/globalTypes'
 import { VisitorUpdate } from '../../../../../__generated__/VisitorUpdate'
+import { messagePlatformToLabel } from '../../messagePlatformToLabel'
 
 export const GET_VISITOR = gql`
   query GetVisitor($id: ID!) {
@@ -72,29 +73,6 @@ export function VisitorDetailForm({ id }: Props): ReactElement {
         input: formattedValues
       }
     })
-  }
-
-  function messagePlatformToLabel(messagePlatform: MessagePlatform): string {
-    switch (messagePlatform) {
-      case MessagePlatform.facebook:
-        return t('Facebook')
-      case MessagePlatform.instagram:
-        return t('Instagram')
-      case MessagePlatform.line:
-        return t('LINE')
-      case MessagePlatform.skype:
-        return t('Skype')
-      case MessagePlatform.snapchat:
-        return t('Snapchat')
-      case MessagePlatform.tikTok:
-        return t('TikTok')
-      case MessagePlatform.viber:
-        return t('Viber')
-      case MessagePlatform.vk:
-        return t('VK')
-      case MessagePlatform.whatsApp:
-        return t('WhatsApp')
-    }
   }
 
   return (
@@ -165,7 +143,7 @@ export function VisitorDetailForm({ id }: Props): ReactElement {
                     label={
                       values.messagePlatform != null &&
                       values.messagePlatform !== ''
-                        ? messagePlatformToLabel(values.messagePlatform)
+                        ? messagePlatformToLabel(values.messagePlatform, t)
                         : t('Contact')
                     }
                     fullWidth

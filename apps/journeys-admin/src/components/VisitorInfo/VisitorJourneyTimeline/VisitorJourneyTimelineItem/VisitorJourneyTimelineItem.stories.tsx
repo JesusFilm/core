@@ -3,7 +3,10 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { simpleComponentConfig } from '../../../../libs/storybook'
 import { GetVisitorEvents_visitor_events as Event } from '../../../../../__generated__/GetVisitorEvents'
-import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import {
+  MessagePlatform,
+  VideoBlockSource
+} from '../../../../../__generated__/globalTypes'
 import { VisitorJourneyTimelineItem } from '.'
 
 const VisitorJourneyTimelineItemDemo = {
@@ -20,6 +23,15 @@ const buttonClickEvent: Event = {
   label: 'How will you remember the journey?',
   value: 'Write a book',
   createdAt: '2022-11-02T03:20:26.368Z'
+}
+const chatOpenedEvent: Event = {
+  __typename: 'ChatOpenEvent',
+  id: 'ChatOpenEventId',
+  journeyId: 'journeyId',
+  label: null,
+  value: 'facebook',
+  createdAt: '2022-11-02T03:20:26.368Z',
+  messagePlatform: MessagePlatform.facebook
 }
 const radioQuestionSubmissionEvent: Event = {
   __typename: 'RadioQuestionSubmissionEvent',
@@ -74,6 +86,12 @@ const Template: Story = () => {
       </Typography>
       <VisitorJourneyTimelineItem event={buttonClickEvent} />
       <VisitorJourneyTimelineItem event={buttonClickEvent} variant="compact" />
+
+      <Typography variant="h5" sx={{ py: 2 }}>
+        ChatOpenedEevent
+      </Typography>
+      <VisitorJourneyTimelineItem event={chatOpenedEvent} />
+      <VisitorJourneyTimelineItem event={chatOpenedEvent} variant="compact" />
 
       <Typography variant="h5" sx={{ py: 2 }}>
         RadioQuestionSubmissionEvent

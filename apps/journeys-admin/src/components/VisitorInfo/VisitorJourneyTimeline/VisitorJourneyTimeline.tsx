@@ -14,6 +14,7 @@ export function VisitorJourneyTimeline({
 }: Props): ReactElement {
   let filter: Array<Event['__typename']> = [
     'ButtonClickEvent',
+    'ChatOpenEvent',
     'RadioQuestionSubmissionEvent',
     'TextResponseSubmissionEvent',
     'VideoCompleteEvent',
@@ -21,7 +22,11 @@ export function VisitorJourneyTimeline({
     'SignUpSubmissionEvent'
   ]
   if (variant === 'compact') {
-    filter = ['TextResponseSubmissionEvent', 'RadioQuestionSubmissionEvent']
+    filter = [
+      'ChatOpenEvent',
+      'TextResponseSubmissionEvent',
+      'RadioQuestionSubmissionEvent'
+    ]
   }
 
   return (
