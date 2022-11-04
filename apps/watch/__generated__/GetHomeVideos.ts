@@ -3,40 +3,34 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideosFilter, VideoType } from "./globalTypes";
+import { VideoType } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetHomeVideos
 // ====================================================
 
-export interface GetHomeVideos_videos_snippet {
+export interface GetHomeVideos_videosById_title {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetHomeVideos_videos_title {
-  __typename: "Translation";
-  value: string;
-}
-
-export interface GetHomeVideos_videos_variant {
+export interface GetHomeVideos_videosById_variant {
   __typename: "VideoVariant";
   duration: number;
 }
 
-export interface GetHomeVideos_videos_slug {
+export interface GetHomeVideos_videosById_slug {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetHomeVideos_videos {
+export interface GetHomeVideos_videosById {
   __typename: "Video";
   id: string;
   type: VideoType;
   image: string | null;
-  snippet: GetHomeVideos_videos_snippet[];
-  title: GetHomeVideos_videos_title[];
-  variant: GetHomeVideos_videos_variant | null;
+  title: GetHomeVideos_videosById_title[];
+  variant: GetHomeVideos_videosById_variant | null;
   /**
    * Episodes are child videos, currently only found in a playlist type
    */
@@ -44,14 +38,14 @@ export interface GetHomeVideos_videos {
   /**
    * slug is a permanent link to the video. It should only be appended, not edited or deleted
    */
-  slug: GetHomeVideos_videos_slug[];
+  slug: GetHomeVideos_videosById_slug[];
 }
 
 export interface GetHomeVideos {
-  videos: GetHomeVideos_videos[];
+  videosById: GetHomeVideos_videosById[];
 }
 
 export interface GetHomeVideosVariables {
-  where?: VideosFilter | null;
+  ids: string[];
   languageId?: string | null;
 }

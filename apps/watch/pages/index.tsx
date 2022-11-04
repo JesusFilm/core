@@ -59,7 +59,7 @@ function HomePage({ data }: HomePageProps): ReactElement {
               paddingRight: '100px !important'
             }}
           >
-            <HomeVideos data={data?.videos} videos={videos} />
+            <HomeVideos data={data?.videosById} videos={videos} />
           </Container>
         </Box>
       </ThemeProvider>
@@ -71,14 +71,11 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
   const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<GetHomeVideos>({
     query: gql`
-      query GetHomeVideos($where: VideosFilter, $languageId: ID) {
-        videos(where: $where) {
+      query GetHomeVideos($ids: [ID!]!, $languageId: ID) {
+        videosById(ids: $ids) {
           id
           type
           image
-          snippet(languageId: $languageId, primary: true) {
-            value
-          }
           title(languageId: $languageId, primary: true) {
             value
           }
@@ -93,14 +90,12 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
       }
     `,
     variables: {
-      where: {
-        ids: videos.map((video) => video.id)
-      },
+      ids: videos.map((video) => video.id),
       languageId: '529'
     }
   })
 
-  if (data.videos === null) {
+  if (data.videosById === null) {
     return {
       props: {},
       notFound: true,
