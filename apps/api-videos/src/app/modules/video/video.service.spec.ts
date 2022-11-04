@@ -132,6 +132,17 @@ describe('VideoService', () => {
       expect(response.bindVars).toEqual({ value0: filter.title })
     })
 
+    it('should filter with list of ids', async () => {
+      const filter = {
+        ids: ['abc']
+      }
+      const response = await service.videoFilter(filter)
+      expect(response.query).toEqual('FILTER item._key IN @value0')
+      expect(response.bindVars).toEqual({
+        value0: filter.ids
+      })
+    })
+
     it('should filter with title and availableVariantLanguageIds', async () => {
       const filter = {
         title: 'abc',
