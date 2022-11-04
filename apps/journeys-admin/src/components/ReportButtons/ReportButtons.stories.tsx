@@ -1,13 +1,12 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { journeysAdminConfig } from '../../libs/storybook'
+import { simpleComponentConfig } from '../../libs/storybook'
 import { ReportButtons } from "./ReportButtons"
 
 const ReportButtonsStory = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: ReportButtons,
   title: 'Journeys-Admin/ReportButtons'
-  
 }
 
 const Template: Story = () => (
