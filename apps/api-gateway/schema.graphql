@@ -171,7 +171,7 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
-type ChatOpenedEvent implements Event {
+type ChatOpenEvent implements Event {
   """time event was created"""
   createdAt: DateTime!
   id: ID!
@@ -179,7 +179,7 @@ type ChatOpenedEvent implements Event {
   """ID of the journey that the buttonBlock belongs to"""
   journeyId: ID!
 
-  """null for ChatOpenedEvent"""
+  """null for ChatOpenEvent"""
   label: String
 
   """
@@ -191,7 +191,7 @@ type ChatOpenedEvent implements Event {
   value: String
 }
 
-input ChatOpenedEventCreateInput {
+input ChatOpenEventCreateInput {
   blockId: ID!
 
   """
@@ -603,7 +603,7 @@ type Mutation {
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
-  chatOpenedEventCreate(input: ChatOpenedEventCreateInput!): ChatOpenedEvent! @join__field(graph: JOURNEYS)
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
   iconBlockUpdate(id: ID!, input: IconBlockUpdateInput!, journeyId: ID!): IconBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
@@ -1778,7 +1778,7 @@ type Visitor
 
   """
   Message platform the visitor wishes to be connected to us on as populated by
-  VisitorUpdate mutation or ChatOpenedEventCreate mutation.
+  VisitorUpdate mutation or ChatOpenEventCreate mutation.
   """
   messagePlatform: MessagePlatform @join__field(graph: JOURNEYS)
 
@@ -1858,7 +1858,7 @@ input VisitorUpdateInput {
 
   """
   Message platform the visitor wishes to be connected to us on (will prevent
-  ChatOpenedEventCreate mutation from updating this field automatically)
+  ChatOpenEventCreate mutation from updating this field automatically)
   """
   messagePlatform: MessagePlatform
 

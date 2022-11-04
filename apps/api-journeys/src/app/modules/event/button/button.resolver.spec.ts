@@ -2,15 +2,18 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
 import {
   ButtonClickEventCreateInput,
-  ChatOpenedEventCreateInput,
+  ChatOpenEventCreateInput,
   MessagePlatform
 } from '../../../__generated__/graphql'
+import { VisitorService } from '../../visitor/visitor.service'
 import {
   ButtonClickEventResolver,
-  ChatOpenedEventResolver
+  ChatOpenEventResolver
 } from './button.resolver'
 
-describe('Button', () => {
+describe('ButtonClickEventResolver', () => {
+  let resolver: ButtonClickEventResolver
+
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(new Date('2021-02-18'))
@@ -20,6 +23,11 @@ describe('Button', () => {
     jest.useRealTimers()
   })
 
+  const response = {
+    visitor: { id: 'visitor.id' },
+    journeyId: 'journey.id'
+  }
+
   const eventService = {
     provide: EventService,
     useFactory: () => ({
@@ -28,21 +36,14 @@ describe('Button', () => {
     })
   }
 
-  const response = {
-    visitor: { id: 'visitor.id' },
-    journeyId: 'journey.id'
-  }
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [ButtonClickEventResolver, eventService]
+    }).compile()
+    resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
+  })
 
   describe('buttonClickEventCreate', () => {
-    let resolver: ButtonClickEventResolver
-
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [ButtonClickEventResolver, eventService]
-      }).compile()
-      resolver = module.get<ButtonClickEventResolver>(ButtonClickEventResolver)
-    })
-
     it('returns ButtonClickEvent', async () => {
       const input: ButtonClickEventCreateInput = {
         id: '1',
@@ -61,31 +62,78 @@ describe('Button', () => {
       })
     })
   })
+})
 
-  describe('chatOpenedEventCreate', () => {
-    let resolver: ChatOpenedEventResolver
+describe('ChatOpenEventResolver', () => {
+  let resolver: ChatOpenEventResolver, vService: VisitorService
 
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [ChatOpenedEventResolver, eventService]
-      }).compile()
-      resolver = module.get<ChatOpenedEventResolver>(ChatOpenedEventResolver)
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
+  const response = {
+    visitor: { id: 'visitor.id' },
+    journeyId: 'journey.id'
+  }
+
+  const eventService = {
+    provide: EventService,
+    useFactory: () => ({
+      save: jest.fn((event) => event),
+      validateBlockEvent: jest.fn(() => response)
     })
+  }
 
-    it('should return ChatOpenedEvent', async () => {
-      const input: ChatOpenedEventCreateInput = {
+  const visitorService = {
+    provide: VisitorService,
+    useFactory: () => ({
+      update: jest.fn(() => null)
+    })
+  }
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [ChatOpenEventResolver, eventService, visitorService]
+    }).compile()
+    resolver = module.get<ChatOpenEventResolver>(ChatOpenEventResolver)
+    vService = module.get<VisitorService>(VisitorService)
+  })
+
+  describe('chatOpenEventCreate', () => {
+    it('should return ChatOpenEvent', async () => {
+      const input: ChatOpenEventCreateInput = {
         id: '1',
         blockId: 'block.id',
         stepId: 'step.id',
         value: MessagePlatform.facebook
       }
 
-      expect(await resolver.chatOpenedEventCreate('userId', input)).toEqual({
+      expect(await resolver.chatOpenEventCreate('userId', input)).toEqual({
         ...input,
-        __typename: 'ChatOpenedEvent',
+        __typename: 'ChatOpenEvent',
         visitorId: 'visitor.id',
         createdAt: new Date().toISOString(),
         journeyId: 'journey.id'
+      })
+    })
+
+    it('should update visitor email', async () => {
+      const input: ChatOpenEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        value: MessagePlatform.facebook
+      }
+
+      await resolver.chatOpenEventCreate('userId', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        messagePlatform: MessagePlatform.facebook
       })
     })
 

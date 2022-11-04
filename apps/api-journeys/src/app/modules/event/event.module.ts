@@ -7,7 +7,7 @@ import { EventService } from './event.service'
 import { EventResolver } from './event.resolver'
 import {
   ButtonClickEventResolver,
-  ChatOpenedEventResolver
+  ChatOpenEventResolver
 } from './button/button.resolver'
 import { JourneyViewEventResolver } from './journey/journey.resolver'
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion/radioQuestion.resolver'
@@ -36,7 +36,7 @@ import {
     EventService,
     EventResolver,
     ButtonClickEventResolver,
-    ChatOpenedEventResolver,
+    ChatOpenEventResolver,
     JourneyViewEventResolver,
     RadioQuestionSubmissionEventResolver,
     SignUpSubmissionEventResolver,
