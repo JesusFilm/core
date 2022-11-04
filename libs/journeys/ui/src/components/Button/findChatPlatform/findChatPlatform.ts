@@ -34,7 +34,7 @@ const platforms = [
     messagePlatform: MessagePlatform.whatsApp
   },
   {
-    url: 'api/whatsapp.com/',
+    url: 'api.whatsapp.com/',
     messagePlatform: MessagePlatform.whatsApp
   },
   {
