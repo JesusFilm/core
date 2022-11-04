@@ -82,34 +82,31 @@ type Visitor @key(fields: "id") {
   """
   countryCode: String
   """
-  The name of the visitor as populated by mutation or otherwise via
+  The name of the visitor as populated by VisitorUpdate mutation or
   SignUpEventSubmissionEventCreate mutation.
   """
   name: String
   """
-  The email address of the visitor as populated by mutation or otherwise via
+  The email address of the visitor as populated by VisitorUpdate mutation or
   SignUpEventSubmissionEventCreate mutation.
   """
   email: String
   """
-  Status of the visitor as set by any journeys-admin user via the VisitorUpdate
-  mutation.
+  Status of the visitor as populated by VisitorUpdate mutation.
   """
   status: VisitorStatus
   """
-  Messenger network of the visitor as set by any journeys-admin user via the
-  VisitorUpdate mutation.
+  Message platform the visitor wishes to be connected to us on as populated by
+  VisitorUpdate mutation or ChatOpenEventCreate mutation.
   """
-  messengerNetwork: String
+  messagePlatform: MessagePlatform
   """
-  Messenger ID of the visitor as set by any journeys-admin user via the
-  VisitorUpdate mutation. This could be a phone number, user id or other
-  unique identifier provided by the messenger network.
+  ID of the visitor as set by VisitorUpdate mutation. This could be a phone
+  number, user id or other unique identifier provided by the message platform.
   """
-  messengerId: String
+  messagePlatformId: String
   """
-  Private notes of the visitor as set by any journeys-admin user via the
-  VisitorUpdate mutation.
+  Private notes of the visitor as set by VisitorUpdate mutation.
   """
   notes: String
   events: [Event!]!
@@ -195,8 +192,16 @@ input VisitorUpdateInput {
   automatically)
   """
   email: String
-  messengerId: String
-  messengerNetwork: String
+  """
+  ID of the visitor. This could be a phone number, user id or other unique
+  identifier provided by the message platform.
+  """
+  messagePlatformId: String
+  """
+  Message platform the visitor wishes to be connected to us on (will prevent
+  ChatOpenEventCreate mutation from updating this field automatically)
+  """
+  messagePlatform: MessagePlatform
   """
   The name of the visitor (will prevent SignUpEventSubmissionEventCreate
   mutation from updating this field automatically)
