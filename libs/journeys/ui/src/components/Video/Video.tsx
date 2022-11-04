@@ -200,6 +200,7 @@ export function Video({
             player={playerRef.current}
             blockId={blockId}
             videoTitle={eventVideoTitle}
+            source={source}
             videoId={eventVideoId}
             startAt={startAt}
             endAt={endAt}

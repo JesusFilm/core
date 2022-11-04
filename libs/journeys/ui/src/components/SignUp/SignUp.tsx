@@ -93,6 +93,7 @@ export const SignUp = ({
             input: {
               id,
               blockId,
+              stepId: activeBlock?.id,
               name: values.name,
               email: values.email
             }

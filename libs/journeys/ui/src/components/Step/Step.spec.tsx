@@ -78,6 +78,8 @@ const block: TreeBlock<StepFields> = {
 describe('Step', () => {
   it('should create a stepViewEvent', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
+    activeBlockVar(block)
+
     const result = jest.fn(() => ({
       data: {
         stepViewEventCreate: {
@@ -96,7 +98,8 @@ describe('Step', () => {
               variables: {
                 input: {
                   id: 'uuid',
-                  blockId: 'Step1'
+                  blockId: 'Step1',
+                  value: 'Untitled'
                 }
               }
             },
@@ -125,7 +128,8 @@ describe('Step', () => {
               variables: {
                 input: {
                   id: 'uuid',
-                  blockId: 'Step1'
+                  blockId: 'Step1',
+                  value: 'Step {{number}}'
                 }
               }
             },
@@ -158,6 +162,7 @@ describe('Step', () => {
   })
   it('should not create a stepViewEvent if there are wrappers', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
+    activeBlockVar(block)
 
     const result = jest.fn(() => ({
       data: {
@@ -177,7 +182,8 @@ describe('Step', () => {
               variables: {
                 input: {
                   id: 'uuid',
-                  blockId: 'Step1'
+                  blockId: 'Step1',
+                  value: 'Step {{number}}'
                 }
               }
             },
