@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { ReactElement, SyntheticEvent, useState } from 'react'
@@ -24,8 +25,7 @@ export function VisitorInfo({ id }: Props): ReactElement {
     <VisitorInfoProvider>
       <Box
         sx={{
-          marginRight: { sm: `${DRAWER_WIDTH}px` },
-          backgroundColor: 'white'
+          marginRight: { sm: `${DRAWER_WIDTH}px` }
         }}
       >
         <Box
@@ -44,12 +44,14 @@ export function VisitorInfo({ id }: Props): ReactElement {
             <Tab label="Journeys" {...tabA11yProps('visitor-info', 1)} />
           </Tabs>
         </Box>
-        <TabPanel name="visitor-info" value={activeTab} index={0}>
-          <VisitorDetail id={id} />
-        </TabPanel>
-        <TabPanel name="visitor-info" value={activeTab} index={1}>
-          <VisitorJourneyList id={id} />
-        </TabPanel>
+        <Container sx={{ py: 4 }}>
+          <TabPanel name="visitor-info" value={activeTab} index={0}>
+            <VisitorDetail id={id} />
+          </TabPanel>
+          <TabPanel name="visitor-info" value={activeTab} index={1}>
+            <VisitorJourneyList id={id} />
+          </TabPanel>
+        </Container>
       </Box>
       <VisitorJourneyDrawer />
     </VisitorInfoProvider>

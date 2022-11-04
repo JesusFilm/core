@@ -63,7 +63,7 @@ export function VisitorJourneyList({ id, limit }: Props): ReactElement {
   }, [dispatch, journey, journeys])
 
   return (
-    <Stack spacing={4} sx={{ p: 4 }}>
+    <Stack spacing={4}>
       {journeys.map((item) => (
         <VisitorJourneyListItem
           key={item.id}

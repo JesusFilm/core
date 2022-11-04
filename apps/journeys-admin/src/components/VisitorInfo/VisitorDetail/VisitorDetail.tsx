@@ -13,12 +13,12 @@ export function VisitorDetail({ id }: Props): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Box pt={4}>
+    <>
       <VisitorDetailForm id={id} />
-      <Box sx={{ px: 4, pt: 4 }}>
+      <Box sx={{ py: 4 }}>
         <Typography variant="h5">{t('Latest Journey')}</Typography>
       </Box>
       <VisitorJourneyList id={id} limit={1} />
-    </Box>
+    </>
   )
 }

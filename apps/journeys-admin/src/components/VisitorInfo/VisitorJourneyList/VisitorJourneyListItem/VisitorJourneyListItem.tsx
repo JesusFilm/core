@@ -36,7 +36,8 @@ export function VisitorJourneyListItem({
     <Card
       variant="outlined"
       sx={{
-        borderColor: { sm: selected === true ? 'primary.main' : undefined }
+        borderColor: { sm: selected === true ? 'primary.main' : undefined },
+        borderRadius: 4
       }}
     >
       <CardContent sx={{ pb: 0 }}>
