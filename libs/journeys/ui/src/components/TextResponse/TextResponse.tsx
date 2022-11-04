@@ -89,6 +89,8 @@ export const TextResponse = ({
               input: {
                 id,
                 blockId,
+                stepId: activeBlock?.id,
+                label: heading,
                 value: values.response
               }
             }
