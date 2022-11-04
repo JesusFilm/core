@@ -29,6 +29,11 @@ const nextConfig = {
         source: '/journeys',
         destination: '/',
         permanent: true
+      },
+      {
+        source: '/reports',
+        destination: '/reports/journeys',
+        permanent: true
       }
     ]
   },

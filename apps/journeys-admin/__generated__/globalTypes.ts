@@ -100,6 +100,19 @@ export enum JourneysReportType {
   singleSummary = "singleSummary",
 }
 
+export enum MessagePlatform {
+  facebook = "facebook",
+  instagram = "instagram",
+  line = "line",
+  skype = "skype",
+  snapchat = "snapchat",
+  telegram = "telegram",
+  tikTok = "tikTok",
+  viber = "viber",
+  vk = "vk",
+  whatsApp = "whatsApp",
+}
+
 export enum Role {
   publisher = "publisher",
 }
@@ -180,6 +193,9 @@ export interface ButtonBlockUpdateInput {
 export interface ButtonClickEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
+  stepId?: string | null;
+  value?: string | null;
 }
 
 export interface CardBlockUpdateInput {
@@ -188,6 +204,13 @@ export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+}
+
+export interface ChatOpenEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  stepId?: string | null;
+  value?: MessagePlatform | null;
 }
 
 export interface IconBlockCreateInput {
@@ -278,7 +301,10 @@ export interface RadioQuestionBlockCreateInput {
 export interface RadioQuestionSubmissionEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   radioOptionBlockId: string;
+  stepId?: string | null;
+  value?: string | null;
 }
 
 export interface SignUpBlockCreateInput {
@@ -299,6 +325,7 @@ export interface SignUpSubmissionEventCreateInput {
   email: string;
   id?: string | null;
   name: string;
+  stepId?: string | null;
 }
 
 export interface StepBlockUpdateInput {
@@ -309,6 +336,7 @@ export interface StepBlockUpdateInput {
 export interface StepViewEventCreateInput {
   blockId: string;
   id?: string | null;
+  value?: string | null;
 }
 
 export interface TextResponseBlockCreateInput {
@@ -331,6 +359,8 @@ export interface TextResponseBlockUpdateInput {
 export interface TextResponseSubmissionEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
+  stepId?: string | null;
   value: string;
 }
 
@@ -384,48 +414,70 @@ export interface VideoBlockUpdateInput {
 export interface VideoCollapseEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoCompleteEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoExpandEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoPauseEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoPlayEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoProgressEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
   progress: number;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoStartEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
+  ids?: string[] | null;
   tagId?: string | null;
   title?: string | null;
   types?: VideoType[] | null;

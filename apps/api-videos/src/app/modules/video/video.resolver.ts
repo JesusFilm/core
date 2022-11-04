@@ -29,6 +29,7 @@ export class VideoResolver {
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
     return await this.videoService.filterEpisodes({
+      ids: where?.ids,
       playlistId,
       idType,
       title: where?.title ?? undefined,
@@ -53,6 +54,7 @@ export class VideoResolver {
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
     return await this.videoService.filterAll({
+      ids: where?.ids,
       title: where?.title ?? undefined,
       tagId: where?.tagId ?? undefined,
       availableVariantLanguageIds:

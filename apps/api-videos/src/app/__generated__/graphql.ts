@@ -24,6 +24,7 @@ export enum VideoVariantDownloadQuality {
 }
 
 export class VideosFilter {
+    ids?: Nullable<string[]>;
     availableVariantLanguageIds?: Nullable<string[]>;
     title?: Nullable<string>;
     tagId?: Nullable<string>;
