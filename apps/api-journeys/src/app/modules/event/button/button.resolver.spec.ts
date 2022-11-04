@@ -122,7 +122,7 @@ describe('ChatOpenEventResolver', () => {
       })
     })
 
-    it('should update visitor email', async () => {
+    it('should update visitor messagePlatform', async () => {
       const input: ChatOpenEventCreateInput = {
         id: '1',
         blockId: 'block.id',
