@@ -146,11 +146,6 @@ export enum VideoType {
   standalone = "standalone",
 }
 
-export enum VideoVariantDownloadQuality {
-  high = "high",
-  low = "low",
-}
-
 export interface ButtonClickEventCreateInput {
   blockId: string;
   id?: string | null;
