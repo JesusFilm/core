@@ -10,7 +10,7 @@ import { HomeHero } from '../src/components/Hero'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { Footer } from '../src/components/Footer/Footer'
 import { HomeVideo, HomeVideos } from '../src/components/HomeVideos/HomeVideos'
-import { designationTypes } from '../src/components/HomeVideos/Card/HomeVideoCard'
+import { FilmType } from '../src/components/HomeVideos/Card/HomeVideoCard'
 import { Header } from '../src/components/Header'
 import { createApolloClient } from '../src/libs/client'
 import { GetHomeVideos } from '../__generated__/GetHomeVideos'
@@ -18,21 +18,21 @@ import { GetHomeVideos } from '../__generated__/GetHomeVideos'
 export const videos: HomeVideo[] = [
   {
     id: '1_jf-0-0',
-    designation: designationTypes.feature
+    designation: FilmType.feature
   },
-  { id: '2_ChosenWitness', designation: designationTypes.animation },
-  { id: '2_GOJ-0-0', designation: designationTypes.feature },
-  { id: 'MAG1', designation: designationTypes.feature },
-  { id: '1_fj-0-0', designation: designationTypes.series },
+  { id: '2_ChosenWitness', designation: FilmType.animation },
+  { id: '2_GOJ-0-0', designation: FilmType.feature },
+  { id: 'MAG1', designation: FilmType.feature },
+  { id: '1_fj-0-0', designation: FilmType.series },
   {
     id: '1_riv-0-0',
-    designation: designationTypes.series
+    designation: FilmType.series
   },
-  { id: '1_wjv-0-0', designation: designationTypes.series },
-  { id: '2_Acts-0-0', designation: designationTypes.feature },
-  { id: '1_cl-0-0', designation: designationTypes.series },
-  { id: '3_0-40DWJ', designation: designationTypes.collection },
-  { id: '1_wl7-0-0', designation: designationTypes.series }
+  { id: '1_wjv-0-0', designation: FilmType.series },
+  { id: '2_Acts-0-0', designation: FilmType.feature },
+  { id: '1_cl-0-0', designation: FilmType.series },
+  { id: '3_0-40DWJ', designation: FilmType.collection },
+  { id: '1_wl7-0-0', designation: FilmType.series }
 ]
 
 interface HomePageProps {
@@ -48,20 +48,21 @@ function HomePage({ data }: HomePageProps): ReactElement {
         themeMode={ThemeMode.dark}
       >
         <HomeHero />
-      </ThemeProvider>
-      <Box sx={{ paddingY: '4rem', backgroundColor: '#131111' }}>
-        <Container
-          sx={{
-            maxWidth: '100% !important',
-            width: '100%',
-            paddingLeft: '100px !important',
-            paddingRight: '100px !important'
-          }}
+        <Box
+          sx={{ paddingY: '4rem', backgroundColor: 'primary.backgroundColor' }}
         >
-          <HomeVideos data={data?.videos} videos={videos} />
-        </Container>
-      </Box>
-      <Footer isHome />
+          <Container
+            sx={{
+              maxWidth: '100% !important',
+              width: '100%',
+              paddingLeft: '100px !important',
+              paddingRight: '100px !important'
+            }}
+          >
+            <HomeVideos data={data?.videos} videos={videos} />
+          </Container>
+        </Box>
+      </ThemeProvider>
     </PageWrapper>
   )
 }

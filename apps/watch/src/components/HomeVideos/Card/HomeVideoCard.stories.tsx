@@ -15,11 +15,21 @@ const HomeVideoCardStory = {
 const Template: Story = ({ ...args }) => {
   return (
     <ThemeProvider themeMode={ThemeMode.dark} themeName={ThemeName.website}>
-      <HomeVideoCard video={data[0]} designation={videos[0].designation} />
+      <HomeVideoCard video={args.video} designation={args.designation} />
     </ThemeProvider>
   )
 }
 
-export const Grid = Template.bind({})
+export const Standalone = Template.bind({})
+Standalone.args = {
+  video: data[0],
+  designation: videos[0].designation
+}
+
+export const Playlist = Template.bind({})
+Playlist.args = {
+  video: data[8],
+  designation: videos[7].designation
+}
 
 export default HomeVideoCardStory as Meta

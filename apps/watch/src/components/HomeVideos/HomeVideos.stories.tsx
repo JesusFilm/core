@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
-import { MockedProvider } from '@apollo/client/testing'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { watchConfig } from '../../libs/storybook'
-import { GET_VIDEOS } from '../Videos/Videos'
 import { data, videos } from './testData'
 import { HomeVideos } from './HomeVideos'
 
@@ -13,32 +13,12 @@ const HomeVideosStory = {
 
 const Template: Story = ({ ...args }) => {
   return (
-    <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: GET_VIDEOS,
-            variables: {
-              where: {
-                availableVariantLanguageIds: ['529']
-              },
-              page: 1,
-              limit: args.limit
-            }
-          },
-          result: {
-            data: {
-              videos: videos
-            }
-          }
-        }
-      ]}
-    >
+    <ThemeProvider themeMode={ThemeMode.dark} themeName={ThemeName.website}>
       <HomeVideos videos={videos} data={data} />
-    </MockedProvider>
+    </ThemeProvider>
   )
 }
 
-export const Grid = Template.bind({})
+export const Default = Template.bind({})
 
 export default HomeVideosStory as Meta

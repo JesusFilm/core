@@ -1,37 +1,37 @@
 import { VideoType } from '../../../__generated__/globalTypes'
 import { GetVideos_videos } from '../../../__generated__/GetVideos'
-import { designationTypes } from './Card/HomeVideoCard'
+import { FilmType } from './Card/HomeVideoCard'
 import { HomeVideo } from './HomeVideos'
 
 export const videos: HomeVideo[] = [
   {
     id: '1_jf-0-0',
-    designation: designationTypes.feature
+    designation: FilmType.feature
   },
-  { id: '2_GOJ-0-0', designation: designationTypes.feature },
-  { id: 'MAG1', designation: designationTypes.feature },
-  { id: '2_Acts-0-0', designation: designationTypes.feature },
+  { id: '2_GOJ-0-0', designation: FilmType.feature },
+  { id: 'rivka', designation: FilmType.series },
+  { id: '2_Acts-0-0', designation: FilmType.feature },
   {
     id: '1_jf-0-0',
-    designation: designationTypes.feature
+    designation: FilmType.feature
   },
-  { id: '2_GOJ-0-0', designation: designationTypes.feature },
-  { id: 'MAG1', designation: designationTypes.feature },
-  { id: '2_Acts-0-0', designation: designationTypes.feature },
+  { id: '2_GOJ-0-0', designation: FilmType.feature },
+  { id: 'rivka', designation: FilmType.series },
+  { id: '2_Acts-0-0', designation: FilmType.feature },
   {
     id: '1_jf-0-0',
-    designation: designationTypes.feature
+    designation: FilmType.feature
   },
-  { id: '2_GOJ-0-0', designation: designationTypes.feature },
-  { id: 'MAG1', designation: designationTypes.feature },
-  { id: '2_Acts-0-0', designation: designationTypes.feature },
+  { id: '2_GOJ-0-0', designation: FilmType.feature },
+  { id: 'rivka', designation: FilmType.series },
+  { id: '2_Acts-0-0', designation: FilmType.feature },
   {
     id: '1_jf-0-0',
-    designation: designationTypes.feature
+    designation: FilmType.feature
   },
-  { id: '2_GOJ-0-0', designation: designationTypes.feature },
-  { id: 'MAG1', designation: designationTypes.feature },
-  { id: '2_Acts-0-0', designation: designationTypes.feature }
+  { id: '2_GOJ-0-0', designation: FilmType.feature },
+  { id: 'rivka', designation: FilmType.series },
+  { id: '2_Acts-0-0', designation: FilmType.feature }
 ]
 
 export const data: GetVideos_videos[] = [
@@ -225,6 +225,34 @@ export const data: GetVideos_videos[] = [
     slug: [
       {
         value: 'installing-the-jesus-film-media-app',
+        __typename: 'Translation'
+      }
+    ]
+  },
+  {
+    id: '1_riv-0-0',
+    type: VideoType.playlist,
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_riv-0-0.mobileCinematicHigh.jpg',
+    snippet: [
+      {
+        value:
+          'Rivka is the compelling story of a first-century community experiencing the joys and sorrows that life brings. Their story demonstrates how our loving God through His Word and Holy Spirit gives us strength for the present and hope for the future. This 12-part series is designed to help women (and men) grow in their relationship with God.',
+        __typename: 'Translation'
+      }
+    ],
+    title: [
+      {
+        value: 'Rivka',
+        __typename: 'Translation'
+      }
+    ],
+    variant: { duration: 118, __typename: 'VideoVariant' },
+    __typename: 'Video',
+    episodeIds: ['1', '2'],
+    slug: [
+      {
+        value: 'rivka',
         __typename: 'Translation'
       }
     ]
