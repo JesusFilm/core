@@ -35,7 +35,7 @@ export function Header(): ReactElement {
   return (
     <>
       <AppBar
-        position="relative"
+        position="absolute"
         sx={{ background: 'transparent', boxShadow: 'none', p: 4 }}
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>

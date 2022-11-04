@@ -14,12 +14,12 @@ interface SimpleHeroProps {
 }
 
 export function SimpleHero({ loading, video }: SimpleHeroProps): ReactElement {
-  const image = video.episodes[0].image as string
+  const firstEpisodeImage = video.episodes[0]?.image
 
   return (
     <Box
       sx={{
-        height: 340,
+        height: { xs: 280, lg: 340 },
         width: '100%',
         display: 'flex',
         alignItems: 'end',
@@ -27,33 +27,32 @@ export function SimpleHero({ loading, video }: SimpleHeroProps): ReactElement {
       }}
     >
       {loading && <CircularProgress />}
-      <Image
-        src={image}
-        alt={video?.title[0].value}
-        layout="fill"
-        objectFit="cover"
-        style={{
-          zIndex: -1
-        }}
-      />
+      {firstEpisodeImage != null && (
+        <Image
+          src={firstEpisodeImage}
+          alt={video?.title[0].value}
+          layout="fill"
+          objectFit="cover"
+        />
+      )}
       <Box
         style={{
-          zIndex: 0,
+          zIndex: 1,
           position: 'absolute',
           height: '100%',
           width: '100%',
-          backgroundColor: 'rgba(0,0,0,0.6)'
+          backgroundColor: 'rgba(0,0,0,0.5)'
         }}
       />
       <Container
         maxWidth="xl"
         style={{
-          zIndex: 1
+          zIndex: 2
         }}
       >
         {/* render video type */}
         <Stack
-          direction={{ xs: 'column', sm: 'column', md: 'column', lg: 'row' }}
+          direction={{ xs: 'column', lg: 'row' }}
           alignItems={{ xs: 'start', lg: 'end' }}
           justifyContent="space-between"
           pb={10}
