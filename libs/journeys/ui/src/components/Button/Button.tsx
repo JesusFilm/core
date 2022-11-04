@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import MuiButton from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -75,7 +75,7 @@ export function Button({
     | TreeBlock<IconFields>
     | undefined
 
-  const chatPlatform = findChatPlatform(action)
+  const chatPlatform = useMemo(() => findChatPlatform(action), [action])
 
   function createClickEvent(): void {
     if (!admin) {

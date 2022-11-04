@@ -250,7 +250,7 @@ describe('Button', () => {
 
     const result = jest.fn(() => ({
       data: {
-        chatOpenEvent: {
+        chatOpenEventCreate: {
           __typename: 'ChatOpenEvent',
           id: 'uuiid'
         }
