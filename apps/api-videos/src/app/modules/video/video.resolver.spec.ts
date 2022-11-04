@@ -29,7 +29,7 @@ describe('VideoResolver', () => {
       useFactory: () => ({
         filterAll: jest.fn(() => [video, video]),
         filterEpisodes: jest.fn(() => [video, video]),
-        getByIds: jest.fn(() => [video, video]),
+        getVideosByIds: jest.fn(() => [video, video]),
         getVideo: jest.fn(() => video)
       })
     }
@@ -150,12 +150,33 @@ describe('VideoResolver', () => {
 
   describe('videosById', () => {
     it('returns Videos', async () => {
-      const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
+      const info = {
+        fieldNodes: [
+          {
+            selectionSet: {
+              selections: [
+                {
+                  name: { value: 'variant' },
+                  arguments: [
+                    {
+                      name: { value: 'languageId' },
+                      value: { value: 'en' }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
       expect(await resolver.videosById(info, [video.id, video.id])).toEqual([
         video,
         video
       ])
-      expect(service.getByIds).toHaveBeenCalledWith([video.id, video.id])
+      expect(service.getVideosByIds).toHaveBeenCalledWith(
+        [video.id, video.id],
+        'en'
+      )
     })
 
     it('returns filtered Videos', async () => {
@@ -182,7 +203,10 @@ describe('VideoResolver', () => {
         video,
         video
       ])
-      expect(service.getByIds).toHaveBeenCalledWith([video.id, video.id])
+      expect(service.getVideosByIds).toHaveBeenCalledWith(
+        [video.id, video.id],
+        'en'
+      )
     })
   })
 

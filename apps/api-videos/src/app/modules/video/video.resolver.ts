@@ -67,7 +67,10 @@ export class VideoResolver {
 
   @Query()
   async videosById(@Info() info, @Args('ids') ids: string[]): Promise<Video[]> {
-    return await this.videoService.getByIds(ids)
+    const variantLanguageId = info.fieldNodes[0].selectionSet.selections
+      .find(({ name }) => name.value === 'variant')
+      ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
+    return await this.videoService.getVideosByIds(ids, variantLanguageId)
   }
 
   @Query()
