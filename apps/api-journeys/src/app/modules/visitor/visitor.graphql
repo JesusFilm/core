@@ -97,7 +97,7 @@ type Visitor @key(fields: "id") {
   status: VisitorStatus
   """
   Message platform the visitor wishes to be connected to us on as populated by
-  VisitorUpdate mutation or ChatOpenedEventCreate mutation.
+  VisitorUpdate mutation or ChatOpenEventCreate mutation.
   """
   messagePlatform: MessagePlatform
   """
@@ -199,7 +199,7 @@ input VisitorUpdateInput {
   messagePlatformId: String
   """
   Message platform the visitor wishes to be connected to us on (will prevent
-  ChatOpenedEventCreate mutation from updating this field automatically)
+  ChatOpenEventCreate mutation from updating this field automatically)
   """
   messagePlatform: MessagePlatform
   """
