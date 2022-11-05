@@ -32,7 +32,7 @@ export function ReportButtons({ pageName }: ReportButtonProps): ReactElement {
             }
           >
             <Typography
-              fontWeight="bold"
+              variant='h3'
               color={pageName === 'journeys' ? 'primary' : 'divider'}
             >
               Journeys
@@ -46,7 +46,7 @@ export function ReportButtons({ pageName }: ReportButtonProps): ReactElement {
             }
           >
             <Typography
-              fontWeight="bold"
+              variant='h3'
               color={pageName === 'visitor' ? 'primary' : 'divider'}
             >
               Visitors
