@@ -24,7 +24,6 @@ export function ReportButtons({ pageName }: ReportButtonProps): ReactElement {
       <Container maxWidth="lg" sx={{ px: { xs: 6, sm: 8 }, marginLeft: 0 }}>
         <Stack direction="row" spacing={16} sx={{ py: 2 }}>
           <Button
-            id="journeys"
             onClick={async () =>
               await router.push('/reports/journeys', undefined, {
                 shallow: true
@@ -32,7 +31,7 @@ export function ReportButtons({ pageName }: ReportButtonProps): ReactElement {
             }
           >
             <Typography
-              variant="h3"
+              variant="subtitle2"
               color={pageName === 'journeys' ? 'primary' : 'divider'}
             >
               Journeys
@@ -46,7 +45,7 @@ export function ReportButtons({ pageName }: ReportButtonProps): ReactElement {
             }
           >
             <Typography
-              variant="h3"
+              variant="subtitle2"
               color={pageName === 'visitor' ? 'primary' : 'divider'}
             >
               Visitors
