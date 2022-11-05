@@ -16,7 +16,7 @@ describe('ReportButtons', () => {
   it('should have Journeys button with push to journeys', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider>
         <FlagsProvider>
           <SnackbarProvider>
@@ -27,6 +27,8 @@ describe('ReportButtons', () => {
         </FlagsProvider>
       </MockedProvider>
     )
+    expect(getByText('Visitors')).toHaveStyle('color: rgba(0, 0, 0, 0.12)')
+    expect(getByText('Journeys')).toHaveStyle('color: rgb(25, 118, 210)')
     fireEvent.click(getByRole('button', { name: 'Journeys' }))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith('/reports/journeys', undefined, {
@@ -38,17 +40,19 @@ describe('ReportButtons', () => {
   it('should have Visitors button with push to visitors', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <MockedProvider>
         <FlagsProvider>
           <SnackbarProvider>
             <JourneyProvider value={{ admin: true }}>
-              <ReportButtons pageName="journeys" />
+              <ReportButtons pageName="visitor" />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>
       </MockedProvider>
     )
+    expect(getByText('Journeys')).toHaveStyle('color: rgba(0, 0, 0, 0.12)')
+    expect(getByText('Visitors')).toHaveStyle('color: rgb(25, 118, 210)')
     fireEvent.click(getByRole('button', { name: 'Visitors' }))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith('/reports/visitors', undefined, {

@@ -31,8 +31,11 @@ export function ReportButtons({ pageName }: ReportButtonProps): ReactElement {
               })
             }
           >
-            <Typography color={pageName === 'journeys' ? 'primary' : 'divider'}>
-              <strong>Journeys</strong>
+            <Typography
+              fontWeight="bold"
+              color={pageName === 'journeys' ? 'primary' : 'divider'}
+            >
+              Journeys
             </Typography>
           </Button>
           <Button
@@ -42,8 +45,11 @@ export function ReportButtons({ pageName }: ReportButtonProps): ReactElement {
               })
             }
           >
-            <Typography color={pageName === 'visitor' ? 'primary' : 'divider'}>
-              <strong>Visitors</strong>
+            <Typography
+              fontWeight="bold"
+              color={pageName === 'visitor' ? 'primary' : 'divider'}
+            >
+              Visitors
             </Typography>
           </Button>
         </Stack>
