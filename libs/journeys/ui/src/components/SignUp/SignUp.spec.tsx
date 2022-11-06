@@ -65,6 +65,16 @@ const block: TreeBlock<SignUpFields> = {
   children: []
 }
 
+const activeBlock: TreeBlock<StepBlock> = {
+  __typename: 'StepBlock',
+  id: 'step.id',
+  parentBlockId: null,
+  parentOrder: 0,
+  locked: true,
+  nextBlockId: null,
+  children: []
+}
+
 interface SignUpMockProps {
   mocks?: Array<MockedResponse<Record<string, unknown>>>
 }
@@ -234,6 +244,8 @@ describe('SignUp', () => {
   })
 
   it('should create submission event on click', async () => {
+    activeBlockVar(activeBlock)
+
     const result = jest.fn(() => ({
       data: {
         signUpSubmissionEventCreate: {
@@ -250,6 +262,7 @@ describe('SignUp', () => {
             input: {
               id: 'uuid',
               blockId: 'signUp0.id',
+              stepId: 'step.id',
               name: 'Anon',
               email: '123abc@gmail.com'
             }
@@ -283,15 +296,6 @@ describe('SignUp', () => {
   })
 
   it('should add submission event to dataLayer', async () => {
-    const activeBlock: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'Step1',
-      parentBlockId: null,
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
     activeBlockVar(activeBlock)
     treeBlocksVar([activeBlock])
 
@@ -303,6 +307,7 @@ describe('SignUp', () => {
             input: {
               id: 'uuid',
               blockId: 'signUp0.id',
+              stepId: 'step.id',
               name: 'Anon',
               email: '123abc@gmail.com'
             }
@@ -349,6 +354,8 @@ describe('SignUp', () => {
   })
 
   it('should show error when submit fails', async () => {
+    activeBlockVar(activeBlock)
+
     const mocks = [
       {
         request: {
@@ -357,6 +364,7 @@ describe('SignUp', () => {
             input: {
               id: 'uuid',
               blockId: 'signUp0.id',
+              stepId: 'step.id',
               name: 'Anon',
               email: '123abc@gmail.com'
             }

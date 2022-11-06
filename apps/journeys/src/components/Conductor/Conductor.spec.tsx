@@ -1,7 +1,10 @@
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { activeBlockVar, treeBlocksVar } from '@core/journeys/ui/block'
+import {
+  TreeBlock,
+  activeBlockVar,
+  treeBlocksVar
+} from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
@@ -132,7 +135,9 @@ describe('Conductor', () => {
               variables: {
                 input: {
                   id: 'uuid',
-                  journeyId: 'journeyId'
+                  journeyId: 'journeyId',
+                  label: 'my journey',
+                  value: '529'
                 }
               }
             },
@@ -160,7 +165,9 @@ describe('Conductor', () => {
               variables: {
                 input: {
                   id: 'uuid',
-                  journeyId: 'journeyId'
+                  journeyId: 'journeyId',
+                  label: 'my journey',
+                  value: '529'
                 }
               }
             },

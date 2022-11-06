@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import MuiButton from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -16,10 +16,20 @@ import { IconFields } from '../Icon/__generated__/IconFields'
 import { Icon } from '../Icon'
 import { ButtonFields } from './__generated__/ButtonFields'
 import { ButtonClickEventCreate } from './__generated__/ButtonClickEventCreate'
+import { ChatOpenEventCreate } from './__generated__/ChatOpenEventCreate'
+import { findChatPlatform } from './findChatPlatform'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
     buttonClickEventCreate(input: $input) {
+      id
+    }
+  }
+`
+
+export const CHAT_OPEN_EVENT_CREATE = gql`
+  mutation ChatOpenEventCreate($input: ChatOpenEventCreateInput!) {
+    chatOpenEventCreate(input: $input) {
       id
     }
   }
@@ -44,6 +54,9 @@ export function Button({
   const [buttonClickEventCreate] = useMutation<ButtonClickEventCreate>(
     BUTTON_CLICK_EVENT_CREATE
   )
+  const [chatOpenEventCreate] = useMutation<ChatOpenEventCreate>(
+    CHAT_OPEN_EVENT_CREATE
+  )
 
   const { admin } = useJourney()
   const { treeBlocks, activeBlock } = useBlocks()
@@ -62,14 +75,19 @@ export function Button({
     | TreeBlock<IconFields>
     | undefined
 
-  function createEvent(): void {
+  const chatPlatform = useMemo(() => findChatPlatform(action), [action])
+
+  function createClickEvent(): void {
     if (!admin) {
       const id = uuidv4()
       void buttonClickEventCreate({
         variables: {
           input: {
             id,
-            blockId
+            blockId,
+            stepId: activeBlock?.id,
+            label: heading,
+            value: label
           }
         }
       })
@@ -84,9 +102,29 @@ export function Button({
     }
   }
 
+  function createChatEvent(): void {
+    if (!admin) {
+      const id = uuidv4()
+      void chatOpenEventCreate({
+        variables: {
+          input: {
+            id,
+            blockId,
+            stepId: activeBlock?.id,
+            value: chatPlatform
+          }
+        }
+      })
+    }
+  }
+
   const router = useRouter()
   const handleClick = async (): Promise<void> => {
-    void createEvent()
+    if (chatPlatform == null) {
+      void createClickEvent()
+    } else {
+      void createChatEvent()
+    }
     handleAction(router, action)
   }
 

@@ -87,7 +87,12 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
       const id = uuidv4()
       void journeyViewEventCreate({
         variables: {
-          input: { id, journeyId: journey.id }
+          input: {
+            id,
+            journeyId: journey.id,
+            label: journey.title,
+            value: journey.language.id
+          }
         }
       })
       TagManager.dataLayer({
