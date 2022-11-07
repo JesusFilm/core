@@ -208,7 +208,7 @@ describe('ShareDialog', () => {
       )
 
       fireEvent.click(getByRole('tab', { name: 'Embed Code' }))
-      fireEvent.click(getByRole('button', { name: 'Copy Embed Code' }))
+      fireEvent.click(getByRole('button', { name: 'Copy Code' }))
 
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(code)
       await waitFor(() => expect(getByText('Code Copied')).toBeInTheDocument())

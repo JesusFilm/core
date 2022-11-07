@@ -59,7 +59,7 @@ EmbedCode.args = {
 }
 EmbedCode.play = () => {
   userEvent.click(screen.getByRole('tab', { name: 'Embed Code' }))
-  userEvent.click(screen.getByRole('button', { name: 'Copy Embed Code' }))
+  userEvent.click(screen.getByRole('button', { name: 'Copy Code' }))
 }
 
 export default ShareDialogStory as Meta
