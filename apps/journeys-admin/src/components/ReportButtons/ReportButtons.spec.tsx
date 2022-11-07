@@ -1,4 +1,4 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
@@ -13,51 +13,48 @@ jest.mock('next/router', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('ReportButtons', () => {
-  it('should have Journeys button with push to journeys', async () => {
+  it('should link to reports', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <MockedProvider>
         <FlagsProvider>
           <SnackbarProvider>
             <JourneyProvider value={{ admin: true }}>
-              <ReportButtons pageName="journeys" />
+              <ReportButtons selected="journeys" />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByText('Visitors')).toHaveStyle('color: rgba(0, 0, 0, 0.12)')
-    expect(getByText('Journeys')).toHaveStyle('color: rgb(25, 118, 210)')
-    fireEvent.click(getByRole('button', { name: 'Journeys' }))
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith('/reports/journeys', undefined, {
-        shallow: true
-      })
-    })
+    expect(getByRole('link', { name: 'Visitors' })).toHaveAttribute(
+      'href',
+      '/reports/visitors'
+    )
+    expect(getByRole('link', { name: 'Journeys' })).toHaveAttribute(
+      'href',
+      '/reports/journeys'
+    )
   })
 
-  it('should have Visitors button with push to visitors', async () => {
+  it('should display selected button for report type ', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <MockedProvider>
         <FlagsProvider>
           <SnackbarProvider>
             <JourneyProvider value={{ admin: true }}>
-              <ReportButtons pageName="visitor" />
+              <ReportButtons selected="visitors" />
             </JourneyProvider>
           </SnackbarProvider>
         </FlagsProvider>
       </MockedProvider>
     )
-    expect(getByText('Journeys')).toHaveStyle('color: rgba(0, 0, 0, 0.12)')
-    expect(getByText('Visitors')).toHaveStyle('color: rgb(25, 118, 210)')
-    fireEvent.click(getByRole('button', { name: 'Visitors' }))
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith('/reports/visitors', undefined, {
-        shallow: true
-      })
-    })
+
+    expect(getByRole('link', { name: 'Visitors' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 })

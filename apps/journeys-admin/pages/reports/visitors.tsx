@@ -27,7 +27,7 @@ function ReportsVisitorsPage(): ReactElement {
         authUser={AuthUser}
         router={router}
       >
-        <ReportButtons pageName="visitor" />
+        <ReportButtons selected="visitors" />
         Visitors report list
       </PageWrapper>
     </>

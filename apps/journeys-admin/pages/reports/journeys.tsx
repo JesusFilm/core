@@ -31,7 +31,7 @@ function ReportsJourneysPage(): ReactElement {
         router={router}
       >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
-          <ReportButtons pageName="journeys" />
+          <ReportButtons selected="journeys" />
           <MemoizedDynamicReport reportType={JourneysReportType.multipleFull} />
         </Box>
       </PageWrapper>

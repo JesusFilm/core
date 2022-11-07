@@ -11,7 +11,7 @@ const ReportButtonsStory = {
 
 const Template: Story = () => (
   <MockedProvider>
-    <ReportButtons pageName="journeys" />
+    <ReportButtons selected="journeys" />
   </MockedProvider>
 )
 
