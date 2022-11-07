@@ -112,5 +112,4 @@ export const RTL = Template.bind({})
 RTL.args = { ...Default.args }
 RTL.parameters = { rtl: true }
 
->>>>>>> main
 export default Demo as Meta

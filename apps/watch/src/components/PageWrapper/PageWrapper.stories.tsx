@@ -13,38 +13,6 @@ const PageWrapperStory = {
   }
 }
 
-const MuiContainer = ({
-  label,
-  height
-}: {
-  label: string
-  height?: string
-}): ReactElement => (
-  <Container
-    maxWidth="xl"
-    style={{
-      height: height,
-      borderStyle: 'solid',
-      borderColor: '#26262E',
-      borderWidth: 1,
-      backgroundColor: '#F0EDE3'
-    }}
-  >
-    <Box
-      sx={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#a9cce8'
-      }}
-    >
-      <Typography variant="h3">{label}</Typography>
-    </Box>
-  </Container>
-)
-
 const Template: Story = () => (
   // Box shows PageWrapper Container spacing
   <Box
