@@ -10,6 +10,7 @@ import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'react-i18next'
 import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
+import { VisitorInfo } from '../../../src/components/VisitorInfo'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import i18nConfig from '../../../next-i18next.config'
 
@@ -20,13 +21,13 @@ function SingleVisitorReportsPage(): ReactElement {
 
   return (
     <>
-      <NextSeo title={t('Visitor Report')} />
+      <NextSeo title={t('Visitor Info')} />
       <PageWrapper
-        title={t('Visitor Report')}
+        title={t('Visitor Info')}
         authUser={AuthUser}
         router={router}
       >
-        Single Visitor report
+        <VisitorInfo id={router.query.visitorId as string} />
       </PageWrapper>
     </>
   )
