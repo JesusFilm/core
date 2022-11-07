@@ -46,7 +46,6 @@ type Video @key(fields: "id primaryLanguageId") {
 }
 
 input VideosFilter {
-  ids: [ID!]
   availableVariantLanguageIds: [ID!]
   title: String
   tagId: String
@@ -78,6 +77,7 @@ extend type Query {
   videoTag(id: ID!): VideoTag
   episodes(playlistId: ID!, idType: IdType, where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
+  videosById(ids: [ID!]): [Video!]!
   video(id: ID!, idType: IdType): Video!
 }
 

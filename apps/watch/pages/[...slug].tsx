@@ -21,6 +21,7 @@ import {
 import { PageWrapper } from '../src/components/PageWrapper'
 import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCarousel'
 import { VideoHero, SimpleHero } from '../src/components/Hero'
+import { ShareDialog } from '../src/components/ShareDialog'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID) {
@@ -110,6 +111,7 @@ export default function SeoFriendly(): ReactElement {
   const { routes } = routeParser(slug)
   const languageContext = useLanguage()
   const [tabValue, setTabValue] = useState(0)
+  const [openShare, setOpenShare] = useState(false)
 
   const handleTabChange = (_event, newValue): void => {
     setTabValue(newValue)
@@ -201,13 +203,6 @@ export default function SeoFriendly(): ReactElement {
                     {data.video.description[0]?.value}
                   </Typography>
                 </TabPanel>
-
-                <TabPanel name="video-transcript" value={tabValue} index={1}>
-                  <Typography variant="body1">&nbsp;</Typography>
-                </TabPanel>
-                <TabPanel name="video-strategy" value={tabValue} index={2}>
-                  <Typography variant="body1">&nbsp;</Typography>
-                </TabPanel>
               </Box>
               <Box width="336px">
                 <Stack direction="row" spacing="20px" mb="40px">
@@ -215,13 +210,19 @@ export default function SeoFriendly(): ReactElement {
                     <SaveAlt />
                     &nbsp; Download
                   </Button>
-                  <Button variant="outlined">
+                  <Button variant="outlined" onClick={() => setOpenShare(true)}>
                     <Share />
                     &nbsp; Share
                   </Button>
                 </Stack>
               </Box>
             </Stack>
+            <ShareDialog
+              open={openShare}
+              video={data.video}
+              routes={routes}
+              onClose={() => setOpenShare(false)}
+            />
           </>
         )}
       </PageWrapper>
