@@ -1,7 +1,10 @@
+import { ReactElement, useCallback, useEffect } from 'react'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
-import { ReactElement, useCallback, useEffect } from 'react'
+import { SnackbarProvider } from 'notistack'
 import { ApolloProvider } from '@apollo/client'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { DefaultSeo } from 'next-seo'
@@ -10,12 +13,11 @@ import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { firebaseClient } from '../src/libs/firebaseClient'
 import { createApolloClient } from '../src/libs/client'
-import { ThemeProvider } from '../src/components/ThemeProvider'
 import '../public/fonts/fonts.css'
 import '../public/styles/carousel.css'
 import '../public/styles/video-js.css'
 
-const clientSideEmotionCache = createEmotionCache()
+const clientSideEmotionCache = createEmotionCache({})
 
 export default function WatchApp({
   Component,
@@ -54,8 +56,13 @@ export default function WatchApp({
         />
       </Head>
       <ApolloProvider client={client}>
-        <ThemeProvider>
-          <Component {...pageProps} />
+        <ThemeProvider
+          themeName={ThemeName.website}
+          themeMode={ThemeMode.light}
+        >
+          <SnackbarProvider>
+            <Component {...pageProps} />
+          </SnackbarProvider>
         </ThemeProvider>
       </ApolloProvider>
     </CacheProvider>

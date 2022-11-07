@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { themes } from '@core/shared/ui/themes'
+import { getTheme } from '@core/shared/ui/themes'
 import {
   TypographyColor,
   TypographyAlign,
   TypographyVariant,
-  ThemeMode,
-  ThemeName
+  ThemeName,
+  ThemeMode
 } from '../../../../../__generated__/globalTypes'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../__generated__/GetJourney'
 import { ColorDisplayIcon } from '.'
@@ -54,7 +54,10 @@ describe('ColorDisplayIcon', () => {
       </EditorProvider>
     )
     expect(getByTestId('primary-display-icon')).toHaveStyle(
-      `background-color: ${themes.base.dark.palette.primary.main}`
+      `background-color: ${
+        getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.dark })
+          .palette.primary.main
+      }`
     )
   })
 
@@ -99,7 +102,10 @@ describe('ColorDisplayIcon', () => {
       </EditorProvider>
     )
     expect(getByTestId('secondary-display-icon')).toHaveStyle(
-      `background-color: ${themes.base.dark.palette.secondary.main}`
+      `background-color: ${
+        getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.dark })
+          .palette.secondary.main
+      }`
     )
   })
 })

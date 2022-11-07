@@ -82,7 +82,7 @@ export function Label(): ReactElement {
                 onChange={handleChange}
                 onBlur={(e) => {
                   handleBlur(e)
-                  if (values.textResponseLabel === '') {
+                  if (values.textResponseLabel.trim() === '') {
                     e.target.value = t('Your answer here')
                     setValues({ textResponseLabel: t('Your answer here') })
                   }

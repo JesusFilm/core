@@ -7,9 +7,10 @@ let launchDarklyClient: LDClient
  * @returns a LaunchDarkly server-side client as a singleton.
  */
 export async function getLaunchDarklyClient(user?: LDUser): Promise<LDClient> {
-  if (launchDarklyClient != null) return launchDarklyClient
+  if (launchDarklyClient == null) {
+    launchDarklyClient = init(process.env.LAUNCH_DARKLY_SDK_KEY ?? '')
+  }
 
-  launchDarklyClient = init(process.env.LAUNCH_DARKLY_SDK_KEY ?? '')
   await launchDarklyClient.waitForInitialization()
 
   if (user != null) launchDarklyClient.identify(user)

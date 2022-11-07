@@ -52,6 +52,7 @@ export class VideoResolver {
     const variantLanguageId = info.fieldNodes[0].selectionSet.selections
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
+
     return await this.videoService.filterAll({
       title: where?.title ?? undefined,
       tagId: where?.tagId ?? undefined,
@@ -62,6 +63,14 @@ export class VideoResolver {
       offset,
       limit
     })
+  }
+
+  @Query()
+  async videosById(@Info() info, @Args('ids') ids: string[]): Promise<Video[]> {
+    const variantLanguageId = info.fieldNodes[0].selectionSet.selections
+      .find(({ name }) => name.value === 'variant')
+      ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
+    return await this.videoService.getVideosByIds(ids, variantLanguageId)
   }
 
   @Query()

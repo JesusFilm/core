@@ -28,7 +28,6 @@ export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
   ) {
     textResponseSubmissionEventCreate(input: $input) {
       id
-      value
     }
   }
 `
@@ -90,6 +89,8 @@ export const TextResponse = ({
               input: {
                 id,
                 blockId,
+                stepId: activeBlock?.id,
+                label: heading,
                 value: values.response
               }
             }

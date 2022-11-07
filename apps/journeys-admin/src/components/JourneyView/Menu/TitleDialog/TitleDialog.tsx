@@ -1,11 +1,11 @@
 import { ReactElement } from 'react'
 import { useMutation, gql, ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneyTitleUpdate } from '../../../../../__generated__/JourneyTitleUpdate'
-import { Dialog } from '../../../Dialog'
 
 export const JOURNEY_TITLE_UPDATE = gql`
   mutation JourneyTitleUpdate($id: ID!, $input: JourneyUpdateInput!) {
@@ -79,7 +79,7 @@ export function TitleDialog({ open, onClose }: TitleDialogProps): ReactElement {
           {({ values, handleChange, handleSubmit, resetForm }) => (
             <Dialog
               open={open}
-              handleClose={handleClose(resetForm)}
+              onClose={handleClose(resetForm)}
               dialogTitle={{ title: 'Edit Title' }}
               dialogAction={{
                 onSubmit: handleSubmit,

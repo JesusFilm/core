@@ -2,9 +2,9 @@ import { ReactElement } from 'react'
 import { useMutation, useQuery, gql } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { JourneyLanguageUpdate } from '../../../../../__generated__/JourneyLanguageUpdate'
-import { Dialog } from '../../../Dialog'
 import { LanguageSelect } from '../../../LanguageSelect'
 import { GetLanguages } from '../../../../../__generated__/GetLanguages'
 
@@ -122,7 +122,7 @@ export function LanguageDialog({
           {({ values, handleSubmit, resetForm, setFieldValue }) => (
             <Dialog
               open={open}
-              handleClose={handleClose(resetForm)}
+              onClose={handleClose(resetForm)}
               dialogTitle={{ title: 'Edit Language' }}
               dialogAction={{
                 onSubmit: handleSubmit,

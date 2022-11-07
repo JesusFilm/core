@@ -173,6 +173,11 @@ ImageBlur.args = {
   fullscreen: true
 }
 
+// RTL Expanded - blur image content background
+export const RTLImageBlur = Template.bind({})
+RTLImageBlur.args = { ...ImageBlur.args }
+RTLImageBlur.parameters = { rtl: true }
+
 // Contained - cover image background with blur image content background
 export const ImageCover = Template.bind({})
 ImageCover.args = {
@@ -180,7 +185,17 @@ ImageCover.args = {
   coverBlockId: image.id,
   children: [...content, image]
 }
+ImageCover.parameters = {
+  chromatic: { viewports: [360, 599, 1200] }
+}
 
+// RTL Expanded - blur image content background
+export const RTLImageCover = Template.bind({})
+RTLImageCover.args = { ...ImageCover.args }
+RTLImageCover.parameters = {
+  rtl: true,
+  chromatic: { viewports: [360, 599, 1200] }
+}
 // Contained - cover video background with default content background
 export const VideoCoverDefault = Template.bind({})
 VideoCoverDefault.args = {

@@ -1,21 +1,40 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
+import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/graphql'
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion.resolver'
 
 describe('RadioQuestionSubmissionEventResolver', () => {
-  let resolver: RadioQuestionSubmissionEventResolver
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
 
-  const input = {
-    id: '1',
-    blockId: '2',
-    radioOptionBlockId: '4'
-  }
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
+  let resolver: RadioQuestionSubmissionEventResolver
 
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((input) => input)
+      save: jest.fn((event) => event),
+      validateBlockEvent: jest.fn(() => response)
     })
+  }
+
+  const response = {
+    visitor: { id: 'visitor.id' },
+    journeyId: 'journey.id'
+  }
+
+  const input: RadioQuestionSubmissionEventCreateInput = {
+    id: '1',
+    blockId: 'block.id',
+    radioOptionBlockId: 'radioOptionBlock.id',
+    stepId: 'step.id',
+    label: 'stepName',
+    value: 'radioOption.label'
   }
 
   beforeEach(async () => {
@@ -34,7 +53,9 @@ describe('RadioQuestionSubmissionEventResolver', () => {
       ).toEqual({
         ...input,
         __typename: 'RadioQuestionSubmissionEvent',
-        userId: 'userId'
+        visitorId: 'visitor.id',
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
     })
   })

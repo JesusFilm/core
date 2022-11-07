@@ -7,7 +7,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { getJourneyRtl } from '.'
+import { getJourneyRTL } from '.'
 
 const language: Language = {
   __typename: 'Language',
@@ -43,27 +43,27 @@ const journey: Journey = {
   seoDescription: null
 }
 
-describe('getJourneyRtl', () => {
+describe('getJourneyRTL', () => {
   it('should return true for journey with rtl bcp47 and iso3', () => {
-    expect(getJourneyRtl(journey)).toBe(true)
+    expect(getJourneyRTL(journey)).toStrictEqual({ rtl: true, locale: 'ar' })
   })
 
   it('should return false for journey with rtl iso3 only', () => {
     expect(
-      getJourneyRtl({ ...journey, language: { ...language, bcp47: null } })
-    ).toBe(false)
+      getJourneyRTL({ ...journey, language: { ...language, bcp47: null } })
+    ).toStrictEqual({ rtl: false, locale: '' })
   })
 
   it('should return false for journey with no locale codes', () => {
     expect(
-      getJourneyRtl({
+      getJourneyRTL({
         ...journey,
         language: { ...language, bcp47: null, iso3: null }
       })
-    ).toBe(false)
+    ).toStrictEqual({ rtl: false, locale: '' })
   })
 
   it('should return false for undefined journey', () => {
-    expect(getJourneyRtl(undefined)).toBe(false)
+    expect(getJourneyRTL(undefined)).toStrictEqual({ rtl: false, locale: '' })
   })
 })
