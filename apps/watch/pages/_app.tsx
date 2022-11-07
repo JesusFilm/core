@@ -1,6 +1,7 @@
+import { ReactElement, useCallback, useEffect } from 'react'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
-import { ReactElement, useCallback, useEffect } from 'react'
+import { SnackbarProvider } from 'notistack'
 import { ApolloProvider } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -59,7 +60,9 @@ export default function WatchApp({
           themeName={ThemeName.website}
           themeMode={ThemeMode.light}
         >
-          <Component {...pageProps} />
+          <SnackbarProvider>
+            <Component {...pageProps} />
+          </SnackbarProvider>
         </ThemeProvider>
       </ApolloProvider>
     </CacheProvider>

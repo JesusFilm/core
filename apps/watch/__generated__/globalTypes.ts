@@ -93,6 +93,19 @@ export enum JourneyStatus {
   trashed = "trashed",
 }
 
+export enum MessagePlatform {
+  facebook = "facebook",
+  instagram = "instagram",
+  line = "line",
+  skype = "skype",
+  snapchat = "snapchat",
+  telegram = "telegram",
+  tikTok = "tikTok",
+  viber = "viber",
+  vk = "vk",
+  whatsApp = "whatsApp",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",
@@ -152,6 +165,13 @@ export interface ButtonClickEventCreateInput {
   label?: string | null;
   stepId?: string | null;
   value?: string | null;
+}
+
+export interface ChatOpenEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  stepId?: string | null;
+  value?: MessagePlatform | null;
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {

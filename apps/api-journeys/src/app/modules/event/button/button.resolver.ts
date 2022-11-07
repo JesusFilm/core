@@ -7,11 +7,12 @@ import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   ButtonClickEvent,
   ButtonClickEventCreateInput,
-  ChatOpenedEventCreateInput,
-  ChatOpenedEvent,
+  ChatOpenEventCreateInput,
+  ChatOpenEvent,
   MessagePlatform
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('ButtonClickEvent')
 export class ButtonClickEventResolver {
@@ -39,25 +40,34 @@ export class ButtonClickEventResolver {
   }
 }
 
-@Resolver('ChatOpenedEvent')
-export class ChatOpenedEventResolver {
-  constructor(private readonly eventService: EventService) {}
+@Resolver('ChatOpenEvent')
+export class ChatOpenEventResolver {
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  async chatOpenedEventCreate(
+  async chatOpenEventCreate(
     @CurrentUserId() userId: string,
-    @Args('input') input: ChatOpenedEventCreateInput
-  ): Promise<ChatOpenedEvent> {
+    @Args('input') input: ChatOpenEventCreateInput
+  ): Promise<ChatOpenEvent> {
     const { visitor, journeyId } = await this.eventService.validateBlockEvent(
       userId,
       input.blockId,
       input.stepId
     )
 
+    if (visitor.messagePlatform == null) {
+      void this.visitorService.update(visitor.id, {
+        messagePlatform: input.value
+      })
+    }
+
     return await this.eventService.save({
       ...input,
-      __typename: 'ChatOpenedEvent',
+      __typename: 'ChatOpenEvent',
       visitorId: visitor.id,
       createdAt: new Date().toISOString(),
       journeyId

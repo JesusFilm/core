@@ -1,9 +1,24 @@
 import { ThemeOptions } from '@mui/material/styles'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import { baseBreakpoints } from '../../base/tokens/breakpoints'
 import { typography } from './typography'
 
 export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          '&:not(.MuiContainer-disableGutters)': {
+            paddingLeft: 24,
+            paddingRight: 24,
+            [baseBreakpoints.breakpoints.up('sm') ?? '']: {
+              paddingLeft: 24,
+              paddingRight: 24
+            }
+          }
+        }
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {
