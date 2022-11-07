@@ -719,6 +719,15 @@ input ButtonClickEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """label of the button"""
+  value: String
 }
 
 type ButtonClickEvent implements Event {
@@ -737,6 +746,54 @@ type ButtonClickEvent implements Event {
   value: String
 }
 
+enum MessagePlatform {
+  facebook
+  telegram
+  whatsApp
+  instagram
+  viber
+  vk
+  snapchat
+  skype
+  line
+  tikTok
+}
+
+input ChatOpenEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """messagePlatform of the link used for chat"""
+  value: MessagePlatform
+}
+
+type ChatOpenEvent implements Event {
+  id: ID!
+
+  """ID of the journey that the buttonBlock belongs to"""
+  journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
+
+  """null for ChatOpenEvent"""
+  label: String
+
+  """messagePlatform of the link used for chat"""
+  value: String
+
+  """
+  messagePlatform of the link used for chat (based on the messagePlatform in the value field)
+  """
+  messagePlatform: MessagePlatform
+}
+
 interface Event {
   id: ID!
   journeyId: ID!
@@ -751,6 +808,12 @@ input JourneyViewEventCreateInput {
   """
   id: ID
   journeyId: ID!
+
+  """title of the journey being viewed"""
+  label: String
+
+  """languageId of the journey being viewed"""
+  value: ID
 }
 
 type JourneyViewEvent implements Event {
@@ -781,6 +844,15 @@ input RadioQuestionSubmissionEventCreateInput {
   id: ID
   blockId: ID!
   radioOptionBlockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """label of the selected radioOption block"""
+  value: String
 }
 
 type RadioQuestionSubmissionEvent implements Event {
@@ -805,7 +877,14 @@ input SignUpSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """name from the signUpBlock form"""
   name: String!
+
+  """email from the signUpBlock form"""
   email: String!
 }
 
@@ -834,6 +913,9 @@ input StepViewEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """stepName of the stepBlock"""
+  value: String
 }
 
 type StepViewEvent implements Event {
@@ -852,12 +934,53 @@ type StepViewEvent implements Event {
   value: String
 }
 
+input StepNextEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+
+  """id of the mext stepBlock"""
+  nextStepId: ID!
+
+  """stepName of the stepBlock"""
+  label: String
+
+  """stepName of the next stepBlock"""
+  value: String
+}
+
+type StepNextEvent implements Event {
+  id: ID!
+
+  """ID of the journey that the stepBlock belongs to"""
+  journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
+
+  """stepName of the stepBlock"""
+  label: String
+
+  """stepName of the next stepBlock"""
+  value: String
+}
+
 input TextResponseSubmissionEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """response from the TextResponseBlock form"""
   value: String!
 }
 
@@ -883,7 +1006,18 @@ input VideoStartEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoStartEvent is triggered"""
   position: Float
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoStartEvent implements Event {
@@ -914,7 +1048,18 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoPlayEvent is triggered"""
   position: Float
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoPlayEvent implements Event {
@@ -945,7 +1090,18 @@ input VideoPauseEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoPauseEvent is triggered"""
   position: Float
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoPauseEvent implements Event {
@@ -976,7 +1132,18 @@ input VideoCompleteEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoCompleteEvent is triggered"""
   position: Float
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoCompleteEvent implements Event {
@@ -1007,7 +1174,18 @@ input VideoExpandEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoExpandEvent is triggered"""
   position: Float
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoExpandEvent implements Event {
@@ -1038,7 +1216,18 @@ input VideoCollapseEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoCollapseEvent is triggered"""
   position: Float
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoCollapseEvent implements Event {
@@ -1069,10 +1258,23 @@ input VideoProgressEventCreateInput {
   """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """duration of the video played when the VideoProgressEvent is triggered"""
   position: Float
 
-  """Progress of the video based on the startAt and endAt values of video"""
+  """
+  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
+  """
   progress: Int!
+
+  """title of the video"""
+  label: String
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoProgressEvent implements Event {
@@ -1296,40 +1498,33 @@ type Visitor @key(fields: "id") {
   countryCode: String
 
   """
-  The name of the visitor as populated by mutation or otherwise via
+  The name of the visitor as populated by VisitorUpdate mutation or
   SignUpEventSubmissionEventCreate mutation.
   """
   name: String
 
   """
-  The email address of the visitor as populated by mutation or otherwise via
+  The email address of the visitor as populated by VisitorUpdate mutation or
   SignUpEventSubmissionEventCreate mutation.
   """
   email: String
 
-  """
-  Status of the visitor as set by any journeys-admin user via the VisitorUpdate
-  mutation.
-  """
+  """Status of the visitor as populated by VisitorUpdate mutation."""
   status: VisitorStatus
 
   """
-  Messenger network of the visitor as set by any journeys-admin user via the
-  VisitorUpdate mutation.
+  Message platform the visitor wishes to be connected to us on as populated by
+  VisitorUpdate mutation or ChatOpenEventCreate mutation.
   """
-  messengerNetwork: String
+  messagePlatform: MessagePlatform
 
   """
-  Messenger ID of the visitor as set by any journeys-admin user via the
-  VisitorUpdate mutation. This could be a phone number, user id or other
-  unique identifier provided by the messenger network.
+  ID of the visitor as set by VisitorUpdate mutation. This could be a phone
+  number, user id or other unique identifier provided by the message platform.
   """
-  messengerId: String
+  messagePlatformId: String
 
-  """
-  Private notes of the visitor as set by any journeys-admin user via the
-  VisitorUpdate mutation.
-  """
+  """Private notes of the visitor as set by VisitorUpdate mutation."""
   notes: String
   events: [Event!]!
 }
@@ -1374,8 +1569,18 @@ input VisitorUpdateInput {
   automatically)
   """
   email: String
-  messengerId: String
-  messengerNetwork: String
+
+  """
+  ID of the visitor. This could be a phone number, user id or other unique
+  identifier provided by the message platform.
+  """
+  messagePlatformId: String
+
+  """
+  Message platform the visitor wishes to be connected to us on (will prevent
+  ChatOpenEventCreate mutation from updating this field automatically)
+  """
+  messagePlatform: MessagePlatform
 
   """
   The name of the visitor (will prevent SignUpEventSubmissionEventCreate
@@ -1439,10 +1644,12 @@ extend type Mutation {
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(id: ID!, journeyId: ID!, input: VideoBlockUpdateInput!): VideoBlock!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent!
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!

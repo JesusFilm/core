@@ -5,6 +5,18 @@ input RadioQuestionSubmissionEventCreateInput {
   id: ID
   blockId: ID!
   radioOptionBlockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  stepName of the parent stepBlock
+  """
+  label: String
+  """
+  label of the selected radioOption block
+  """
+  value: String
 }
 
 type RadioQuestionSubmissionEvent implements Event {

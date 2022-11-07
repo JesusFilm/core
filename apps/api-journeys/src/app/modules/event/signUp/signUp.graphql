@@ -4,7 +4,17 @@ input SignUpSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  name from the signUpBlock form
+  """
   name: String!
+  """
+  email from the signUpBlock form
+  """
   email: String!
 }
 

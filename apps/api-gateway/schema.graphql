@@ -89,6 +89,15 @@ input ButtonClickEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """label of the button"""
+  value: String
 }
 
 enum ButtonColor {
@@ -160,6 +169,41 @@ input CardBlockUpdateInput {
   parentBlockId: ID
   themeMode: ThemeMode
   themeName: ThemeName
+}
+
+type ChatOpenEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
+  id: ID!
+
+  """ID of the journey that the buttonBlock belongs to"""
+  journeyId: ID!
+
+  """null for ChatOpenEvent"""
+  label: String
+
+  """
+  messagePlatform of the link used for chat (based on the messagePlatform in the value field)
+  """
+  messagePlatform: MessagePlatform
+
+  """messagePlatform of the link used for chat"""
+  value: String
+}
+
+input ChatOpenEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """messagePlatform of the link used for chat"""
+  value: MessagePlatform
 }
 
 type Country
@@ -481,6 +525,12 @@ input JourneyViewEventCreateInput {
   """
   id: ID
   journeyId: ID!
+
+  """title of the journey being viewed"""
+  label: String
+
+  """languageId of the journey being viewed"""
+  value: ID
 }
 
 type Language
@@ -513,6 +563,19 @@ input LinkActionInput {
   url: String!
 }
 
+enum MessagePlatform {
+  facebook
+  instagram
+  line
+  skype
+  snapchat
+  telegram
+  tikTok
+  viber
+  vk
+  whatsApp
+}
+
 type Mutation {
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(id: ID!, journeyId: ID!, parentBlockId: ID): [Block!]! @join__field(graph: JOURNEYS)
@@ -540,6 +603,7 @@ type Mutation {
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @join__field(graph: JOURNEYS)
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @join__field(graph: JOURNEYS)
   cardBlockUpdate(id: ID!, input: CardBlockUpdateInput!, journeyId: ID!): CardBlock! @join__field(graph: JOURNEYS)
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @join__field(graph: JOURNEYS)
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @join__field(graph: JOURNEYS)
   iconBlockUpdate(id: ID!, input: IconBlockUpdateInput!, journeyId: ID!): IconBlock! @join__field(graph: JOURNEYS)
   imageBlockCreate(input: ImageBlockCreateInput!): ImageBlock! @join__field(graph: JOURNEYS)
@@ -576,6 +640,7 @@ type Mutation {
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent! @join__field(graph: JOURNEYS)
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock! @join__field(graph: JOURNEYS)
   stepBlockUpdate(id: ID!, input: StepBlockUpdateInput!, journeyId: ID!): StepBlock! @join__field(graph: JOURNEYS)
+  stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent! @join__field(graph: JOURNEYS)
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent! @join__field(graph: JOURNEYS)
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
   textResponseBlockUpdate(id: ID!, input: TextResponseBlockUpdateInput!, journeyId: ID!): TextResponseBlock @join__field(graph: JOURNEYS)
@@ -690,6 +755,7 @@ type Query {
   videoTag(id: ID!): VideoTag @join__field(graph: VIDEOS)
   videoTags: [VideoTag!] @join__field(graph: VIDEOS)
   videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
+  videosById(ids: [ID!]): [Video!]! @join__field(graph: VIDEOS)
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
@@ -763,7 +829,16 @@ input RadioQuestionSubmissionEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
   radioOptionBlockId: ID!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """label of the selected radioOption block"""
+  value: String
 }
 
 enum Role {
@@ -817,13 +892,20 @@ type SignUpSubmissionEvent implements Event {
 
 input SignUpSubmissionEventCreateInput {
   blockId: ID!
+
+  """email from the signUpBlock form"""
   email: String!
 
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """name from the signUpBlock form"""
   name: String!
+
+  """id of the parent stepBlock"""
+  stepId: ID
 }
 
 type StepBlock implements Block {
@@ -859,6 +941,39 @@ input StepBlockUpdateInput {
   nextBlockId: ID
 }
 
+type StepNextEvent implements Event {
+  """time event was created"""
+  createdAt: DateTime!
+  id: ID!
+
+  """ID of the journey that the stepBlock belongs to"""
+  journeyId: ID!
+
+  """stepName of the stepBlock"""
+  label: String
+
+  """stepName of the next stepBlock"""
+  value: String
+}
+
+input StepNextEventCreateInput {
+  blockId: ID!
+
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+
+  """stepName of the stepBlock"""
+  label: String
+
+  """id of the mext stepBlock"""
+  nextStepId: ID!
+
+  """stepName of the next stepBlock"""
+  value: String
+}
+
 type StepViewEvent implements Event {
   """time event was created"""
   createdAt: DateTime!
@@ -881,6 +996,9 @@ input StepViewEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """stepName of the stepBlock"""
+  value: String
 }
 
 type TextResponseBlock implements Block {
@@ -935,6 +1053,14 @@ input TextResponseSubmissionEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """response from the TextResponseBlock form"""
   value: String!
 }
 
@@ -1284,7 +1410,18 @@ input VideoCollapseEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoCollapseEvent is triggered"""
   position: Float
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoCompleteEvent implements Event {
@@ -1315,7 +1452,18 @@ input VideoCompleteEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoCompleteEvent is triggered"""
   position: Float
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoExpandEvent implements Event {
@@ -1346,7 +1494,18 @@ input VideoExpandEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoExpandEvent is triggered"""
   position: Float
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoPauseEvent implements Event {
@@ -1377,7 +1536,18 @@ input VideoPauseEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoPauseEvent is triggered"""
   position: Float
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoPlayEvent implements Event {
@@ -1408,7 +1578,18 @@ input VideoPlayEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoPlayEvent is triggered"""
   position: Float
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoProgressEvent implements Event {
@@ -1444,10 +1625,23 @@ input VideoProgressEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoProgressEvent is triggered"""
   position: Float
 
-  """Progress of the video based on the startAt and endAt values of video"""
+  """
+  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
+  """
   progress: Int!
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 input VideosFilter {
@@ -1485,7 +1679,18 @@ input VideoStartEventCreateInput {
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
   """
   id: ID
+
+  """title of the video"""
+  label: String
+
+  """duration of the video played when the VideoStartEvent is triggered"""
   position: Float
+
+  """id of the parent stepBlock"""
+  stepId: ID
+
+  """source of the video"""
+  value: VideoBlockSource
 }
 
 type VideoTag {
@@ -1559,7 +1764,7 @@ type Visitor
   createdAt: DateTime! @join__field(graph: JOURNEYS)
 
   """
-  The email address of the visitor as populated by mutation or otherwise via
+  The email address of the visitor as populated by VisitorUpdate mutation or
   SignUpEventSubmissionEventCreate mutation.
   """
   email: String @join__field(graph: JOURNEYS)
@@ -1573,34 +1778,27 @@ type Visitor
   lastChatStartedAt: DateTime @join__field(graph: JOURNEYS)
 
   """
-  Messenger ID of the visitor as set by any journeys-admin user via the
-  VisitorUpdate mutation. This could be a phone number, user id or other
-  unique identifier provided by the messenger network.
+  Message platform the visitor wishes to be connected to us on as populated by
+  VisitorUpdate mutation or ChatOpenEventCreate mutation.
   """
-  messengerId: String @join__field(graph: JOURNEYS)
+  messagePlatform: MessagePlatform @join__field(graph: JOURNEYS)
 
   """
-  Messenger network of the visitor as set by any journeys-admin user via the
-  VisitorUpdate mutation.
+  ID of the visitor as set by VisitorUpdate mutation. This could be a phone
+  number, user id or other unique identifier provided by the message platform.
   """
-  messengerNetwork: String @join__field(graph: JOURNEYS)
+  messagePlatformId: String @join__field(graph: JOURNEYS)
 
   """
-  The name of the visitor as populated by mutation or otherwise via
+  The name of the visitor as populated by VisitorUpdate mutation or
   SignUpEventSubmissionEventCreate mutation.
   """
   name: String @join__field(graph: JOURNEYS)
 
-  """
-  Private notes of the visitor as set by any journeys-admin user via the
-  VisitorUpdate mutation.
-  """
+  """Private notes of the visitor as set by VisitorUpdate mutation."""
   notes: String @join__field(graph: JOURNEYS)
 
-  """
-  Status of the visitor as set by any journeys-admin user via the VisitorUpdate
-  mutation.
-  """
+  """Status of the visitor as populated by VisitorUpdate mutation."""
   status: VisitorStatus @join__field(graph: JOURNEYS)
 
   """
@@ -1658,8 +1856,18 @@ input VisitorUpdateInput {
   automatically)
   """
   email: String
-  messengerId: String
-  messengerNetwork: String
+
+  """
+  Message platform the visitor wishes to be connected to us on (will prevent
+  ChatOpenEventCreate mutation from updating this field automatically)
+  """
+  messagePlatform: MessagePlatform
+
+  """
+  ID of the visitor. This could be a phone number, user id or other unique
+  identifier provided by the message platform.
+  """
+  messagePlatformId: String
 
   """
   The name of the visitor (will prevent SignUpEventSubmissionEventCreate
