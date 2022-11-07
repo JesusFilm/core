@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack'
 import Image from 'next/image'
 
 import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
+import { VideoType } from '../../../../__generated__/globalTypes'
 
 interface SimpleHeroProps {
   loading: boolean
@@ -50,17 +51,29 @@ export function SimpleHero({ loading, video }: SimpleHeroProps): ReactElement {
           zIndex: 2
         }}
       >
-        {/* render video type */}
+        {video.type === VideoType.playlist && (
+          <Typography
+            variant="overline1"
+            color="secondary.contrastText"
+            sx={{ opacity: 0.7 }}
+          >
+            Series
+          </Typography>
+        )}
         <Stack
           direction={{ xs: 'column', lg: 'row' }}
           alignItems={{ xs: 'start', lg: 'end' }}
           justifyContent="space-between"
-          pb={10}
+          pb={15}
         >
           <Typography variant="h1" color="secondary.contrastText">
             {video.title[0]?.value}
           </Typography>
-          <Typography variant="overline1" color="secondary.contrastText">
+          <Typography
+            variant="overline1"
+            color="secondary.contrastText"
+            sx={{ opacity: 0.7 }}
+          >
             {video.episodes.length} Episodes
           </Typography>
         </Stack>
