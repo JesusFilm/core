@@ -37,7 +37,7 @@ export const typography = {
     fontWeight: 700,
     fontSize: 80,
     lineHeight: pxToRem(86, 80),
-    letterSpacing: -3
+    letterSpacing: -1
   },
   h2: {
     fontWeight: 700,

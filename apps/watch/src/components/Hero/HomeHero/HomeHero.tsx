@@ -3,13 +3,11 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTheme } from '@mui/material/styles'
 import Image from 'next/image'
 
 import JesusHeader from '../../../../public/images/jesus-header.svg'
 
 export function HomeHero(): ReactElement {
-  const theme = useTheme()
   return (
     <Box
       sx={{
@@ -38,28 +36,25 @@ export function HomeHero(): ReactElement {
       />
       <Container
         maxWidth="xl"
-        sx={{ display: 'flex', justifyContent: 'center' }}
+        sx={{ display: 'flex', justifyContent: 'center', pt: 30 }}
       >
         <Stack
           direction={{ xs: 'column', lg: 'row' }}
           alignContent="center"
           sx={{ zIndex: 2 }}
         >
-          <Typography variant="h1" color="secondary.contrastText">
-            Free Gospel Video{' '}
-            <Typography
-              variant="h1"
-              component="span"
+          <Stack spacing={1}>
+            <Typography variant="h1" color="secondary.contrastText">
+              Free Gospel Video Streaming Library
+            </Typography>
+            <Box
               sx={{
-                textDecoration: 'underline',
-                textDecorationColor: theme.palette.primary.main,
-                textUnderlineOffset: 10
+                width: '40%',
+                height: { xs: 5, lg: 10 },
+                backgroundColor: 'primary.main'
               }}
-            >
-              Streaming
-            </Typography>{' '}
-            Library
-          </Typography>
+            />
+          </Stack>
           <Typography
             variant="h5"
             color="secondary.contrastText"
