@@ -112,6 +112,7 @@ export function ShareDialog({
       />
       <Button
         variant="contained"
+        size="small"
         startIcon={<ContentCopyIcon />}
         onClick={handleShareLinkClick}
         sx={{ alignSelf: 'flex-end' }}
@@ -213,6 +214,7 @@ export function ShareDialog({
                   />
                   <Button
                     variant="contained"
+                    size="small"
                     startIcon={<ContentCopyIcon />}
                     onClick={handleEmbedCodeClick}
                     sx={{ alignSelf: 'flex-end' }}
