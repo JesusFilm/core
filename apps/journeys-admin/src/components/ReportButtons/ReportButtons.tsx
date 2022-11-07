@@ -5,12 +5,14 @@ import Stack from '@mui/material/Stack'
 import NextLink from 'next/link'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'react-i18next'
 
 interface ReportButtonProps {
   selected: 'journeys' | 'visitors'
 }
 
 export function ReportButtons({ selected }: ReportButtonProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Box
       sx={{
@@ -28,7 +30,7 @@ export function ReportButtons({ selected }: ReportButtonProps): ReactElement {
                 variant="subtitle2"
                 color={selected === 'journeys' ? 'primary' : 'divider'}
               >
-                Journeys
+                {t('Journeys')}
               </Typography>
             </Button>
           </NextLink>
@@ -38,7 +40,7 @@ export function ReportButtons({ selected }: ReportButtonProps): ReactElement {
                 variant="subtitle2"
                 color={selected === 'visitors' ? 'primary' : 'divider'}
               >
-                Visitors
+                {t('Visitors')}
               </Typography>
             </Button>
           </NextLink>

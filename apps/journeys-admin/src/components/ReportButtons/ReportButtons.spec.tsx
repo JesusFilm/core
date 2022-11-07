@@ -3,19 +3,19 @@ import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { NextRouter, useRouter } from 'next/router'
 import { ReportButtons } from './ReportButtons'
 
-jest.mock('next/router', () => ({
+jest.mock('react-i18next', () => ({
   __esModule: true,
-  useRouter: jest.fn()
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
 }))
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('ReportButtons', () => {
   it('should link to reports', async () => {
-    const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
     const { getByRole } = render(
       <MockedProvider>
         <FlagsProvider>
@@ -38,8 +38,6 @@ describe('ReportButtons', () => {
   })
 
   it('should display selected button for report type ', async () => {
-    const push = jest.fn()
-    mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
     const { getByRole } = render(
       <MockedProvider>
         <FlagsProvider>
