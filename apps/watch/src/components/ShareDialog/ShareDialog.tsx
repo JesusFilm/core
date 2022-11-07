@@ -219,7 +219,7 @@ export function ShareDialog({
                     onClick={handleEmbedCodeClick}
                     sx={{ alignSelf: 'flex-end' }}
                   >
-                    Copy Embed Code
+                    Copy Code
                   </Button>
                 </Stack>
               </TabPanel>
