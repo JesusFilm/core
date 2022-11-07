@@ -4,27 +4,15 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 
 import { HomeHero } from '../src/components/Hero'
 import { Videos } from '../src/components/Videos'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { VideoType } from '../__generated__/globalTypes'
 
-import { Footer } from '../src/components/Footer/Footer'
-import { Header } from '../src/components/Header'
-
 function HomePage(): ReactElement {
   return (
-    <PageWrapper header={<Header />} footer={<Footer />}>
-      <ThemeProvider
-        nested
-        themeName={ThemeName.website}
-        themeMode={ThemeMode.dark}
-      >
-        <HomeHero />
-      </ThemeProvider>
+    <PageWrapper hero={<HomeHero />}>
       <Box sx={{ paddingY: '4rem' }}>
         <Container
           sx={{

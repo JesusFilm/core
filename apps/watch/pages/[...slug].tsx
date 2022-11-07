@@ -12,8 +12,6 @@ import SaveAlt from '@mui/icons-material/SaveAlt'
 import Share from '@mui/icons-material/Share'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import 'video.js/dist/video-js.css'
 
 import { routeParser } from '../src/libs/routeParser/routeParser'
@@ -23,8 +21,6 @@ import {
 } from '../src/libs/languageContext/LanguageContext'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCarousel'
-import { Footer } from '../src/components/Footer'
-import { Header } from '../src/components/Header'
 import { VideoHero, SimpleHero } from '../src/components/Hero'
 
 export const GET_VIDEO = gql`
@@ -144,25 +140,24 @@ export default function SeoFriendly(): ReactElement {
 
   return (
     <LanguageProvider>
-      <PageWrapper header={<Header />} footer={<Footer />}>
+      <PageWrapper
+        hero={
+          data?.video == null ? (
+            <></>
+          ) : siblingsData != null ? (
+            <VideoHero
+              loading={loading}
+              video={data.video}
+              siblingVideos={siblingsData}
+              routes={routes}
+            />
+          ) : (
+            <SimpleHero loading={loading} video={data.video} />
+          )
+        }
+      >
         {data?.video != null && (
           <>
-            <ThemeProvider
-              nested
-              themeName={ThemeName.website}
-              themeMode={ThemeMode.dark}
-            >
-              {siblingsData != null ? (
-                <VideoHero
-                  loading={loading}
-                  video={data.video}
-                  siblingVideos={siblingsData}
-                  routes={routes}
-                />
-              ) : (
-                <SimpleHero loading={loading} video={data.video} />
-              )}
-            </ThemeProvider>
             <Box
               sx={{
                 paddingTop: '20px',
