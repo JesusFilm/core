@@ -3,8 +3,10 @@ import { Header } from './Header'
 
 describe('Header', () => {
   it('should open navigation panel on menu icon click', () => {
-    const { getByTestId, getByText } = render(<Header />)
-    fireEvent.click(getByTestId('MenuIcon'))
+    const { getByText, getByRole } = render(<Header />)
+
+    fireEvent.click(getByRole('button', { name: 'open header menu' }))
+
     expect(getByText('About')).toBeInTheDocument()
   })
 })

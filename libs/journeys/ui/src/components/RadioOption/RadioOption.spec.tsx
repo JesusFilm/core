@@ -43,7 +43,7 @@ describe('RadioOption', () => {
       <RadioOption {...block} onClick={handleClick} />
     )
     fireEvent.click(getByRole('button'))
-    expect(handleClick).toBeCalledWith(block.id)
+    expect(handleClick).toBeCalledWith(block.id, block.label)
   })
 
   it('should call actionHandler on click', () => {

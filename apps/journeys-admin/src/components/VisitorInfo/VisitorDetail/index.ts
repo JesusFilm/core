@@ -1,0 +1,1 @@
+export { VisitorDetail } from './VisitorDetail'

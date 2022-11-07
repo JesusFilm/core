@@ -9,7 +9,12 @@ import { FooterLink } from './FooterLink'
 
 export function Footer(): ReactElement {
   return (
-    <>
+    <Container
+      component="footer"
+      maxWidth={false}
+      disableGutters
+      sx={{ backgroundColor: 'background.default' }}
+    >
       {/* desktop view */}
       <Container
         maxWidth="xl"
@@ -18,7 +23,7 @@ export function Footer(): ReactElement {
           height: '350px'
         }}
       >
-        <Stack justifyContent="space-between" height="100%" sx={{ py: 4 }}>
+        <Stack justifyContent="space-between" height="100%" sx={{ pt: 9 }}>
           <Stack direction="row" justifyContent="space-between">
             <FooterLinks />
             <Stack width="220px">
@@ -56,13 +61,7 @@ export function Footer(): ReactElement {
       </Container>
 
       {/* mobile view */}
-      <Container
-        maxWidth="xl"
-        sx={{
-          display: { xs: 'block', sm: 'none' },
-          px: 2
-        }}
-      >
+      <Container maxWidth="xl" sx={{ display: { xs: 'block', sm: 'none' } }}>
         <Stack alignItems="end">
           <FooterSocials />
         </Stack>
@@ -99,6 +98,6 @@ export function Footer(): ReactElement {
           />
         </Stack>
       </Container>
-    </>
+    </Container>
   )
 }

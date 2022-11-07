@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { VisitorsConnection } from '../../__generated__/graphql'
+import {
+  MessagePlatform,
+  VisitorsConnection
+} from '../../__generated__/graphql'
 import { EventService } from '../event/event.service'
 import { MemberService } from '../member/member.service'
 
@@ -24,8 +27,8 @@ describe('VisitorResolver', () => {
     countryCode: null,
     email: 'bob@example.com',
     lastChatStartedAt: null,
-    messengerId: '555-000000',
-    messengerNetwork: 'phone',
+    messagePlatformId: '555-000000',
+    messagePlatform: MessagePlatform.whatsApp,
     name: 'Bob Smith',
     notes: 'Bob called this afternoon to arrange a meet-up.',
     status: 'star',
@@ -142,8 +145,8 @@ describe('VisitorResolver', () => {
   describe('visitorUpdate', () => {
     const input = {
       email: 'sarah@example.com',
-      messengerId: '0800838383',
-      messengerNetwork: 'phone',
+      messagePlatformId: '0800838383',
+      messagePlatform: MessagePlatform.whatsApp,
       name: 'Sarah',
       notes: 'this is a test',
       status: 'star'

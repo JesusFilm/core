@@ -1,6 +1,8 @@
-import { Breakpoints, Breakpoint, ThemeOptions } from '@mui/material/styles'
+import { Breakpoint } from '@mui/material/styles'
 // eslint-disable-next-line no-restricted-imports
-import createBreakpoints from '@mui/system/createTheme/createBreakpoints'
+import createBreakpoints, {
+  BreakpointsOptions
+} from '@mui/system/createTheme/createBreakpoints'
 
 const minWidths: { [key in Breakpoint]: number } = {
   xs: 0, // Mobile (P)
@@ -62,7 +64,11 @@ const only = (key: Breakpoint): string => {
   return `@media ${overlappingMobileCheck}${defaultBreakpointCheck}`
 }
 
-const breakpoints: Breakpoints = createBreakpoints({
+type BaseBreakpoints = Required<
+  Omit<BreakpointsOptions, 'between' | 'not' | 'step' | 'unit'>
+>
+
+const breakpoints: BaseBreakpoints = createBreakpoints({
   values: minWidths,
   keys: breakpointKeys,
   unit: 'px',
@@ -72,6 +78,6 @@ const breakpoints: Breakpoints = createBreakpoints({
   between: undefined
 })
 
-export const baseBreakpoints: Required<Pick<ThemeOptions, 'breakpoints'>> = {
+export const baseBreakpoints: { breakpoints: BaseBreakpoints } = {
   breakpoints
 }
