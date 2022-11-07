@@ -1,10 +1,10 @@
 import { ReactElement } from 'react'
 import { useMutation, gql, ApolloQueryResult } from '@apollo/client'
 import Typography from '@mui/material/Typography'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { useSnackbar } from 'notistack'
 import { JourneyTrash } from '../../../../../../__generated__/JourneyTrash'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
-import { Dialog } from '../../../../Dialog'
 import { GetActiveJourneys } from '../../../../../../__generated__/GetActiveJourneys'
 import { GetArchivedJourneys } from '../../../../../../__generated__/GetArchivedJourneys'
 import { GetTrashedJourneys } from '../../../../../../__generated__/GetTrashedJourneys'
@@ -72,7 +72,7 @@ export function TrashJourneyDialog({
   return (
     <Dialog
       open={open}
-      handleClose={handleClose}
+      onClose={handleClose}
       dialogTitle={{ title: 'Trash Journey?', closeButton: true }}
       dialogAction={{
         onSubmit: handleTrash,

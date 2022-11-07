@@ -4,15 +4,50 @@ input VideoStartEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoStartEvent is triggered
+  """
   position: Float
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoStartEvent implements Event {
   id: ID!
-  userId: ID!
+  """
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
   createdAt: DateTime!
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: String
+  """
+  duration of the video played when the VideoStartEvent is triggered
+  """
   position: Float
-  block: VideoBlock
+  """
+  source of the video (based on the source in the value field)
+  """
+  source: VideoBlockSource
 }
 
 input VideoPlayEventCreateInput {
@@ -21,15 +56,50 @@ input VideoPlayEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoPlayEvent is triggered
+  """
   position: Float
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoPlayEvent implements Event {
   id: ID!
-  userId: ID!
+  """
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
   createdAt: DateTime!
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: String
+  """
+  duration of the video played when the VideoPlayEvent is triggered
+  """
   position: Float
-  block: VideoBlock
+  """
+  source of the video (based on the source in the value field)
+  """
+  source: VideoBlockSource
 }
 
 input VideoPauseEventCreateInput {
@@ -38,15 +108,50 @@ input VideoPauseEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoPauseEvent is triggered
+  """
   position: Float
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoPauseEvent implements Event {
   id: ID!
-  userId: ID!
+  """
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
   createdAt: DateTime!
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: String
+  """
+  duration of the video played when the VideoPauseEvent is triggered
+  """
   position: Float
-  block: VideoBlock
+  """
+  source of the video (based on the source in the value field)
+  """
+  source: VideoBlockSource
 }
 
 input VideoCompleteEventCreateInput {
@@ -55,15 +160,50 @@ input VideoCompleteEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoCompleteEvent is triggered
+  """
   position: Float
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoCompleteEvent implements Event {
   id: ID!
-  userId: ID!
+  """
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
   createdAt: DateTime!
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: String
+  """
+  duration of the video played when the VideoCompleteEvent is triggered
+  """
   position: Float
-  block: VideoBlock
+  """
+  source of the video (based on the source in the value field)
+  """
+  source: VideoBlockSource
 }
 
 input VideoExpandEventCreateInput {
@@ -72,15 +212,50 @@ input VideoExpandEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoExpandEvent is triggered
+  """
   position: Float
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoExpandEvent implements Event {
   id: ID!
-  userId: ID!
+  """
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
   createdAt: DateTime!
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: String
+  """
+  duration of the video played when the VideoExpandEvent is triggered
+  """
   position: Float
-  block: VideoBlock
+  """
+  source of the video (based on the source in the value field)
+  """
+  source: VideoBlockSource
 }
 
 input VideoCollapseEventCreateInput {
@@ -89,15 +264,50 @@ input VideoCollapseEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoCollapseEvent is triggered
+  """
   position: Float
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoCollapseEvent implements Event {
   id: ID!
-  userId: ID!
+  """
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
   createdAt: DateTime!
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: String
+  """
+  duration of the video played when the VideoCollapseEvent is triggered
+  """
   position: Float
-  block: VideoBlock
+  """
+  source of the video (based on the source in the value field)
+  """
+  source: VideoBlockSource
 }
 
 input VideoProgressEventCreateInput {
@@ -106,20 +316,58 @@ input VideoProgressEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  duration of the video played when the VideoProgressEvent is triggered
+  """
   position: Float
   """
-  Progress of the video based on the startAt and endAt values of video
+  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
   """
   progress: Int!
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: VideoBlockSource
 }
 
 type VideoProgressEvent implements Event {
   id: ID!
-  userId: ID!
+  """
+  ID of the journey that the videoBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
   createdAt: DateTime!
+  """
+  title of the video
+  """
+  label: String
+  """
+  source of the video
+  """
+  value: String
+  """
+  duration of the video played when the VideoProgressEvent is triggered
+  """
   position: Float
+  """
+  source of the video (based on the source in the value field)
+  """
+  source: VideoBlockSource
+  """
+  progress is a integer indicating the precentage completion from the startAt to the endAt times of the videoBlock
+  """
   progress: Int!
-  block: VideoBlock
 }
 
 extend type Mutation {

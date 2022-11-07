@@ -71,6 +71,16 @@ const block: TreeBlock<TextResponseFields> = {
   children: []
 }
 
+const activeBlock: TreeBlock<StepBlock> = {
+  __typename: 'StepBlock',
+  id: 'step.id',
+  parentBlockId: null,
+  parentOrder: 0,
+  locked: true,
+  nextBlockId: null,
+  children: []
+}
+
 const submissionSuccess = {
   request: {
     query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
@@ -78,6 +88,8 @@ const submissionSuccess = {
       input: {
         id: 'uuid',
         blockId: 'textResponse0.id',
+        stepId: 'step.id',
+        label: 'Step {{number}}',
         value: 'My response'
       }
     }
@@ -85,9 +97,7 @@ const submissionSuccess = {
   result: {
     data: {
       textResponseSubmissionEventCreate: {
-        id: 'uuid',
-        blockId: 'textResponse0.id',
-        value: 'My response'
+        id: 'uuid'
       }
     }
   }
@@ -170,9 +180,7 @@ describe('TextResponse', () => {
     const result = jest.fn(() => ({
       data: {
         textResponseSubmissionEventCreate: {
-          id: 'uuid',
-          blockId: 'textResponse0.id',
-          value: ' '
+          id: 'uuid'
         }
       }
     }))
@@ -193,12 +201,13 @@ describe('TextResponse', () => {
   })
 
   it('should create submission event on click', async () => {
+    activeBlockVar(activeBlock)
+    treeBlocksVar([activeBlock])
+
     const result = jest.fn(() => ({
       data: {
         textResponseSubmissionEventCreate: {
-          id: 'uuid',
-          blockId: 'textResponse0.id',
-          value: 'My response'
+          id: 'uuid'
         }
       }
     }))
@@ -219,15 +228,6 @@ describe('TextResponse', () => {
   })
 
   it('should add submission event to dataLayer', async () => {
-    const activeBlock: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'Step1',
-      parentBlockId: null,
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
     activeBlockVar(activeBlock)
     treeBlocksVar([activeBlock])
 

@@ -3,6 +3,9 @@ import videojs from 'video.js'
 import { MockedProvider } from '@apollo/client/testing'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
+import { TreeBlock, activeBlockVar } from '../../libs/block'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import {
   VideoEventsProps,
   VIDEO_START_EVENT_CREATE,
@@ -56,6 +59,7 @@ describe('VideoEvents', () => {
       startAt: 0,
       endAt: 100,
       videoTitle: 'video.title',
+      source: VideoBlockSource.internal,
       videoId: 'video.id'
     }
   })
@@ -63,13 +67,32 @@ describe('VideoEvents', () => {
     cleanup()
   })
 
+  const activeBlock: TreeBlock<StepBlock> = {
+    __typename: 'StepBlock',
+    id: 'step.id',
+    parentBlockId: null,
+    parentOrder: 0,
+    locked: true,
+    nextBlockId: null,
+    children: []
+  }
+
+  const input = {
+    id: 'uuid',
+    blockId: 'video0.id',
+    stepId: 'step.id',
+    label: 'video.title',
+    value: VideoBlockSource.internal
+  }
+
   it('should create start event', async () => {
+    activeBlockVar(activeBlock)
+
     const result = jest.fn(() => ({
       data: {
         videoStartEventCreate: {
           id: 'uuid',
-          __typename: 'VideoStartEvent',
-          position: 0
+          __typename: 'VideoStartEvent'
         }
       }
     }))
@@ -81,7 +104,10 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_START_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+                input: {
+                  ...input,
+                  position: 0
+                }
               }
             },
             result
@@ -100,6 +126,7 @@ describe('VideoEvents', () => {
   })
 
   it('should add start event to dataLayer', async () => {
+    activeBlockVar(activeBlock)
     render(
       <MockedProvider
         mocks={[
@@ -107,15 +134,17 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_START_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+                input: {
+                  ...input,
+                  position: 0
+                }
               }
             },
             result: {
               data: {
                 videoStartEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoStartEvent',
-                  position: 0
+                  __typename: 'VideoStartEvent'
                 }
               }
             }
@@ -145,12 +174,12 @@ describe('VideoEvents', () => {
   })
 
   it('should create play event', async () => {
+    activeBlockVar(activeBlock)
     const result = jest.fn(() => ({
       data: {
         videoPlayEventCreate: {
           id: 'uuid',
-          __typename: 'VideoPlayEvent',
-          position: 0.12
+          __typename: 'VideoPlayEvent'
         }
       }
     }))
@@ -162,7 +191,10 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PLAY_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0.12 }
+                input: {
+                  ...input,
+                  position: 0.12
+                }
               }
             },
             result
@@ -180,6 +212,7 @@ describe('VideoEvents', () => {
   })
 
   it('should add play event to dataLayer', async () => {
+    activeBlockVar(activeBlock)
     render(
       <MockedProvider
         mocks={[
@@ -187,15 +220,17 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PLAY_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0.12 }
+                input: {
+                  ...input,
+                  position: 0.12
+                }
               }
             },
             result: {
               data: {
                 videoPlayEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoPlayEvent',
-                  position: 0.12
+                  __typename: 'VideoPlayEvent'
                 }
               }
             }
@@ -224,12 +259,12 @@ describe('VideoEvents', () => {
   })
 
   it('should create pause event', async () => {
+    activeBlockVar(activeBlock)
     const result = jest.fn(() => ({
       data: {
         videoPauseEventCreate: {
           id: 'uuid',
-          __typename: 'VideoPauseEvent',
-          position: 0.34
+          __typename: 'VideoPauseEvent'
         }
       }
     }))
@@ -241,7 +276,10 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PAUSE_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0.34 }
+                input: {
+                  ...input,
+                  position: 0.34
+                }
               }
             },
             result
@@ -259,6 +297,7 @@ describe('VideoEvents', () => {
   })
 
   it('should add pause event to dataLayer', async () => {
+    activeBlockVar(activeBlock)
     render(
       <MockedProvider
         mocks={[
@@ -266,15 +305,17 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_PAUSE_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0.34 }
+                input: {
+                  ...input,
+                  position: 0.34
+                }
               }
             },
             result: {
               data: {
                 videoPauseEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoPauseEvent',
-                  position: 0.34
+                  __typename: 'VideoPauseEvent'
                 }
               }
             }
@@ -303,12 +344,12 @@ describe('VideoEvents', () => {
   })
 
   it('should create expand event', async () => {
+    activeBlockVar(activeBlock)
     const result = jest.fn(() => ({
       data: {
         videoExpandEventCreate: {
           id: 'uuid',
-          __typename: 'VideoExpandEvent',
-          position: 0.56
+          __typename: 'VideoExpandEvent'
         }
       }
     }))
@@ -320,7 +361,10 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_EXPAND_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0.56 }
+                input: {
+                  ...input,
+                  position: 0.56
+                }
               }
             },
             result
@@ -338,6 +382,7 @@ describe('VideoEvents', () => {
   })
 
   it('should add expand event to dataLayer', async () => {
+    activeBlockVar(activeBlock)
     render(
       <MockedProvider
         mocks={[
@@ -345,15 +390,17 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_EXPAND_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0.56 }
+                input: {
+                  ...input,
+                  position: 0.56
+                }
               }
             },
             result: {
               data: {
                 videoExpandEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoExpandEvent',
-                  position: 0.56
+                  __typename: 'VideoExpandEvent'
                 }
               }
             }
@@ -382,12 +429,12 @@ describe('VideoEvents', () => {
   })
 
   it('should create collapse event', async () => {
+    activeBlockVar(activeBlock)
     const result = jest.fn(() => ({
       data: {
         videoCollapseEventCreate: {
           id: 'uuid',
-          __typename: 'VideoCollapseEvent',
-          position: 0
+          __typename: 'VideoCollapseEvent'
         }
       }
     }))
@@ -399,15 +446,17 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_EXPAND_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0.78 }
+                input: {
+                  ...input,
+                  position: 0.78
+                }
               }
             },
             result: {
               data: {
                 videoExpandEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoExpandEvent',
-                  position: 0.78
+                  __typename: 'VideoExpandEvent'
                 }
               }
             }
@@ -416,7 +465,10 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_COLLAPSE_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0.78 }
+                input: {
+                  ...input,
+                  position: 0.78
+                }
               }
             },
             result
@@ -435,6 +487,7 @@ describe('VideoEvents', () => {
   })
 
   it('should add collapse event to dataLayer', async () => {
+    activeBlockVar(activeBlock)
     render(
       <MockedProvider
         mocks={[
@@ -442,15 +495,17 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_EXPAND_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0.78 }
+                input: {
+                  ...input,
+                  position: 0.78
+                }
               }
             },
             result: {
               data: {
                 videoExpandEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoExpandEvent',
-                  position: 0.78
+                  __typename: 'VideoExpandEvent'
                 }
               }
             }
@@ -459,15 +514,17 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_COLLAPSE_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0.78 }
+                input: {
+                  ...input,
+                  position: 0.78
+                }
               }
             },
             result: {
               data: {
                 videoCollapseEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoCollapseEvent',
-                  position: 0
+                  __typename: 'VideoCollapseEvent'
                 }
               }
             }
@@ -497,12 +554,12 @@ describe('VideoEvents', () => {
   })
 
   it('should create progress event and complete event', async () => {
+    activeBlockVar(activeBlock)
     const resultStart = jest.fn(() => ({
       data: {
         videoStartEventCreate: {
           id: 'uuid',
-          __typename: 'VideoStartEvent',
-          position: 0
+          __typename: 'VideoStartEvent'
         }
       }
     }))
@@ -511,9 +568,7 @@ describe('VideoEvents', () => {
       data: {
         videoProgressEventCreate: {
           id: 'uuid',
-          __typename: 'VideoProgressEvent',
-          position: 25,
-          progress: 25
+          __typename: 'VideoProgressEvent'
         }
       }
     }))
@@ -522,9 +577,7 @@ describe('VideoEvents', () => {
       data: {
         videoProgressEventCreate: {
           id: 'uuid',
-          __typename: 'VideoProgressEvent',
-          position: 50,
-          progress: 50
+          __typename: 'VideoProgressEvent'
         }
       }
     }))
@@ -533,9 +586,7 @@ describe('VideoEvents', () => {
       data: {
         videoProgressEventCreate: {
           id: 'uuid',
-          __typename: 'VideoProgressEvent',
-          position: 75,
-          progress: 75
+          __typename: 'VideoProgressEvent'
         }
       }
     }))
@@ -544,8 +595,7 @@ describe('VideoEvents', () => {
       data: {
         videoCompleteEventCreate: {
           id: 'uuid',
-          __typename: 'VideoCompleteEvent',
-          position: 100
+          __typename: 'VideoCompleteEvent'
         }
       }
     }))
@@ -557,7 +607,10 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_START_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+                input: {
+                  ...input,
+                  position: 0
+                }
               }
             },
             result: resultStart
@@ -567,8 +620,7 @@ describe('VideoEvents', () => {
               query: VIDEO_PROGRESS_EVENT_CREATE,
               variables: {
                 input: {
-                  id: 'uuid',
-                  blockId: 'video0.id',
+                  ...input,
                   position: 25,
                   progress: 25
                 }
@@ -581,8 +633,7 @@ describe('VideoEvents', () => {
               query: VIDEO_PROGRESS_EVENT_CREATE,
               variables: {
                 input: {
-                  id: 'uuid',
-                  blockId: 'video0.id',
+                  ...input,
                   position: 50,
                   progress: 50
                 }
@@ -595,8 +646,7 @@ describe('VideoEvents', () => {
               query: VIDEO_PROGRESS_EVENT_CREATE,
               variables: {
                 input: {
-                  id: 'uuid',
-                  blockId: 'video0.id',
+                  ...input,
                   position: 75,
                   progress: 75
                 }
@@ -608,7 +658,10 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_COMPLETE_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 100 }
+                input: {
+                  ...input,
+                  position: 100
+                }
               }
             },
             result: resultComplete
@@ -651,6 +704,7 @@ describe('VideoEvents', () => {
   })
 
   it('should add progress event and complete event to dataLayer', async () => {
+    activeBlockVar(activeBlock)
     render(
       <MockedProvider
         mocks={[
@@ -658,15 +712,17 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_START_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 0 }
+                input: {
+                  ...input,
+                  position: 0
+                }
               }
             },
             result: {
               data: {
                 videoStartEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoStartEvent',
-                  position: 0
+                  __typename: 'VideoStartEvent'
                 }
               }
             }
@@ -676,8 +732,7 @@ describe('VideoEvents', () => {
               query: VIDEO_PROGRESS_EVENT_CREATE,
               variables: {
                 input: {
-                  id: 'uuid',
-                  blockId: 'video0.id',
+                  ...input,
                   position: 25,
                   progress: 25
                 }
@@ -687,9 +742,7 @@ describe('VideoEvents', () => {
               data: {
                 videoProgressEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoProgressEvent',
-                  position: 25,
-                  progress: 25
+                  __typename: 'VideoProgressEvent'
                 }
               }
             }
@@ -699,8 +752,7 @@ describe('VideoEvents', () => {
               query: VIDEO_PROGRESS_EVENT_CREATE,
               variables: {
                 input: {
-                  id: 'uuid',
-                  blockId: 'video0.id',
+                  ...input,
                   position: 50,
                   progress: 50
                 }
@@ -710,9 +762,7 @@ describe('VideoEvents', () => {
               data: {
                 videoProgressEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoProgressEvent',
-                  position: 50,
-                  progress: 50
+                  __typename: 'VideoProgressEvent'
                 }
               }
             }
@@ -722,8 +772,7 @@ describe('VideoEvents', () => {
               query: VIDEO_PROGRESS_EVENT_CREATE,
               variables: {
                 input: {
-                  id: 'uuid',
-                  blockId: 'video0.id',
+                  ...input,
                   position: 75,
                   progress: 75
                 }
@@ -733,9 +782,7 @@ describe('VideoEvents', () => {
               data: {
                 videoProgressEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoProgressEvent',
-                  position: 75,
-                  progress: 75
+                  __typename: 'VideoProgressEvent'
                 }
               }
             }
@@ -744,15 +791,17 @@ describe('VideoEvents', () => {
             request: {
               query: VIDEO_COMPLETE_EVENT_CREATE,
               variables: {
-                input: { id: 'uuid', blockId: 'video0.id', position: 100 }
+                input: {
+                  ...input,
+                  position: 100
+                }
               }
             },
             result: {
               data: {
                 videoCompleteEventCreate: {
                   id: 'uuid',
-                  __typename: 'VideoCompleteEvent',
-                  position: 100
+                  __typename: 'VideoCompleteEvent'
                 }
               }
             }

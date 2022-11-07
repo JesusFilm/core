@@ -26,22 +26,27 @@ aws --profile $DESTINATION_PROFILE --region $DESTINATION_REGION ecr get-login-pa
 
 
 for i in ${!URI[@]}; do
-  echo "====> Grabbing latest from ${NAME[$i]} repo"
-  # create ecr repo if one does not exist in destination account
-  aws ecr describe-repositories --profile $DESTINATION_PROFILE --repository-names ${NAME[$i]} || aws ecr create-repository --profile $DESTINATION_PROFILE --repository-name ${NAME[$i]}
+  {
+    echo "====> Grabbing latest from ${NAME[$i]} repo"
+    # create ecr repo if one does not exist in destination account
+    # aws ecr describe-repositories --profile $DESTINATION_PROFILE --repository-names ${NAME[$i]} || aws ecr create-repository --profile $DESTINATION_PROFILE --repository-name ${NAME[$i]}
 
-  for tag in "main" "stage"
-   do
-   {
-    echo "start pulling image ${URI[$i]}:$tag"
-    docker pull ${URI[$i]}:$tag
-    docker tag ${URI[$i]}:$tag $DESTINATION_BASE_PATH/${NAME[$i]}:$tag
+    echo "start pulling image ${URI[$i]}:main"
+    docker pull ${URI[$i]}:main
+    docker tag ${URI[$i]}:main $DESTINATION_BASE_PATH/${NAME[$i]}-prod:latest
+    
+    echo "start pushing image $DESTINATION_BASE_PATH/${NAME[$i]}-prod:latest"
+    docker push $DESTINATION_BASE_PATH/${NAME[$i]}-prod:latest
+    echo ""
+
+    echo "start pulling image ${URI[$i]}:stage"
+    docker pull ${URI[$i]}:stage
+    docker tag ${URI[$i]}:stage $DESTINATION_BASE_PATH/${NAME[$i]}-stage:latest
     
     echo "start pushing image $DESTINATION_BASE_PATH/${NAME[$i]}:$tag"
-    docker push $DESTINATION_BASE_PATH/${NAME[$i]}:$tag
+    docker push $DESTINATION_BASE_PATH/${NAME[$i]}-stage:latest
     echo ""
-   } || {}
-  done
+  } || {}
 done
 
 echo "Finish repo copy: `date`"

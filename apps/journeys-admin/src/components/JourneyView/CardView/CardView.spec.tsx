@@ -18,7 +18,20 @@ describe('JourneyView/CardView', () => {
   const journey = {
     id: 'journeyId',
     themeMode: ThemeMode.dark,
-    themeName: ThemeName.base
+    themeName: ThemeName.base,
+    language: {
+      __typename: 'Language',
+      id: '529',
+      bcp47: 'en',
+      iso3: 'eng',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'English',
+          primary: true
+        }
+      ]
+    }
   } as unknown as Journey
 
   it('should render cards', () => {

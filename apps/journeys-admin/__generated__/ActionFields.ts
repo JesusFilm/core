@@ -20,10 +20,16 @@ export interface ActionFields_NavigateToBlockAction {
   blockId: string;
 }
 
+export interface ActionFields_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface ActionFields_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: ActionFields_NavigateToJourneyAction_journey_language;
 }
 
 export interface ActionFields_NavigateToJourneyAction {

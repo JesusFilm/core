@@ -27,6 +27,7 @@ export async function jfpTeam(): Promise<void> {
   await db.query(aql`
     FOR userJourney IN userJourneys
       INSERT {
+        _key: CONCAT(userJourney.userId, ":", ${team._key}),
         teamId: ${team._key}, 
         userId: userJourney.userId, 
         createdAt: DATE_ISO8601(DATE_NOW())
@@ -38,8 +39,9 @@ export async function jfpTeam(): Promise<void> {
   await db.query(aql`
     FOR event IN events
       INSERT {
+        _key: CONCAT(event.userId, ":", ${team._key}),
         teamId: ${team._key}, 
-        userId: event.userId, 
+        userId: event.userId,
         createdAt: DATE_ISO8601(DATE_NOW())
       }
       IN visitors OPTIONS { ignoreErrors: true }

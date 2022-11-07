@@ -1,12 +1,24 @@
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { activeBlockVar, treeBlocksVar } from '@core/journeys/ui/block'
+import {
+  TreeBlock,
+  activeBlockVar,
+  treeBlocksVar
+} from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 import TagManager from 'react-gtm-module'
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import {
+  GetJourney_journey as Journey,
+  GetJourney_journey_language as Language
+} from '../../../__generated__/GetJourney'
+import {
+  ThemeName,
+  ThemeMode,
+  JourneyStatus
+} from '../../../__generated__/globalTypes'
+import { basic } from '../../libs/testData/storyData'
 import { JOURNEY_VIEW_EVENT_CREATE } from './Conductor'
 import { Conductor } from '.'
 
@@ -36,13 +48,59 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
 beforeEach(() => {
   const useBreakpointsMock = useBreakpoints as jest.Mock
   useBreakpointsMock.mockReturnValue({
-    xs: true,
+    xs: false,
     sm: false,
     md: false,
     lg: false,
-    xl: false
+    xl: true
   })
 })
+
+const rtlLanguage: Language = {
+  __typename: 'Language',
+  id: '529',
+  bcp47: 'ar',
+  iso3: 'arb',
+  name: [
+    {
+      __typename: 'Translation',
+      value: 'Arabic',
+      primary: false
+    }
+  ]
+}
+
+const defaultJourney: Journey = {
+  __typename: 'Journey',
+  id: 'journeyId',
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
+  title: 'my journey',
+  slug: 'my-journey',
+  language: {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
+  description: 'my cool journey',
+  status: JourneyStatus.draft,
+  createdAt: '2021-11-19T12:34:56.647Z',
+  publishedAt: null,
+  blocks: [],
+  primaryImageBlock: null,
+  userJourneys: [],
+  template: null,
+  seoTitle: null,
+  seoDescription: null
+}
 
 describe('Conductor', () => {
   it('should create a journeyViewEvent', async () => {
@@ -66,7 +124,9 @@ describe('Conductor', () => {
               variables: {
                 input: {
                   id: 'uuid',
-                  journeyId: 'journeyId'
+                  journeyId: 'journeyId',
+                  label: 'my journey',
+                  value: '529'
                 }
               }
             },
@@ -74,11 +134,7 @@ describe('Conductor', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey
-          }}
-        >
+        <JourneyProvider value={{ journey: defaultJourney }}>
           <Conductor blocks={[]} />
         </JourneyProvider>
       </MockedProvider>
@@ -98,7 +154,9 @@ describe('Conductor', () => {
               variables: {
                 input: {
                   id: 'uuid',
-                  journeyId: 'journeyId'
+                  journeyId: 'journeyId',
+                  label: 'my journey',
+                  value: '529'
                 }
               }
             },
@@ -113,14 +171,7 @@ describe('Conductor', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              title: 'journey title'
-            } as unknown as Journey
-          }}
-        >
+        <JourneyProvider value={{ journey: defaultJourney }}>
           <Conductor blocks={[]} />
         </JourneyProvider>
       </MockedProvider>
@@ -131,327 +182,10 @@ describe('Conductor', () => {
           event: 'journey_view',
           journeyId: 'journeyId',
           eventId: 'uuid',
-          journeyTitle: 'journey title'
+          journeyTitle: 'my journey'
         }
       })
     )
-  })
-  it('should show first block', () => {
-    const blocks: TreeBlock[] = [
-      {
-        id: 'step1.id',
-        __typename: 'StepBlock',
-        parentBlockId: null,
-        parentOrder: 0,
-        locked: false,
-        nextBlockId: 'step2.id',
-        children: [
-          {
-            id: 'card1.id',
-            __typename: 'CardBlock',
-            parentBlockId: 'step1.id',
-            coverBlockId: 'null',
-            parentOrder: 0,
-            backgroundColor: null,
-            themeMode: null,
-            themeName: null,
-            fullscreen: false,
-            children: [
-              {
-                id: 'radioQuestion1.id',
-                __typename: 'RadioQuestionBlock',
-                parentBlockId: 'card1.id',
-                parentOrder: 0,
-                children: [
-                  {
-                    id: 'radioOption2.id',
-                    __typename: 'RadioOptionBlock',
-                    parentBlockId: 'radioQuestion1.id',
-                    parentOrder: 0,
-                    label: '1. Step 2 (Locked)',
-                    action: {
-                      __typename: 'NavigateToBlockAction',
-                      parentBlockId: 'radioOption2.id',
-                      gtmEventName: 'gtmEventName',
-                      blockId: 'step2.id'
-                    },
-                    children: []
-                  },
-                  {
-                    id: 'radioOption3.id',
-                    __typename: 'RadioOptionBlock',
-                    parentBlockId: 'radioQuestion1.id',
-                    parentOrder: 1,
-                    label: '1. Step 3 (No nextBlockId)',
-                    action: {
-                      __typename: 'NavigateToBlockAction',
-                      parentBlockId: 'radioOption3.id',
-                      gtmEventName: 'gtmEventName',
-                      blockId: 'step3.id'
-                    },
-                    children: []
-                  },
-                  {
-                    id: 'radioOption4.id',
-                    __typename: 'RadioOptionBlock',
-                    parentBlockId: 'radioQuestion1.id',
-                    parentOrder: 2,
-                    label: '1. Step 4 (End)',
-                    action: {
-                      __typename: 'NavigateToBlockAction',
-                      parentBlockId: 'radioOption4.id',
-                      gtmEventName: 'gtmEventName',
-                      blockId: 'step4.id'
-                    },
-                    children: []
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'step2.id',
-        __typename: 'StepBlock',
-        parentBlockId: null,
-        parentOrder: 1,
-        locked: true,
-        nextBlockId: 'step3.id',
-        children: [
-          {
-            id: 'card2.id',
-            __typename: 'CardBlock',
-            parentBlockId: 'step2.id',
-            coverBlockId: 'null',
-            parentOrder: 0,
-            backgroundColor: null,
-            themeMode: null,
-            themeName: null,
-            fullscreen: false,
-            children: [
-              {
-                id: 'radioQuestion1.id',
-                __typename: 'RadioQuestionBlock',
-                parentBlockId: 'card2.id',
-                parentOrder: 0,
-                children: [
-                  {
-                    id: 'radioOption1.id',
-                    __typename: 'RadioOptionBlock',
-                    parentBlockId: 'radioQuestion1.id',
-                    parentOrder: 0,
-                    label: '2. Step 1 (Start)',
-                    action: {
-                      __typename: 'NavigateToBlockAction',
-                      parentBlockId: 'radioOption1.id',
-                      gtmEventName: 'gtmEventName',
-                      blockId: 'step1.id'
-                    },
-                    children: []
-                  },
-                  {
-                    id: 'radioOption3.id',
-                    __typename: 'RadioOptionBlock',
-                    parentBlockId: 'radioQuestion1.id',
-                    parentOrder: 1,
-                    label: '2. Step 3 (No nextBlockId)',
-                    action: {
-                      __typename: 'NavigateToBlockAction',
-                      parentBlockId: 'radioOption3.id',
-                      gtmEventName: 'gtmEventName',
-                      blockId: 'step3.id'
-                    },
-                    children: []
-                  },
-                  {
-                    id: 'radioOption4.id',
-                    __typename: 'RadioOptionBlock',
-                    parentBlockId: 'radioQuestion1.id',
-                    parentOrder: 2,
-                    label: '2. Step 4 (End)',
-                    action: {
-                      __typename: 'NavigateToBlockAction',
-                      parentBlockId: 'radioOption4.id',
-                      gtmEventName: 'gtmEventName',
-                      blockId: 'step4.id'
-                    },
-                    children: []
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'step3.id',
-        __typename: 'StepBlock',
-        parentBlockId: null,
-        parentOrder: 2,
-        locked: false,
-        nextBlockId: 'step4.id',
-        children: [
-          {
-            id: 'card3.id',
-            __typename: 'CardBlock',
-            parentBlockId: 'step3.id',
-            coverBlockId: 'null',
-            parentOrder: 0,
-            backgroundColor: null,
-            themeMode: null,
-            themeName: null,
-            fullscreen: false,
-            children: [
-              {
-                id: 'radioQuestion1.id',
-                __typename: 'RadioQuestionBlock',
-                parentBlockId: 'card3.id',
-                parentOrder: 0,
-                children: [
-                  {
-                    id: 'radioOption1.id',
-                    __typename: 'RadioOptionBlock',
-                    parentBlockId: 'radioQuestion1.id',
-                    parentOrder: 0,
-                    label: '3. Step 1 (Start)',
-                    action: {
-                      __typename: 'NavigateToBlockAction',
-                      parentBlockId: 'radioOption1.id',
-                      gtmEventName: 'gtmEventName',
-                      blockId: 'step1.id'
-                    },
-                    children: []
-                  },
-                  {
-                    id: 'radioOption2.id',
-                    __typename: 'RadioOptionBlock',
-                    parentBlockId: 'radioQuestion1.id',
-                    parentOrder: 1,
-                    label: '3. Step 2 (Locked)',
-                    action: {
-                      __typename: 'NavigateToBlockAction',
-                      parentBlockId: 'radioOption2.id',
-                      gtmEventName: 'gtmEventName',
-                      blockId: 'step2.id'
-                    },
-                    children: []
-                  },
-                  {
-                    id: 'radioOption4.id',
-                    __typename: 'RadioOptionBlock',
-                    parentBlockId: 'radioQuestion1.id',
-                    parentOrder: 2,
-                    label: '3. Step 4 (End)',
-                    action: {
-                      __typename: 'NavigateToBlockAction',
-                      parentBlockId: 'radioOption4.id',
-                      gtmEventName: 'gtmEventName',
-                      blockId: 'step4.id'
-                    },
-                    children: []
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'step4.id',
-        __typename: 'StepBlock',
-        parentBlockId: null,
-        parentOrder: 3,
-        locked: false,
-        nextBlockId: null,
-        children: [
-          {
-            id: 'card4.id',
-            __typename: 'CardBlock',
-            parentBlockId: 'step4.id',
-            coverBlockId: 'null',
-            parentOrder: 0,
-            backgroundColor: null,
-            themeMode: null,
-            themeName: null,
-            fullscreen: false,
-            children: [
-              {
-                id: 'radioQuestion1.id',
-                __typename: 'RadioQuestionBlock',
-                parentBlockId: 'card4.id',
-                parentOrder: 0,
-                children: [
-                  {
-                    id: 'radioOption1.id',
-                    __typename: 'RadioOptionBlock',
-                    parentBlockId: 'radioQuestion1.id',
-                    parentOrder: 0,
-                    label: '4. Step 1 (Start)',
-                    action: {
-                      __typename: 'NavigateToBlockAction',
-                      parentBlockId: 'radioOption1.id',
-                      gtmEventName: 'gtmEventName',
-                      blockId: 'step1.id'
-                    },
-                    children: []
-                  },
-                  {
-                    id: 'radioOption2.id',
-                    __typename: 'RadioOptionBlock',
-                    parentBlockId: 'radioQuestion1.id',
-                    parentOrder: 1,
-                    label: '4. Step 2 (Locked)',
-                    action: {
-                      __typename: 'NavigateToBlockAction',
-                      parentBlockId: 'radioOption2.id',
-                      gtmEventName: 'gtmEventName',
-                      blockId: 'step2.id'
-                    },
-                    children: []
-                  },
-                  {
-                    id: 'radioOption3.id',
-                    __typename: 'RadioOptionBlock',
-                    parentBlockId: 'radioQuestion1.id',
-                    parentOrder: 2,
-                    label: '4. Step 3 (No nextBlockId)',
-                    action: {
-                      __typename: 'NavigateToBlockAction',
-                      parentBlockId: 'radioOption3.id',
-                      gtmEventName: 'gtmEventName',
-                      blockId: 'step3.id'
-                    },
-                    children: []
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ]
-    const { getByRole, getByTestId, queryByTestId } = render(
-      <MockedProvider>
-        <Conductor blocks={blocks} />
-      </MockedProvider>
-    )
-    const conductorNextButton = getByTestId('conductorNextButton')
-    expect(treeBlocksVar()).toBe(blocks)
-    expect(activeBlockVar()?.id).toBe('step1.id')
-    expect(conductorNextButton).toHaveStyle('cursor: pointer;')
-    fireEvent.click(conductorNextButton)
-    expect(activeBlockVar()?.id).toBe('step2.id')
-    fireEvent.click(conductorNextButton)
-    expect(activeBlockVar()?.id).toBe('step2.id')
-    expect(conductorNextButton).toHaveStyle('cursor: default;')
-    fireEvent.click(getByRole('button', { name: '2. Step 3 (No nextBlockId)' }))
-    expect(activeBlockVar()?.id).toBe('step3.id')
-    fireEvent.click(conductorNextButton)
-    expect(activeBlockVar()?.id).toBe('step4.id')
-    fireEvent.click(getByRole('button', { name: '3. Step 4 (End)' }))
-    expect(activeBlockVar()?.id).toBe('step4.id')
-    expect(queryByTestId('conductorNextButton')).toBeNull()
   })
 
   it('should not throw error if no blocks', () => {
@@ -463,5 +197,173 @@ describe('Conductor', () => {
     )
     expect(treeBlocksVar()).toBe(blocks)
     expect(activeBlockVar()).toBe(null)
+  })
+
+  describe('ltr journey', () => {
+    it('should navigate to next block on right button click', () => {
+      const { getByTestId, queryByTestId } = render(
+        <MockedProvider mocks={[]}>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <Conductor blocks={basic} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+      const leftButton = queryByTestId('conductorLeftButton')
+      const rightButton = getByTestId('conductorRightButton')
+
+      expect(treeBlocksVar()).toBe(basic)
+      expect(activeBlockVar()?.id).toBe('step1.id')
+      expect(leftButton).not.toBeInTheDocument()
+      expect(rightButton).not.toBeDisabled()
+      expect(rightButton).toHaveStyle('cursor: pointer;')
+
+      fireEvent.click(rightButton)
+
+      expect(activeBlockVar()?.id).toBe('step2.id')
+    })
+
+    it('should disable navigating to previous step by default', () => {
+      const { getByTestId } = render(
+        <MockedProvider mocks={[]}>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <Conductor blocks={basic} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      const rightButton = getByTestId('conductorRightButton')
+      fireEvent.click(rightButton)
+      expect(activeBlockVar()?.id).toBe('step2.id')
+      const leftButton = getByTestId('conductorLeftButton')
+
+      expect(leftButton).toBeInTheDocument()
+      expect(leftButton).toBeDisabled()
+    })
+
+    it('should disable right button if next step is locked', () => {
+      const { getByTestId } = render(
+        <MockedProvider mocks={[]}>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <Conductor blocks={basic} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(getByTestId('conductorRightButton'))
+      expect(activeBlockVar()?.id).toBe('step2.id')
+
+      expect(getByTestId('conductorRightButton')).toBeDisabled()
+    })
+
+    it('should not show right button if on last card', () => {
+      const { getByTestId, getAllByRole, queryByTestId } = render(
+        <MockedProvider mocks={[]}>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <Conductor blocks={basic} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(getByTestId('conductorRightButton'))
+      expect(activeBlockVar()?.id).toBe('step2.id')
+
+      fireEvent.click(
+        getAllByRole('button', { name: 'Step 3 (No nextBlockId)' })[0]
+      )
+      expect(activeBlockVar()?.id).toBe('step3.id')
+
+      fireEvent.click(getByTestId('conductorRightButton'))
+      expect(activeBlockVar()?.id).toBe('step4.id')
+
+      expect(queryByTestId('conductorRightButton')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('rtl journey', () => {
+    it('should navigate to next block on left button click', () => {
+      const { getByTestId, queryByTestId } = render(
+        <MockedProvider mocks={[]}>
+          <JourneyProvider
+            value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
+          >
+            <Conductor blocks={basic} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+      const leftButton = getByTestId('conductorLeftButton')
+      const rightButton = queryByTestId('conductorRightButton')
+
+      expect(treeBlocksVar()).toBe(basic)
+      expect(activeBlockVar()?.id).toBe('step1.id')
+      expect(rightButton).not.toBeInTheDocument()
+      expect(leftButton).not.toBeDisabled()
+      expect(leftButton).toHaveStyle('cursor: pointer;')
+
+      fireEvent.click(leftButton)
+
+      expect(activeBlockVar()?.id).toBe('step2.id')
+    })
+
+    it('should disable navigating to previous step by default', () => {
+      const { getByTestId } = render(
+        <MockedProvider mocks={[]}>
+          <JourneyProvider
+            value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
+          >
+            <Conductor blocks={basic} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      const leftButton = getByTestId('conductorLeftButton')
+      fireEvent.click(leftButton)
+      expect(activeBlockVar()?.id).toBe('step2.id')
+      const rightButton = getByTestId('conductorRightButton')
+
+      expect(rightButton).toBeInTheDocument()
+      expect(rightButton).toBeDisabled()
+    })
+
+    it('should disable left button if next step is locked', () => {
+      const { getByTestId } = render(
+        <MockedProvider mocks={[]}>
+          <JourneyProvider
+            value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
+          >
+            <Conductor blocks={basic} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(getByTestId('conductorLeftButton'))
+      expect(activeBlockVar()?.id).toBe('step2.id')
+
+      expect(getByTestId('conductorLeftButton')).toBeDisabled()
+    })
+
+    it('should not show left button if on last card', () => {
+      const { getByTestId, getAllByRole, queryByTestId } = render(
+        <MockedProvider mocks={[]}>
+          <JourneyProvider
+            value={{ journey: { ...defaultJourney, language: rtlLanguage } }}
+          >
+            <Conductor blocks={basic} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(getByTestId('conductorLeftButton'))
+      expect(activeBlockVar()?.id).toBe('step2.id')
+
+      fireEvent.click(
+        getAllByRole('button', { name: 'Step 3 (No nextBlockId)' })[0]
+      )
+      expect(activeBlockVar()?.id).toBe('step3.id')
+
+      fireEvent.click(getByTestId('conductorLeftButton'))
+      expect(activeBlockVar()?.id).toBe('step4.id')
+
+      expect(queryByTestId('conductorLeftButton')).not.toBeInTheDocument()
+    })
   })
 })

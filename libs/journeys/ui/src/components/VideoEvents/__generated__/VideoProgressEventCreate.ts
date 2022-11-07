@@ -12,7 +12,6 @@ import { VideoProgressEventCreateInput } from "./../../../../__generated__/globa
 export interface VideoProgressEventCreate_videoProgressEventCreate {
   __typename: "VideoProgressEvent";
   id: string;
-  progress: number;
 }
 
 export interface VideoProgressEventCreate {
