@@ -1,11 +1,11 @@
 import Stack from '@mui/material/Stack'
-import { Story, Meta } from '@storybook/react'
+import { ComponentStory, Meta } from '@storybook/react'
 import { Form, Formik } from 'formik'
 import { object, string } from 'yup'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { StoryCard } from '../StoryCard'
-import { TextField, TextFieldProps } from './TextField'
+import { TextField } from './TextField'
 
 const Demo = {
   ...journeyUiConfig,
@@ -14,15 +14,16 @@ const Demo = {
   title: 'Journeys-Ui/TextField'
 }
 
-const Template: Story<TextFieldProps> = () => (
+const Template: ComponentStory<typeof TextField> = () => (
   <StoryCard>
     <Formik
       initialValues={{
         default: '',
+        focused: '',
+        placeholder: '',
         prepopulated: 'Prepopulated',
         hint: '',
         error: '',
-        focused: '',
         disabled: ''
       }}
       validationSchema={object().shape({
@@ -39,11 +40,19 @@ const Template: Story<TextFieldProps> = () => (
       {() => (
         <Form>
           <Stack>
-            <TextField name="default" label="Default" />
+            <Stack direction="row" spacing={4}>
+              <TextField name="default" label="Default" />
+              <TextField name="focused" label="Default focused" focused />
+            </Stack>
+            <TextField
+              name="placeholder"
+              label="Placeholder"
+              placeholder="Placeholder"
+              focused
+            />
             <TextField name="prepopulated" label="Prepopulated" />
             <TextField name="hint" label="Hint" helperText="Hint Text" />
             <TextField name="error" label="Error" />
-            <TextField name="focused" label="Focused" focused />
             <TextField name="disabled" label="Disabled" disabled />
           </Stack>
         </Form>
@@ -52,7 +61,7 @@ const Template: Story<TextFieldProps> = () => (
   </StoryCard>
 )
 
-const TextareaTemplate: Story<TextFieldProps> = () => {
+const TextareaTemplate: ComponentStory<typeof TextField> = () => {
   // Hack to create multiple components in 1 story. Only done for journey-ui
   const fields = [
     {

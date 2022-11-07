@@ -1,9 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { useField } from 'formik'
+import { TextField } from './TextField'
 
-import { TextField, TextFieldProps } from './TextField'
-
-const props: TextFieldProps = {
+const props: Parameters<typeof TextField>[0] = {
   id: 'name',
   name: 'name',
   label: 'Name'
