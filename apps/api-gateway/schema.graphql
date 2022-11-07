@@ -755,6 +755,7 @@ type Query {
   videoTag(id: ID!): VideoTag @join__field(graph: VIDEOS)
   videoTags: [VideoTag!] @join__field(graph: VIDEOS)
   videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
+  videosById(ids: [ID!]): [Video!]! @join__field(graph: VIDEOS)
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
@@ -1645,7 +1646,6 @@ input VideoProgressEventCreateInput {
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
-  ids: [ID!]
   tagId: String
   title: String
   types: [VideoType!]
