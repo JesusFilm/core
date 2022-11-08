@@ -2,7 +2,8 @@ import { ReactElement } from 'react'
 import Grid from '@mui/material/Grid'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
-import { GetHomeVideos_videosById } from '../../../__generated__/GetHomeVideos'
+
+import { GetHomeVideo_video } from '../../../__generated__/GetHomeVideo'
 import { FilmType, HomeVideoCard } from './Card/HomeVideoCard'
 
 export interface HomeVideo {
@@ -12,7 +13,7 @@ export interface HomeVideo {
 
 interface VideoListGridProps {
   videos: HomeVideo[] | undefined
-  data: GetHomeVideos_videosById[] | undefined
+  data: GetHomeVideo_video[] | undefined
   loading?: boolean
 }
 

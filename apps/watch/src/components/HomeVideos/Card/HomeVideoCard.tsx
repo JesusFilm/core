@@ -8,7 +8,7 @@ import { styled } from '@mui/material/styles'
 import ButtonBase from '@mui/material/ButtonBase'
 
 import { VideoType } from '../../../../__generated__/globalTypes'
-import { GetHomeVideos_videosById } from '../../../../__generated__/GetHomeVideos'
+import { GetHomeVideo_video } from '../../../../__generated__/GetHomeVideo'
 
 export enum FilmType {
   animation = 'Animation',
@@ -25,7 +25,7 @@ const designationColors = {
 }
 
 interface VideoListCardProps {
-  video?: GetHomeVideos_videosById
+  video?: GetHomeVideo_video
   designation?: FilmType
 }
 
