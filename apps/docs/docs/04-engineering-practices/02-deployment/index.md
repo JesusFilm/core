@@ -1,6 +1,8 @@
-# Stage Deployment Process
+# Deployment
 
-## Adding your Pull Request (PR) branch to the stage branch
+## Stage
+
+### Adding your Pull Request (PR) branch to the stage branch
 
 1. Add "on stage" label to your PR.
 1. GitHub Bot will attempt to merge your PR branch into the stage branch.
@@ -12,7 +14,7 @@
    1. Resolve conflicts between your PR branch and the stage branch
    1. Run `git push origin stage`
 
-## Resetting the stage branch
+### Resetting the stage branch
 
 From time to time the stage branch will need to be reset to main. This can happen for any number of reasons including but not limited to:
 
