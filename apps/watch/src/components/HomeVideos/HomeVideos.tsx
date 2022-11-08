@@ -28,7 +28,6 @@ export function HomeVideos({ data, videos }: VideoListGridProps): ReactElement {
         mb={0}
         mr={0}
         pt={0}
-        columns={{ xs: 12, sm: 12, md: 6, lg: 4, xl: 3 }}
       >
         {(data?.length ?? 0) > 0 &&
           videos?.map((item, index) => (
@@ -36,6 +35,15 @@ export function HomeVideos({ data, videos }: VideoListGridProps): ReactElement {
               item
               key={index}
               pt={0}
+              xl={3}
+              lg={4}
+              md={6}
+              sm={12}
+              xs={12}
+              minWidth={266}
+              maxWidth={338}
+              minHeight={136}
+              maxHeight={160}
               sx={{
                 display: {
                   xs: index > 5 ? 'none' : '',

@@ -30,8 +30,12 @@ interface VideoListCardProps {
 }
 
 const ImageButton = styled(ButtonBase)(({ theme }) => ({
+  width: '100%',
+  minWidth: 266,
+  maxWidth: 338,
+  minHeight: 136,
+  maxHeight: 160,
   position: 'relative',
-  height: 160,
   '&:hover, &.Mui-focusVisible': {
     zIndex: 1,
     '& .MuiImageBackdrop-root': {
@@ -45,6 +49,7 @@ const ImageButton = styled(ButtonBase)(({ theme }) => ({
 
 const ImageSpan = styled('span')(({ theme }) => ({
   position: 'absolute',
+  objectFit: 'cover',
   left: 0,
   right: 0,
   top: 0,
@@ -85,7 +90,7 @@ export function HomeVideoCard({
 }: VideoListCardProps): ReactElement {
   return (
     <Link href={`/${video?.slug[0]?.value ?? ''}`} passHref>
-      <ImageButton focusRipple style={{ width: 338, height: 160 }}>
+      <ImageButton focusRipple>
         <ImageSrc
           style={{
             backgroundImage: `url(${video?.image ?? ''})`
