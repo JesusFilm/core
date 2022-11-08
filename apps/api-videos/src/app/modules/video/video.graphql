@@ -53,6 +53,5 @@ extend type Query {
     limit: Int
   ): [Video!]!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  videosById(ids: [ID!]): [Video!]!
   video(id: ID!, idType: IdType): Video!
 }
