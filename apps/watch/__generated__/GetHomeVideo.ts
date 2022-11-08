@@ -6,31 +6,31 @@
 import { VideoType } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: GetHomeVideos
+// GraphQL query operation: GetHomeVideo
 // ====================================================
 
-export interface GetHomeVideos_videosById_title {
+export interface GetHomeVideo_video_title {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetHomeVideos_videosById_variant {
+export interface GetHomeVideo_video_variant {
   __typename: "VideoVariant";
   duration: number;
 }
 
-export interface GetHomeVideos_videosById_slug {
+export interface GetHomeVideo_video_slug {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetHomeVideos_videosById {
+export interface GetHomeVideo_video {
   __typename: "Video";
   id: string;
   type: VideoType;
   image: string | null;
-  title: GetHomeVideos_videosById_title[];
-  variant: GetHomeVideos_videosById_variant | null;
+  title: GetHomeVideo_video_title[];
+  variant: GetHomeVideo_video_variant | null;
   /**
    * Episodes are child videos, currently only found in a playlist type
    */
@@ -38,14 +38,14 @@ export interface GetHomeVideos_videosById {
   /**
    * slug is a permanent link to the video. It should only be appended, not edited or deleted
    */
-  slug: GetHomeVideos_videosById_slug[];
+  slug: GetHomeVideo_video_slug[];
 }
 
-export interface GetHomeVideos {
-  videosById: GetHomeVideos_videosById[];
+export interface GetHomeVideo {
+  video: GetHomeVideo_video;
 }
 
-export interface GetHomeVideosVariables {
-  ids: string[];
+export interface GetHomeVideoVariables {
+  id: string;
   languageId?: string | null;
 }

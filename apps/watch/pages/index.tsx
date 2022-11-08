@@ -13,30 +13,36 @@ import { HomeVideo, HomeVideos } from '../src/components/HomeVideos/HomeVideos'
 import { FilmType } from '../src/components/HomeVideos/Card/HomeVideoCard'
 import { Header } from '../src/components/Header'
 import { createApolloClient } from '../src/libs/client'
-import { GetHomeVideos } from '../__generated__/GetHomeVideos'
+import { GetHomeVideo } from '../__generated__/GetHomeVideo'
 
 export const videos: HomeVideo[] = [
   {
     id: '1_jf-0-0',
     designation: FilmType.feature
   },
-  { id: '2_ChosenWitness', designation: FilmType.animation },
   { id: '2_GOJ-0-0', designation: FilmType.feature },
+  { id: '1_jf6119-0-0', designation: FilmType.feature },
+  { id: '1_wl604423-0-0', designation: FilmType.feature },
   { id: 'MAG1', designation: FilmType.feature },
-  { id: '1_fj-0-0', designation: FilmType.series },
-  {
-    id: '1_riv-0-0',
-    designation: FilmType.series
-  },
-  { id: '1_wjv-0-0', designation: FilmType.series },
+  { id: '1_wl7-0-0', designation: FilmType.series },
+  { id: '3_0-8DWJ-WIJ_06-0-0', designation: FilmType.feature },
   { id: '2_Acts-0-0', designation: FilmType.feature },
-  { id: '1_cl-0-0', designation: FilmType.series },
-  { id: '3_0-40DWJ', designation: FilmType.collection },
-  { id: '1_wl7-0-0', designation: FilmType.series }
+  { id: '2_GOJ4904-0-0', designation: FilmType.feature },
+  // TODO: LUMO collection goes here
+  { id: '2_Acts7331-0-0', designation: FilmType.feature },
+  { id: '3_0-8DWJ-WIJ', designation: FilmType.feature },
+  { id: '2_ChosenWitness', designation: FilmType.animation },
+  // TODO: LUMO collection gospel of luke here
+  { id: '1_cl1309-0-0', designation: FilmType.feature },
+  { id: '1_jf6102-0-0', designation: FilmType.feature },
+  { id: '2_0-FallingPlates', designation: FilmType.series },
+  { id: '2_Acts7345-0-0', designation: FilmType.feature },
+  { id: '1_mld-0-0', designation: FilmType.feature },
+  { id: '1_jf6101-0-0', designation: FilmType.feature }
 ]
 
 interface HomePageProps {
-  data: GetHomeVideos
+  data: GetHomeVideo[]
 }
 
 function HomePage({ data }: HomePageProps): ReactElement {
@@ -59,7 +65,10 @@ function HomePage({ data }: HomePageProps): ReactElement {
               paddingRight: '100px !important'
             }}
           >
-            <HomeVideos data={data?.videosById} videos={videos} />
+            <HomeVideos
+              data={data?.map(({ video }) => video)}
+              videos={videos}
+            />
           </Container>
         </Box>
       </ThemeProvider>
@@ -67,38 +76,189 @@ function HomePage({ data }: HomePageProps): ReactElement {
   )
 }
 
+export const GET_HOME_VIDEO = gql`
+  query GetHomeVideo($id: ID!, $languageId: ID) {
+    video(id: $id) {
+      id
+      type
+      image
+      title(languageId: $languageId, primary: true) {
+        value
+      }
+      variant {
+        duration
+      }
+      episodeIds
+      slug(languageId: $languageId, primary: true) {
+        value
+      }
+    }
+  }
+`
 export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
   const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<GetHomeVideos>({
-    query: gql`
-      query GetHomeVideos($ids: [ID!]!, $languageId: ID) {
-        videosById(ids: $ids) {
-          id
-          type
-          image
-          title(languageId: $languageId, primary: true) {
-            value
-          }
-          variant {
-            duration
-          }
-          episodeIds
-          slug(languageId: $languageId, primary: true) {
-            value
-          }
-        }
-      }
-    `,
+  // unfortunately we have to grab videos individually. Getting them in batch causes out of memory issues
+  // TODO: replace once we migrate off arangodb
+  const { data: video0 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
     variables: {
-      ids: videos.map((video) => video.id),
+      id: videos[0].id,
       languageId: '529'
     }
   })
+  const { data: video1 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[1].id,
+      languageId: '529'
+    }
+  })
+  const { data: video2 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[2].id,
+      languageId: '529'
+    }
+  })
+  const { data: video3 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[3].id,
+      languageId: '529'
+    }
+  })
+  const { data: video4 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[4].id,
+      languageId: '529'
+    }
+  })
+  const { data: video5 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[5].id,
+      languageId: '529'
+    }
+  })
+  const { data: video6 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[6].id,
+      languageId: '529'
+    }
+  })
+  const { data: video7 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[7].id,
+      languageId: '529'
+    }
+  })
+  const { data: video8 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[8].id,
+      languageId: '529'
+    }
+  })
+  const { data: video9 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[9].id,
+      languageId: '529'
+    }
+  })
+  const { data: video10 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[10].id,
+      languageId: '529'
+    }
+  })
+  const { data: video11 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[11].id,
+      languageId: '529'
+    }
+  })
+  const { data: video12 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[12].id,
+      languageId: '529'
+    }
+  })
+  const { data: video13 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[13].id,
+      languageId: '529'
+    }
+  })
+  const { data: video14 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[14].id,
+      languageId: '529'
+    }
+  })
+  const { data: video15 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[15].id,
+      languageId: '529'
+    }
+  })
+  const { data: video16 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[16].id,
+      languageId: '529'
+    }
+  })
+  const { data: video17 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[17].id,
+      languageId: '529'
+    }
+  })
+  const { data: video18 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[12].id,
+      languageId: '529'
+    }
+  })
+  const data = [
+    video0,
+    video1,
+    video2,
+    video3,
+    video4,
+    video5,
+    video6,
+    video7,
+    video8,
+    video9,
+    video10,
+    video11,
+    video12,
+    video13,
+    video14,
+    video15,
+    video16,
+    video17,
+    video18
+  ]
 
-  if (data.videosById === null) {
+  if (data.find((item) => item.video == null) == null) {
     return {
-      props: {},
-      notFound: true,
+      props: {
+        data
+      },
       revalidate: 60
     }
   } else {
