@@ -2,6 +2,7 @@ import { ReactElement, useState } from 'react'
 import IconButton from '@mui/material/IconButton'
 import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
 import { gql, useMutation } from '@apollo/client'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useSnackbar } from 'notistack'
@@ -9,7 +10,6 @@ import Typography from '@mui/material/Typography'
 import { BlockDelete } from '../../../../../__generated__/BlockDelete'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { MenuItem } from '../../../MenuItem'
-import { Dialog } from '../../../Dialog'
 import getSelected from './utils/getSelected'
 
 export const BLOCK_DELETE = gql`
@@ -94,7 +94,7 @@ export function DeleteBlock({
     <>
       <Dialog
         open={openDialog}
-        handleClose={handleCloseDialog}
+        onClose={handleCloseDialog}
         dialogTitle={{ title: 'Delete Card?' }}
         dialogAction={{
           onSubmit: handleDeleteBlock,

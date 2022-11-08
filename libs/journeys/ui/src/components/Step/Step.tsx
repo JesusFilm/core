@@ -43,7 +43,7 @@ export function Step({
     if (!admin) {
       const id = uuidv4()
       void stepViewEventCreate({
-        variables: { input: { id, blockId } }
+        variables: { input: { id, blockId, value: heading } }
       })
       TagManager.dataLayer({
         dataLayer: {

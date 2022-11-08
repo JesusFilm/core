@@ -1,7 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useEffect } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { Dialog } from '../../../../../Dialog'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../__generated__/GetJourney'
 import { BlockDeleteForPosterImage } from '../../../../../../../__generated__/BlockDeleteForPosterImage'
 import { PosterImageBlockCreate } from '../../../../../../../__generated__/PosterImageBlockCreate'
@@ -228,7 +228,7 @@ export function VideoBlockEditorSettingsPosterDialog({
   return (
     <Dialog
       open={open}
-      handleClose={onClose}
+      onClose={onClose}
       dialogTitle={{
         title: 'Cover Image',
         closeButton: true

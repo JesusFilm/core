@@ -23,12 +23,6 @@ module "acm_central_jesusfilm_org" {
 
 locals {
   services = [
-    "api-gateway",
-    "api-journeys",
-    "api-languages",
-    "api-media",
-    "api-users",
-    "api-videos",
     "arangodb-bigquery-etl",
     "arangodb-s3-backup"
   ]

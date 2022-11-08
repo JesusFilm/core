@@ -4,19 +4,15 @@ import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery } from 'arangojs/aql'
-import { IdType, VideoType } from '../../__generated__/graphql'
+import { IdType, VideosFilter } from '../../__generated__/graphql'
 
-interface VideosFilter {
-  title?: string
-  tagId?: string
-  availableVariantLanguageIds?: string[]
+interface ExtendedVideosFilter extends VideosFilter {
   variantLanguageId?: string
-  types?: VideoType[]
   offset?: number
   limit?: number
 }
 
-interface EpisodesFilter extends VideosFilter {
+interface EpisodesFilter extends ExtendedVideosFilter {
   playlistId: string
   idType: IdType.databaseId | IdType.slug
 }
@@ -24,7 +20,7 @@ interface EpisodesFilter extends VideosFilter {
 export class VideoService extends BaseService {
   collection: DocumentCollection = this.db.collection('videos')
 
-  videoFilter(filter?: EpisodesFilter | VideosFilter): AqlQuery {
+  videoFilter(filter?: VideosFilter): AqlQuery {
     const {
       title,
       tagId = null,
@@ -34,12 +30,14 @@ export class VideoService extends BaseService {
 
     return aql.join(
       [
-        (title != null || availableVariantLanguageIds.length > 0) &&
+        (title != null || (availableVariantLanguageIds?.length ?? 0) > 0) &&
           aql`SEARCH`,
         title != null &&
           aql`ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
-        title != null && availableVariantLanguageIds.length > 0 && aql`AND`,
-        availableVariantLanguageIds.length > 0 &&
+        title != null &&
+          (availableVariantLanguageIds?.length ?? 0) > 0 &&
+          aql`AND`,
+        (availableVariantLanguageIds?.length ?? 0) > 0 &&
           aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
         types != null && aql`FILTER item.type IN ${types}`,
         tagId != null && aql`FILTER ${tagId} IN item.tagIds`
@@ -99,7 +97,7 @@ export class VideoService extends BaseService {
   }
 
   @KeyAsId()
-  async filterAll<T>(filter?: VideosFilter): Promise<T[]> {
+  async filterAll<T>(filter?: ExtendedVideosFilter): Promise<T[]> {
     const { variantLanguageId, offset = 0, limit = 100 } = filter ?? {}
     const videosView = this.db.view('videosView')
     const search = this.videoFilter(filter)

@@ -1,5 +1,7 @@
 interface Event {
   id: ID!
-  userId: ID!
+  journeyId: ID!
   createdAt: DateTime!
+  label: String
+  value: String
 }

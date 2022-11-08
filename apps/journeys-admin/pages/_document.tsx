@@ -22,7 +22,6 @@ export default class MyDocument extends Document<{
             href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans&display=swap"
             rel="stylesheet"
           />
-
           <link
             rel="apple-touch-icon"
             sizes="180x180"
@@ -76,7 +75,7 @@ MyDocument.getInitialProps = async (ctx) => {
 
   // You can consider sharing the same emotion cache between all the SSR requests to speed up performance.
   // However, be aware that it can have global side effects.
-  const cache = createEmotionCache()
+  const cache = createEmotionCache({})
   const { extractCriticalToChunks } = createEmotionServer(cache)
 
   ctx.renderPage = () =>
