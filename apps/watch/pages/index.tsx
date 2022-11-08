@@ -1,6 +1,9 @@
 import { ReactElement } from 'react'
 import { GetStaticProps } from 'next'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Stack from '@mui/material/Stack'
+import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import { gql } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -47,31 +50,10 @@ interface HomePageProps {
 
 function HomePage({ data }: HomePageProps): ReactElement {
   return (
-    <PageWrapper header={<Header />} footer={<Footer />}>
-      <ThemeProvider
-        nested
-        themeName={ThemeName.website}
-        themeMode={ThemeMode.dark}
-      >
-        <HomeHero />
-        <Box
-          sx={{ paddingY: '4rem', backgroundColor: 'primary.backgroundColor' }}
-        >
-          <Container
-            sx={{
-              maxWidth: '100% !important',
-              width: '100%',
-              paddingLeft: '100px !important',
-              paddingRight: '100px !important'
-            }}
-          >
-            <HomeVideos
-              data={data?.map(({ video }) => video)}
-              videos={videos}
-            />
-          </Container>
-        </Box>
-      </ThemeProvider>
+    <PageWrapper hero={<HomeHero />}>
+      <Box sx={{ paddingY: '4rem' }}>
+        <HomeVideos data={data?.map(({ video }) => video)} videos={videos} />
+      </Box>
     </PageWrapper>
   )
 }

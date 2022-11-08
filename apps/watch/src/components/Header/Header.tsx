@@ -1,4 +1,5 @@
 import { ReactElement, useState, KeyboardEvent, MouseEvent } from 'react'
+import Container from '@mui/material/Container'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
@@ -33,7 +34,13 @@ export function Header(): ReactElement {
     }
 
   return (
-    <>
+    <Container
+      sx={{
+        position: 'absolute'
+      }}
+      maxWidth={false}
+      disableGutters
+    >
       <AppBar
         position="relative"
         sx={{ background: 'transparent', boxShadow: 'none', p: 4 }}
@@ -51,7 +58,7 @@ export function Header(): ReactElement {
           <Stack spacing={0.5} direction="row">
             <IconButton
               color="inherit"
-              aria-label="open drawer"
+              aria-label="open header menu"
               edge="start"
               onClick={toggleDrawer('top', true)}
             >
@@ -68,6 +75,6 @@ export function Header(): ReactElement {
       >
         <HeaderMenuPanel toggleDrawer={toggleDrawer} />
       </SwipeableDrawer>
-    </>
+    </Container>
   )
 }
