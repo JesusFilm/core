@@ -1,5 +1,5 @@
 import { deepmerge } from '@mui/utils'
-import { createTheme } from '@mui/material/styles'
+import { createTheme, responsiveFontSizes } from '@mui/material/styles'
 import { baseBreakpoints } from '../base/tokens/breakpoints'
 import { baseSpacing } from '../base/tokens/spacing'
 import { websiteTypography } from './tokens/typography'
@@ -13,10 +13,8 @@ const websiteTheme = {
   ...websiteComponents
 }
 
-export const websiteLight = createTheme(
-  deepmerge(websiteColorsLight, websiteTheme)
-)
+const light = createTheme(deepmerge(websiteColorsLight, websiteTheme))
+export const websiteLight = responsiveFontSizes(light)
 
-export const websiteDark = createTheme(
-  deepmerge(websiteColorsDark, websiteTheme)
-)
+const dark = createTheme(deepmerge(websiteColorsDark, websiteTheme))
+export const websiteDark = responsiveFontSizes(dark)

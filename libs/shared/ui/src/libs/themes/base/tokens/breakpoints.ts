@@ -4,12 +4,19 @@ import createBreakpoints, {
   BreakpointsOptions
 } from '@mui/system/createTheme/createBreakpoints'
 
+declare module '@mui/material/styles' {
+  interface BreakpointOverrides {
+    xxl: true
+  }
+}
+
 const minWidths: { [key in Breakpoint]: number } = {
   xs: 0, // Mobile (P)
   sm: 568, // Mobile (L)
   md: 600, // Tablet (P)
   lg: 961, // Tablet (L)
-  xl: 1200 // Laptop/Desktop
+  xl: 1200, // Laptop
+  xxl: 1400 // Desktop
 }
 
 const minHeights: { [key in Breakpoint]: number } = {
@@ -17,7 +24,8 @@ const minHeights: { [key in Breakpoint]: number } = {
   sm: 0,
   md: 600,
   lg: 600,
-  xl: 600
+  xl: 600,
+  xxl: 600
 }
 
 const maxWidths: { [key in Breakpoint]: number } = {
@@ -25,7 +33,8 @@ const maxWidths: { [key in Breakpoint]: number } = {
   sm: minWidths.md - 1,
   md: minWidths.lg - 1,
   lg: minWidths.xl - 1,
-  xl: 9999
+  xl: minWidths.xxl - 1,
+  xxl: 9999
 }
 
 const breakpointKeys = Object.keys(minWidths) as Breakpoint[]
