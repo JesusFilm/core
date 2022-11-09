@@ -49,3 +49,4 @@ services:
 volumes:
   arango-data:
   core-node-doppler:
+  postgres-data:
