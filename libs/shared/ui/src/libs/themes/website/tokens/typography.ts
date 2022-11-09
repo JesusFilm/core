@@ -27,71 +27,75 @@ declare module '@mui/material/Typography' {
 
 type ValueOf<T> = T[keyof T]
 
+// Converts pixel to rem
+// px divided by base fontsize returns rem
+const pxToRem = (pixel: number, fontSize: number): number => pixel / fontSize
+
 export const typography = {
   fontFamily: ['"Apercu", "Arial", sans-serif'].join(','),
   h1: {
     fontWeight: 700,
     fontSize: 80,
-    lineHeight: '86px',
-    letterSpacing: -3
+    lineHeight: pxToRem(86, 80),
+    letterSpacing: -1
   },
   h2: {
     fontWeight: 700,
     fontSize: 64,
-    lineHeight: '67px',
+    lineHeight: pxToRem(67, 64),
     letterSpacing: -1
   },
   h3: {
     fontWeight: 700,
     fontSize: 48,
-    lineHeight: '48px'
+    lineHeight: pxToRem(48, 48)
   },
   h4: {
     fontWeight: 700,
     fontSize: 36,
-    lineHeight: '40px'
+    lineHeight: pxToRem(40, 36)
   },
   h5: {
     fontWeight: 700,
     fontSize: 27,
-    lineHeight: '33px'
+    lineHeight: pxToRem(33, 27)
   },
   h6: {
     fontWeight: 700,
     fontSize: 21,
-    lineHeight: '27px'
+    lineHeight: pxToRem(27, 21)
   },
   subtitle1: {
     fontWeight: 400,
     fontSize: 20,
-    lineHeight: '27px'
+    lineHeight: pxToRem(27, 20)
   },
   subtitle2: {
     fontWeight: 700,
     fontSize: 18,
-    lineHeight: '21px'
+    lineHeight: pxToRem(21, 18)
   },
   body1: {
     fontSize: 16,
     fontWeight: 400,
-    lineHeight: '21px'
+    lineHeight: pxToRem(21, 16)
   },
   body2: {
     fontSize: 14,
     fontWeight: 400,
-    lineHeight: '20px'
+    lineHeight: pxToRem(20, 14)
   },
   overline1: {
     fontSize: 18,
     fontWeight: 700,
-    lineHeight: '28px',
+    lineHeight: pxToRem(28, 18),
     letterSpacing: '0.12em',
     textTransform: 'uppercase'
   },
   overline2: {
     fontSize: 14,
     fontWeight: 700,
-    lineHeight: '17px',
+    lineHeight: pxToRem(17, 14),
     letterSpacing: '0.14em',
     textTransform: 'uppercase'
   }

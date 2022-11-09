@@ -34,7 +34,7 @@ export function PageWrapper({
             {hero}
           </ThemeProvider>
         </Container>
-        <Container maxWidth="xl" sx={{ flexGrow: 1 }}>
+        <Container maxWidth="xxl" sx={{ flexGrow: 1 }}>
           {children}
         </Container>
 
