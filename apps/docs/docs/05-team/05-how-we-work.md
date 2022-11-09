@@ -10,7 +10,7 @@ This is particularly important for the product teams. Here we like to designate 
 
 ## Cooldown
 
-In between each cycle, we spend one week cooling down. That’s the time to deal with bugs or smaller issues that come up, write up what we worked on, and figure out what we should tackle next. It’s sometimes tempting to simply extend the cycles into the cooldown period to fit in more work. But the goal is to resist this temptation. Yes, sometimes a little spill-over will happen, but it’s helpful to think about the end of the normal cycle as "pencils down". That means that by week 4 of a normal cycle, we should be winding down, getting ready to launch, make sure QA is lined up, and all the other work that happens during and after the launch of new projects.
+In between each cycle, we spend two weeks cooling down. That’s the time to deal with bugs or smaller issues that come up, write up what we worked on, and figure out what we should tackle next. It’s sometimes tempting to simply extend the cycles into the cooldown period to fit in more work. But the goal is to resist this temptation. Yes, sometimes a little spill-over will happen, but it’s helpful to think about the end of the normal cycle as "pencils down". That means that by week 4 of a normal cycle, we should be winding down, getting ready to launch, make sure QA is lined up, and all the other work that happens during and after the launch of new projects.
 
 ## Communication
 
