@@ -93,7 +93,7 @@
         "schema": "apps/api-users/prisma/schema.prisma"
       }
     },
-    "seed": {
+    "prisma-seed": {
       "executor": "@nx-tools/nx-prisma:seed",
       "options": {
         "script": "apps/api-users/prisma/seed.ts",

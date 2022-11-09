@@ -20,7 +20,7 @@ jobs:
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
   api-users:
-    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
+    uses: JesusFilm/core/.github/workflows/api-deploy-postgres-worker.yml@stage
     with:
       name: api-users
       repository: jfp-api-users-stage
