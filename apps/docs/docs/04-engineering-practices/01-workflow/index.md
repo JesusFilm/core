@@ -176,27 +176,54 @@ Don't worry about losing information. Your pull request and commit history will 
 
 ## Our checks
 
+Our checks are defined in this [main.yml](https://github.com/JesusFilm/core/blob/main/.github/workflows/main.yml) file to define our workflow configuration. For more information, see "[Workflow syntax for GitHub Actions](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions)." Check failures will often provide documentation inline to your PR via comments or logs.
+
 ### CodeQL
 
-- CodeQL / Analyze (javascript)
-- Code scanning results / CodeQL
-  Discover vulnerabilities across a codebase with CodeQL, GitHub's industry-leading semantic code analysis engine.
+This check runs GitHub's industry-leading semantic code analysis engine, [CodeQL](https://github.com/github/codeql-action), against our source code to find security vulnerabilities. It then automatically uploads the results to GitHub so they can be displayed in the repository security tab. CodeQL runs an extensible set of queries, which have been developed by the community and the GitHub Security Lab to find common vulnerabilities in your code.
 
-- Danger / danger
-- Danger
-- Main / lint
-- Main / build
-- Main / test
-- Main / visual-test
-- UI Review
-- UI Tests
-- Storybook Publish
-- Vercel – core-docs
-- Vercel – journeys
-- Vercel – journeys-admin
-- Vercel – watch
-- Infracost
-- atlantis/apply
-- atlantis/plan
-- atlantis/policy_check
-- license/cla
+### Danger
+
+This check runs [Danger JS](https://danger.systems/js/) giving us the chance to automate common code review chores. This provides another logical step in your build, through this Danger can help lint your rote tasks in daily code review. We use Danger to codify your teams norms. Leaving humans to think about harder problems. For more information, see "[dangerfile.ts](https://github.com/JesusFilm/core/blob/main/dangerfile.ts)."
+
+### Lint
+
+This check runs `codegen`, `lint`, `type-check`, and `extract-translations` commands on all affected projects. On top of that we also run [prettier](https://prettier.io/), [commitlint](https://commitlint.js.org/#/), and [validate-branch-name](https://www.npmjs.com/package/validate-branch-name). Finally we run a [script](https://github.com/JesusFilm/core/blob/main/tools/scripts/check-git-status.sh) ensure that no files changed when the previous commands have been run.
+
+### Build
+
+This check runs `fetch-secrets`, `generate`, and `build` commands on all affected projects. This ensures that changes to our projects can still be built and deployed.
+
+### Tests
+
+This check runs `generate` and `test` on all affected projects. Typically the `test` command will run all integration, unit and e2e tests contained within the affected projects.
+
+### Visual Tests
+
+This check runs `build-storybook` on the shared-storybook project. It will then run the [Chromatic GitHub Action](https://www.chromatic.com/docs/github-actions) to automate our visual regression tests and publish [Storybook](https://storybook.core.jesusfilm.org/). Upon success two additional checks are added for [UI Tests](https://www.chromatic.com/docs/test) and [UI Review](https://www.chromatic.com/docs/review).
+
+### Vercel
+
+[Vercel for GitHub](https://vercel.com/docs/concepts/git/vercel-for-github) checks automatically deploys all affected projects on Vercel. On completion it will publish Preview Deployment URLs for affected projects as a comment.
+
+![Vercel Comment](./vercel-comment.png)
+
+### Atlantis
+
+[Atlantis](https://www.runatlantis.io/) is an application for automating Terraform via pull requests. It is deployed as a standalone application into our infrastructure at [atlantis.central.jesusfilm.org](https://atlantis.central.jesusfilm.org/).
+
+Atlantis listens for GitHub webhooks about Terraform pull requests. It then runs `terraform plan` and comments with the output back on the pull request.
+
+![Alantis Comment](./atlantis-comment.png)
+
+After an approval, when you want to apply, comment `atlantis apply` on the pull request and Atlantis will run `terraform apply` and comment back with the output.
+
+### Infracost
+
+Infracost scans for Terraform code changes and checks over 3 million prices to create a simple, understandable cost estimate before any resources are launched. It is important to consider considerable price increases based on Terraform changes and ensure you have appropriate leadership buy-in when increasing costs.
+
+![Infracost Comment](./infracost-comment.png)
+
+### Contributor License Agreement
+
+This check ensures that you as an individual collaborator have agreed to our [Contributor License Agreement (CLA)](https://cla-assistant.io/JesusFilm/core). If you have not already done so, a bot will leave a comment asking you to agree. We are only able to accept contributions from individuals who agree to our CLA. If you are a salaried or contract engineer, as a condition of your contract, you have already agreed to this CLA.
