@@ -3,7 +3,7 @@ import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { render } from '@testing-library/react'
 import { videos } from '../../../../pages'
 import { data } from '../testData'
-import { HomeVideoCard } from './HomeVideoCard'
+import { HomeVideoCard } from '.'
 
 describe('HomeVideoCard', () => {
   describe('card', () => {

@@ -3,7 +3,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { watchConfig } from '../../libs/storybook'
 import { data, videos } from './testData'
-import { HomeVideos } from './HomeVideos'
+import { HomeVideos } from '.'
 
 const HomeVideosStory = {
   ...watchConfig,

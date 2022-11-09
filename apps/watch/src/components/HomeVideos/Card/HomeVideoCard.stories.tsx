@@ -4,7 +4,7 @@ import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { watchConfig } from '../../../libs/storybook'
 import { videos } from '../../../../pages'
 import { data } from '../testData'
-import { HomeVideoCard } from './HomeVideoCard'
+import { HomeVideoCard } from '.'
 
 const HomeVideoCardStory = {
   ...watchConfig,

@@ -5,10 +5,30 @@ import { gql } from '@apollo/client'
 
 import { HomeHero } from '../src/components/Hero'
 import { PageWrapper } from '../src/components/PageWrapper'
-import { HomeVideo, HomeVideos } from '../src/components/HomeVideos/HomeVideos'
-import { FilmType } from '../src/components/HomeVideos/Card/HomeVideoCard'
+import { HomeVideo, HomeVideos } from '../src/components/HomeVideos'
+import { FilmType } from '../src/components/HomeVideos/Card'
 import { createApolloClient } from '../src/libs/client'
 import { GetHomeVideo } from '../__generated__/GetHomeVideo'
+
+export const GET_HOME_VIDEO = gql`
+  query GetHomeVideo($id: ID!, $languageId: ID) {
+    video(id: $id) {
+      id
+      type
+      image
+      title(languageId: $languageId, primary: true) {
+        value
+      }
+      variant {
+        duration
+      }
+      episodeIds
+      slug(languageId: $languageId, primary: true) {
+        value
+      }
+    }
+  }
+`
 
 export const videos: HomeVideo[] = [
   {
@@ -50,25 +70,6 @@ function HomePage({ data }: HomePageProps): ReactElement {
   )
 }
 
-export const GET_HOME_VIDEO = gql`
-  query GetHomeVideo($id: ID!, $languageId: ID) {
-    video(id: $id) {
-      id
-      type
-      image
-      title(languageId: $languageId, primary: true) {
-        value
-      }
-      variant {
-        duration
-      }
-      episodeIds
-      slug(languageId: $languageId, primary: true) {
-        value
-      }
-    }
-  }
-`
 export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
   const apolloClient = createApolloClient()
   // unfortunately we have to grab videos individually. Getting them in batch causes out of memory issues

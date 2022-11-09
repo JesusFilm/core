@@ -3,8 +3,8 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { videos } from '../../../pages'
 
-import { HomeVideos } from './HomeVideos'
 import { data } from './testData'
+import { HomeVideos } from '.'
 
 describe('HomeVideos', () => {
   describe('grid', () => {
