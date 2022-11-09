@@ -61,3 +61,8 @@ variable "doppler_token" {
 variable "environment_variables" {
   type = list(string)
 }
+
+variable "create_rds_cluster" {
+  type    = bool
+  default = false
+}

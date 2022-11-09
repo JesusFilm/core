@@ -335,3 +335,19 @@ resource "aws_route53_record" "record" {
   zone_id = var.service_config.zone_id
   records = [var.service_config.alb_dns_name]
 }
+
+module "rds" {
+  count         = var.create_rds_cluster ? 1 : 0
+  source        = "../aurora"
+  env           = var.env
+  name          = var.service_config.name
+  doppler_token = var.doppler_token
+}
+
+resource "doppler_secret" "rds_url" {
+  count   = var.create_rds_cluster ? 1 : 0
+  project = var.service_config.name
+  config  = var.env == "prod" ? "prd" : "stg"
+  name    = "PG_DATABASE_URL"
+  value   = module.rds[0].rds_ssm_url.value
+}
