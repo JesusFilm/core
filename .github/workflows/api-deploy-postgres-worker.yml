@@ -121,6 +121,12 @@ jobs:
         with:
           args: rollout status deploy ${{ inputs.name }}-$ENV_SUFFIX
 
+      - name: Migrate Database
+        uses: mansagroup/nrwl-nx-action@v2
+        with:
+          targets: prisma-migrate
+          projects: ${{ inputs.name }}
+
       - name: Get affected app seed
         run: echo "::set-output name=dbs::$(git diff --name-only HEAD~1 HEAD | grep 'apps/${{ inputs.name }}/prisma/seed.ts')"
         id: affected-dbs
