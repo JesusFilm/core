@@ -17,7 +17,10 @@
     "monotykamary.vscode-aql",
     "eamodio.gitlens",
     "graphql.vscode-graphql",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-pg",
+    "prisma.prisma"
   ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
