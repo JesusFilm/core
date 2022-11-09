@@ -142,14 +142,13 @@ As a reviewer doing a code review, you must make sure that:
 - The code is well-designed.
 - The functionality is good for the users of the code.
 - Any UI changes are sensible and look good.
-- Any parallel programming is done safely.
 - The code isn’t more complex than it needs to be.
 - The developer isn’t implementing things they might need in the future but doesn’t know they need now.
 - Code has appropriate unit tests.
 - Tests are well-designed.
 - The developer used clear names for everything.
 - Comments are clear and useful, and mostly explain why instead of what.
-- Code is appropriately documented (generally in g3doc).
+- Code is appropriately documented.
 - The code conforms to our style guides.
 
 #### Address review comments
@@ -160,7 +159,7 @@ You can continue to commit and push changes in response to the reviews. Your pul
 
 ### Squash and merge your pull request
 
-Once your pull request is approved and all [checks have passed](#our-checks), squash and merge your pull request. This will automatically merge your branch so that your changes appear on the `main` branch. GitHub retains the history of comments and commits in the pull request to help future contributors understand your changes. For more information, see "[Merging a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request)."
+Once your pull request is approved and all [checks have passed](#our-checks), click the "Squash and merge" button on your pull request. This will automatically merge your branch so that your changes appear on the `main` branch. GitHub retains the history of comments and commits in the pull request to help future contributors understand your changes. For more information, see "[Merging a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request)."
 
 ![Pull Request Squash and Merge](./pull-request-merge.png)
 
