@@ -6,9 +6,9 @@ Core is a single monorepo that aims to implement our unified product suite hoste
 
 To follow our workflow, you will need a GitHub account and access to the [JesusFilm/Core](https://github.com/JesusFilm/core) repository by being added to a JesusFilm GitHub Team. For information on how to create an account, see "[Signing up for GitHub](https://docs.github.com/en/github/getting-started-with-github/signing-up-for-github)."
 
-For salaried and contract engineers you'll need to be added to the [Engineering](https://github.com/orgs/JesusFilm/teams/engineering) team. For collaborators and friends of the ministry you'll need to be added to the [Friends of the Ministry](https://github.com/orgs/JesusFilm/teams/friends-of-the-ministry) team as an outside collaboration. You'll need to contact a Team maintainer to request being added to one of these teams. If you have access to [JFP Digital Slack](https://jfp-digital.slack.com/) post a message to #sol-engineering requesting access to the relevant team.
+For salaried and contract engineers you'll need to be added to the [Engineering](https://github.com/orgs/JesusFilm/teams/engineering) team. For collaborators and friends of the ministry you'll need to be added to the [Friends of the Ministry](https://github.com/orgs/JesusFilm/teams/friends-of-the-ministry) team as an outside collaborator. You'll need to contact a Team maintainer to request being added to one of these teams. If you have access to [JFP Digital Slack](https://jfp-digital.slack.com/) post a message to #sol-engineering requesting access to the relevant team.
 
-If You are a team maintainer and have been and have been contacted by someone to add them to a GitHub team, see "[Adding organization members to a team](https://docs.github.com/en/organizations/organizing-members-into-teams/adding-organization-members-to-a-team).
+If You are a team maintainer and have been and have been contacted by someone to add them to a GitHub team, see "[Adding organization members to a team](https://docs.github.com/en/organizations/organizing-members-into-teams/adding-organization-members-to-a-team)."
 
 ## Following our workflow
 
