@@ -34,30 +34,10 @@
         }
       }
     },
-    "seed": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "command": "npx ts-node apps/api-users/db/seed.ts"
-      }
-    },
-    "serve-nowatch": {
+    "serve": {
       "executor": "@nrwl/node:execute",
       "options": {
         "buildTarget": "api-users:build"
-      }
-    },
-    "serve": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "nx serve-nowatch api-users"
-          },
-          {
-            "command": "npx ts-node apps/api-users/src/generate-typings.ts"
-          }
-        ],
-        "parallel": true
       }
     },
     "lint": {
@@ -93,6 +73,31 @@
             "command": "DOPPLER_TOKEN=$DOPPLER_API_USERS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-users > apps/api-users/.env"
           }
         ]
+      }
+    },
+    "prisma-generate": {
+      "executor": "@nx-tools/nx-prisma:generate",
+      "options": {
+        "schema": "apps/api-users/prisma/schema.prisma"
+      }
+    },
+    "prisma-migrate": {
+      "executor": "@nx-tools/nx-prisma:migrate",
+      "options": {
+        "schema": "apps/api-users/prisma/schema.prisma"
+      }
+    },
+    "prisma-rollback": {
+      "executor": "@nx-tools/nx-prisma:rollback",
+      "options": {
+        "schema": "apps/api-users/prisma/schema.prisma"
+      }
+    },
+    "seed": {
+      "executor": "@nx-tools/nx-prisma:seed",
+      "options": {
+        "script": "apps/api-users/prisma/seed.ts",
+        "tsConfig": "apps/api-users/tsconfig.app.json"
       }
     }
   },

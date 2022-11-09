@@ -19,5 +19,17 @@
     "editor.defaultFormatter": "hashicorp.terraform",
     "editor.formatOnSave": true,
     "editor.formatOnSaveMode": "file"
-  }
+  },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "name": "users",
+      "driver": "PostgreSQL",
+      "database": "users",
+      "username": "postgres",
+      "password": "postgres"
+    }
+  ]
 }
