@@ -76,43 +76,43 @@ The commit message should be structured as follows:
 [optional footer(s)]
 ```
 
-### Create a pull request (PR)
+### Create a pull request
 
 Create a pull request to ask collaborators for feedback on your changes. Pull request review is so valuable to us that we require approving review and passing checks before pull requests can be merged. If you want early feedback or advice before you complete your changes, you can mark your pull request as a draft. For more information, see "[Creating a pull request](https://docs.github.com/en/articles/creating-a-pull-request)."
 
-When you create a pull request, include a summary of the changes and what problem they solve. You can include images, links, and tables to help convey this information. The body of the PR will automatically be populated using our [pull request template](https://github.com/JesusFilm/core/blob/main/.github/pull_request_template.md).
+When you create a pull request, include a summary of the changes and what problem they solve. You can include images, links, and tables to help convey this information. The body of the pull request will automatically be populated using our [pull request template](https://github.com/JesusFilm/core/blob/main/.github/pull_request_template.md).
 
-[![Example PR](./pull-request-example.png)](https://github.com/JesusFilm/core/pull/1020)
+[![Example pull request](./pull-request-example.png)](https://github.com/JesusFilm/core/pull/1020)
 
 In addition to filling out the body of the pull request, you can add comments to specific lines of the pull request to explicitly point something out to the reviewers.
 
-![Example PR](./pull-request-comment.png)
+![Example pull request](./pull-request-comment.png)
 
 Once you've done this you can check off `I have performed a self-review of my own code`.
 
 Our repository has checks configured to run on pull requests, you will see any checks that failed on your pull request. This helps you catch errors before merging your branch. For more information, see "[About status checks](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-status-checks)."
 
-#### Naming your PR
+#### Naming your pull request
 
-- Primary type with colon should be at start of PR name (build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test).
+- Primary type with colon should be at start of pull request name (build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test).
 - Short summary of what is being done.
 - Complete sentence, written as though it was an order.
 
 Try to keep your name short, focused, and to the point. The clarity and utility to the reader should be the top concern.
 
-By tradition, the name of a PRis a complete sentence, written as though it were an order (an imperative sentence). For example, say "chore: Delete the FizzBuzz RPC and replace it with the new system.” instead of "Deleting the FizzBuzz RPC and replacing it with the new system.”
+By tradition, the name of a pull request is a complete sentence, written as though it were an order (an imperative sentence). For example, say "chore: Delete the FizzBuzz RPC and replace it with the new system.” instead of "Deleting the FizzBuzz RPC and replacing it with the new system.”
 
 #### Reviewer
 
-You must tag at least one reviewer. Typically this is going to be a fellow team member or a senior engineer from another team with domain specific experience relevant to the PR's content.
+You must tag at least one reviewer. Typically this is going to be a fellow team member or a senior engineer from another team with domain specific experience relevant to the pull request's content.
 
 #### Assignee
 
-You must tag the person responsible for merging this PR. Typically this is going to be youself or your team leader.
+You must tag the person responsible for merging this pull request. Typically this is going to be youself or your team leader.
 
 #### Labelling
 
-It is important that you monitor your PR and apply the appropriate labels.
+It is important that you monitor your pull request and apply the appropriate labels.
 
 - Prefixes matter. Labels get chaotic without them. The chosen are;
   - effort = relative effort involved, Fibonacci from 1 to 13
@@ -122,17 +122,17 @@ It is important that you monitor your PR and apply the appropriate labels.
 
 #### Projects
 
-As a mono-repo, there are many projects contained in this repository. You must add the appropriate user-facing project tag that your PR is primarily affecting. There are some times however when your PR is more general in nature. For these PRs you can tag them with the core project.
+As a mono-repo, there are many projects contained in this repository. You must add the appropriate user-facing project tag that your pull request is primarily affecting. There are some times however when your pull request is more general in nature. For these pull requests you can tag them with the core project.
 
 #### Milestone
 
-As per Shape Up we make use of cycles and cooldowns and make references to these as milestones. You must add the related milestone tag to your PR. For Example `2022 - 02 Cycle` or `2022 - 02 Cooldown`.
+As per Shape Up we make use of cycles and cooldowns and make references to these as milestones. You must add the related milestone tag to your pull request. For Example `2022 - 02 Cycle` or `2022 - 02 Cooldown`.
 
 ### Code Review
 
 Reviews allow collaborators to comment on the changes proposed in pull requests, approve the changes, or request further changes before the pull request is merged. We require that all pull requests are approved before being merged.
 
-We've adopted [The Standard of Code Review](https://google.github.io/eng-practices/review/reviewer/standard.html) put forward by Google. Please note that when Google refer to CL (changelist) we take it to mean PR (Pull Request). Two documents worthy of your time are:
+We've adopted [The Standard of Code Review](https://google.github.io/eng-practices/review/reviewer/standard.html) put forward by Google. Please note that when Google refer to CL (changelist) we take it to mean PR (pull request). Two documents worthy of your time are:
 
 - [Reviewers: How to do a code review](https://google.github.io/eng-practices/review/reviewer/)
 - [Authors: getting through code review](https://google.github.io/eng-practices/review/developer/)
@@ -176,7 +176,13 @@ Don't worry about losing information. Your pull request and commit history will 
 
 ## Our checks
 
-Our checks are defined in this [main.yml](https://github.com/JesusFilm/core/blob/main/.github/workflows/main.yml) file to define our workflow configuration. For more information, see "[Workflow syntax for GitHub Actions](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions)." Check failures will often provide documentation inline to your PR via comments or logs.
+Our checks are defined in this [main.yml](https://github.com/JesusFilm/core/blob/main/.github/workflows/main.yml) file to define our workflow configuration. These checks run automatically when creating and updating a pull request. For more information, see "[Workflow syntax for GitHub Actions](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions)."
+
+:::tip
+
+Checks in the fail or pending state will add details to your pull request via comments or logs. They can be discovered by clicking the "Details" button next to the relevant check.
+
+:::
 
 ### CodeQL
 
