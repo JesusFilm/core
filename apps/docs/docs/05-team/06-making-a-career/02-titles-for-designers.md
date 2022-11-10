@@ -10,16 +10,12 @@ These criteria chiefly examine the scope of work someone is capable of tackling 
 - Works primarily on tightly scoped, single element, routine problems with another designer.
 - Follows existing design patterns, works within our existing look and feel.
 - Usually less than 2 years of experience being a professional designer.
-- WEB: Can write basic HTML/CSS with guidance.
-- MOBILE: Can create prototypes w/ static screens.
 
 ## Designer
 
 - Work is reviewed with the occasional need for material direction or implementation changes.
 - Works mostly on tightly scoped features, individual screens, or small problems with another designer.
 - Usually at least 2-5 years of experience being a professional designer.
-- WEB: Fully capable of writing modern HTML/CSS.
-- MOBILE: Can create basic prototypes demonstrating interactions and animations.
 
 ## Senior Designer
 
@@ -27,8 +23,6 @@ These criteria chiefly examine the scope of work someone is capable of tackling 
 - Can run point on small batch projects, taking them from concept to shipping as the sole designer (alongside a engineer).
 - Can occasionally run point on large batch projects, sometimes with assistance.
 - Usually at least 5-8 years of experience being a professional designer.
-- WEB: Fully capable of writing modern HTML/CSS and basic proficiency in Javascript.
-- MOBILE: Can create detailed interactive prototypes demonstrating flows, interactions, and animations.
 
 ## Lead Designer
 
@@ -39,8 +33,6 @@ These criteria chiefly examine the scope of work someone is capable of tackling 
 - Makes regular, material contributions to the look-and-feel of our general aesthetic and brand.
 - Usually at least 8-12 years of experience being a professional designer.
 - Typically at least 3-5 years experience at Jesus Film internalizing how we work.
-- WEB: Fully capable of writing modern HTML/CSS/JS + the ability to make moderate progress in Rails.
-- MOBILE: Can create detailed interactive prototypes demonstrating flows, interactions, and animations.
 
 ## Principal Designer
 
@@ -52,7 +44,3 @@ These criteria chiefly examine the scope of work someone is capable of tackling 
 - Completely comfortable discussing complex application logic with engineers.
 - Usually at least 12-15+ years of experience being a professional designer.
 - Typically at least 5-7 years experience at Jesus Film internalizing how we work.
-- WEB: Fully capable of writing their own HTML/CSS/JS + the ability to make significant progress in Rails.
-- WEB: Can spin up new Rails apps from scratch, and make initial progress without outside help.
-- MOBILE: Can create detailed interactive prototypes demonstrating flows, interactions, and animations.
-- MOBILE: Can work in native environments and put together their own app from scratch.

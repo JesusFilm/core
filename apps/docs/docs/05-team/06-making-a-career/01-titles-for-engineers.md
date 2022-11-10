@@ -31,18 +31,17 @@ It should also be noted that these criteria chiefly examine the scope of work so
 ## Lead Engineer
 
 - Work happens completely autonomously with no regular need for review.
-- Fully capable of owning and running entire subsystems of work (Queenbee expert, Action Cable implementation).
+- Fully capable of owning and running entire subsystems of work.
 - Helps set and maintain professional standards for the entire organization.
 - Deep, substantial expertise in multiple programming environments.
 - Capable of running and directing small teams for substantial projects.
-- Capable of executing projects across multiple domains (say, native app that needs API backend).
+- Capable of executing projects across multiple domains (say, mobile web app that needs API backend).
 - Usually at least 8-12 years of experience being a professional engineer in the specific domain.
 
 ## Principal Engineer
 
-- Can set and direct an entire department, like SIP, Core Product, or Research & Fidelity.
-- Fully capable of designing, owning, and running entirely new, novel systems (design billing systems, Trix, Active Record from scratch)
+- Can set and direct an entire department.
+- Fully capable of designing, owning, and running entirely new, novel systems.
 - Capable of running and directing larger teams for large, long-running projects.
-- Recognized widely in the industry for material contributions to the state of the art.
 - Invents new concepts, pushes the whole organization forward regularly.
 - Usually at least 12-15+ years of experience being a professional engineer in the specific domain.
