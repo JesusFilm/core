@@ -1,19 +1,41 @@
 # What We Stand For
 
-## Sharing the story of Jesus
-
 We want everyone, everywhere to encounter Jesus. We believe film is the most dynamic way to hear and see the greatest story ever lived -- so we are driven to bring Christ-centered video to the ends of the earth. More than 490 million people have come to Jesus after watching these films! We’ve set an ambitious goal of **reaching 1 billion unreached people annually by 2025**, but we need your help. You, your work, your ideas, your faith, will be a critical element that makes this goal a reality!
 
 ## Values
 
 Before anything else, values come first. Without clear, shared values, we wander independently and contradict one another. Everything’s harder when we all believe different things about what’s important to _us_, our team.
 
-Key values:
+### Who we are
 
-- **Be Straightforward.** Whenever we speak - internally or externally - we should speak plainly and clearly. Watch out for lingo, assumptions, exaggeration, or other things that get in the way of a straightforward explanation. This doesn’t mean we strip the poetry and personal expression from our language, but it’s got to make sense. With the exception of deep technical discussions, anyone who reads what we collectively write should simply get it without further explanation required. Don’t use eight words when five will do.
+- **We honor Christ and our teammates with integrity.**
+  If we live with integrity, nothing else matters. If we don't live with integrity, nothing else matters. This creates openness and trust. It is related to how you treat people driving us to have honesty in our conversations, showing that we value their feelings. This kind of grace and truth builds trust within our team.
 
-- **Be fair and do the right thing.** What’s fair? What’s the right thing? We all have to use our best judgment, and everyone’s judgment varies, but a good rule of thumb is "what would you do for a friend or a neighbor if they asked for help?" An example might be being someone who says ’Sure we can do that for you’ when a user expected you to say ’sorry, we can’t.’ If the request is reasonable, grant it. At the same time, saying no is sometimes the right thing! If that’s the case, don’t feel badly about it.
+  > The Word became flesh and made his dwelling among us. We have seen his glory, the glory of the one and only Son, who came from the Father, full of grace and truth. - John 1:14
 
-- **Levelheadedness**. We should be calm, considered, and thoughtful in our dealings with each other and the world at large. We don’t act out of spite, we don’t rush to judgment, we don’t jump to conclusions. If someone disagrees with us or attacks us we listen, we think, and we respond calmly and clearly - directly addressing the idea or the situation, not the personality or the pressure.
+- **We always bring our best.**
+  Excellence honors God and inspires people.
 
-- **Generosity.** Generosity is a wonderful virtue. Being generous is surprising someone on the other end with goodwill and asking for nothing in return. It could be time, attention, or treasure - we give what we’re expected to, and then some.
+  > So whether you eat or drink or whatever you do, do it all for the glory of God. - 1 Corinthians 10:31
+
+- **We are faith-filled, big-thinking, bet-the-farm risk takers.**
+  We'll never insult God with small thinking and safe living because God owns all the farms. We should be willing to fail, test, learn and repeat.
+
+- **We are fearlessly unconventional to reach people who don’t know Christ.**
+  In order to reach people no one is reaching, we'll have to do things no one is doing. We are called to reach people who don’t know Christ. It is who we are.
+
+### How we do it
+
+- **We do things WITH partners in the field, not on our OWN for the field.**
+  Partners are saying "don't do anything for us without us".
+
+- **We choose our partners’ success and ministry success over Organizational brand success.**
+  Our partners aren’t doing this for us, their ministry success is ultimately our success, so we help them without imposing our needs on their efforts.
+
+- **We don’t get stuck because of edge cases and what we did before. We prioritize solving today’s real problems for customers.**
+  We are willing to be driven by the real needs of today’s audiences.
+
+- **We give up things we love for things we love even more.**
+  It's an honor to sacrifice for Christ and His church. We are passionate about this, as such it should not feel like a sacrifice. We can fall in love with our piece of the work, but we've got to be willing to let go when others show us a better way.
+
+  > Therefore if you have any encouragement from being united with Christ, if any comfort from his love, if any common sharing in the Spirit, if any tenderness and compassion, then make my joy complete by being like-minded, having the same love, being one in spirit and of one mind. - Philippians 2:1-2
