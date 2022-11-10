@@ -2,7 +2,7 @@
 
 ## Meetups
 
-Twice a year, our team gathers at a ministry hub for a week. Your first meet-up will be overwhelming; there are a lot of people to meet, most or all of whom you’ve only chatted with virtually. People tend to arrive on the Sunday before the meet-up, but ’campers who travel longer distances arrive earlier to beat the jet lag. Jesus Film books accomodation nearby, so you don’t need to worry about finding a place to stay.
+Once a year, our team gathers at a ministry hub for a week. Your first meet-up will be overwhelming; there are a lot of people to meet, most or all of whom you’ve only chatted with virtually. People tend to arrive on the Sunday before the meet-up, but ’campers who travel longer distances arrive earlier to beat the jet lag. Jesus Film books accomodation nearby, so you don’t need to worry about finding a place to stay.
 
 Every morning, we gather for breakfast at 8am, and sessions start around 9am. The meet-up is not structured. There are some scheduled talks - Marc and Aaron generally talk about the state of the organization on Monday or Tuesday morning, and other Jesus Filmers may want to give a talk about a special circumstance they’ve seen in the past 6 months. Occasionally, we bring in outside speakers, too. But, day-to-day, the meet-up is very loosely scheduled. Teams work together in a room at the office; people go out for coffee or ice cream; managers schedule one-on-ones with employees.
 

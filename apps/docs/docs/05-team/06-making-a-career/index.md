@@ -4,7 +4,7 @@ Advancing your career at Jesus Film doesn’t mean giving up on your craft. Whet
 
 Within each of our job functions, we’ve mapped our trajectory of mastery to five different levels. That title structure is shared amongst all departments, but the particulars of what characterizes one level from another will of course be different. Here’s an example of the titles for product engineering:
 
-- Graduate Product Engineer
+- Junior Product Engineer
 - Product Engineer
 - Senior Product Engineer
 - Lead Product Engineer

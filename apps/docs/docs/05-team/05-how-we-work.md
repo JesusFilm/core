@@ -16,17 +16,23 @@ In between each cycle, we spend two weeks cooling down. That’s the time to dea
 
 It’s hard to keep up on what everyone is doing and what it means, if you just watch the stream of latest activity scrolling along in Basecamp. (It’s also a waste of time and source of stress to even try.) Instead, we have four chief mechanisms for keeping everyone in the loop about the work that’s going on.
 
-First, there’s the daily question of What did you work on today?, which supplies the nitty gritty details, but as a personal narrative. They’re a great conversation starter if you see someone working on something you either care about or want to learn more about. Please do use them as such! You’re obliged to answer this question at least twice a week when you’re not out.
+First, there’s the daily questions of:
 
-Second, there’s the weekly question of What will you be working on this week?, which details your intentions for the coming week. Everyone is obliged to answer this question when they’re not out.
+- How do you feel today?
+- What have you done since yesterday?
+- What will you do today?
 
-Third, there are the heartbeats. These are the team versions of What did you work on this cycle? This is where we summarize and celebrate the work that’s been done. Every team lead is obliged to write, or designate someone on the team to write, this account one week after a cycle has ended.
+These supply the nitty gritty details, but as a personal narrative. They’re a great conversation starter if you see someone working on something you either care about or want to learn more about. Please do use them as such! You’re obliged to answer this question at least twice a week when you’re not out.
 
-Fourth, and finally, there are the kickoffs. These are the team version of What are you going to work on next cycle? This is where the plan for the coming four weeks is presented. Every team lead is obliged to write, or designate someone on the team to write, this account before the start of the new cycle.
+Daily questions are asked on our Slack by [Geekbot](https://geekbot.com/) to all members of the #sol-team-stand-up channel. Geekbot will automatically ask you these questions at 10am in your local timezome and post your answers into our stand up channel.
+
+Secondly, there are the heartbeats. These are the team versions of What did you work on this cycle? This is where we summarize and celebrate the work that’s been done. Every team lead is obliged to write, or designate someone on the team to write, this account one week after a cycle has ended.
+
+Third, and finally, there are the kickoffs. These are where the plan for the coming cycle is presented. Every team lead is obliged to write, or designate someone on the team to write, this account before the start of the new cycle.
 
 These mechanisms work together to free individuals and teams to run their days and cycles with confidence and independence. We have ten opportunities per year to make big decisions about what to work on, and the rest of the time should chiefly be spent carrying out those short-term plans. By having clear expectations for communication, it’s easier for everyone to build trust in where we’re going and why.
 
-All these questions and write-ups will be posted in the What Works project for the current year.
+Heartbeats and Kickoffs will be posted in the [JFP Solutions Team](https://3.basecamp.com/3105655/projects/23266566) project.
 
 ## Pitches
 
