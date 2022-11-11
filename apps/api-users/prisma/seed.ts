@@ -23,7 +23,8 @@ async function main(): Promise<void> {
           },
           ['_key', '_id', '_rev']
         ) as User
-    )
+    ),
+    skipDuplicates: true
   })
 }
 main().catch((e) => {
