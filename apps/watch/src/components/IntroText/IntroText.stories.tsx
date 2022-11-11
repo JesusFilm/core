@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { Meta, Story } from '@storybook/react'
 import { watchConfig } from '../../libs/storybook'
 import { IntroText } from './IntroText'
@@ -11,7 +12,15 @@ const HomeHeroStory = {
   }
 }
 
-const Template: Story = () => <IntroText />
+const Template: Story = () => (
+  <Box
+    sx={{
+      backgroundColor: '#26262E'
+    }}
+  >
+    <IntroText />
+  </Box>
+)
 
 export const Default = Template.bind({})
 
