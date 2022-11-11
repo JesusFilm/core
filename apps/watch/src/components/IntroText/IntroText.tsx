@@ -42,7 +42,7 @@ export function IntroText(): ReactElement {
           <Typography
             variant="subtitle1"
             color="secondary.contrastText"
-            sx={{ opacity: 0.85 }}
+            sx={{ opacity: 0.8 }}
           >
             Jesus Film Project is a Christian ministry with a vision to reach
             the world with the gospel of Jesus Christ through evangelistic
