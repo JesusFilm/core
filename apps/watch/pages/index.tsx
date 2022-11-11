@@ -9,6 +9,7 @@ import { HomeVideo, HomeVideos } from '../src/components/HomeVideos'
 import { FilmType } from '../src/components/HomeVideos/Card'
 import { createApolloClient } from '../src/libs/client'
 import { GetHomeVideo } from '../__generated__/GetHomeVideo'
+import { IntroText } from '../src/components/IntroText'
 
 export const GET_HOME_VIDEO = gql`
   query GetHomeVideo($id: ID!, $languageId: ID) {
@@ -66,6 +67,7 @@ function HomePage({ data }: HomePageProps): ReactElement {
       <Box sx={{ paddingY: '4rem' }}>
         <HomeVideos data={data?.map(({ video }) => video)} videos={videos} />
       </Box>
+      <IntroText />
     </PageWrapper>
   )
 }
