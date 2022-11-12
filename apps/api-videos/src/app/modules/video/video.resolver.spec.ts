@@ -29,6 +29,7 @@ describe('VideoResolver', () => {
       useFactory: () => ({
         filterAll: jest.fn(() => [video, video]),
         filterEpisodes: jest.fn(() => [video, video]),
+        getVideosByIds: jest.fn(() => [video, video]),
         getVideo: jest.fn(() => video)
       })
     }

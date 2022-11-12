@@ -31,18 +31,36 @@ describe('action', () => {
       expect(nextActiveBlock).toHaveBeenCalledWith({ id: 'block-id' })
     })
 
-    it('should handle NavigateToJourneyAction', () => {
+    it('should navigate to journey with same RTL on NavigateToJourneyAction', () => {
       handleAction(router, {
         __typename: 'NavigateToJourneyAction',
         parentBlockId: 'parent-id',
         journey: {
           __typename: 'Journey',
           id: 'journey-id',
-          slug: 'journey-slug'
+          slug: 'journey-slug',
+          language: { __typename: 'Language', bcp47: 'en' }
         },
         gtmEventName: null
       })
       expect(router.push).toHaveBeenCalledWith('/journey-slug')
+    })
+
+    it('should navigate on journey with different RTL on NavigateToJourneyAction', () => {
+      window.open = jest.fn()
+
+      handleAction(router, {
+        __typename: 'NavigateToJourneyAction',
+        parentBlockId: 'parent-id',
+        journey: {
+          __typename: 'Journey',
+          id: 'journey-id',
+          slug: 'journey-slug',
+          language: { __typename: 'Language', bcp47: 'ar' }
+        },
+        gtmEventName: null
+      })
+      expect(window.open).toHaveBeenCalledWith('/journey-slug', '_self')
     })
 
     it('should handle NavigateToJourneyAction when journey is null', () => {

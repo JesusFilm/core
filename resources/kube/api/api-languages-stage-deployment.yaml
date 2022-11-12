@@ -20,9 +20,9 @@ spec:
       nodeSelector:
         type: api
       containers:
-        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-languages:stage
+        - image: 894231352815.dkr.ecr.us-east-2.amazonaws.com/jfp-api-languages-stage:latest
           imagePullPolicy: IfNotPresent
-          name: jfp-api-languages
+          name: jfp-api-languages-stage
           ports:
             - containerPort: 4003
           envFrom:

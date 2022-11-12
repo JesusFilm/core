@@ -58,10 +58,12 @@ export enum IconColor {
  * IconName is equivalent to the icons found in @mui/icons-material
  */
 export enum IconName {
+  ArrowBackRounded = "ArrowBackRounded",
   ArrowForwardRounded = "ArrowForwardRounded",
   BeenhereRounded = "BeenhereRounded",
   ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
   CheckCircleRounded = "CheckCircleRounded",
+  ChevronLeftRounded = "ChevronLeftRounded",
   ChevronRightRounded = "ChevronRightRounded",
   ContactSupportRounded = "ContactSupportRounded",
   FormatQuoteRounded = "FormatQuoteRounded",
@@ -96,6 +98,19 @@ export enum JourneysReportType {
   multipleSummary = "multipleSummary",
   singleFull = "singleFull",
   singleSummary = "singleSummary",
+}
+
+export enum MessagePlatform {
+  facebook = "facebook",
+  instagram = "instagram",
+  line = "line",
+  skype = "skype",
+  snapchat = "snapchat",
+  telegram = "telegram",
+  tikTok = "tikTok",
+  viber = "viber",
+  vk = "vk",
+  whatsApp = "whatsApp",
 }
 
 export enum Role {
@@ -155,6 +170,24 @@ export enum VideoType {
   standalone = "standalone",
 }
 
+/**
+ * The status of a visitor according to team members interacting with the
+ * visitor admin interface. This enum should map to an emoji when displayed
+ * (names here match Apple's emoji name)
+ */
+export enum VisitorStatus {
+  checkMarkSymbol = "checkMarkSymbol",
+  partyPopper = "partyPopper",
+  prohibited = "prohibited",
+  redExclamationMark = "redExclamationMark",
+  redQuestionMark = "redQuestionMark",
+  robotFace = "robotFace",
+  star = "star",
+  thumbsDown = "thumbsDown",
+  thumbsUp = "thumbsUp",
+  warning = "warning",
+}
+
 export interface ButtonBlockCreateInput {
   color?: ButtonColor | null;
   id?: string | null;
@@ -178,6 +211,9 @@ export interface ButtonBlockUpdateInput {
 export interface ButtonClickEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
+  stepId?: string | null;
+  value?: string | null;
 }
 
 export interface CardBlockUpdateInput {
@@ -186,6 +222,13 @@ export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+}
+
+export interface ChatOpenEventCreateInput {
+  blockId: string;
+  id?: string | null;
+  stepId?: string | null;
+  value?: MessagePlatform | null;
 }
 
 export interface IconBlockCreateInput {
@@ -276,7 +319,10 @@ export interface RadioQuestionBlockCreateInput {
 export interface RadioQuestionSubmissionEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   radioOptionBlockId: string;
+  stepId?: string | null;
+  value?: string | null;
 }
 
 export interface SignUpBlockCreateInput {
@@ -297,6 +343,7 @@ export interface SignUpSubmissionEventCreateInput {
   email: string;
   id?: string | null;
   name: string;
+  stepId?: string | null;
 }
 
 export interface StepBlockUpdateInput {
@@ -307,6 +354,7 @@ export interface StepBlockUpdateInput {
 export interface StepViewEventCreateInput {
   blockId: string;
   id?: string | null;
+  value?: string | null;
 }
 
 export interface TextResponseBlockCreateInput {
@@ -329,6 +377,8 @@ export interface TextResponseBlockUpdateInput {
 export interface TextResponseSubmissionEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
+  stepId?: string | null;
   value: string;
 }
 
@@ -382,44 +432,65 @@ export interface VideoBlockUpdateInput {
 export interface VideoCollapseEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoCompleteEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoExpandEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoPauseEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoPlayEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoProgressEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
   progress: number;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideoStartEventCreateInput {
   blockId: string;
   id?: string | null;
+  label?: string | null;
   position?: number | null;
+  stepId?: string | null;
+  value?: VideoBlockSource | null;
 }
 
 export interface VideosFilter {
@@ -427,6 +498,18 @@ export interface VideosFilter {
   tagId?: string | null;
   title?: string | null;
   types?: VideoType[] | null;
+}
+
+/**
+ * A list of fields to update a visitor when calling the visitorUpdate mutation
+ */
+export interface VisitorUpdateInput {
+  email?: string | null;
+  messagePlatform?: MessagePlatform | null;
+  messagePlatformId?: string | null;
+  name?: string | null;
+  notes?: string | null;
+  status?: VisitorStatus | null;
 }
 
 //==============================================================

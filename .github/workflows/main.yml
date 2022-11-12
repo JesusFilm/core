@@ -158,6 +158,7 @@ jobs:
           storybookBuildDir: 'dist/storybook/shared-storybook'
           exitOnceUploaded: true,
           autoAcceptChanges: 'main'
-          onlyChanged: true
+          onlyChanged: 'true'
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
+          untraced: ${{ github.ref != 'refs/heads/main' && 'package.json,package-lock.json,.storybook/main.js,.storybook/preview.js,.storybook/preview-head.html,.storybook/static/*.js' }},
           traceChanged: 'expanded'

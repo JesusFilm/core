@@ -32,7 +32,7 @@ export function NavigationListItem({
       <ListItemButton
         onClick={handleClick}
         aria-selected={selected}
-        data-testId={`${label}-list-item`}
+        data-testid={`${label}-list-item`}
       >
         <ListItemIcon sx={{ color }}>{icon}</ListItemIcon>
         <ListItemText primary={label} sx={{ color }} />

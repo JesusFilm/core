@@ -64,6 +64,16 @@ const block: TreeBlock<RadioQuestionFields> = {
   ]
 }
 
+const activeBlock: TreeBlock<StepBlock> = {
+  __typename: 'StepBlock',
+  id: 'step.id',
+  parentBlockId: null,
+  parentOrder: 0,
+  locked: true,
+  nextBlockId: null,
+  children: []
+}
+
 describe('RadioQuestion', () => {
   it('should display the correct options', () => {
     const { getByText } = render(
@@ -77,11 +87,12 @@ describe('RadioQuestion', () => {
   })
 
   it('should select an option onClick', async () => {
+    activeBlockVar(activeBlock)
+
     const result = jest.fn(() => ({
       data: {
         radioQuestionSubmissionEventCreate: {
-          id: 'uuid',
-          radioOptionBlockId: 'RadioOption1'
+          id: 'uuid'
         }
       }
     }))
@@ -96,7 +107,10 @@ describe('RadioQuestion', () => {
                 input: {
                   id: 'uuid',
                   blockId: 'RadioQuestion1',
-                  radioOptionBlockId: 'RadioOption1'
+                  radioOptionBlockId: 'RadioOption1',
+                  stepId: 'step.id',
+                  label: 'Untitled',
+                  value: 'Option 1'
                 }
               }
             },
@@ -119,6 +133,8 @@ describe('RadioQuestion', () => {
   })
 
   it('should disable unselected options', async () => {
+    activeBlockVar(activeBlock)
+
     const { getByTestId, getAllByRole } = render(
       <MockedProvider
         mocks={[
@@ -129,15 +145,17 @@ describe('RadioQuestion', () => {
                 input: {
                   id: 'uuid',
                   blockId: 'RadioQuestion1',
-                  radioOptionBlockId: 'RadioOption1'
+                  radioOptionBlockId: 'RadioOption1',
+                  stepId: 'step.id',
+                  label: 'Untitled',
+                  value: 'Option 1'
                 }
               }
             },
             result: {
               data: {
                 radioQuestionSubmissionEventCreate: {
-                  id: 'uuid',
-                  radioOptionBlockId: 'RadioOption1'
+                  id: 'uuid'
                 }
               }
             }
@@ -184,15 +202,6 @@ describe('RadioQuestion', () => {
   })
 
   it('should add radio submission to dataLayer', async () => {
-    const activeBlock: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'Step1',
-      parentBlockId: null,
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      children: []
-    }
     activeBlockVar(activeBlock)
     treeBlocksVar([activeBlock])
 
@@ -206,15 +215,17 @@ describe('RadioQuestion', () => {
                 input: {
                   id: 'uuid',
                   blockId: 'RadioQuestion1',
-                  radioOptionBlockId: 'RadioOption1'
+                  radioOptionBlockId: 'RadioOption1',
+                  stepId: 'step.id',
+                  label: 'Step {{number}}',
+                  value: 'Option 1'
                 }
               }
             },
             result: {
               data: {
                 radioQuestionSubmissionEventCreate: {
-                  id: 'uuid',
-                  radioOptionBlockId: 'RadioOption1'
+                  id: 'uuid'
                 }
               }
             }

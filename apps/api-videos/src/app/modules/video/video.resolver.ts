@@ -52,6 +52,7 @@ export class VideoResolver {
     const variantLanguageId = info.fieldNodes[0].selectionSet.selections
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
+
     return await this.videoService.filterAll({
       title: where?.title ?? undefined,
       tagId: where?.tagId ?? undefined,

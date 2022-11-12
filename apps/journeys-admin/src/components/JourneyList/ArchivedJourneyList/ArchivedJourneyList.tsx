@@ -2,6 +2,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import { gql, useMutation, useQuery } from '@apollo/client'
+import { Dialog } from '@core/shared/ui/Dialog'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 import { useSnackbar } from 'notistack'
@@ -9,7 +10,6 @@ import { AuthUser } from 'next-firebase-auth'
 import { GetArchivedJourneys } from '../../../../__generated__/GetArchivedJourneys'
 import { JourneyCard } from '../JourneyCard'
 import { SortOrder } from '../JourneySort'
-import { Dialog } from '../../Dialog'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 
 export const GET_ARCHIVED_JOURNEYS = gql`
@@ -238,7 +238,7 @@ export function ArchivedJourneyList({
       )}
       <Dialog
         open={openRestoreAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: t('Unarchive Journeys'),
           closeButton: true
@@ -257,7 +257,7 @@ export function ArchivedJourneyList({
       </Dialog>
       <Dialog
         open={openTrashAll ?? false}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{
           title: t('Trash Journeys'),
           closeButton: true

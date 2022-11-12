@@ -37,10 +37,16 @@ export interface SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockActio
   blockId: string;
 }
 
+export interface SignUpBlockCreate_signUpBlockUpdate_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface SignUpBlockCreate_signUpBlockUpdate_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: SignUpBlockCreate_signUpBlockUpdate_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface SignUpBlockCreate_signUpBlockUpdate_action_NavigateToJourneyAction {

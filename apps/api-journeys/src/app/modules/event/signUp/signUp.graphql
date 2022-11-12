@@ -4,16 +4,42 @@ input SignUpSubmissionEventCreateInput {
   """
   id: ID
   blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  name from the signUpBlock form
+  """
   name: String!
+  """
+  email from the signUpBlock form
+  """
   email: String!
 }
 
 type SignUpSubmissionEvent implements Event {
   id: ID!
-  userId: ID!
-  name: String!
-  email: String!
-  block: SignUpBlock
+  """
+  ID of the journey that the block belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  null for signUpSubmissionEvent
+  """
+  label: String
+  """
+  name from the signUpBlock form
+  """
+  value: String
+  """
+  email from the signUpBlock form
+  """
+  email: String
 }
 
 extend type Mutation {

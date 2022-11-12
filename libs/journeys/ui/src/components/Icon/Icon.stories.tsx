@@ -4,14 +4,19 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import Container from '@mui/material/Container'
 import {
+  JourneyFields as Journey,
+  JourneyFields_language as Language
+} from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import {
   IconName,
   IconSize,
-  IconColor
+  IconColor,
+  ThemeName,
+  ThemeMode
 } from '../../../__generated__/globalTypes'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import type { TreeBlock } from '../../libs/block'
-import { IconFields } from './__generated__/IconFields'
 import { Icon } from '.'
 
 const IconDemo = {
@@ -21,33 +26,49 @@ const IconDemo = {
   title: 'Journeys-Ui/Icon'
 }
 
-interface IconStoryProps extends TreeBlock<IconFields> {
-  variants: string[]
-}
-
-const VariantTemplate: Story<IconStoryProps> = ({ ...args }) => (
-  <Container>
-    <Grid container spacing={6} columns={{ xs: 4, sm: 8, md: 12 }}>
-      {args.variants.map((variant, i) => (
-        <Grid
-          container
-          item
-          key={i}
-          xs={2}
-          sm={4}
-          md={4}
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Icon {...args} iconName={variant as IconName} />
-          <Typography mt={1} variant="caption">{`${variant}`}</Typography>
-        </Grid>
-      ))}
-    </Grid>
-  </Container>
+const VariantTemplate: Story<
+  Parameters<typeof Icon>[0] & { variants: IconName[]; language: Language }
+> = ({ ...args }) => (
+  <JourneyProvider
+    value={{
+      journey: {
+        id: 'journeyId',
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base,
+        language: args.language
+      } as unknown as Journey
+    }}
+  >
+    <Container>
+      <Grid container spacing={6} columns={{ xs: 4, sm: 8, md: 12 }}>
+        {args.variants.map((variant, i) => (
+          <Grid
+            container
+            item
+            key={i}
+            xs={2}
+            sm={4}
+            md={4}
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Icon {...args} iconName={variant} />
+            <Typography mt={1} variant="caption">{`${
+              variant === IconName.ArrowBackRounded
+                ? 'ArrowLeftRounded'
+                : variant === IconName.ArrowForwardRounded
+                ? 'ArrowRightRounded'
+                : variant
+            }`}</Typography>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
+  </JourneyProvider>
 )
 
+// Add ArrowBackRounded, ChevronLeftRounded
 export const Variant = VariantTemplate.bind({})
 Variant.args = {
   __typename: 'IconBlock',
@@ -55,10 +76,12 @@ Variant.args = {
   iconSize: IconSize.lg,
   variants: [
     IconName.ArrowForwardRounded,
+    IconName.ArrowBackRounded,
     IconName.BeenhereRounded,
     IconName.ChatBubbleOutlineRounded,
     IconName.CheckCircleRounded,
     IconName.ChevronRightRounded,
+    IconName.ChevronLeftRounded,
     IconName.ContactSupportRounded,
     IconName.FormatQuoteRounded,
     IconName.LiveTvRounded,
@@ -69,10 +92,25 @@ Variant.args = {
     IconName.SendRounded,
     IconName.SubscriptionsRounded,
     IconName.TranslateRounded
-  ]
+  ],
+  language: {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  }
 }
 
-const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
+const ColorTemplate: Story<
+  Parameters<typeof Icon>[0] & { variants: IconColor[] }
+> = ({ ...args }) => (
   <Container>
     {args.variants.map((variant, i) => (
       <Box
@@ -84,7 +122,7 @@ const ColorTemplate: Story<IconStoryProps> = ({ ...args }) => (
         }}
       >
         <Typography>{`${variant}`}</Typography>
-        <Icon {...args} iconColor={variant as IconColor} />
+        <Icon {...args} iconColor={variant} />
       </Box>
     ))}
   </Container>
@@ -105,7 +143,9 @@ Color.args = {
   ]
 }
 
-const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
+const SizeTemplate: Story<
+  Parameters<typeof Icon>[0] & { variants: IconSize[] }
+> = ({ ...args }) => (
   <Container>
     {args.variants.map((variant, i) => (
       <Box
@@ -117,7 +157,7 @@ const SizeTemplate: Story<IconStoryProps> = ({ ...args }) => (
         }}
       >
         <Typography>{`${variant}`}</Typography>
-        <Icon {...args} iconSize={variant as IconSize} />
+        <Icon {...args} iconSize={variant} />
       </Box>
     ))}
   </Container>
@@ -136,6 +176,24 @@ Size.args = {
     IconSize.lg,
     IconSize.xl
   ]
+}
+
+export const RTL = VariantTemplate.bind({})
+RTL.args = {
+  ...Variant.args,
+  language: {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'ar',
+    iso3: 'arb',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'Arabic',
+        primary: false
+      }
+    ]
+  }
 }
 
 export default IconDemo as Meta

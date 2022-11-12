@@ -1,251 +1,250 @@
 import { ReactElement } from 'react'
+import { GetStaticProps } from 'next'
 import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Grid from '@mui/material/Grid'
-import Typography from '@mui/material/Typography'
-import { useQuery, gql } from '@apollo/client'
-import Stack from '@mui/material/Stack'
-import IconButton from '@mui/material/IconButton'
-import InputAdornment from '@mui/material/InputAdornment'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import Search from '@mui/icons-material/Search'
-import Button from '@mui/material/Button'
-import Language from '@mui/icons-material/Language'
-import Place from '@mui/icons-material/Place'
-import Link from 'next/link'
-import Chip from '@mui/material/Chip'
+import { gql } from '@apollo/client'
 
-import { VideoList } from '../src/components/Videos/VideoList/VideoList'
+import { HomeHero } from '../src/components/Hero'
 import { PageWrapper } from '../src/components/PageWrapper'
-import { GetVideoTag } from '../__generated__/GetVideoTag'
-import { VideoType } from '../__generated__/globalTypes'
-import { theme } from '../src/components/ThemeProvider/ThemeProvider'
-import {
-  LanguageProvider,
-  useLanguage
-} from '../src/libs/languageContext/LanguageContext'
-import { Footer } from '../src/components/Footer/Footer'
+import { HomeVideo, HomeVideos } from '../src/components/HomeVideos'
+import { FilmType } from '../src/components/HomeVideos/Card'
+import { createApolloClient } from '../src/libs/client'
+import { GetHomeVideo } from '../__generated__/GetHomeVideo'
+import { IntroText } from '../src/components/IntroText'
 
-export const GET_VIDEO_TAG = gql`
-  query GetVideoTag($id: ID!, $languageId: ID) {
-    videoTag(id: $id) {
+export const GET_HOME_VIDEO = gql`
+  query GetHomeVideo($id: ID!, $languageId: ID) {
+    video(id: $id) {
       id
+      type
+      image
       title(languageId: $languageId, primary: true) {
         value
       }
-    }
-    videoTags {
-      id
-      title(languageId: $languageId, primary: true) {
+      variant {
+        duration
+      }
+      episodeIds
+      slug(languageId: $languageId, primary: true) {
         value
       }
     }
   }
 `
 
-function VideoPage(): ReactElement {
-  const languageContext = useLanguage()
-  const { data: jfm1Data } = useQuery<GetVideoTag>(GET_VIDEO_TAG, {
-    variables: {
-      id: 'JFM1',
-      languageId: languageContext?.id ?? '529'
-    }
-  })
+export const videos: HomeVideo[] = [
+  {
+    id: '1_jf-0-0',
+    designation: FilmType.feature
+  },
+  { id: '2_GOJ-0-0', designation: FilmType.feature },
+  { id: '1_jf6119-0-0', designation: FilmType.feature },
+  { id: '1_wl604423-0-0', designation: FilmType.feature },
+  { id: 'MAG1', designation: FilmType.feature },
+  { id: '1_wl7-0-0', designation: FilmType.series },
+  { id: '3_0-8DWJ-WIJ_06-0-0', designation: FilmType.feature },
+  { id: '2_Acts-0-0', designation: FilmType.feature },
+  { id: '2_GOJ4904-0-0', designation: FilmType.feature },
+  // TODO: LUMO collection goes here
+  { id: '2_Acts7331-0-0', designation: FilmType.feature },
+  { id: '3_0-8DWJ-WIJ', designation: FilmType.feature },
+  { id: '2_ChosenWitness', designation: FilmType.animation },
+  // TODO: LUMO collection gospel of luke here
+  { id: '1_cl1309-0-0', designation: FilmType.feature },
+  { id: '1_jf6102-0-0', designation: FilmType.feature },
+  { id: '2_0-FallingPlates', designation: FilmType.series },
+  { id: '2_Acts7345-0-0', designation: FilmType.feature },
+  { id: '1_mld-0-0', designation: FilmType.feature },
+  { id: '1_jf6101-0-0', designation: FilmType.feature }
+]
+
+interface HomePageProps {
+  data: GetHomeVideo[]
+}
+
+function HomePage({ data }: HomePageProps): ReactElement {
   return (
-    <LanguageProvider>
-      <PageWrapper />
-      <Box
-        sx={{ backgroundImage: 'url(/images/jesus-header.png)', height: 776 }}
-      >
-        <Container
-          maxWidth="xl"
-          style={{
-            paddingTop: 350,
-            textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)',
-            paddingLeft: 100,
-            paddingRight: 100,
-            margin: 0
-          }}
-        >
-          <Stack direction="row" justifyContent="space-between" width="100%">
-            <Box>
-              <Typography
-                variant="h2"
-                color={theme.palette.secondary.contrastText}
-                sx={{ whiteSpace: 'nowrap' }}
-              >
-                Until Everyone
-              </Typography>
-              <Typography
-                variant="h2"
-                color={theme.palette.secondary.contrastText}
-                sx={{ whiteSpace: 'nowrap' }}
-              >
-                <u style={{ textDecorationColor: theme.palette.primary.main }}>
-                  Sees Jesus
-                </u>
-                .
-              </Typography>
-            </Box>
-            <Typography
-              variant="h6"
-              color={theme.palette.secondary.contrastText}
-              sx={{ opacity: 0.7, whiteSpace: 'nowrap' }}
-            >
-              The story of the gospel in 78 videos in 1800 languages.
-            </Typography>
-          </Stack>
-        </Container>
-        <Box
-          sx={{ backgroundColor: 'rgba(18, 17, 17, 0.25)' }}
-          width="100%"
-          height="133px"
-          mt="165px"
-        >
-          <Stack pt="34px" mx="100px" width="100%" direction="row">
-            <OutlinedInput
-              sx={{
-                backgroundColor: '#F0F0F0',
-                height: 64,
-                width: 'calc(100vw - 600px)'
-              }}
-              placeholder="Keyword, Country or Language"
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton edge="end">
-                    <Search />
-                  </IconButton>
-                </InputAdornment>
-              }
-            />
-            <Stack direction="row">
-              <Button
-                variant="outlined"
-                size="large"
-                sx={{
-                  background: 'transparent',
-                  color: theme.palette.primary.contrastText,
-                  borderColor: theme.palette.primary.contrastText,
-                  height: 62,
-                  marginX: 2
-                }}
-              >
-                <Language />
-                &nbsp;{languageContext?.name[0].value}
-              </Button>
-              <Link href="/countries" passHref>
-                <Button
-                  variant="outlined"
-                  size="large"
-                  sx={{
-                    background: 'transparent',
-                    color: theme.palette.primary.contrastText,
-                    borderColor: theme.palette.primary.contrastText,
-                    height: 62
-                  }}
-                >
-                  <Place />
-                  &nbsp;Language by country
-                </Button>
-              </Link>
-            </Stack>
-          </Stack>
-        </Box>
-      </Box>
-
+    <PageWrapper hero={<HomeHero />}>
       <Box sx={{ paddingY: '4rem' }}>
-        <Container
-          sx={{
-            maxWidth: '100% !important',
-            width: '100%',
-            margin: 0,
-            paddingLeft: '100px !important',
-            paddingRight: '100px !important'
-          }}
-        >
-          <Stack direction="row" justifyContent="space-between" mb={3}>
-            <Typography variant="h4">Series</Typography>
-            <Button variant="outlined">See All</Button>
-          </Stack>
-          <VideoList
-            filter={{
-              availableVariantLanguageIds: ['529'],
-              types: [VideoType.playlist]
-            }}
-            limit={6}
-            showLoadMore={false}
-            layout="carousel"
-          />
-        </Container>
+        <HomeVideos data={data?.map(({ video }) => video)} videos={videos} />
       </Box>
-
-      <Box sx={{ paddingY: '3rem' }}>
-        <Container
-          sx={{
-            maxWidth: '100% !important',
-            width: '100%',
-            margin: 0,
-            paddingLeft: '100px !important',
-            paddingRight: '100px !important'
-          }}
-        >
-          <Stack direction="row" justifyContent="space-between" mb={3}>
-            <Typography variant="h4">
-              {jfm1Data?.videoTag?.title[0]?.value}
-            </Typography>
-            <Button variant="outlined">See All</Button>
-          </Stack>
-          <VideoList
-            filter={{
-              availableVariantLanguageIds: ['529'],
-              types: [VideoType.playlist, VideoType.standalone],
-              tagId: 'JFM1'
-            }}
-            limit={6}
-            showLoadMore={false}
-            layout="carousel"
-          />
-        </Container>
-      </Box>
-
-      <Box sx={{ bgcolor: theme.palette.secondary.light, paddingY: '3rem' }}>
-        <Container
-          sx={{
-            maxWidth: '100% !important',
-            width: '100%',
-            margin: 0,
-            paddingLeft: '100px !important',
-            paddingRight: '100px !important'
-          }}
-        >
-          <Typography variant="h4" color="secondary">
-            Collections
-          </Typography>
-          <Grid
-            container
-            spacing={2}
-            direction="row"
-            justifyContent="start"
-            alignItems="center"
-            sx={{ paddingY: '1rem' }}
-          >
-            {jfm1Data?.videoTags?.map((item) => (
-              <Grid item key={item.id}>
-                <Link href={`/videos/t/${item.id}`} passHref>
-                  <Chip
-                    label={item.title[0]?.value}
-                    variant="outlined"
-                    color="primary"
-                  />
-                </Link>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-      <Footer isHome />
-    </LanguageProvider>
+      <IntroText />
+    </PageWrapper>
   )
 }
 
-export default VideoPage
+export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
+  const apolloClient = createApolloClient()
+  // unfortunately we have to grab videos individually. Getting them in batch causes out of memory issues
+  // TODO: replace once we migrate off arangodb
+  const { data: video0 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[0].id,
+      languageId: '529'
+    }
+  })
+  const { data: video1 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[1].id,
+      languageId: '529'
+    }
+  })
+  const { data: video2 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[2].id,
+      languageId: '529'
+    }
+  })
+  const { data: video3 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[3].id,
+      languageId: '529'
+    }
+  })
+  const { data: video4 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[4].id,
+      languageId: '529'
+    }
+  })
+  const { data: video5 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[5].id,
+      languageId: '529'
+    }
+  })
+  const { data: video6 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[6].id,
+      languageId: '529'
+    }
+  })
+  const { data: video7 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[7].id,
+      languageId: '529'
+    }
+  })
+  const { data: video8 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[8].id,
+      languageId: '529'
+    }
+  })
+  const { data: video9 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[9].id,
+      languageId: '529'
+    }
+  })
+  const { data: video10 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[10].id,
+      languageId: '529'
+    }
+  })
+  const { data: video11 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[11].id,
+      languageId: '529'
+    }
+  })
+  const { data: video12 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[12].id,
+      languageId: '529'
+    }
+  })
+  const { data: video13 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[13].id,
+      languageId: '529'
+    }
+  })
+  const { data: video14 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[14].id,
+      languageId: '529'
+    }
+  })
+  const { data: video15 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[15].id,
+      languageId: '529'
+    }
+  })
+  const { data: video16 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[16].id,
+      languageId: '529'
+    }
+  })
+  const { data: video17 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[17].id,
+      languageId: '529'
+    }
+  })
+  const { data: video18 } = await apolloClient.query<GetHomeVideo>({
+    query: GET_HOME_VIDEO,
+    variables: {
+      id: videos[12].id,
+      languageId: '529'
+    }
+  })
+  const data = [
+    video0,
+    video1,
+    video2,
+    video3,
+    video4,
+    video5,
+    video6,
+    video7,
+    video8,
+    video9,
+    video10,
+    video11,
+    video12,
+    video13,
+    video14,
+    video15,
+    video16,
+    video17,
+    video18
+  ]
+
+  if (data.find((item) => item.video == null) == null) {
+    return {
+      props: {
+        data
+      },
+      revalidate: 60
+    }
+  } else {
+    return {
+      props: {
+        data
+      },
+      revalidate: 60
+    }
+  }
+}
+export default HomePage

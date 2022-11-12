@@ -8,10 +8,10 @@ import type { TreeBlock } from '../../libs/block'
 import { handleAction } from '../../libs/action'
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
-export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
+interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   selected?: boolean
   disabled?: boolean
-  onClick?: (selected: string) => void
+  onClick?: (selectedId: string, selectedLabel: string) => void
   editableLabel?: ReactElement
 }
 
@@ -38,7 +38,7 @@ export function RadioOption({
   const router = useRouter()
 
   const handleClick = (): void => {
-    onClick?.(id)
+    onClick?.(id, label)
     handleAction(router, action)
   }
 
