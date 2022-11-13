@@ -46,6 +46,8 @@ export function VideoLibrary({
     }
   }, [selectedBlock, open])
 
+  console.log('regardless if card or video, show selected', selectedBlock)
+
   const handleChange = (
     _event: SyntheticEvent<Element, Event>,
     newValue: number
@@ -150,6 +152,7 @@ export function VideoLibrary({
           onClose={setOpenVideoDetails}
           onLibraryClose={onClose}
           onSelect={onSelect}
+          showChangeVideo
         />
       )}
     </>

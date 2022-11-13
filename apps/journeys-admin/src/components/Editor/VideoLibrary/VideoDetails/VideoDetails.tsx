@@ -8,7 +8,6 @@ import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
 import Close from '@mui/icons-material/Close'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded'
 import Button from '@mui/material/Button'
 import {
@@ -27,6 +26,7 @@ export interface VideoDetailsProps {
   onSelect: (block: VideoBlockUpdateInput) => void
   onLibraryClose?: () => void
   source: VideoBlockSource
+  showChangeVideo?: boolean
 }
 
 export function VideoDetails({
@@ -35,15 +35,10 @@ export function VideoDetails({
   onLibraryClose,
   onClose,
   onSelect,
-  source
+  source,
+  showChangeVideo
 }: VideoDetailsProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const {
-    state: { selectedBlock }
-  } = useEditor()
-
-  let videoBlock
-  if (selectedBlock?.__typename === 'VideoBlock') videoBlock = selectedBlock
 
   let Details: (
     props: Pick<VideoDetailsProps, 'id' | 'open' | 'onSelect'>
@@ -107,7 +102,7 @@ export function VideoDetails({
           </Toolbar>
         </AppBar>
         <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
-          {id === videoBlock?.videoId && (
+          {showChangeVideo === true && (
             <Button
               startIcon={<SubscriptionsRoundedIcon />}
               size="small"

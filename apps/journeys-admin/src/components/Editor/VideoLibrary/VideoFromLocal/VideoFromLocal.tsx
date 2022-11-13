@@ -81,7 +81,7 @@ export function VideoFromLocal({
       <VideoSearch
         value={searchQuery}
         onChange={setSearchQuery}
-        activeTab={VideoBlockSource.internal}
+        icon="search"
       />
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         {searchQuery === '' && (

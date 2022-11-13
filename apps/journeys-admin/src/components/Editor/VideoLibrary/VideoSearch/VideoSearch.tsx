@@ -5,20 +5,19 @@ import Search from '@mui/icons-material/Search'
 import LinkRounded from '@mui/icons-material/LinkRounded'
 import { debounce } from 'lodash'
 import Box from '@mui/material/Box'
-import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 
 interface VideoSearchProps {
   label?: string
   value?: string
   onChange: (value: string) => void
-  activeTab?: VideoBlockSource
+  icon?: 'search' | 'link'
 }
 
 export function VideoSearch({
   label,
   value,
   onChange,
-  activeTab
+  icon
 }: VideoSearchProps): ReactElement {
   const handleChange = useMemo(() => debounce(onChange, 500), [onChange])
   const [search, setSearch] = useState(value ?? '')
@@ -56,8 +55,8 @@ export function VideoSearch({
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              {activeTab === VideoBlockSource.internal && <Search />}
-              {activeTab === VideoBlockSource.youTube && <LinkRounded />}
+              {icon === 'search' && <Search />}
+              {icon === 'link' && <LinkRounded />}
             </InputAdornment>
           )
         }}
