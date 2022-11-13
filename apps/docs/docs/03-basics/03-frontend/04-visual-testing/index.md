@@ -11,6 +11,10 @@ We use Chromatic to capture snapshots for each component variation (story). Thes
 
 Currently we have a 80k snapshot limit per month for visual regression testing.
 
+## What is a story?
+
+[A rendered state of a UI component](https://storybook.js.org/docs/react/get-started/whats-a-story)
+
 ## When to write stories
 
 > See [component types]() for examples
@@ -19,13 +23,9 @@ For instances of mui components we directly use, a `components.stories.tsx` stor
 [journeys]() - to be created <br/>
 [watch](https://storybook.core.jesusfilm.org/?path=/story/website-theme--components)
 
+For our own components use the following chart:
+
 ![When to write stories](./when-to-write-stories.png)
-
-For instances of our common components - no story is needed
-
-For an extension of a common component -
-
-For any instance We assume that they are already well tested by the mui team so only create stories for our own common and regular components.
 
 All common components must have at least 1 story documenting its visual state/s.
 Could combine multiple visual states in 1 story if it’s simple? (hover / focus)
