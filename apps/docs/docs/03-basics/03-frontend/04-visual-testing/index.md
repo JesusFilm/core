@@ -49,7 +49,7 @@ Storybook documents multiple ways to write stories [here](https://storybook.js.o
 // imports
 
 const ComponentDemo = {
-  ...config,
+  ...projectSpecificConfig,
   component: Component,
   title: 'Project/ComponentPath/Component'
 }

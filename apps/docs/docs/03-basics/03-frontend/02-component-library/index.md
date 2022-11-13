@@ -36,7 +36,7 @@ We need the Mui components to look and/or function differently to the default. W
 
 For styling & function changes for **all** components:
 ![All components](./all-components.png)
-We override the `mui` default theme with different themes. See more on theming [here](../04-theming.md).
+We override the `mui` default theme with different themes. See more on theming [here](../03-theming.md).
 
 For all other use cases:
 
