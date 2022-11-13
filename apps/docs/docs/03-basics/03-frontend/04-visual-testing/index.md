@@ -19,6 +19,8 @@ For instances of mui components we directly use, a `components.stories.tsx` stor
 [journeys]() - to be created <br/>
 [watch](https://storybook.core.jesusfilm.org/?path=/story/website-theme--components)
 
+![When to write stories](./when-to-write-stories.png)
+
 For instances of our common components - no story is needed
 
 For an extension of a common component -
