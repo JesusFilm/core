@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react'
-import { themes } from '../../libs/themes'
-import { ThemeName, ThemeMode } from './ThemeProvider'
+import { getTheme, ThemeName, ThemeMode } from '../../libs/themes'
 import { ThemeProvider } from '.'
 
 describe('ThemeProvider', () => {
@@ -13,7 +12,8 @@ describe('ThemeProvider', () => {
     expect(baseElement.parentElement?.innerHTML).toEqual(
       expect.stringContaining(
         `background-color:${
-          themes[ThemeName.base][ThemeMode.light].palette.background.default
+          getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.light })
+            .palette.background.default
         };`
       )
     )
@@ -28,7 +28,52 @@ describe('ThemeProvider', () => {
     expect(baseElement.parentElement?.innerHTML).toEqual(
       expect.stringContaining(
         `background-color:${
-          themes[ThemeName.base][ThemeMode.dark].palette.background.default
+          getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.dark })
+            .palette.background.default
+        };`
+      )
+    )
+  })
+
+  it('should apply base rtl theme', () => {
+    const { baseElement } = render(
+      <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light} rtl>
+        Hello from ThemeProvider
+      </ThemeProvider>
+    )
+    expect(baseElement.parentElement?.innerHTML).toEqual(
+      expect.stringContaining(
+        `font-family:${
+          getTheme({
+            themeName: ThemeName.base,
+            themeMode: ThemeMode.light,
+            rtl: true
+          }).typography.fontFamily ?? ''
+        };`
+      )
+    )
+  })
+
+  it('should apply urdu rtl theme', () => {
+    const { baseElement } = render(
+      <ThemeProvider
+        themeName={ThemeName.base}
+        themeMode={ThemeMode.light}
+        rtl
+        locale="ur"
+      >
+        Hello from ThemeProvider
+      </ThemeProvider>
+    )
+    expect(baseElement.parentElement?.innerHTML).toEqual(
+      expect.stringContaining(
+        `font-family:${
+          getTheme({
+            themeName: ThemeName.base,
+            themeMode: ThemeMode.light,
+            rtl: true,
+            locale: 'ur'
+          }).typography.fontFamily ?? ''
         };`
       )
     )

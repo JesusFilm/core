@@ -13,16 +13,25 @@ import { EventService } from '../event.service'
 @Resolver('TextResponseSubmissionEvent')
 export class TextResponseSubmissionEventResolver {
   constructor(private readonly eventService: EventService) {}
+
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async textResponseSubmissionEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: TextResponseSubmissionEventCreateInput
   ): Promise<TextResponseSubmissionEvent> {
+    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
+      userId,
+      input.blockId,
+      input.stepId
+    )
+
     return await this.eventService.save({
       ...input,
       __typename: 'TextResponseSubmissionEvent',
-      userId
+      visitorId: visitor.id,
+      createdAt: new Date().toISOString(),
+      journeyId
     })
   }
 }

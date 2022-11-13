@@ -17,7 +17,10 @@
     "monotykamary.vscode-aql",
     "eamodio.gitlens",
     "graphql.vscode-graphql",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-pg",
+    "prisma.prisma"
   ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -34,6 +37,11 @@
     "kubectl-helm-minikube": "1.21",
     "git": "os-provided",
     "aws-cli": "latest",
-    "python": "os-provided"
+    "python": "os-provided",
+    "terraform": {
+      "version": "latest",
+      "tflint": "latest",
+      "terragrunt": "latest"
+    }
   }
 }

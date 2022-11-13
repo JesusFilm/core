@@ -18,6 +18,8 @@ export interface GetPublisherTemplate_publisherTemplate_language_name {
 export interface GetPublisherTemplate_publisherTemplate_language {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
+  iso3: string | null;
   name: GetPublisherTemplate_publisherTemplate_language_name[];
 }
 
@@ -34,10 +36,16 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_actio
   blockId: string;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToJourneyAction {
@@ -163,10 +171,16 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_
   blockId: string;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToJourneyAction {
@@ -214,10 +228,16 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_actio
   blockId: string;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToJourneyAction {
@@ -278,10 +298,16 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock
   blockId: string;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock_action_NavigateToJourneyAction {
@@ -356,10 +382,16 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action
   blockId: string;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToJourneyAction_journey_language;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToJourneyAction {
@@ -466,10 +498,16 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   blockId: string;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey_language {
+  __typename: "Language";
+  bcp47: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  language: GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction_journey_language;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToJourneyAction {

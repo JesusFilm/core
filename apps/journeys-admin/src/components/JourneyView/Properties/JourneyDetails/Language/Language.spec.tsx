@@ -183,6 +183,8 @@ describe('Language', () => {
                 language: {
                   __typename: 'Language',
                   id: '529',
+                  bcp47: 'be',
+                  iso3: 'bel',
                   name: [
                     {
                       value: 'Беларуская мова',

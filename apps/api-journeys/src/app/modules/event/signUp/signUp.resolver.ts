@@ -9,20 +9,50 @@ import {
   SignUpSubmissionEventCreateInput
 } from '../../../__generated__/graphql'
 import { EventService } from '../event.service'
+import { VisitorService } from '../../visitor/visitor.service'
 
 @Resolver('SignUpSubmissionEvent')
 export class SignUpSubmissionEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly visitorService: VisitorService
+  ) {}
+
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async signUpSubmissionEventCreate(
     @CurrentUserId() userId: string,
     @Args('input') input: SignUpSubmissionEventCreateInput
   ): Promise<SignUpSubmissionEvent> {
+    const { visitor, journeyId } = await this.eventService.validateBlockEvent(
+      userId,
+      input.blockId,
+      input.stepId
+    )
+
+    if (visitor.name == null) {
+      void this.visitorService.update(visitor.id, {
+        name: input.name
+      })
+    }
+
+    if (visitor.email == null) {
+      void this.visitorService.update(visitor.id, {
+        email: input.email
+      })
+    }
+
     return await this.eventService.save({
-      ...input,
+      id: input.id,
+      blockId: input.blockId,
       __typename: 'SignUpSubmissionEvent',
-      userId
+      visitorId: visitor.id,
+      createdAt: new Date().toISOString(),
+      journeyId,
+      stepId: input.stepId,
+      label: null,
+      value: input.name,
+      email: input.email
     })
   }
 }

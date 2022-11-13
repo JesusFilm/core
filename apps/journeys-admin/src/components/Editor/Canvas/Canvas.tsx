@@ -11,6 +11,7 @@ import {
   ActiveTab,
   ActiveFab
 } from '@core/journeys/ui/EditorProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -36,6 +37,7 @@ export function Canvas(): ReactElement {
     dispatch
   } = useEditor()
   const { journey } = useJourney()
+  const { rtl, locale } = getJourneyRTL(journey)
 
   useEffect(() => {
     if (swiper != null && selectedStep != null && steps != null) {
@@ -53,7 +55,6 @@ export function Canvas(): ReactElement {
           EDGE_SLIDE_WIDTH * 2) /
           2
       )
-
       setSpaceBetween(spaceBetween)
     }
 
@@ -99,7 +100,6 @@ export function Canvas(): ReactElement {
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={(swiper) => {
           if (steps == null) return
-
           dispatch({
             type: 'SetSelectedStepAction',
             step: steps[swiper.activeIndex]
@@ -142,10 +142,12 @@ export function Canvas(): ReactElement {
                   }}
                 />
 
-                <FramePortal width={356} height={536}>
+                <FramePortal width={356} height={536} dir={rtl ? 'rtl' : 'ltr'}>
                   <ThemeProvider
                     themeName={journey?.themeName ?? ThemeName.base}
                     themeMode={journey?.themeMode ?? ThemeMode.light}
+                    rtl={rtl}
+                    locale={locale}
                   >
                     <Fade
                       in={selectedStep?.id === step.id}
@@ -191,7 +193,6 @@ export function Canvas(): ReactElement {
                 height={536}
                 sx={{
                   borderRadius: 5,
-
                   transform: 'scaleY(0.9)'
                 }}
               />

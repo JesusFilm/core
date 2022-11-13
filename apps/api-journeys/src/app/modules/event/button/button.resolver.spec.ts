@@ -1,20 +1,38 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { EventService } from '../event.service'
-import { ButtonClickEventCreateInput } from '../../../__generated__/graphql'
-import { ButtonClickEventResolver } from './button.resolver'
+import {
+  ButtonClickEventCreateInput,
+  ChatOpenEventCreateInput,
+  MessagePlatform
+} from '../../../__generated__/graphql'
+import { VisitorService } from '../../visitor/visitor.service'
+import {
+  ButtonClickEventResolver,
+  ChatOpenEventResolver
+} from './button.resolver'
 
 describe('ButtonClickEventResolver', () => {
   let resolver: ButtonClickEventResolver
 
-  const input: ButtonClickEventCreateInput = {
-    id: '1',
-    blockId: 'block.id'
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
+  const response = {
+    visitor: { id: 'visitor.id' },
+    journeyId: 'journey.id'
   }
 
   const eventService = {
     provide: EventService,
     useFactory: () => ({
-      save: jest.fn((event) => event)
+      save: jest.fn((event) => event),
+      validateBlockEvent: jest.fn(() => response)
     })
   }
 
@@ -27,11 +45,102 @@ describe('ButtonClickEventResolver', () => {
 
   describe('buttonClickEventCreate', () => {
     it('returns ButtonClickEvent', async () => {
+      const input: ButtonClickEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        label: 'Step name',
+        value: 'Button label'
+      }
+
       expect(await resolver.buttonClickEventCreate('userId', input)).toEqual({
         ...input,
         __typename: 'ButtonClickEvent',
-        userId: 'userId'
+        visitorId: 'visitor.id',
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
       })
+    })
+  })
+})
+
+describe('ChatOpenEventResolver', () => {
+  let resolver: ChatOpenEventResolver, vService: VisitorService
+
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
+  const response = {
+    visitor: { id: 'visitor.id' },
+    journeyId: 'journey.id'
+  }
+
+  const eventService = {
+    provide: EventService,
+    useFactory: () => ({
+      save: jest.fn((event) => event),
+      validateBlockEvent: jest.fn(() => response)
+    })
+  }
+
+  const visitorService = {
+    provide: VisitorService,
+    useFactory: () => ({
+      update: jest.fn(() => null)
+    })
+  }
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [ChatOpenEventResolver, eventService, visitorService]
+    }).compile()
+    resolver = module.get<ChatOpenEventResolver>(ChatOpenEventResolver)
+    vService = module.get<VisitorService>(VisitorService)
+  })
+
+  describe('chatOpenEventCreate', () => {
+    it('should return ChatOpenEvent', async () => {
+      const input: ChatOpenEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        value: MessagePlatform.facebook
+      }
+
+      expect(await resolver.chatOpenEventCreate('userId', input)).toEqual({
+        ...input,
+        __typename: 'ChatOpenEvent',
+        visitorId: 'visitor.id',
+        createdAt: new Date().toISOString(),
+        journeyId: 'journey.id'
+      })
+    })
+
+    it('should update visitor messagePlatform', async () => {
+      const input: ChatOpenEventCreateInput = {
+        id: '1',
+        blockId: 'block.id',
+        stepId: 'step.id',
+        value: MessagePlatform.facebook
+      }
+
+      await resolver.chatOpenEventCreate('userId', input)
+
+      expect(vService.update).toHaveBeenCalledWith('visitor.id', {
+        messagePlatform: MessagePlatform.facebook
+      })
+    })
+
+    it('returns object for federation', () => {
+      expect(
+        resolver.messagePlatform({ value: MessagePlatform.facebook })
+      ).toEqual(MessagePlatform.facebook)
     })
   })
 })

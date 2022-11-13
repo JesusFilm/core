@@ -1,0 +1,1 @@
+export { getJourneyRTL } from './rtl'

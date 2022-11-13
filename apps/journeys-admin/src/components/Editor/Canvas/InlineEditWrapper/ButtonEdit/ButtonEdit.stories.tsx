@@ -139,7 +139,20 @@ const Template: Story = ({ ...args }) => {
           journey: {
             id: 'journeyId',
             themeMode: ThemeMode.light,
-            themeName: ThemeName.base
+            themeName: ThemeName.base,
+            language: {
+              __typename: 'Language',
+              id: '529',
+              bcp47: 'en',
+              iso3: 'eng',
+              name: [
+                {
+                  __typename: 'Translation',
+                  value: 'English',
+                  primary: true
+                }
+              ]
+            }
           } as unknown as Journey,
           admin: true
         }}
@@ -161,16 +174,6 @@ const Template: Story = ({ ...args }) => {
 export const Default = Template.bind({})
 Default.args = {
   selectedBlock: contained
-}
-
-export const Filled = Template.bind({})
-Filled.args = {
-  selectedBlock: filled
-}
-
-export const Text = Template.bind({})
-Text.args = {
-  selectedBlock: text
 }
 
 export default ButtonEditStory as Meta

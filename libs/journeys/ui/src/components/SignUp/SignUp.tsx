@@ -28,8 +28,6 @@ export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
   ) {
     signUpSubmissionEventCreate(input: $input) {
       id
-      name
-      email
     }
   }
 `
@@ -95,6 +93,7 @@ export const SignUp = ({
             input: {
               id,
               blockId,
+              stepId: activeBlock?.id,
               name: values.name,
               email: values.email
             }

@@ -110,7 +110,13 @@ const Template: Story = ({ ...args }) => {
           journey: {
             id: 'journeyId',
             themeMode: ThemeMode.light,
-            themeName: ThemeName.base
+            themeName: ThemeName.base,
+            language: {
+              __typename: 'Language',
+              id: '529',
+              bcp47: 'en',
+              iso3: 'eng'
+            }
           } as unknown as Journey,
           admin: true
         }}
@@ -129,19 +135,9 @@ const Template: Story = ({ ...args }) => {
   )
 }
 
-export const Heading = Template.bind({})
-Heading.args = {
+export const Default = Template.bind({})
+Default.args = {
   selectedBlock: heading
-}
-
-export const Body = Template.bind({})
-Body.args = {
-  selectedBlock: body
-}
-
-export const Caption = Template.bind({})
-Caption.args = {
-  selectedBlock: caption
 }
 
 export default TypographyEditStory as Meta

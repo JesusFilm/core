@@ -7,7 +7,7 @@ import Box from '@mui/material/Box'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import Skeleton from '@mui/material/Skeleton'
-import { Dialog } from '../../../../Dialog'
+import { Dialog } from '@core/shared/ui/Dialog'
 import { ImageBlockEditor } from '../../../ImageBlockEditor'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../__generated__/GetJourney'
 import { blockDeleteUpdate } from '../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
@@ -268,7 +268,7 @@ export function ImageEdit(): ReactElement {
 
       <Dialog
         open={open}
-        handleClose={handleClose}
+        onClose={handleClose}
         dialogTitle={{ title: 'Social media image', closeButton: true }}
       >
         <ImageBlockEditor
