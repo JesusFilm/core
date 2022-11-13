@@ -18,14 +18,14 @@ Currently we have a 80k snapshot limit per month for visual regression testing.
 ## When to write stories
 
 For instances of mui components we directly use, a `components.stories.tsx` story should be included in the shared-ui theme tokens folder. <br/>
-[journeys]() - to be created <br/>
+journeys - to be created <br/>
 [watch](https://storybook.core.jesusfilm.org/?path=/story/website-theme--components)
 
 For our own components use the following chart:
 
 ![When to write stories](./when-to-write-stories.png)
 
-> Not sure how the component is made? See [component types]()
+> Not sure how the component is made? See [component types](#component-types)
 
 A general rule of thumb would be to create a new story for each property that changes the visual state.
 
@@ -113,5 +113,3 @@ Unique components only used in one other component / page. Similarly they are cr
   > See [ShareDialog](https://storybook.core.jesusfilm.org/?path=/story/watch-sharedialog--basic) (extended from shared-ui [Dialog](https://storybook.core.jesusfilm.org/?path=/story/shared-ui-dialog--info))
 - An instance of a component
   > See [RadioOptionAttribute](https://storybook.core.jesusfilm.org/?path=/story/journeys-admin-editor-controlpanel-attributes-radiooption--filled) (instance of [Attribute](https://storybook.core.jesusfilm.org/?path=/story/journeys-admin-editor-controlpanel-attributes-attribute--default))
-
-<br/>
