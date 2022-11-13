@@ -17,8 +17,6 @@ Currently we have a 80k snapshot limit per month for visual regression testing.
 
 ## When to write stories
 
-> See [component types]() for examples
-
 For instances of mui components we directly use, a `components.stories.tsx` story should be included in the shared-ui theme tokens folder. <br/>
 [journeys]() - to be created <br/>
 [watch](https://storybook.core.jesusfilm.org/?path=/story/website-theme--components)
@@ -27,9 +25,67 @@ For our own components use the following chart:
 
 ![When to write stories](./when-to-write-stories.png)
 
-All common components must have at least 1 story documenting its visual state/s.
-Could combine multiple visual states in 1 story if it’s simple? (hover / focus)
-If it’s a non-visual component like a transparent container / customized scrollbar, add other components in the story template so we can visualize it.
+> Not sure how the component is made? See [component types]()
+
+A general rule of thumb would be to create a new story for each property that changes the visual state.
+
+- For example, a component with `disabled`, `size` and `variant` properties would have 3 stories.
+
+Each story should show all the visual states possible on that property.
+
+- For example, the `size` story should show that component rendered at all sizes.
+
+Sometimes, multiple properties may determine the visual state of the component. In this case, keep to the principle that each story should show one or variants of one visual state.
+
+Sometimes components require others to be visualised such as transparent containers / customized scrollbars. In this case add other components in the story template so we can visualize it.
+
+## How to write stories
+
+Storybook documents multiple ways to write stories [here](https://storybook.js.org/docs/react/writing-stories/introduction). In our code we adopt the Component Story Format ([CSF](https://storybook.js.org/docs/react/writing-stories/introduction#component-story-format)), using Templates with [args composition](https://storybook.js.org/docs/react/writing-stories/introduction#using-args) to write stories.
+
+### Basic Story Structure
+
+```
+// imports
+
+const ComponentDemo = {
+  ...config,
+  component: Component,
+  title: 'Project/ComponentPath/Component'
+}
+
+const mockedFunctionResponse: MockedResponseType = someMockResponse
+
+const mockedData: MockDataType = { mockData }
+
+const Template: ComponentStory<typeof Component> = = ({ ...args }) => (
+  <OptionalProviders>
+    <Component/>
+  </OptionalProviders>
+)
+
+export const Default = Template.bind({})
+Default.args = {
+  // add properties here
+}
+
+export const OtherStory = Template.bind({})
+OtherStory.args = {
+  ...Default.args,
+  // set properties unique to other stories
+}
+
+```
+
+Special notes:
+
+- Each story should use it's project-specific config to correctly set the theme. If the component is simple and does not change based on viewport, use the project-specific `simpleComponentConfig`.
+
+- Our project uses `ComponentStory<typeof Component>` as the Template type. If you need to extend the template type, use
+
+```
+Story< Parameters<typeof Component>[0] & { newProperty: NewPropertyType }
+```
 
 ## Component Types
 
@@ -59,5 +115,3 @@ Unique components only used in one other component / page. Similarly they are cr
   > See [RadioOptionAttribute](https://storybook.core.jesusfilm.org/?path=/story/journeys-admin-editor-controlpanel-attributes-radiooption--filled) (instance of [Attribute](https://storybook.core.jesusfilm.org/?path=/story/journeys-admin-editor-controlpanel-attributes-attribute--default))
 
 <br/>
-
-**Testing differs based on component type**
