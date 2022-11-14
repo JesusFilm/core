@@ -263,7 +263,7 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
 
   const maxBreakpointValue = (breakpoint: Breakpoint): string => {
     switch (breakpoint) {
-      case 'xl':
+      case 'xxl':
         return '+'
       default:
         return `${
@@ -333,8 +333,10 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
               }}
             >
               {/* Test useBreakpoints */}
-              {breakpoints.xl
+              {breakpoints.xxl
                 ? 'Desktop'
+                : breakpoints.xl
+                ? 'Laptop'
                 : breakpoints.lg
                 ? 'Tablet (L)'
                 : breakpoints.md
@@ -390,7 +392,7 @@ const breakpoints = getTheme({
 export const Viewport = ViewportTemplate.bind({})
 Viewport.args = {
   // Height of viewport will alter breakpoints display.
-  variants: ['xs', 'sm', 'md', 'lg', 'xl']
+  variants: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl']
 }
 Viewport.parameters = {
   layout: 'fullscreen',
@@ -404,7 +406,9 @@ Viewport.parameters = {
       breakpoints.values.lg - 1,
       breakpoints.values.lg,
       breakpoints.values.xl - 1,
-      breakpoints.values.xl
+      breakpoints.values.xl,
+      breakpoints.values.xxl - 1,
+      breakpoints.values.xxl
     ]
   }
 }
