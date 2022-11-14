@@ -210,6 +210,7 @@ describe('VideoDetails', () => {
             open
             onClose={onClose}
             onSelect={onSelect}
+            showChangeVideo
           />
         </EditorProvider>
       </MockedProvider>
