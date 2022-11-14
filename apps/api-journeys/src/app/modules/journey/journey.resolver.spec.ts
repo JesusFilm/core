@@ -842,6 +842,21 @@ describe('JourneyResolver', () => {
       })
     })
 
+    it('does not duplicate the primaryImageBlock', async () => {
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId2')
+      expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
+        ...journey,
+        id: 'duplicateJourneyId2',
+        createdAt: new Date().toISOString(),
+        status: JourneyStatus.draft,
+        slug: `${journey.title}-copy`,
+        title: `${journey.title} copy`,
+        publishedAt: undefined,
+        template: false,
+        primaryImageBlock: null
+      })
+    })
+
     it('throws error and does not get stuck in retry loop', async () => {
       const mockSave = service.save as jest.MockedFunction<typeof service.save>
       mockSave.mockRejectedValueOnce(new Error('database error'))
