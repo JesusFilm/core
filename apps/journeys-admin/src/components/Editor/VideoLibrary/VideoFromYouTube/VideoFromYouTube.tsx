@@ -109,6 +109,7 @@ export function VideoFromYouTube({
         value={url}
         onChange={setUrl}
         label="Paste any YouTube Link"
+        icon="link"
       />
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         {videos.length > 1 && (
