@@ -1,6 +1,5 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { MockedProvider } from '@apollo/client/testing'
 import { GET_VIDEO } from '../VideoFromLocal/LocalDetails/LocalDetails'
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
@@ -162,57 +161,14 @@ describe('VideoDetails', () => {
     const onClose = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: {
-              __typename: 'VideoBlock',
-              id: 'video0.id',
-              parentBlockId: '',
-              parentOrder: 0,
-              autoplay: false,
-              startAt: 10,
-              endAt: null,
-              muted: null,
-              posterBlockId: 'posterBlockId',
-              fullsize: null,
-              action: null,
-              videoId: '2_0-FallingPlates',
-              videoVariantLanguageId: '529',
-              source: VideoBlockSource.internal,
-              title: null,
-              description: null,
-              duration: null,
-              image: null,
-              video: {
-                __typename: 'Video',
-                id: '2_0-FallingPlates',
-                title: [
-                  {
-                    __typename: 'Translation',
-                    value: 'FallingPlates'
-                  }
-                ],
-                image:
-                  'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-                variant: {
-                  __typename: 'VideoVariant',
-                  id: '2_0-FallingPlates-529',
-                  hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-                }
-              },
-              children: []
-            }
-          }}
-        >
-          <VideoDetails
-            id="2_0-FallingPlates"
-            source={VideoBlockSource.internal}
-            open
-            onClose={onClose}
-            onSelect={onSelect}
-            showChangeVideo
-          />
-        </EditorProvider>
+        <VideoDetails
+          id="2_0-FallingPlates"
+          source={VideoBlockSource.internal}
+          open
+          onClose={onClose}
+          onSelect={onSelect}
+          showChangeVideo
+        />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Change Video' }))
