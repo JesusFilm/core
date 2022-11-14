@@ -8,8 +8,10 @@ import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
 import Close from '@mui/icons-material/Close'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded'
 import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
@@ -99,17 +101,40 @@ export function VideoDetails({
             </IconButton>
           </Toolbar>
         </AppBar>
-        <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
-          <Button
-            startIcon={<SubscriptionsRoundedIcon />}
-            size="small"
-            onClick={() => onClose(false)}
-            sx={{ mx: 6, mt: 6, px: 3 }}
+        <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Stack
+            direction="row"
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              mx: 6,
+              mt: 4
+            }}
           >
-            Change Video
-          </Button>
-          <Details id={id} open={open} onSelect={handleSelect} />
-        </Box>
+            <Box>
+              <Button
+                startIcon={<SubscriptionsRoundedIcon />}
+                size="small"
+                onClick={() => onClose(false)}
+              >
+                Change Video
+              </Button>
+            </Box>
+            <Box>
+              <IconButton
+                onClick={() => {
+                  alert('test')
+                }}
+                size="small"
+              >
+                <DeleteOutlineIcon />
+              </IconButton>
+            </Box>
+          </Stack>
+          <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+            <Details id={id} open={open} onSelect={handleSelect} />
+          </Box>
+        </Stack>
       </Drawer>
     </>
   )
