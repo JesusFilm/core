@@ -115,6 +115,8 @@ jobs:
   visual-test:
     runs-on: ubuntu-latest
     steps:
+      - name: Check branch up to date with head
+        run: ./tools/scripts/check-git-diff.sh
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -125,9 +127,6 @@ jobs:
         with:
           node-version: '16'
           cache: 'npm'
-      - name: Check branch up to date with head
-        id: git-diff
-        run: '[[ ! -z "git diff --name-only origin/$GITHUB_HEAD_REF...origin/$GITHUB_BASE_REF" ]] && exit 1'
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v2
