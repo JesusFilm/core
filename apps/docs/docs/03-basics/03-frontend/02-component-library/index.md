@@ -1,6 +1,6 @@
 # Component Libraries
 
-For each Jesus Film project ([storybook](https://storybook.core.jesusfilm.org/)), [Material UI](https://mui.com/material-ui/getting-started/overview/) is used to build the component library. `mui` is the latest web component library following the [Material Design 2](https://m2.material.io/components?platform=web) design system.
+For each Jesus Film project, [Material UI](https://mui.com/material-ui/getting-started/overview/) is used to build the component library. `mui` is the latest web component library following the [Material Design 2](https://m2.material.io/components?platform=web) design system.
 
 UX refer to Material Design to understand usage guidelines whilst developers should refer to [Material UI](https://mui.com/material-ui/getting-started/supported-components/) to understand how to build and style components.
 
@@ -34,9 +34,8 @@ Since we reuse these high level `mui` components to build many different compone
 
 We need the Mui components to look and/or function differently to the default. We apply multiple different strategies for each use case.
 
-For styling & function changes for **all** components:
-![All components](./all-components.png)
-We override the `mui` default theme with different themes. See more on theming [here](../03-theming.md).
+For styling & function changes for **all** components, we override the `mui` default theme with different themes.
+See more on project theming [here](../03-theming.md).
 
 For all other use cases:
 
@@ -46,16 +45,54 @@ For all other use cases:
 
 **Applications**
 
-- [journeys](https://your.nextstep.is/)
-- [journeys-admin](https://admin.nextstep.is/)
-- [watch](https://watch-jesusfilm.vercel.app/)
+- Contain application specific components
+  - [journeys](https://storybook.core.jesusfilm.org/?path=/story/journeys-conductor--default)
+  - [journeys-admin](https://storybook.core.jesusfilm.org/?path=/story/journeys-admin-editor--default)
+  - [watch](https://storybook.core.jesusfilm.org/?path=/story/watch-pagewrapper--default)
 
 **UI Libraries**
 
-- journey-ui: common components used in journeys & journeys-admin
-- shared-ui: common components used in all app projects
+- [journey-ui](https://storybook.core.jesusfilm.org/?path=/story/journeys-ui-card--default): common components used in `journeys` & `journeys-admin`
+- [shared-ui](https://storybook.core.jesusfilm.org/?path=/story/shared-ui-dialog--basic): common components used in all app projects
+
+**Themes**
+
+- [base](https://storybook.core.jesusfilm.org/?path=/story/default-theme--viewport): default theme for Next Steps. Includes project specific styles for journeys. (Should extract this to another theme)
+- [website](https://storybook.core.jesusfilm.org/?path=/story/website-theme--components): project theme for Jesus Film Project websites
+- [admin](https://storybook.core.jesusfilm.org/?path=/story/admin-theme--colors): project theme for admin projects.
 
 This common implementation pattern is derived from the [Atomic Web Design](https://bradfrost.com/blog/post/atomic-web-design/) approach
+
+## Component Types
+
+In our monorepo we can categorize all the components we create into **common** and **regular** components, of which there are several types:
+
+**Common components**<br/>
+Any component intended for reuse in multiple different components. This includes:
+
+- Some unique component made from multiple components like
+  > For example [journeys-admin Button](https://storybook.core.jesusfilm.org/?path=/story/journeys-admin-editor-controlpanel-button--default) is made from Mui-Box, Mui-Typography and Mui-Stack amongst others.
+- An extension of a component.
+  > For example [journeys-ui TextField](https://storybook.core.jesusfilm.org/?path=/story/journeys-ui-textfield--states) uses the `filled` variant of [Mui-TextField](https://mui.com/material-ui/react-text-field/#form-props) and adapts it to work with formik - a form management library.
+- An instance of a component
+
+  > For example [Attribute](https://storybook.core.jesusfilm.org/?path=/story/journeys-admin-editor-controlpanel-attributes-attribute--default) is a version of [journeys-admin Button](https://storybook.core.jesusfilm.org/?path=/story/journeys-admin-editor-controlpanel-button--default) which sets the `selected` and `onClick` logic.
+
+  ![Component Hierarchy](./component-types.png)
+
+**Regular components**<br/>
+Unique components only used in one other component / page. Similarly they are created by:
+
+- Unique components made from multiple components
+  > See [watch Header](https://storybook.core.jesusfilm.org/?path=/story/watch-header--default)
+- Extending a component
+  > See [ShareDialog](https://storybook.core.jesusfilm.org/?path=/story/watch-sharedialog--basic) (extended from shared-ui [Dialog](https://storybook.core.jesusfilm.org/?path=/story/shared-ui-dialog--info))
+- An instance of a component
+
+  > See [RadioOptionAttribute](https://storybook.core.jesusfilm.org/?path=/story/journeys-admin-editor-controlpanel-attributes-radiooption--filled) (instance of [Attribute](https://storybook.core.jesusfilm.org/?path=/story/journeys-admin-editor-controlpanel-attributes-attribute--default))
+
+[Visual tests](../04-storybook/index.md/#when-to-write-stories) differ based on component type.
+<br/>
 
 ## FAQs
 
