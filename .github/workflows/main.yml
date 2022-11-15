@@ -139,7 +139,6 @@ jobs:
       - name: nx Install
         run: npm install -g nx --silent
       - name: Build Stories
-        if: ${{ !!env.GIT_DIFF }}
         id: build-storybook
         run: nx build-storybook shared-storybook --webpack-stats-json
       - name: Check for frontend changes
@@ -162,7 +161,6 @@ jobs:
           exitOnceUploaded: true,
           autoAcceptChanges: 'main'
           onlyChanged: 'true'
-          ignoreLastBuildOnBranch: ${{ github.ref != 'refs/heads/main' && 'main' }}
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
           untraced: ${{ github.ref != 'refs/heads/main' && 'package.json,package-lock.json,.storybook/main.js,.storybook/preview.js,.storybook/preview-head.html,.storybook/static/*.js' }},
           traceChanged: 'expanded'
