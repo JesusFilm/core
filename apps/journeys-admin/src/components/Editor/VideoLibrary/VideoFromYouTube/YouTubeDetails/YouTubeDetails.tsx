@@ -146,6 +146,7 @@ export function YouTubeDetails({
           onClick={handleSelect}
           size="small"
           disabled={loading}
+          sx={{ backgroundColor: 'secondary.dark' }}
         >
           Select
         </Button>
