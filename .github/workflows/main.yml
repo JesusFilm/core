@@ -127,7 +127,9 @@ jobs:
           cache: 'npm'
       - name: Check branch up to date with head
         id: git-diff
-        run: echo "GIT_DIFF=$(git diff --name-only ...origin/$GITHUB_BASE_REF)" >> $GITHUB_ENV
+        run: | 
+        echo git diff --name-only ...origin/$GITHUB_BASE_REF
+        echo "GIT_DIFF=$(git diff --name-only ...origin/$GITHUB_BASE_REF)" >> $GITHUB_ENV
         shell: bash
       - name: Cache Node Modules
         id: cache-node-modules
@@ -141,6 +143,7 @@ jobs:
       - name: nx Install
         run: npm install -g nx --silent
       - name: Build Stories
+        if: ${{ !!env.GIT_DIFF }}
         id: build-storybook
         run: nx build-storybook shared-storybook --webpack-stats-json
       - name: Check for frontend changes
@@ -150,7 +153,7 @@ jobs:
           files: 'dist/storybook/shared-storybook'
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests
-        if: ${{ steps.check_files.outputs.files_exists == 'true' && !!env.GIT_DIFF }}
+        if: ${{ steps.check_files.outputs.files_exists == 'true' }}
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         # https://www.chromatic.com/docs/github-actions#available-options
