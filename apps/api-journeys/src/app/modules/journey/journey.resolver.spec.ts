@@ -614,6 +614,19 @@ describe('JourneyResolver', () => {
     it('should return null', async () => {
       expect(await resolver.primaryImageBlock(journey)).toEqual(null)
     })
+
+    it('should return null if primaryImageBlock journeyId is not current journey id ', async () => {
+      const journey2 = {
+        ...journey,
+        id: 'journeyId2'
+      }
+      expect(
+        await resolver.primaryImageBlock({
+          ...journey2,
+          primaryImageBlockId: 'blockId'
+        })
+      ).toEqual(null)
+    })
   })
 
   describe('journeyCreate', () => {
@@ -839,21 +852,6 @@ describe('JourneyResolver', () => {
         slug: `${journey.title}-copy-2`,
         title: `${journey.title} copy 2`,
         template: false
-      })
-    })
-
-    it('does not duplicate the primaryImageBlock', async () => {
-      mockUuidv4.mockReturnValueOnce('duplicateJourneyId2')
-      expect(await resolver.journeyDuplicate('journeyId', 'userId')).toEqual({
-        ...journey,
-        id: 'duplicateJourneyId2',
-        createdAt: new Date().toISOString(),
-        status: JourneyStatus.draft,
-        slug: `${journey.title}-copy`,
-        title: `${journey.title} copy`,
-        publishedAt: undefined,
-        template: false,
-        primaryImageBlock: null
       })
     })
 
