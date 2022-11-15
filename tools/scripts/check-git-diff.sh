@@ -6,7 +6,8 @@ DIFF=$(git diff --name-only origin/$GITHUB_HEAD_REF...origin/$GITHUB_BASE_REF)
 
 if [ ! -z "$DIFF" ]; then
   # Changes
-  echo "🛑 - branch missing following files from latest base"
+  echo "🛑 - branch not updated to latest base"
+  echo "Missing files:"
   echo  $DIFF \ | tr " " "\n" 
   exit 1
 else
