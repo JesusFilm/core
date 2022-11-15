@@ -128,7 +128,7 @@ jobs:
       - name: Check branch up to date with head
         id: git-diff
         run: |
-        echo git diff --name-only $GITHUB_HEAD_REF...origin/$GITHUB_BASE_REF
+        echo git diff --name-only ${{github.head_ref}}...origin/${{github.base_ref}}
         echo "GIT_DIFF=$(git diff --name-only ${GITHUB_HEAD_REF}...origin/${GITHUB_BASE_REF} )" >> $GITHUB_ENV
       - name: Cache Node Modules
         id: cache-node-modules
