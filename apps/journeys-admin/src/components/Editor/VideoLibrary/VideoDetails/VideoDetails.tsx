@@ -60,6 +60,16 @@ export function VideoDetails({
     onClose(false)
   }
 
+  function removeVideo(): void {
+    onSelect({
+      videoId: null,
+      videoVariantLanguageId: null,
+      source: null
+    })
+    onClose(false)
+    if (onLibraryClose != null) onLibraryClose()
+  }
+
   return (
     <>
       <Drawer
@@ -125,12 +135,7 @@ export function VideoDetails({
               )}
             </Box>
             <Box>
-              <IconButton
-                onClick={() => {
-                  alert('test')
-                }}
-                size="small"
-              >
+              <IconButton onClick={() => removeVideo()} size="small">
                 <DeleteOutlineIcon />
               </IconButton>
             </Box>
