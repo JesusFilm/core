@@ -125,6 +125,9 @@ jobs:
         with:
           node-version: '16'
           cache: 'npm'
+      - name: Check branch up to date with head
+        id: git-diff
+        run: echo "GIT_DIFF=$(git diff --name-only HEAD^...origin/HEAD )" >> $GITHUB_ENV
       - name: Cache Node Modules
         id: cache-node-modules
         uses: actions/cache@v2
@@ -146,7 +149,7 @@ jobs:
           files: 'dist/storybook/shared-storybook'
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests
-        if: ${{ steps.check_files.outputs.files_exists == 'true' }}
+        if: ${{ steps.check_files.outputs.files_exists == 'true' && !!steps.git-diff.outputs.GIT_DIFF }}
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         # https://www.chromatic.com/docs/github-actions#available-options
@@ -159,6 +162,7 @@ jobs:
           exitOnceUploaded: true,
           autoAcceptChanges: 'main'
           onlyChanged: 'true'
+          ignoreLastBuildOnBranch: ${{ github.ref != 'refs/heads/main' && 'main' }}
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
           untraced: ${{ github.ref != 'refs/heads/main' && 'package.json,package-lock.json,.storybook/main.js,.storybook/preview.js,.storybook/preview-head.html,.storybook/static/*.js' }},
           traceChanged: 'expanded'
