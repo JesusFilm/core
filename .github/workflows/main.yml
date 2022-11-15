@@ -121,7 +121,7 @@ jobs:
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - name: Check branch up to date with head
+      - name: Check branch up to date with base
         run: ./tools/scripts/check-git-diff.sh
       - uses: actions/setup-node@v2
         with:
