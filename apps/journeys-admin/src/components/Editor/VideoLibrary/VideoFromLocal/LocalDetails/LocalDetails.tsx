@@ -186,6 +186,7 @@ export function LocalDetails({
           startIcon={<Check />}
           onClick={handleSelect}
           size="small"
+          sx={{ backgroundColor: 'secondary.dark' }}
         >
           Select
         </Button>

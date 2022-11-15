@@ -150,6 +150,7 @@ export function VideoLibrary({
           onClose={setOpenVideoDetails}
           onLibraryClose={onClose}
           onSelect={onSelect}
+          showChangeVideo
         />
       )}
     </>

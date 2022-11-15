@@ -28,6 +28,7 @@ export interface VideoDetailsProps {
   onSelect: (block: VideoBlockUpdateInput) => void
   onLibraryClose?: () => void
   source: VideoBlockSource
+  showChangeVideo?: boolean
 }
 
 export function VideoDetails({
@@ -36,7 +37,8 @@ export function VideoDetails({
   onLibraryClose,
   onClose,
   onSelect,
-  source
+  source,
+  showChangeVideo
 }: VideoDetailsProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
@@ -112,13 +114,15 @@ export function VideoDetails({
             }}
           >
             <Box>
-              <Button
-                startIcon={<SubscriptionsRoundedIcon />}
-                size="small"
-                onClick={() => onClose(false)}
-              >
-                Change Video
-              </Button>
+              {showChangeVideo === true && (
+                <Button
+                  startIcon={<SubscriptionsRoundedIcon />}
+                  size="small"
+                  onClick={() => onClose(false)}
+                >
+                  Change Video
+                </Button>
+              )}
             </Box>
             <Box>
               <IconButton
