@@ -24,7 +24,7 @@ Slack is the main place that we communicate with each other. Especially being a 
 
 ### Jesus Film Github team
 
-Refer to instructions in [prerequisites](../04-engineering-practices/01-workflow) in `Our Workflow`
+Refer to instructions in [prerequisites](../04-engineering-practices/01-workflow/index.md) in `Our Workflow`
 
 ### Doppler
 
