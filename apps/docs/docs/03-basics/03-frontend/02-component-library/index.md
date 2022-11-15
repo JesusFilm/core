@@ -35,7 +35,7 @@ Since we reuse these high level `mui` components to build many different compone
 We need the Mui components to look and/or function differently to the default. We apply multiple different strategies for each use case.
 
 For styling & function changes for **all** components, we override the `mui` default theme with different themes.
-See more on project theming [here](../03-theming.md).
+See more on project theming [here](../03-theming/index.md).
 
 For all other use cases:
 
@@ -57,7 +57,7 @@ For all other use cases:
 
 **Themes**
 
-- [base](https://storybook.core.jesusfilm.org/?path=/story/default-theme--viewport): default theme for Next Steps. Includes project specific styles for journeys. (Should extract this to another theme)
+- [base](https://storybook.core.jesusfilm.org/?path=/story/default-theme--viewport): default theme for Next Steps. Includes project specific styles for journeys.
 - [website](https://storybook.core.jesusfilm.org/?path=/story/website-theme--components): project theme for Jesus Film Project websites
 - [admin](https://storybook.core.jesusfilm.org/?path=/story/admin-theme--colors): project theme for admin projects.
 
