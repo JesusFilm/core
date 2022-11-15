@@ -128,8 +128,7 @@ jobs:
       - name: Check branch up to date with head
         id: git-diff
         run: |
-          echo "GIT_DIFF=$(git diff --name-only ...origin/$GITHUB_BASE_REF)" >> $GITHUB_ENV
-          echo ${{ env.GIT_DIFF }}
+          git diff --name-only ...origin/$GITHUB_BASE_REF
         shell: bash
       - name: Cache Node Modules
         id: cache-node-modules
