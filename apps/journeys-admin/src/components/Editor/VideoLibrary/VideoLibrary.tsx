@@ -26,13 +26,15 @@ interface VideoLibraryProps {
   onClose?: () => void
   selectedBlock?: TreeBlock<VideoBlock> | null
   onSelect?: (block: VideoBlockUpdateInput) => void
+  onClearVideo?: () => void
 }
 
 export function VideoLibrary({
   open,
   onClose,
   selectedBlock,
-  onSelect: handleSelect
+  onSelect: handleSelect,
+  onClearVideo
 }: VideoLibraryProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [openVideoDetails, setOpenVideoDetails] = useState(false)
@@ -150,7 +152,8 @@ export function VideoLibrary({
           onClose={setOpenVideoDetails}
           onLibraryClose={onClose}
           onSelect={onSelect}
-          showChangeVideo
+          showChangeVideoBar
+          onClearVideo={onClearVideo}
         />
       )}
     </>

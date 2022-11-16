@@ -28,7 +28,8 @@ export interface VideoDetailsProps {
   onSelect: (block: VideoBlockUpdateInput) => void
   onLibraryClose?: () => void
   source: VideoBlockSource
-  showChangeVideo?: boolean
+  showChangeVideoBar?: boolean
+  onClearVideo?: () => void
 }
 
 export function VideoDetails({
@@ -38,7 +39,8 @@ export function VideoDetails({
   onClose,
   onSelect,
   source,
-  showChangeVideo
+  showChangeVideoBar,
+  onClearVideo
 }: VideoDetailsProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
@@ -60,16 +62,15 @@ export function VideoDetails({
     onClose(false)
   }
 
-  function removeVideo(): void {
+  function handleClearVideo(): void {
     onSelect({
       videoId: null,
       videoVariantLanguageId: null,
       source: null
     })
     onClose(false)
-    if (onLibraryClose != null) {
-      onLibraryClose()
-    }
+    if (onLibraryClose != null) onLibraryClose()
+    if (onClearVideo != null) onClearVideo()
   }
 
   return (
@@ -116,7 +117,7 @@ export function VideoDetails({
           </Toolbar>
         </AppBar>
         <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
-          {showChangeVideo === true && (
+          {showChangeVideoBar === true && (
             <Stack
               direction="row"
               sx={{
@@ -136,13 +137,23 @@ export function VideoDetails({
                 </Button>
               </Box>
               <Box>
-                <IconButton onClick={() => removeVideo()} size="small">
+                <IconButton
+                  onClick={() => handleClearVideo()}
+                  size="small"
+                  aria-label="clear-video"
+                >
                   <DeleteOutlineIcon />
                 </IconButton>
               </Box>
             </Stack>
           )}
-          <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              overflow: 'auto',
+              pt: showChangeVideoBar === true ? 0 : 3
+            }}
+          >
             <Details id={id} open={open} onSelect={handleSelect} />
           </Box>
         </Stack>

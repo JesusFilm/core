@@ -20,13 +20,15 @@ interface SourceProps {
 
 export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
   const [open, setOpen] = useState(false)
+  const [clearVideo, setClearVideo] = useState(false)
 
   useEffect(() => {
-    // opens the video library if videoId is null
-    if (selectedBlock?.videoId == null) {
+    // opens the video library if videoId is null and clearVideo is false
+    // it is true when a video is cleared
+    if (selectedBlock?.videoId == null && !clearVideo) {
       setOpen(true)
     }
-  }, [selectedBlock])
+  }, [selectedBlock, clearVideo])
 
   let SourceContent
 
@@ -60,6 +62,7 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
         onClose={() => setOpen(false)}
         selectedBlock={selectedBlock}
         onSelect={onChange}
+        onClearVideo={() => setClearVideo(true)}
       />
     </>
   )
