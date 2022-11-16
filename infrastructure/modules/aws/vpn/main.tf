@@ -1,5 +1,5 @@
 resource "aws_acm_certificate" "vpn_server" {
-  domain_name       = var.name
+  domain_name       = var.dns_name
   validation_method = "DNS"
 
   lifecycle {
