@@ -477,7 +477,11 @@ export class JourneyResolver {
     @Parent() journey: Journey & { primaryImageBlockId?: string | null }
   ): Promise<ImageBlock | null> {
     if (journey.primaryImageBlockId == null) return null
-    return await this.blockService.get(journey.primaryImageBlockId)
+    const block: ImageBlock = await this.blockService.get(
+      journey.primaryImageBlockId
+    )
+    if (block.journeyId !== journey.id) return null
+    return block
   }
 
   @ResolveField()

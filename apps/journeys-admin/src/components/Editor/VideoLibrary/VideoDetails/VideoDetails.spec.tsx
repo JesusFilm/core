@@ -162,11 +162,12 @@ describe('VideoDetails', () => {
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
         <VideoDetails
-          id="2_Acts7302-0-0"
+          id="2_0-FallingPlates"
           source={VideoBlockSource.internal}
           open
           onClose={onClose}
           onSelect={onSelect}
+          showChangeVideo
         />
       </MockedProvider>
     )

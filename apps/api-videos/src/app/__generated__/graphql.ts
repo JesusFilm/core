@@ -89,8 +89,6 @@ export abstract class IQuery {
 
     abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 
-    abstract videosById(ids?: Nullable<string[]>): Video[] | Promise<Video[]>;
-
     abstract video(id: string, idType?: Nullable<IdType>): Video | Promise<Video>;
 }
 

@@ -6,6 +6,9 @@ sudo chgrp node -R /workspaces
 
 cd /workspaces/core
 
+# add default user to postgres
+psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;"
+
 # install Nx CLI tool
 npm install -g nx
 

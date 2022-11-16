@@ -6,14 +6,11 @@ import Error from 'next/error'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import Container from '@mui/material/Container'
 import Button from '@mui/material/Button'
 import SaveAlt from '@mui/icons-material/SaveAlt'
 import Share from '@mui/icons-material/Share'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import 'video.js/dist/video-js.css'
 
 import { routeParser } from '../src/libs/routeParser/routeParser'
@@ -23,9 +20,8 @@ import {
 } from '../src/libs/languageContext/LanguageContext'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCarousel'
-import { Footer } from '../src/components/Footer'
-import { Header } from '../src/components/Header'
 import { VideoHero, SimpleHero } from '../src/components/Hero'
+import { ShareDialog } from '../src/components/ShareDialog'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID) {
@@ -115,6 +111,7 @@ export default function SeoFriendly(): ReactElement {
   const { routes } = routeParser(slug)
   const languageContext = useLanguage()
   const [tabValue, setTabValue] = useState(0)
+  const [openShare, setOpenShare] = useState(false)
 
   const handleTabChange = (_event, newValue): void => {
     setTabValue(newValue)
@@ -144,31 +141,25 @@ export default function SeoFriendly(): ReactElement {
 
   return (
     <LanguageProvider>
-      <PageWrapper header={<Header />} footer={<Footer />}>
+      <PageWrapper
+        hero={
+          data?.video == null ? (
+            <></>
+          ) : siblingsData != null ? (
+            <VideoHero
+              loading={loading}
+              video={data.video}
+              siblingVideos={siblingsData}
+              routes={routes}
+            />
+          ) : (
+            <SimpleHero loading={loading} video={data.video} />
+          )
+        }
+      >
         {data?.video != null && (
           <>
-            <ThemeProvider
-              nested
-              themeName={ThemeName.website}
-              themeMode={ThemeMode.dark}
-            >
-              {siblingsData != null ? (
-                <VideoHero
-                  loading={loading}
-                  video={data.video}
-                  siblingVideos={siblingsData}
-                  routes={routes}
-                />
-              ) : (
-                <SimpleHero loading={loading} video={data.video} />
-              )}
-            </ThemeProvider>
-            <Box
-              sx={{
-                paddingTop: '20px',
-                paddingX: '100px'
-              }}
-            >
+            <Box sx={{ pt: '20px' }}>
               {data.video.episodes.length > 0 && (
                 <VideosCarousel
                   videos={data.video.episodes}
@@ -182,58 +173,56 @@ export default function SeoFriendly(): ReactElement {
                 />
               )}
             </Box>
-            <Container
-              style={{
-                paddingLeft: 100,
-                paddingRight: 100,
-                margin: 0,
-                marginTop: 20,
-                marginBottom: 80,
+
+            <Stack
+              direction="row"
+              spacing="100px"
+              sx={{
+                mx: 0,
+                mt: 20,
+                mb: 80,
                 maxWidth: '100%'
               }}
             >
-              <Stack direction="row" spacing="100px">
-                <Box width="100%">
-                  <Tabs
-                    value={tabValue}
-                    onChange={handleTabChange}
-                    aria-label="background tabs"
-                    variant="fullWidth"
-                    centered
-                    sx={{ marginBottom: '40px' }}
-                  >
-                    <Tab
-                      label="Description"
-                      {...tabA11yProps('video-description', 0)}
-                    />
-                  </Tabs>
-                  <TabPanel name="video-description" value={tabValue} index={0}>
-                    <Typography variant="body1">
-                      {data.video.description[0]?.value}
-                    </Typography>
-                  </TabPanel>
-
-                  <TabPanel name="video-transcript" value={tabValue} index={1}>
-                    <Typography variant="body1">&nbsp;</Typography>
-                  </TabPanel>
-                  <TabPanel name="video-strategy" value={tabValue} index={2}>
-                    <Typography variant="body1">&nbsp;</Typography>
-                  </TabPanel>
-                </Box>
-                <Box width="336px">
-                  <Stack direction="row" spacing="20px" mb="40px">
-                    <Button variant="outlined">
-                      <SaveAlt />
-                      &nbsp; Download
-                    </Button>
-                    <Button variant="outlined">
-                      <Share />
-                      &nbsp; Share
-                    </Button>
-                  </Stack>
-                </Box>
-              </Stack>
-            </Container>
+              <Box width="100%">
+                <Tabs
+                  value={tabValue}
+                  onChange={handleTabChange}
+                  aria-label="background tabs"
+                  variant="fullWidth"
+                  centered
+                  sx={{ marginBottom: '40px' }}
+                >
+                  <Tab
+                    label="Description"
+                    {...tabA11yProps('video-description', 0)}
+                  />
+                </Tabs>
+                <TabPanel name="video-description" value={tabValue} index={0}>
+                  <Typography variant="body1">
+                    {data.video.description[0]?.value}
+                  </Typography>
+                </TabPanel>
+              </Box>
+              <Box width="336px">
+                <Stack direction="row" spacing="20px" mb="40px">
+                  <Button variant="outlined">
+                    <SaveAlt />
+                    &nbsp; Download
+                  </Button>
+                  <Button variant="outlined" onClick={() => setOpenShare(true)}>
+                    <Share />
+                    &nbsp; Share
+                  </Button>
+                </Stack>
+              </Box>
+            </Stack>
+            <ShareDialog
+              open={openShare}
+              video={data.video}
+              routes={routes}
+              onClose={() => setOpenShare(false)}
+            />
           </>
         )}
       </PageWrapper>

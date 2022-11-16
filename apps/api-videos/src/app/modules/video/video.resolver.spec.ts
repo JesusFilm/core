@@ -148,68 +148,6 @@ describe('VideoResolver', () => {
     })
   })
 
-  describe('videosById', () => {
-    it('returns Videos', async () => {
-      const info = {
-        fieldNodes: [
-          {
-            selectionSet: {
-              selections: [
-                {
-                  name: { value: 'variant' },
-                  arguments: [
-                    {
-                      name: { value: 'languageId' },
-                      value: { value: 'en' }
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        ]
-      }
-      expect(await resolver.videosById(info, [video.id, video.id])).toEqual([
-        video,
-        video
-      ])
-      expect(service.getVideosByIds).toHaveBeenCalledWith(
-        [video.id, video.id],
-        'en'
-      )
-    })
-
-    it('returns filtered Videos', async () => {
-      const info = {
-        fieldNodes: [
-          {
-            selectionSet: {
-              selections: [
-                {
-                  name: { value: 'variant' },
-                  arguments: [
-                    {
-                      name: { value: 'languageId' },
-                      value: { value: 'en' }
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        ]
-      }
-      expect(await resolver.videosById(info, [video.id, video.id])).toEqual([
-        video,
-        video
-      ])
-      expect(service.getVideosByIds).toHaveBeenCalledWith(
-        [video.id, video.id],
-        'en'
-      )
-    })
-  })
-
   describe('video', () => {
     it('return a video', async () => {
       const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
