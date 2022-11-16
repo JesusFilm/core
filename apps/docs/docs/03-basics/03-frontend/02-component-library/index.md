@@ -57,9 +57,9 @@ For all other use cases:
 
 **Themes**
 
-- [base](https://storybook.core.jesusfilm.org/?path=/story/default-theme--viewport): default theme for Next Steps. Includes project specific styles for journeys.
-- [website](https://storybook.core.jesusfilm.org/?path=/story/website-theme--components): project theme for Jesus Film Project websites
-- [admin](https://storybook.core.jesusfilm.org/?path=/story/admin-theme--colors): project theme for admin projects.
+- [base](https://storybook.core.jesusfilm.org/?path=/story/default-theme): default theme for Next Steps. Includes project specific styles for journeys.
+- [website](https://storybook.core.jesusfilm.org/?path=/story/website-theme): project theme for Jesus Film Project websites
+- [admin](https://storybook.core.jesusfilm.org/?path=/story/admin-theme): project theme for admin projects.
 
 This common implementation pattern is derived from the [Atomic Web Design](https://bradfrost.com/blog/post/atomic-web-design/) approach
 

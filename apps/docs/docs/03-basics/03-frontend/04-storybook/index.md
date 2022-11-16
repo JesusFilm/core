@@ -53,7 +53,7 @@ const ComponentDemo = {
 // #4 add mocked data
 
 #5
-const Template: ComponentStory<typeof Component> = = ({ ...args }) => (
+const Template: Story<ComponentProps<typeof Component>> = = ({ ...args }) => (
   <OptionalProviders>         // #6
     <Component {...args} />
   </OptionalProviders>
@@ -108,10 +108,10 @@ const exampleEventMock: MockedResponse = {
 
 4. Instead of bloating the Template or story args, we extract any complex component data. This may be defined above the Template or imported from a `data.ts` file within the same component folder. See `RadioQuestion.stories.tsx` for an example.
 
-5. Our project uses `ComponentStory<typeof Component>` as the Template type. If you need to extend the template type, use
+5. Our project uses `Story<ComponentProps<typeof Component>>` as the Template type. If you need to extend the template type, use
 
 ```
-Story< Parameters<typeof Component>[0] & { newProperty: NewPropertyType }
+Story<ComponentProps<typeof Component> & { newProperty: NewPropertyType }>
 ```
 
 6.  Components sometimes references data passed to it from a parent `Provider` component. Some providers we use pass down:
