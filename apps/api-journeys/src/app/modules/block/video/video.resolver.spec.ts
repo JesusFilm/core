@@ -190,30 +190,6 @@ describe('VideoBlockResolver', () => {
     })
 
     describe('Internal Source', () => {
-      it('throws error when no videoVariantLanguageId', async () => {
-        await expect(
-          async () =>
-            await resolver.videoBlockCreate({
-              journeyId: 'journeyId',
-              parentBlockId: 'parentBlockId',
-              videoId: 'videoId',
-              source: VideoBlockSource.internal
-            })
-        ).rejects.toThrow('videoVariantLanguageId is a required field')
-      })
-
-      it('throws error when no videoId', async () => {
-        await expect(
-          async () =>
-            await resolver.videoBlockCreate({
-              journeyId: 'journeyId',
-              parentBlockId: 'parentBlockId',
-              videoVariantLanguageId: 'videoVariantLanguageId',
-              source: VideoBlockSource.internal
-            })
-        ).rejects.toThrow('videoId is a required field')
-      })
-
       it('creates a VideoBlock', async () => {
         expect(
           await resolver.videoBlockCreate({
@@ -318,26 +294,6 @@ describe('VideoBlockResolver', () => {
     })
 
     describe('Internal Source', () => {
-      it('throws error when no videoVariantLanguageId', async () => {
-        await expect(
-          async () =>
-            await resolver.videoBlockUpdate('blockId', 'journeyId', {
-              videoId: 'videoId',
-              source: VideoBlockSource.internal
-            })
-        ).rejects.toThrow('videoVariantLanguageId is a required field')
-      })
-
-      it('throws error when no videoId', async () => {
-        await expect(
-          async () =>
-            await resolver.videoBlockUpdate('blockId', 'journeyId', {
-              videoVariantLanguageId: 'videoVariantLanguageId',
-              source: VideoBlockSource.internal
-            })
-        ).rejects.toThrow('videoId is a required field')
-      })
-
       it('updates a VideoBlock', async () => {
         expect(
           await resolver.videoBlockUpdate('blockId', 'journeyId', {
