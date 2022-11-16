@@ -175,7 +175,7 @@ describe('VideoDetails', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('should clear onSelect and call onClose on removeVideo click', () => {
+  it('should clear onSelect and call onClose on clearVideo click', () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
     const onClearVideo = jest.fn()
