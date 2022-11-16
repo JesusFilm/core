@@ -1,3 +1,4 @@
+import { ComponentProps } from 'react'
 import { ComponentStory, Meta } from '@storybook/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
@@ -14,7 +15,7 @@ const Demo = {
   title: 'Journeys-Ui/RadioQuestion'
 }
 
-const typographyProps: Parameters<typeof Typography>[0] = {
+const typographyProps: ComponentProps<typeof Typography> = {
   __typename: 'TypographyBlock',
   id: 'id',
   parentOrder: 0,

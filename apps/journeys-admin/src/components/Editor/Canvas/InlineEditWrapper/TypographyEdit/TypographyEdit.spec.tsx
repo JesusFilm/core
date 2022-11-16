@@ -1,18 +1,15 @@
+import { ComponentProps } from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TypographyVariant } from '../../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import {
-  TypographyEdit,
-  TypographyEditProps,
-  TYPOGRAPHY_BLOCK_UPDATE_CONTENT
-} from '.'
+import { TypographyEdit, TYPOGRAPHY_BLOCK_UPDATE_CONTENT } from '.'
 
 describe('TypographyEdit', () => {
   const onDelete = jest.fn()
-  const props: TypographyEditProps = {
+  const props: ComponentProps<typeof TypographyEdit> = {
     __typename: 'TypographyBlock',
     parentBlockId: 'card.id',
     parentOrder: 0,

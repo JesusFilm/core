@@ -24,7 +24,7 @@ export const RADIO_OPTION_BLOCK_CREATE = gql`
   }
 `
 
-export interface RadioQuestionEditProps extends TreeBlock<RadioQuestionFields> {
+interface RadioQuestionEditProps extends TreeBlock<RadioQuestionFields> {
   wrappers?: WrappersProps
 }
 

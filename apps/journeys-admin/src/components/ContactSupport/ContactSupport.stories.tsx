@@ -1,6 +1,6 @@
-import { Story, Meta } from '@storybook/react'
+import { ComponentStory, Meta } from '@storybook/react'
 import { journeysAdminConfig } from '../../libs/storybook'
-import { ContactSupport, ContactSupportProps } from '.'
+import { ContactSupport } from '.'
 
 const ContactSupportStory = {
   ...journeysAdminConfig,
@@ -8,7 +8,7 @@ const ContactSupportStory = {
   title: 'Journeys-Admin/ContactSupport'
 }
 
-const Template: Story = ({ ...args }: ContactSupportProps) => (
+const Template: ComponentStory<typeof ContactSupport> = ({ ...args }) => (
   <ContactSupport {...args} />
 )
 

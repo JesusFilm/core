@@ -1,7 +1,7 @@
+import { ComponentProps, ReactElement } from 'react'
 import { Meta, ComponentStory } from '@storybook/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
-import { ReactElement } from 'react'
 import { SnackbarProvider } from 'notistack'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
@@ -27,7 +27,7 @@ const Demo = {
   }
 }
 
-const typographyProps: Parameters<typeof Typography>[0] = {
+const typographyProps: ComponentProps<typeof Typography> = {
   __typename: 'TypographyBlock',
   id: 'id',
   parentOrder: 0,
@@ -39,7 +39,7 @@ const typographyProps: Parameters<typeof Typography>[0] = {
   children: []
 }
 
-const signUpProps: Parameters<typeof SignUp>[0] = {
+const signUpProps: ComponentProps<typeof SignUp> = {
   id: 'signUpBlockId1',
   __typename: 'SignUpBlock',
   parentBlockId: null,
