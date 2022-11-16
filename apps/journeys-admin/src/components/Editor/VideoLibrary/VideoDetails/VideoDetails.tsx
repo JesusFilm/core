@@ -67,7 +67,9 @@ export function VideoDetails({
       source: null
     })
     onClose(false)
-    if (onLibraryClose != null) onLibraryClose()
+    if (onLibraryClose != null) {
+      onLibraryClose()
+    }
   }
 
   return (
@@ -114,17 +116,17 @@ export function VideoDetails({
           </Toolbar>
         </AppBar>
         <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Stack
-            direction="row"
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              mx: 6,
-              mt: 4
-            }}
-          >
-            <Box>
-              {showChangeVideo === true && (
+          {showChangeVideo === true && (
+            <Stack
+              direction="row"
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                mx: 6,
+                mt: 4
+              }}
+            >
+              <Box>
                 <Button
                   startIcon={<SubscriptionsRoundedIcon />}
                   size="small"
@@ -132,14 +134,14 @@ export function VideoDetails({
                 >
                   Change Video
                 </Button>
-              )}
-            </Box>
-            <Box>
-              <IconButton onClick={() => removeVideo()} size="small">
-                <DeleteOutlineIcon />
-              </IconButton>
-            </Box>
-          </Stack>
+              </Box>
+              <Box>
+                <IconButton onClick={() => removeVideo()} size="small">
+                  <DeleteOutlineIcon />
+                </IconButton>
+              </Box>
+            </Stack>
+          )}
           <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
             <Details id={id} open={open} onSelect={handleSelect} />
           </Box>
