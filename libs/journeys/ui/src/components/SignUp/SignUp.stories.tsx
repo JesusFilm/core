@@ -1,5 +1,5 @@
 import { ComponentProps, ReactElement } from 'react'
-import { Meta, ComponentStory } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
@@ -76,7 +76,9 @@ const submitEventMock: MockedResponse = {
   }
 }
 
-const Template: ComponentStory<typeof SignUp> = ({ ...args }): ReactElement => (
+const Template: Story<ComponentProps<typeof SignUp>> = ({
+  ...args
+}): ReactElement => (
   <MockedProvider mocks={[submitEventMock]}>
     <JourneyProvider>
       <SnackbarProvider>
@@ -127,7 +129,7 @@ SubmitError.play = () => {
   userEvent.click(submit)
 }
 
-const LoadingTemplate: ComponentStory<typeof SignUp> = ({
+const LoadingTemplate: Story<ComponentProps<typeof SignUp>> = ({
   ...args
 }): ReactElement => (
   <ApolloLoadingProvider>

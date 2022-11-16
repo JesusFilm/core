@@ -1,5 +1,5 @@
 import { ComponentProps } from 'react'
-import { ComponentStory, Meta } from '@storybook/react'
+import { Story, Meta } from '@storybook/react'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { StoryCard } from '../StoryCard'
 import { Image } from './Image'
@@ -22,7 +22,7 @@ const emptyImage: Omit<ComponentProps<typeof Image>, 'src'> = {
   children: []
 }
 
-const Template: ComponentStory<typeof Image> = ({ ...args }) => (
+const Template: Story<ComponentProps<typeof Image>> = ({ ...args }) => (
   <StoryCard>
     <Image {...args} alt={args.alt} />
   </StoryCard>

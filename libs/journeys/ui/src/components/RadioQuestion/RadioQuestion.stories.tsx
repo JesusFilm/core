@@ -1,5 +1,5 @@
 import { ComponentProps } from 'react'
-import { ComponentStory, Meta } from '@storybook/react'
+import { Story, Meta } from '@storybook/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import type { TreeBlock } from '../../libs/block'
@@ -86,7 +86,7 @@ const submitEventMock: MockedResponse = {
   }
 }
 
-const Template: ComponentStory<typeof RadioQuestion> = ({ ...args }) => (
+const Template: Story<ComponentProps<typeof RadioQuestion>> = ({ ...args }) => (
   <MockedProvider mocks={[submitEventMock]}>
     <StoryCard>
       <Typography {...typographyProps} />

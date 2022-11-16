@@ -1,4 +1,5 @@
-import { ComponentStory, Meta } from '@storybook/react'
+import { ComponentProps } from 'react'
+import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { noop } from 'lodash'
 
@@ -32,7 +33,7 @@ const video: Video = {
 
 const routes = ['the-story-of-jesus-for-children']
 
-const Template: ComponentStory<typeof ShareDialog> = ({ ...args }) => {
+const Template: Story<ComponentProps<typeof ShareDialog>> = ({ ...args }) => {
   return <ShareDialog {...args} />
 }
 

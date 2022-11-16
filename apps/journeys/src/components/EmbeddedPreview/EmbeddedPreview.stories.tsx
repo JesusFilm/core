@@ -1,6 +1,6 @@
+import { ComponentProps, ReactElement } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
-import { ComponentStory, Meta } from '@storybook/react'
-import { ReactElement } from 'react'
+import { Story, Meta } from '@storybook/react'
 
 import { journeysConfig } from '../../libs/storybook'
 import {
@@ -24,7 +24,7 @@ const Demo = {
   }
 }
 
-const Template: ComponentStory<typeof EmbeddedPreview> = ({
+const Template: Story<ComponentProps<typeof EmbeddedPreview>> = ({
   ...args
 }): ReactElement => (
   <MockedProvider>
