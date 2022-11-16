@@ -8,6 +8,12 @@ enum VideoBlockSource {
   youTube
 }
 
+enum VideoBlockObjectFit {
+  fill
+  fit
+  zoomed
+}
+
 type VideoBlock implements Block {
   id: ID!
   journeyId: ID!
@@ -81,6 +87,10 @@ type VideoBlock implements Block {
   action that should be performed when the video ends
   """
   action: Action
+  """
+  aspect ratio for VideoBlock
+  """
+  objectFit: VideoBlockObjectFit
 }
 
 input VideoBlockCreateInput {
@@ -126,6 +136,10 @@ input VideoBlockCreateInput {
   True if the coverBlockId in a parent block should be set to this block's id.
   """
   isCover: Boolean
+  """
+  aspect ratio for VideoBlock
+  """
+  objectFit: VideoBlockObjectFit
 }
 
 input VideoBlockUpdateInput {
@@ -163,6 +177,10 @@ input VideoBlockUpdateInput {
   """
   posterBlockId: ID
   fullsize: Boolean
+  """
+  aspect ratio for VideoBlock
+  """
+  objectFit: VideoBlockObjectFit
 }
 
 extend type Mutation {

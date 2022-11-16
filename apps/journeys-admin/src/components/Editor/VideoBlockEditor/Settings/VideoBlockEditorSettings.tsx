@@ -1,10 +1,14 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+// import Button from '@mui/material/Button'
+// import ButtonGroup from '@mui/material/ButtonGroup'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup  from '@mui/material/ToggleButtonGroup'
 import Box from '@mui/material/Box'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { noop } from 'lodash'
@@ -53,9 +57,104 @@ export function VideoBlockEditorSettings({
     onSubmit: noop
   })
 
+  const [aspectRatio, setAspectRatio] = useState('fill');
+
+  const handleAspectRatioChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newAspectRatio: string,
+  ) :void  =>  {
+    setAspectRatio(newAspectRatio);
+    // TODO: this could be where we update the objectFit on video block?
+  };
+
   return (
     <Box sx={{ px: 6, py: 3, width: '100%' }}>
       <Stack direction="column" spacing={3}>
+        <Stack direction="column" spacing={3}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              color:
+                selectedBlock == null || selectedBlock.parentOrder == null
+                  ? 'action.disabled'
+                  : undefined
+            }}
+          >
+            Timing
+          </Typography>
+          <Stack direction="row" justifyContent="space-around" spacing={3}>
+            <TimeField
+              showSeconds
+              value={values.startAt}
+              onChange={handleChange}
+              style={{ width: '100%' }}
+              input={
+                <TextField
+                  label="Starts At"
+                  name="startAt"
+                  value={values.startAt}
+                  variant="filled"
+                  disabled={selectedBlock == null}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PlayCircle />
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              }
+            />
+            <TimeField
+              showSeconds
+              value={values.endAt}
+              onChange={handleChange}
+              style={{ width: '100%' }}
+              input={
+                <TextField
+                  label="Ends At"
+                  name="endAt"
+                  value={values.endAt}
+                  variant="filled"
+                  disabled={selectedBlock == null}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <StopCircle />
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              }
+            />
+          </Stack>
+        </Stack>
+        <Stack direction="column" spacing={3}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              color:
+                selectedBlock == null || selectedBlock.parentOrder == null
+                  ? 'action.disabled'
+                  : undefined
+            }}
+          >
+            Aspect ratio
+          </Typography>
+          <ToggleButtonGroup
+            color="primary"
+            value={aspectRatio}
+            exclusive
+            fullWidth
+            onChange={handleAspectRatioChange}
+            aria-label="Platform"
+          >
+            <ToggleButton value="fill">Fill</ToggleButton>
+            <ToggleButton value="fit">Fit</ToggleButton>
+            <ToggleButton value="zoomed">Zoomed</ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
+        <Divider />
         <Stack direction="row" justifyContent="space-between">
           <Stack direction="column">
             <Typography
@@ -129,53 +228,6 @@ export function VideoBlockEditorSettings({
             inputProps={{
               'aria-label': 'Muted'
             }}
-          />
-        </Stack>
-        <Divider />
-        <Stack direction="row" justifyContent="space-around" spacing={3}>
-          <TimeField
-            showSeconds
-            value={values.startAt}
-            onChange={handleChange}
-            style={{ width: '100%' }}
-            input={
-              <TextField
-                label="Starts At"
-                name="startAt"
-                value={values.startAt}
-                variant="filled"
-                disabled={selectedBlock == null}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PlayCircle />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            }
-          />
-          <TimeField
-            showSeconds
-            value={values.endAt}
-            onChange={handleChange}
-            style={{ width: '100%' }}
-            input={
-              <TextField
-                label="Ends At"
-                name="endAt"
-                value={values.endAt}
-                variant="filled"
-                disabled={selectedBlock == null}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <StopCircle />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            }
           />
         </Stack>
         <Divider />

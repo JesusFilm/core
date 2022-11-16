@@ -45,7 +45,8 @@ describe('VideoBlockResolver', () => {
       gtmEventName: 'gtmEventName',
       url: 'https://jesusfilm.org',
       target: 'target'
-    }
+    },
+    objectFit: 'fill'
   }
 
   const actionResponse = {
