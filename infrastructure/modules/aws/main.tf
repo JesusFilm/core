@@ -68,5 +68,5 @@ module "vpn" {
   vpc_id         = module.vpc.vpc_id
   vpc_cidr_block = var.cidr
   cidr_block     = "10.0.0.0/16"
-  subnets        = module.vpc.internal_subnets
+  subnets        = module.vpc.public_subnets
 }
