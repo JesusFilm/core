@@ -20,42 +20,52 @@ These are a list of key services that we use. Please note that there may be othe
 
 ### Slack
 
-Slack is the main place that we communicate with each other. Especially being a team located around the world, slack is an important tool for us. Connect with your manager for access to the [JFP Digital](https://jfp-digital.slack.com/) slack. Your manager should add you to any team specific chanels, it's up to you to look through the list of public chanels for any others you want to join.
+Slack is the main place that we communicate with each other. Especially being a team located around the world, slack is an important tool for us. Your manager should add you to any team specific channels, it's up to you to look through the list of public channels for any others you want to join.
+
+> Connect with your manager for access to the [JFP Digital](https://jfp-digital.slack.com/) slack.
 
 ### Jesus Film Github team
 
-Refer to instructions in [prerequisites](../04-engineering-practices/01-workflow/index.md) in `Our Workflow`
+Get added to a our team to start contributing.
+
+> Refer to instructions in [prerequisites](../04-engineering-practices/01-workflow/index.md) in **Our Workflow**
 
 ### Doppler
 
-Refer to instructions in [Setup Environment Variables](../02-getting-started/02-environment-variables.mdx)
+We store all secrets for our projects in doppler. This is required for you to be able to run the project locally.
+
+> Refer to instructions in [Setup Environment Variables](../02-getting-started/02-environment-variables.mdx)
 
 ### JFP Product Strategy
 
-Open [JF - Product Stragey](https://drive.google.com/drive/u/1/folders/0AOQHTGg1mdieUk9PVA) on Google Drive and request acces to the Team Drive.
+The files in this google drive contain the pitches and additional docs for our product suite.
+
+> Open [JF - Product Strategy](https://drive.google.com/drive/u/1/folders/0AOQHTGg1mdieUk9PVA) on Google Drive and request access to the Team Drive.
 
 ### Know your team
 
-Know your team helps you to get to know the wider team and helps them to know a bit about you too. Your team may use this tool for other ways of connecting (eg, stand ups, schedueling meetings), ask your managaer to clarify expections of usage.
+Know your team helps you to get to know the wider team and helps them to know a bit about you too. Your team may use this tool for other ways of connecting (eg, stand ups, scheduling meetings), ask your manager to clarify expectations of usage.
 
-Get invited to the Jesus Film Know Your Team account by sending an email to our Know Your Team [admin](mailto:tataihono.nikora@jesusfilm.org?subject=Doppler%20Invite%20Request)
+> Get invited to the Jesus Film Know Your Team account by sending an email to our Know Your Team [admin](mailto:tataihono.nikora@jesusfilm.org?subject=Doppler%20Invite%20Request)
 
 ### Perdoo
 
 Start by reading [The ultimate guide to OKR](https://www.perdoo.com/resources/ebook-the-ultimate-guide-to-okr/)
 
-Perdoo is to help you and your manager create progression pathways for your time working with us. Talk with your manager about how to get added to the Jesus Film Perdoo account, and how to go about creating your first OKR (Objectives and Key Results)
+Perdoo is to help you and your manager create progression pathways for your time working with us. Once you have access talk with your manager about creating your first OKR (Objectives and Key Results)
+
+> Talk with your manager about how to get added to the Jesus Film Perdoo account
 
 ### Geekbot
 
-Geekbot is a bot for slack that helps our team communicate what work we've done and what work we're intending to work on. Every working day geekbot will send you an automated message at 10am (your local time) asking you to asnwer a few questions. Upon answering all of geekbots questions, your update will be posted on to the `#sol-team-stand-up` chanel on slack.
+Geekbot is a bot for slack that helps our team communicate what work we've done and what work we're intending to work on. Every working day geekbot will send you an automated message at 10am (your local time) asking you to answer a few questions. Upon answering all of geekbots questions, your update will be posted on to the `#sol-team-stand-up` chanel on slack.
 
 It is important to fill these in daily to let your manager know what you are working, and may be used in performance reviews.
 
-Once you've been invited to the JFP Digital slack, ask your manager to add you to the `#sol-team-stand-up` chanel.
+> Once you've been invited to the JFP Digital slack, ask your manager to add you to the `#sol-team-stand-up` chanel.
 
 ### Cloudflare
 
-We use [cloud flare zero trust](https://www.cloudflare.com/products/zero-trust/zero-trust-network-access/) when connecting to untrusted networks to connect to the internet. Set up cloudflare zero trust for any device that you use for work purposes. Follow [set-up guide](https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/deployment/manual-deployment/) and use `jfp-sol` as the team name.
+We use [cloud flare zero trust](https://www.cloudflare.com/products/zero-trust/zero-trust-network-access/) when connecting to untrusted networks to connect to the internet. It is to be set up for any devices you use for work purposes.
 
-<br/>
+> Follow [set-up guide](https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/deployment/manual-deployment/) and use `jfp-sol` as the team name.
