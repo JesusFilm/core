@@ -163,7 +163,7 @@ jobs:
           autoAcceptChanges: 'main'
           onlyChanged: 'true'
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
+          traceChanged: 'expanded'
           untraced: |
           - '**/package*.json'
           - '**/.storybook/**'
-          traceChanged: 'expanded'
