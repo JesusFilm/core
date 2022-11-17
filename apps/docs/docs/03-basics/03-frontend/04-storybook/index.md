@@ -11,9 +11,10 @@ Storybook allows us to capture multiple visual variations of a component which m
 
 ## When to write stories
 
-For instances of mui components we directly use, a `components.stories.tsx` story should be included in the shared-ui theme tokens folder. <br/>
-journeys - to be created <br/>
-[watch](https://storybook.core.jesusfilm.org/?path=/story/website-theme--components)
+For instances of mui components we directly use, a `components.stories.tsx` story should be included in the shared-ui theme tokens folder. For example see:<br/>
+
+- journeys - to be created <br/>
+- [watch](https://storybook.core.jesusfilm.org/?path=/story/website-theme--components)
 
 For our own components use the following chart:
 
@@ -59,6 +60,7 @@ const Template: Story<ComponentProps<typeof Component>> = = ({ ...args }) => (
   </OptionalProviders>
 )
 
+#7
 export const Default = Template.bind({})
 Default.args = {
   // add properties here
@@ -122,3 +124,5 @@ Story<ComponentProps<typeof Component> & { newProperty: NewPropertyType }>
     - Api data (ApolloProvider - use MockedProvider in tests/stories). <br/>
 
     Add **only** the providers needed to render and interact with the story.
+
+7.  Name the stories based on their visual state. Usually this is 1 or 2 words. The default rendered state (usually the simplest variant) is named "Default". Also name the story "Default" if there is only 1 story.
