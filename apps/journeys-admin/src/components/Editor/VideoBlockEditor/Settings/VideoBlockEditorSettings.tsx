@@ -65,6 +65,11 @@ export function VideoBlockEditorSettings({
   ) :void  =>  {
     setAspectRatio(newAspectRatio);
     // TODO: this could be where we update the objectFit on video block?
+    // merge backend changes into this branch, once it's been approved
+    // need to call videoblock update mutation method
+    // add objectFit to videoFields.ts, run codegen
+    // add objectFit to props in Video.tsx
+    // Find out how to make a video fill fit or zoom on video.tsx
   };
 
   return (
