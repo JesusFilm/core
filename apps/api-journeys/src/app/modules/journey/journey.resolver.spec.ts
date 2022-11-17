@@ -614,6 +614,19 @@ describe('JourneyResolver', () => {
     it('should return null', async () => {
       expect(await resolver.primaryImageBlock(journey)).toEqual(null)
     })
+
+    it('should return null if primaryImageBlock journeyId is not current journey id ', async () => {
+      const journey2 = {
+        ...journey,
+        id: 'journeyId2'
+      }
+      expect(
+        await resolver.primaryImageBlock({
+          ...journey2,
+          primaryImageBlockId: 'blockId'
+        })
+      ).toEqual(null)
+    })
   })
 
   describe('journeyCreate', () => {

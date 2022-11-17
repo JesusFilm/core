@@ -23,8 +23,8 @@ const videoBlockYouTubeSchema = object().shape({
   )
 })
 const videoBlockInternalSchema = object().shape({
-  videoId: string().required(),
-  videoVariantLanguageId: string().required()
+  videoId: string().nullable(),
+  videoVariantLanguageId: string().nullable()
 })
 
 export interface YoutubeVideosData {
