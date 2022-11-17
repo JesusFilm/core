@@ -17,10 +17,9 @@ import {
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
 const videoBlockYouTubeSchema = object().shape({
-  videoId: string().matches(
-    /^[-\w]{11}$/,
-    'videoId must be a valid YouTube videoId'
-  )
+  videoId: string()
+    .matches(/^[-\w]{11}$/, 'videoId must be a valid YouTube videoId')
+    .nullable()
 })
 const videoBlockInternalSchema = object().shape({
   videoId: string().nullable(),
