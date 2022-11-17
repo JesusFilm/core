@@ -1,21 +1,3 @@
-resource "aws_acm_certificate" "vpn_server" {
-  domain_name       = var.dns_name
-  validation_method = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_acm_certificate_validation" "vpn_server" {
-  certificate_arn = aws_acm_certificate.vpn_server.arn
-
-  timeouts {
-    create = "1m"
-  }
-}
-
-
 resource "aws_acm_certificate" "vpn_client_root" {
   private_key       = data.aws_ssm_parameter.vpn_client_key.value
   certificate_body  = data.aws_ssm_parameter.vpn_client_cert.value
@@ -33,10 +15,12 @@ resource "aws_cloudwatch_log_stream" "vpn" {
 
 resource "aws_ec2_client_vpn_endpoint" "private" {
   description            = var.name
-  server_certificate_arn = aws_acm_certificate.vpn_server.arn
+  server_certificate_arn = var.certificate_arn
   client_cidr_block      = var.cidr_block
   split_tunnel           = true
-
+  vpc_id                 = var.vpc_id
+  security_group_ids     = [aws_security_group.vpn_access.id]
+  dns_servers            = [var.dns_server]
   authentication_options {
     type                       = "certificate-authentication"
     root_certificate_chain_arn = aws_acm_certificate.vpn_client_root.arn
@@ -74,7 +58,6 @@ resource "aws_ec2_client_vpn_network_association" "vpn_subnets" {
 
   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.private.id
   subnet_id              = var.subnets[count.index]
-  security_groups        = [aws_security_group.vpn_access.id]
 
   lifecycle {
     // The issue why we are ignoring changes is that on every change

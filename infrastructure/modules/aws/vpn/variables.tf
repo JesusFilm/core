@@ -22,3 +22,11 @@ variable "vpc_cidr_block" {
 variable "subnets" {
   type = list(string)
 }
+
+variable "certificate_arn" {
+  type = string
+}
+
+variable "dns_server" {
+  type = string
+}
