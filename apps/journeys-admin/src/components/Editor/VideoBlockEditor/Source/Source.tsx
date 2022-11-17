@@ -24,7 +24,6 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
 
   useEffect(() => {
     // opens the video library if videoId is null and clearVideo is false
-    // it is true when a video is cleared
     if (selectedBlock?.videoId == null && !clearVideo) {
       setOpen(true)
     }
