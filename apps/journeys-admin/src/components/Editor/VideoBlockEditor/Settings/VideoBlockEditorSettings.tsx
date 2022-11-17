@@ -58,6 +58,7 @@ export function VideoBlockEditorSettings({
   })
 
   const [aspectRatio, setAspectRatio] = useState('fill');
+  // change useState from 'fill' to objectFit value of videoBlock
 
   const handleAspectRatioChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -72,6 +73,7 @@ export function VideoBlockEditorSettings({
     // Find out how to make a video fill fit or zoom on video.tsx
   };
 
+  // togglebutton should conditionally render the text color, depending on if it's selected or not
   return (
     <Box sx={{ px: 6, py: 3, width: '100%' }}>
       <Stack direction="column" spacing={3}>
@@ -147,12 +149,13 @@ export function VideoBlockEditorSettings({
             Aspect ratio
           </Typography>
           <ToggleButtonGroup
-            color="primary"
+            color="secondary"
             value={aspectRatio}
             exclusive
             fullWidth
             onChange={handleAspectRatioChange}
             aria-label="Platform"
+            disabled
           >
             <ToggleButton value="fill">Fill</ToggleButton>
             <ToggleButton value="fit">Fit</ToggleButton>
