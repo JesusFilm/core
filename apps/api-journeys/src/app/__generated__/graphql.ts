@@ -123,6 +123,12 @@ export enum VideoBlockSource {
     youTube = "youTube"
 }
 
+export enum VideoBlockObjectFit {
+    fill = "fill",
+    fit = "fit",
+    zoomed = "zoomed"
+}
+
 export enum MessagePlatform {
     facebook = "facebook",
     telegram = "telegram",
@@ -370,6 +376,7 @@ export class VideoBlockCreateInput {
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
     isCover?: Nullable<boolean>;
+    objectFit?: Nullable<VideoBlockObjectFit>;
 }
 
 export class VideoBlockUpdateInput {
@@ -382,6 +389,7 @@ export class VideoBlockUpdateInput {
     source?: Nullable<VideoBlockSource>;
     posterBlockId?: Nullable<string>;
     fullsize?: Nullable<boolean>;
+    objectFit?: Nullable<VideoBlockObjectFit>;
 }
 
 export class ButtonClickEventCreateInput {
@@ -783,6 +791,7 @@ export class VideoBlock implements Block {
     image?: Nullable<string>;
     duration?: Nullable<number>;
     action?: Nullable<Action>;
+    objectFit?: Nullable<VideoBlockObjectFit>;
 }
 
 export class VideoTriggerBlock implements Block {
