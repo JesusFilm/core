@@ -158,7 +158,7 @@ jobs:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           token: ${{ secrets.GITHUB_TOKEN }}
           storybookBuildDir: 'dist/storybook/shared-storybook'
-          dryRun: true,
+          dryRun: 'true'
           exitOnceUploaded: true,
           autoAcceptChanges: 'main'
           onlyChanged: 'true'
