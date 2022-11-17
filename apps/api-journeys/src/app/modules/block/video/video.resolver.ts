@@ -88,7 +88,7 @@ export class VideoBlockResolver {
         input = {
           ...input,
           ...(await this.fetchFieldsFromYouTube(input.videoId as string)),
-          objectFit:null
+          objectFit: null
         }
         break
       case VideoBlockSource.internal:
@@ -164,7 +164,7 @@ export class VideoBlockResolver {
           input = {
             ...input,
             ...(await this.fetchFieldsFromYouTube(input.videoId)),
-            objectFit:null
+            objectFit: null
           }
         }
         break
