@@ -160,7 +160,6 @@ jobs:
           storybookBuildDir: 'dist/storybook/shared-storybook'
           exitOnceUploaded: true,
           autoAcceptChanges: 'main'
-          dryRun: true
           onlyChanged: 'true'
           forceRebuild: 'main'
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
