@@ -161,6 +161,7 @@ jobs:
           exitOnceUploaded: 'true'
           autoAcceptChanges: 'main'
           onlyChanged: 'true'
+          forceRebuild: 'true'
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
           untraced: |
             - '**/package*.json'
