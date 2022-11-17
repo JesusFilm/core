@@ -13,5 +13,6 @@ if [ ! -z "$DIFF" ]; then
 else
   # No changes
   echo "✅ - branch is updated to latest base"
+  echo  $DIFF \ | tr " " "\n"
   exit 0
 fi
