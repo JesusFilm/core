@@ -159,11 +159,11 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           storybookBuildDir: 'dist/storybook/shared-storybook'
           dryRun: 'true'
-          exitOnceUploaded: true,
+          exitOnceUploaded: 'true'
           autoAcceptChanges: 'main'
           onlyChanged: 'true'
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
-          traceChanged: 'expanded'
           untraced: |
-          - '**/package*.json'
-          - '**/.storybook/**'
+            - '**/package*.json'
+            - '**/.storybook/**'
+          traceChanged: 'expanded'
