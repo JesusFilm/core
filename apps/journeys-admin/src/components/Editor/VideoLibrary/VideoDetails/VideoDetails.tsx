@@ -151,7 +151,7 @@ export function VideoDetails({
             sx={{
               flexGrow: 1,
               overflow: 'auto',
-              pt: showChangeVideoBar === true ? 0 : 3
+              pt: showChangeVideoBar === true ? 0 : 6
             }}
           >
             <Details id={id} open={open} onSelect={handleSelect} />
