@@ -61,7 +61,7 @@ const languages: Language[] = [
   }
 ]
 
-const Template: Story = ({ id, onSelect, showChangeVideoBar }) => {
+const Template: Story = ({ id, onSelect, activeVideo }) => {
   const [open, setOpen] = useState(true)
 
   return (
@@ -113,7 +113,7 @@ const Template: Story = ({ id, onSelect, showChangeVideoBar }) => {
         onClose={() => setOpen(false)}
         onSelect={onSelect}
         source={VideoBlockSource.internal}
-        showChangeVideoBar={showChangeVideoBar}
+        activeVideo={activeVideo}
       />
     </MockedProvider>
   )
@@ -127,7 +127,7 @@ Default.args = {
 export const Selected = Template.bind({})
 Selected.args = {
   ...Default.args,
-  showChangeVideoBar: true
+  activeVideo: true
 }
 
 export const Loading: Story = ({ id, onSelect }) => {

@@ -167,7 +167,7 @@ describe('VideoDetails', () => {
           open
           onClose={onClose}
           onSelect={onSelect}
-          showChangeVideoBar
+          activeVideo
         />
       </MockedProvider>
     )
@@ -175,10 +175,10 @@ describe('VideoDetails', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('should clear onSelect and call onClose on clearVideo click', () => {
+  it('should clear the video on delete icon click', () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
-    const onClearVideo = jest.fn()
+    const onLibraryClose = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
         <VideoDetails
@@ -187,17 +187,18 @@ describe('VideoDetails', () => {
           open
           onClose={onClose}
           onSelect={onSelect}
-          showChangeVideoBar
-          onClearVideo={onClearVideo}
+          activeVideo
+          onLibraryClose={onLibraryClose}
         />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'clear-video' }))
     expect(onSelect).toHaveBeenCalledWith({
-      source: null,
+      source: VideoBlockSource.internal,
       videoId: null,
       videoVariantLanguageId: null
     })
-    expect(onClearVideo).toHaveBeenCalled()
+    expect(onLibraryClose).toHaveBeenCalled()
+    expect(onClose).toHaveBeenCalled()
   })
 })

@@ -60,6 +60,11 @@ export function VideoLibrary({
     if (onClose != null) onClose()
   }
 
+  const handleLibraryClose = (): void => {
+    if (onClose != null) onClose()
+    if (onClearVideo != null) onClearVideo()
+  }
+
   return (
     <>
       <Drawer
@@ -150,10 +155,9 @@ export function VideoLibrary({
           open={openVideoDetails}
           source={selectedBlock.source}
           onClose={setOpenVideoDetails}
-          onLibraryClose={onClose}
+          onLibraryClose={handleLibraryClose}
           onSelect={onSelect}
-          showChangeVideoBar
-          onClearVideo={onClearVideo}
+          activeVideo
         />
       )}
     </>

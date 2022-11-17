@@ -28,8 +28,7 @@ export interface VideoDetailsProps {
   onSelect: (block: VideoBlockUpdateInput) => void
   onLibraryClose?: () => void
   source: VideoBlockSource
-  showChangeVideoBar?: boolean
-  onClearVideo?: () => void
+  activeVideo?: boolean
 }
 
 export function VideoDetails({
@@ -39,8 +38,7 @@ export function VideoDetails({
   onClose,
   onSelect,
   source,
-  showChangeVideoBar,
-  onClearVideo
+  activeVideo
 }: VideoDetailsProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
@@ -57,22 +55,24 @@ export function VideoDetails({
       break
   }
 
-  function handleSelect(block: VideoBlockUpdateInput): void {
+  const handleSelect = (block: VideoBlockUpdateInput): void => {
     onSelect(block)
     onClose(false)
   }
 
-  function handleClearVideo(): void {
+  const handleLibraryClose = (): void => {
+    onClose(false)
+    if (onLibraryClose != null) onLibraryClose()
+  }
+
+  const handleClearVideo = (): void => {
     onSelect({
       videoId: null,
       videoVariantLanguageId: null,
-      source: null
+      source: VideoBlockSource.internal
     })
-    onClose(false)
-    if (onLibraryClose != null) onLibraryClose()
-    if (onClearVideo != null) onClearVideo()
+    handleLibraryClose()
   }
-
   return (
     <>
       <Drawer
@@ -104,10 +104,7 @@ export function VideoDetails({
               Video Details
             </Typography>
             <IconButton
-              onClick={() => {
-                onClose(false)
-                if (onLibraryClose != null) onLibraryClose()
-              }}
+              onClick={handleLibraryClose}
               sx={{ display: 'inline-flex' }}
               edge="end"
               aria-label="Close"
@@ -117,7 +114,7 @@ export function VideoDetails({
           </Toolbar>
         </AppBar>
         <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
-          {showChangeVideoBar === true && (
+          {activeVideo === true && (
             <Stack
               direction="row"
               sx={{
@@ -127,31 +124,27 @@ export function VideoDetails({
                 mt: 4
               }}
             >
-              <Box>
-                <Button
-                  startIcon={<SubscriptionsRoundedIcon />}
-                  size="small"
-                  onClick={() => onClose(false)}
-                >
-                  Change Video
-                </Button>
-              </Box>
-              <Box>
-                <IconButton
-                  onClick={() => handleClearVideo()}
-                  size="small"
-                  aria-label="clear-video"
-                >
-                  <DeleteOutlineIcon />
-                </IconButton>
-              </Box>
+              <Button
+                startIcon={<SubscriptionsRoundedIcon />}
+                size="small"
+                onClick={() => onClose(false)}
+              >
+                Change Video
+              </Button>
+              <IconButton
+                onClick={handleClearVideo}
+                size="small"
+                aria-label="clear-video"
+              >
+                <DeleteOutlineIcon />
+              </IconButton>
             </Stack>
           )}
           <Box
             sx={{
               flexGrow: 1,
               overflow: 'auto',
-              pt: showChangeVideoBar === true ? 0 : 6
+              pt: activeVideo === true ? 0 : 6
             }}
           >
             <Details id={id} open={open} onSelect={handleSelect} />
