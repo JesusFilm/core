@@ -168,7 +168,6 @@ describe('VideoBlockResolver', () => {
         __typename: 'VideoBlock',
         parentOrder: 0
       })
-      // expect(service.update).toHaveBeenCalledWith(createdBlock.id, createdBlock)
     })
 
     it('creates a cover VideoBlock', async () => {
