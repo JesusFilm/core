@@ -24,9 +24,8 @@ export const DRAWER_WIDTH = 328
 export interface VideoDetailsProps {
   open: boolean
   id: string
-  onClose: (closeParent: boolean) => void
+  onClose: (closeParent?: boolean) => void
   onSelect: (block: VideoBlockUpdateInput) => void
-  onLibraryClose?: () => void
   source: VideoBlockSource
   activeVideo?: boolean
 }
@@ -34,7 +33,6 @@ export interface VideoDetailsProps {
 export function VideoDetails({
   open,
   id,
-  onLibraryClose,
   onClose,
   onSelect,
   source,
@@ -57,12 +55,6 @@ export function VideoDetails({
 
   const handleSelect = (block: VideoBlockUpdateInput): void => {
     onSelect(block)
-    onClose(false)
-  }
-
-  const handleLibraryClose = (): void => {
-    onClose(false)
-    if (onLibraryClose != null) onLibraryClose()
   }
 
   const handleClearVideo = (): void => {
@@ -71,7 +63,6 @@ export function VideoDetails({
       videoVariantLanguageId: null,
       source: VideoBlockSource.internal
     })
-    handleLibraryClose()
   }
   return (
     <>
@@ -104,7 +95,7 @@ export function VideoDetails({
               Video Details
             </Typography>
             <IconButton
-              onClick={handleLibraryClose}
+              onClick={() => onClose(false)}
               sx={{ display: 'inline-flex' }}
               edge="end"
               aria-label="Close"
@@ -120,8 +111,8 @@ export function VideoDetails({
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                mx: 6,
-                mt: 4
+                px: 6,
+                pt: 4
               }}
             >
               <Button
@@ -144,7 +135,7 @@ export function VideoDetails({
             sx={{
               flexGrow: 1,
               overflow: 'auto',
-              pt: activeVideo === true ? 0 : 6
+              mt: activeVideo === true ? -6 : 0
             }}
           >
             <Details id={id} open={open} onSelect={handleSelect} />

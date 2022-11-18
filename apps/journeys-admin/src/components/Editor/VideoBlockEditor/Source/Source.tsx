@@ -20,14 +20,12 @@ interface SourceProps {
 
 export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
   const [open, setOpen] = useState(false)
-  const [clearVideo, setClearVideo] = useState(false)
 
   useEffect(() => {
-    // opens the video library if videoId is null and clearVideo is false
-    if (selectedBlock?.videoId == null && !clearVideo) {
+    if (selectedBlock?.videoId == null) {
       setOpen(true)
     }
-  }, [selectedBlock, clearVideo])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   let SourceContent
 
@@ -61,7 +59,6 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
         onClose={() => setOpen(false)}
         selectedBlock={selectedBlock}
         onSelect={onChange}
-        onClearVideo={() => setClearVideo(true)}
       />
     </>
   )

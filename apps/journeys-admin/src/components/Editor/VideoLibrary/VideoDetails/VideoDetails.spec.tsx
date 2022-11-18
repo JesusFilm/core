@@ -178,7 +178,6 @@ describe('VideoDetails', () => {
   it('should clear the video on delete icon click', () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
-    const onLibraryClose = jest.fn()
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
         <VideoDetails
@@ -188,7 +187,6 @@ describe('VideoDetails', () => {
           onClose={onClose}
           onSelect={onSelect}
           activeVideo
-          onLibraryClose={onLibraryClose}
         />
       </MockedProvider>
     )
@@ -198,7 +196,5 @@ describe('VideoDetails', () => {
       videoId: null,
       videoVariantLanguageId: null
     })
-    expect(onLibraryClose).toHaveBeenCalled()
-    expect(onClose).toHaveBeenCalled()
   })
 })
