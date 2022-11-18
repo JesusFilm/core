@@ -88,13 +88,6 @@ export class ImageBlockResolver {
       await this.blockService.update(parentBlock.id, {
         coverBlockId: coverBlock.id
       })
-      // Delete old coverBlock
-      if (parentBlock.coverBlockId != null) {
-        await this.blockService.removeBlockAndChildren(
-          parentBlock.coverBlockId,
-          parentBlock.journeyId
-        )
-      }
 
       return coverBlock
     }

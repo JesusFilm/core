@@ -129,13 +129,12 @@ describe('ImageBlockResolver', () => {
   })
 
   describe('imageBlockCreate', () => {
+    mockedAxios.get.mockResolvedValue({
+      data: {
+        mockData: 'mockData' // this kinda doesnt matter since sharp returns the data we need, but still need to mock so it doesnt run the API
+      }
+    })
     it('creates an ImageBlock', async () => {
-      mockedAxios.get.mockResolvedValue({
-        data: {
-          mockData: 'mockData' // this kinda doesnt matter since sharp returns the data we need, but still need to mock so it doesnt run the API
-        }
-      })
-
       await resolver.imageBlockCreate(blockCreate)
 
       expect(service.getSiblings).toHaveBeenCalledWith(
@@ -154,10 +153,6 @@ describe('ImageBlockResolver', () => {
         isCover: true,
         parentOrder: null
       })
-      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
-        parentBlock.coverBlockId,
-        parentBlock.journeyId
-      )
       expect(service.update).toHaveBeenCalledWith(parentBlock.id, {
         coverBlockId: createdBlock.id
       })

@@ -6,7 +6,6 @@ import { UserInputError } from 'apollo-server'
 import { BlockService } from '../block.service'
 import {
   Action,
-  CardBlock,
   Role,
   UserJourneyRole,
   VideoBlock,
@@ -101,20 +100,10 @@ export class VideoBlockResolver {
         __typename: 'VideoBlock',
         parentOrder: null
       })
-      const parentBlock: CardBlock = await this.blockService.get(
-        input.parentBlockId
-      )
 
       await this.blockService.update(input.parentBlockId, {
         coverBlockId: coverBlock.id
       })
-
-      if (parentBlock.coverBlockId != null) {
-        await this.blockService.removeBlockAndChildren(
-          parentBlock.coverBlockId,
-          input.journeyId
-        )
-      }
 
       return coverBlock
     }
