@@ -529,8 +529,29 @@ enum VideoBlockSource {
 }
 
 enum VideoBlockObjectFit {
+  """
+  The video is scaled to maintain its aspect ratio while filling the
+   entire VideoBlock. If the video's aspect ratio does not match the 
+   aspect ratio of the VideoBlock, then the video will be clipped to fit.
+  """
   fill
+
+  """
+  The video is scaled to maintain its aspect ratio while fitting within the
+   VideoBlock. The entire video is made to fill the VideoBlock, while
+   preserving its aspect ratio, so the video will be "letterboxed" if its
+   aspect ratio does not match the aspect ratio of the VideoBlock.
+  """
   fit
+
+  """
+  12.5% of either side of the video is discarded (this has the effect of
+   converting a 16:9 aspect ratio to 4:3). The remaining video is scaled to
+   maintain its new aspect ratio while fitting within the VideoBlock.  The
+   remaining video is made to fill the VideoBlock, while preserving its new
+   aspect ratio, so the video will be "letterboxed" if its new aspect ratio
+   does not match the aspect ratio of the VideoBlock.
+  """
   zoomed
 }
 
@@ -614,7 +635,7 @@ type VideoBlock implements Block {
   """action that should be performed when the video ends"""
   action: Action
 
-  """aspect ratio for VideoBlock"""
+  """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit
 }
 
@@ -665,7 +686,7 @@ input VideoBlockCreateInput {
   """
   isCover: Boolean
 
-  """aspect ratio for VideoBlock"""
+  """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit
 }
 
@@ -706,7 +727,7 @@ input VideoBlockUpdateInput {
   posterBlockId: ID
   fullsize: Boolean
 
-  """aspect ratio for VideoBlock"""
+  """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit
 }
 
