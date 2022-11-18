@@ -133,30 +133,11 @@ jobs:
         run: npm install --silent
       - name: nx Install
         run: npm install -g nx --silent
-      - name: Get affected apps (PR only)
-        id: affected-apps
-        if: ${{ github.event_name == 'pull_request' }}
-        run: echo "::set-output name=apps::$(nx affected:apps --plain --base=origin/main --head=HEAD)"
-      - name: Get affected libs (PR only)
-        id: affected-libs
-        if: ${{ github.event_name == 'pull_request' }}
-        run: echo "::set-output name=libs::$(nx affected:libs --plain --base=origin/main --head=HEAD)"
       - name: Build Stories
         id: build-storybook
-        env:
-          NX_AFFECTED_APPS: ${{ steps.affected-apps.outputs.apps }}
-          NX_AFFECTED_LIBS: ${{ steps.affected-libs.outputs.libs }}
-        uses: mansagroup/nrwl-nx-action@v2
-        with:
-          targets: build-storybook
-      - name: Check for frontend changes
-        id: check_files
-        uses: andstor/file-existence-action@v1
-        with:
-          files: 'dist/storybook/shared-storybook'
+        run: nx build-storybook shared-storybook --webpack-stats-json
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests
-        if: ${{ steps.check_files.outputs.files_exists == 'true' }}
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         # https://www.chromatic.com/docs/github-actions#available-options
@@ -169,7 +150,8 @@ jobs:
           exitOnceUploaded: 'true'
           autoAcceptChanges: 'main'
           onlyChanged: 'true'
-          forceRebuild: 'main'
+          # Uncomment forceRebuild if you're making a package and storybook config change which you expect to change stories. Recomment after the visual regression build is done.
+          # forceRebuild: 'main'
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
           untraced: |
             - '**/package*.json'

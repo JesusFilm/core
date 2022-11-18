@@ -42,33 +42,12 @@ const allStories = [
   ...storiesForProject['shared-ui']
 ]
 
-const affectedStories = () => {
-  const affectedApps = process.env.NX_AFFECTED_APPS ?? ''
-  const affectedLibs = process.env.NX_AFFECTED_LIBS ?? ''
-  const affectedProjects = [
-    ...affectedApps.split(' '),
-    ...affectedLibs.split(' ')
-  ]
-
-  const stories = affectedProjects
-    .map((project) => {
-      if (project === '') return []
-      return storiesForProject[project] ?? []
-    })
-    .flat()
-
-  return stories.length > 0 ? stories : undefined
-}
-
 module.exports = {
   staticDirs: [
     './static',
     { from: '../apps/watch/public/fonts', to: '/fonts' }
   ],
-  stories:
-    affectedStories() ||
-    storiesForProject[process.env.NX_TASK_TARGET_PROJECT] ||
-    allStories,
+  stories: allStories,
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
