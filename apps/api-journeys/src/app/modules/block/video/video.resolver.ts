@@ -23,8 +23,8 @@ const videoBlockYouTubeSchema = object().shape({
   )
 })
 const videoBlockInternalSchema = object().shape({
-  videoId: string().required(),
-  videoVariantLanguageId: string().required()
+  videoId: string().nullable(),
+  videoVariantLanguageId: string().nullable()
 })
 
 export interface YoutubeVideosData {
@@ -87,7 +87,8 @@ export class VideoBlockResolver {
         await videoBlockYouTubeSchema.validate(input)
         input = {
           ...input,
-          ...(await this.fetchFieldsFromYouTube(input.videoId as string))
+          ...(await this.fetchFieldsFromYouTube(input.videoId as string)),
+          objectFit: null
         }
         break
       case VideoBlockSource.internal:
@@ -162,7 +163,8 @@ export class VideoBlockResolver {
         if (input.videoId != null) {
           input = {
             ...input,
-            ...(await this.fetchFieldsFromYouTube(input.videoId))
+            ...(await this.fetchFieldsFromYouTube(input.videoId)),
+            objectFit: null
           }
         }
         break

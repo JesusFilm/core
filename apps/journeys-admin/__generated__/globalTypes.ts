@@ -159,6 +159,12 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
+export enum VideoBlockObjectFit {
+  fill = "fill",
+  fit = "fit",
+  zoomed = "zoomed",
+}
+
 export enum VideoBlockSource {
   internal = "internal",
   youTube = "youTube",
@@ -409,6 +415,7 @@ export interface VideoBlockCreateInput {
   isCover?: boolean | null;
   journeyId: string;
   muted?: boolean | null;
+  objectFit?: VideoBlockObjectFit | null;
   parentBlockId: string;
   posterBlockId?: string | null;
   source?: VideoBlockSource | null;
@@ -422,6 +429,7 @@ export interface VideoBlockUpdateInput {
   endAt?: number | null;
   fullsize?: boolean | null;
   muted?: boolean | null;
+  objectFit?: VideoBlockObjectFit | null;
   posterBlockId?: string | null;
   source?: VideoBlockSource | null;
   startAt?: number | null;

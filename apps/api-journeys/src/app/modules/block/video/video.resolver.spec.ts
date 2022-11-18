@@ -6,6 +6,7 @@ import {
   CardBlock,
   VideoBlock,
   VideoBlockCreateInput,
+  VideoBlockObjectFit as ObjectFit,
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../__generated__/graphql'
@@ -45,7 +46,8 @@ describe('VideoBlockResolver', () => {
       gtmEventName: 'gtmEventName',
       url: 'https://jesusfilm.org',
       target: 'target'
-    }
+    },
+    objectFit: 'fill'
   }
 
   const actionResponse = {
@@ -84,7 +86,8 @@ describe('VideoBlockResolver', () => {
     muted: true,
     autoplay: true,
     fullsize: true,
-    action: navigateAction
+    action: navigateAction,
+    objectFit: null
   }
 
   const parentBlock: CardBlock = {
@@ -120,7 +123,8 @@ describe('VideoBlockResolver', () => {
     muted: true,
     autoplay: true,
     posterBlockId: 'posterBlockId',
-    fullsize: true
+    fullsize: true,
+    objectFit: ObjectFit.fill
   }
 
   beforeEach(async () => {
@@ -190,30 +194,6 @@ describe('VideoBlockResolver', () => {
     })
 
     describe('Internal Source', () => {
-      it('throws error when no videoVariantLanguageId', async () => {
-        await expect(
-          async () =>
-            await resolver.videoBlockCreate({
-              journeyId: 'journeyId',
-              parentBlockId: 'parentBlockId',
-              videoId: 'videoId',
-              source: VideoBlockSource.internal
-            })
-        ).rejects.toThrow('videoVariantLanguageId is a required field')
-      })
-
-      it('throws error when no videoId', async () => {
-        await expect(
-          async () =>
-            await resolver.videoBlockCreate({
-              journeyId: 'journeyId',
-              parentBlockId: 'parentBlockId',
-              videoVariantLanguageId: 'videoVariantLanguageId',
-              source: VideoBlockSource.internal
-            })
-        ).rejects.toThrow('videoId is a required field')
-      })
-
       it('creates a VideoBlock', async () => {
         expect(
           await resolver.videoBlockCreate({
@@ -318,26 +298,6 @@ describe('VideoBlockResolver', () => {
     })
 
     describe('Internal Source', () => {
-      it('throws error when no videoVariantLanguageId', async () => {
-        await expect(
-          async () =>
-            await resolver.videoBlockUpdate('blockId', 'journeyId', {
-              videoId: 'videoId',
-              source: VideoBlockSource.internal
-            })
-        ).rejects.toThrow('videoVariantLanguageId is a required field')
-      })
-
-      it('throws error when no videoId', async () => {
-        await expect(
-          async () =>
-            await resolver.videoBlockUpdate('blockId', 'journeyId', {
-              videoVariantLanguageId: 'videoVariantLanguageId',
-              source: VideoBlockSource.internal
-            })
-        ).rejects.toThrow('videoId is a required field')
-      })
-
       it('updates a VideoBlock', async () => {
         expect(
           await resolver.videoBlockUpdate('blockId', 'journeyId', {
@@ -424,7 +384,8 @@ describe('VideoBlockResolver', () => {
             'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
           duration: 1167,
           image: 'https://i.ytimg.com/vi/7RoqnGcEjcs/hqdefault.jpg',
-          title: 'What is the Bible?'
+          title: 'What is the Bible?',
+          objectFit: null
         })
       })
 
