@@ -21,7 +21,6 @@ variable "service_config" {
     cpu            = number
     memory         = number
     desired_count  = number
-    image_tag      = string
     alb_dns_name   = string
     zone_id        = string
     is_public      = bool

@@ -17,7 +17,6 @@ locals {
     cpu            = 512
     memory         = 1024
     desired_count  = 1
-    image_tag      = var.ecs_config.image_tag
     alb_dns_name   = var.ecs_config.alb_dns_name
     zone_id        = var.ecs_config.zone_id
     alb_target_group = merge(var.ecs_config.alb_target_group, {

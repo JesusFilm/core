@@ -16,7 +16,6 @@ locals {
     task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
     cluster                 = module.prod.ecs.ecs_cluster
     alb_dns_name            = module.prod.public_alb.dns_name
-    image_tag               = "main"
     zone_id                 = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
     alb_target_group        = local.alb_target_group
   }
@@ -30,7 +29,6 @@ locals {
     task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
     cluster                 = module.prod.ecs.ecs_cluster
     alb_dns_name            = module.prod.internal_alb.dns_name
-    image_tag               = "main"
     zone_id                 = module.prod.route53_private_zone_id
     alb_target_group        = local.alb_target_group
   }

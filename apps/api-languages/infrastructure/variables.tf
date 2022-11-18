@@ -3,7 +3,6 @@ variable "ecs_config" {
     vpc_id           = string
     is_public        = bool
     subnets          = list(string)
-    image_tag        = string
     alb_dns_name     = string
     zone_id          = string
     alb_listener_arn = string

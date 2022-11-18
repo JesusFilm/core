@@ -49,7 +49,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
   container_definitions = jsonencode([
     {
-      name      = var.service_config.name
+      name      = "jfp-${var.service_config.name}-${var.env}"
       image     = "${aws_ecr_repository.ecr_repository.repository_url}:latest"
       cpu       = var.service_config.cpu
       memory    = var.service_config.memory
@@ -120,7 +120,7 @@ resource "aws_ecs_service" "ecs_service" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.alb_target_group.arn
-    container_name   = var.service_config.name
+    container_name   = "jfp-${var.service_config.name}-${var.env}"
     container_port   = var.service_config.container_port
   }
 
