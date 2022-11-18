@@ -1242,6 +1242,9 @@ type VideoBlock implements Block {
   image: String
   journeyId: ID!
   muted: Boolean
+
+  """aspect ratio for VideoBlock"""
+  objectFit: VideoBlockObjectFit
   parentBlockId: ID
   parentOrder: Int
 
@@ -1304,6 +1307,9 @@ input VideoBlockCreateInput {
   isCover: Boolean
   journeyId: ID!
   muted: Boolean
+
+  """aspect ratio for VideoBlock"""
+  objectFit: VideoBlockObjectFit
   parentBlockId: ID!
 
   """
@@ -1337,6 +1343,12 @@ input VideoBlockCreateInput {
   videoVariantLanguageId: ID
 }
 
+enum VideoBlockObjectFit {
+  fill
+  fit
+  zoomed
+}
+
 enum VideoBlockSource {
   internal
   youTube
@@ -1349,6 +1361,9 @@ input VideoBlockUpdateInput {
   endAt: Int
   fullsize: Boolean
   muted: Boolean
+
+  """aspect ratio for VideoBlock"""
+  objectFit: VideoBlockObjectFit
 
   """
   posterBlockId is present if a child block should be used as a poster.
