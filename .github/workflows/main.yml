@@ -150,8 +150,6 @@ jobs:
           exitOnceUploaded: 'true'
           autoAcceptChanges: 'main'
           onlyChanged: 'true'
-          # Uncomment forceRebuild if you're making a package and storybook config change which you expect to change stories. Recomment after the visual regression build is done.
-          # forceRebuild: 'main'
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
           untraced: |
             - '**/package*.json'
