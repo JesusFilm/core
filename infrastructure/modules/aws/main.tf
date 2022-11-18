@@ -60,3 +60,15 @@ module "ecs" {
   internal_alb_security_group = module.internal_alb_security_group
   public_alb_security_group   = module.public_alb_security_group
 }
+
+module "vpn" {
+  source          = "./vpn"
+  dns_name        = "vpn-${var.env}.central.jesusfilm.org"
+  name            = "jfp-vpn-${var.env}"
+  vpc_id          = module.vpc.vpc_id
+  vpc_cidr_block  = var.cidr
+  cidr_block      = "10.0.0.0/16"
+  subnets         = module.vpc.public_subnets
+  certificate_arn = var.certificate_arn
+  dns_server      = var.env == "prod" ? "10.10.0.2" : "10.11.0.2"
+}
