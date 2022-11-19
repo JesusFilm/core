@@ -3,7 +3,6 @@ variable "ecs_config" {
     vpc_id                  = string
     is_public               = bool
     subnets                 = list(string)
-    alb_listener_arn        = string
     security_group_id       = string
     task_execution_role_arn = string
     cluster = object({
@@ -24,6 +23,8 @@ variable "service_config" {
     alb_dns_name   = string
     zone_id        = string
     is_public      = bool
+
+    alb_listener = any
 
     alb_target_group = object({
       port              = number

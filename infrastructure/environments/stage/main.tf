@@ -11,26 +11,34 @@ locals {
     vpc_id                  = module.stage.vpc.id
     is_public               = true
     subnets                 = module.stage.vpc.public_subnets
-    alb_listener_arn        = module.stage.public_alb.aws_alb_listener["HTTPS"].arn
     security_group_id       = module.stage.ecs.public_ecs_security_group_id
     task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
     cluster                 = module.stage.ecs.ecs_cluster
     alb_dns_name            = module.stage.public_alb.dns_name
     zone_id                 = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
     alb_target_group        = local.alb_target_group
+    alb_listener = {
+      alb_arn         = module.stage.public_alb.arn
+      port            = 443
+      protocol        = "HTTPS"
+      certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
+    }
   }
 
   internal_ecs_config = {
     vpc_id                  = module.stage.vpc.id
     is_public               = false
     subnets                 = module.stage.vpc.internal_subnets
-    alb_listener_arn        = module.stage.internal_alb.aws_alb_listener["HTTP"].arn
     security_group_id       = module.stage.ecs.internal_ecs_security_group_id
     task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
     cluster                 = module.stage.ecs.ecs_cluster
     alb_dns_name            = module.stage.internal_alb.dns_name
     zone_id                 = module.stage.route53_private_zone_id
     alb_target_group        = local.alb_target_group
+    alb_listener = {
+      alb_arn  = module.stage.internal_alb.arn
+      protocol = "HTTP"
+    }
   }
 }
 
