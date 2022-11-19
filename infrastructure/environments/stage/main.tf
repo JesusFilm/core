@@ -2,8 +2,14 @@ module "stage" {
   source            = "../../modules/aws"
   env               = "stage"
   cidr              = "10.11.0.0/16"
-  internal_url_name = "service.stage.internal"
+  internal_url_name = "stage.internal"
   certificate_arn   = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
+}
+
+module "route53_stage_central_jesusfilm_org" {
+  source         = "../../modules/aws/route53/subdomain"
+  domain_name    = "stage.central.jesusfilm.org"
+  parent_zone_id = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
 }
 
 locals {
@@ -15,7 +21,7 @@ locals {
     task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
     cluster                 = module.stage.ecs.ecs_cluster
     alb_dns_name            = module.stage.public_alb.dns_name
-    zone_id                 = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
+    zone_id                 = module.route53_stage_central_jesusfilm_org.zone_id
     alb_target_group        = local.alb_target_group
     alb_listener = {
       alb_arn         = module.stage.public_alb.arn

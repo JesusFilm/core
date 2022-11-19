@@ -186,7 +186,7 @@ resource "aws_appautoscaling_policy" "ecs_policy_cpu" {
 }
 
 resource "aws_route53_record" "record" {
-  name    = var.env == "prod" ? var.service_config.name : "${var.service_config.name}-${var.env}"
+  name    = var.service_config.name
   type    = "CNAME"
   ttl     = 300
   zone_id = var.service_config.zone_id
