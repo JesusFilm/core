@@ -161,15 +161,16 @@ jobs:
           echo "${{ secrets.USER_KEY }}" > user.key
 
       - name: Connect VPN
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: sudo openvpn --config ".github/vpn/${{ inputs.branch }}.ovpn" --log "vpn.log" --daemon
 
       - name: Wait for a VPN connection
-        if: contains(inputs.branch, 'main')
+        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'main')
         timeout-minutes: 1
         run: until dig api-journeys.service.internal A +time=1; do sleep 2; done
 
       - name: Wait for a VPN connection
-        if: contains(inputs.branch, 'stage')
+        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'stage')
         timeout-minutes: 1
         run: until dig api-journeys.stage.internal A +time=1; do sleep 2; done
 
@@ -197,9 +198,12 @@ jobs:
           echo "Pushing image to ECR..."
           docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
       - name: Download task definition
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: |
           aws ecs describe-task-definition --task-definition ${{ inputs.repository }} --query taskDefinition > task-definition.json
+
       - name: Redeploy ECS service
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -210,5 +214,5 @@ jobs:
           wait-for-service-stability: true
 
       - name: kill vpn
-        if: always()
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: sudo killall openvpn
