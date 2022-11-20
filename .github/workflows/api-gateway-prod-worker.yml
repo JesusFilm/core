@@ -2,16 +2,6 @@ name: API Deployment
 
 on:
   workflow_call:
-    inputs:
-      name:
-        required: true
-        type: string
-      repository:
-        required: true
-        type: string
-      branch:
-        required: true
-        type: string
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -21,13 +11,21 @@ on:
         required: true
       KUBE_CONFIG_DATA:
         required: true
+      JFP_AWS_ACCESS_KEY_ID:
+        required: true
+      JFP_AWS_SECRET_ACCESS_KEY:
+        required: true
+      CA_CRT:
+        required: true
+      USER_CRT:
+        required: true
+      USER_KEY:
+        required: true
 
 jobs:
   build-and-deploy:
     environment: Production
     env:
-      ENV_SUFFIX: ${{ inputs.branch }}
-      ECR_REPOSITORY: ${{ inputs.repository }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       IMAGE_TAG: ${{ github.sha }}
     runs-on: ubuntu-latest
@@ -59,11 +57,11 @@ jobs:
       - name: rover Install
         run: npm install -g @apollo/rover@0.2.1
 
-      - name: Build ${{ inputs.name }}
+      - name: Build api-gateway
         uses: mansagroup/nrwl-nx-action@v2
         with:
           targets: build
-          projects: ${{ inputs.name }}
+          projects: api-gateway
           args: --configuration="production"
 
       - name: Build api-journeys-main schema
@@ -79,7 +77,7 @@ jobs:
         run: rover subgraph introspect https://api-videos.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-videos-schema.graphql
 
       - name: Build api-gateway schema
-        run: rover supergraph compose --config apps/api-gateway/supergraph-$ENV_SUFFIX.yml > dist/apps/api-gateway/schema.graphql
+        run: rover supergraph compose --config apps/api-gateway/supergraph-main.yml > dist/apps/api-gateway/schema.graphql
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -98,22 +96,91 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .  -f apps/${{ inputs.name }}/Dockerfile
+          docker build -t $ECR_REGISTRY/jfp-api-gateway-prod:$IMAGE_TAG -t $ECR_REGISTRY/jfp-api-gateway-prod:latest .  -f apps/api-gateway/Dockerfile
           echo "Pushing image to ECR..."
-          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push -a $ECR_REGISTRY/jfp-api-gateway-prod
+          echo "::set-output name=image::$ECR_REGISTRY/jfp-api-gateway-prod:$IMAGE_TAG"
 
       - name: Deploy to Kubernetes cluster
         uses: kodermax/kubectl-aws-eks@master
         env:
           KUBECTL_VERSION: 'v1.21.12'
-          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/jfp-api-gateway-prod:${{ env.IMAGE_TAG }}
         with:
-          args: set image deployment/${{ inputs.name }}-$ENV_SUFFIX $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }}
+          args: set image deployment/api-gateway-main jfp-api-gateway-prod=${{ env.RELEASE_IMAGE }}
 
       - name: Verify Kubernetes deployment
         uses: kodermax/kubectl-aws-eks@master
         env:
           KUBECTL_VERSION: 'v1.21.12'
         with:
-          args: rollout status deploy ${{ inputs.name }}-$ENV_SUFFIX
+          args: rollout status deploy api-gateway-main
+
+      #ECS Deployment
+      - name: Install Open VPN
+        run: sudo apt-get install openvpn
+
+      - name: Connect VPN
+        uses: golfzaptw/action-connect-ovpn@master
+        id: connect_vpn
+        with:
+          FILE_OVPN: '.github/vpn/main.ovpn'
+        env:
+          CA_CRT: ${{ secrets.CA_CRT}}
+          USER_CRT: ${{ secrets.USER_CRT }}
+          USER_KEY: ${{ secrets.USER_KEY }}
+
+      - name: Check Connect VPN
+        run: echo ${{ steps.connect_vpn.outputs.STATUS }}
+
+      # TODO: Used once we have moved to ECS
+      # - name: Build api-journeys-main schema
+      #   run: rover subgraph introspect http://api-journeys.service.internal:4001/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
+
+      # - name: Build api-users-main schema
+      #   run: rover subgraph introspect http://api-users.service.internal:4002/graphql > dist/apps/api-gateway/api-users-schema.graphql
+
+      # - name: Build api-languages-main schema
+      #   run: rover subgraph introspect http://api-languages.service.internal:4003/graphql > dist/apps/api-gateway/api-languages-schema.graphql
+
+      # - name: Build api-videos-main schema
+      #   run: rover subgraph introspect https://api-videos.service.internal:4004/graphql > dist/apps/api-gateway/api-videos-schema.graphql
+
+      - name: Build api-gateway schema
+        run: rover supergraph compose --config apps/api-gateway/supergraph-main-ecs.yml > dist/apps/api-gateway/schema.graphql
+
+      - name: Configure ECS AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          # Build a docker container and push it to ECR 
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/api-gateway/Dockerfile
+          echo "Pushing image to ECR..."
+          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition --task-definition jfp-api-gateway-prod --query taskDefinition > task-definition.json
+      - name: Redeploy ECS service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          service: api-gateway-prod-service
+          cluster: jfp-ecs-cluster-prod
+          wait-for-service-stability: true
+
+      - name: kill vpn
+        if: always()
+        run: sudo killall openvpn
