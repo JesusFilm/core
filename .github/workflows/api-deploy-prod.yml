@@ -23,8 +23,8 @@ jobs:
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
-      CA_CERT: ${{ secrets.CA_CERT }}
-      USER_CERT: ${{ secrets.USER_CERT }}
+      CA_CERT: ${{ secrets.CA_CRT }}
+      USER_CERT: ${{ secrets.USER_CRT }}
       USER_KEY: ${{ secrets.USER_KEY }}
   api-users:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
@@ -45,8 +45,8 @@ jobs:
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
-      CA_CERT: ${{ secrets.CA_CERT }}
-      USER_CERT: ${{ secrets.USER_CERT }}
+      CA_CERT: ${{ secrets.CA_CRT }}
+      USER_CERT: ${{ secrets.USER_CRT }}
       USER_KEY: ${{ secrets.USER_KEY }}
   api-languages:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
@@ -67,8 +67,8 @@ jobs:
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
-      CA_CERT: ${{ secrets.CA_CERT }}
-      USER_CERT: ${{ secrets.USER_CERT }}
+      CA_CERT: ${{ secrets.CA_CRT }}
+      USER_CERT: ${{ secrets.USER_CRT }}
       USER_KEY: ${{ secrets.USER_KEY }}
   api-videos:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
@@ -89,8 +89,8 @@ jobs:
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
-      CA_CERT: ${{ secrets.CA_CERT }}
-      USER_CERT: ${{ secrets.USER_CERT }}
+      CA_CERT: ${{ secrets.CA_CRT }}
+      USER_CERT: ${{ secrets.USER_CRT }}
       USER_KEY: ${{ secrets.USER_KEY }}
 
   api-gateway:
@@ -103,6 +103,6 @@ jobs:
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
-      CA_CERT: ${{ secrets.CA_CERT }}
-      USER_CERT: ${{ secrets.USER_CERT }}
+      CA_CERT: ${{ secrets.CA_CRT }}
+      USER_CERT: ${{ secrets.USER_CRT }}
       USER_KEY: ${{ secrets.USER_KEY }}
