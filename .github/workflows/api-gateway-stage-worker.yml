@@ -115,6 +115,7 @@ jobs:
           KUBECTL_VERSION: 'v1.21.12'
         with:
           args: rollout status deploy api-gateway-stage
+
       #ECS Deployment
       - name: Install Open VPN
         run: sudo apt-get install openvpn
@@ -165,10 +166,10 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/api-gateway/Dockerfile
+          docker build -t $ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG -t $ECR_REGISTRY/jfp-api-gateway-stage:latest . -f apps/api-gateway/Dockerfile
           echo "Pushing image to ECR..."
-          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push -a $ECR_REGISTRY/jfp-api-gateway-stage
+          echo "::set-output name=image::$ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG"
       - name: Download task definition
         run: |
           aws ecs describe-task-definition --task-definition jfp-api-gateway-stage --query taskDefinition > task-definition.json

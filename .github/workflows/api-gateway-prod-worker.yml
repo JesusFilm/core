@@ -166,10 +166,10 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/api-gateway/Dockerfile
+          docker build -t $ECR_REGISTRY/jfp-api-gateway-prod:$IMAGE_TAG -t $ECR_REGISTRY/jfp-api-gateway-prod:latest . -f apps/api-gateway/Dockerfile
           echo "Pushing image to ECR..."
-          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push -a $ECR_REGISTRY/jfp-api-gateway-prod
+          echo "::set-output name=image::$ECR_REGISTRY/jfp-api-gateway-prod:$IMAGE_TAG"
       - name: Download task definition
         run: |
           aws ecs describe-task-definition --task-definition jfp-api-gateway-prod --query taskDefinition > task-definition.json
