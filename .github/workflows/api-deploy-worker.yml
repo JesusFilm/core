@@ -177,14 +177,14 @@ jobs:
 
       - name: Login to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        id: login-ecr
+        id: login-ecr-ecs
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push the image to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: build-image
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/${{ inputs.name }}/Dockerfile

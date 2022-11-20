@@ -156,13 +156,13 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Login to Amazon ECR
-        id: login-ecr
+        id: login-ecr-ecs
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push the image to Amazon ECR
         id: build-image
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/api-gateway/Dockerfile
