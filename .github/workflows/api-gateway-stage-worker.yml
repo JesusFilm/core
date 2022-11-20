@@ -99,7 +99,7 @@ jobs:
           docker build -t $ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG -t $ECR_REGISTRY/jfp-api-gateway-stage:latest .  -f apps/api-gateway/Dockerfile
           echo "Pushing image to ECR..."
           docker push -a $ECR_REGISTRY/jfp-api-gateway-stage
-          echo "::set-output name=image::$ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG"
+          echo "image=$ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Deploy to Kubernetes cluster
         uses: kodermax/kubectl-aws-eks@master
@@ -169,7 +169,7 @@ jobs:
           docker build -t $ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG -t $ECR_REGISTRY/jfp-api-gateway-stage:latest . -f apps/api-gateway/Dockerfile
           echo "Pushing image to ECR..."
           docker push -a $ECR_REGISTRY/jfp-api-gateway-stage
-          echo "::set-output name=image::$ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG"
+          echo "image=$ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Download task definition
         run: |
@@ -181,7 +181,3 @@ jobs:
           service: api-gateway-stage-service
           cluster: jfp-ecs-cluster-stage
           wait-for-service-stability: true
-
-      - name: kill vpn
-        if: always()
-        run: sudo killall openvpn
