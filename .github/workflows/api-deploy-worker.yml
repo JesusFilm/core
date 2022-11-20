@@ -162,7 +162,7 @@ jobs:
 
       - name: Connect VPN
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        run: sudo openvpn --config ".github/vpn/${{ inputs.branch }}.ovpn" --log "vpn.log" --daemon
+        run: sudo openvpn --config ".github/vpn/${{ inputs.branch }}.ovpn" --daemon
 
       - name: Wait for a VPN connection
         if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'main')

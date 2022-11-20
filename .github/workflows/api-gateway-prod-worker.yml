@@ -127,7 +127,7 @@ jobs:
           echo "${{ secrets.USER_KEY }}" > user.key
 
       - name: Connect VPN
-        run: sudo openvpn --config ".github/vpn/main.ovpn" --log "vpn.log" --daemon
+        run: sudo openvpn --config ".github/vpn/main.ovpn" --daemon
 
       - name: Wait for a VPN connection
         timeout-minutes: 1
@@ -170,6 +170,7 @@ jobs:
           echo "Pushing image to ECR..."
           docker push -a $ECR_REGISTRY/jfp-api-gateway-prod
           echo "::set-output name=image::$ECR_REGISTRY/jfp-api-gateway-prod:$IMAGE_TAG"
+
       - name: Download task definition
         run: |
           aws ecs describe-task-definition --task-definition jfp-api-gateway-prod --query taskDefinition > task-definition.json
