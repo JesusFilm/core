@@ -1,15 +1,38 @@
 module "stage" {
-  source            = "../../modules/aws"
-  env               = "stage"
-  cidr              = "10.11.0.0/16"
-  internal_url_name = "stage.internal"
-  certificate_arn   = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
+  source              = "../../modules/aws"
+  env                 = "stage"
+  cidr                = "10.11.0.0/16"
+  internal_url_name   = "stage.internal"
+  certificate_arn     = aws_acm_certificate.stage.arn
+  vpn_certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
 }
 
 module "route53_stage_central_jesusfilm_org" {
   source         = "../../modules/aws/route53/subdomain"
   domain_name    = "stage.central.jesusfilm.org"
   parent_zone_id = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
+}
+
+resource "aws_acm_certificate" "stage" {
+  domain_name       = "*.stage.central.jesusfilm.org"
+  validation_method = "DNS"
+}
+
+resource "aws_acm_certificate_validation" "stage" {
+  certificate_arn = aws_acm_certificate.stage.arn
+}
+
+resource "aws_route53_record" "acm_validation" {
+  for_each = {
+    for validation in aws_acm_certificate.stage.domain_validation_options :
+    validation.domain_name => validation
+  }
+  name            = each.value.resource_record_name
+  type            = each.value.resource_record_type
+  ttl             = "300"
+  records         = [each.value.resource_record_value]
+  allow_overwrite = true
+  zone_id         = module.route53_stage_central_jesusfilm_org.zone_id
 }
 
 locals {

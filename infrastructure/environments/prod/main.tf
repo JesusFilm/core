@@ -1,9 +1,10 @@
 module "prod" {
-  source            = "../../modules/aws"
-  certificate_arn   = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
-  env               = "prod"
-  cidr              = "10.10.0.0/16"
-  internal_url_name = "service.internal"
+  source              = "../../modules/aws"
+  certificate_arn     = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
+  env                 = "prod"
+  cidr                = "10.10.0.0/16"
+  internal_url_name   = "service.internal"
+  vpn_certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
 }
 
 locals {
