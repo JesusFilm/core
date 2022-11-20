@@ -154,18 +154,24 @@ jobs:
       - name: Install Open VPN
         run: sudo apt-get install openvpn
 
-      - name: Connect VPN
-        uses: golfzaptw/action-connect-ovpn@master
-        id: connect_vpn
-        with:
-          FILE_OVPN: '.github/vpn/${{ inputs.branch }}.ovpn'
-        env:
-          CA_CRT: ${{ secrets.CA_CRT}}
-          USER_CRT: ${{ secrets.USER_CRT }}
-          USER_KEY: ${{ secrets.USER_KEY }}
+      - name: Setup VPN CONFIG
+        run: |
+          echo "${{ secrets.CA_CRT }}" > ca.crt
+          echo "${{ secrets.USER_CRT }}" > user.crt
+          echo "${{ secrets.USER_KEY }}" > user.key
 
-      - name: Check Connect VPN
-        run: echo ${{ steps.connect_vpn.outputs.STATUS }}
+      - name: Connect VPN
+        run: sudo openvpn --config ".github/vpn/${{ inputs.branch }}.ovpn" --log "vpn.log" --daemon
+
+      - name: Wait for a VPN connection
+        if: contains(inputs.branch, 'main')
+        timeout-minutes: 1
+        run: until dig api-journeys.service.internal A +time=1; do sleep 2; done
+
+      - name: Wait for a VPN connection
+        if: contains(inputs.branch, 'stage')
+        timeout-minutes: 1
+        run: until dig api-journeys.stage.internal A +time=1; do sleep 2; done
 
       - name: Configure ECS AWS credentials
         if: contains(steps.affected-apps.outputs.apps, inputs.name)

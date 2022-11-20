@@ -120,18 +120,18 @@ jobs:
       - name: Install Open VPN
         run: sudo apt-get install openvpn
 
-      - name: Connect VPN
-        uses: golfzaptw/action-connect-ovpn@master
-        id: connect_vpn
-        with:
-          FILE_OVPN: '.github/vpn/main.ovpn'
-        env:
-          CA_CRT: ${{ secrets.CA_CRT}}
-          USER_CRT: ${{ secrets.USER_CRT }}
-          USER_KEY: ${{ secrets.USER_KEY }}
+      - name: Setup VPN CONFIG
+        run: |
+          echo "${{ secrets.CA_CRT }}" > ca.crt
+          echo "${{ secrets.USER_CRT }}" > user.crt
+          echo "${{ secrets.USER_KEY }}" > user.key
 
-      - name: Check Connect VPN
-        run: echo ${{ steps.connect_vpn.outputs.STATUS }}
+      - name: Connect VPN
+        run: sudo openvpn --config ".github/vpn/main.ovpn" --log "vpn.log" --daemon
+
+      - name: Wait for a VPN connection
+        timeout-minutes: 1
+        run: until dig api-journeys.service.internal A +time=1; do sleep 2; done
 
       # TODO: Used once we have moved to ECS
       # - name: Build api-journeys-main schema
