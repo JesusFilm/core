@@ -182,7 +182,7 @@ jobs:
 
       - name: Build, tag, and push the image to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        id: build-image
+        id: build-image-ecs
         env:
           ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
         run: |
