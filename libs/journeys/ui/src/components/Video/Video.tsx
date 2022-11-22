@@ -5,7 +5,10 @@ import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
-import { VideoBlockSource } from '../../../__generated__/globalTypes'
+import {
+  VideoBlockObjectFit,
+  VideoBlockSource
+} from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { blurImage } from '../../libs/blurImage'
@@ -32,7 +35,8 @@ export function Video({
   muted,
   posterBlockId,
   children,
-  action
+  action,
+  objectFit
 }: TreeBlock<VideoFields>): ReactElement {
   const [loading, setLoading] = useState(true)
   const theme = useTheme()
@@ -136,6 +140,18 @@ export function Video({
 
   const videoImage = source === VideoBlockSource.internal ? video?.image : image
 
+  const videoFit =
+    source === VideoBlockSource.youTube
+      ? 'fit'
+      : objectFit === null || objectFit === VideoBlockObjectFit.fill
+      ? 'fill'
+      : objectFit === VideoBlockObjectFit.fit
+      ? 'contain'
+      : objectFit === VideoBlockObjectFit.zoomed
+      ? 'cover'
+      : 'fill'
+
+  console.log('videoFit= ', videoFit)
   return (
     <Box
       data-testid={`video-${blockId}`}
@@ -158,7 +174,7 @@ export function Video({
           height: '100%',
           minHeight: 'inherit',
           '> .vjs-tech': {
-            objectFit: 'cover'
+            objectFit: videoFit
           },
           '> .vjs-loading-spinner': {
             zIndex: 1,

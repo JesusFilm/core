@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, UserJourneyRole } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, GridDirection, GridJustifyContent, GridAlignItems, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetPublisherTemplate
@@ -474,6 +474,10 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
    * duration in seconds.
    */
   duration: number | null;
+  /**
+   * aspect ratio for VideoBlock
+   */
+  objectFit: VideoBlockObjectFit | null;
   /**
    * internal source videos: video is only populated when videoID and
    * videoVariantLanguageId are present

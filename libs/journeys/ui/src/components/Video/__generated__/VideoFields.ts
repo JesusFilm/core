@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockSource } from "./../../../../__generated__/globalTypes";
+import { VideoBlockSource, VideoBlockObjectFit } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: VideoFields
@@ -133,6 +133,10 @@ export interface VideoFields {
    * duration in seconds.
    */
   duration: number | null;
+  /**
+   * aspect ratio for VideoBlock
+   */
+  objectFit: VideoBlockObjectFit | null;
   /**
    * internal source videos: video is only populated when videoID and
    * videoVariantLanguageId are present

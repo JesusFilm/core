@@ -1,7 +1,10 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { MockedProvider } from '@apollo/client/testing'
-import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import {
+  VideoBlockSource,
+  VideoBlockObjectFit as ObjectFit
+} from '../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../ThemeProvider'
 import { VideoBlockEditorSettings } from '.'
 
@@ -41,7 +44,8 @@ const video: TreeBlock = {
     }
   },
   posterBlockId: null,
-  children: []
+  children: [],
+  objectFit: null
 }
 
 describe('VideoBlockEditorSettings', () => {
@@ -100,7 +104,8 @@ describe('VideoBlockEditorSettings', () => {
         autoplay: false,
         muted: true,
         endAt: 0,
-        startAt: 0
+        startAt: 0,
+        objectFit: ObjectFit.fill
       })
     )
   })
@@ -123,7 +128,8 @@ describe('VideoBlockEditorSettings', () => {
         autoplay: true,
         muted: false,
         endAt: 0,
-        startAt: 0
+        startAt: 0,
+        objectFit: ObjectFit.fill
       })
     })
   })
@@ -148,7 +154,8 @@ describe('VideoBlockEditorSettings', () => {
         autoplay: true,
         muted: true,
         endAt: 0,
-        startAt: 11
+        startAt: 11,
+        objectFit: ObjectFit.fill
       })
     )
   })
@@ -173,8 +180,51 @@ describe('VideoBlockEditorSettings', () => {
         autoplay: true,
         muted: true,
         endAt: 11,
-        startAt: 0
+        startAt: 0,
+        objectFit: ObjectFit.fill
       })
     )
+  })
+  it('should update objectFit to fit', async () => {
+    const onChange = jest.fn()
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={video}
+            posterBlock={null}
+            onChange={onChange}
+          />
+        </MockedProvider>
+      </ThemeProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Fit' }))
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({
+        autoplay: true,
+        muted: true,
+        endAt: 0,
+        startAt: 0,
+        objectFit: ObjectFit.fit
+      })
+    })
+  })
+
+  it('Aspect ratio buttons should be disabled for youtube video', async () => {
+    const onChange = jest.fn()
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <VideoBlockEditorSettings
+            selectedBlock={{ ...video, source: VideoBlockSource.youTube }}
+            posterBlock={null}
+            onChange={onChange}
+          />
+        </MockedProvider>
+      </ThemeProvider>
+    )
+    expect(getByRole('button', { name: 'Fill' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Fit' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Zoomed' })).toBeDisabled()
   })
 })

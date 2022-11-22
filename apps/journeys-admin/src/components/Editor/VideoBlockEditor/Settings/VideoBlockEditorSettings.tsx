@@ -1,14 +1,15 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 // import Button from '@mui/material/Button'
 // import ButtonGroup from '@mui/material/ButtonGroup'
 import ToggleButton from '@mui/material/ToggleButton'
-import ToggleButtonGroup  from '@mui/material/ToggleButtonGroup'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Box from '@mui/material/Box'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { noop } from 'lodash'
@@ -25,7 +26,12 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../__generated__/GetJourney'
-import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
+import {
+  VideoBlockObjectFit as ObjectFit,
+  VideoBlockSource,
+  VideoBlockUpdateInput
+} from '../../../../../__generated__/globalTypes'
+import { palette } from '../../../ThemeProvider/admin/tokens/colors'
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 
 interface VideoBlockEditorSettingsProps {
@@ -39,12 +45,13 @@ export function VideoBlockEditorSettings({
   posterBlock,
   onChange
 }: VideoBlockEditorSettingsProps): ReactElement {
-  const { values, handleChange } = useFormik({
+  const { values, handleChange, setFieldValue } = useFormik({
     initialValues: {
       autoplay: selectedBlock?.autoplay ?? true,
       muted: selectedBlock?.muted ?? true,
       startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
-      endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0)
+      endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0),
+      objectFit: selectedBlock?.objectFit ?? ObjectFit.fill
     },
     enableReinitialize: true,
     validate: async (values) => {
@@ -57,23 +64,16 @@ export function VideoBlockEditorSettings({
     onSubmit: noop
   })
 
-  const [aspectRatio, setAspectRatio] = useState('fill');
-  // change useState from 'fill' to objectFit value of videoBlock
+  const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+    '& .MuiToggleButtonGroup-grouped': {
+      backgroundColor: theme.palette[0],
+      '&.Mui-selected': {
+        backgroundColor: theme.palette[100],
+        color: palette.error
+      }
+    }
+  }))
 
-  const handleAspectRatioChange = (
-    event: React.MouseEvent<HTMLElement>,
-    newAspectRatio: string,
-  ) :void  =>  {
-    setAspectRatio(newAspectRatio);
-    // TODO: this could be where we update the objectFit on video block?
-    // merge backend changes into this branch, once it's been approved
-    // need to call videoblock update mutation method
-    // add objectFit to videoFields.ts, run codegen
-    // add objectFit to props in Video.tsx
-    // Find out how to make a video fill fit or zoom on video.tsx
-  };
-
-  // togglebutton should conditionally render the text color, depending on if it's selected or not
   return (
     <Box sx={{ px: 6, py: 3, width: '100%' }}>
       <Stack direction="column" spacing={3}>
@@ -137,30 +137,44 @@ export function VideoBlockEditorSettings({
           </Stack>
         </Stack>
         <Stack direction="column" spacing={3}>
-          <Typography
-            variant="subtitle2"
-            sx={{
-              color:
-                selectedBlock == null || selectedBlock.parentOrder == null
-                  ? 'action.disabled'
-                  : undefined
-            }}
-          >
-            Aspect ratio
-          </Typography>
-          <ToggleButtonGroup
-            color="secondary"
-            value={aspectRatio}
+          <Stack>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color:
+                  selectedBlock == null ||
+                  selectedBlock.parentOrder == null ||
+                  selectedBlock?.source === VideoBlockSource.youTube
+                    ? 'action.disabled'
+                    : undefined
+              }}
+            >
+              Aspect ratio
+            </Typography>
+            {selectedBlock?.source === VideoBlockSource.youTube && (
+              <Typography variant="caption" color="action.disabled">
+                This option is not available for YouTube videos
+              </Typography>
+            )}
+          </Stack>
+          <StyledToggleButtonGroup
+            value={
+              selectedBlock?.source === VideoBlockSource.youTube
+                ? ObjectFit.fit
+                : values.objectFit
+            }
             exclusive
             fullWidth
-            onChange={handleAspectRatioChange}
-            aria-label="Platform"
-            disabled
+            onChange={async (_event, value) => {
+              if (value != null) await setFieldValue('objectFit', value)
+            }}
+            aria-label="Object Fit"
+            disabled={selectedBlock?.source === VideoBlockSource.youTube}
           >
-            <ToggleButton value="fill">Fill</ToggleButton>
-            <ToggleButton value="fit">Fit</ToggleButton>
-            <ToggleButton value="zoomed">Zoomed</ToggleButton>
-          </ToggleButtonGroup>
+            <ToggleButton value={ObjectFit.fill}>Fill</ToggleButton>
+            <ToggleButton value={ObjectFit.fit}>Fit</ToggleButton>
+            <ToggleButton value={ObjectFit.zoomed}>Zoomed</ToggleButton>
+          </StyledToggleButtonGroup>
         </Stack>
         <Divider />
         <Stack direction="row" justifyContent="space-between">

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockUpdateInput, VideoBlockSource } from "./globalTypes";
+import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardBlockVideoBlockUpdate
@@ -133,6 +133,10 @@ export interface CardBlockVideoBlockUpdate_videoBlockUpdate {
    * duration in seconds.
    */
   duration: number | null;
+  /**
+   * aspect ratio for VideoBlock
+   */
+  objectFit: VideoBlockObjectFit | null;
   /**
    * internal source videos: video is only populated when videoID and
    * videoVariantLanguageId are present
