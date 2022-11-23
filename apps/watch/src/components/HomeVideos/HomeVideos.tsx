@@ -4,20 +4,14 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 
 import { GetHomeVideo_video } from '../../../__generated__/GetHomeVideo'
-import { FilmType, HomeVideoCard } from './Card'
-
-export interface HomeVideo {
-  id: string
-  designation: FilmType
-}
+import { HomeVideoCard } from './Card'
 
 interface VideoListGridProps {
-  videos: HomeVideo[] | undefined
   data: GetHomeVideo_video[] | undefined
   loading?: boolean
 }
 
-export function HomeVideos({ data, videos }: VideoListGridProps): ReactElement {
+export function HomeVideos({ data }: VideoListGridProps): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
       <Grid
@@ -31,7 +25,7 @@ export function HomeVideos({ data, videos }: VideoListGridProps): ReactElement {
         px="76px"
       >
         {(data?.length ?? 0) > 0 &&
-          videos?.map((item, index) => (
+          data?.map((item, index) => (
             <Grid
               item
               key={index}
@@ -57,7 +51,6 @@ export function HomeVideos({ data, videos }: VideoListGridProps): ReactElement {
             >
               <HomeVideoCard
                 video={data?.find((video) => video.id === item.id)}
-                designation={item?.designation}
               />
             </Grid>
           ))}

@@ -1,52 +1,24 @@
-import { VideoType } from '../../../__generated__/globalTypes'
-import { GetVideos_videos } from '../../../__generated__/GetVideos'
-import { FilmType } from './Card/HomeVideoCard'
-import { HomeVideo } from './HomeVideos'
+import { VideoSubType, VideoType } from '../../../__generated__/globalTypes'
+import { GetHomeVideo_video } from '../../../__generated__/GetHomeVideo'
 
-export const videos: HomeVideo[] = [
-  {
-    id: '1_jf-0-0',
-    designation: FilmType.feature
-  },
-  { id: '2_GOJ-0-0', designation: FilmType.feature },
-  { id: 'rivka', designation: FilmType.series },
-  { id: '2_Acts-0-0', designation: FilmType.feature },
-  {
-    id: '1_jf-0-0',
-    designation: FilmType.feature
-  },
-  { id: '2_GOJ-0-0', designation: FilmType.feature },
-  { id: 'rivka', designation: FilmType.series },
-  { id: '2_Acts-0-0', designation: FilmType.feature },
-  {
-    id: '1_jf-0-0',
-    designation: FilmType.feature
-  },
-  { id: '2_GOJ-0-0', designation: FilmType.feature },
-  { id: 'rivka', designation: FilmType.series },
-  { id: '2_Acts-0-0', designation: FilmType.feature },
-  {
-    id: '1_jf-0-0',
-    designation: FilmType.feature
-  },
-  { id: '2_GOJ-0-0', designation: FilmType.feature },
-  { id: 'rivka', designation: FilmType.series },
-  { id: '2_Acts-0-0', designation: FilmType.feature }
+export const videos = [
+  '1_jf-0-0',
+  '2_GOJ-0-0',
+  'rivka',
+  '2_Acts-0-0',
+  '1_jf-0-0',
+  '2_GOJ-0-0',
+  'rivka',
+  '2_Acts-0-0'
 ]
 
-export const data: GetVideos_videos[] = [
+export const data: GetHomeVideo_video[] = [
   {
     id: '1_cl-0-0',
     type: VideoType.standalone,
+    subType: VideoSubType.featureFilm,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl-0-0.mobileCinematicHigh.jpg',
-    snippet: [
-      {
-        value:
-          "In the first century, a group of children meet together to talk about what they've seen and heard about Jesus. Some believe Jesus is the Son of God. But others think Jesus may just be tricking the people.",
-        __typename: 'Translation'
-      }
-    ],
     title: [
       {
         value: 'The Story of Jesus for Children',
@@ -66,15 +38,9 @@ export const data: GetVideos_videos[] = [
   {
     id: '1_jf-0-0',
     type: VideoType.standalone,
+    subType: VideoSubType.featureFilm,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
-    snippet: [
-      {
-        value:
-          'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.',
-        __typename: 'Translation'
-      }
-    ],
     title: [{ value: 'JESUS', __typename: 'Translation' }],
     variant: { duration: 7674, __typename: 'VideoVariant' },
     __typename: 'Video',
@@ -84,15 +50,9 @@ export const data: GetVideos_videos[] = [
   {
     id: '1_wl-0-0',
     type: VideoType.standalone,
+    subType: VideoSubType.series,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_wl-0-0.mobileCinematicHigh.jpg',
-    snippet: [
-      {
-        value:
-          "Magdalena, a film made especially for women, beautifully shares God's love and the gospel, engaging women at the heart level with the potential of changing their lives for eternity. The Director's Cut is 82 minutes and includes additional scenes.",
-        __typename: 'Translation'
-      }
-    ],
     title: [
       {
         value: "Magdalena - Director's Cut",
@@ -112,15 +72,9 @@ export const data: GetVideos_videos[] = [
   {
     id: '2_Acts-0-0',
     type: VideoType.standalone,
+    subType: VideoSubType.collection,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
-    snippet: [
-      {
-        value:
-          'This film depicts the birth of the early church through the eyes of Luke, the author of the Gospel of Luke.',
-        __typename: 'Translation'
-      }
-    ],
     title: [{ value: 'Book of Acts', __typename: 'Translation' }],
     variant: { duration: 11530, __typename: 'VideoVariant' },
     __typename: 'Video',
@@ -130,15 +84,9 @@ export const data: GetVideos_videos[] = [
   {
     id: '2_CSF',
     type: VideoType.standalone,
+    subType: VideoSubType.shortFilm,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_CSF.mobileCinematicHigh.jpg',
-    snippet: [
-      {
-        value:
-          'The story of Matthew 14:13-33 as told from the First Nations Version for North American Native People. The film begins with a group of people around a fire listening to the storyteller, Mishomis, sharing about the Good Story first told by Gift from Creator (Matthew), who was a follower of Creator Sets Free (Jesus) the Chosen One—the Son of the Great Spirit.nnWatch as Creator Sets Free (Jesus) knows what each person He encounters needs and how He meets those needs. Visit https://firstnationsversion.com to learn more.',
-        __typename: 'Translation'
-      }
-    ],
     title: [
       {
         value: 'A Day and a Night with Creator Sets Free',
@@ -158,15 +106,9 @@ export const data: GetVideos_videos[] = [
   {
     id: '2_GOJ-0-0',
     type: VideoType.standalone,
+    subType: VideoSubType.collection,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
-    snippet: [
-      {
-        value:
-          'And truly Jesus did many other signs in the presence of His disciples, which are not written in this book; but these are written that you may believe that Jesus is the Christ, the Son of God, and that believing you may have life in His name. -John 20:30-31 NKJV',
-        __typename: 'Translation'
-      }
-    ],
     title: [
       {
         value: 'Life of Jesus (Gospel of John)',
@@ -186,15 +128,9 @@ export const data: GetVideos_videos[] = [
   {
     id: 'MAG1',
     type: VideoType.standalone,
+    subType: VideoSubType.collection,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/high_mag_collection_640x300br.jpg',
-    snippet: [
-      {
-        value:
-          'This compelling film collection portraying Jesus’ tender regard for women, is being met with incredible response around the world--inspiring women everywhere to realize and reclaim the purpose they were always intended for...to know God’s love for them and to make it known to others.',
-        __typename: 'Translation'
-      }
-    ],
     title: [{ value: 'Magdalena', __typename: 'Translation' }],
     variant: { duration: 3665, __typename: 'VideoVariant' },
     __typename: 'Video',
@@ -204,15 +140,9 @@ export const data: GetVideos_videos[] = [
   {
     id: '1_0-TrainV_1Install',
     type: VideoType.standalone,
+    subType: VideoSubType.segment,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/lrg_cine_install.jpg',
-    snippet: [
-      {
-        value:
-          'Installing the Jesus Film Media app is easy! Follow this simple video and have access to the entire Jesus Film catalog, with videos in more than 1200 languages!',
-        __typename: 'Translation'
-      }
-    ],
     title: [
       {
         value: 'Installing the Jesus Film Media App',
@@ -232,15 +162,9 @@ export const data: GetVideos_videos[] = [
   {
     id: '1_riv-0-0',
     type: VideoType.playlist,
+    subType: VideoSubType.series,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_riv-0-0.mobileCinematicHigh.jpg',
-    snippet: [
-      {
-        value:
-          'Rivka is the compelling story of a first-century community experiencing the joys and sorrows that life brings. Their story demonstrates how our loving God through His Word and Holy Spirit gives us strength for the present and hope for the future. This 12-part series is designed to help women (and men) grow in their relationship with God.',
-        __typename: 'Translation'
-      }
-    ],
     title: [
       {
         value: 'Rivka',
