@@ -1,4 +1,5 @@
-import { Meta, ComponentStory } from '@storybook/react'
+import { ComponentProps } from 'react'
+import { Meta, Story } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
@@ -12,7 +13,7 @@ const Demo = {
   title: 'Journeys-Ui/Video'
 }
 
-const emptyVideo: Omit<Parameters<typeof Video>[0], 'source'> = {
+const emptyVideo: Omit<ComponentProps<typeof Video>, 'source'> = {
   __typename: 'VideoBlock',
   id: 'video1.id',
   parentBlockId: 'step1.id',
@@ -50,7 +51,7 @@ const startVideoMock = {
   }
 }
 
-const Template: ComponentStory<typeof Video> = ({ ...args }) => (
+const Template: Story<ComponentProps<typeof Video>> = ({ ...args }) => (
   <MockedProvider mocks={[startVideoMock]}>
     <Box
       sx={{

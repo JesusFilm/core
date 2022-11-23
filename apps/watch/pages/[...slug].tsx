@@ -30,7 +30,13 @@ export const GET_VIDEO = gql`
       id
       type
       image
+      snippet(languageId: $languageId, primary: true) {
+        value
+      }
       description(languageId: $languageId, primary: true) {
+        value
+      }
+      studyQuestions(languageId: $languageId, primary: true) {
         value
       }
       title(languageId: $languageId, primary: true) {

@@ -1,4 +1,5 @@
-import { ComponentStory, Meta } from '@storybook/react'
+import { ComponentProps } from 'react'
+import { Story, Meta } from '@storybook/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import type { TreeBlock } from '../../libs/block'
@@ -14,7 +15,7 @@ const Demo = {
   title: 'Journeys-Ui/RadioQuestion'
 }
 
-const typographyProps: Parameters<typeof Typography>[0] = {
+const typographyProps: ComponentProps<typeof Typography> = {
   __typename: 'TypographyBlock',
   id: 'id',
   parentOrder: 0,
@@ -85,7 +86,7 @@ const submitEventMock: MockedResponse = {
   }
 }
 
-const Template: ComponentStory<typeof RadioQuestion> = ({ ...args }) => (
+const Template: Story<ComponentProps<typeof RadioQuestion>> = ({ ...args }) => (
   <MockedProvider mocks={[submitEventMock]}>
     <StoryCard>
       <Typography {...typographyProps} />
