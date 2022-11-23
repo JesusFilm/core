@@ -27,6 +27,7 @@ const video: Video = {
     hls: 'https://arc.gt/4jz75'
   },
   description: videos[0].snippet,
+  studyQuestions: [],
   episodes: [],
   variantLanguages: []
 }
