@@ -31,6 +31,7 @@ const emptyVideo: Omit<Parameters<typeof Video>[0], 'source'> = {
   posterBlockId: null,
   fullsize: null,
   action: null,
+  objectFit: null,
   children: []
 }
 

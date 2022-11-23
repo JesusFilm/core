@@ -31,6 +31,7 @@ describe('VideoWrapper', () => {
       posterBlockId: 'image5.id',
       fullsize: null,
       action: null,
+      objectFit: null,
       children: [
         {
           id: 'image5.id',
@@ -112,6 +113,7 @@ describe('VideoWrapper', () => {
       posterBlockId: 'image5.id',
       fullsize: null,
       action: null,
+      objectFit: null,
       children: [
         {
           id: 'image5.id',

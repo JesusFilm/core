@@ -53,6 +53,7 @@ const video: TreeBlock<VideoBlock> = {
   description: null,
   duration: null,
   image: null,
+  objectFit: null,
   video: {
     __typename: 'Video',
     id: '5_0-NUA0201-0-0',
