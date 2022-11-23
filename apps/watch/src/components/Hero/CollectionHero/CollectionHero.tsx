@@ -10,13 +10,20 @@ import IconButton from '@mui/material/IconButton'
 interface Props {
   title: string
   imageSrc: string
+  type: 'collection' | 'series'
+  length: number
 }
 
-export function CollectionHero({ title, imageSrc }: Props): ReactElement {
+export function CollectionHero({
+  title,
+  imageSrc,
+  type,
+  length
+}: Props): ReactElement {
   return (
     <Box
       sx={{
-        height: { xs: 502, lg: 777 },
+        height: { xs: 280, lg: 340 },
         width: '100%',
         display: 'flex',
         alignItems: 'flex-end',
@@ -31,7 +38,7 @@ export function CollectionHero({ title, imageSrc }: Props): ReactElement {
           height: '100%',
           width: '100%',
           background:
-            'linear-gradient(180deg, rgba(50, 50, 51, 0) 64%, rgba(38, 38, 38, 0.3) 76%, rgba(27, 27, 28, 0.46) 86%, #000000 100%), linear-gradient(90deg, #141414 16%, rgba(10, 10, 10, 0.5) 24%, rgba(4, 4, 4, 0.2) 31%, rgba(0, 0, 0, 0) 40%)'
+            'linear-gradient(180deg, rgba(50, 50, 51, 0) 64%, rgba(38, 38, 38, 0.3) 76%, rgba(27, 27, 28, 0.46) 86%, #000000 100%), linear-gradient(90deg, #141414 16%, rgba(10, 10, 10, 0.5) 24%, rgba(4, 4, 4, 0.2) 31%, rgba(0, 0, 0, 0) 40%)' // TODO: update gradient
         }}
       />
       <Container
@@ -46,11 +53,14 @@ export function CollectionHero({ title, imageSrc }: Props): ReactElement {
         >
           <Stack direction="column">
             <Typography
-              variant="overline"
+              variant="overline1" // TODO: typogs variants should change when mobile
               color="secondary.contrastText"
-              sx={{ opacity: 0.7, zIndex: 2 }}
+              sx={{
+                opacity: 0.7,
+                zIndex: 2
+              }}
             >
-              subtitle
+              {type}
             </Typography>
             <Typography
               variant="h1"
@@ -65,18 +75,20 @@ export function CollectionHero({ title, imageSrc }: Props): ReactElement {
             direction="row"
             sx={{
               alignSelf: { sm: 'flex-end' },
+              alignItems: 'center',
               ml: { sm: 'auto' },
               maxWidth: '100%'
             }}
           >
             <Typography
-              variant="overline"
-              color="secondary.contrastText" // check with Ziwei about updating theme to include #DCDDE5
+              variant="overline1"
+              align="center"
+              color="secondary.contrastText" // TODO: check with Ziwei about updating theme to include #DCDDE5
               sx={{
                 zIndex: 2
               }}
             >
-              count
+              {`${length} ${type === 'collection' ? 'Chapters' : 'Episodes'}`}
             </Typography>
             <IconButton
               sx={{
