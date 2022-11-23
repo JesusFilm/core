@@ -151,7 +151,6 @@ export function Video({
       ? 'cover'
       : 'fill'
 
-  console.log('videoFit= ', videoFit)
   return (
     <Box
       data-testid={`video-${blockId}`}
