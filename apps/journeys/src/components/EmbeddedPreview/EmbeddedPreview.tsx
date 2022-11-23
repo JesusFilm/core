@@ -16,7 +16,7 @@ import { ButtonWrapper } from './ButtonWrapper/ButtonWrapper'
 import { VideoWrapper } from './VideoWrapper/VideoWrapper'
 import { RadioOptionWrapper } from './RadioOptionWrapper/RadioOptionWrapper'
 
-export interface EmbeddedPreviewProps {
+interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
 }
 

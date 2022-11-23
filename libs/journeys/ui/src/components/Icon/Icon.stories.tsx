@@ -1,3 +1,4 @@
+import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -27,7 +28,7 @@ const IconDemo = {
 }
 
 const VariantTemplate: Story<
-  Parameters<typeof Icon>[0] & { variants: IconName[]; language: Language }
+  ComponentProps<typeof Icon> & { variants: IconName[]; language: Language }
 > = ({ ...args }) => (
   <JourneyProvider
     value={{
@@ -109,7 +110,7 @@ Variant.args = {
 }
 
 const ColorTemplate: Story<
-  Parameters<typeof Icon>[0] & { variants: IconColor[] }
+  ComponentProps<typeof Icon> & { variants: IconColor[] }
 > = ({ ...args }) => (
   <Container>
     {args.variants.map((variant, i) => (
@@ -144,7 +145,7 @@ Color.args = {
 }
 
 const SizeTemplate: Story<
-  Parameters<typeof Icon>[0] & { variants: IconSize[] }
+  ComponentProps<typeof Icon> & { variants: IconSize[] }
 > = ({ ...args }) => (
   <Container>
     {args.variants.map((variant, i) => (

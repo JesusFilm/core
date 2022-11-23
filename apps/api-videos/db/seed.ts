@@ -85,7 +85,7 @@ interface Video {
   seoTitle: Translation[]
   snippet: Translation[]
   description: Translation[]
-  studyQuestions: Translation[][]
+  studyQuestions: Translation[]
   image: string
   imageAlt: Translation[]
   variants: VideoVariant[]
@@ -212,13 +212,13 @@ async function digestContent(
         primary: true
       }
     ],
-    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => [
-      {
+    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => {
+      return {
         languageId: metadataLanguageId,
         value: studyQuestion,
         primary: true
       }
-    ]),
+    }),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     imageAlt: [
       {
@@ -364,13 +364,13 @@ async function digestContainer(
         primary: true
       }
     ],
-    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => [
-      {
+    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => {
+      return {
         languageId: metadataLanguageId,
         value: studyQuestion,
         primary: true
       }
-    ]),
+    }),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     imageAlt: [
       {
