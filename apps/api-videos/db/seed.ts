@@ -218,13 +218,13 @@ async function digestContent(
         primary: true
       }
     ],
-    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => [
-      {
+    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => {
+      return {
         languageId: metadataLanguageId,
         value: studyQuestion,
         primary: true
       }
-    ]),
+    }),
     image: mediaComponent.imageUrls.mobileCinematicHigh,
     imageAlt: [
       {
