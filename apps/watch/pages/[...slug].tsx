@@ -12,7 +12,7 @@ import Share from '@mui/icons-material/Share'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import 'video.js/dist/video-js.css'
-
+import { NextSeo } from 'next-seo'
 import { routeParser } from '../src/libs/routeParser/routeParser'
 import {
   LanguageProvider,
@@ -22,6 +22,7 @@ import { PageWrapper } from '../src/components/PageWrapper'
 import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCarousel'
 import { VideoHero, SimpleHero } from '../src/components/Hero'
 import { ShareDialog } from '../src/components/ShareDialog'
+
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID) {
@@ -136,96 +137,137 @@ export default function SeoFriendly(): ReactElement {
   if (routes == null) return throw404()
 
   const getSiblingRoute = (routes: string[]): string[] => {
+    
     return routes.filter((route, index) => index !== routes.length - 1)
   }
 
   return (
-    <LanguageProvider>
-      <PageWrapper
-        hero={
-          data?.video == null ? (
-            <></>
-          ) : siblingsData != null ? (
-            <VideoHero
-              loading={loading}
-              video={data.video}
-              siblingVideos={siblingsData}
-              routes={routes}
-            />
-          ) : (
-            <SimpleHero loading={loading} video={data.video} />
-          )
-        }
-      >
-        {data?.video != null && (
-          <>
-            <Box sx={{ pt: '20px' }}>
-              {data.video.episodes.length > 0 && (
-                <VideosCarousel
-                  videos={data.video.episodes}
-                  routePrefix={routes.join('/')}
-                />
-              )}
-              {siblingsData?.episodes?.length > 0 && (
-                <VideosCarousel
-                  videos={siblingsData.episodes}
-                  routePrefix={getSiblingRoute(routes).join('/')}
-                />
-              )}
-            </Box>
-
-            <Stack
-              direction="row"
-              spacing="100px"
-              sx={{
-                mx: 0,
-                mt: 20,
-                mb: 80,
-                maxWidth: '100%'
-              }}
-            >
-              <Box width="100%">
-                <Tabs
-                  value={tabValue}
-                  onChange={handleTabChange}
-                  aria-label="background tabs"
-                  variant="fullWidth"
-                  centered
-                  sx={{ marginBottom: '40px' }}
-                >
-                  <Tab
-                    label="Description"
-                    {...tabA11yProps('video-description', 0)}
+    <>
+      {data != null ? <NextSeo
+          title={data.video.title.value}
+          description={data.video.description ?? undefined}
+          openGraph={{
+            type: 'website',
+            title: data.video.seoTitle ?? data.video.title.value,
+            url: `${
+              process.env.NEXT_PUBLIC_WATCH_URL ??
+              'https://watch-jesusfilm.vercel.app'
+            }/${routes?.join('/')}`.trim(),
+            description:
+            data.video.description[0].value ?? undefined,
+            images:
+            data.video.description?.image != null
+                ? [
+                    {
+                      url: data.video.description.image,
+                      // width: data.video.primaryImageBlock.width,
+                      // height: data.video.primaryImageBlock.height,
+                      alt: "no image",
+                      type: 'image/jpeg'
+                    }
+                  ]
+                : []
+          }}
+          facebook={
+            process.env.NEXT_PUBLIC_FACEBOOK_APP_ID != null
+              ? {
+                  appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID
+                }
+              : undefined
+          }
+          twitter={{
+            site: '@YourNextStepIs',
+            cardType: 'summary_large_image'
+          }}
+        /> : <></>}
+      
+      <LanguageProvider>
+        <PageWrapper
+          hero={
+            data?.video == null ? (
+              <></>
+            ) : siblingsData != null ? (
+              <VideoHero
+                loading={loading}
+                video={data.video}
+                siblingVideos={siblingsData}
+                routes={routes}
+              />
+            ) : (
+              <SimpleHero loading={loading} video={data.video} />
+            )
+          }
+        >
+          {data?.video != null && (
+            <>
+              <Box sx={{ pt: '20px' }}>
+                {data.video.episodes.length > 0 && (
+                  <VideosCarousel
+                    videos={data.video.episodes}
+                    routePrefix={routes.join('/')}
                   />
-                </Tabs>
-                <TabPanel name="video-description" value={tabValue} index={0}>
-                  <Typography variant="body1">
-                    {data.video.description[0]?.value}
-                  </Typography>
-                </TabPanel>
+                )}
+                {siblingsData?.episodes?.length > 0 && (
+                  <VideosCarousel
+                    videos={siblingsData.episodes}
+                    routePrefix={getSiblingRoute(routes).join('/')}
+                  />
+                )}
               </Box>
-              <Box width="336px">
-                <Stack direction="row" spacing="20px" mb="40px">
-                  <Button variant="outlined">
-                    <SaveAlt />
-                    &nbsp; Download
-                  </Button>
-                  <Button variant="outlined" onClick={() => setOpenShare(true)}>
-                    <Share />
-                    &nbsp; Share
-                  </Button>
-                </Stack>
-              </Box>
-            </Stack>
-            <ShareDialog
-              open={openShare}
-              video={data.video}
-              routes={routes}
-              onClose={() => setOpenShare(false)}
-            />
-          </>
-        )}
-      </PageWrapper>
-    </LanguageProvider>
+
+              <Stack
+                direction="row"
+                spacing="100px"
+                sx={{
+                  mx: 0,
+                  mt: 20,
+                  mb: 80,
+                  maxWidth: '100%'
+                }}
+              >
+                <Box width="100%">
+                  <Tabs
+                    value={tabValue}
+                    onChange={handleTabChange}
+                    aria-label="background tabs"
+                    variant="fullWidth"
+                    centered
+                    sx={{ marginBottom: '40px' }}
+                  >
+                    <Tab
+                      label="Description"
+                      {...tabA11yProps('video-description', 0)}
+                    />
+                  </Tabs>
+                  <TabPanel name="video-description" value={tabValue} index={0}>
+                    <Typography variant="body1">
+                      {data.video.description[0]?.value}
+                    </Typography>
+                  </TabPanel>
+                </Box>
+                <Box width="336px">
+                  <Stack direction="row" spacing="20px" mb="40px">
+                    <Button variant="outlined">
+                      <SaveAlt />
+                      &nbsp; Download
+                    </Button>
+                    <Button variant="outlined" onClick={() => setOpenShare(true)}>
+                      <Share />
+                      &nbsp; Share
+                    </Button>
+                  </Stack>
+                </Box>
+              </Stack>
+              <ShareDialog
+                open={openShare}
+                video={data.video}
+                routes={routes}
+                onClose={() => setOpenShare(false)}
+              />
+            </>
+          )}
+        </PageWrapper>
+      </LanguageProvider>
+    </>
   )
 }
