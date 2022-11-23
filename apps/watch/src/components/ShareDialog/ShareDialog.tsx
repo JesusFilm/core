@@ -14,7 +14,6 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { createSvgIcon } from '@mui/material/utils'
 import { useTheme } from '@mui/material/styles'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import { NextSeo } from 'next-seo'
 
 import { GetVideo_video } from '../../../__generated__/GetVideo'
 import { VideoType } from '../../../__generated__/globalTypes'

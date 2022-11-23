@@ -23,7 +23,6 @@ import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCa
 import { VideoHero, SimpleHero } from '../src/components/Hero'
 import { ShareDialog } from '../src/components/ShareDialog'
 
-
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID) {
     video(id: $id, idType: slug) {
@@ -143,32 +142,31 @@ export default function SeoFriendly(): ReactElement {
   if (routes == null) return throw404()
 
   const getSiblingRoute = (routes: string[]): string[] => {
-    
     return routes.filter((route, index) => index !== routes.length - 1)
   }
 
   return (
     <>
-      {data != null ? <NextSeo
-          title={data.video.title.value}
-          description={data.video.description ?? undefined}
+      {data != null ? (
+        <NextSeo
+          title={data.video.title[0].value}
+          description={data.video.snippet[0].value ?? undefined}
           openGraph={{
             type: 'website',
-            title: data.video.seoTitle ?? data.video.title.value,
+            title: data.video.title[0].value,
             url: `${
               process.env.NEXT_PUBLIC_WATCH_URL ??
               'https://watch-jesusfilm.vercel.app'
             }/${routes?.join('/')}`.trim(),
-            description:
-            data.video.description[0].value ?? undefined,
+            description: data.video.snippet[0].value ?? undefined,
             images:
-            data.video.description?.image != null
+              data.video.image !== null
                 ? [
                     {
-                      url: data.video.description.image,
-                      // width: data.video.primaryImageBlock.width,
-                      // height: data.video.primaryImageBlock.height,
-                      alt: "no image",
+                      url: data.video.image,
+                      width: 640,
+                      height: 300,
+                      alt: data.video.imageAlt,
                       type: 'image/jpeg'
                     }
                   ]
@@ -185,8 +183,11 @@ export default function SeoFriendly(): ReactElement {
             site: '@YourNextStepIs',
             cardType: 'summary_large_image'
           }}
-        /> : <></>}
-      
+        />
+      ) : (
+        <></>
+      )}
+
       <LanguageProvider>
         <PageWrapper
           hero={
@@ -257,7 +258,10 @@ export default function SeoFriendly(): ReactElement {
                       <SaveAlt />
                       &nbsp; Download
                     </Button>
-                    <Button variant="outlined" onClick={() => setOpenShare(true)}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => setOpenShare(true)}
+                    >
                       <Share />
                       &nbsp; Share
                     </Button>
