@@ -450,7 +450,8 @@ describe('BackgroundMediaVideo', () => {
                       startAt: 0,
                       endAt: 144,
                       muted: true,
-                      autoplay: false
+                      autoplay: false,
+                      objectFit: 'fill'
                     }
                   }
                 },
@@ -512,7 +513,8 @@ describe('BackgroundMediaVideo', () => {
                     startAt: 0,
                     endAt: 144,
                     muted: false,
-                    autoplay: true
+                    autoplay: true,
+                    objectFit: 'fill'
                   }
                 }
               },
@@ -573,7 +575,8 @@ describe('BackgroundMediaVideo', () => {
                     startAt: 11,
                     endAt: 144,
                     autoplay: true,
-                    muted: true
+                    muted: true,
+                    objectFit: 'fill'
                   }
                 }
               },
@@ -635,7 +638,8 @@ describe('BackgroundMediaVideo', () => {
                     autoplay: true,
                     muted: true,
                     startAt: 0,
-                    endAt: 31
+                    endAt: 31,
+                    objectFit: 'fill'
                   }
                 }
               },
