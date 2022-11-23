@@ -1,4 +1,5 @@
-import { ComponentStory, Meta } from '@storybook/react'
+import { ComponentProps } from 'react'
+import { Story, Meta } from '@storybook/react'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { StoryCard } from '../StoryCard'
 import { Image } from './Image'
@@ -9,7 +10,7 @@ const Demo = {
   title: 'Journeys-Ui/Image'
 }
 
-const emptyImage: Omit<Parameters<typeof Image>[0], 'src'> = {
+const emptyImage: Omit<ComponentProps<typeof Image>, 'src'> = {
   __typename: 'ImageBlock',
   parentBlockId: 'card.id',
   parentOrder: 0,
@@ -21,7 +22,7 @@ const emptyImage: Omit<Parameters<typeof Image>[0], 'src'> = {
   children: []
 }
 
-const Template: ComponentStory<typeof Image> = ({ ...args }) => (
+const Template: Story<ComponentProps<typeof Image>> = ({ ...args }) => (
   <StoryCard>
     <Image {...args} alt={args.alt} />
   </StoryCard>

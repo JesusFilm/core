@@ -1,3 +1,4 @@
+import { ComponentProps } from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -5,16 +6,13 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { RadioOptionFields } from '../../../../../../__generated__/RadioOptionFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import {
-  RadioQuestionEditProps,
-  RADIO_OPTION_BLOCK_CREATE
-} from './RadioQuestionEdit'
+import { RADIO_OPTION_BLOCK_CREATE } from './RadioQuestionEdit'
 import { RadioQuestionEdit } from '.'
 
 describe('RadioQuestionEdit', () => {
   const props = (
     children?: Array<TreeBlock<RadioOptionFields>>
-  ): RadioQuestionEditProps => {
+  ): ComponentProps<typeof RadioQuestionEdit> => {
     return {
       __typename: 'RadioQuestionBlock',
       parentBlockId: 'card.id',

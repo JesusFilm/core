@@ -20,7 +20,7 @@ export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
     }
   }
 `
-export interface TypographyEditProps extends TreeBlock<TypographyFields> {
+interface TypographyEditProps extends TreeBlock<TypographyFields> {
   deleteSelf: () => void
 }
 
