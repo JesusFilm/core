@@ -79,6 +79,7 @@ interface VideoVariant {
 
 interface Video {
   type: VideoType
+  subType: string
   primaryLanguageId: string
   title: Translation[]
   seoTitle: Translation[]
@@ -88,18 +89,10 @@ interface Video {
   image: string
   imageAlt: Translation[]
   variants: VideoVariant[]
-  tagIds: string[]
   slug: Translation[]
   episodeIds: string[]
   noIndex: boolean
 }
-
-interface Tag {
-  _key: string
-  title: Translation[]
-}
-
-const tags: Record<string, Tag> = {}
 
 async function getLanguages(): Promise<Language[]> {
   const response: {
@@ -189,6 +182,7 @@ async function digestContent(
 
   const body = {
     type: VideoType.standalone,
+    subType: mediaComponent.subType,
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
     title: [
       {
@@ -236,7 +230,6 @@ async function digestContent(
         primary: true
       }
     ],
-    tagIds: [],
     episodeIds: [],
     variants,
     slug: video?.slug ?? [
@@ -311,30 +304,37 @@ async function getMediaComponentLinks(
   return response.linkedMediaComponentIds.contains
 }
 
-async function digestSeriesContainer(
-  mediaComponent,
-  languages,
-  video
-): Promise<Video> {
-  if (video?.slug != null)
-    video.slug.forEach((title) => usedTitles.push(title.value))
+async function digestContainer(
+  languages: Language[],
+  mediaComponent: MediaComponent
+): Promise<void> {
+  console.log('container:', mediaComponent.mediaComponentId)
+  const existingContainer = await getVideo(mediaComponent.mediaComponentId)
+  if (existingContainer?.slug != null)
+    existingContainer.slug.forEach((title) => usedTitles.push(title.value))
   const metadataLanguageId =
     languages
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
       ?.languageId.toString() ?? '529' // english by default
 
   const variants: VideoVariant[] = []
-  for (const mediaComponentLanguage of await getMediaComponentLanguage(
-    mediaComponent.mediaComponentId
-  )) {
-    variants.push(
-      await digestMediaComponentLanguage(mediaComponentLanguage, mediaComponent)
-    )
+  if (mediaComponent.subType !== 'collection') {
+    for (const mediaComponentLanguage of await getMediaComponentLanguage(
+      mediaComponent.mediaComponentId
+    )) {
+      variants.push(
+        await digestMediaComponentLanguage(
+          mediaComponentLanguage,
+          mediaComponent
+        )
+      )
+    }
   }
 
-  return {
+  const container: Video = {
     _key: mediaComponent.mediaComponentId,
     type: VideoType.playlist,
+    subType: mediaComponent.subType,
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
     title: [
       {
@@ -382,8 +382,7 @@ async function digestSeriesContainer(
         primary: true
       }
     ],
-    tagIds: [],
-    slug: video?.slug ?? [
+    slug: existingContainer?.slug ?? [
       {
         value: getSeoSlug(mediaComponent.title, usedTitles),
         languageId: metadataLanguageId,
@@ -394,64 +393,24 @@ async function digestSeriesContainer(
     variants,
     noIndex: false
   }
-}
 
-async function digestContainer(
-  languages: Language[],
-  mediaComponent: MediaComponent
-): Promise<void> {
-  console.log('container:', mediaComponent.mediaComponentId)
-  let series, existingSeries
-  if (mediaComponent.subType === 'series') {
-    existingSeries = await getVideo(mediaComponent.mediaComponentId)
-    series = await digestSeriesContainer(
-      mediaComponent,
-      languages,
-      existingSeries
-    )
-  } else {
-    const metadataLanguageId =
-      languages
-        .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
-        ?.languageId.toString() ?? '529' // english by default
-    tags[mediaComponent.mediaComponentId] = {
-      _key: mediaComponent.mediaComponentId,
-      title: [
-        {
-          value: mediaComponent.title,
-          languageId: metadataLanguageId,
-          primary: true
-        }
-      ]
-    }
-  }
   for (const videoId of await getMediaComponentLinks(
     mediaComponent.mediaComponentId
   )) {
     const video = await getVideo(videoId)
     if (video == null) continue
 
-    if (mediaComponent.subType === 'series') series.episodeIds.push(videoId)
+    container.episodeIds.push(videoId)
 
-    if (video.tagIds.includes(mediaComponent.mediaComponentId)) continue
-
-    if (mediaComponent.subType === 'series') {
-      await db.collection('videos').update(videoId, {
-        type: VideoType.episode
-      })
-    } else {
-      await db.collection('videos').update(videoId, {
-        tagIds: [...video.tagIds, mediaComponent.mediaComponentId]
-      })
-    }
+    await db.collection('videos').update(videoId, {
+      type: VideoType.episode
+    })
   }
-  if (mediaComponent.subType === 'series') {
-    if (existingSeries != null)
-      await db
-        .collection('videos')
-        .update(mediaComponent.mediaComponentId, series)
-    else await db.collection('videos').save(series)
-  }
+  if (existingContainer != null)
+    await db
+      .collection('videos')
+      .update(mediaComponent.mediaComponentId, container)
+  else await db.collection('videos').save(container)
 }
 
 async function getVideo(videoId: string): Promise<Video | undefined> {
@@ -482,9 +441,6 @@ async function main(): Promise<void> {
     links: {
       videos: {
         fields: {
-          tagIds: {
-            analyzers: ['identity']
-          },
           variants: {
             fields: {
               languageId: {
@@ -507,6 +463,9 @@ async function main(): Promise<void> {
             }
           },
           type: {
+            analyzers: ['identity']
+          },
+          subType: {
             analyzers: ['identity']
           },
           episodeIds: {
@@ -543,16 +502,6 @@ async function main(): Promise<void> {
     fields: ['slug[*].value'],
     unique: true
   })
-
-  for (const key in tags) {
-    await db.collection('videoTags').save(
-      {
-        _key: tags[key]._key,
-        title: tags[key].title
-      },
-      { overwriteMode: 'update' }
-    )
-  }
 }
 main().catch((e) => {
   console.error(e)

@@ -13,9 +13,19 @@ enum VideoType {
   playlist
 }
 
+enum VideoSubType {
+  collection
+  episode
+  featureFilm
+  segment
+  series
+  shortFilm
+}
+
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
   type: VideoType!
+  subType: VideoSubType!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
   seoTitle(languageId: ID, primary: Boolean): [Translation!]!
@@ -40,8 +50,8 @@ type Video @key(fields: "id primaryLanguageId") {
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
-  tagId: String
   types: [VideoType!]
+  subTypes: [VideoSubType!]
 }
 
 extend type Query {

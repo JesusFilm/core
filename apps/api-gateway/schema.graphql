@@ -752,8 +752,6 @@ type Query {
   languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
   video(id: ID!, idType: IdType): Video! @join__field(graph: VIDEOS)
-  videoTag(id: ID!): VideoTag @join__field(graph: VIDEOS)
-  videoTags: [VideoTag!] @join__field(graph: VIDEOS)
   videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 
   """Get a single visitor"""
@@ -1203,6 +1201,7 @@ type Video
   slug(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  subType: VideoSubType! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   type: VideoType! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
@@ -1243,7 +1242,7 @@ type VideoBlock implements Block {
   journeyId: ID!
   muted: Boolean
 
-  """aspect ratio for VideoBlock"""
+  """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit
   parentBlockId: ID
   parentOrder: Int
@@ -1308,7 +1307,7 @@ input VideoBlockCreateInput {
   journeyId: ID!
   muted: Boolean
 
-  """aspect ratio for VideoBlock"""
+  """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit
   parentBlockId: ID!
 
@@ -1344,8 +1343,29 @@ input VideoBlockCreateInput {
 }
 
 enum VideoBlockObjectFit {
+  """
+  The video is scaled to maintain its aspect ratio while filling the
+   entire VideoBlock. If the video's aspect ratio does not match the
+   aspect ratio of the VideoBlock, then the video will be clipped to fit.
+  """
   fill
+
+  """
+  The video is scaled to maintain its aspect ratio while fitting within the
+   VideoBlock. The entire video is made to fill the VideoBlock, while
+   preserving its aspect ratio, so the video will be "letterboxed" if its
+   aspect ratio does not match the aspect ratio of the VideoBlock.
+  """
   fit
+
+  """
+  12.5% of either side of the video is discarded (this has the effect of
+   converting a 16:9 aspect ratio to 4:3). The remaining video is scaled to
+   maintain its new aspect ratio while fitting within the VideoBlock.  The
+   remaining video is made to fill the VideoBlock, while preserving its new
+   aspect ratio, so the video will be "letterboxed" if its new aspect ratio
+   does not match the aspect ratio of the VideoBlock.
+  """
   zoomed
 }
 
@@ -1362,7 +1382,7 @@ input VideoBlockUpdateInput {
   fullsize: Boolean
   muted: Boolean
 
-  """aspect ratio for VideoBlock"""
+  """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit
 
   """
@@ -1660,7 +1680,7 @@ input VideoProgressEventCreateInput {
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
-  tagId: String
+  subTypes: [VideoSubType!]
   title: String
   types: [VideoType!]
 }
@@ -1707,9 +1727,13 @@ input VideoStartEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoTag {
-  id: ID!
-  title(languageId: ID, primary: Boolean): [Translation!]!
+enum VideoSubType {
+  collection
+  episode
+  featureFilm
+  segment
+  series
+  shortFilm
 }
 
 """

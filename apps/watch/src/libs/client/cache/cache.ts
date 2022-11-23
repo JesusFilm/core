@@ -16,7 +16,7 @@ export const cache: InMemoryCache = new InMemoryCache({
           ...offsetLimitPagination(),
           keyArgs: [
             'where',
-            ['tagId', 'types', 'availableVariantLanguageIds', 'title']
+            ['subTypes', 'types', 'availableVariantLanguageIds', 'title']
           ]
         }
       }
