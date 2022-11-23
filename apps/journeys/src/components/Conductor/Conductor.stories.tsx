@@ -1,3 +1,4 @@
+import { ComponentProps } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
@@ -79,7 +80,7 @@ const defaultJourney: Journey = {
 }
 
 const Template: Story<
-  Parameters<typeof Conductor>[0] & { journey?: Journey }
+  ComponentProps<typeof Conductor> & { journey?: Journey }
 > = ({ journey = defaultJourney, ...args }) => (
   <MockedProvider mocks={[]}>
     <JourneyProvider value={{ journey }}>
