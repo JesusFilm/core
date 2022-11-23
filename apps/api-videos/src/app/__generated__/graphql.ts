@@ -52,7 +52,7 @@ export class Video {
     seoTitle: Translation[];
     snippet: Translation[];
     description: Translation[];
-    studyQuestions: Translation[];
+    studyQuestions: Nullable<Translation>[];
     image?: Nullable<string>;
     imageAlt: Translation[];
     variantLanguages: Language[];
