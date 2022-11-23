@@ -164,8 +164,8 @@ export default function SeoFriendly(): ReactElement {
                 ? [
                     {
                       url: data.video.image,
-                      // width: 640,
-                      // height: 300,
+                      width: 1080,
+                      height: 600,
                       alt: data.video.imageAlt,
                       type: 'image/jpeg'
                     }
