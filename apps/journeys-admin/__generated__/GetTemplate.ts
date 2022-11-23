@@ -475,7 +475,7 @@ export interface GetTemplate_template_blocks_VideoBlock {
    */
   duration: number | null;
   /**
-   * aspect ratio for VideoBlock
+   * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
   /**
