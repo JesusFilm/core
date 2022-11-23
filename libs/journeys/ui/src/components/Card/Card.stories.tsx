@@ -1,4 +1,5 @@
-import { ComponentStory, Meta } from '@storybook/react'
+import { ComponentProps } from 'react'
+import { Story, Meta } from '@storybook/react'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import { MockedProvider } from '@apollo/client/testing'
@@ -126,7 +127,7 @@ const video: TreeBlock<VideoFields> = {
   children: []
 }
 
-const Template: ComponentStory<typeof Card> = ({ ...args }) => {
+const Template: Story<ComponentProps<typeof Card>> = ({ ...args }) => {
   const theme = useTheme()
   return (
     <MockedProvider>

@@ -1,3 +1,4 @@
+import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 
 import {
@@ -20,7 +21,9 @@ const TypographyDemo = {
 }
 
 const VariantTemplate: Story<
-  Parameters<typeof Typography>[0] & { variants: TypographyVariant[] }
+  ComponentProps<typeof Typography> & {
+    variants: TypographyVariant[]
+  }
 > = (args) => (
   <StoryCard>
     {args.variants.map((variant) => (
@@ -54,7 +57,7 @@ Variants.args = {
 }
 
 const TypographyColors: Story<
-  Parameters<typeof Typography>[0] & {
+  ComponentProps<typeof Typography> & {
     variants: Array<TypographyColor | null>
     heading?: string
   }
@@ -83,7 +86,7 @@ const TypographyColors: Story<
 }
 
 const ColorTemplate: Story<
-  Parameters<typeof Typography>[0] & { variants: TypographyColor[] }
+  ComponentProps<typeof Typography> & { variants: TypographyColor[] }
 > = (args) => (
   <div
     style={{
@@ -118,7 +121,7 @@ Colors.args = {
 }
 
 const AlignmentTemplate: Story<
-  Parameters<typeof Typography>[0] & { variants: TypographyAlign[] }
+  ComponentProps<typeof Typography> & { variants: TypographyAlign[] }
 > = (args) => (
   <StoryCard>
     {args.variants.map((variant) => (
