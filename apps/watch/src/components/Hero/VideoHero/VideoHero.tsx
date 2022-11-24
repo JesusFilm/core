@@ -62,6 +62,8 @@ export function VideoHero({ video }: VideoHeroProps): ReactElement {
     setIsPlaying(false)
   }
 
+  // TODO: refactor according to how overlay works
+
   return (
     <Box
       sx={{
@@ -70,7 +72,7 @@ export function VideoHero({ video }: VideoHeroProps): ReactElement {
         display: 'flex',
         alignItems: 'center',
         position: 'relative',
-        '.video-js .vjs-big-play-button': {
+        '> .video-js .vjs-big-play-button': {
           display: 'none'
         }
       }}
@@ -90,15 +92,33 @@ export function VideoHero({ video }: VideoHeroProps): ReactElement {
       )}
       {!isPlaying && (
         <>
-          <Image
-            src={video?.image ?? ''}
-            alt={video?.title[0].value ?? ''}
-            layout="fill"
-            objectFit="cover"
-            style={{
-              zIndex: 1
+          <Box
+            sx={{
+              position: 'absolute',
+              height: '100%',
+              width: '100%'
             }}
-          />
+          >
+            <Image
+              src={video?.image ?? ''}
+              alt={video?.title[0].value ?? ''}
+              layout="fill"
+              objectFit="cover"
+              style={{
+                zIndex: 1
+              }}
+            />
+            <Box
+              sx={{
+                zIndex: 1,
+                position: 'absolute',
+                height: '100%',
+                width: '100%',
+                background:
+                  'linear-gradient(180deg, rgba(50, 50, 51, 0) 64%, rgba(38, 38, 38, 0.3) 76%, rgba(27, 27, 28, 0.46) 86%, #000000 100%), linear-gradient(90deg, #141414 16%, rgba(10, 10, 10, 0.5) 24%, rgba(4, 4, 4, 0.2) 31%, rgba(0, 0, 0, 0) 40%)'
+              }}
+            />
+          </Box>
           <Container
             maxWidth="xl"
             sx={{
