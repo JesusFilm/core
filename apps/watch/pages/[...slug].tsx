@@ -152,12 +152,7 @@ export default function SeoFriendly(): ReactElement {
           data?.video == null ? (
             <></>
           ) : siblingsData != null ? (
-            <VideoHero
-              loading={loading}
-              video={data.video}
-              siblingVideos={siblingsData}
-              routes={routes}
-            />
+            <VideoHero video={data.video} />
           ) : (
             <SimpleHero loading={loading} video={data.video} />
           )

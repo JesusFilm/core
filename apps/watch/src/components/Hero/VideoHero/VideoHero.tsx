@@ -1,35 +1,24 @@
 import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import { secondsToMinutes } from '@core/shared/ui/timeFormat'
 import Container from '@mui/material/Container'
 import Button from '@mui/material/Button'
-import PlayArrow from '@mui/icons-material/PlayArrow'
+import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import AccessTime from '@mui/icons-material/AccessTime'
-import Circle from '@mui/icons-material/Circle'
+import Image from 'next/image'
 
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 
-import { VideoType } from '../../../../__generated__/globalTypes'
 import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
-import { GetVideoSiblings as VideoSiblings } from '../../../../__generated__/GetVideoSiblings'
 
 interface VideoHeroProps {
-  loading: boolean
-  routes: string[]
   video: Video
-  siblingVideos: VideoSiblings
 }
 
-export function VideoHero({
-  loading,
-  routes,
-  video,
-  siblingVideos
-}: VideoHeroProps): ReactElement {
+export function VideoHero({ video }: VideoHeroProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState(false)
@@ -74,116 +63,80 @@ export function VideoHero({
   }
 
   return (
-    <>
-      {loading && <CircularProgress />}
-      <>
-        <Box
-          sx={{
-            backgroundImage: `url(${video.image as string})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            height: 776
+    <Box
+      sx={{
+        width: '100%',
+        height: 776,
+        display: 'flex',
+        alignItems: 'center',
+        position: 'relative',
+        '.video-js .vjs-big-play-button': {
+          display: 'none'
+        }
+      }}
+    >
+      {video.variant?.hls != null && (
+        <video
+          ref={videoRef}
+          className="vjs-jfp video-js vjs-fill"
+          style={{
+            alignSelf: 'center',
+            position: 'absolute'
           }}
+          playsInline
         >
-          {video.variant?.hls != null && (
-            <video
-              ref={videoRef}
-              className="vjs-jfp video-js vjs-fill"
-              style={{
-                alignSelf: 'center'
-              }}
-              playsInline
-            >
-              <source src={video.variant.hls} type="application/x-mpegURL" />
-            </video>
-          )}
-          {!isPlaying && (
-            <>
-              <Container
-                maxWidth="xl"
-                style={{
-                  position: 'absolute',
-                  top: 350,
-                  paddingLeft: 100,
-                  margin: 0,
-                  textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)'
-                }}
+          <source src={video.variant.hls} type="application/x-mpegURL" />
+        </video>
+      )}
+      {!isPlaying && (
+        <>
+          <Image
+            src={video?.image ?? ''}
+            alt={video?.title[0].value ?? ''}
+            layout="fill"
+            objectFit="cover"
+            style={{
+              zIndex: 1
+            }}
+          />
+          <Container
+            maxWidth="xl"
+            sx={{
+              pt: 50,
+              zIndex: 2
+            }}
+          >
+            <Stack spacing={5} width="60%">
+              <Typography variant="h2" color="text.primary">
+                {video.title[0]?.value}
+              </Typography>
+              <Stack
+                direction={{ xs: 'column', md: 'row' }}
+                spacing={4}
+                sx={{ color: 'text.primary', width: '100%' }}
               >
-                <Typography
-                  variant="h2"
-                  sx={{
-                    maxWidth: '600px',
-                    color: 'text.primary'
-                  }}
-                >
-                  {video.title[0]?.value}
-                </Typography>
-              </Container>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: '520px'
-                }}
-                width="100%"
-                height="133px"
-              >
+                <Button size="medium" variant="contained" onClick={playVideo}>
+                  <PlayArrowRounded />
+                  Play Video
+                </Button>
                 <Stack
                   direction="row"
-                  justifyContent="space-between"
-                  px="100px"
-                  sx={{ color: 'text.primary' }}
+                  spacing={1}
+                  justifyContent="center"
+                  alignItems="center"
                 >
-                  <Stack direction="row" spacing="20px">
-                    {video.type === VideoType.playlist && (
-                      <Typography variant="subtitle1">
-                        {video.episodes.length} episodes
-                      </Typography>
-                    )}
-                    {video.type !== VideoType.playlist && (
-                      <>
-                        <Button
-                          size="large"
-                          variant="contained"
-                          sx={{ height: 71, fontSize: '24px' }}
-                          onClick={playVideo}
-                        >
-                          <PlayArrow />
-                          &nbsp; Play Video
-                        </Button>
-                        {video.variant !== null && (
-                          <Stack height="71px" direction="row">
-                            <AccessTime sx={{ paddingTop: '23px' }} />
-                            <Typography
-                              variant="body2"
-                              sx={{ lineHeight: '71px', paddingLeft: '10px' }}
-                            >
-                              {secondsToMinutes(video.variant.duration)} min
-                            </Typography>
-                          </Stack>
-                        )}
-                        <Circle sx={{ fontSize: '10px', paddingTop: '30px' }} />
-                      </>
-                    )}
-                  </Stack>
+                  <AccessTime />
+                  {video.variant !== null && (
+                    <Typography variant="body1">
+                      {secondsToMinutes(video.variant.duration)} min
+                    </Typography>
+                  )}
                 </Stack>
-              </Box>
-              <Box
-                sx={{
-                  backgroundColor: 'rgba(18, 17, 17, 0.25)',
-                  position: 'absolute',
-                  top: '643px'
-                }}
-                width="100%"
-                height="133px"
-              >
-                <Stack pt="34px" mx="100px" width="100%" direction="row">
-                  <Stack direction="row">&nbsp;</Stack>
-                </Stack>
-              </Box>
-            </>
-          )}
-        </Box>
-      </>
-    </>
+              </Stack>
+            </Stack>
+          </Container>
+        </>
+      )}
+    </Box>
   )
 }
