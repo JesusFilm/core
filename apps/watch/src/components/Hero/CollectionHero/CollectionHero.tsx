@@ -38,7 +38,7 @@ export function CollectionHero({
           height: '100%',
           width: '100%',
           background:
-            'linear-gradient(180deg, rgba(50, 50, 51, 0) 64%, rgba(38, 38, 38, 0.3) 76%, rgba(27, 27, 28, 0.46) 86%, #000000 100%), linear-gradient(90deg, #141414 16%, rgba(10, 10, 10, 0.5) 24%, rgba(4, 4, 4, 0.2) 31%, rgba(0, 0, 0, 0) 40%)' // TODO: update gradient
+            'linear-gradient(180.21deg, rgba(50, 50, 51, 0) 52.73%, rgba(38, 38, 38, 0.174648) 68.58%, rgba(27, 27, 28, 0.321668) 81.42%, rgba(0, 0, 0, 0.7) 99.82%), linear-gradient(89.75deg, rgba(20, 20, 20, 0.3) 7.11%, rgba(10, 10, 10, 0.148691) 27.28%, rgba(4, 4, 4, 0.0587687) 44.45%, rgba(0, 0, 0, 0) 66.08%)'
         }}
       />
       <Container
@@ -51,11 +51,12 @@ export function CollectionHero({
           direction={{ xs: 'column', sm: 'row' }}
           sx={{ width: '100%', pb: { xs: 5, sm: 11 } }}
         >
-          <Stack direction="column">
+          <Stack direction="column" sx={{ pb: { xs: 13, sm: 0 } }}>
             <Typography
-              variant="overline1" // TODO: typogs variants should change when mobile
+              variant="overline1"
               color="secondary.contrastText"
               sx={{
+                display: { xs: 'none', sm: 'flex' },
                 opacity: 0.7,
                 zIndex: 2
               }}
@@ -63,9 +64,28 @@ export function CollectionHero({
               {type}
             </Typography>
             <Typography
+              variant="overline2"
+              color="secondary.contrastText"
+              sx={{
+                display: { xs: 'flex', sm: 'none' },
+                opacity: 0.7,
+                zIndex: 2
+              }}
+            >
+              {type}
+            </Typography>
+
+            <Typography
               variant="h1"
               color="secondary.contrastText"
-              sx={{ zIndex: 2 }}
+              sx={{ display: { xs: 'none', sm: 'flex' }, zIndex: 2 }}
+            >
+              {title}
+            </Typography>
+            <Typography
+              variant="h4"
+              color="secondary.contrastText"
+              sx={{ display: { xs: 'flex', sm: 'none' }, zIndex: 2 }}
             >
               {title}
             </Typography>
@@ -83,13 +103,28 @@ export function CollectionHero({
             <Typography
               variant="overline1"
               align="center"
-              color="secondary.contrastText" // TODO: check with Ziwei about updating theme to include #DCDDE5
+              color="background.default"
               sx={{
-                zIndex: 2
+                display: { xs: 'none', sm: 'flex' },
+                zIndex: 2,
+                opacity: 0.7
               }}
             >
               {`${length} ${type === 'collection' ? 'Chapters' : 'Episodes'}`}
             </Typography>
+            <Typography
+              variant="overline2"
+              align="center"
+              color="background.default"
+              sx={{
+                display: { xs: 'flex', sm: 'none' },
+                zIndex: 2,
+                opacity: 0.7
+              }}
+            >
+              {`${length} ${type === 'collection' ? 'Chapters' : 'Episodes'}`}
+            </Typography>
+
             <IconButton
               sx={{
                 display: { xs: 'flex', sm: 'none' },
