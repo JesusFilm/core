@@ -49,7 +49,7 @@ export function CollectionHero({
       >
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
-          sx={{ width: '100%', pb: { xs: 5, sm: 11 } }}
+          sx={{ width: '100%', pb: { xs: 4, sm: 11 } }}
         >
           <Stack direction="column" sx={{ pb: { xs: 13, sm: 0 } }}>
             <Typography
@@ -62,7 +62,6 @@ export function CollectionHero({
             >
               {type}
             </Typography>
-
             <Typography
               variant="h1"
               color="secondary.contrastText"
@@ -86,7 +85,7 @@ export function CollectionHero({
             <Typography
               variant="overline1"
               align="center"
-              color="background.default"
+              color="secondary.contrastText"
               sx={{
                 zIndex: 2,
                 opacity: 0.7
@@ -94,7 +93,6 @@ export function CollectionHero({
             >
               {`${length} ${type === 'collection' ? 'Chapters' : 'Episodes'}`}
             </Typography>
-
             <IconButton
               sx={{
                 display: { xs: 'flex', sm: 'none' },
