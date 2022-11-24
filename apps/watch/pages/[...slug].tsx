@@ -147,47 +147,42 @@ export default function SeoFriendly(): ReactElement {
 
   return (
     <>
-      {data != null ? (
-        <NextSeo
-          title={data.video.title[0].value}
-          description={data.video.snippet[0].value ?? undefined}
-          openGraph={{
-            type: 'website',
-            title: data.video.title[0].value,
-            url: `${
-              process.env.NEXT_PUBLIC_WATCH_URL ??
-              'https://watch-jesusfilm.vercel.app'
-            }/${routes?.join('/')}`.trim(),
-            description: data.video.snippet[0].value ?? undefined,
-            images:
-              data.video.image !== null
-                ? [
-                    {
-                      url: data.video.image,
-                      width: 1080,
-                      height: 600,
-                      alt: data.video.imageAlt,
-                      type: 'image/jpeg'
-                    }
-                  ]
-                : []
-          }}
-          facebook={
-            process.env.NEXT_PUBLIC_FACEBOOK_APP_ID != null
-              ? {
-                  appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID
-                }
-              : undefined
-          }
-          twitter={{
-            site: '@YourNextStepIs',
-            cardType: 'summary_large_image'
-          }}
-        />
-      ) : (
-        <></>
-      )}
-
+      <NextSeo
+        title={data?.video.title[0].value}
+        description={data?.video.snippet[0].value ?? undefined}
+        openGraph={{
+          type: 'website',
+          title: data?.video.title[0].value,
+          url: `${
+            process.env.NEXT_PUBLIC_WATCH_URL ??
+            'https://watch-jesusfilm.vercel.app'
+          }/${routes?.join('/')}`.trim(),
+          description: data?.video.snippet[0].value ?? undefined,
+          images:
+            data?.video.image != null
+              ? [
+                  {
+                    url: data.video.image,
+                    width: 1080,
+                    height: 600,
+                    alt: data.video.imageAlt,
+                    type: 'image/jpeg'
+                  }
+                ]
+              : []
+        }}
+        facebook={
+          process.env.NEXT_PUBLIC_FACEBOOK_APP_ID != null
+            ? {
+                appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID
+              }
+            : undefined
+        }
+        twitter={{
+          site: '@YourNextStepIs',
+          cardType: 'summary_large_image'
+        }}
+      />
       <LanguageProvider>
         <PageWrapper
           hero={
