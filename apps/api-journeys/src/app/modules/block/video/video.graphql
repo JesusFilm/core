@@ -32,12 +32,6 @@ enum VideoBlockObjectFit {
   zoomed
 }
 
-enum VideoBlockObjectFit {
-  fill
-  fit
-  zoomed
-}
-
 type VideoBlock implements Block {
   id: ID!
   journeyId: ID!

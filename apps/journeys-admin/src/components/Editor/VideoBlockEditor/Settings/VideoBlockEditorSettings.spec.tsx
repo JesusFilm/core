@@ -216,7 +216,11 @@ describe('VideoBlockEditorSettings', () => {
       <ThemeProvider>
         <MockedProvider>
           <VideoBlockEditorSettings
-            selectedBlock={{ ...video, source: VideoBlockSource.youTube }}
+            selectedBlock={{
+              ...video,
+              source: VideoBlockSource.youTube,
+              objectFit: ObjectFit.fill
+            }}
             posterBlock={null}
             onChange={onChange}
           />
@@ -225,6 +229,10 @@ describe('VideoBlockEditorSettings', () => {
     )
     expect(getByRole('button', { name: 'Fill' })).toBeDisabled()
     expect(getByRole('button', { name: 'Fit' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Fit' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
     expect(getByRole('button', { name: 'Zoomed' })).toBeDisabled()
   })
 })

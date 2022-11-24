@@ -1,5 +1,12 @@
 import videojs from 'video.js'
-import { ReactElement, useEffect, useRef, useState, useMemo } from 'react'
+import {
+  ReactElement,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  CSSProperties
+} from 'react'
 import { NextImage } from '@core/shared/ui/NextImage'
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
@@ -140,16 +147,28 @@ export function Video({
 
   const videoImage = source === VideoBlockSource.internal ? video?.image : image
 
-  const videoFit =
-    source === VideoBlockSource.youTube
-      ? 'fit'
-      : objectFit === null || objectFit === VideoBlockObjectFit.fill
-      ? 'fill'
-      : objectFit === VideoBlockObjectFit.fit
-      ? 'contain'
-      : objectFit === VideoBlockObjectFit.zoomed
-      ? 'cover'
-      : 'fill'
+  let videoFit: CSSProperties['objectFit']
+  if (source === VideoBlockSource.youTube) {
+    videoFit = 'contain'
+  } else {
+    switch (objectFit) {
+      case VideoBlockObjectFit.fill:
+        videoFit = 'cover'
+        break
+      case VideoBlockObjectFit.fit:
+        videoFit = 'contain'
+        break
+      case VideoBlockObjectFit.zoomed:
+        videoFit = 'contain'
+        break
+      default:
+        videoFit = 'cover'
+        break
+    }
+  }
+
+  console.log('VideoFit = ', videoFit)
+  console.log('ObjectFit = ', objectFit)
 
   return (
     <Box
@@ -173,7 +192,11 @@ export function Video({
           height: '100%',
           minHeight: 'inherit',
           '> .vjs-tech': {
-            objectFit: videoFit
+            objectFit: videoFit,
+            transform:
+              objectFit === VideoBlockObjectFit.zoomed
+                ? 'scale(1.33)'
+                : undefined
           },
           '> .vjs-loading-spinner': {
             zIndex: 1,

@@ -2,12 +2,9 @@ import { ReactElement } from 'react'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-// import Button from '@mui/material/Button'
-// import ButtonGroup from '@mui/material/ButtonGroup'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Box from '@mui/material/Box'
@@ -31,7 +28,6 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../__generated__/globalTypes'
-import { palette } from '../../../ThemeProvider/admin/tokens/colors'
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 
 interface VideoBlockEditorSettingsProps {
@@ -63,16 +59,6 @@ export function VideoBlockEditorSettings({
     },
     onSubmit: noop
   })
-
-  const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-    '& .MuiToggleButtonGroup-grouped': {
-      backgroundColor: theme.palette[0],
-      '&.Mui-selected': {
-        backgroundColor: theme.palette[100],
-        color: palette.error
-      }
-    }
-  }))
 
   return (
     <Box sx={{ px: 6, py: 3, width: '100%' }}>
@@ -157,7 +143,7 @@ export function VideoBlockEditorSettings({
               </Typography>
             )}
           </Stack>
-          <StyledToggleButtonGroup
+          <ToggleButtonGroup
             value={
               selectedBlock?.source === VideoBlockSource.youTube
                 ? ObjectFit.fit
@@ -171,10 +157,37 @@ export function VideoBlockEditorSettings({
             aria-label="Object Fit"
             disabled={selectedBlock?.source === VideoBlockSource.youTube}
           >
-            <ToggleButton value={ObjectFit.fill}>Fill</ToggleButton>
-            <ToggleButton value={ObjectFit.fit}>Fit</ToggleButton>
-            <ToggleButton value={ObjectFit.zoomed}>Zoomed</ToggleButton>
-          </StyledToggleButtonGroup>
+            <ToggleButton
+              sx={{
+                '&.Mui-selected': {
+                  color: 'primary.main'
+                }
+              }}
+              value={ObjectFit.fill}
+            >
+              Fill
+            </ToggleButton>
+            <ToggleButton
+              sx={{
+                '&.Mui-selected': {
+                  color: 'primary.main'
+                }
+              }}
+              value={ObjectFit.fit}
+            >
+              Fit
+            </ToggleButton>
+            <ToggleButton
+              sx={{
+                '&.Mui-selected': {
+                  color: 'primary.main'
+                }
+              }}
+              value={ObjectFit.zoomed}
+            >
+              Crop
+            </ToggleButton>
+          </ToggleButtonGroup>
         </Stack>
         <Divider />
         <Stack direction="row" justifyContent="space-between">
