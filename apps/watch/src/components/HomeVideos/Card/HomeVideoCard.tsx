@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import ButtonBase from '@mui/material/ButtonBase'
 
-import { VideoType } from '../../../../__generated__/globalTypes'
+import { VideoSubType, VideoType } from '../../../../__generated__/globalTypes'
 import { GetHomeVideo_video } from '../../../../__generated__/GetHomeVideo'
 
 export enum FilmType {
@@ -149,7 +149,10 @@ export function HomeVideoCard({ video }: VideoListCardProps): ReactElement {
               )}
               {video?.type === VideoType.playlist && (
                 <Typography variant="body1">
-                  {video?.episodeIds.length} episodes
+                  {video?.episodeIds.length}{' '}
+                  {video.subType === VideoSubType.featureFilm
+                    ? 'chapters'
+                    : 'episodes'}
                 </Typography>
               )}
             </Stack>
