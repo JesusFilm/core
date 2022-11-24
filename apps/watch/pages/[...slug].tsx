@@ -1,16 +1,12 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import Error from 'next/error'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
-import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Button from '@mui/material/Button'
 import SaveAlt from '@mui/icons-material/SaveAlt'
 import Share from '@mui/icons-material/Share'
-import Tabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
 import 'video.js/dist/video-js.css'
 
 import { routeParser } from '../src/libs/routeParser/routeParser'
@@ -22,6 +18,7 @@ import { PageWrapper } from '../src/components/PageWrapper'
 import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCarousel'
 import { VideoHero, SimpleHero } from '../src/components/Hero'
 import { ShareDialog } from '../src/components/ShareDialog'
+import { VideoContent } from '../src/components/Videos/VideoContent'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID) {
@@ -116,12 +113,7 @@ export default function SeoFriendly(): ReactElement {
   const { slug } = router.query
   const { routes } = routeParser(slug)
   const languageContext = useLanguage()
-  const [tabValue, setTabValue] = useState(0)
   const [openShare, setOpenShare] = useState(false)
-
-  const handleTabChange = (_event, newValue): void => {
-    setTabValue(newValue)
-  }
 
   const { data, loading } = useQuery(GET_VIDEO, {
     variables: {
@@ -165,7 +157,7 @@ export default function SeoFriendly(): ReactElement {
       >
         {data?.video != null && (
           <>
-            <Box sx={{ pt: '20px' }}>
+            <Box sx={{ pt: 5 }}>
               {data.video.episodes.length > 0 && (
                 <VideosCarousel
                   videos={data.video.episodes}
@@ -179,7 +171,6 @@ export default function SeoFriendly(): ReactElement {
                 />
               )}
             </Box>
-
             <Stack
               direction="row"
               spacing="100px"
@@ -190,28 +181,14 @@ export default function SeoFriendly(): ReactElement {
                 maxWidth: '100%'
               }}
             >
-              <Box width="100%">
-                <Tabs
-                  value={tabValue}
-                  onChange={handleTabChange}
-                  aria-label="background tabs"
-                  variant="fullWidth"
-                  centered
-                  sx={{ marginBottom: '40px' }}
-                >
-                  <Tab
-                    label="Description"
-                    {...tabA11yProps('video-description', 0)}
-                  />
-                </Tabs>
-                <TabPanel name="video-description" value={tabValue} index={0}>
-                  <Typography variant="body1">
-                    {data.video.description[0]?.value}
-                  </Typography>
-                </TabPanel>
-              </Box>
-              <Box width="336px">
-                <Stack direction="row" spacing="20px" mb="40px">
+              <VideoContent data={data} />
+              <Box
+                width="336px"
+                sx={{
+                  display: { xs: 'none', md: 'block' }
+                }}
+              >
+                <Stack direction="row" spacing={5} mb={10}>
                   <Button variant="outlined">
                     <SaveAlt />
                     &nbsp; Download
