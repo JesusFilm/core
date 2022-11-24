@@ -131,7 +131,13 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
         disablePortal
         fullWidth
         options={audioLanguages}
-        renderInput={(params) => <TextField {...params} label="Audio" />}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Audio"
+            helperText="6 options available"
+          />
+        )}
       />
       {/* TABS */}
       <Tabs value={value} onChange={handleChange} aria-label="tabs example">

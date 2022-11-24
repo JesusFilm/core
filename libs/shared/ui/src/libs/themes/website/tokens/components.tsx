@@ -63,6 +63,31 @@ export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {
         }
       ]
     },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        notchedOutline: {
+          top: 0,
+          '> legend': {
+            display: 'none'
+          }
+        },
+        input: {
+          ':not([readonly])': {
+            transform: `translate(0px, 9px) scale(1)`,
+            transition: `color 200ms cubic-bezier(0.0,0,0.2,1) 0ms,transform 200ms cubic-bezier(0.0,0,0.2,1) 0ms,max-width 200ms cubic-bezier(0.0,0,0.2,1) 0ms`
+          }
+        }
+      }
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        outlined: {
+          '&.MuiInputLabel-shrink': {
+            transform: `translate(14px, 9px) scale(0.75)`
+          }
+        }
+      }
+    },
     MuiSelect: {
       defaultProps: {
         IconComponent: KeyboardArrowDownIcon
