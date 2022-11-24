@@ -1,5 +1,6 @@
 import { useState, SyntheticEvent, ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
+import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -32,6 +33,15 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
   const handleChange = (e: SyntheticEvent, newValue: number): void => {
     setValue(newValue)
   }
+
+  const audioLanguages = [
+    { label: 'English', value: 'en' },
+    { label: 'Spanish', value: 'es' },
+    { label: 'French', value: 'fr' },
+    { label: 'Chinese - Simplified', value: 'zh-hans' },
+    { label: 'Chinese - Traditional', value: 'zh-hant' },
+    { label: 'Arabic', value: 'ar' }
+  ]
 
   return (
     <Stack spacing={8} alignItems="flex-start">
@@ -116,6 +126,13 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
         <MenuItem value="high">High (59.83 MB)</MenuItem>
         <MenuItem value="low">Low (12 MB)</MenuItem>
       </TextField>
+      {/* AUTOCOMPLETE */}
+      <Autocomplete
+        disablePortal
+        fullWidth
+        options={audioLanguages}
+        renderInput={(params) => <TextField {...params} label="Audio" />}
+      />
       {/* TABS */}
       <Tabs value={value} onChange={handleChange} aria-label="tabs example">
         <Tab label="Description" {...tabA11yProps('description', 0)} />
@@ -127,21 +144,6 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
       <TabPanel name="discussion" value={value} index={1}>
         Discussion
       </TabPanel>
-      {/* DIALOG */}
-      {/* TODO: Move Dialog to shared-ui */}
-      {/* <FormControl>
-        <InputLabel htmlFor="search">Keyword, Country or Language</InputLabel>
-        <FilledInput
-          id="search"
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton>
-                <SearchIcon />
-              </IconButton>
-            </InputAdornment>
-          }
-        />
-      </FormControl> */}
     </Stack>
   )
 }

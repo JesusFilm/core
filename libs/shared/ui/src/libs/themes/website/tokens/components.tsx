@@ -68,6 +68,11 @@ export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {
         IconComponent: KeyboardArrowDownIcon
       }
     },
+    MuiAutocomplete: {
+      defaultProps: {
+        popupIcon: <KeyboardArrowDownIcon />
+      }
+    },
     MuiTabs: {
       styleOverrides: {
         root: {
