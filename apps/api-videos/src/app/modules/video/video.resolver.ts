@@ -9,7 +9,7 @@ import {
   Parent
 } from '@nestjs/graphql'
 
-import { IdType, Video, VideosFilter } from '../../__generated__/graphql'
+import { VideoIdType, Video, VideosFilter } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 @Resolver('Video')
@@ -20,7 +20,7 @@ export class VideoResolver {
   async episodesQuery(
     @Info() info,
     @Args('playlistId') playlistId: string,
-    @Args('idType') idType: IdType = IdType.databaseId,
+    @Args('idType') idType: VideoIdType = VideoIdType.databaseId,
     @Args('where') where?: VideosFilter,
     @Args('offset') offset?: number,
     @Args('limit') limit?: number
@@ -69,12 +69,12 @@ export class VideoResolver {
   async video(
     @Info() info,
     @Args('id') id: string,
-    @Args('idType') idType: IdType = IdType.databaseId
+    @Args('idType') idType: VideoIdType = VideoIdType.databaseId
   ): Promise<Video> {
     const variantLanguageId = info.fieldNodes[0].selectionSet.selections
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
-    return idType === IdType.databaseId
+    return idType === VideoIdType.databaseId
       ? await this.videoService.getVideo(id, variantLanguageId)
       : await this.videoService.getVideoBySlug(id, variantLanguageId)
   }

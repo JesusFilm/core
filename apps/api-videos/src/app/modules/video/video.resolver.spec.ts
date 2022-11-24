@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { IdType } from '../../__generated__/graphql'
+import { VideoIdType } from '../../__generated__/graphql'
 import { VideoResolver } from './video.resolver'
 import { VideoService } from './video.service'
 
@@ -45,10 +45,10 @@ describe('VideoResolver', () => {
       const playlistId = 'rivka'
       const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
       expect(
-        await resolver.episodesQuery(info, playlistId, IdType.slug)
+        await resolver.episodesQuery(info, playlistId, VideoIdType.slug)
       ).toEqual([video, video])
       expect(service.filterEpisodes).toHaveBeenCalledWith({
-        idType: IdType.slug,
+        idType: VideoIdType.slug,
         playlistId
       })
     })
@@ -79,7 +79,7 @@ describe('VideoResolver', () => {
         await resolver.episodesQuery(
           info,
           playlistId,
-          IdType.databaseId,
+          VideoIdType.databaseId,
           {
             title: 'abc',
             availableVariantLanguageIds: ['fr']
@@ -90,7 +90,7 @@ describe('VideoResolver', () => {
       ).toEqual([video, video])
       expect(service.filterEpisodes).toHaveBeenCalledWith({
         playlistId,
-        idType: IdType.databaseId,
+        idType: VideoIdType.databaseId,
         title: 'abc',
         availableVariantLanguageIds: ['fr'],
         variantLanguageId: 'en',

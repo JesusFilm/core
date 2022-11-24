@@ -5,7 +5,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
 import { AqlQuery } from 'arangojs/aql'
-import { IdType, VideoType } from '../../__generated__/graphql'
+import { VideoIdType, VideoType } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 const DEFAULT_QUERY = aql`
@@ -210,7 +210,7 @@ describe('VideoService', () => {
   describe('filterEpisodes', () => {
     const filter = {
       playlistId: 'playlistId',
-      idType: IdType.slug
+      idType: VideoIdType.slug
     }
     it('should query', async () => {
       db.query.mockImplementationOnce(async (q) => {
@@ -259,6 +259,18 @@ describe('VideoService', () => {
       expect(await service.filterEpisodes({ ...filter, limit: 200 })).toEqual(
         []
       )
+    })
+
+    it('should throw userInputError if idType is incorrect', async () => {
+      const errorFilter = {
+        ...filter,
+        idType: VideoIdType.path
+      }
+      await service
+        .filterEpisodes({ ...errorFilter, offset: 200 })
+        .catch((error) => {
+          expect(error.message).toEqual('Incorrect video id type')
+        })
     })
   })
 

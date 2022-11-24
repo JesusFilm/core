@@ -4,7 +4,8 @@ import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery } from 'arangojs/aql'
-import { IdType, VideosFilter } from '../../__generated__/graphql'
+import { UserInputError } from 'apollo-server-errors'
+import { VideoIdType, VideosFilter } from '../../__generated__/graphql'
 
 interface ExtendedVideosFilter extends VideosFilter {
   variantLanguageId?: string
@@ -14,7 +15,7 @@ interface ExtendedVideosFilter extends VideosFilter {
 
 interface EpisodesFilter extends ExtendedVideosFilter {
   playlistId: string
-  idType: IdType.databaseId | IdType.slug
+  idType: VideoIdType
 }
 @Injectable()
 export class VideoService extends BaseService {
@@ -56,10 +57,19 @@ export class VideoService extends BaseService {
     } = filter ?? {}
     const videosView = this.db.view('videosView')
     const search = this.videoFilter(filter)
-    const idFilter =
-      idType === IdType.databaseId
-        ? aql`FILTER video._key == ${playlistId}`
-        : aql`FILTER ${playlistId} IN video.slug[*].value`
+
+    let idFilter
+    switch (idType) {
+      case VideoIdType.databaseId:
+        idFilter = aql`FILTER video._key == ${playlistId}`
+        break
+      case VideoIdType.slug:
+        idFilter = aql`FILTER ${playlistId} IN video.slug[*].value`
+        break
+    }
+    if (idFilter == null) {
+      throw new UserInputError('Incorrect video id type')
+    }
 
     const res = await this.db.query(aql`
     FOR video IN ${this.collection}
