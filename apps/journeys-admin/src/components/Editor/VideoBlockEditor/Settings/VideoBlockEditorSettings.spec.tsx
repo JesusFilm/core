@@ -233,6 +233,6 @@ describe('VideoBlockEditorSettings', () => {
       'aria-pressed',
       'true'
     )
-    expect(getByRole('button', { name: 'Zoomed' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Crop' })).toBeDisabled()
   })
 })
