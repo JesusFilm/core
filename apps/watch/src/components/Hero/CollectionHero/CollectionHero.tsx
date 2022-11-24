@@ -43,7 +43,6 @@ export function CollectionHero({
       />
       <Container
         maxWidth="xl"
-        disableGutters
         sx={{
           display: 'flex'
         }}
