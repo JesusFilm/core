@@ -43,6 +43,7 @@ export function CollectionHero({
       />
       <Container
         maxWidth="xl"
+        disableGutters
         sx={{
           display: 'flex'
         }}
@@ -56,18 +57,6 @@ export function CollectionHero({
               variant="overline1"
               color="secondary.contrastText"
               sx={{
-                display: { xs: 'none', sm: 'flex' },
-                opacity: 0.7,
-                zIndex: 2
-              }}
-            >
-              {type}
-            </Typography>
-            <Typography
-              variant="overline2"
-              color="secondary.contrastText"
-              sx={{
-                display: { xs: 'flex', sm: 'none' },
                 opacity: 0.7,
                 zIndex: 2
               }}
@@ -78,14 +67,9 @@ export function CollectionHero({
             <Typography
               variant="h1"
               color="secondary.contrastText"
-              sx={{ display: { xs: 'none', sm: 'flex' }, zIndex: 2 }}
-            >
-              {title}
-            </Typography>
-            <Typography
-              variant="h4"
-              color="secondary.contrastText"
-              sx={{ display: { xs: 'flex', sm: 'none' }, zIndex: 2 }}
+              sx={{
+                zIndex: 2
+              }}
             >
               {title}
             </Typography>
@@ -105,19 +89,6 @@ export function CollectionHero({
               align="center"
               color="background.default"
               sx={{
-                display: { xs: 'none', sm: 'flex' },
-                zIndex: 2,
-                opacity: 0.7
-              }}
-            >
-              {`${length} ${type === 'collection' ? 'Chapters' : 'Episodes'}`}
-            </Typography>
-            <Typography
-              variant="overline2"
-              align="center"
-              color="background.default"
-              sx={{
-                display: { xs: 'flex', sm: 'none' },
                 zIndex: 2,
                 opacity: 0.7
               }}
