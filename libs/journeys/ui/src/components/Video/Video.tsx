@@ -167,9 +167,6 @@ export function Video({
     }
   }
 
-  console.log('VideoFit = ', videoFit)
-  console.log('ObjectFit = ', objectFit)
-
   return (
     <Box
       data-testid={`video-${blockId}`}
