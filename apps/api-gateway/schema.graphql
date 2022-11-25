@@ -744,14 +744,14 @@ type Query {
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
-  episodes(idType: VideoIdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
+  episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
-  video(id: ID!, idType: VideoIdType): Video! @join__field(graph: VIDEOS)
+  video(id: ID!, idType: IdType): Video! @join__field(graph: VIDEOS)
   videoTag(id: ID!): VideoTag @join__field(graph: VIDEOS)
   videoTags: [VideoTag!] @join__field(graph: VIDEOS)
   videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
@@ -1541,12 +1541,6 @@ input VideoExpandEventCreateInput {
 
   """source of the video"""
   value: VideoBlockSource
-}
-
-enum VideoIdType {
-  databaseId
-  path
-  slug
 }
 
 type VideoPauseEvent implements Event {

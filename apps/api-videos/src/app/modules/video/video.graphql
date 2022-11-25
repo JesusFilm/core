@@ -2,10 +2,9 @@ extend type Language @key(fields: "id") {
   id: ID! @external
 }
 
-enum VideoIdType {
+enum IdType {
   databaseId
   slug
-  path
 }
 
 enum VideoType {
@@ -48,11 +47,11 @@ input VideosFilter {
 extend type Query {
   episodes(
     playlistId: ID!
-    idType: VideoIdType
+    idType: IdType
     where: VideosFilter
     offset: Int
     limit: Int
   ): [Video!]!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  video(id: ID!, idType: VideoIdType): Video!
+  video(id: ID!, idType: IdType): Video!
 }

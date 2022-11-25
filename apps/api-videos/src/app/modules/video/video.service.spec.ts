@@ -5,7 +5,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
-import { VideoIdType, VideoType } from '../../__generated__/graphql'
+import { IdType, VideoType } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 const baseVideo: GeneratedAqlQuery[] = [
@@ -54,7 +54,7 @@ const VIDEO_EPISODES_QUERY = aql`
 
 const EPISODES_QUERY = aql`
     FOR video IN undefined
-      FILTER @value0 IN video.slug[*].value
+      FILTER video._key == @value0
       LIMIT 1
       FOR item IN 
         FILTER item._key IN video.episodeIds
@@ -64,28 +64,14 @@ const EPISODES_QUERY = aql`
           ${aql.join(baseVideo)}
           primaryLanguageId: item.primaryLanguageId,
           variant: NTH(item.variants[* 
-            FILTER CURRENT.languageId == NOT_NULL(@value3, item.primaryLanguageId)
-            LIMIT 1 RETURN CURRENT
-          ], 0),
+          FILTER CURRENT.languageId == NOT_NULL(@value3, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT
+        ], 0),
           variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
         }
     `.query
 
 const GET_VIDEO_BY_SLUG_QUERY = aql`
-    FOR item IN undefined
-      FILTER @value0 IN item.slug[*].value
-      LIMIT 1
-      RETURN {
-        ${aql.join(baseVideo)}
-        playlist: item.playlist,
-        variant: NTH(item.variants[* 
-          FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
-          LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
-      }
-    `.query
-
-const GET_VIDEO_BY_PATH_QUERY = aql`
     FOR item IN undefined
       FILTER @value0 IN item.variants[*].path
       LIMIT 1
@@ -218,7 +204,7 @@ describe('VideoService', () => {
   describe('filterEpisodes', () => {
     const filter = {
       playlistId: 'playlistId',
-      idType: VideoIdType.slug
+      idType: IdType.databaseId
     }
     it('should query', async () => {
       db.query.mockImplementationOnce(async (q) => {
@@ -268,18 +254,6 @@ describe('VideoService', () => {
         []
       )
     })
-
-    it('should throw userInputError if idType is incorrect', async () => {
-      const errorFilter = {
-        ...filter,
-        idType: VideoIdType.path
-      }
-      await service
-        .filterEpisodes({ ...errorFilter, offset: 200 })
-        .catch((error) => {
-          expect(error.message).toEqual('Incorrect video id type')
-        })
-    })
   })
 
   describe('getVideo', () => {
@@ -319,28 +293,12 @@ describe('VideoService', () => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(GET_VIDEO_BY_SLUG_QUERY)
         expect(bindVars).toEqual({
-          value0: 'video-slug',
-          value1: null
-        })
-        return { next: () => [] } as unknown as ArrayCursor
-      })
-
-      expect(await service.getVideoBySlug('video-slug', undefined)).toEqual([])
-    })
-  })
-
-  describe('getVideoByPath', () => {
-    it('should query a video by path', async () => {
-      db.query.mockImplementationOnce(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(GET_VIDEO_BY_PATH_QUERY)
-        expect(bindVars).toEqual({
           value0: 'jesus.html/english.html'
         })
         return { next: () => [] } as unknown as ArrayCursor
       })
 
-      expect(await service.getVideoByPath('jesus.html/english.html')).toEqual(
+      expect(await service.getVideoBySlug('jesus.html/english.html')).toEqual(
         []
       )
     })

@@ -9,10 +9,9 @@ type Translation {
   primary: Boolean!
 }
 
-enum VideoIdType {
+enum IdType {
   databaseId
   slug
-  path
 }
 
 enum VideoType {
@@ -76,9 +75,9 @@ type VideoVariant {
 extend type Query {
   videoTags: [VideoTag!]
   videoTag(id: ID!): VideoTag
-  episodes(playlistId: ID!, idType: VideoIdType, where: VideosFilter, offset: Int, limit: Int): [Video!]!
+  episodes(playlistId: ID!, idType: IdType, where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  video(id: ID!, idType: VideoIdType): Video!
+  video(id: ID!, idType: IdType): Video!
 }
 
 extend type Language @key(fields: "id") {

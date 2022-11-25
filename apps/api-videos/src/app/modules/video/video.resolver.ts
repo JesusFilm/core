@@ -9,7 +9,7 @@ import {
   Parent
 } from '@nestjs/graphql'
 
-import { VideoIdType, Video, VideosFilter } from '../../__generated__/graphql'
+import { IdType, Video, VideosFilter } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 @Resolver('Video')
@@ -20,7 +20,7 @@ export class VideoResolver {
   async episodesQuery(
     @Info() info,
     @Args('playlistId') playlistId: string,
-    @Args('idType') idType: VideoIdType = VideoIdType.databaseId,
+    @Args('idType') idType: IdType = IdType.databaseId,
     @Args('where') where?: VideosFilter,
     @Args('offset') offset?: number,
     @Args('limit') limit?: number
@@ -69,19 +69,17 @@ export class VideoResolver {
   async video(
     @Info() info,
     @Args('id') id: string,
-    @Args('idType') idType: VideoIdType = VideoIdType.databaseId
+    @Args('idType') idType: IdType = IdType.databaseId
   ): Promise<Video> {
     const variantLanguageId = info.fieldNodes[0].selectionSet.selections
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
 
     switch (idType) {
-      case VideoIdType.databaseId:
+      case IdType.databaseId:
         return await this.videoService.getVideo(id, variantLanguageId)
-      case VideoIdType.slug:
-        return await this.videoService.getVideoBySlug(id, variantLanguageId)
-      case VideoIdType.path:
-        return await this.videoService.getVideoByPath(id)
+      case IdType.slug:
+        return await this.videoService.getVideoBySlug(id)
     }
   }
 

@@ -5,7 +5,7 @@ import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
 import { UserInputError } from 'apollo-server-errors'
-import { VideoIdType, VideosFilter } from '../../__generated__/graphql'
+import { IdType, VideosFilter } from '../../__generated__/graphql'
 
 interface ExtendedVideosFilter extends VideosFilter {
   variantLanguageId?: string
@@ -15,7 +15,7 @@ interface ExtendedVideosFilter extends VideosFilter {
 
 interface EpisodesFilter extends ExtendedVideosFilter {
   playlistId: string
-  idType: VideoIdType
+  idType: IdType
 }
 @Injectable()
 export class VideoService extends BaseService {
@@ -75,15 +75,25 @@ export class VideoService extends BaseService {
     const search = this.videoFilter(filter)
 
     let idFilter
+    const variantFilter: GeneratedAqlQuery[] = []
     switch (idType) {
-      case VideoIdType.databaseId:
+      case IdType.databaseId:
         idFilter = aql`FILTER video._key == ${playlistId}`
+        variantFilter.push(aql`variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(${
+            variantLanguageId ?? null
+          }, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT
+        ], 0),`)
         break
-      case VideoIdType.slug:
-        idFilter = aql`FILTER ${playlistId} IN video.slug[*].value`
+      case IdType.slug:
+        idFilter = aql`FILTER ${playlistId} IN item.variants[*].path`
+        variantFilter.push(aql` variant: NTH(item.variants[*
+          FILTER CURRENT.path == ${playlistId}
+          LIMIT 1 RETURN CURRENT], 0),`)
         break
     }
-    if (idFilter == null) {
+    if (idFilter == null || variantFilter == null) {
       throw new UserInputError('Incorrect video id type')
     }
 
@@ -98,12 +108,7 @@ export class VideoService extends BaseService {
         RETURN {
           ${aql.join(this.baseVideo)}
           primaryLanguageId: item.primaryLanguageId,
-          variant: NTH(item.variants[* 
-            FILTER CURRENT.languageId == NOT_NULL(${
-              variantLanguageId ?? null
-            }, item.primaryLanguageId)
-            LIMIT 1 RETURN CURRENT
-          ], 0),
+          ${aql.join(variantFilter)}
           variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
         }
     `)
@@ -156,39 +161,16 @@ export class VideoService extends BaseService {
   }
 
   @KeyAsId()
-  async getVideoBySlug<T>(
-    slug: string,
-    variantLanguageId?: string
-  ): Promise<T> {
+  async getVideoBySlug<T>(slug: string): Promise<T> {
     const res = await this.db.query(aql`
     FOR item IN ${this.collection}
-      FILTER ${slug} IN item.slug[*].value
-      LIMIT 1
-      RETURN {
-        ${aql.join(this.baseVideo)}
-        playlist: item.playlist,
-        variant: NTH(item.variants[* 
-          FILTER CURRENT.languageId == NOT_NULL(${
-            variantLanguageId ?? null
-          }, item.primaryLanguageId)
-          LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
-      }
-    `)
-    return await res.next()
-  }
-
-  @KeyAsId()
-  async getVideoByPath<T>(id: string): Promise<T> {
-    const res = await this.db.query(aql`
-    FOR item IN ${this.collection}
-      FILTER ${id} IN item.variants[*].path
+      FILTER ${slug} IN item.variants[*].path
       LIMIT 1
       RETURN {
         ${aql.join(this.baseVideo)}
         playlist: item.playlist,
         variant: NTH(item.variants[*
-          FILTER CURRENT.path == ${id}
+          FILTER CURRENT.path == ${slug}
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
       }

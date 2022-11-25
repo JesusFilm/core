@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { VideoIdType } from '../../__generated__/graphql'
+import { IdType } from '../../__generated__/graphql'
 import { VideoResolver } from './video.resolver'
 import { VideoService } from './video.service'
 
@@ -57,10 +57,10 @@ describe('VideoResolver', () => {
       const playlistId = 'rivka'
       const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
       expect(
-        await resolver.episodesQuery(info, playlistId, VideoIdType.slug)
+        await resolver.episodesQuery(info, playlistId, IdType.slug)
       ).toEqual([video, video])
       expect(service.filterEpisodes).toHaveBeenCalledWith({
-        idType: VideoIdType.slug,
+        idType: IdType.slug,
         playlistId
       })
     })
@@ -91,7 +91,7 @@ describe('VideoResolver', () => {
         await resolver.episodesQuery(
           info,
           playlistId,
-          VideoIdType.databaseId,
+          IdType.databaseId,
           {
             title: 'abc',
             availableVariantLanguageIds: ['fr']
@@ -102,7 +102,7 @@ describe('VideoResolver', () => {
       ).toEqual([video, video])
       expect(service.filterEpisodes).toHaveBeenCalledWith({
         playlistId,
-        idType: VideoIdType.databaseId,
+        idType: IdType.databaseId,
         title: 'abc',
         availableVariantLanguageIds: ['fr'],
         variantLanguageId: 'en',
@@ -193,19 +193,9 @@ describe('VideoResolver', () => {
 
     it('should return video with slug as idtype', async () => {
       expect(
-        await resolver.video(info, 'video-slug', VideoIdType.slug)
+        await resolver.video(info, 'jesus.html/english.html', IdType.slug)
       ).toEqual(video)
       expect(service.getVideoBySlug).toHaveBeenCalledWith(
-        'video-slug',
-        undefined
-      )
-    })
-
-    it('should return video with path as idtype', async () => {
-      expect(
-        await resolver.video(info, 'jesus.html/english.html', VideoIdType.path)
-      ).toEqual(video)
-      expect(service.getVideoByPath).toHaveBeenCalledWith(
         'jesus.html/english.html'
       )
     })
