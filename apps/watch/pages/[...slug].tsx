@@ -44,18 +44,25 @@ export const GET_VIDEO = gql`
       variant {
         duration
         hls
+        language {
+          id
+          name(languageId: $languageId, primary: true) {
+            value
+          }
+        }
+      }
+      slug(languageId: $languageId, primary: true) {
+        value
       }
       episodes {
         id
         type
+        subType
         title(languageId: $languageId, primary: true) {
           value
         }
         image
         imageAlt(languageId: $languageId, primary: true) {
-          value
-        }
-        snippet(languageId: $languageId, primary: true) {
           value
         }
         slug(languageId: $languageId, primary: true) {
@@ -65,15 +72,6 @@ export const GET_VIDEO = gql`
         variant {
           duration
           hls
-        }
-      }
-      slug(languageId: $languageId, primary: true) {
-        value
-      }
-      variantLanguages {
-        id
-        name(languageId: $languageId, primary: true) {
-          value
         }
       }
     }
