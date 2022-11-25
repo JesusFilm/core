@@ -227,6 +227,7 @@ describe('Card', () => {
             endAt: null,
             fullsize: null,
             action: null,
+            objectFit: null,
             children: []
           }
         ]
@@ -293,6 +294,7 @@ describe('Card', () => {
             endAt: null,
             fullsize: null,
             action: null,
+            objectFit: null,
             children: []
           }
         ]
