@@ -213,6 +213,36 @@ export class VideoService extends BaseService {
   }
 
   @KeyAsId()
+  async getVideoByPath<T>(id: string): Promise<T> {
+    const res = await this.db.query(aql`
+    FOR item IN ${this.collection}
+      FILTER ${id} IN item.variants[*].path
+      LIMIT 1
+      RETURN {
+        _key: item._key,
+        type: item.type,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        playlist: item.playlist,
+        variant: NTH(item.variants[*
+          FILTER CURRENT.path == ${id}
+          LIMIT 1 RETURN CURRENT], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        episodeIds: item.episodeIds,
+        slug: item.slug,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt
+      }
+    `)
+    return await res.next()
+  }
+
+  @KeyAsId()
   async getVideosByIds<T>(
     keys: string[],
     variantLanguageId?: string

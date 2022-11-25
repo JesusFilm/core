@@ -20,6 +20,16 @@ describe('VideoResolver', () => {
         primary: false,
         videoId: '529'
       }
+    ],
+    slug: [
+      {
+        value: 'video-slug'
+      }
+    ],
+    variant: [
+      {
+        path: 'jesus.html/english.html'
+      }
     ]
   }
 
@@ -30,7 +40,9 @@ describe('VideoResolver', () => {
         filterAll: jest.fn(() => [video, video]),
         filterEpisodes: jest.fn(() => [video, video]),
         getVideosByIds: jest.fn(() => [video, video]),
-        getVideo: jest.fn(() => video)
+        getVideo: jest.fn(() => video),
+        getVideoBySlug: jest.fn(() => video),
+        getVideoByPath: jest.fn(() => video)
       })
     }
     const module: TestingModule = await Test.createTestingModule({
@@ -149,14 +161,14 @@ describe('VideoResolver', () => {
   })
 
   describe('video', () => {
+    const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
     it('return a video', async () => {
-      const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
       expect(await resolver.video(info, '20615')).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', undefined)
     })
 
     it('return a filtered video', async () => {
-      const info = {
+      const filteredInfo = {
         fieldNodes: [
           {
             selectionSet: {
@@ -175,8 +187,27 @@ describe('VideoResolver', () => {
           }
         ]
       }
-      expect(await resolver.video(info, '20615')).toEqual(video)
+      expect(await resolver.video(filteredInfo, '20615')).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', 'en')
+    })
+
+    it('should return video with slug as idtype', async () => {
+      expect(
+        await resolver.video(info, 'video-slug', VideoIdType.slug)
+      ).toEqual(video)
+      expect(service.getVideoBySlug).toHaveBeenCalledWith(
+        'video-slug',
+        undefined
+      )
+    })
+
+    it('should return video with path as idtype', async () => {
+      expect(
+        await resolver.video(info, 'jesus.html/english.html', VideoIdType.path)
+      ).toEqual(video)
+      expect(service.getVideoByPath).toHaveBeenCalledWith(
+        'jesus.html/english.html'
+      )
     })
   })
 

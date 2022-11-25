@@ -305,6 +305,49 @@ describe('VideoService', () => {
     })
   })
 
+  describe('getVideoByPath', () => {
+    const GET_VIDEO_BY_PATH_QUERY = aql`
+    FOR item IN undefined
+      FILTER @value0 IN item.variants[*].path
+      LIMIT 1
+      RETURN {
+        _key: item._key,
+        type: item.type,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        playlist: item.playlist,
+        variant: NTH(item.variants[*
+          FILTER CURRENT.path == @value0
+          LIMIT 1 RETURN CURRENT], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        episodeIds: item.episodeIds,
+        slug: item.slug,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt
+      }
+    `.query
+
+    it('should query a video by path', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(GET_VIDEO_BY_PATH_QUERY)
+        expect(bindVars).toEqual({
+          value0: 'jesus.html/english.html'
+        })
+        return { next: () => [] } as unknown as ArrayCursor
+      })
+
+      expect(await service.getVideoByPath('jesus.html/english.html')).toEqual(
+        []
+      )
+    })
+  })
+
   describe('episodes', () => {
     it('should query', async () => {
       db.query.mockImplementationOnce(async (q) => {
