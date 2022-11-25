@@ -60,15 +60,15 @@ describe('VisitorService', () => {
     LET $edges_plus_one = (
       FOR item IN visitors
         FILTER item.@value0 == @value1
-        SORT item.createdAt @value2
-        LIMIT @value3 + 1
-        RETURN { cursor: item._key, node: MERGE({ id: item._key }, item) }
+        SORT item.createdAt DESC
+        LIMIT @value2 + 1
+        RETURN { cursor: item.createdAt, node: MERGE({ id: item._key }, item) }
     )
-    LET $edges = SLICE($edges_plus_one, 0, @value3)
+    LET $edges = SLICE($edges_plus_one, 0, @value2)
     RETURN {
       edges: $edges,
       pageInfo: {
-        hasNextPage: LENGTH($edges_plus_one) == @value3 + 1,
+        hasNextPage: LENGTH($edges_plus_one) == @value2 + 1,
         startCursor: LENGTH($edges) > 0 ? FIRST($edges).cursor : null,
         endCursor: LENGTH($edges) > 0 ? LAST($edges).cursor : null
       }
@@ -77,8 +77,7 @@ describe('VisitorService', () => {
         expect(bindVars).toEqual({
           value0: 'teamId',
           value1: 'jfp-team',
-          value2: 'ASC',
-          value3: 50
+          value2: 50
         })
         return await mockDbQueryResult(service.db, [connection])
       })
@@ -94,8 +93,7 @@ describe('VisitorService', () => {
           value0: 'cursorId',
           value1: 'teamId',
           value2: 'jfp-team',
-          value3: 'ASC',
-          value4: 50
+          value3: 50
         })
         return await mockDbQueryResult(service.db, [connection])
       })
@@ -103,24 +101,6 @@ describe('VisitorService', () => {
         first: 50,
         after: 'cursorId',
         filter: { teamId: 'jfp-team' }
-      })
-    })
-
-    it('allows custom sort order of the visitors connection', async () => {
-      db.query.mockImplementation(async (q) => {
-        const { bindVars } = q as unknown as AqlQuery
-        expect(bindVars).toEqual({
-          value0: 'teamId',
-          value1: 'jfp-team',
-          value2: 'DESC',
-          value3: 50
-        })
-        return await mockDbQueryResult(service.db, [connection])
-      })
-      await service.getList({
-        first: 50,
-        filter: { teamId: 'jfp-team' },
-        sortOrder: 'DESC'
       })
     })
   })

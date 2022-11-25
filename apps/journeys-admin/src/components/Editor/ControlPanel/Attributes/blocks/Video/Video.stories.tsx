@@ -34,6 +34,7 @@ export const Default: Story = () => {
     image: null,
     video: null,
     posterBlockId: null,
+    objectFit: null,
     children: []
   }
   return (
@@ -70,6 +71,7 @@ export const Filled: Story = () => {
     description: null,
     duration: null,
     image: null,
+    objectFit: null,
     video: {
       __typename: 'Video',
       id: '2_0-FallingPlates',

@@ -25,11 +25,10 @@ export class VisitorService extends BaseService {
   async getList({
     after,
     first,
-    filter,
-    sortOrder = 'ASC'
+    filter
   }: ListParams): Promise<VisitorsConnection> {
     const filters: GeneratedAqlQuery[] = []
-    if (after != null) filters.push(aql`FILTER item._key > ${after}`)
+    if (after != null) filters.push(aql`FILTER item.createdAt > ${after}`)
 
     forEach(filter, (value, key) => {
       if (value !== undefined) filters.push(aql`FILTER item.${key} == ${value}`)
@@ -39,9 +38,9 @@ export class VisitorService extends BaseService {
     LET $edges_plus_one = (
       FOR item IN visitors
         ${aql.join(filters)}
-        SORT item.createdAt ${sortOrder}
+        SORT item.createdAt DESC
         LIMIT ${first} + 1
-        RETURN { cursor: item._key, node: MERGE({ id: item._key }, item) }
+        RETURN { cursor: item.createdAt, node: MERGE({ id: item._key }, item) }
     )
     LET $edges = SLICE($edges_plus_one, 0, ${first})
     RETURN {
