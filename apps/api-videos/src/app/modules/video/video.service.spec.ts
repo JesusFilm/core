@@ -305,6 +305,48 @@ describe('VideoService', () => {
     })
   })
 
+  describe('getVideoBySlug', () => {
+    const GET_VIDEO_BY_SLUG_QUERY = aql`
+    FOR item IN undefined
+      FILTER @value0 IN item.slug[*].value
+      LIMIT 1
+      RETURN {
+        _key: item._key,
+        type: item.type,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        playlist: item.playlist,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        episodeIds: item.episodeIds,
+        slug: item.slug,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt
+      }
+    `.query
+
+    it('should query the video by slug', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(GET_VIDEO_BY_SLUG_QUERY)
+        expect(bindVars).toEqual({
+          value0: 'video-slug',
+          value1: null
+        })
+        return { next: () => [] } as unknown as ArrayCursor
+      })
+
+      expect(await service.getVideoBySlug('video-slug', undefined)).toEqual([])
+    })
+  })
+
   describe('getVideoByPath', () => {
     const GET_VIDEO_BY_PATH_QUERY = aql`
     FOR item IN undefined

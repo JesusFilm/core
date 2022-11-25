@@ -182,7 +182,7 @@ export class VideoService extends BaseService {
     variantLanguageId?: string
   ): Promise<T> {
     const res = await this.db.query(aql`
-    FOR item in ${this.collection}
+    FOR item IN ${this.collection}
       FILTER ${slug} IN item.slug[*].value
       LIMIT 1
       RETURN {
@@ -200,8 +200,7 @@ export class VideoService extends BaseService {
             variantLanguageId ?? null
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
-        ],
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         episodeIds: item.episodeIds,
         slug: item.slug,
         noIndex: item.noIndex,
