@@ -176,8 +176,8 @@ export default function SeoFriendly(): ReactElement {
               spacing="100px"
               sx={{
                 mx: 0,
-                mt: 20,
-                mb: 80,
+                mt: 19.5,
+                mb: 19.5,
                 maxWidth: '100%'
               }}
             >

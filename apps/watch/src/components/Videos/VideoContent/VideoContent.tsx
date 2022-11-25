@@ -4,6 +4,7 @@ import { ReactElement, useState } from 'react'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Typography from '@mui/material/Typography'
 import Tab from '@mui/material/Tab'
+import Stack from '@mui/material/Stack'
 
 export function VideoContent({ data }: any): ReactElement {
   const [tabValue, setTabValue] = useState(0)
@@ -28,15 +29,42 @@ export function VideoContent({ data }: any): ReactElement {
       </Tabs>
       <TabPanel name="video-description" value={tabValue} index={0}>
         <Typography variant="body1">
-          {data.video.description[0]?.value}
+          {data.video.description[0]?.value.toString()}
         </Typography>
       </TabPanel>
       <TabPanel name="discussion-questions" value={tabValue} index={1}>
-        {data.video.studyQuestions?.map((question, index) => (
-          <Typography key={index} variant="body1">
-            {question.value}
-          </Typography>
-        ))}
+        <Stack
+          direction="column"
+          spacing={4}
+          sx={{
+            pt: 2,
+            pb: 2
+          }}
+        >
+          {data.video.studyQuestions?.map((question, index: number) => (
+            <>
+              <Stack direction="row" spacing={4} alignItems="center">
+                <Box
+                  sx={{
+                    display: 'flex',
+                    height: '38px',
+                    width: '38px',
+                    backgroundColor: '#EDEDED',
+                    borderRadius: '50%',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <Typography variant="h6">{index + 1}</Typography>
+                </Box>
+
+                <Typography key={index} variant="body1">
+                  {question.value}
+                </Typography>
+              </Stack>
+            </>
+          ))}
+        </Stack>
       </TabPanel>
     </Box>
   )
