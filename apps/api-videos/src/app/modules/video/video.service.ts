@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
-import { AqlQuery } from 'arangojs/aql'
+import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
 import { UserInputError } from 'apollo-server-errors'
 import { VideoIdType, VideosFilter } from '../../__generated__/graphql'
 
@@ -20,6 +20,22 @@ interface EpisodesFilter extends ExtendedVideosFilter {
 @Injectable()
 export class VideoService extends BaseService {
   collection: DocumentCollection = this.db.collection('videos')
+
+  baseVideo: GeneratedAqlQuery[] = [
+    aql`_key: item._key,
+        type: item.type,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        tagIds: item.tagIds,
+        episodeIds: item.episodeIds,
+        slug: item.slug,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt,`
+  ]
 
   videoFilter(filter?: VideosFilter): AqlQuery {
     const {
@@ -80,14 +96,7 @@ export class VideoService extends BaseService {
         ${search}
         LIMIT ${offset}, ${limit}
         RETURN {
-          _key: item._key,
-          type: item.type,
-          title: item.title,
-          snippet: item.snippet,
-          description: item.description,
-          studyQuestions: item.studyQuestions,
-          image: item.image,
-          tagIds: item.tagIds,
+          ${aql.join(this.baseVideo)}
           primaryLanguageId: item.primaryLanguageId,
           variant: NTH(item.variants[* 
             FILTER CURRENT.languageId == NOT_NULL(${
@@ -95,12 +104,7 @@ export class VideoService extends BaseService {
             }, item.primaryLanguageId)
             LIMIT 1 RETURN CURRENT
           ], 0),
-          variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-          episodeIds: item.episodeIds,
-          slug: item.slug,
-          noIndex: item.noIndex,
-          seoTitle: item.seoTitle,
-          imageAlt: item.imageAlt
+          variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
         }
     `)
     return await res.all()
@@ -117,14 +121,7 @@ export class VideoService extends BaseService {
       ${search}
       LIMIT ${offset}, ${limit}
       RETURN {
-        _key: item._key,
-        type: item.type,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        tagIds: item.tagIds,
+        ${aql.join(this.baseVideo)}
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
@@ -132,12 +129,7 @@ export class VideoService extends BaseService {
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
       }
     `)
     return await res.all()
@@ -150,27 +142,14 @@ export class VideoService extends BaseService {
       FILTER item._key == ${_key}
       LIMIT 1
       RETURN {
-        _key: item._key,
-        type: item.type,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        tagIds: item.tagIds,
+        ${aql.join(this.baseVideo)}
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
-        ],
-        episodeIds: item.episodeIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
       }
     `)
     return await res.next()
@@ -186,26 +165,14 @@ export class VideoService extends BaseService {
       FILTER ${slug} IN item.slug[*].value
       LIMIT 1
       RETURN {
-        _key: item._key,
-        type: item.type,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        tagIds: item.tagIds,
+        ${aql.join(this.baseVideo)}
         playlist: item.playlist,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
       }
     `)
     return await res.next()
@@ -218,24 +185,12 @@ export class VideoService extends BaseService {
       FILTER ${id} IN item.variants[*].path
       LIMIT 1
       RETURN {
-        _key: item._key,
-        type: item.type,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        tagIds: item.tagIds,
+        ${aql.join(this.baseVideo)}
         playlist: item.playlist,
         variant: NTH(item.variants[*
           FILTER CURRENT.path == ${id}
           LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
       }
     `)
     return await res.next()
@@ -251,26 +206,14 @@ export class VideoService extends BaseService {
     FOR item IN ${videosView}
       FILTER item._key IN ${keys}
       RETURN {
-        _key: item._key,
-        type: item.type,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        tagIds: item.tagIds,
+        ${aql.join(this.baseVideo)}
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
       }
     `)
     return await res.all()

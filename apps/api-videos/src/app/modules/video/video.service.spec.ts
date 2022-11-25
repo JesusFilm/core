@@ -4,16 +4,12 @@ import { Database, aql } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
-import { AqlQuery } from 'arangojs/aql'
+import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
 import { VideoIdType, VideoType } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
-const DEFAULT_QUERY = aql`
-    FOR item IN 
-      
-      LIMIT ${0}, ${100}
-      RETURN {
-        _key: item._key,
+const baseVideo: GeneratedAqlQuery[] = [
+  aql`_key: item._key,
         type: item.type,
         title: item.title,
         snippet: item.snippet,
@@ -21,17 +17,25 @@ const DEFAULT_QUERY = aql`
         studyQuestions: item.studyQuestions,
         image: item.image,
         tagIds: item.tagIds,
+        episodeIds: item.episodeIds,
+        slug: item.slug,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt,`
+]
+
+const DEFAULT_QUERY = aql`
+    FOR item IN 
+      
+      LIMIT ${0}, ${100}
+      RETURN {
+        ${aql.join(baseVideo)}
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
       }
     `.query
 
@@ -39,24 +43,12 @@ const VIDEO_EPISODES_QUERY = aql`
     FOR item IN 
       FILTER item._key IN @value0
       RETURN {
-        _key: item._key,
-        type: item.type,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        tagIds: item.tagIds,
+        ${aql.join(baseVideo)}
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
       }
     `.query
 
@@ -69,26 +61,42 @@ const EPISODES_QUERY = aql`
         
         LIMIT @value1, @value2
         RETURN {
-          _key: item._key,
-          type: item.type,
-          title: item.title,
-          snippet: item.snippet,
-          description: item.description,
-          studyQuestions: item.studyQuestions,
-          image: item.image,
-          tagIds: item.tagIds,
+          ${aql.join(baseVideo)}
           primaryLanguageId: item.primaryLanguageId,
           variant: NTH(item.variants[* 
             FILTER CURRENT.languageId == NOT_NULL(@value3, item.primaryLanguageId)
             LIMIT 1 RETURN CURRENT
           ], 0),
-          variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-          episodeIds: item.episodeIds,
-          slug: item.slug,
-          noIndex: item.noIndex,
-          seoTitle: item.seoTitle,
-          imageAlt: item.imageAlt
+          variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
         }
+    `.query
+
+const GET_VIDEO_BY_SLUG_QUERY = aql`
+    FOR item IN undefined
+      FILTER @value0 IN item.slug[*].value
+      LIMIT 1
+      RETURN {
+        ${aql.join(baseVideo)}
+        playlist: item.playlist,
+        variant: NTH(item.variants[* 
+          FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
+          LIMIT 1 RETURN CURRENT], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+      }
+    `.query
+
+const GET_VIDEO_BY_PATH_QUERY = aql`
+    FOR item IN undefined
+      FILTER @value0 IN item.variants[*].path
+      LIMIT 1
+      RETURN {
+        ${aql.join(baseVideo)}
+        playlist: item.playlist,
+        variant: NTH(item.variants[*
+          FILTER CURRENT.path == @value0
+          LIMIT 1 RETURN CURRENT], 0),
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+      }
     `.query
 
 describe('VideoService', () => {
@@ -306,32 +314,6 @@ describe('VideoService', () => {
   })
 
   describe('getVideoBySlug', () => {
-    const GET_VIDEO_BY_SLUG_QUERY = aql`
-    FOR item IN undefined
-      FILTER @value0 IN item.slug[*].value
-      LIMIT 1
-      RETURN {
-        _key: item._key,
-        type: item.type,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        tagIds: item.tagIds,
-        playlist: item.playlist,
-        variant: NTH(item.variants[* 
-          FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
-          LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
-      }
-    `.query
-
     it('should query the video by slug', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
@@ -348,32 +330,6 @@ describe('VideoService', () => {
   })
 
   describe('getVideoByPath', () => {
-    const GET_VIDEO_BY_PATH_QUERY = aql`
-    FOR item IN undefined
-      FILTER @value0 IN item.variants[*].path
-      LIMIT 1
-      RETURN {
-        _key: item._key,
-        type: item.type,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        tagIds: item.tagIds,
-        playlist: item.playlist,
-        variant: NTH(item.variants[*
-          FILTER CURRENT.path == @value0
-          LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
-      }
-    `.query
-
     it('should query a video by path', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
