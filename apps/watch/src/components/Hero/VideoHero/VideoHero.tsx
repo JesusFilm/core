@@ -115,7 +115,7 @@ export function VideoHero({ video }: VideoHeroProps): ReactElement {
                 height: '100%',
                 width: '100%',
                 background:
-                  'linear-gradient(180deg, rgba(50, 50, 51, 0) 64%, rgba(38, 38, 38, 0.3) 76%, rgba(27, 27, 28, 0.46) 86%, #000000 100%), linear-gradient(90deg, #141414 16%, rgba(10, 10, 10, 0.5) 24%, rgba(4, 4, 4, 0.2) 31%, rgba(0, 0, 0, 0) 40%)'
+                  'linear-gradient(180deg, rgba(50, 50, 51, 0) 34%, rgba(38, 38, 38, 0.3) 46%, rgba(27, 27, 28, 0.46) 66%, #000000 100%), linear-gradient(90deg, #141414 0%, rgba(10, 10, 10, 0.5) 21%, rgba(4, 4, 4, 0.2) 36%, rgba(0, 0, 0, 0) 60%)'
               }}
             />
           </Box>
