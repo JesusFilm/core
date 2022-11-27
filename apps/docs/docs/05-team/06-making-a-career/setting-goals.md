@@ -1,56 +1,40 @@
 # Setting Goals
 
-Your development is important to us at Jesus Film. Often people would work hard but feel like it’s going nowhere. A key reason for this is because they haven’t spent enough time thinking about what they want to achieve. It resembles almost embarking on an unplanned journey. Setting realistic goals is one of the finest strategies to advance.
+Your development is important to us at Jesus Film. Often people would work hard but feel like it’s going nowhere. A key reason for this is that they haven’t spent enough time thinking about what they want to achieve. It can almost look like embarking on an unplanned journey. Setting realistic goals is one of the finest strategies to advance.
 
-## Objectives & Key Results
+## Objectives & Key Results (OKRs)
 
-We would be utilising a well-known framework for goal-setting called Objectives & Key Results (OKR). The main ideology behind OKR is to set **goals that matter, goals with transparency, and better strategic alignment**.
+We use a well-known framework for goal-setting called Objectives & Key Results (OKRs). The main ideology behind OKRs are to set goals that **matter, are transparent, and have strategic alignment**.
 
-### What is OKR?
+### What are OKRs?
 
-Three ideas make up OKR: the objective, the key results, and the initiatives. A description of your desired outcomes is contained in your **objectives**. The outcomes you need to get in order to meet your objectives are known as **Key Results**. **Initiatives** are the tasks necessary to assist you in achieving your Key Results, to sum up. An in-depth explanation of **[what an OKR is and how to write one](https://www.perdoo.com/wp-content/uploads/2020/12/eBook-The-ultimate-guide-to-okr.pdf)** has been provided by Perdoo.
+Three ideas make up OKRs: the objective, the key results, and the initiatives.
+
+1. A description of your desired outcomes is contained in your **objectives**.
+2. The outcomes you need to get in order to meet your objectives are known as **Key Results**.
+3. **Initiatives** are the tasks necessary to assist you in achieving your Key Results.
+
+An in-depth explanation of **[what OKRs are and how to write one](https://www.perdoo.com/wp-content/uploads/2020/12/eBook-The-ultimate-guide-to-okr.pdf)** has been provided by Perdoo.
 
 ### What is Perdoo?
 
-The OKR software programme you'll use to monitor your goals is called **[Perdoo](https://www.perdoo.com/about/)**. The delivery of strategy has never been so simple thanks to Perdoo, a platform that is dedicated to producing results that matter.
+**[Perdoo](https://www.perdoo.com/about/)** is the app we use to create and track OKRs. The delivery of strategy has never been so simple thanks to Perdoo, a platform that is dedicated to producing results that matter.
 
 ## Alignment
 
-Setting OKR aids in greater strategic alignment, as was previously indicated. This entails coordinating your OKR with the **objectives of engineering, your own aspirations, and our strategic pillars**.
-
-### Engineering Goals
-
-Our objectives for engineers are still being determined. This section will be revised appropriately.
-
-### Strategic Pillars
-
-Pillars serve as strongholds and structural supports. The strategic pillars complement the vision while creating a plan. For the vision to continue, a pillar must remain in place. Following are the pillars of our strategy:
-
-<ul>
-  <li>Pursue operational excellence that gives our users confidence in our platforms</li>
-  <li>Put loving people at the heart of our product development</li>
-  <li>Be a team that our partners love to work with</li>
-  <li>Build a culture where each team member learns and thrives</li>
-</ul>
+Setting OKRs aids in greater strategic alignment, as was previously indicated. This entails coordinating your OKRs with the **objectives of your team, your aspirations, and our strategic pillars**.
 
 ### Personal Development
 
-Setting your own, wide personal development goals can take some time. We've outlined each position in Jesus Film on the **[Titles for Engineers](https://docs.core.jesusfilm.org/docs/team/making-a-career/titles-for-engineers)** docs to better assist you. As you consider drafting your OKR, be sure to reflect and align it to the next stage of your career.
+It can take some time to establish your own personal growth objectives. For your benefit, locate the **[Making a Career](https://docs.core.jesusfilm.org/docs/team/making-a-career/)** documents section. Each title for engineers and designers has been described here. Navigate to the position that best describes you at the moment or the next level of your career.
 
-If you want to become an **Engineer** and are a **Junior Engineer**, an Engineer is defined as
+There are window timeframes at each stage of a career. For the first half of the said time. Your OKRs should promote a quality that defines the **current stage** of your career. The remaining half should then promote a quality that defines the **next phase** of your career.
 
-<ul>
-  <li>Work is reviewed with the occasional need for material direction or implementation changes.</li>
-  <li>Follows established patterns and approaches within existing code bases with ease.</li>
-  <li>Works mostly on clearly defined and scoped individual features or problems.</li>
-  <li>Usually at least 2-5 years of experience being a professional engineer in the specific domain.</li>
-</ul>
+For example, if you are a **Junior Engineer** aiming to be an **[Engineer](https://docs.core.jesusfilm.org/docs/team/making-a-career/titles-for-engineers)**. You need to have at least an experience in a specific domain for about 2 years and onwards. For the first year, your OKRs should relate to what defines a Junior Engineer. While the second year should relate to Engineer.
 
-Your personal developmet OKRs should promote a quality that defines the next phase of your career.
+## Writing OKRs
 
-## Writing OKR
-
-Essentially, while you consider developing your OKR, keep in mind that it should be in line with these three things: engineering objectives, your personal ambitions, and our strategic pillars.
+Essentially, while you consider developing your OKRs, keep in mind that it should be in line with these three things: your team goals, your aspirations, and our strategic pillars.
 
 <div
   style={{
@@ -76,9 +60,9 @@ Essentially, while you consider developing your OKR, keep in mind that it should
   />
 </div>
 
-You must provide your objective (O) and key result (KR) when writing an OKR. Your aim is described in the Objective, and your Key Result is the measurable result needed to accomplish the Objective. You will create and keep track of your OKRs in Perdoo.
+You must provide your objective (O) and key result (KR) when writing an OKRs. Your aim is described in the Objective, and your Key Result is the measurable result needed to accomplish the Objective. You will create and keep track of your OKRs in Perdoo.
 
-#### OKR example:
+#### OKRs example:
 
 **O:** Build features that follows existing patterns and approaches
 
@@ -86,7 +70,7 @@ You must provide your objective (O) and key result (KR) when writing an OKR. You
 
 **KR:** Generate 2 pages for variable naming patterns for Core
 
-Perdoo has delivered once more by providing additional **[examples](https://support.perdoo.com/en/articles/4350812-product-engineering-it-okr-kpi-examples)** for us to use as guides or to assist us understand how to write our OKR.
+Perdoo has delivered once more by providing additional **[examples](https://support.perdoo.com/en/articles/4350812-product-engineering-it-okr-kpi-examples)** for us to use as guides or to assist us understand how to write our OKRs.
 
 Writing out our goals helps to better guide, inspire, and push us. Let's continue to run this race well together and work towards the things that really count.
 
