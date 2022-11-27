@@ -1,4 +1,5 @@
-import { ComponentStory, Meta } from '@storybook/react'
+import { ComponentProps } from 'react'
+import { Story, Meta } from '@storybook/react'
 import { noop } from 'lodash'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
@@ -18,7 +19,7 @@ const DialogStory = {
   }
 }
 
-const Template: ComponentStory<typeof Dialog> = ({ ...args }) => {
+const Template: Story<ComponentProps<typeof Dialog>> = ({ ...args }) => {
   return <Dialog {...args} />
 }
 

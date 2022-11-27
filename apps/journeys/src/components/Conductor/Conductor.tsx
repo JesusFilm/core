@@ -42,7 +42,7 @@ const RightNavigationContainer = styled(Box)`
   /* @noflip */
   right: 0;
 `
-export interface ConductorProps {
+interface ConductorProps {
   blocks: TreeBlock[]
 }
 
