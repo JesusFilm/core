@@ -34,8 +34,11 @@ export class VideoService extends BaseService {
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt,`
+        imageAlt: item.imageAlt,
+        primaryLanguageId: item.primaryLanguageId,`
   ]
+
+  videosView = this.db.view('videosView')
 
   videoFilter(filter?: VideosFilter): AqlQuery {
     const {
@@ -71,7 +74,6 @@ export class VideoService extends BaseService {
       offset = 0,
       limit = 100
     } = filter ?? {}
-    const videosView = this.db.view('videosView')
     const search = this.videoFilter(filter)
 
     let idFilter
@@ -98,16 +100,15 @@ export class VideoService extends BaseService {
     }
 
     const res = await this.db.query(aql`
-    FOR video IN ${this.collection}
+    FOR video IN ${this.videosView}
       ${idFilter}
       LIMIT 1
-      FOR item IN ${videosView}
+      FOR item IN ${this.videosView}
         FILTER item._key IN video.episodeIds
         ${search}
         LIMIT ${offset}, ${limit}
         RETURN {
           ${aql.join(this.baseVideo)}
-          primaryLanguageId: item.primaryLanguageId,
           ${aql.join(variantFilter)}
           variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
         }
@@ -118,16 +119,14 @@ export class VideoService extends BaseService {
   @KeyAsId()
   async filterAll<T>(filter?: ExtendedVideosFilter): Promise<T[]> {
     const { variantLanguageId, offset = 0, limit = 100 } = filter ?? {}
-    const videosView = this.db.view('videosView')
     const search = this.videoFilter(filter)
 
     const res = await this.db.query(aql`
-    FOR item IN ${videosView}
+    FOR item IN ${this.videosView}
       ${search}
       LIMIT ${offset}, ${limit}
       RETURN {
         ${aql.join(this.baseVideo)}
-        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
@@ -143,12 +142,11 @@ export class VideoService extends BaseService {
   @KeyAsId()
   async getVideo<T>(_key: string, variantLanguageId?: string): Promise<T> {
     const res = await this.db.query(aql`
-    FOR item in ${this.collection}
+    FOR item in ${this.videosView}
       FILTER item._key == ${_key}
       LIMIT 1
       RETURN {
         ${aql.join(this.baseVideo)}
-        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
@@ -163,7 +161,7 @@ export class VideoService extends BaseService {
   @KeyAsId()
   async getVideoBySlug<T>(slug: string): Promise<T> {
     const res = await this.db.query(aql`
-    FOR item IN ${this.collection}
+    FOR item IN ${this.videosView}
       FILTER ${slug} IN item.variants[*].path
       LIMIT 1
       RETURN {
@@ -183,13 +181,11 @@ export class VideoService extends BaseService {
     keys: string[],
     variantLanguageId?: string
   ): Promise<T[]> {
-    const videosView = this.db.view('videosView')
     const res = await this.db.query(aql`
-    FOR item IN ${videosView}
+    FOR item IN ${this.videosView}
       FILTER item._key IN ${keys}
       RETURN {
         ${aql.join(this.baseVideo)}
-        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null

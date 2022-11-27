@@ -21,7 +21,8 @@ const baseVideo: GeneratedAqlQuery[] = [
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt,`
+        imageAlt: item.imageAlt,
+        primaryLanguageId: item.primaryLanguageId,`
 ]
 
 const DEFAULT_QUERY = aql`
@@ -30,7 +31,6 @@ const DEFAULT_QUERY = aql`
       LIMIT ${0}, ${100}
       RETURN {
         ${aql.join(baseVideo)}
-        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
@@ -44,7 +44,6 @@ const VIDEO_EPISODES_QUERY = aql`
       FILTER item._key IN @value0
       RETURN {
         ${aql.join(baseVideo)}
-        primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
@@ -53,7 +52,7 @@ const VIDEO_EPISODES_QUERY = aql`
     `.query
 
 const EPISODES_QUERY = aql`
-    FOR video IN undefined
+    FOR video IN 
       FILTER video._key == @value0
       LIMIT 1
       FOR item IN 
@@ -62,7 +61,6 @@ const EPISODES_QUERY = aql`
         LIMIT @value1, @value2
         RETURN {
           ${aql.join(baseVideo)}
-          primaryLanguageId: item.primaryLanguageId,
           variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(@value3, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
@@ -72,7 +70,7 @@ const EPISODES_QUERY = aql`
     `.query
 
 const GET_VIDEO_BY_SLUG_QUERY = aql`
-    FOR item IN undefined
+    FOR item IN 
       FILTER @value0 IN item.variants[*].path
       LIMIT 1
       RETURN {
