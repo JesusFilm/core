@@ -531,7 +531,7 @@ enum VideoBlockSource {
 enum VideoBlockObjectFit {
   """
   The video is scaled to maintain its aspect ratio while filling the
-   entire VideoBlock. If the video's aspect ratio does not match the 
+   entire VideoBlock. If the video's aspect ratio does not match the
    aspect ratio of the VideoBlock, then the video will be clipped to fit.
   """
   fill
