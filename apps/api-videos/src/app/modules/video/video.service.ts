@@ -76,7 +76,7 @@ export class VideoService extends BaseService {
     } = filter ?? {}
     const search = this.videoFilter(filter)
 
-    let idFilter
+    let idFilter: GeneratedAqlQuery | undefined
     const variantFilter: GeneratedAqlQuery[] = []
     switch (idType) {
       case IdType.databaseId:
