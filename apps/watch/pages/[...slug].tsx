@@ -154,8 +154,8 @@ export default function SeoFriendly(): ReactElement {
           type: 'website',
           title: data?.video.title[0].value,
           url: `${
-            process.env.NEXT_PUBLIC_WATCH_URL ??
-            'https://watch-jesusfilm.vercel.app'
+            // process.env.NEXT_PUBLIC_WATCH_URL ??
+            'https://watch-9y4744vnh-jesusfilm.vercel.app/'
           }/${routes?.join('/')}`.trim(),
           description: data?.video.snippet[0].value ?? undefined,
           images:
