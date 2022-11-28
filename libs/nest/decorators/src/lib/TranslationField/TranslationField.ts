@@ -17,22 +17,12 @@ export function TranslationField(
     descriptor: PropertyDescriptor
   ) => {
     descriptor.value = function (
-      parent: { [key: string]: Translation[][] | Translation[] },
+      parent: { [key: string]: Translation[] },
       languageId?: string,
       primary?: boolean
     ) {
       const translations = parent[name]
-      if (Array.isArray(translations[0])) {
-        return (translations as Translation[][]).map((translations) =>
-          filterTranslations(translations, languageId, primary)
-        )
-      } else {
-        return filterTranslations(
-          translations as Translation[],
-          languageId,
-          primary
-        )
-      }
+      return filterTranslations(translations, languageId, primary)
     }
   }
 }

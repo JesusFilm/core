@@ -460,6 +460,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             posterBlockId: null,
             fullsize: null,
             action: null,
+            objectFit: null,
             children: []
           }
         ]

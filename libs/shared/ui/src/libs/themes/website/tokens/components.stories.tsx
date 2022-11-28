@@ -1,4 +1,4 @@
-import { useState, SyntheticEvent } from 'react'
+import { useState, SyntheticEvent, ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
@@ -26,7 +26,7 @@ const ComponentsDemo = {
   }
 }
 
-const Template: Story<Parameters<typeof Button>[0]> = (args) => {
+const Template: Story<ComponentProps<typeof Button>> = (args) => {
   const [value, setValue] = useState(0)
 
   const handleChange = (e: SyntheticEvent, newValue: number): void => {
