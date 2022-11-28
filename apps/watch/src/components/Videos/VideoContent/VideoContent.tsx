@@ -5,8 +5,13 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Typography from '@mui/material/Typography'
 import Tab from '@mui/material/Tab'
 import Stack from '@mui/material/Stack'
+import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
 
-export function VideoContent({ data }: any): ReactElement {
+interface VideoContentProps {
+  video: Video
+}
+
+export function VideoContent({ video }: VideoContentProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
 
   const handleTabChange = (_event, newValue): void => {
@@ -22,14 +27,16 @@ export function VideoContent({ data }: any): ReactElement {
         sx={{ mb: 10 }}
       >
         <Tab label="Description" {...tabA11yProps('video-description', 0)} />
-        <Tab
-          label="Discussion Questions"
-          {...tabA11yProps('discussion-questions', 1)}
-        />
+        {video.studyQuestions.length !== 0 && (
+          <Tab
+            label="Discussion Questions"
+            {...tabA11yProps('discussion-questions', 1)}
+          />
+        )}
       </Tabs>
       <TabPanel name="video-description" value={tabValue} index={0}>
         <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-          {data.video.description[0]?.value}
+          {video.description[0]?.value}
         </Typography>
       </TabPanel>
       <TabPanel name="discussion-questions" value={tabValue} index={1}>
@@ -41,7 +48,7 @@ export function VideoContent({ data }: any): ReactElement {
             pb: 2
           }}
         >
-          {data.video.studyQuestions?.map((question, index: number) => (
+          {video.studyQuestions?.map((question, index: number) => (
             <>
               <Stack direction="row" spacing={4} alignItems="center">
                 <Box

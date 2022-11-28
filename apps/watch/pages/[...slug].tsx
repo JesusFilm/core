@@ -181,7 +181,7 @@ export default function SeoFriendly(): ReactElement {
                 maxWidth: '100%'
               }}
             >
-              <VideoContent data={data} />
+              <VideoContent video={data.video} />
               <Box
                 width="336px"
                 sx={{
