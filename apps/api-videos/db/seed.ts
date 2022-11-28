@@ -2,7 +2,6 @@ import { aql } from 'arangojs'
 import { flatten } from 'lodash'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
-import { VideoType } from '../src/app/__generated__/graphql'
 import { ArangoDB } from './db'
 
 interface Video {
@@ -80,8 +79,7 @@ interface VideoVariant {
 }
 
 interface Video {
-  type: VideoType
-  subType: string
+  label: string
   primaryLanguageId: string
   title: Translation[]
   seoTitle: Translation[]
@@ -213,18 +211,10 @@ async function digestContent(
     if (video == null) continue
 
     episodeIds.push(videoId)
-
-    await db.collection('videos').update(videoId, {
-      type: VideoType.episode
-    })
   }
 
-  const type =
-    episodeIds.length === 0 ? VideoType.standalone : VideoType.playlist
-
   const body = {
-    type: type,
-    subType: mediaComponent.subType,
+    label: mediaComponent.subType,
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
     title: [
       {
@@ -395,10 +385,7 @@ async function main(): Promise<void> {
               }
             }
           },
-          type: {
-            analyzers: ['identity']
-          },
-          subType: {
+          label: {
             analyzers: ['identity']
           },
           episodeIds: {
