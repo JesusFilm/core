@@ -38,8 +38,10 @@ export function PlaylistHero({ video }: Props): ReactElement {
           position: 'absolute',
           height: '100%',
           width: '100%',
-          background:
-            'linear-gradient(180.21deg, rgba(50, 50, 51, 0) 52.73%, rgba(38, 38, 38, 0.174648) 68.58%, rgba(27, 27, 28, 0.321668) 81.42%, rgba(0, 0, 0, 0.7) 99.82%), linear-gradient(89.75deg, rgba(20, 20, 20, 0.3) 7.11%, rgba(10, 10, 10, 0.148691) 27.28%, rgba(4, 4, 4, 0.0587687) 44.45%, rgba(0, 0, 0, 0) 66.08%)'
+          background: {
+            xs: 'linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), linear-gradient(180.21deg, rgba(50, 50, 51, 0) 52.73%, rgba(38, 38, 38, 0.174648) 68.58%, rgba(27, 27, 28, 0.321668) 81.42%, rgba(0, 0, 0, 0.7) 99.82%), linear-gradient(89.75deg, rgba(20, 20, 20, 0.3) 7.11%, rgba(10, 10, 10, 0.148691) 27.28%, rgba(4, 4, 4, 0.0587687) 44.45%, rgba(0, 0, 0, 0) 66.08%), url(1_fj_1-0-0.mobileCinematicHigh.jpg)',
+            sm: 'linear-gradient(180.21deg, rgba(50, 50, 51, 0) 52.73%, rgba(38, 38, 38, 0.174648) 68.58%, rgba(27, 27, 28, 0.321668) 81.42%, rgba(0, 0, 0, 0.7) 99.82%), linear-gradient(89.75deg, rgba(20, 20, 20, 0.3) 7.11%, rgba(10, 10, 10, 0.148691) 27.28%, rgba(4, 4, 4, 0.0587687) 44.45%, rgba(0, 0, 0, 0) 66.08%)'
+          }
         }}
       />
       <Container
@@ -52,7 +54,7 @@ export function PlaylistHero({ video }: Props): ReactElement {
           direction={{ xs: 'column', sm: 'row' }}
           sx={{ width: '100%', pb: { xs: 4, sm: 11 } }}
         >
-          <Stack direction="column" sx={{ pb: { xs: 13, sm: 0 } }}>
+          <Stack direction="column" sx={{ pb: { xs: 4, sm: 0 } }}>
             <Typography
               variant="overline1"
               color="secondary.contrastText"
