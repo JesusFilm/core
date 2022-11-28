@@ -78,6 +78,7 @@ export class VideoVariant {
     duration: number;
     language: Language;
     subtitle: Translation[];
+    slug: string;
 }
 
 export abstract class IQuery {

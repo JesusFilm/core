@@ -17,6 +17,10 @@ type VideoVariant {
   duration: Int!
   language: Language!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!
+  """
+  Address of the video
+  """
+  slug: String!
 }
 
 extend type Video {
