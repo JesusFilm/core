@@ -14,7 +14,7 @@ interface Props {
   length: number
 }
 
-export function CollectionHero({
+export function PlaylistHero({
   title,
   imageSrc,
   type,

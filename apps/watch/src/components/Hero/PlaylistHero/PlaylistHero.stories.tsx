@@ -1,15 +1,15 @@
 import { ComponentStory, Meta } from '@storybook/react'
 import { watchConfig } from '../../../libs/storybook'
-import { CollectionHero } from '.'
+import { PlaylistHero } from '.'
 
-const CollectionHeroStory = {
+const PlaylistHeroStory = {
   ...watchConfig,
-  component: CollectionHero,
-  title: 'Watch/Hero/CollectionHero'
+  component: PlaylistHero,
+  title: 'Watch/Hero/PlaylistHero'
 }
 
-const Template: ComponentStory<typeof CollectionHero> = ({ ...args }) => (
-  <CollectionHero {...args} />
+const Template: ComponentStory<typeof PlaylistHero> = ({ ...args }) => (
+  <PlaylistHero {...args} />
 )
 
 export const Default = Template.bind({})
@@ -30,4 +30,4 @@ Series.args = {
   length: 10
 }
 
-export default CollectionHeroStory as Meta
+export default PlaylistHeroStory as Meta
