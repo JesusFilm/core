@@ -1191,6 +1191,7 @@ type Video
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
   imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  label: VideoLabel! @join__field(graph: VIDEOS)
   noIndex: Boolean @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
   seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
@@ -1201,9 +1202,7 @@ type Video
   slug(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  subType: VideoSubType! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  type: VideoType! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
 }
@@ -1542,6 +1541,15 @@ input VideoExpandEventCreateInput {
   value: VideoBlockSource
 }
 
+enum VideoLabel {
+  collection
+  episode
+  featureFilm
+  segment
+  series
+  shortFilm
+}
+
 type VideoPauseEvent implements Event {
   """time event was created"""
   createdAt: DateTime!
@@ -1680,9 +1688,8 @@ input VideoProgressEventCreateInput {
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
-  subTypes: [VideoSubType!]
+  labels: [VideoLabel!]
   title: String
-  types: [VideoType!]
 }
 
 type VideoStartEvent implements Event {
@@ -1727,15 +1734,6 @@ input VideoStartEventCreateInput {
   value: VideoBlockSource
 }
 
-enum VideoSubType {
-  collection
-  episode
-  featureFilm
-  segment
-  series
-  shortFilm
-}
-
 """
 VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
@@ -1752,12 +1750,6 @@ type VideoTriggerBlock implements Block {
   this is the number of seconds since the start of the video
   """
   triggerStart: Int!
-}
-
-enum VideoType {
-  episode
-  playlist
-  standalone
 }
 
 type VideoVariant {
