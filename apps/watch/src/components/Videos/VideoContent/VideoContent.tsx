@@ -28,8 +28,8 @@ export function VideoContent({ data }: any): ReactElement {
         />
       </Tabs>
       <TabPanel name="video-description" value={tabValue} index={0}>
-        <Typography variant="body1">
-          {data.video.description[0]?.value.toString()}
+        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+          {data.video.description[0]?.value}
         </Typography>
       </TabPanel>
       <TabPanel name="discussion-questions" value={tabValue} index={1}>

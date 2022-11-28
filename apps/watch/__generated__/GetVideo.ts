@@ -96,11 +96,6 @@ export interface GetVideo_video_variantLanguages {
   name: GetVideo_video_variantLanguages_name[];
 }
 
-export interface GetVideo_video_studyQuestions {
-  __typename: "Translation";
-  value: string;
-}
-
 export interface GetVideo_video {
   __typename: "Video";
   id: string;
