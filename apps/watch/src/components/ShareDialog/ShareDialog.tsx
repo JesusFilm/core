@@ -40,8 +40,8 @@ export function ShareDialog({
   const shareLink =
     routes != null
       ? `${
-          // process.env.NEXT_PUBLIC_WATCH_URL ??
-          'https://watch-9y4744vnh-jesusfilm.vercel.app/'
+          process.env.NEXT_PUBLIC_WATCH_URL ??
+          'https://watch-jesusfilm.vercel.app'
         }/${routes?.join('/')}`.trim()
       : ''
 
