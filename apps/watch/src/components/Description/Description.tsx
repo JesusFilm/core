@@ -11,14 +11,14 @@ export interface Props {
 export function Description({ value }: Props): ReactElement {
   return (
     <Stack direction="row" spacing={4} alignItems="flex-start">
-      <Typography variant="subtitle1" color="text.primary"> 
+      <Typography variant="subtitle1" color="text.primary">
         {value}
       </Typography>
       <Button
         sx={{
           display: { xs: 'none', sm: 'flex' },
           borderColor: 'secondary.main', // TODO: #BBBCBC
-          minWidth: 220,ß
+          minWidth: 220,
           height: 60,
           gap: '11px'
         }}
