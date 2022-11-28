@@ -10,25 +10,24 @@ export interface Props {
 
 export function Description({ value }: Props): ReactElement {
   return (
-    <Stack direction="row" spacing={4}>
-      <Typography
-        variant="subtitle1"
-        color="text.primary"
-        sx={{ maxWidth: '70%' }}
-      >
+    <Stack direction="row" spacing={4} alignItems="flex-start">
+      <Typography variant="subtitle1" color="text.primary"> 
         {value}
       </Typography>
       <Button
-        sx={
-          {
-            // width: 2220,
-            // height: 60
-          }
-        }
+        sx={{
+          display: { xs: 'none', sm: 'flex' },
+          borderColor: 'secondary.main', // TODO: #BBBCBC
+          minWidth: 220,ß
+          height: 60,
+          gap: '11px'
+        }}
         variant="outlined"
-        startIcon={<ShareOutlinedIcon sx={{ color: 'text.secondary' }} />}
       >
-        <Typography variant="h6">Share</Typography>
+        <ShareOutlinedIcon sx={{ color: 'text.secondary' }} />
+        <Typography variant="subtitle1" color="text.secondary">
+          Share
+        </Typography>
       </Button>
     </Stack>
   )
