@@ -140,8 +140,9 @@ export default function SeoFriendly(): ReactElement {
     }
   })
 
+  // TODO: Update logic here to find correct hero to show for the page
   useEffect(() => {
-    if (!loading && data.video != null) {
+    if (!loading && data != null) {
       setType(data.video.type === 'playlist' ? 'playlist' : 'video')
     }
   }, [loading, data])
