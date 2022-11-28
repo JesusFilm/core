@@ -5,6 +5,8 @@ import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Box from '@mui/material/Box'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { noop } from 'lodash'
@@ -21,7 +23,11 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../../../__generated__/GetJourney'
-import { VideoBlockUpdateInput } from '../../../../../__generated__/globalTypes'
+import {
+  VideoBlockObjectFit as ObjectFit,
+  VideoBlockSource,
+  VideoBlockUpdateInput
+} from '../../../../../__generated__/globalTypes'
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 
 interface VideoBlockEditorSettingsProps {
@@ -35,12 +41,13 @@ export function VideoBlockEditorSettings({
   posterBlock,
   onChange
 }: VideoBlockEditorSettingsProps): ReactElement {
-  const { values, handleChange } = useFormik({
+  const { values, handleChange, setFieldValue } = useFormik({
     initialValues: {
       autoplay: selectedBlock?.autoplay ?? true,
       muted: selectedBlock?.muted ?? true,
       startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
-      endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0)
+      endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0),
+      objectFit: selectedBlock?.objectFit ?? ObjectFit.fill
     },
     enableReinitialize: true,
     validate: async (values) => {
@@ -56,6 +63,133 @@ export function VideoBlockEditorSettings({
   return (
     <Box sx={{ px: 6, py: 3, width: '100%' }}>
       <Stack direction="column" spacing={3}>
+        <Stack direction="column" spacing={3}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              color:
+                selectedBlock == null || selectedBlock.parentOrder == null
+                  ? 'action.disabled'
+                  : undefined
+            }}
+          >
+            Timing
+          </Typography>
+          <Stack direction="row" justifyContent="space-around" spacing={3}>
+            <TimeField
+              showSeconds
+              value={values.startAt}
+              onChange={handleChange}
+              style={{ width: '100%' }}
+              input={
+                <TextField
+                  label="Starts At"
+                  name="startAt"
+                  value={values.startAt}
+                  variant="filled"
+                  disabled={selectedBlock == null}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PlayCircle />
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              }
+            />
+            <TimeField
+              showSeconds
+              value={values.endAt}
+              onChange={handleChange}
+              style={{ width: '100%' }}
+              input={
+                <TextField
+                  label="Ends At"
+                  name="endAt"
+                  value={values.endAt}
+                  variant="filled"
+                  disabled={selectedBlock == null}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <StopCircle />
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              }
+            />
+          </Stack>
+        </Stack>
+        <Stack direction="column" spacing={3}>
+          <Stack>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color:
+                  selectedBlock == null ||
+                  selectedBlock.parentOrder == null ||
+                  selectedBlock?.source === VideoBlockSource.youTube
+                    ? 'action.disabled'
+                    : undefined
+              }}
+            >
+              Aspect ratio
+            </Typography>
+            {selectedBlock?.source === VideoBlockSource.youTube && (
+              <Typography variant="caption" color="action.disabled">
+                This option is not available for YouTube videos
+              </Typography>
+            )}
+          </Stack>
+          <ToggleButtonGroup
+            value={
+              selectedBlock?.source === VideoBlockSource.youTube
+                ? ObjectFit.fit
+                : values.objectFit
+            }
+            exclusive
+            fullWidth
+            onChange={async (_event, value) => {
+              if (value != null) await setFieldValue('objectFit', value)
+            }}
+            aria-label="Object Fit"
+            disabled={selectedBlock?.source === VideoBlockSource.youTube}
+          >
+            <ToggleButton
+              sx={{
+                '&.Mui-selected': {
+                  color: 'primary.main'
+                }
+              }}
+              value={ObjectFit.fill}
+            >
+              Fill
+            </ToggleButton>
+            <ToggleButton
+              sx={{
+                '&.Mui-selected': {
+                  color: 'primary.main'
+                }
+              }}
+              value={ObjectFit.fit}
+            >
+              Fit
+            </ToggleButton>
+            <ToggleButton
+              sx={{
+                '&.Mui-selected': {
+                  color: 'primary.main'
+                }
+              }}
+              value={ObjectFit.zoomed}
+            >
+              Crop
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
+        <Divider />
         <Stack direction="row" justifyContent="space-between">
           <Stack direction="column">
             <Typography
@@ -129,53 +263,6 @@ export function VideoBlockEditorSettings({
             inputProps={{
               'aria-label': 'Muted'
             }}
-          />
-        </Stack>
-        <Divider />
-        <Stack direction="row" justifyContent="space-around" spacing={3}>
-          <TimeField
-            showSeconds
-            value={values.startAt}
-            onChange={handleChange}
-            style={{ width: '100%' }}
-            input={
-              <TextField
-                label="Starts At"
-                name="startAt"
-                value={values.startAt}
-                variant="filled"
-                disabled={selectedBlock == null}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PlayCircle />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            }
-          />
-          <TimeField
-            showSeconds
-            value={values.endAt}
-            onChange={handleChange}
-            style={{ width: '100%' }}
-            input={
-              <TextField
-                label="Ends At"
-                name="endAt"
-                value={values.endAt}
-                variant="filled"
-                disabled={selectedBlock == null}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <StopCircle />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            }
           />
         </Stack>
         <Divider />
