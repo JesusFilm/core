@@ -28,7 +28,7 @@ describe('VideoResolver', () => {
     ],
     variant: [
       {
-        path: 'jesus.html/english.html'
+        slug: 'jesus.html/english.html'
       }
     ]
   }
@@ -41,8 +41,7 @@ describe('VideoResolver', () => {
         filterEpisodes: jest.fn(() => [video, video]),
         getVideosByIds: jest.fn(() => [video, video]),
         getVideo: jest.fn(() => video),
-        getVideoBySlug: jest.fn(() => video),
-        getVideoByPath: jest.fn(() => video)
+        getVideoBySlug: jest.fn(() => video)
       })
     }
     const module: TestingModule = await Test.createTestingModule({
