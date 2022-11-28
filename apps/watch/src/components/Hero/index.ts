@@ -1,3 +1,3 @@
 export { HomeHero } from './HomeHero'
-export { SimpleHero } from './SimpleHero/SimpleHero'
-export { VideoHero } from './VideoHero/VideoHero'
+export { PlaylistHero } from './PlaylistHero'
+export { VideoHero } from './VideoHero'

@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Error from 'next/error'
 import { useRouter } from 'next/router'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Button from '@mui/material/Button'
 import SaveAlt from '@mui/icons-material/SaveAlt'
@@ -20,7 +20,7 @@ import {
 } from '../src/libs/languageContext/LanguageContext'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCarousel'
-import { VideoHero, SimpleHero } from '../src/components/Hero'
+import { VideoHero, PlaylistHero } from '../src/components/Hero'
 import { ShareDialog } from '../src/components/ShareDialog'
 
 export const GET_VIDEO = gql`
@@ -118,6 +118,7 @@ export default function SeoFriendly(): ReactElement {
   const languageContext = useLanguage()
   const [tabValue, setTabValue] = useState(0)
   const [openShare, setOpenShare] = useState(false)
+  const [type, setType] = useState<string | null>(null)
 
   const handleTabChange = (_event, newValue): void => {
     setTabValue(newValue)
@@ -139,6 +140,12 @@ export default function SeoFriendly(): ReactElement {
     }
   })
 
+  useEffect(() => {
+    if (!loading && data.video != null) {
+      setType(data.video.type === 'playlist' ? 'playlist' : 'video')
+    }
+  }, [loading, data])
+
   if (routes == null) return throw404()
 
   const getSiblingRoute = (routes: string[]): string[] => {
@@ -151,7 +158,7 @@ export default function SeoFriendly(): ReactElement {
         hero={
           data?.video == null ? (
             <></>
-          ) : siblingsData != null ? (
+          ) : type === 'video' ? (
             <VideoHero
               loading={loading}
               video={data.video}
@@ -159,7 +166,7 @@ export default function SeoFriendly(): ReactElement {
               routes={routes}
             />
           ) : (
-            <SimpleHero loading={loading} video={data.video} />
+            <PlaylistHero video={data.video} />
           )
         }
       >

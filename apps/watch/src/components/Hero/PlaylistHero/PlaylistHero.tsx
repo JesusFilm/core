@@ -7,19 +7,18 @@ import { ReactElement } from 'react'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import IconButton from '@mui/material/IconButton'
 
+import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
+
 interface Props {
-  title: string
-  imageSrc: string
-  type: 'collection' | 'series'
-  length: number
+  video: Video
 }
 
-export function PlaylistHero({
-  title,
-  imageSrc,
-  type,
-  length
-}: Props): ReactElement {
+export function PlaylistHero({ video }: Props): ReactElement {
+  const type = 'collection'
+  const title = video.title[0].value
+  const length = video.episodes.length
+  const image = video.image
+
   return (
     <Box
       sx={{
@@ -30,7 +29,9 @@ export function PlaylistHero({
         position: 'relative'
       }}
     >
-      <Image src={imageSrc} alt="Home Hero" layout="fill" objectFit="cover" />
+      {image != null && (
+        <Image src={image} alt="Home Hero" layout="fill" objectFit="cover" />
+      )}
       <Box
         sx={{
           zIndex: 1,
@@ -42,7 +43,7 @@ export function PlaylistHero({
         }}
       />
       <Container
-        maxWidth="xl"
+        maxWidth="xxl"
         sx={{
           display: 'flex'
         }}
