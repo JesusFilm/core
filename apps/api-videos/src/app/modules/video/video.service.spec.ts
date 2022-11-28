@@ -71,13 +71,13 @@ const EPISODES_QUERY = aql`
 
 const GET_VIDEO_BY_SLUG_QUERY = aql`
     FOR item IN 
-      FILTER @value0 IN item.variants[*].path
+      FILTER @value0 IN item.variants[*].slug
       LIMIT 1
       RETURN {
         ${aql.join(baseVideo)}
         playlist: item.playlist,
         variant: NTH(item.variants[*
-          FILTER CURRENT.path == @value0
+          FILTER CURRENT.slug == @value0
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
       }

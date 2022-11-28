@@ -89,9 +89,9 @@ export class VideoService extends BaseService {
         ], 0),`)
         break
       case IdType.slug:
-        idFilter = aql`FILTER ${playlistId} IN item.variants[*].path`
+        idFilter = aql`FILTER ${playlistId} IN item.variants[*].slug`
         variantFilter.push(aql` variant: NTH(item.variants[*
-          FILTER CURRENT.path == ${playlistId}
+          FILTER CURRENT.slug == ${playlistId}
           LIMIT 1 RETURN CURRENT], 0),`)
         break
     }
@@ -162,13 +162,13 @@ export class VideoService extends BaseService {
   async getVideoBySlug<T>(slug: string): Promise<T> {
     const res = await this.db.query(aql`
     FOR item IN ${this.videosView}
-      FILTER ${slug} IN item.variants[*].path
+      FILTER ${slug} IN item.variants[*].slug
       LIMIT 1
       RETURN {
         ${aql.join(this.baseVideo)}
         playlist: item.playlist,
         variant: NTH(item.variants[*
-          FILTER CURRENT.path == ${slug}
+          FILTER CURRENT.slug == ${slug}
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
       }
