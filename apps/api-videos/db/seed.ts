@@ -448,18 +448,6 @@ async function digestContainer(
     if (video == null) continue
 
     if (mediaComponent.subType === 'series') series.episodeIds.push(videoId)
-
-    if (video.tagIds?.includes(mediaComponent.mediaComponentId)) continue
-
-    if (mediaComponent.subType === 'series') {
-      await db.collection('videos').update(videoId, {
-        type: VideoType.episode
-      })
-    } else {
-      await db.collection('videos').update(videoId, {
-        tagIds: [...video.tagIds, mediaComponent.mediaComponentId]
-      })
-    }
   }
   if (mediaComponent.subType === 'series') {
     if (existingSeries != null)
