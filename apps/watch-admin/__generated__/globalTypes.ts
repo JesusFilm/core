@@ -148,6 +148,12 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
+export enum VideoBlockObjectFit {
+  fill = "fill",
+  fit = "fit",
+  zoomed = "zoomed",
+}
+
 export enum VideoBlockSource {
   internal = "internal",
   youTube = "youTube",

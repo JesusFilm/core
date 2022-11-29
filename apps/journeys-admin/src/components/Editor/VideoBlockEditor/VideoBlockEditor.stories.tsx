@@ -62,6 +62,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
   description: null,
   duration: null,
   image: null,
+  objectFit: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -116,6 +117,7 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   action: null,
   source: VideoBlockSource.youTube,
   video: null,
+  objectFit: null,
   posterBlockId: 'poster1.id',
   children: []
 }
