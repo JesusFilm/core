@@ -25,7 +25,8 @@ export class VideoService extends BaseService {
       title,
       tagId = null,
       availableVariantLanguageIds = [],
-      types = null
+      types = null,
+      labels = null
     } = filter ?? {}
 
     return aql.join(
@@ -40,6 +41,7 @@ export class VideoService extends BaseService {
         (availableVariantLanguageIds?.length ?? 0) > 0 &&
           aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
         types != null && aql`FILTER item.type IN ${types}`,
+        labels != null && aql`FILTER item.label IN ${labels}`,
         tagId != null && aql`FILTER ${tagId} IN item.tagIds`
       ].filter((x) => x !== false)
     )
@@ -72,6 +74,7 @@ export class VideoService extends BaseService {
         RETURN {
           _key: item._key,
           type: item.type,
+          label: item.label,
           title: item.title,
           snippet: item.snippet,
           description: item.description,
