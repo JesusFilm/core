@@ -45,7 +45,7 @@
     "@golevelup/ts-jest": "^0.3.2",
     "@mdx-js/react": "^1.6.21",
     "@mui/icons-material": "^5.3.0",
-    "@mui/lab": "^5.0.0-alpha.71",
+    "@mui/lab": "^5.0.0-alpha.110",
     "@mui/material": "^5.3.0",
     "@mui/styles": "^5.3.0",
     "@mui/system": "^5.3.0",
