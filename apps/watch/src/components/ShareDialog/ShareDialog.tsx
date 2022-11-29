@@ -154,12 +154,7 @@ export function ShareDialog({
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
               {video.title[0].value}
             </Typography>
-            <Typography>
-              {`${video.description[0].value
-                .split(' ')
-                .slice(0, 18)
-                .join(' ')}...`}
-            </Typography>
+            <Typography>{video.snippet[0].value}</Typography>
           </Stack>
         </Stack>
         <>
