@@ -110,7 +110,7 @@ describe('VideoContent', () => {
   it('should switch tabs', () => {
     const { getByRole, getByText } = render(<VideoContent video={video} />)
     fireEvent.click(getByRole('tab', { name: 'Discussion Questions' }))
-    expect(getByText(video.studyQuestions[0].value))
+    expect(getByText(video.studyQuestions[0].value)).toBeInTheDocument()
   })
   it('should hide the dicussion questions tab if no questions', () => {
     const { queryByRole } = render(<VideoContent video={videoNoQuestions} />)
