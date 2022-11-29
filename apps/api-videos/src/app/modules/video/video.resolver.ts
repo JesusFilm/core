@@ -16,10 +16,10 @@ import { VideoService } from './video.service'
 export class VideoResolver {
   constructor(private readonly videoService: VideoService) {}
 
-  @Query('episodes')
-  async episodesQuery(
+  @Query('children')
+  async childrenQuery(
     @Info() info,
-    @Args('playlistId') playlistId: string,
+    @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.databaseId,
     @Args('where') where?: VideosFilter,
     @Args('offset') offset?: number,
@@ -29,7 +29,7 @@ export class VideoResolver {
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
     return await this.videoService.filterEpisodes({
-      playlistId,
+      id,
       idType,
       title: where?.title ?? undefined,
       tagId: where?.tagId ?? undefined,
@@ -40,6 +40,25 @@ export class VideoResolver {
       offset,
       limit
     })
+  }
+
+  @Query('episodes')
+  async episodesQuery(
+    @Info() info,
+    @Args('playlistId') playlistId: string,
+    @Args('idType') idType: IdType = IdType.databaseId,
+    @Args('where') where?: VideosFilter,
+    @Args('offset') offset?: number,
+    @Args('limit') limit?: number
+  ): Promise<Video[]> {
+    return await this.childrenQuery(
+      info,
+      playlistId,
+      idType,
+      where,
+      offset,
+      limit
+    )
   }
 
   @Query()
@@ -93,8 +112,15 @@ export class VideoResolver {
 
   @ResolveField()
   async episodes(@Parent() video: Video): Promise<Video[] | null> {
-    return video.episodeIds != null
-      ? await this.videoService.getVideosByIds(video.episodeIds)
+    return video.childIds != null
+      ? await this.videoService.getVideosByIds(video.childIds)
+      : null
+  }
+
+  @ResolveField()
+  async children(@Parent() video: Video): Promise<Video[] | null> {
+    return video.childIds != null
+      ? await this.videoService.getVideosByIds(video.childIds)
       : null
   }
 

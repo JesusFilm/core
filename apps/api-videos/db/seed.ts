@@ -91,6 +91,7 @@ interface Video {
   tagIds: string[]
   slug: Translation[]
   episodeIds: string[]
+  childIds: string[]
   noIndex: boolean
 }
 
@@ -238,6 +239,7 @@ async function digestContent(
     ],
     tagIds: [],
     episodeIds: [],
+    childIds: [],
     variants,
     slug: video?.slug ?? [
       {
@@ -391,6 +393,7 @@ async function digestSeriesContainer(
       }
     ],
     episodeIds: [],
+    childIds: [],
     variants,
     noIndex: false
   }
@@ -431,7 +434,10 @@ async function digestContainer(
     const video = await getVideo(videoId)
     if (video == null) continue
 
-    if (mediaComponent.subType === 'series') series.episodeIds.push(videoId)
+    if (mediaComponent.subType === 'series') {
+      series.episodeIds.push(videoId)
+      series.childIds.push(videoId)
+    }
 
     if (video.tagIds.includes(mediaComponent.mediaComponentId)) continue
 
@@ -510,6 +516,9 @@ async function main(): Promise<void> {
             analyzers: ['identity']
           },
           episodeIds: {
+            analyzers: ['identity']
+          },
+          childIds: {
             analyzers: ['identity']
           },
           slug: {

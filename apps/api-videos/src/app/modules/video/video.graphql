@@ -35,6 +35,8 @@ type Video @key(fields: "id primaryLanguageId") {
   """
   episodeIds: [ID!]!
   episodes: [Video!]!
+  childIds: [ID!]!
+  children: [Video!]!
 }
 
 input VideosFilter {
@@ -47,6 +49,13 @@ input VideosFilter {
 extend type Query {
   episodes(
     playlistId: ID!
+    idType: IdType
+    where: VideosFilter
+    offset: Int
+    limit: Int
+  ): [Video!]!
+  children(
+    id: ID!
     idType: IdType
     where: VideosFilter
     offset: Int
