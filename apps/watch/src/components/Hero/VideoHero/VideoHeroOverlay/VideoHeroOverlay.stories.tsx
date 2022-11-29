@@ -2,22 +2,33 @@ import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { VideoType } from '../../../../__generated__/globalTypes'
-import { watchConfig } from '../../../libs/storybook'
-import { VideoHero } from './VideoHero'
+import Box from '@mui/system/Box'
+import { VideoType } from '../../../../../__generated__/globalTypes'
+import { watchConfig } from '../../../../libs/storybook'
+import { VideoHeroOverlay } from './VideoHeroOverlay'
 
-const VideoHeroStory = {
+const VideoHeroOverlayStory = {
   ...watchConfig,
-  component: VideoHero,
-  title: 'Watch/Hero/VideoHero',
+  component: VideoHeroOverlay,
+  title: 'Watch/Hero/VideoHero/VideoHeroOverlay',
   parameters: {
     fullscreen: true
   }
 }
 
-const Template: Story<ComponentProps<typeof VideoHero>> = ({ ...args }) => (
+const Template: Story<ComponentProps<typeof VideoHeroOverlay>> = ({
+  ...args
+}) => (
   <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
-    <VideoHero {...args} />
+    <Box
+      sx={{
+        position: 'relative',
+        width: '100%',
+        height: 776
+      }}
+    >
+      <VideoHeroOverlay {...args} />
+    </Box>
   </ThemeProvider>
 )
 
@@ -57,4 +68,4 @@ Default.args = {
   }
 }
 
-export default VideoHeroStory as Meta
+export default VideoHeroOverlayStory as Meta

@@ -1,18 +1,10 @@
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { ReactElement, useEffect, useRef, useState } from 'react'
-import { secondsToMinutes } from '@core/shared/ui/timeFormat'
-import Container from '@mui/material/Container'
-import Button from '@mui/material/Button'
-import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
-import AccessTime from '@mui/icons-material/AccessTime'
-import Image from 'next/image'
-
+import Box from '@mui/material/Box'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 
 import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
+import { VideoHeroOverlay } from './VideoHeroOverlay'
 
 interface VideoHeroProps {
   video: Video
@@ -22,6 +14,7 @@ export function VideoHero({ video }: VideoHeroProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState(false)
+  const [muted, setMuted] = useState(false)
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -45,30 +38,29 @@ export function VideoHero({ video }: VideoHeroProps): ReactElement {
             inline: false
           }
         },
+        muted: false,
         responsive: true,
         poster: video?.image ?? undefined
       })
-      playerRef.current.on('pause', pauseVideo)
-      playerRef.current.on('play', playVideo)
+      playerRef.current.on('play', handlePlay)
     }
-  })
+  }, [video])
 
-  function playVideo(): void {
+  function handleMute(): void {
+    setMuted(!muted)
+    playerRef.current?.muted(!muted)
+  }
+
+  function handlePlay(): void {
     setIsPlaying(true)
-    videoRef?.current?.play()
+    playerRef?.current?.play()
   }
-
-  function pauseVideo(): void {
-    setIsPlaying(false)
-  }
-
-  // TODO: refactor according to how overlay works
 
   return (
     <Box
       sx={{
         width: '100%',
-        height: 776,
+        height: { xs: 502, lg: 777 },
         display: 'flex',
         alignItems: 'center',
         position: 'relative',
@@ -91,71 +83,12 @@ export function VideoHero({ video }: VideoHeroProps): ReactElement {
         </video>
       )}
       {!isPlaying && (
-        <>
-          <Box
-            sx={{
-              position: 'absolute',
-              height: '100%',
-              width: '100%'
-            }}
-          >
-            <Image
-              src={video?.image ?? ''}
-              alt={video?.title[0].value ?? ''}
-              layout="fill"
-              objectFit="cover"
-              style={{
-                zIndex: 1
-              }}
-            />
-            <Box
-              sx={{
-                zIndex: 1,
-                position: 'absolute',
-                height: '100%',
-                width: '100%',
-                background:
-                  'linear-gradient(180deg, rgba(50, 50, 51, 0) 34%, rgba(38, 38, 38, 0.3) 46%, rgba(27, 27, 28, 0.46) 66%, #000000 100%), linear-gradient(90deg, #141414 0%, rgba(10, 10, 10, 0.5) 21%, rgba(4, 4, 4, 0.2) 36%, rgba(0, 0, 0, 0) 60%)'
-              }}
-            />
-          </Box>
-          <Container
-            maxWidth="xl"
-            sx={{
-              pt: 50,
-              zIndex: 2
-            }}
-          >
-            <Stack spacing={5} width="60%">
-              <Typography variant="h2" color="text.primary">
-                {video.title[0]?.value}
-              </Typography>
-              <Stack
-                direction={{ xs: 'column', md: 'row' }}
-                spacing={4}
-                sx={{ color: 'text.primary', width: '100%' }}
-              >
-                <Button size="medium" variant="contained" onClick={playVideo}>
-                  <PlayArrowRounded />
-                  Play Video
-                </Button>
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <AccessTime />
-                  {video.variant !== null && (
-                    <Typography variant="body1">
-                      {secondsToMinutes(video.variant.duration)} min
-                    </Typography>
-                  )}
-                </Stack>
-              </Stack>
-            </Stack>
-          </Container>
-        </>
+        <VideoHeroOverlay
+          video={video}
+          isMuted={muted}
+          handleMute={handleMute}
+          handlePlay={handlePlay}
+        />
       )}
     </Box>
   )
