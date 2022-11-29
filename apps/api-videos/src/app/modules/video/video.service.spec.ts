@@ -5,7 +5,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
 import { AqlQuery } from 'arangojs/aql'
-import { IdType, VideoType } from '../../__generated__/graphql'
+import { IdType } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 const DEFAULT_QUERY = aql`
@@ -14,8 +14,7 @@ const DEFAULT_QUERY = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
-        type: item.type,
-        subType: item.subType,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -40,8 +39,7 @@ const VIDEO_EPISODES_QUERY = aql`
       FILTER item._key IN @value0
       RETURN {
         _key: item._key,
-        type: item.type,
-        subType: item.subType,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -70,8 +68,7 @@ const EPISODES_QUERY = aql`
         LIMIT @value1, @value2
         RETURN {
           _key: item._key,
-          type: item.type,
-          subType: item.subType,
+          label: item.label,
           title: item.title,
           snippet: item.snippet,
           description: item.description,
@@ -112,15 +109,6 @@ describe('VideoService', () => {
   })
 
   describe('videoFilter', () => {
-    it('should filter with specific types', async () => {
-      const filter = {
-        types: [VideoType.playlist, VideoType.standalone]
-      }
-      const response = await service.videoFilter(filter)
-      expect(response.query).toEqual('FILTER item.type IN @value0')
-      expect(response.bindVars).toEqual({ value0: filter.types })
-    })
-
     it('should filter with title', async () => {
       const filter = {
         title: 'abc'

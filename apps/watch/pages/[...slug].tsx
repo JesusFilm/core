@@ -27,7 +27,7 @@ export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID) {
     video(id: $id, idType: slug) {
       id
-      type
+      label
       image
       snippet(languageId: $languageId, primary: true) {
         value
@@ -56,8 +56,7 @@ export const GET_VIDEO = gql`
       }
       episodes {
         id
-        type
-        subType
+        label
         title(languageId: $languageId, primary: true) {
           value
         }
@@ -82,7 +81,6 @@ export const GET_VIDEO_SIBLINGS = gql`
   query GetVideoSiblings($playlistId: ID!, $languageId: ID) {
     episodes(playlistId: $playlistId, idType: slug) {
       id
-      type
       image
       imageAlt(languageId: $languageId, primary: true) {
         value

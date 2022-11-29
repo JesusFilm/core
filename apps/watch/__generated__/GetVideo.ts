@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoType, VideoSubType } from "./globalTypes";
+import { VideoLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetVideo
@@ -76,8 +76,7 @@ export interface GetVideo_video_episodes_variant {
 export interface GetVideo_video_episodes {
   __typename: "Video";
   id: string;
-  type: VideoType;
-  subType: VideoSubType;
+  label: VideoLabel;
   title: GetVideo_video_episodes_title[];
   image: string | null;
   imageAlt: GetVideo_video_episodes_imageAlt[];
@@ -95,7 +94,7 @@ export interface GetVideo_video_episodes {
 export interface GetVideo_video {
   __typename: "Video";
   id: string;
-  type: VideoType;
+  label: VideoLabel;
   image: string | null;
   snippet: GetVideo_video_snippet[];
   description: GetVideo_video_description[];

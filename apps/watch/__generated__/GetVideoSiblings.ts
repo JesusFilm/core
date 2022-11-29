@@ -3,8 +3,6 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoType } from "./globalTypes";
-
 // ====================================================
 // GraphQL query operation: GetVideoSiblings
 // ====================================================
@@ -38,7 +36,6 @@ export interface GetVideoSiblings_episodes_slug {
 export interface GetVideoSiblings_episodes {
   __typename: "Video";
   id: string;
-  type: VideoType;
   image: string | null;
   imageAlt: GetVideoSiblings_episodes_imageAlt[];
   snippet: GetVideoSiblings_episodes_snippet[];

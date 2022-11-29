@@ -12,13 +12,7 @@ export enum IdType {
     slug = "slug"
 }
 
-export enum VideoType {
-    episode = "episode",
-    standalone = "standalone",
-    playlist = "playlist"
-}
-
-export enum VideoSubType {
+export enum VideoLabel {
     collection = "collection",
     episode = "episode",
     featureFilm = "featureFilm",
@@ -35,8 +29,7 @@ export enum VideoVariantDownloadQuality {
 export class VideosFilter {
     availableVariantLanguageIds?: Nullable<string[]>;
     title?: Nullable<string>;
-    types?: Nullable<VideoType[]>;
-    subTypes?: Nullable<VideoSubType[]>;
+    labels?: Nullable<VideoLabel[]>;
 }
 
 export class Translation {
@@ -49,8 +42,7 @@ export class Translation {
 export class Video {
     __typename?: 'Video';
     id: string;
-    type: VideoType;
-    subType: VideoSubType;
+    label: VideoLabel;
     primaryLanguageId: string;
     title: Translation[];
     seoTitle: Translation[];

@@ -14,8 +14,6 @@ export const GET_HOME_VIDEO = gql`
   query GetHomeVideo($id: ID!, $languageId: ID) {
     video(id: $id) {
       id
-      type
-      subType
       image
       title(languageId: $languageId, primary: true) {
         value
