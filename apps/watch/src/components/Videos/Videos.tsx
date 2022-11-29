@@ -16,7 +16,6 @@ export const GET_VIDEOS = gql`
   ) {
     videos(where: $where, offset: $offset, limit: $limit) {
       id
-      type
       image
       snippet(languageId: $languageId, primary: true) {
         value
