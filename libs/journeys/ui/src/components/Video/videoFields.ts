@@ -20,6 +20,7 @@ export const VIDEO_FIELDS = gql`
     description
     image
     duration
+    objectFit
     video {
       id
       title(primary: true) {

@@ -86,6 +86,7 @@ describe('CardList', () => {
             posterBlockId: null,
             fullsize: true,
             action: null,
+            objectFit: null,
             children: [
               {
                 id: 'trigger.id',

@@ -31,6 +31,7 @@ describe('VideoWrapper', () => {
       posterBlockId: 'image5.id',
       fullsize: null,
       action: null,
+      objectFit: null,
       children: [
         {
           id: 'image5.id',
@@ -83,6 +84,7 @@ describe('VideoWrapper', () => {
         description: null,
         duration: null,
         image: null,
+        objectFit: null,
         video: null,
         videoId: null,
         videoVariantLanguageId: '529'
@@ -112,6 +114,7 @@ describe('VideoWrapper', () => {
       posterBlockId: 'image5.id',
       fullsize: null,
       action: null,
+      objectFit: null,
       children: [
         {
           id: 'image5.id',
@@ -164,6 +167,7 @@ describe('VideoWrapper', () => {
         description: null,
         duration: null,
         image: null,
+        objectFit: null,
         video: null,
         videoId: null,
         videoVariantLanguageId: '529'
