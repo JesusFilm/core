@@ -4,7 +4,7 @@ import { Description } from './Description'
 describe('Description', () => {
   const sampleText = 'This text should appear in the description'
 
-  it('should render description test correctly', () => {
+  it('should render description text correctly', () => {
     render(<Description value={sampleText} />)
     const testText = screen.getByText(sampleText)
     expect(testText).toBeInTheDocument()
