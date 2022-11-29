@@ -7,52 +7,52 @@
 // GraphQL query operation: GetVideoSiblings
 // ====================================================
 
-export interface GetVideoSiblings_episodes_imageAlt {
+export interface GetVideoSiblings_children_imageAlt {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetVideoSiblings_episodes_snippet {
+export interface GetVideoSiblings_children_snippet {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetVideoSiblings_episodes_title {
+export interface GetVideoSiblings_children_title {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetVideoSiblings_episodes_variant {
+export interface GetVideoSiblings_children_variant {
   __typename: "VideoVariant";
   duration: number;
   hls: string | null;
 }
 
-export interface GetVideoSiblings_episodes_slug {
+export interface GetVideoSiblings_children_slug {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetVideoSiblings_episodes {
+export interface GetVideoSiblings_children {
   __typename: "Video";
   id: string;
   image: string | null;
-  imageAlt: GetVideoSiblings_episodes_imageAlt[];
-  snippet: GetVideoSiblings_episodes_snippet[];
-  title: GetVideoSiblings_episodes_title[];
-  variant: GetVideoSiblings_episodes_variant | null;
+  imageAlt: GetVideoSiblings_children_imageAlt[];
+  snippet: GetVideoSiblings_children_snippet[];
+  title: GetVideoSiblings_children_title[];
+  variant: GetVideoSiblings_children_variant | null;
   /**
    * Episodes are child videos, currently only found in a playlist type
    */
-  episodeIds: string[];
+  childIds: string[];
   /**
    * slug is a permanent link to the video. It should only be appended, not edited or deleted
    */
-  slug: GetVideoSiblings_episodes_slug[];
+  slug: GetVideoSiblings_children_slug[];
 }
 
 export interface GetVideoSiblings {
-  episodes: GetVideoSiblings_episodes[];
+  children: GetVideoSiblings_children[];
 }
 
 export interface GetVideoSiblingsVariables {

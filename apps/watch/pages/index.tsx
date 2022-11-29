@@ -22,7 +22,7 @@ export const GET_HOME_VIDEO = gql`
       variant {
         duration
       }
-      episodeIds
+      childIds
       slug(languageId: $languageId, primary: true) {
         value
       }
