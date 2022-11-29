@@ -18,7 +18,7 @@ import { PageWrapper } from '../src/components/PageWrapper'
 import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCarousel'
 import { VideoHero, SimpleHero } from '../src/components/Hero'
 import { ShareDialog } from '../src/components/ShareDialog'
-import { VideoContent } from '../src/components/Videos/VideoContent'
+import { VideoContent } from '../src/components/Video/VideoContent'
 
 export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID) {

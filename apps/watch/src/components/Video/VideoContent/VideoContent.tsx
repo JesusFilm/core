@@ -34,7 +34,7 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
           />
         )}
       </Tabs>
-      <TabPanel name="video-description" value={tabValue} index={0}>
+      <TabPanel name="description" value={tabValue} index={0}>
         <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
           {video.description[0]?.value}
         </Typography>
@@ -49,27 +49,25 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
           }}
         >
           {video.studyQuestions?.map((question, index: number) => (
-            <>
-              <Stack direction="row" spacing={4} alignItems="center">
-                <Box
-                  sx={{
-                    display: 'flex',
-                    height: '38px',
-                    width: '38px',
-                    backgroundColor: '#EDEDED',
-                    borderRadius: '50%',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <Typography variant="h6">{index + 1}</Typography>
-                </Box>
+            <Stack direction="row" spacing={4} alignItems="center" key={index}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  minHeight: '38px',
+                  minWidth: '38px',
+                  backgroundColor: '#EDEDED',
+                  borderRadius: '50%',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <Typography variant="h6">{index + 1}</Typography>
+              </Box>
 
-                <Typography key={index} variant="body1">
-                  {question.value}
-                </Typography>
-              </Stack>
-            </>
+              <Typography key={index} variant="body1">
+                {question.value}
+              </Typography>
+            </Stack>
           ))}
         </Stack>
       </TabPanel>
