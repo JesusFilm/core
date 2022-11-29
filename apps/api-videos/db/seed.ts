@@ -449,7 +449,7 @@ async function digestContainer(
 
     if (mediaComponent.subType === 'series') series.episodeIds.push(videoId)
 
-    if (video.tagIds.includes(mediaComponent.mediaComponentId)) continue
+    if (video.tagIds?.includes(mediaComponent.mediaComponentId)) continue
 
     if (mediaComponent.subType === 'series') {
       await db.collection('videos').update(videoId, {
