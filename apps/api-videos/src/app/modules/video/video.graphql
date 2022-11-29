@@ -33,11 +33,8 @@ type Video @key(fields: "id primaryLanguageId") {
   """
   slug(languageId: ID, primary: Boolean): [Translation!]!
   noIndex: Boolean
-  """
-  Episodes are child videos, currently only found in a playlist type
-  """
-  episodeIds: [ID!]!
-  episodes: [Video!]!
+  childIds: [ID!]!
+  children: [Video!]!
 }
 
 input VideosFilter {
@@ -47,7 +44,7 @@ input VideosFilter {
 }
 
 extend type Query {
-  episodes(
+  children(
     playlistId: ID!
     idType: IdType
     where: VideosFilter

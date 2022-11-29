@@ -16,7 +16,7 @@ import { VideoService } from './video.service'
 export class VideoResolver {
   constructor(private readonly videoService: VideoService) {}
 
-  @Query('episodes')
+  @Query('children')
   async episodesQuery(
     @Info() info,
     @Args('playlistId') playlistId: string,
@@ -90,9 +90,9 @@ export class VideoResolver {
   }
 
   @ResolveField()
-  async episodes(@Parent() video: Video): Promise<Video[] | null> {
-    return video.episodeIds != null
-      ? await this.videoService.getVideosByIds(video.episodeIds)
+  async children(@Parent() video: Video): Promise<Video[] | null> {
+    return video.childIds != null
+      ? await this.videoService.getVideosByIds(video.childIds)
       : null
   }
 

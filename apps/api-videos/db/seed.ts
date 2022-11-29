@@ -90,7 +90,7 @@ interface Video {
   imageAlt: Translation[]
   variants: VideoVariant[]
   slug: Translation[]
-  episodeIds: string[]
+  childIds: string[]
   noIndex: boolean
 }
 
@@ -202,7 +202,7 @@ async function digestContent(
     }
   }
 
-  const episodeIds: string[] = []
+  const childIds: string[] = []
 
   for (const videoId of await getMediaComponentLinks(
     mediaComponent.mediaComponentId
@@ -210,7 +210,7 @@ async function digestContent(
     const video = await getVideo(videoId)
     if (video == null) continue
 
-    episodeIds.push(videoId)
+    childIds.push(videoId)
   }
 
   const body = {
@@ -262,7 +262,7 @@ async function digestContent(
         primary: true
       }
     ],
-    episodeIds: episodeIds,
+    childIds: childIds,
     variants,
     slug: video?.slug ?? [
       {
@@ -388,7 +388,7 @@ async function main(): Promise<void> {
           label: {
             analyzers: ['identity']
           },
-          episodeIds: {
+          childIds: {
             analyzers: ['identity']
           },
           slug: {

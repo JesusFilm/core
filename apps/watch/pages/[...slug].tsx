@@ -54,7 +54,7 @@ export const GET_VIDEO = gql`
       slug(languageId: $languageId, primary: true) {
         value
       }
-      episodes {
+      children {
         id
         label
         title(languageId: $languageId, primary: true) {
@@ -67,7 +67,7 @@ export const GET_VIDEO = gql`
         slug(languageId: $languageId, primary: true) {
           value
         }
-        episodeIds
+        childIds
         variant {
           duration
           hls
@@ -79,7 +79,7 @@ export const GET_VIDEO = gql`
 
 export const GET_VIDEO_SIBLINGS = gql`
   query GetVideoSiblings($playlistId: ID!, $languageId: ID) {
-    episodes(playlistId: $playlistId, idType: slug) {
+    children(playlistId: $playlistId, idType: slug) {
       id
       image
       imageAlt(languageId: $languageId, primary: true) {
@@ -95,7 +95,7 @@ export const GET_VIDEO_SIBLINGS = gql`
         duration
         hls
       }
-      episodeIds
+      childIds
       slug(languageId: $languageId, primary: true) {
         value
       }
@@ -162,15 +162,15 @@ export default function SeoFriendly(): ReactElement {
         {data?.video != null && (
           <>
             <Box sx={{ pt: '20px' }}>
-              {data.video.episodes.length > 0 && (
+              {data.video.children.length > 0 && (
                 <VideosCarousel
-                  videos={data.video.episodes}
+                  videos={data.video.children}
                   routePrefix={routes.join('/')}
                 />
               )}
-              {siblingsData?.episodes?.length > 0 && (
+              {siblingsData?.children?.length > 0 && (
                 <VideosCarousel
-                  videos={siblingsData.episodes}
+                  videos={siblingsData.children}
                   routePrefix={getSiblingRoute(routes).join('/')}
                 />
               )}

@@ -40,7 +40,7 @@ describe('VideoResolver', () => {
     service = await module.resolve(VideoService)
   })
 
-  describe('episodes', () => {
+  describe('children', () => {
     it('returns Videos', async () => {
       const playlistId = 'rivka'
       const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }

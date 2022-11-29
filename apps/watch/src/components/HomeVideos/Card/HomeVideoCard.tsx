@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import ButtonBase from '@mui/material/ButtonBase'
 
-import { VideoSubType, VideoType } from '../../../../__generated__/globalTypes'
+import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { GetHomeVideo_video } from '../../../../__generated__/GetHomeVideo'
 
 export enum FilmType {
@@ -123,10 +123,10 @@ export function HomeVideoCard({ video }: VideoListCardProps): ReactElement {
           >
             <Typography
               variant="overline2"
-              color={designationColors[video?.subType ?? ''] ?? ''}
+              color={designationColors[video?.label ?? ''] ?? ''}
               p={0}
             >
-              {FilmType[video?.subType ?? '']}
+              {FilmType[video?.label ?? '']}
             </Typography>
             <Stack
               direction="row"
@@ -139,7 +139,7 @@ export function HomeVideoCard({ video }: VideoListCardProps): ReactElement {
               color="primary.contrastText"
               bgcolor="rgba(0, 0, 0, 0.5)"
             >
-              {video?.type !== VideoType.playlist && (
+              {video?.childIds.length === 0 && (
                 <Stack direction="row">
                   <PlayArrow sx={{ fontSize: '1rem' }} />
                   <Typography variant="body1" sx={{ lineHeight: '16px' }}>
@@ -147,12 +147,9 @@ export function HomeVideoCard({ video }: VideoListCardProps): ReactElement {
                   </Typography>
                 </Stack>
               )}
-              {video?.type === VideoType.playlist && (
+              {(video?.childIds ?? []).length > 0 && (
                 <Typography variant="body1">
-                  {video?.episodeIds.length}{' '}
-                  {video.subType === VideoSubType.featureFilm
-                    ? 'chapters'
-                    : 'episodes'}
+                  {video?.childIds.length} episodes
                 </Typography>
               )}
             </Stack>

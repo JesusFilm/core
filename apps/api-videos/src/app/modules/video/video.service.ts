@@ -64,7 +64,7 @@ export class VideoService extends BaseService {
       ${idFilter}
       LIMIT 1
       FOR item IN ${videosView}
-        FILTER item._key IN video.episodeIds
+        FILTER item._key IN video.childIds
         ${search}
         LIMIT ${offset}, ${limit}
         RETURN {
@@ -83,7 +83,7 @@ export class VideoService extends BaseService {
             LIMIT 1 RETURN CURRENT
           ], 0),
           variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-          episodeIds: item.episodeIds,
+          childIds: item.childIds,
           slug: item.slug,
           noIndex: item.noIndex,
           seoTitle: item.seoTitle,
@@ -119,7 +119,7 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
+        childIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -151,7 +151,7 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
-        episodeIds: item.episodeIds,
+        childIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -186,7 +186,7 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
-        episodeIds: item.episodeIds,
+        childIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -220,7 +220,7 @@ export class VideoService extends BaseService {
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
+        childIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
