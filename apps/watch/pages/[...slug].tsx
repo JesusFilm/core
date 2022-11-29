@@ -157,7 +157,7 @@ export default function SeoFriendly(): ReactElement {
       >
         {data?.video != null && (
           <>
-            <Box sx={{ pt: 5 }}>
+            <Box sx={{ pt: '20px' }}>
               {data.video.episodes.length > 0 && (
                 <VideosCarousel
                   videos={data.video.episodes}
