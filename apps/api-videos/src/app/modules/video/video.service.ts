@@ -109,6 +109,7 @@ export class VideoService extends BaseService {
       RETURN {
         _key: item._key,
         type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -142,6 +143,7 @@ export class VideoService extends BaseService {
       RETURN {
         _key: item._key,
         type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -178,6 +180,7 @@ export class VideoService extends BaseService {
       RETURN {
         _key: item._key,
         type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -214,6 +217,7 @@ export class VideoService extends BaseService {
       RETURN {
         _key: item._key,
         type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,

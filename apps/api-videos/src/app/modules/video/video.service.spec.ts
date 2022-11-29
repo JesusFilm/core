@@ -15,6 +15,7 @@ const DEFAULT_QUERY = aql`
       RETURN {
         _key: item._key,
         type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -41,6 +42,7 @@ const VIDEO_EPISODES_QUERY = aql`
       RETURN {
         _key: item._key,
         type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -71,6 +73,7 @@ const EPISODES_QUERY = aql`
         RETURN {
           _key: item._key,
           type: item.type,
+          label: item.label,
           title: item.title,
           snippet: item.snippet,
           description: item.description,
