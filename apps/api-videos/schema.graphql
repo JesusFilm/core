@@ -20,9 +20,19 @@ enum VideoType {
   playlist
 }
 
+enum VideoLabel {
+  collection
+  episode
+  featureFilm
+  segment
+  series
+  shortFilm
+}
+
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
   type: VideoType!
+  label: VideoLabel!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
   seoTitle(languageId: ID, primary: Boolean): [Translation!]!
@@ -50,6 +60,7 @@ input VideosFilter {
   title: String
   tagId: String
   types: [VideoType!]
+  labels: [VideoLabel!]
 }
 
 enum VideoVariantDownloadQuality {
