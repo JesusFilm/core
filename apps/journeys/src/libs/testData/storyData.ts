@@ -885,6 +885,7 @@ export const videoBlocks: TreeBlock[] = [
             posterBlockId: 'image1.id',
             fullsize: true,
             action: null,
+            objectFit: null,
             children: [
               {
                 id: 'trigger.id',
@@ -1038,6 +1039,7 @@ export const videoBlocks: TreeBlock[] = [
             startAt: 2738,
             fullsize: true,
             action: null,
+            objectFit: null,
             children: [
               {
                 id: 'posterBlockId',
@@ -1096,6 +1098,7 @@ export const videoBlocks: TreeBlock[] = [
             startAt: 2738,
             fullsize: true,
             action: null,
+            objectFit: null,
             children: []
           }
         ]
@@ -1144,6 +1147,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             posterBlockId: null,
             fullsize: true,
             action: null,
+            objectFit: null,
             children: [
               {
                 id: 'trigger.id',
@@ -1285,6 +1289,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             startAt: 2738,
             fullsize: true,
             action: null,
+            objectFit: null,
             children: [
               {
                 id: 'posterBlockId',
@@ -1343,6 +1348,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             startAt: 2738,
             fullsize: true,
             action: null,
+            objectFit: null,
             children: []
           }
         ]
@@ -1391,6 +1397,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             posterBlockId: null,
             fullsize: true,
             action: null,
+            objectFit: null,
             children: [
               {
                 id: 'trigger.id',
@@ -1532,6 +1539,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             startAt: 2738,
             fullsize: true,
             action: null,
+            objectFit: null,
             children: [
               {
                 id: 'posterBlockId',
@@ -1590,6 +1598,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             startAt: 2738,
             fullsize: true,
             action: null,
+            objectFit: null,
             children: []
           }
         ]
@@ -1690,6 +1699,7 @@ export const videoLoop: TreeBlock[] = [
             posterBlockId: 'image1.id',
             fullsize: true,
             action: null,
+            objectFit: null,
             children: [
               {
                 id: 'image1.id',
@@ -1753,6 +1763,7 @@ export const videoLoop: TreeBlock[] = [
               gtmEventName: 'gtmEventName',
               blockId: 'step2.id'
             },
+            objectFit: null,
             children: [
               {
                 id: 'image1.id',
@@ -1811,6 +1822,7 @@ export const videoLoop: TreeBlock[] = [
             posterBlockId: 'image1.id',
             fullsize: true,
             action: null,
+            objectFit: null,
             children: [
               {
                 id: 'image1.id',
