@@ -32,6 +32,7 @@ const emptyVideo: Omit<ComponentProps<typeof Video>, 'source'> = {
   posterBlockId: null,
   fullsize: null,
   action: null,
+  objectFit: null,
   children: []
 }
 

@@ -105,6 +105,7 @@ const video: TreeBlock<VideoFields> = {
   description: null,
   duration: null,
   image: null,
+  objectFit: null,
   video: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
