@@ -16,7 +16,7 @@ import { useTheme } from '@mui/material/styles'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetVideo_video } from '../../../__generated__/GetVideo'
-import { VideoType } from '../../../__generated__/globalTypes'
+import { VideoLabel } from '../../../__generated__/globalTypes'
 
 interface ShareDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
@@ -181,7 +181,7 @@ export function ShareDialog({
               <TwitterIcon sx={{ fontSize: 46 }} />
             </IconButton>
           </Stack>
-          {video.type === VideoType.playlist ? (
+          {[VideoLabel.series, VideoLabel.collection].includes(video.label) ? (
             <ShareLink />
           ) : (
             <>

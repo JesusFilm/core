@@ -13,7 +13,7 @@ describe('HomeVideoCard', () => {
         </ThemeProvider>
       )
       expect(getByText(data[0].title[0].value)).toBeInTheDocument()
-      expect(getByText(FilmType[data[0].subType])).toBeInTheDocument()
+      expect(getByText(FilmType[data[0].label])).toBeInTheDocument()
     })
     it('should link to video url', async () => {
       const { getByRole } = render(<HomeVideoCard video={data[0]} />)

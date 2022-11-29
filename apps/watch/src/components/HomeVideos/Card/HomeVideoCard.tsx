@@ -7,7 +7,6 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import ButtonBase from '@mui/material/ButtonBase'
 
-import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { GetHomeVideo_video } from '../../../../__generated__/GetHomeVideo'
 
 export enum FilmType {
