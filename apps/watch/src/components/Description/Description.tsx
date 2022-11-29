@@ -15,17 +15,17 @@ export function Description({ value }: Props): ReactElement {
         {value}
       </Typography>
       <Button
-        aria-label="collection-share-button"
         size="medium"
         variant="outlined"
+        color="secondary"
+        aria-label="collection-share-button"
         sx={{
           display: { xs: 'none', sm: 'flex' },
-          borderColor: 'secondary.main', // TODO: #BBBCBC
           minWidth: 220,
           gap: '11px'
         }}
       >
-        <ShareOutlinedIcon sx={{ color: 'text.secondary' }} />
+        <ShareOutlinedIcon />
         <Typography variant="subtitle1" color="text.secondary">
           Share
         </Typography>
