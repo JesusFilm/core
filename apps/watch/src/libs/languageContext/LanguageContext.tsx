@@ -17,18 +17,12 @@ const LanguageContext = createContext({} as unknown as Language | undefined)
 
 export function useLanguage(): Language | undefined {
   const router = useRouter()
-  const language = findLanguage(router?.locale, router?.defaultLocale)
+  const language =
+    languages.find(
+      (l) => l.bcp47 === router?.locale ?? router?.defaultLocale
+    ) ?? languages[0]
   const context = useContext(createContext(language))
   return context
-}
-
-export function findLanguage(
-  locale?: string,
-  defaultLocale?: string
-): Language {
-  const language =
-    languages.find((l) => l.bcp47 === locale ?? defaultLocale) ?? languages[0]
-  return language
 }
 
 interface LanguageProviderProps {
