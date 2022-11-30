@@ -1193,6 +1193,7 @@ type Video
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
   imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  label: VideoLabel! @join__field(graph: VIDEOS)
   noIndex: Boolean @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
   seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
@@ -1346,7 +1347,7 @@ input VideoBlockCreateInput {
 enum VideoBlockObjectFit {
   """
   The video is scaled to maintain its aspect ratio while filling the
-   entire VideoBlock. If the video's aspect ratio does not match the 
+   entire VideoBlock. If the video's aspect ratio does not match the
    aspect ratio of the VideoBlock, then the video will be clipped to fit.
   """
   fill
@@ -1543,6 +1544,15 @@ input VideoExpandEventCreateInput {
   value: VideoBlockSource
 }
 
+enum VideoLabel {
+  collection
+  episode
+  featureFilm
+  segment
+  series
+  shortFilm
+}
+
 type VideoPauseEvent implements Event {
   """time event was created"""
   createdAt: DateTime!
@@ -1681,6 +1691,7 @@ input VideoProgressEventCreateInput {
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
+  labels: [VideoLabel!]
   tagId: String
   title: String
   types: [VideoType!]
