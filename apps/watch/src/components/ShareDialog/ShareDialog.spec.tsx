@@ -24,6 +24,16 @@ const video: Video = {
 }
 
 describe('ShareDialog', () => {
+  beforeEach(() => {
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_WATCH_URL: 'http://localhost:4300'
+    }
+  })
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
   it('closes the modal on cancel icon click', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
@@ -46,8 +56,9 @@ describe('ShareDialog', () => {
       </SnackbarProvider>
     )
 
-    const link =
-      'https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children'
+    const link = `${
+      process.env.NEXT_PUBLIC_WATCH_URL as string
+    }/the-story-of-jesus-for-children`
     expect(getByRole('textbox')).toHaveValue(link)
     expect(getByRole('button', { name: 'Copy Link' })).toBeInTheDocument()
     expect(queryAllByRole('tab')).toHaveLength(0)

@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
-import { videos } from '../../../pages'
+import { videos } from './videosData'
 
 import { data } from './testData'
 import { HomeVideos } from '.'

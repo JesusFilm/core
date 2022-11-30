@@ -5,8 +5,8 @@ import { gql } from '@apollo/client'
 
 import { HomeHero } from '../src/components/Hero'
 import { PageWrapper } from '../src/components/PageWrapper'
-import { HomeVideo, HomeVideos } from '../src/components/HomeVideos'
-import { FilmType } from '../src/components/HomeVideos/Card'
+import { HomeVideos } from '../src/components/HomeVideos'
+import { videos } from '../src/components/HomeVideos/videosData'
 import { createApolloClient } from '../src/libs/client'
 import { GetHomeVideo } from '../__generated__/GetHomeVideo'
 import { IntroText } from '../src/components/IntroText'
@@ -30,32 +30,6 @@ export const GET_HOME_VIDEO = gql`
     }
   }
 `
-
-export const videos: HomeVideo[] = [
-  {
-    id: '1_jf-0-0',
-    designation: FilmType.feature
-  },
-  { id: '2_GOJ-0-0', designation: FilmType.feature },
-  { id: '1_jf6119-0-0', designation: FilmType.feature },
-  { id: '1_wl604423-0-0', designation: FilmType.feature },
-  { id: 'MAG1', designation: FilmType.feature },
-  { id: '1_wl7-0-0', designation: FilmType.series },
-  { id: '3_0-8DWJ-WIJ_06-0-0', designation: FilmType.feature },
-  { id: '2_Acts-0-0', designation: FilmType.feature },
-  { id: '2_GOJ4904-0-0', designation: FilmType.feature },
-  // TODO: LUMO collection goes here
-  { id: '2_Acts7331-0-0', designation: FilmType.feature },
-  { id: '3_0-8DWJ-WIJ', designation: FilmType.feature },
-  { id: '2_ChosenWitness', designation: FilmType.animation },
-  // TODO: LUMO collection gospel of luke here
-  { id: '1_cl1309-0-0', designation: FilmType.feature },
-  { id: '1_jf6102-0-0', designation: FilmType.feature },
-  { id: '2_0-FallingPlates', designation: FilmType.series },
-  { id: '2_Acts7345-0-0', designation: FilmType.feature },
-  { id: '1_mld-0-0', designation: FilmType.feature },
-  { id: '1_jf6101-0-0', designation: FilmType.feature }
-]
 
 interface HomePageProps {
   data: GetHomeVideo[]
