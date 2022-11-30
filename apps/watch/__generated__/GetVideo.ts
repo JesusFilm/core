@@ -84,9 +84,6 @@ export interface GetVideo_video_children {
    * slug is a permanent link to the video. It should only be appended, not edited or deleted
    */
   slug: GetVideo_video_children_slug[];
-  /**
-   * Episodes are child videos, currently only found in a playlist type
-   */
   childIds: string[];
   variant: GetVideo_video_children_variant | null;
 }

@@ -41,9 +41,6 @@ export interface GetVideoSiblings_children {
   snippet: GetVideoSiblings_children_snippet[];
   title: GetVideoSiblings_children_title[];
   variant: GetVideoSiblings_children_variant | null;
-  /**
-   * Episodes are child videos, currently only found in a playlist type
-   */
   childIds: string[];
   /**
    * slug is a permanent link to the video. It should only be appended, not edited or deleted

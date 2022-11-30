@@ -31,9 +31,6 @@ export interface GetHomeVideo_video {
   image: string | null;
   title: GetHomeVideo_video_title[];
   variant: GetHomeVideo_video_variant | null;
-  /**
-   * Episodes are child videos, currently only found in a playlist type
-   */
   childIds: string[];
   /**
    * slug is a permanent link to the video. It should only be appended, not edited or deleted
