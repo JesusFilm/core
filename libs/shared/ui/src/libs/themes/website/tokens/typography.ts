@@ -95,6 +95,7 @@ export const typography = {
     fontWeight: 400,
     lineHeight: pxToRem(20, 14)
   },
+  // TODO: use same mobile overline styles for both
   overline1: {
     fontSize: 18,
     fontWeight: 700,
