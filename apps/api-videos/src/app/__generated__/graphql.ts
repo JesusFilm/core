@@ -18,6 +18,15 @@ export enum VideoType {
     playlist = "playlist"
 }
 
+export enum VideoLabel {
+    collection = "collection",
+    episode = "episode",
+    featureFilm = "featureFilm",
+    segment = "segment",
+    series = "series",
+    shortFilm = "shortFilm"
+}
+
 export enum VideoVariantDownloadQuality {
     low = "low",
     high = "high"
@@ -28,6 +37,7 @@ export class VideosFilter {
     title?: Nullable<string>;
     tagId?: Nullable<string>;
     types?: Nullable<VideoType[]>;
+    labels?: Nullable<VideoLabel[]>;
 }
 
 export class VideoTag {
@@ -47,6 +57,7 @@ export class Video {
     __typename?: 'Video';
     id: string;
     type: VideoType;
+    label: VideoLabel;
     primaryLanguageId: string;
     title: Translation[];
     seoTitle: Translation[];

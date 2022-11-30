@@ -37,6 +37,7 @@ export class VideoResolver {
         where?.availableVariantLanguageIds ?? undefined,
       variantLanguageId,
       types: where?.types ?? undefined,
+      labels: where?.labels ?? undefined,
       offset,
       limit
     })
@@ -60,6 +61,7 @@ export class VideoResolver {
         where?.availableVariantLanguageIds ?? undefined,
       variantLanguageId,
       types: where?.types ?? undefined,
+      labels: where?.labels ?? undefined,
       offset,
       limit
     })

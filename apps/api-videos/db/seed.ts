@@ -1,4 +1,5 @@
 import { aql } from 'arangojs'
+import { flatten } from 'lodash'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
 import { VideoType } from '../src/app/__generated__/graphql'
@@ -12,6 +13,7 @@ const db = ArangoDB()
 
 interface MediaComponent {
   mediaComponentId: string
+  componentType: string
   primaryLanguageId: number
   title: string
   shortDescription: string
@@ -79,6 +81,7 @@ interface VideoVariant {
 
 interface Video {
   type: VideoType
+  label: string
   primaryLanguageId: string
   title: Translation[]
   seoTitle: Translation[]
@@ -163,13 +166,26 @@ function getSeoSlug(title: string, collection: string[]): string {
   collection.push(newSlug)
   return newSlug
 }
+
+async function getAllSlugs(): Promise<void> {
+  const cursor = await db.query(aql`
+    FOR v IN videos
+      RETURN {
+        _key: v._key,
+        slug: v.slug
+      }
+  `)
+  const results = await cursor.all()
+  usedTitles.concat(
+    flatten(results.map(({ slug }) => slug.map((s) => s.value)))
+  )
+}
+
 async function digestContent(
   languages: Language[],
   mediaComponent: MediaComponent
 ): Promise<void> {
   const video = await getVideo(mediaComponent.mediaComponentId)
-  if (video?.slug != null)
-    video.slug.forEach((title) => usedTitles.push(title.value))
 
   const metadataLanguageId =
     languages
@@ -189,6 +205,7 @@ async function digestContent(
 
   const body = {
     type: VideoType.standalone,
+    label: mediaComponent.subType,
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
     title: [
       {
@@ -308,7 +325,7 @@ async function getMediaComponentLinks(
       }`
     )
   ).json()
-  return response.linkedMediaComponentIds.contains
+  return response.linkedMediaComponentIds.contains ?? []
 }
 
 async function digestSeriesContainer(
@@ -316,8 +333,6 @@ async function digestSeriesContainer(
   languages,
   video
 ): Promise<Video> {
-  if (video?.slug != null)
-    video.slug.forEach((title) => usedTitles.push(title.value))
   const metadataLanguageId =
     languages
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
@@ -335,6 +350,7 @@ async function digestSeriesContainer(
   return {
     _key: mediaComponent.mediaComponentId,
     type: VideoType.playlist,
+    label: mediaComponent.subType,
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
     title: [
       {
@@ -432,18 +448,6 @@ async function digestContainer(
     if (video == null) continue
 
     if (mediaComponent.subType === 'series') series.episodeIds.push(videoId)
-
-    if (video.tagIds.includes(mediaComponent.mediaComponentId)) continue
-
-    if (mediaComponent.subType === 'series') {
-      await db.collection('videos').update(videoId, {
-        type: VideoType.episode
-      })
-    } else {
-      await db.collection('videos').update(videoId, {
-        tagIds: [...video.tagIds, mediaComponent.mediaComponentId]
-      })
-    }
   }
   if (mediaComponent.subType === 'series') {
     if (existingSeries != null)
@@ -509,6 +513,9 @@ async function main(): Promise<void> {
           type: {
             analyzers: ['identity']
           },
+          label: {
+            analyzers: ['identity']
+          },
           episodeIds: {
             analyzers: ['identity']
           },
@@ -527,6 +534,9 @@ async function main(): Promise<void> {
     await db.createView('videosView', view)
   }
   console.log('view created')
+
+  console.log('getting existing slugs')
+  await getAllSlugs()
 
   const languages = await getLanguages()
   for (const content of await getMediaComponents('content')) {
