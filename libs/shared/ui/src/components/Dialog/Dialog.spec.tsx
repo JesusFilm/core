@@ -20,7 +20,9 @@ describe('Dialog', () => {
     children: <Typography>Children</Typography>
   }
   it('should display the content', () => {
-    const { getByText, getByRole, getByTestId } = render(<Dialog {...dialogProps} />)
+    const { getByText, getByRole, getByTestId } = render(
+      <Dialog {...dialogProps} />
+    )
     expect(getByTestId('LanguageIcon')).toBeInTheDocument()
     expect(getByText('Title')).toBeInTheDocument()
     expect(getByText('Children')).toBeInTheDocument()
