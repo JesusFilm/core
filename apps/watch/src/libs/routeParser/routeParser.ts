@@ -1,6 +1,5 @@
 interface RouteParserResult {
   routes: string[] | undefined
-  tags: string[]
   audioLanguage: number
   subtitleLanguage: number
 }
@@ -13,7 +12,6 @@ export function routeParser(
 ): RouteParserResult {
   const result: RouteParserResult = {
     routes: [],
-    tags: [],
     audioLanguage: 529,
     subtitleLanguage: 529
   }
@@ -31,9 +29,6 @@ export function routeParser(
           break
         case 'sl':
           result.subtitleLanguage = Number(nextItem)
-          break
-        case 't':
-          result.tags.push(nextItem)
           break
       }
     } else {
