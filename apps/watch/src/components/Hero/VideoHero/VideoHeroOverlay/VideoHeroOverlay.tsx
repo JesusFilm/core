@@ -75,7 +75,7 @@ export function VideoHeroOverlay({
               height: 68,
               borderRadius: 10,
               backgroundColor: 'background.default',
-              opacity: 0.7,
+              opacity: 0.5,
               alignSelf: 'end',
               mb: { xs: 20, lg: 20 },
               '&:hover': {
