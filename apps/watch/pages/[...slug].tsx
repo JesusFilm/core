@@ -8,6 +8,7 @@ import Button from '@mui/material/Button'
 import SaveAlt from '@mui/icons-material/SaveAlt'
 import Share from '@mui/icons-material/Share'
 import 'video.js/dist/video-js.css'
+import Container from '@mui/material/Container'
 
 import { routeParser } from '../src/libs/routeParser/routeParser'
 import {
@@ -171,35 +172,41 @@ export default function SeoFriendly(): ReactElement {
                 />
               )}
             </Box>
-            <Stack
-              direction="row"
-              spacing="100px"
-              sx={{
-                mx: 0,
-                mt: 19.5,
-                mb: 19.5,
-                maxWidth: '100%'
-              }}
-            >
-              <VideoContent video={data.video} />
-              <Box
-                width="336px"
+            <Container maxWidth="xl">
+              <Stack
+                direction="row"
+                spacing="100px"
                 sx={{
-                  display: { xs: 'none', md: 'block' }
+                  mx: 0,
+                  mt: 19.5,
+                  mb: 19.5,
+                  maxWidth: '100%'
                 }}
               >
-                <Stack direction="row" spacing={5} mb={10}>
-                  <Button variant="outlined">
-                    <SaveAlt />
-                    &nbsp; Download
-                  </Button>
-                  <Button variant="outlined" onClick={() => setOpenShare(true)}>
-                    <Share />
-                    &nbsp; Share
-                  </Button>
-                </Stack>
-              </Box>
-            </Stack>
+                <VideoContent video={data.video} />
+                <Box
+                  width="336px"
+                  sx={{
+                    display: { xs: 'none', md: 'block' }
+                  }}
+                >
+                  <Stack direction="row" spacing={5} mb={10}>
+                    <Button variant="outlined">
+                      <SaveAlt />
+                      &nbsp; Download
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => setOpenShare(true)}
+                    >
+                      <Share />
+                      &nbsp; Share
+                    </Button>
+                  </Stack>
+                </Box>
+              </Stack>
+            </Container>
+
             <ShareDialog
               open={openShare}
               video={data.video}

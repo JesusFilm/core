@@ -19,7 +19,7 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
   }
 
   return (
-    <Box width="100%">
+    <Box>
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
