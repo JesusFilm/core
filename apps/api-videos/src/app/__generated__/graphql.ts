@@ -71,6 +71,7 @@ export class Video {
     noIndex?: Nullable<boolean>;
     episodeIds: string[];
     episodes: Video[];
+    children: Video[];
     variant?: Nullable<VideoVariant>;
 }
 
