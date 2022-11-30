@@ -91,18 +91,10 @@ interface Video {
   image: string
   imageAlt: Translation[]
   variants: VideoVariant[]
-  tagIds: string[]
   slug: Translation[]
   episodeIds: string[]
   noIndex: boolean
 }
-
-interface Tag {
-  _key: string
-  title: Translation[]
-}
-
-const tags: Record<string, Tag> = {}
 
 async function getLanguages(): Promise<Language[]> {
   const response: {
@@ -253,7 +245,6 @@ async function digestContent(
         primary: true
       }
     ],
-    tagIds: [],
     episodeIds: [],
     variants,
     slug: video?.slug ?? [
@@ -398,7 +389,6 @@ async function digestSeriesContainer(
         primary: true
       }
     ],
-    tagIds: [],
     slug: video?.slug ?? [
       {
         value: getSeoSlug(mediaComponent.title, usedTitles),
@@ -425,21 +415,6 @@ async function digestContainer(
       languages,
       existingSeries
     )
-  } else {
-    const metadataLanguageId =
-      languages
-        .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
-        ?.languageId.toString() ?? '529' // english by default
-    tags[mediaComponent.mediaComponentId] = {
-      _key: mediaComponent.mediaComponentId,
-      title: [
-        {
-          value: mediaComponent.title,
-          languageId: metadataLanguageId,
-          primary: true
-        }
-      ]
-    }
   }
   for (const videoId of await getMediaComponentLinks(
     mediaComponent.mediaComponentId
@@ -472,10 +447,6 @@ async function main(): Promise<void> {
     await db.createCollection('videos', { keyOptions: { type: 'uuid' } })
   }
 
-  if (!(await db.collection('videoTags').exists())) {
-    await db.createCollection('videoTags', { keyOptions: { type: 'uuid' } })
-  }
-
   await db.collection('videos').ensureIndex({
     name: 'language_id',
     type: 'persistent',
@@ -486,9 +457,6 @@ async function main(): Promise<void> {
     links: {
       videos: {
         fields: {
-          tagIds: {
-            analyzers: ['identity']
-          },
           variants: {
             fields: {
               languageId: {
@@ -553,16 +521,6 @@ async function main(): Promise<void> {
     fields: ['slug[*].value'],
     unique: true
   })
-
-  for (const key in tags) {
-    await db.collection('videoTags').save(
-      {
-        _key: tags[key]._key,
-        title: tags[key].title
-      },
-      { overwriteMode: 'update' }
-    )
-  }
 }
 main().catch((e) => {
   console.error(e)

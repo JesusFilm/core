@@ -21,7 +21,6 @@ const DEFAULT_QUERY = aql`
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
@@ -48,7 +47,6 @@ const VIDEO_EPISODES_QUERY = aql`
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
@@ -79,7 +77,6 @@ const EPISODES_QUERY = aql`
           description: item.description,
           studyQuestions: item.studyQuestions,
           image: item.image,
-          tagIds: item.tagIds,
           primaryLanguageId: item.primaryLanguageId,
           variant: NTH(item.variants[* 
             FILTER CURRENT.languageId == NOT_NULL(@value3, item.primaryLanguageId)

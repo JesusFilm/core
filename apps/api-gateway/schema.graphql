@@ -752,8 +752,6 @@ type Query {
   languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
   video(id: ID!, idType: IdType): Video! @join__field(graph: VIDEOS)
-  videoTag(id: ID!): VideoTag @join__field(graph: VIDEOS)
-  videoTags: [VideoTag!] @join__field(graph: VIDEOS)
   videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 
   """Get a single visitor"""
@@ -1692,7 +1690,6 @@ input VideoProgressEventCreateInput {
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   labels: [VideoLabel!]
-  tagId: String
   title: String
   types: [VideoType!]
 }
@@ -1737,11 +1734,6 @@ input VideoStartEventCreateInput {
 
   """source of the video"""
   value: VideoBlockSource
-}
-
-type VideoTag {
-  id: ID!
-  title(languageId: ID, primary: Boolean): [Translation!]!
 }
 
 """
