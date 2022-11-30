@@ -32,7 +32,6 @@ export class VideoResolver {
       id,
       idType,
       title: where?.title ?? undefined,
-      tagId: where?.tagId ?? undefined,
       availableVariantLanguageIds:
         where?.availableVariantLanguageIds ?? undefined,
       variantLanguageId,
@@ -56,7 +55,6 @@ export class VideoResolver {
 
     return await this.videoService.filterAll({
       title: where?.title ?? undefined,
-      tagId: where?.tagId ?? undefined,
       availableVariantLanguageIds:
         where?.availableVariantLanguageIds ?? undefined,
       variantLanguageId,

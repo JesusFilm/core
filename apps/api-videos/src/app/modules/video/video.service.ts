@@ -23,7 +23,6 @@ export class VideoService extends BaseService {
   videoFilter(filter?: VideosFilter): AqlQuery {
     const {
       title,
-      tagId = null,
       availableVariantLanguageIds = [],
       types = null,
       labels = null
@@ -41,8 +40,7 @@ export class VideoService extends BaseService {
         (availableVariantLanguageIds?.length ?? 0) > 0 &&
           aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
         types != null && aql`FILTER item.type IN ${types}`,
-        labels != null && aql`FILTER item.label IN ${labels}`,
-        tagId != null && aql`FILTER ${tagId} IN item.tagIds`
+        labels != null && aql`FILTER item.label IN ${labels}`
       ].filter((x) => x !== false)
     )
   }
@@ -80,7 +78,6 @@ export class VideoService extends BaseService {
           description: item.description,
           studyQuestions: item.studyQuestions,
           image: item.image,
-          tagIds: item.tagIds,
           primaryLanguageId: item.primaryLanguageId,
           variant: NTH(item.variants[* 
             FILTER CURRENT.languageId == NOT_NULL(${
@@ -118,7 +115,6 @@ export class VideoService extends BaseService {
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
@@ -152,7 +148,6 @@ export class VideoService extends BaseService {
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
@@ -189,7 +184,6 @@ export class VideoService extends BaseService {
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
         playlist: item.playlist,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
@@ -226,7 +220,6 @@ export class VideoService extends BaseService {
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
