@@ -19,7 +19,7 @@ export class VideoResolver {
   @Query('children')
   async episodesQuery(
     @Info() info,
-    @Args('playlistId') playlistId: string,
+    @Args('playlistId') id: string,
     @Args('idType') idType: IdType = IdType.databaseId,
     @Args('where') where?: VideosFilter,
     @Args('offset') offset?: number,
@@ -28,8 +28,8 @@ export class VideoResolver {
     const variantLanguageId = info.fieldNodes[0].selectionSet.selections
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
-    return await this.videoService.filterEpisodes({
-      playlistId,
+    return await this.videoService.filterChildren({
+      id,
       idType,
       title: where?.title ?? undefined,
       availableVariantLanguageIds:
@@ -90,7 +90,9 @@ export class VideoResolver {
   }
 
   @ResolveField()
-  async children(@Parent() video: Video): Promise<Video[] | null> {
+  async children(
+    @Parent() video: Video & { childIds: string[] }
+  ): Promise<Video[] | null> {
     return video.childIds != null
       ? await this.videoService.getVideosByIds(video.childIds)
       : null

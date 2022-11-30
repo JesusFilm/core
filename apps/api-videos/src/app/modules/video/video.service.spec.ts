@@ -197,7 +197,7 @@ describe('VideoService', () => {
 
   describe('filterEpisodes', () => {
     const filter = {
-      playlistId: 'playlistId',
+      id: 'playlistId',
       idType: IdType.slug
     }
     it('should query', async () => {
@@ -205,14 +205,14 @@ describe('VideoService', () => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(EPISODES_QUERY)
         expect(bindVars).toEqual({
-          value0: filter.playlistId,
+          value0: filter.id,
           value1: 0,
           value2: 100,
           value3: null
         })
         return { all: () => [] } as unknown as ArrayCursor
       })
-      expect(await service.filterEpisodes(filter)).toEqual([])
+      expect(await service.filterChildren(filter)).toEqual([])
     })
 
     it('should query with offset', async () => {
@@ -220,14 +220,14 @@ describe('VideoService', () => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(EPISODES_QUERY)
         expect(bindVars).toEqual({
-          value0: filter.playlistId,
+          value0: filter.id,
           value1: 200,
           value2: 100,
           value3: null
         })
         return { all: () => [] } as unknown as ArrayCursor
       })
-      expect(await service.filterEpisodes({ ...filter, offset: 200 })).toEqual(
+      expect(await service.filterChildren({ ...filter, offset: 200 })).toEqual(
         []
       )
     })
@@ -237,14 +237,14 @@ describe('VideoService', () => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(EPISODES_QUERY)
         expect(bindVars).toEqual({
-          value0: filter.playlistId,
+          value0: filter.id,
           value1: 0,
           value2: 200,
           value3: null
         })
         return { all: () => [] } as unknown as ArrayCursor
       })
-      expect(await service.filterEpisodes({ ...filter, limit: 200 })).toEqual(
+      expect(await service.filterChildren({ ...filter, limit: 200 })).toEqual(
         []
       )
     })

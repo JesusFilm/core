@@ -50,7 +50,7 @@ extend type Query {
     where: VideosFilter
     offset: Int
     limit: Int
-  ): [Video!]!
+  ): [Video!]! @deprecated(reason: "Use video children instead")
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!, idType: IdType): Video!
 }

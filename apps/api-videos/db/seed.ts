@@ -350,10 +350,6 @@ async function main(): Promise<void> {
     await db.createCollection('videos', { keyOptions: { type: 'uuid' } })
   }
 
-  if (!(await db.collection('videoTags').exists())) {
-    await db.createCollection('videoTags', { keyOptions: { type: 'uuid' } })
-  }
-
   await db.collection('videos').ensureIndex({
     name: 'language_id',
     type: 'persistent',
