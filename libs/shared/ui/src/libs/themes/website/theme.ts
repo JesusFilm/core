@@ -13,8 +13,10 @@ const websiteTheme = {
   ...websiteComponents
 }
 
-const light = createTheme(deepmerge(websiteColorsLight, websiteTheme))
-export const websiteLight = responsiveFontSizes(light)
+export const websiteLight = createTheme(
+  deepmerge(websiteColorsLight, websiteTheme)
+)
 
-const dark = createTheme(deepmerge(websiteColorsDark, websiteTheme))
-export const websiteDark = responsiveFontSizes(dark)
+export const websiteDark = createTheme(
+  deepmerge(websiteColorsDark, websiteTheme)
+)

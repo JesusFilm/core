@@ -1,4 +1,5 @@
 import { ThemeOptions } from '@mui/material/styles'
+import { baseBreakpoints } from '../../base/tokens/breakpoints'
 
 // https://mui.com/material-ui/customization/typography/#adding-amp-disabling-variants
 declare module '@mui/material/styles' {
@@ -35,15 +36,24 @@ export const typography = {
   fontFamily: ['"Apercu", "Arial", sans-serif'].join(','),
   h1: {
     fontWeight: 700,
-    fontSize: 80,
-    lineHeight: pxToRem(86, 80),
-    letterSpacing: -1
+    fontSize: 36,
+    lineHeight: pxToRem(40, 36),
+    [baseBreakpoints.breakpoints.up('md')]: {
+      fontSize: 80,
+      lineHeight: pxToRem(86, 80),
+      letterSpacing: -3
+    }
   },
+
   h2: {
     fontWeight: 700,
-    fontSize: 64,
-    lineHeight: pxToRem(67, 64),
-    letterSpacing: -1
+    fontSize: 27,
+    // add other mobile styles here
+    [baseBreakpoints.breakpoints.up('md')]: {
+      lineHeight: pxToRem(67, 64),
+      fontSize: 64,
+      letterSpacing: -1
+    }
   },
   h3: {
     fontWeight: 700,
