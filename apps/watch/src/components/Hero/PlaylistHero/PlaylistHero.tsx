@@ -14,9 +14,9 @@ interface Props {
 }
 
 export function PlaylistHero({ video }: Props): ReactElement {
-  const type = 'collection'
+  const type = video.label === 'series' ? 'series' : 'collection'
   const title = video.title[0].value
-  const length = video.episodes.length
+  const length = video.children.length
   const image = video.image
 
   return (
@@ -94,7 +94,7 @@ export function PlaylistHero({ video }: Props): ReactElement {
                 opacity: 0.7
               }}
             >
-              {`${length} ${type === 'collection' ? 'Chapters' : 'Episodes'}`}
+              {`${length} ${type === 'series' ? 'Episodes' : 'Chapters'}`}
             </Typography>
             <IconButton
               sx={{

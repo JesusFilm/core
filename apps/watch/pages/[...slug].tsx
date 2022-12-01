@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Error from 'next/error'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Button from '@mui/material/Button'
 import SaveAlt from '@mui/icons-material/SaveAlt'
@@ -28,6 +28,7 @@ export const GET_VIDEO = gql`
     video(id: $id, idType: slug) {
       id
       type
+      label
       image
       snippet(languageId: $languageId, primary: true) {
         value
@@ -125,7 +126,6 @@ export default function SeoFriendly(): ReactElement {
   const languageContext = useLanguage()
   const [tabValue, setTabValue] = useState(0)
   const [openShare, setOpenShare] = useState(false)
-  const [type, setType] = useState<string | null>(null)
 
   const handleTabChange = (_event, newValue): void => {
     setTabValue(newValue)
@@ -147,13 +147,6 @@ export default function SeoFriendly(): ReactElement {
     }
   })
 
-  // TODO: Update logic here to find correct hero to show for the page
-  useEffect(() => {
-    if (!loading && data != null) {
-      setType(data.video.type === 'playlist' ? 'playlist' : 'video')
-    }
-  }, [loading, data])
-
   if (routes == null) return throw404()
 
   const getSiblingRoute = (routes: string[]): string[] => {
@@ -166,7 +159,7 @@ export default function SeoFriendly(): ReactElement {
         hero={
           data?.video == null ? (
             <></>
-          ) : type === 'video' ? (
+          ) : data.video.children.length === 0 ? (
             <VideoHero
               loading={loading}
               video={data.video}
