@@ -28,7 +28,6 @@ const DEFAULT_QUERY = aql`
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         childIds: item.childIds,
-        episodeIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -54,7 +53,6 @@ const VIDEO_EPISODES_QUERY = aql`
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         childIds: item.childIds,
-        episodeIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -86,7 +84,6 @@ const EPISODES_QUERY = aql`
           ], 0),
           variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
           childIds: item.childIds,
-          episodeIds: item.childIds,
           slug: item.slug,
           noIndex: item.noIndex,
           seoTitle: item.seoTitle,
@@ -296,7 +293,7 @@ describe('VideoService', () => {
     })
   })
 
-  describe('episodes', () => {
+  describe('children', () => {
     it('should query', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
