@@ -77,7 +77,7 @@ export function VideoCard({
                   )}
                   {video.type === VideoType.playlist && (
                     <Typography variant="body1">
-                      {video.episodeIds.length} episodes
+                      {video.children.length} episodes
                     </Typography>
                   )}
                 </Box>

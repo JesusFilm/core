@@ -136,7 +136,7 @@ export function VideoHero({
                   <Stack direction="row" spacing="20px">
                     {video.type === VideoType.playlist && (
                       <Typography variant="subtitle1">
-                        {video.episodes.length} episodes
+                        {video.children.length} episodes
                       </Typography>
                     )}
                     {video.type !== VideoType.playlist && (
