@@ -43,8 +43,6 @@ type Video @key(fields: "id primaryLanguageId") {
   """
   slug(languageId: ID, primary: Boolean): [Translation!]!
   noIndex: Boolean
-
-  """Episodes are child videos, currently only found in a playlist type"""
   children: [Video!]!
   variant(languageId: ID): VideoVariant
 }
