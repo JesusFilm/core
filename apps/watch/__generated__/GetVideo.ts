@@ -78,9 +78,6 @@ export interface GetVideo_video_children {
    * slug is a permanent link to the video. It should only be appended, not edited or deleted
    */
   slug: GetVideo_video_children_slug[];
-  /**
-   * Episodes are child videos, currently only found in a playlist type
-   */
   children: GetVideo_video_children_children[];
   variant: GetVideo_video_children_variant | null;
 }
@@ -111,9 +108,6 @@ export interface GetVideo_video {
   studyQuestions: GetVideo_video_studyQuestions[];
   title: GetVideo_video_title[];
   variant: GetVideo_video_variant | null;
-  /**
-   * Episodes are child videos, currently only found in a playlist type
-   */
   children: GetVideo_video_children[];
   /**
    * slug is a permanent link to the video. It should only be appended, not edited or deleted
