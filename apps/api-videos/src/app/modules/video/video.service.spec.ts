@@ -36,7 +36,7 @@ const DEFAULT_QUERY = aql`
     `.query
 
 const VIDEO_EPISODES_QUERY = aql`
-    FOR item IN 
+    FOR item IN undefined
       FILTER item._key IN @value0
       RETURN {
         _key: item._key,
@@ -293,7 +293,7 @@ describe('VideoService', () => {
     })
   })
 
-  describe('episodes', () => {
+  describe('children', () => {
     it('should query', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
