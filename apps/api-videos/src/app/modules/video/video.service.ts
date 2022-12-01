@@ -87,6 +87,7 @@ export class VideoService extends BaseService {
           ], 0),
           variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
           childIds: item.childIds,
+          episodeIds: item.childIds,
           slug: item.slug,
           noIndex: item.noIndex,
           seoTitle: item.seoTitle,
@@ -124,6 +125,7 @@ export class VideoService extends BaseService {
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         childIds: item.childIds,
+        episodeIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -157,6 +159,7 @@ export class VideoService extends BaseService {
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
         childIds: item.childIds,
+        episodeIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -193,6 +196,7 @@ export class VideoService extends BaseService {
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
         childIds: item.childIds,
+        episodeIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -207,9 +211,8 @@ export class VideoService extends BaseService {
     keys: string[],
     variantLanguageId?: string
   ): Promise<T[]> {
-    const videosView = this.db.view('videosView')
     const res = await this.db.query(aql`
-    FOR item IN ${videosView}
+    FOR item IN ${this.collection}
       FILTER item._key IN ${keys}
       RETURN {
         _key: item._key,
@@ -228,6 +231,7 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         childIds: item.childIds,
+        episodeIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,

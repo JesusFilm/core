@@ -16,7 +16,7 @@ import { LanguageProvider } from '../src/libs/languageContext/LanguageContext'
 import { GetVideo, GetVideo_video as Video } from '../__generated__/GetVideo'
 import {
   GetVideoSiblings,
-  GetVideoSiblings_episodes
+  GetVideoSiblings_video_children
 } from '../__generated__/GetVideoSiblings'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCarousel'
@@ -26,7 +26,7 @@ import { createApolloClient } from '../src/libs/client'
 
 interface Props {
   video: Video
-  siblings: GetVideoSiblings_episodes[] | null
+  siblings: GetVideoSiblings_video_children[] | null
   routes: string[]
 }
 
@@ -59,9 +59,9 @@ export default function SeoFriendly({
       >
         <>
           <Box sx={{ pt: '20px' }}>
-            {video.episodes.length > 0 && (
+            {video.children.length > 0 && (
               <VideosCarousel
-                videos={video.episodes}
+                videos={video.children}
                 routePrefix={routes.join('/')}
               />
             )}
@@ -150,7 +150,7 @@ export const GET_VIDEO = gql`
         duration
         hls
       }
-      episodes {
+      children {
         id
         type
         title(languageId: $languageId, primary: true) {
@@ -166,7 +166,9 @@ export const GET_VIDEO = gql`
         slug(languageId: $languageId, primary: true) {
           value
         }
-        episodeIds
+        children {
+          id
+        }
         variant {
           duration
           hls
@@ -186,27 +188,32 @@ export const GET_VIDEO = gql`
 `
 
 export const GET_VIDEO_SIBLINGS = gql`
-  query GetVideoSiblings($playlistId: ID!, $languageId: ID) {
-    episodes(playlistId: $playlistId, idType: slug) {
+  query GetVideoSiblings($id: ID!, $languageId: ID) {
+    video(id: $id, idType: slug) {
       id
-      type
-      image
-      imageAlt(languageId: $languageId, primary: true) {
-        value
-      }
-      snippet(languageId: $languageId, primary: true) {
-        value
-      }
-      title(languageId: $languageId, primary: true) {
-        value
-      }
-      variant {
-        duration
-        hls
-      }
-      episodeIds
-      slug(languageId: $languageId, primary: true) {
-        value
+      children {
+        id
+        type
+        image
+        imageAlt(languageId: $languageId, primary: true) {
+          value
+        }
+        snippet(languageId: $languageId, primary: true) {
+          value
+        }
+        title(languageId: $languageId, primary: true) {
+          value
+        }
+        variant {
+          duration
+          hls
+        }
+        children {
+          id
+        }
+        slug(languageId: $languageId, primary: true) {
+          value
+        }
       }
     }
   }
@@ -226,7 +233,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
     }
   })
 
-  let siblings: GetVideoSiblings_episodes[] | null = null
+  let siblings: GetVideoSiblings_video_children[] | null = null
   const playlistId = routes?.[routes?.length - 2]
   if (playlistId != null) {
     const { data } = await apolloClient.query<GetVideoSiblings>({
@@ -235,7 +242,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
         playlistId
       }
     })
-    siblings = data.episodes != null ? data.episodes : null
+    siblings = data.video.children != null ? data.video.children : null
   }
 
   if (videoData == null || videoData.video == null || routes == null) {

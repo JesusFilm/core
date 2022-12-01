@@ -19,7 +19,7 @@ const video: Video = {
   },
   description: videos[0].snippet,
   studyQuestions: [],
-  episodes: [],
+  children: [],
   variantLanguages: []
 }
 

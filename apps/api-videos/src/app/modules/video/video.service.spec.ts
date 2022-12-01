@@ -28,6 +28,7 @@ const DEFAULT_QUERY = aql`
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         childIds: item.childIds,
+        episodeIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -36,7 +37,7 @@ const DEFAULT_QUERY = aql`
     `.query
 
 const VIDEO_EPISODES_QUERY = aql`
-    FOR item IN 
+    FOR item IN undefined
       FILTER item._key IN @value0
       RETURN {
         _key: item._key,
@@ -53,6 +54,7 @@ const VIDEO_EPISODES_QUERY = aql`
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
         childIds: item.childIds,
+        episodeIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -84,6 +86,7 @@ const EPISODES_QUERY = aql`
           ], 0),
           variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
           childIds: item.childIds,
+          episodeIds: item.childIds,
           slug: item.slug,
           noIndex: item.noIndex,
           seoTitle: item.seoTitle,
