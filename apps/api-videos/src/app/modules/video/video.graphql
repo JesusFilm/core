@@ -24,7 +24,7 @@ enum VideoLabel {
 
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
-  type: VideoType!
+  type: VideoType! @deprecated(reason: "No longer relevant")
   label: VideoLabel!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
@@ -43,15 +43,15 @@ type Video @key(fields: "id primaryLanguageId") {
   """
   Episodes are child videos, currently only found in a playlist type
   """
-  episodeIds: [ID!]!
-  episodes: [Video!]!
+  episodeIds: [ID!]! @deprecated(reason: "Use children instead")
+  episodes: [Video!]! @deprecated(reason: "Use children instead")
+  children: [Video!]!
 }
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
-  tagId: String
-  types: [VideoType!]
+  types: [VideoType!] @deprecated(reason: "No longer relevant")
   labels: [VideoLabel!]
 }
 
@@ -62,7 +62,7 @@ extend type Query {
     where: VideosFilter
     offset: Int
     limit: Int
-  ): [Video!]!
+  ): [Video!]! @deprecated(reason: "Use video children instead")
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!, idType: IdType): Video!
 }
