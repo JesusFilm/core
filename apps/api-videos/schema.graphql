@@ -45,8 +45,6 @@ type Video @key(fields: "id primaryLanguageId") {
   noIndex: Boolean
 
   """Episodes are child videos, currently only found in a playlist type"""
-  episodeIds: [ID!]! @deprecated(reason: "Use children instead")
-  episodes: [Video!]! @deprecated(reason: "Use children instead")
   children: [Video!]!
   variant(languageId: ID): VideoVariant
 }
@@ -83,7 +81,6 @@ extend type Language @key(fields: "id") {
 }
 
 extend type Query {
-  episodes(playlistId: ID!, idType: IdType, where: VideosFilter, offset: Int, limit: Int): [Video!]! @deprecated(reason: "Use video children instead")
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!, idType: IdType): Video!
 }

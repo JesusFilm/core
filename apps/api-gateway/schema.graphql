@@ -744,7 +744,6 @@ type Query {
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
-  episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @deprecated(reason: "Use video children instead") @join__field(graph: VIDEOS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
@@ -1183,12 +1182,9 @@ type Video
   @join__type(graph: VIDEOS, key: "id primaryLanguageId")
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
 {
+  """Episodes are child videos, currently only found in a playlist type"""
   children: [Video!]! @join__field(graph: VIDEOS)
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-
-  """Episodes are child videos, currently only found in a playlist type"""
-  episodeIds: [ID!]! @deprecated(reason: "Use children instead") @join__field(graph: VIDEOS)
-  episodes: [Video!]! @deprecated(reason: "Use children instead") @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
   imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)

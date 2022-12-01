@@ -49,6 +49,9 @@ export interface GetVideoSiblings_video_children {
   snippet: GetVideoSiblings_video_children_snippet[];
   title: GetVideoSiblings_video_children_title[];
   variant: GetVideoSiblings_video_children_variant | null;
+  /**
+   * Episodes are child videos, currently only found in a playlist type
+   */
   children: GetVideoSiblings_video_children_children[];
   /**
    * slug is a permanent link to the video. It should only be appended, not edited or deleted
@@ -59,6 +62,9 @@ export interface GetVideoSiblings_video_children {
 export interface GetVideoSiblings_video {
   __typename: "Video";
   id: string;
+  /**
+   * Episodes are child videos, currently only found in a playlist type
+   */
   children: GetVideoSiblings_video_children[];
 }
 
