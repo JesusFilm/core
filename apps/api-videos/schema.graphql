@@ -1,8 +1,3 @@
-type VideoTag {
-  id: ID!
-  title(languageId: ID, primary: Boolean): [Translation!]!
-}
-
 type Translation {
   value: String!
   language: Language!
@@ -20,9 +15,19 @@ enum VideoType {
   playlist
 }
 
+enum VideoLabel {
+  collection
+  episode
+  featureFilm
+  segment
+  series
+  shortFilm
+}
+
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
-  type: VideoType!
+  type: VideoType! @deprecated(reason: "No longer relevant")
+  label: VideoLabel!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
   seoTitle(languageId: ID, primary: Boolean): [Translation!]!
@@ -40,16 +45,17 @@ type Video @key(fields: "id primaryLanguageId") {
   noIndex: Boolean
 
   """Episodes are child videos, currently only found in a playlist type"""
-  episodeIds: [ID!]!
-  episodes: [Video!]!
+  episodeIds: [ID!]! @deprecated(reason: "Use children instead")
+  episodes: [Video!]! @deprecated(reason: "Use children instead")
+  children: [Video!]!
   variant(languageId: ID): VideoVariant
 }
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
-  tagId: String
-  types: [VideoType!]
+  types: [VideoType!] @deprecated(reason: "No longer relevant")
+  labels: [VideoLabel!]
 }
 
 enum VideoVariantDownloadQuality {
@@ -72,14 +78,12 @@ type VideoVariant {
   subtitle(languageId: ID, primary: Boolean): [Translation!]!
 }
 
-extend type Query {
-  videoTags: [VideoTag!]
-  videoTag(id: ID!): VideoTag
-  episodes(playlistId: ID!, idType: IdType, where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  video(id: ID!, idType: IdType): Video!
-}
-
 extend type Language @key(fields: "id") {
   id: ID! @external
+}
+
+extend type Query {
+  episodes(playlistId: ID!, idType: IdType, where: VideosFilter, offset: Int, limit: Int): [Video!]! @deprecated(reason: "Use video children instead")
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
+  video(id: ID!, idType: IdType): Video!
 }

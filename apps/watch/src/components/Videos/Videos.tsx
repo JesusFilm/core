@@ -27,7 +27,9 @@ export const GET_VIDEOS = gql`
       variant {
         duration
       }
-      episodeIds
+      children {
+        id
+      }
       slug(languageId: $languageId, primary: true) {
         value
       }

@@ -22,7 +22,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 3680, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [
       {
         value: 'the-story-of-jesus-for-children',
@@ -45,7 +45,7 @@ export const videos: GetVideos_videos[] = [
     title: [{ value: 'JESUS', __typename: 'Translation' }],
     variant: { duration: 7674, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [{ value: 'jesus', __typename: 'Translation' }]
   },
   {
@@ -68,7 +68,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 4952, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [
       {
         value: 'magdalena-directors-cut',
@@ -91,7 +91,7 @@ export const videos: GetVideos_videos[] = [
     title: [{ value: 'Book of Acts', __typename: 'Translation' }],
     variant: { duration: 11530, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [{ value: 'book-of-acts', __typename: 'Translation' }]
   },
   {
@@ -114,7 +114,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 343, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [
       {
         value: 'a-day-and-a-night-with-creator-sets-free',
@@ -142,7 +142,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 10994, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [
       {
         value: 'life-of-jesus-gospel-of-john',
@@ -165,7 +165,7 @@ export const videos: GetVideos_videos[] = [
     title: [{ value: 'Magdalena', __typename: 'Translation' }],
     variant: { duration: 3665, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [{ value: 'magdalena', __typename: 'Translation' }]
   },
   {
@@ -188,7 +188,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 118, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [
       {
         value: 'installing-the-jesus-film-media-app',
