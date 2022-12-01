@@ -17,13 +17,13 @@ const baseVideo: GeneratedAqlQuery[] = [
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
-        episodeIds: item.episodeIds,
+        primaryLanguageId: item.primaryLanguageId,
+        childIds: item.childIds
+        episodeIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt,
-        primaryLanguageId: item.primaryLanguageId,`
+        imageAlt: item.imageAlt,`
 ]
 
 const DEFAULT_QUERY = aql`
@@ -41,11 +41,11 @@ const DEFAULT_QUERY = aql`
     `.query
 
 const VIDEO_EPISODES_QUERY = aql`
-    FOR item IN undefined
+    FOR item IN 
       FILTER item._key IN @value0
       RETURN {
         ${aql.join(baseVideo)}
-        variant: NTH(item.variants[* 
+        variant: NTH(item.variants[*
           FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
@@ -200,10 +200,10 @@ describe('VideoService', () => {
     })
   })
 
-  describe('filterEpisodes', () => {
+  describe('filterChildren', () => {
     const filter = {
       id: 'playlistId',
-      idType: IdType.slug
+      idType: IdType.databaseId
     }
     it('should query', async () => {
       db.query.mockImplementationOnce(async (q) => {

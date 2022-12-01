@@ -187,7 +187,7 @@ export class VideoService extends BaseService {
       FILTER item._key IN ${keys}
       RETURN {
         ${aql.join(this.baseVideo)}
-        variant: NTH(item.variants[* 
+        variant: NTH(item.variants[*
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
           }, item.primaryLanguageId)
