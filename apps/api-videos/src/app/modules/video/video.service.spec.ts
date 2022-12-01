@@ -11,6 +11,7 @@ import { VideoService } from './video.service'
 const baseVideo: GeneratedAqlQuery[] = [
   aql`_key: item._key,
         type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
@@ -40,7 +41,7 @@ const DEFAULT_QUERY = aql`
     `.query
 
 const VIDEO_EPISODES_QUERY = aql`
-    FOR item IN 
+    FOR item IN undefined
       FILTER item._key IN @value0
       RETURN {
         ${aql.join(baseVideo)}
@@ -56,7 +57,7 @@ const EPISODES_QUERY = aql`
       FILTER video._key == @value0
       LIMIT 1
       FOR item IN 
-        FILTER item._key IN video.episodeIds
+        FILTER item._key IN video.childIds
         
         LIMIT @value1, @value2
         RETURN {
@@ -201,22 +202,22 @@ describe('VideoService', () => {
 
   describe('filterEpisodes', () => {
     const filter = {
-      playlistId: 'playlistId',
-      idType: IdType.databaseId
+      id: 'playlistId',
+      idType: IdType.slug
     }
     it('should query', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(EPISODES_QUERY)
         expect(bindVars).toEqual({
-          value0: filter.playlistId,
+          value0: filter.id,
           value1: 0,
           value2: 100,
           value3: null
         })
         return { all: () => [] } as unknown as ArrayCursor
       })
-      expect(await service.filterEpisodes(filter)).toEqual([])
+      expect(await service.filterChildren(filter)).toEqual([])
     })
 
     it('should query with offset', async () => {
@@ -224,14 +225,14 @@ describe('VideoService', () => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(EPISODES_QUERY)
         expect(bindVars).toEqual({
-          value0: filter.playlistId,
+          value0: filter.id,
           value1: 200,
           value2: 100,
           value3: null
         })
         return { all: () => [] } as unknown as ArrayCursor
       })
-      expect(await service.filterEpisodes({ ...filter, offset: 200 })).toEqual(
+      expect(await service.filterChildren({ ...filter, offset: 200 })).toEqual(
         []
       )
     })
@@ -241,14 +242,14 @@ describe('VideoService', () => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(EPISODES_QUERY)
         expect(bindVars).toEqual({
-          value0: filter.playlistId,
+          value0: filter.id,
           value1: 0,
           value2: 200,
           value3: null
         })
         return { all: () => [] } as unknown as ArrayCursor
       })
-      expect(await service.filterEpisodes({ ...filter, limit: 200 })).toEqual(
+      expect(await service.filterChildren({ ...filter, limit: 200 })).toEqual(
         []
       )
     })

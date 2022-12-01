@@ -14,7 +14,7 @@ interface ExtendedVideosFilter extends VideosFilter {
 }
 
 interface EpisodesFilter extends ExtendedVideosFilter {
-  playlistId: string
+  id: string
   idType: IdType
 }
 @Injectable()
@@ -24,18 +24,19 @@ export class VideoService extends BaseService {
   baseVideo: GeneratedAqlQuery[] = [
     aql`_key: item._key,
         type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
-        episodeIds: item.episodeIds,
+        primaryLanguageId: item.primaryLanguageId,
+        childIds: item.childIds
+        episodeIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt,
-        primaryLanguageId: item.primaryLanguageId,`
+        imageAlt: item.imageAlt,`
   ]
 
   videosView = this.db.view('videosView')
@@ -43,9 +44,9 @@ export class VideoService extends BaseService {
   videoFilter(filter?: VideosFilter): AqlQuery {
     const {
       title,
-      tagId = null,
       availableVariantLanguageIds = [],
-      types = null
+      types = null,
+      labels = null
     } = filter ?? {}
 
     return aql.join(
@@ -60,15 +61,15 @@ export class VideoService extends BaseService {
         (availableVariantLanguageIds?.length ?? 0) > 0 &&
           aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
         types != null && aql`FILTER item.type IN ${types}`,
-        tagId != null && aql`FILTER ${tagId} IN item.tagIds`
+        labels != null && aql`FILTER item.label IN ${labels}`
       ].filter((x) => x !== false)
     )
   }
 
   @KeyAsId()
-  async filterEpisodes<T>(filter?: EpisodesFilter): Promise<T[]> {
+  async filterChildren<T>(filter?: EpisodesFilter): Promise<T[]> {
     const {
-      playlistId,
+      id,
       idType,
       variantLanguageId,
       offset = 0,
@@ -80,7 +81,7 @@ export class VideoService extends BaseService {
     const variantFilter: GeneratedAqlQuery[] = []
     switch (idType) {
       case IdType.databaseId:
-        idFilter = aql`FILTER video._key == ${playlistId}`
+        idFilter = aql`FILTER video._key == ${id}`
         variantFilter.push(aql`variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
@@ -89,9 +90,9 @@ export class VideoService extends BaseService {
         ], 0),`)
         break
       case IdType.slug:
-        idFilter = aql`FILTER ${playlistId} IN item.variants[*].slug`
+        idFilter = aql`FILTER ${id} IN item.variants[*].slug`
         variantFilter.push(aql` variant: NTH(item.variants[*
-          FILTER CURRENT.slug == ${playlistId}
+          FILTER CURRENT.slug == ${id}
           LIMIT 1 RETURN CURRENT], 0),`)
         break
     }
@@ -104,7 +105,7 @@ export class VideoService extends BaseService {
       ${idFilter}
       LIMIT 1
       FOR item IN ${this.videosView}
-        FILTER item._key IN video.episodeIds
+        FILTER item._key IN video.childIds
         ${search}
         LIMIT ${offset}, ${limit}
         RETURN {

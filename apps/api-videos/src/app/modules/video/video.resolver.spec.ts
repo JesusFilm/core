@@ -38,7 +38,7 @@ describe('VideoResolver', () => {
       provide: VideoService,
       useFactory: () => ({
         filterAll: jest.fn(() => [video, video]),
-        filterEpisodes: jest.fn(() => [video, video]),
+        filterChildren: jest.fn(() => [video, video]),
         getVideosByIds: jest.fn(() => [video, video]),
         getVideo: jest.fn(() => video),
         getVideoBySlug: jest.fn(() => video)
@@ -51,16 +51,16 @@ describe('VideoResolver', () => {
     service = await module.resolve(VideoService)
   })
 
-  describe('episodes', () => {
+  describe('children', () => {
     it('returns Videos', async () => {
       const playlistId = 'rivka'
       const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
       expect(
         await resolver.episodesQuery(info, playlistId, IdType.slug)
       ).toEqual([video, video])
-      expect(service.filterEpisodes).toHaveBeenCalledWith({
+      expect(service.filterChildren).toHaveBeenCalledWith({
         idType: IdType.slug,
-        playlistId
+        id: playlistId
       })
     })
 
@@ -99,8 +99,8 @@ describe('VideoResolver', () => {
           200
         )
       ).toEqual([video, video])
-      expect(service.filterEpisodes).toHaveBeenCalledWith({
-        playlistId,
+      expect(service.filterChildren).toHaveBeenCalledWith({
+        id: playlistId,
         idType: IdType.databaseId,
         title: 'abc',
         availableVariantLanguageIds: ['fr'],
