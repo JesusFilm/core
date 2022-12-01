@@ -14,7 +14,7 @@ import 'video.js/dist/video-js.css'
 
 import { VideoType } from '../../../../__generated__/globalTypes'
 import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
-import { GetVideoSiblings_episodes as VideoSiblings } from '../../../../__generated__/GetVideoSiblings'
+import { GetVideoSiblings_video_children as VideoSiblings } from '../../../../__generated__/GetVideoSiblings'
 
 interface VideoHeroProps {
   routes: string[]
