@@ -207,9 +207,8 @@ export class VideoService extends BaseService {
     keys: string[],
     variantLanguageId?: string
   ): Promise<T[]> {
-    const videosView = this.db.view('videosView')
     const res = await this.db.query(aql`
-    FOR item IN ${videosView}
+    FOR item IN ${this.collection}
       FILTER item._key IN ${keys}
       RETURN {
         _key: item._key,
