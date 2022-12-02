@@ -51,7 +51,7 @@ export interface GetVideoSiblings_video_children {
   variant: GetVideoSiblings_video_children_variant | null;
   children: GetVideoSiblings_video_children_children[];
   /**
-   * slug is a permanent link to the video. It should only be appended, not edited or deleted
+   * slug is a permanent link to the video. It should only be appended, not edited or deleted.
    */
   slug: GetVideoSiblings_video_children_slug[];
 }

@@ -38,7 +38,7 @@ export interface GetHomeVideo_video {
   variant: GetHomeVideo_video_variant | null;
   children: GetHomeVideo_video_children[];
   /**
-   * slug is a permanent link to the video. It should only be appended, not edited or deleted
+   * slug is a permanent link to the video. It should only be appended, not edited or deleted.
    */
   slug: GetHomeVideo_video_slug[];
 }

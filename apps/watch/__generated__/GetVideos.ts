@@ -44,7 +44,7 @@ export interface GetVideos_videos {
   variant: GetVideos_videos_variant | null;
   children: GetVideos_videos_children[];
   /**
-   * slug is a permanent link to the video. It should only be appended, not edited or deleted
+   * slug is a permanent link to the video. It should only be appended, not edited or deleted.
    */
   slug: GetVideos_videos_slug[];
 }

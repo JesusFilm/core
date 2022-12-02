@@ -1193,7 +1193,7 @@ type Video
   seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
 
   """
-  slug is a permanent link to the video. It should only be appended, not edited or deleted
+  slug is a permanent link to the video. It should only be appended, not edited or deleted.
   """
   slug(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
@@ -1755,8 +1755,10 @@ type VideoVariant {
   id: String!
   language: Language!
 
-  """Address of the video"""
-  slug: String!
+  """
+  slug is a permanent link to the video variant. It should only be appended, not edited or deleted.
+  """
+  slug(languageId: ID, primary: Boolean): [Translation!]!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!
 }
 

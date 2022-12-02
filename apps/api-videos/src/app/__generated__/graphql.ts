@@ -73,7 +73,7 @@ export class VideoVariant {
     duration: number;
     language: Language;
     subtitle: Translation[];
-    slug: string;
+    slug: Translation[];
 }
 
 export class Language {

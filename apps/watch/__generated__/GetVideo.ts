@@ -86,7 +86,7 @@ export interface GetVideo_video_children {
   image: string | null;
   imageAlt: GetVideo_video_children_imageAlt[];
   /**
-   * slug is a permanent link to the video. It should only be appended, not edited or deleted
+   * slug is a permanent link to the video. It should only be appended, not edited or deleted.
    */
   slug: GetVideo_video_children_slug[];
   children: GetVideo_video_children_children[];
@@ -104,7 +104,7 @@ export interface GetVideo_video {
   title: GetVideo_video_title[];
   variant: GetVideo_video_variant | null;
   /**
-   * slug is a permanent link to the video. It should only be appended, not edited or deleted
+   * slug is a permanent link to the video. It should only be appended, not edited or deleted.
    */
   slug: GetVideo_video_slug[];
   children: GetVideo_video_children[];
