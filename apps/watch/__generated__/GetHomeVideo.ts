@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoType } from "./globalTypes";
+import { VideoLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetHomeVideo
@@ -32,7 +32,7 @@ export interface GetHomeVideo_video_slug {
 export interface GetHomeVideo_video {
   __typename: "Video";
   id: string;
-  type: VideoType;
+  label: VideoLabel;
   image: string | null;
   title: GetHomeVideo_video_title[];
   variant: GetHomeVideo_video_variant | null;

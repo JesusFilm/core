@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { IdType } from '../../__generated__/graphql'
 import { VideoResolver } from './video.resolver'
 import { VideoService } from './video.service'
 
@@ -49,66 +48,6 @@ describe('VideoResolver', () => {
     }).compile()
     resolver = module.get<VideoResolver>(VideoResolver)
     service = await module.resolve(VideoService)
-  })
-
-  describe('children', () => {
-    it('returns Videos', async () => {
-      const playlistId = 'rivka'
-      const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
-      expect(
-        await resolver.episodesQuery(info, playlistId, IdType.slug)
-      ).toEqual([video, video])
-      expect(service.filterChildren).toHaveBeenCalledWith({
-        idType: IdType.slug,
-        id: playlistId
-      })
-    })
-
-    it('returns filtered Videos', async () => {
-      const playlistId = 'rivka_1'
-
-      const info = {
-        fieldNodes: [
-          {
-            selectionSet: {
-              selections: [
-                {
-                  name: { value: 'variant' },
-                  arguments: [
-                    {
-                      name: { value: 'languageId' },
-                      value: { value: 'en' }
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        ]
-      }
-      expect(
-        await resolver.episodesQuery(
-          info,
-          playlistId,
-          IdType.databaseId,
-          {
-            title: 'abc',
-            availableVariantLanguageIds: ['fr']
-          },
-          100,
-          200
-        )
-      ).toEqual([video, video])
-      expect(service.filterChildren).toHaveBeenCalledWith({
-        id: playlistId,
-        idType: IdType.databaseId,
-        title: 'abc',
-        availableVariantLanguageIds: ['fr'],
-        variantLanguageId: 'en',
-        offset: 100,
-        limit: 200
-      })
-    })
   })
 
   describe('videos', () => {

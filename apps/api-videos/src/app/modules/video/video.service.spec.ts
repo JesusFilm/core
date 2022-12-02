@@ -5,7 +5,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
-import { IdType, VideoType } from '../../__generated__/graphql'
+import { IdType } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 const baseVideo: GeneratedAqlQuery[] = [
@@ -105,15 +105,6 @@ describe('VideoService', () => {
   })
 
   describe('videoFilter', () => {
-    it('should filter with specific types', async () => {
-      const filter = {
-        types: [VideoType.playlist, VideoType.standalone]
-      }
-      const response = await service.videoFilter(filter)
-      expect(response.query).toEqual('FILTER item.type IN @value0')
-      expect(response.bindVars).toEqual({ value0: filter.types })
-    })
-
     it('should filter with title', async () => {
       const filter = {
         title: 'abc'
@@ -303,7 +294,7 @@ describe('VideoService', () => {
     })
   })
 
-  describe('episodes', () => {
+  describe('children', () => {
     it('should query', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery

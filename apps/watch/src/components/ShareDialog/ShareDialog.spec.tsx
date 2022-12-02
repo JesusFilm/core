@@ -1,8 +1,10 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { GetVideo_video as Video } from '../../../__generated__/GetVideo'
-import { VideoType } from '../../../__generated__/globalTypes'
+import {
+  GetVideo_video as Video,
+  GetVideo_video_children
+} from '../../../__generated__/GetVideo'
 import { videos } from '../Videos/testData'
 import { ShareDialog } from './ShareDialog'
 
@@ -15,12 +17,21 @@ const video: Video = {
   variant: {
     __typename: 'VideoVariant',
     duration: videos[0].variant?.duration ?? 0,
+    language: {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'en'
+        }
+      ]
+    },
     hls: 'https://arc.gt/4jz75'
   },
   description: videos[0].snippet,
   studyQuestions: [],
-  children: [],
-  variantLanguages: []
+  children: []
 }
 
 describe('ShareDialog', () => {
@@ -38,7 +49,10 @@ describe('ShareDialog', () => {
     const { getByRole, queryAllByRole } = render(
       <SnackbarProvider>
         <ShareDialog
-          video={{ ...video, type: VideoType.playlist }}
+          video={{
+            ...video,
+            children: [{ id: '1' }] as unknown as GetVideo_video_children[]
+          }}
           routes={routes}
           open
           onClose={onClose}
