@@ -1,5 +1,9 @@
 import { aql } from 'arangojs'
 import { fetchMediaComponentsAndTransformToVideos } from '../src/libs/arclight'
+import {
+  fetchMediaLanguagesAndTransformToLanguages,
+  Video
+} from '../src/libs/arclight/arclight'
 import { ArangoDB } from './db'
 
 const db = ArangoDB()
@@ -16,14 +20,25 @@ async function getVideo(
 }
 
 async function importMediaComponents(): Promise<void> {
-  const videos = await fetchMediaComponentsAndTransformToVideos()
-  for (const video of videos) {
-    if ((await getVideo(video._key)) != null) {
-      await db.collection('videos').update(video._key, video)
-    } else {
-      await db.collection('videos').save(video)
+  const usedVideoSlugs = []
+  const languages = await fetchMediaLanguagesAndTransformToLanguages()
+  let videos: Video[]
+  let page = 1
+  do {
+    videos = await fetchMediaComponentsAndTransformToVideos(
+      languages,
+      usedVideoSlugs,
+      page
+    )
+    for (const video of videos) {
+      if ((await getVideo(video._key)) != null) {
+        await db.collection('videos').update(video._key, video)
+      } else {
+        await db.collection('videos').save(video)
+      }
     }
-  }
+    page++
+  } while (videos.length > 0)
 }
 
 async function main(): Promise<void> {
@@ -54,7 +69,11 @@ async function main(): Promise<void> {
                 }
               },
               slug: {
-                analyzers: ['identity']
+                fields: {
+                  value: {
+                    analyzers: ['identity']
+                  }
+                }
               }
             }
           },
@@ -72,7 +91,11 @@ async function main(): Promise<void> {
             analyzers: ['identity']
           },
           slug: {
-            analyzers: ['identity']
+            fields: {
+              value: {
+                analyzers: ['identity']
+              }
+            }
           }
         }
       }

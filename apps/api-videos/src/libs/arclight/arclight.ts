@@ -40,7 +40,7 @@ export interface ArclightMediaComponentLanguage {
     }>
   }
   streamingUrls: {
-    hls: Array<{
+    hls?: Array<{
       url: string
     }>
   }
@@ -110,14 +110,14 @@ export async function getArclightMediaLanguages(): Promise<
   return response._embedded.mediaLanguages
 }
 
-export async function getArclightMediaComponents(): Promise<
-  ArclightMediaComponent[]
-> {
+export async function getArclightMediaComponents(
+  page: number
+): Promise<ArclightMediaComponent[]> {
   const response: {
     _embedded: { mediaComponents: ArclightMediaComponent[] }
   } = await (
     await fetch(
-      `https://api.arclight.org/v2/media-components?limit=5000&isDeprecated=false&contentTypes=video&apiKey=${
+      `https://api.arclight.org/v2/media-components?limit=50&isDeprecated=false&contentTypes=video&page=${page}&apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
     )
@@ -195,7 +195,7 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
         value: url,
         primary: languageId === mediaComponentLanguage.languageId
       })) ?? [],
-    hls: mediaComponentLanguage.streamingUrls.hls[0].url,
+    hls: mediaComponentLanguage.streamingUrls.hls?.[0].url,
     languageId: mediaComponentLanguage.languageId.toString(),
     duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001),
     downloads,
@@ -214,8 +214,6 @@ export function transformArclightMediaComponentToVideo(
     languages
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
       ?.languageId.toString() ?? '529' // english by default
-
-  console.log('content:', mediaComponent.mediaComponentId)
 
   const slug = [
     {
@@ -315,26 +313,38 @@ export function transformArclightMediaLanguageToLanguage(
   }
 }
 
-export async function fetchMediaComponentsAndTransformToVideos(): Promise<
-  Video[]
+export async function fetchMediaLanguagesAndTransformToLanguages(): Promise<
+  Language[]
 > {
-  const usedVideoSlugs = []
   const usedLanguageSlugs = []
   const mediaLanguages = await getArclightMediaLanguages()
-  const mediaComponents = await getArclightMediaComponents()
-  const languages = mediaLanguages.map((mediaLanguage) =>
+  return mediaLanguages.map((mediaLanguage) =>
     transformArclightMediaLanguageToLanguage(mediaLanguage, usedLanguageSlugs)
   )
+}
 
-  return await Promise.all(
+export async function fetchMediaComponentsAndTransformToVideos(
+  languages: Language[],
+  usedVideoSlugs: string[],
+  page: number
+): Promise<Video[]> {
+  const mediaComponents = await getArclightMediaComponents(page)
+
+  const mediaComponentsAndMetadata = await Promise.all(
     mediaComponents.map(async (mediaComponent) => {
-      console.log(`mediaComponent:`, mediaComponent.mediaComponentId)
-      const mediaComponentLinks = await getArclightMediaComponentLinks(
-        mediaComponent.mediaComponentId
-      )
+      console.log(`fetching mediaComponent:`, mediaComponent.mediaComponentId)
       const mediaComponentLanguages = await getArclightMediaComponentLanguages(
         mediaComponent.mediaComponentId
       )
+      const mediaComponentLinks = await getArclightMediaComponentLinks(
+        mediaComponent.mediaComponentId
+      )
+      return { mediaComponent, mediaComponentLanguages, mediaComponentLinks }
+    })
+  )
+
+  return mediaComponentsAndMetadata.map(
+    ({ mediaComponent, mediaComponentLanguages, mediaComponentLinks }) => {
       return transformArclightMediaComponentToVideo(
         mediaComponent,
         mediaComponentLanguages,
@@ -342,6 +352,6 @@ export async function fetchMediaComponentsAndTransformToVideos(): Promise<
         languages,
         usedVideoSlugs
       )
-    })
+    }
   )
 }
