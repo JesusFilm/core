@@ -2,13 +2,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import { useState } from 'react'
 import { Meta, Story } from '@storybook/react'
 import { watchConfig } from '../../libs/storybook'
-import { GET_VIDEO_LANGUAGES } from './AudioLanguageDialog'
-import { AudioLanguageDialog } from '.'
+import { GET_VIDEO_LANGUAGES } from './AudioDialog'
+import { AudioDialog } from '.'
 
-const AudioLanguageDialogStory = {
+const AudioDialogStory = {
   ...watchConfig,
-  component: AudioLanguageDialog,
-  title: 'Watch/AudioLanguageDialog'
+  component: AudioDialog,
+  title: 'Watch/AudioDialog'
 }
 
 const Template: Story = () => {
@@ -29,6 +29,12 @@ const Template: Story = () => {
             data: {
               video: {
                 id: '1_jf-0-0',
+                slug: [
+                  {
+                    value: 'the-story-of-jesus-for-children',
+                    __typename: 'Translation'
+                  }
+                ],
                 variant: {
                   id: '529',
                   language: {
@@ -93,11 +99,11 @@ const Template: Story = () => {
         }
       ]}
     >
-      <AudioLanguageDialog open={open} onClose={() => setOpen(false)} />
+      <AudioDialog open={open} onClose={() => setOpen(false)} />
     </MockedProvider>
   )
 }
 
 export const Default = Template.bind({})
 
-export default AudioLanguageDialogStory as Meta
+export default AudioDialogStory as Meta

@@ -1,9 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, fireEvent, waitFor } from '@testing-library/react'
-import { GET_VIDEO_LANGUAGES } from './AudioLanguageDialog'
-import { AudioLanguageDialog } from '.'
+import { GET_VIDEO_LANGUAGES } from './AudioDialog'
+import { AudioDialog } from '.'
 
-describe('AudioLanguageDialog', () => {
+describe('AudioDialog', () => {
   const mocks = [
     {
       request: {
@@ -17,6 +17,12 @@ describe('AudioLanguageDialog', () => {
         data: {
           video: {
             id: '1_jf-0-0',
+            slug: [
+              {
+                value: 'the-story-of-jesus-for-children',
+                __typename: 'Translation'
+              }
+            ],
             variant: {
               id: '529',
               language: {
@@ -84,7 +90,7 @@ describe('AudioLanguageDialog', () => {
   it('should sort langauge options alphabetically', async () => {
     const { getByRole, queryAllByRole } = render(
       <MockedProvider mocks={mocks}>
-        <AudioLanguageDialog open onClose={jest.fn()} />
+        <AudioDialog open onClose={jest.fn()} />
       </MockedProvider>
     )
     await waitFor(() => fireEvent.focus(getByRole('textbox')))
@@ -97,7 +103,7 @@ describe('AudioLanguageDialog', () => {
   it('should set default value', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <AudioLanguageDialog open onClose={jest.fn()} />
+        <AudioDialog open onClose={jest.fn()} />
       </MockedProvider>
     )
     await waitFor(() => expect(getByRole('textbox')).toHaveValue('English'))

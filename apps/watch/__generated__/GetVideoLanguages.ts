@@ -7,6 +7,11 @@
 // GraphQL query operation: GetVideoLanguages
 // ====================================================
 
+export interface GetVideoLanguages_video_slug {
+  __typename: "Translation";
+  value: string;
+}
+
 export interface GetVideoLanguages_video_variant_language_name {
   __typename: "Translation";
   value: string;
@@ -39,6 +44,10 @@ export interface GetVideoLanguages_video_variantLanguages {
 export interface GetVideoLanguages_video {
   __typename: "Video";
   id: string;
+  /**
+   * slug is a permanent link to the video. It should only be appended, not edited or deleted
+   */
+  slug: GetVideoLanguages_video_slug[];
   variant: GetVideoLanguages_video_variant | null;
   variantLanguages: GetVideoLanguages_video_variantLanguages[];
 }
