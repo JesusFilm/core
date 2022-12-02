@@ -30,9 +30,7 @@ export const GET_VIDEOS = gql`
       children {
         id
       }
-      slug(languageId: $languageId, primary: true) {
-        value
-      }
+      slug
     }
   }
 `
