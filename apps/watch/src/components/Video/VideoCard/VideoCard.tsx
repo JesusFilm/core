@@ -11,7 +11,6 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import Link from 'next/link'
 import Stack from '@mui/material/Stack'
 
-import { VideoType } from '../../../../__generated__/globalTypes'
 import { GetVideos_videos } from '../../../../__generated__/GetVideos'
 
 interface VideoCardProps {
@@ -67,7 +66,7 @@ export function VideoCard({
                     padding: '5px'
                   }}
                 >
-                  {video.type !== VideoType.playlist && (
+                  {video.children.length === 0 && (
                     <Stack direction="row">
                       <PlayArrow sx={{ fontSize: '1rem' }} />
                       <Typography variant="body1" sx={{ lineHeight: '16px' }}>
@@ -75,9 +74,9 @@ export function VideoCard({
                       </Typography>
                     </Stack>
                   )}
-                  {video.type === VideoType.playlist && (
+                  {video.children.length > 0 && (
                     <Typography variant="body1">
-                      {video.episodeIds.length} episodes
+                      {video.children.length} episodes
                     </Typography>
                   )}
                 </Box>

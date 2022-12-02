@@ -35,7 +35,6 @@ export enum VideoVariantDownloadQuality {
 export class VideosFilter {
     availableVariantLanguageIds?: Nullable<string[]>;
     title?: Nullable<string>;
-    types?: Nullable<VideoType[]>;
     labels?: Nullable<VideoLabel[]>;
 }
 
@@ -49,7 +48,6 @@ export class Translation {
 export class Video {
     __typename?: 'Video';
     id: string;
-    type: VideoType;
     label: VideoLabel;
     primaryLanguageId: string;
     title: Translation[];
@@ -62,8 +60,7 @@ export class Video {
     variantLanguages: Language[];
     slug: Translation[];
     noIndex?: Nullable<boolean>;
-    episodeIds: string[];
-    episodes: Video[];
+    children: Video[];
     variant?: Nullable<VideoVariant>;
 }
 
@@ -89,8 +86,6 @@ export class Language {
 }
 
 export abstract class IQuery {
-    abstract episodes(playlistId: string, idType?: Nullable<IdType>, where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
-
     abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 
     abstract video(id: string, idType?: Nullable<IdType>): Video | Promise<Video>;

@@ -15,7 +15,6 @@ export const GET_HOME_VIDEO = gql`
   query GetHomeVideo($id: ID!, $languageId: ID) {
     video(id: $id) {
       id
-      type
       image
       title(languageId: $languageId, primary: true) {
         value
@@ -23,7 +22,9 @@ export const GET_HOME_VIDEO = gql`
       variant {
         duration
       }
-      episodeIds
+      children {
+        id
+      }
       slug(languageId: $languageId, primary: true) {
         value
       }

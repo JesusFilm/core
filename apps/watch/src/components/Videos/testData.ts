@@ -1,10 +1,8 @@
-import { VideoType } from '../../../__generated__/globalTypes'
 import { GetVideos_videos } from '../../../__generated__/GetVideos'
 
 export const videos: GetVideos_videos[] = [
   {
     id: '1_cl-0-0',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl-0-0.mobileCinematicHigh.jpg',
     snippet: [
@@ -22,7 +20,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 3680, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [
       {
         value: 'the-story-of-jesus-for-children',
@@ -32,7 +30,6 @@ export const videos: GetVideos_videos[] = [
   },
   {
     id: '1_jf-0-0',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
     snippet: [
@@ -45,12 +42,11 @@ export const videos: GetVideos_videos[] = [
     title: [{ value: 'JESUS', __typename: 'Translation' }],
     variant: { duration: 7674, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [{ value: 'jesus', __typename: 'Translation' }]
   },
   {
     id: '1_wl-0-0',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_wl-0-0.mobileCinematicHigh.jpg',
     snippet: [
@@ -68,7 +64,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 4952, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [
       {
         value: 'magdalena-directors-cut',
@@ -78,7 +74,6 @@ export const videos: GetVideos_videos[] = [
   },
   {
     id: '2_Acts-0-0',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
     snippet: [
@@ -91,12 +86,11 @@ export const videos: GetVideos_videos[] = [
     title: [{ value: 'Book of Acts', __typename: 'Translation' }],
     variant: { duration: 11530, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [{ value: 'book-of-acts', __typename: 'Translation' }]
   },
   {
     id: '2_CSF',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_CSF.mobileCinematicHigh.jpg',
     snippet: [
@@ -114,7 +108,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 343, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [
       {
         value: 'a-day-and-a-night-with-creator-sets-free',
@@ -124,7 +118,6 @@ export const videos: GetVideos_videos[] = [
   },
   {
     id: '2_GOJ-0-0',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
     snippet: [
@@ -142,7 +135,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 10994, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [
       {
         value: 'life-of-jesus-gospel-of-john',
@@ -152,7 +145,6 @@ export const videos: GetVideos_videos[] = [
   },
   {
     id: 'MAG1',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/high_mag_collection_640x300br.jpg',
     snippet: [
@@ -165,12 +157,11 @@ export const videos: GetVideos_videos[] = [
     title: [{ value: 'Magdalena', __typename: 'Translation' }],
     variant: { duration: 3665, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [{ value: 'magdalena', __typename: 'Translation' }]
   },
   {
     id: '1_0-TrainV_1Install',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/lrg_cine_install.jpg',
     snippet: [
@@ -188,7 +179,7 @@ export const videos: GetVideos_videos[] = [
     ],
     variant: { duration: 118, __typename: 'VideoVariant' },
     __typename: 'Video',
-    episodeIds: [],
+    children: [],
     slug: [
       {
         value: 'installing-the-jesus-film-media-app',
