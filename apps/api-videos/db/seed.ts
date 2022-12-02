@@ -2,7 +2,6 @@ import { aql } from 'arangojs'
 import { flatten } from 'lodash'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
-import { VideoType } from '../src/app/__generated__/graphql'
 import { ArangoDB } from './db'
 
 interface Video {
@@ -80,7 +79,6 @@ interface VideoVariant {
 }
 
 interface Video {
-  type: VideoType
   label: string
   primaryLanguageId: string
   title: Translation[]
@@ -215,7 +213,6 @@ async function digestContent(
   }
 
   const body = {
-    type: VideoType.standalone,
     label: mediaComponent.subType,
     primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
     title: [
@@ -383,9 +380,6 @@ async function main(): Promise<void> {
                 analyzers: ['text_en']
               }
             }
-          },
-          type: {
-            analyzers: ['identity']
           },
           label: {
             analyzers: ['identity']

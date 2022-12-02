@@ -32,7 +32,6 @@ export class VideoResolver {
       availableVariantLanguageIds:
         where?.availableVariantLanguageIds ?? undefined,
       variantLanguageId,
-      types: where?.types ?? undefined,
       labels: where?.labels ?? undefined,
       offset,
       limit
