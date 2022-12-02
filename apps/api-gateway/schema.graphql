@@ -1748,12 +1748,6 @@ type VideoTriggerBlock implements Block {
   triggerStart: Int!
 }
 
-enum VideoType {
-  episode
-  playlist
-  standalone
-}
-
 type VideoVariant {
   downloads: [VideoVariantDownload!]!
   duration: Int!
