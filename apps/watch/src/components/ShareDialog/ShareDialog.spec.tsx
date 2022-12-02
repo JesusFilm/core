@@ -5,7 +5,6 @@ import {
   GetVideo_video as Video,
   GetVideo_video_children
 } from '../../../__generated__/GetVideo'
-import { VideoLabel } from '../../../__generated__/globalTypes'
 import { videos } from '../Videos/testData'
 import { ShareDialog } from './ShareDialog'
 
