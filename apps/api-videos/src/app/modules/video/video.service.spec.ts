@@ -38,7 +38,7 @@ const DEFAULT_QUERY = aql`
     `.query
 
 const VIDEO_CHILDREN_QUERY = aql`
-    FOR item IN 
+    FOR item IN undefined
       FILTER item._key IN @value0
       RETURN {
         ${aql.join(baseVideo)}
@@ -49,7 +49,7 @@ const VIDEO_CHILDREN_QUERY = aql`
     `.query
 
 const GET_VIDEO_BY_SLUG_QUERY = aql`
-    FOR item IN 
+    FOR item IN undefined
       FILTER @value0 IN item.variants[*].slug
       LIMIT 1
       RETURN {
