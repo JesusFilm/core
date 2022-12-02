@@ -1,10 +1,8 @@
-import { VideoType } from '../../../__generated__/globalTypes'
 import { GetVideos_videos } from '../../../__generated__/GetVideos'
 
 export const videos: GetVideos_videos[] = [
   {
     id: '1_cl-0-0',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl-0-0.mobileCinematicHigh.jpg',
     snippet: [
@@ -32,7 +30,6 @@ export const videos: GetVideos_videos[] = [
   },
   {
     id: '1_jf-0-0',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
     snippet: [
@@ -50,7 +47,6 @@ export const videos: GetVideos_videos[] = [
   },
   {
     id: '1_wl-0-0',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_wl-0-0.mobileCinematicHigh.jpg',
     snippet: [
@@ -78,7 +74,6 @@ export const videos: GetVideos_videos[] = [
   },
   {
     id: '2_Acts-0-0',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
     snippet: [
@@ -96,7 +91,6 @@ export const videos: GetVideos_videos[] = [
   },
   {
     id: '2_CSF',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_CSF.mobileCinematicHigh.jpg',
     snippet: [
@@ -124,7 +118,6 @@ export const videos: GetVideos_videos[] = [
   },
   {
     id: '2_GOJ-0-0',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
     snippet: [
@@ -152,7 +145,6 @@ export const videos: GetVideos_videos[] = [
   },
   {
     id: 'MAG1',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/high_mag_collection_640x300br.jpg',
     snippet: [
@@ -170,7 +162,6 @@ export const videos: GetVideos_videos[] = [
   },
   {
     id: '1_0-TrainV_1Install',
-    type: VideoType.standalone,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/lrg_cine_install.jpg',
     snippet: [

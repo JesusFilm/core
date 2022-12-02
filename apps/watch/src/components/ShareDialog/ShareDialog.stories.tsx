@@ -4,8 +4,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { noop } from 'lodash'
 
 import { GetVideo_video as Video } from '../../../__generated__/GetVideo'
-import { VideoType } from '../../../__generated__/globalTypes'
-
+import { GetVideoSiblings_video_children } from '../../../__generated__/GetVideoSiblings'
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/testData'
 import { ShareDialog } from './ShareDialog'
@@ -42,7 +41,10 @@ export const Basic = Template.bind({})
 Basic.args = {
   open: true,
   onClose: noop,
-  video: { ...video, type: VideoType.playlist },
+  video: {
+    ...video,
+    children: [{ id: '1' }] as unknown as GetVideoSiblings_video_children[]
+  },
   routes
 }
 
