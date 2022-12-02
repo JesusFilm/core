@@ -85,7 +85,7 @@ export const GET_VIDEO_SIBLINGS = gql`
       id
       children {
         id
-        type
+        label
         image
         imageAlt(languageId: $languageId, primary: true) {
           value

@@ -742,7 +742,6 @@ type Query {
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   adminJourneys(status: [JourneyStatus!], template: Boolean): [Journey!]! @join__field(graph: JOURNEYS)
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
-  children(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @deprecated(reason: "Use video children instead") @join__field(graph: VIDEOS)
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
@@ -1183,7 +1182,6 @@ type Video
   @join__type(graph: VIDEOS, key: "id primaryLanguageId")
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
 {
-  childIds: [ID!]! @join__field(graph: VIDEOS)
   children: [Video!]! @join__field(graph: VIDEOS)
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)

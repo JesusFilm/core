@@ -65,7 +65,7 @@ export function VideoCard({
                     padding: '5px'
                   }}
                 >
-                  {video.childIds.length === 0 && (
+                  {video.children.length === 0 && (
                     <Stack direction="row">
                       <PlayArrow sx={{ fontSize: '1rem' }} />
                       <Typography variant="body1" sx={{ lineHeight: '16px' }}>
@@ -73,7 +73,7 @@ export function VideoCard({
                       </Typography>
                     </Stack>
                   )}
-                  {video.childIds.length > 0 && (
+                  {video.children.length > 0 && (
                     <Typography variant="body1">
                       {video.children.length} episodes
                     </Typography>
