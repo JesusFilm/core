@@ -185,61 +185,6 @@ describe('VideoService', () => {
     })
   })
 
-  describe('filterChildren', () => {
-    const filter = {
-      id: 'playlistId',
-      idType: IdType.databaseId
-    }
-    it('should query', async () => {
-      db.query.mockImplementationOnce(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(EPISODES_QUERY)
-        expect(bindVars).toEqual({
-          value0: filter.id,
-          value1: 0,
-          value2: 100,
-          value3: null
-        })
-        return { all: () => [] } as unknown as ArrayCursor
-      })
-      expect(await service.filterChildren(filter)).toEqual([])
-    })
-
-    it('should query with offset', async () => {
-      db.query.mockImplementationOnce(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(EPISODES_QUERY)
-        expect(bindVars).toEqual({
-          value0: filter.id,
-          value1: 200,
-          value2: 100,
-          value3: null
-        })
-        return { all: () => [] } as unknown as ArrayCursor
-      })
-      expect(await service.filterChildren({ ...filter, offset: 200 })).toEqual(
-        []
-      )
-    })
-
-    it('should query with limit', async () => {
-      db.query.mockImplementationOnce(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(EPISODES_QUERY)
-        expect(bindVars).toEqual({
-          value0: filter.id,
-          value1: 0,
-          value2: 200,
-          value3: null
-        })
-        return { all: () => [] } as unknown as ArrayCursor
-      })
-      expect(await service.filterChildren({ ...filter, limit: 200 })).toEqual(
-        []
-      )
-    })
-  })
-
   describe('getVideo', () => {
     const video = {
       id: '20615',
@@ -277,14 +222,12 @@ describe('VideoService', () => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(GET_VIDEO_BY_SLUG_QUERY)
         expect(bindVars).toEqual({
-          value0: 'jesus.html/english.html'
+          value0: 'jesus/english'
         })
         return { next: () => [] } as unknown as ArrayCursor
       })
 
-      expect(await service.getVideoBySlug('jesus.html/english.html')).toEqual(
-        []
-      )
+      expect(await service.getVideoBySlug('jesus/english')).toEqual([])
     })
   })
 

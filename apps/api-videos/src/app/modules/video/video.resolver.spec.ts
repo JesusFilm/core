@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { IdType } from '../../__generated__/graphql'
 import { VideoResolver } from './video.resolver'
 import { VideoService } from './video.service'
 
@@ -27,7 +28,7 @@ describe('VideoResolver', () => {
     ],
     variant: [
       {
-        slug: 'jesus.html/english.html'
+        slug: 'jesus/english'
       }
     ]
   }
@@ -37,7 +38,6 @@ describe('VideoResolver', () => {
       provide: VideoService,
       useFactory: () => ({
         filterAll: jest.fn(() => [video, video]),
-        filterChildren: jest.fn(() => [video, video]),
         getVideosByIds: jest.fn(() => [video, video]),
         getVideo: jest.fn(() => video),
         getVideoBySlug: jest.fn(() => video)
@@ -130,12 +130,10 @@ describe('VideoResolver', () => {
     })
 
     it('should return video with slug as idtype', async () => {
-      expect(
-        await resolver.video(info, 'jesus.html/english.html', IdType.slug)
-      ).toEqual(video)
-      expect(service.getVideoBySlug).toHaveBeenCalledWith(
-        'jesus.html/english.html'
+      expect(await resolver.video(info, 'jesus/english', IdType.slug)).toEqual(
+        video
       )
+      expect(service.getVideoBySlug).toHaveBeenCalledWith('jesus/english')
     })
   })
 
