@@ -34,7 +34,7 @@ export class VideoService extends BaseService {
 
   videosView = this.db.view('videosView')
 
-  private videoFilter(filter?: VideosFilter): AqlQuery {
+  public videoFilter(filter?: VideosFilter): AqlQuery {
     const {
       title,
       availableVariantLanguageIds = [],

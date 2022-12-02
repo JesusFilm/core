@@ -5,7 +5,6 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
-import { IdType } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 const baseVideo: GeneratedAqlQuery[] = [
@@ -38,7 +37,7 @@ const DEFAULT_QUERY = aql`
       }
     `.query
 
-const VIDEO_EPISODES_QUERY = aql`
+const VIDEO_CHILDREN_QUERY = aql`
     FOR item IN 
       FILTER item._key IN @value0
       RETURN {
@@ -47,23 +46,6 @@ const VIDEO_EPISODES_QUERY = aql`
           FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0)
       }
-    `.query
-
-const EPISODES_QUERY = aql`
-    FOR video IN 
-      FILTER video._key == @value0
-      LIMIT 1
-      FOR item IN 
-        FILTER item._key IN video.childIds
-        
-        LIMIT @value1, @value2
-        RETURN {
-          ${aql.join(baseVideo)}
-          variant: NTH(item.variants[* 
-          FILTER CURRENT.languageId == NOT_NULL(@value3, item.primaryLanguageId)
-          LIMIT 1 RETURN CURRENT
-        ], 0)
-        }
     `.query
 
 const GET_VIDEO_BY_SLUG_QUERY = aql`
@@ -235,7 +217,7 @@ describe('VideoService', () => {
     it('should query', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(VIDEO_EPISODES_QUERY)
+        expect(query).toEqual(VIDEO_CHILDREN_QUERY)
         expect(bindVars).toEqual({ value0: ['20615', '20616'], value1: null })
         return { all: () => [] } as unknown as ArrayCursor
       })
