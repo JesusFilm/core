@@ -13,7 +13,7 @@ interface ExtendedVideosFilter extends VideosFilter {
 }
 
 interface EpisodesFilter extends ExtendedVideosFilter {
-  playlistId: string
+  id: string
   idType: IdType.databaseId | IdType.slug
 }
 @Injectable()
@@ -23,9 +23,9 @@ export class VideoService extends BaseService {
   videoFilter(filter?: VideosFilter): AqlQuery {
     const {
       title,
-      tagId = null,
       availableVariantLanguageIds = [],
-      types = null
+      types = null,
+      labels = null
     } = filter ?? {}
 
     return aql.join(
@@ -40,15 +40,15 @@ export class VideoService extends BaseService {
         (availableVariantLanguageIds?.length ?? 0) > 0 &&
           aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
         types != null && aql`FILTER item.type IN ${types}`,
-        tagId != null && aql`FILTER ${tagId} IN item.tagIds`
+        labels != null && aql`FILTER item.label IN ${labels}`
       ].filter((x) => x !== false)
     )
   }
 
   @KeyAsId()
-  async filterEpisodes<T>(filter?: EpisodesFilter): Promise<T[]> {
+  async filterChildren<T>(filter?: EpisodesFilter): Promise<T[]> {
     const {
-      playlistId,
+      id,
       idType,
       variantLanguageId,
       offset = 0,
@@ -58,26 +58,26 @@ export class VideoService extends BaseService {
     const search = this.videoFilter(filter)
     const idFilter =
       idType === IdType.databaseId
-        ? aql`FILTER video._key == ${playlistId}`
-        : aql`FILTER ${playlistId} IN video.slug[*].value`
+        ? aql`FILTER video._key == ${id}`
+        : aql`FILTER ${id} IN video.slug[*].value`
 
     const res = await this.db.query(aql`
     FOR video IN ${this.collection}
       ${idFilter}
       LIMIT 1
       FOR item IN ${videosView}
-        FILTER item._key IN video.episodeIds
+        FILTER item._key IN video.childIds
         ${search}
         LIMIT ${offset}, ${limit}
         RETURN {
           _key: item._key,
           type: item.type,
+          label: item.label,
           title: item.title,
           snippet: item.snippet,
           description: item.description,
           studyQuestions: item.studyQuestions,
           image: item.image,
-          tagIds: item.tagIds,
           primaryLanguageId: item.primaryLanguageId,
           variant: NTH(item.variants[* 
             FILTER CURRENT.languageId == NOT_NULL(${
@@ -86,7 +86,7 @@ export class VideoService extends BaseService {
             LIMIT 1 RETURN CURRENT
           ], 0),
           variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-          episodeIds: item.episodeIds,
+          childIds: item.childIds,
           slug: item.slug,
           noIndex: item.noIndex,
           seoTitle: item.seoTitle,
@@ -109,12 +109,12 @@ export class VideoService extends BaseService {
       RETURN {
         _key: item._key,
         type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
@@ -123,7 +123,7 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
+        childIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -142,12 +142,12 @@ export class VideoService extends BaseService {
       RETURN {
         _key: item._key,
         type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
@@ -156,7 +156,7 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
-        episodeIds: item.episodeIds,
+        childIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -178,12 +178,12 @@ export class VideoService extends BaseService {
       RETURN {
         _key: item._key,
         type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
         playlist: item.playlist,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
@@ -192,7 +192,7 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
         ],
-        episodeIds: item.episodeIds,
+        childIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -207,19 +207,18 @@ export class VideoService extends BaseService {
     keys: string[],
     variantLanguageId?: string
   ): Promise<T[]> {
-    const videosView = this.db.view('videosView')
     const res = await this.db.query(aql`
-    FOR item IN ${videosView}
+    FOR item IN ${this.collection}
       FILTER item._key IN ${keys}
       RETURN {
         _key: item._key,
         type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
@@ -227,7 +226,7 @@ export class VideoService extends BaseService {
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
+        childIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,

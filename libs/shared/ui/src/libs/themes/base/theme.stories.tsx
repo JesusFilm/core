@@ -24,7 +24,7 @@ const ThemeDemo = {
   title: 'Default Theme',
   parameters: {
     ...simpleComponentConfig.parameters,
-    theme: 'dark'
+    theme: 'all'
   }
 }
 
@@ -185,9 +185,6 @@ Colors.args = {
   mainColor: ['light', 'main', 'dark'],
   overrideColors: ['primary', 'secondary', 'error']
 }
-Colors.parameters = {
-  theme: 'all'
-}
 
 // Make sure this is consistent with palette in colors.ts
 const palette: Record<string, string> = {
@@ -292,8 +289,8 @@ const ViewportTemplate: Story<ThemeStoryProps> = (args) => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        height: '600px',
-        m: '20%'
+        height: '100%',
+        px: '20%'
       }}
     >
       <Typography
@@ -410,7 +407,8 @@ Viewport.parameters = {
       breakpoints.values.xxl - 1,
       breakpoints.values.xxl
     ]
-  }
+  },
+  theme: 'dark'
 }
 
 const StyledButton = styled(Button)(({ theme }) => ({

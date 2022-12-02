@@ -7,6 +7,7 @@ import MuiListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Skeleton from '@mui/material/Skeleton'
 import ListItemText from '@mui/material/ListItemText'
+import Language from '@mui/icons-material/Language'
 import { sharedUiConfig } from '../../libs/sharedUiConfig'
 import { Dialog } from './Dialog'
 
@@ -32,6 +33,14 @@ Basic.args = {
     onSubmit: noop,
     submitLabel: 'Ok'
   },
+  children: <Typography>This is the content</Typography>
+}
+
+export const IconTitle = Template.bind({})
+IconTitle.args = {
+  open: true,
+  onClose: noop,
+  dialogTitle: { icon: <Language sx={{ mr: 3 }} />, title: 'Simple Dialog' },
   children: <Typography>This is the content</Typography>
 }
 
