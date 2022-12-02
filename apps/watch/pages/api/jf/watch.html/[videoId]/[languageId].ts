@@ -48,7 +48,7 @@ export default async function Handler(
   })
 
   // if video then redirect, else return 404
-  if (data != null) {
+  if (data.video != null) {
     res.redirect(302, `/${data.video.slug[0].value}`)
   } else {
     res.status(404).json({ success: false })
@@ -59,6 +59,6 @@ export default async function Handler(
   // } else {
   //   res.status(404).json({ success: false })
   // }
-  const newSlug = data.video.slug[0].value
-  res.status(200).json({ videoId, languageId, newSlug })
+  // const newSlug = data.video.slug[0].value
+  // res.status(200).json({ videoId, languageId, newSlug })
 }
