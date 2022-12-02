@@ -10,7 +10,6 @@ import { VideoService } from './video.service'
 
 const baseVideo: GeneratedAqlQuery[] = [
   aql`_key: item._key,
-        type: item.type,
         label: item.label,
         title: item.title,
         snippet: item.snippet,
@@ -18,12 +17,12 @@ const baseVideo: GeneratedAqlQuery[] = [
         studyQuestions: item.studyQuestions,
         image: item.image,
         primaryLanguageId: item.primaryLanguageId,
-        childIds: item.childIds
-        episodeIds: item.childIds,
+        childIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt,`
+        imageAlt: item.imageAlt,
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],`
 ]
 
 const DEFAULT_QUERY = aql`
@@ -35,8 +34,7 @@ const DEFAULT_QUERY = aql`
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
-        ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        ], 0)
       }
     `.query
 
@@ -47,8 +45,7 @@ const VIDEO_EPISODES_QUERY = aql`
         ${aql.join(baseVideo)}
         variant: NTH(item.variants[*
           FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
-          LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+          LIMIT 1 RETURN CURRENT], 0)
       }
     `.query
 
@@ -65,8 +62,7 @@ const EPISODES_QUERY = aql`
           variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(@value3, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
-        ], 0),
-          variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+        ], 0)
         }
     `.query
 
@@ -76,11 +72,9 @@ const GET_VIDEO_BY_SLUG_QUERY = aql`
       LIMIT 1
       RETURN {
         ${aql.join(baseVideo)}
-        playlist: item.playlist,
         variant: NTH(item.variants[*
           FILTER CURRENT.slug == @value0
-          LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }]
+          LIMIT 1 RETURN CURRENT], 0)
       }
     `.query
 

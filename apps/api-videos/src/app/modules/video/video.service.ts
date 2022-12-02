@@ -83,13 +83,13 @@ export class VideoService extends BaseService {
             variantLanguageId ?? null
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
-        ], 0),`)
+        ], 0)`)
         break
       case IdType.slug:
         idFilter = aql`FILTER ${id} IN item.variants[*].slug[*].value`
         variantFilter.push(aql` variant: NTH(item.variants[*
           FILTER CURRENT.slug == ${id}
-          LIMIT 1 RETURN CURRENT], 0),`)
+          LIMIT 1 RETURN CURRENT], 0)`)
         break
     }
     if (idFilter == null || variantFilter == null) {
