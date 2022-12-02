@@ -591,19 +591,6 @@ describe('arclight', () => {
       mockFetch.mockImplementation(async (url) => {
         let response
         switch (url) {
-          case 'https://api.arclight.org/v2/media-languages?limit=5000&filter=default&apiKey=':
-            response = {
-              _embedded: {
-                mediaLanguages: [
-                  {
-                    name: 'English',
-                    bcp47: 'en',
-                    languageId: 529
-                  }
-                ]
-              }
-            }
-            break
           case 'https://api.arclight.org/v2/media-components?limit=50&isDeprecated=false&contentTypes=video&page=1&apiKey=':
             response = {
               _embedded: {
