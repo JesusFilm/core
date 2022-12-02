@@ -33,7 +33,6 @@ type Video @key(fields: "id primaryLanguageId") {
   """
   slug(languageId: ID, primary: Boolean): [Translation!]!
   noIndex: Boolean
-  childIds: [ID!]!
   children: [Video!]!
 }
 
@@ -44,13 +43,6 @@ input VideosFilter {
 }
 
 extend type Query {
-  children(
-    playlistId: ID!
-    idType: IdType
-    where: VideosFilter
-    offset: Int
-    limit: Int
-  ): [Video!]! @deprecated(reason: "Use video children instead")
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!, idType: IdType): Video!
 }

@@ -75,7 +75,7 @@ export function VideoCard({
                   )}
                   {video.childIds.length > 0 && (
                     <Typography variant="body1">
-                      {video.childIds.length} episodes
+                      {video.children.length} episodes
                     </Typography>
                   )}
                 </Box>

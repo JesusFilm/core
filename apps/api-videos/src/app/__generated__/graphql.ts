@@ -54,7 +54,6 @@ export class Video {
     variantLanguages: Language[];
     slug: Translation[];
     noIndex?: Nullable<boolean>;
-    childIds: string[];
     children: Video[];
     variant?: Nullable<VideoVariant>;
 }
@@ -81,8 +80,6 @@ export class Language {
 }
 
 export abstract class IQuery {
-    abstract children(playlistId: string, idType?: Nullable<IdType>, where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
-
     abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 
     abstract video(id: string, idType?: Nullable<IdType>): Video | Promise<Video>;

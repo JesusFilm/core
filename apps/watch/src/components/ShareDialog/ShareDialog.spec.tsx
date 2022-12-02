@@ -29,7 +29,8 @@ const video: Video = {
   },
   description: videos[0].snippet,
   studyQuestions: [],
-  children: []
+  children: [],
+  variantLanguages: []
 }
 
 describe('ShareDialog', () => {

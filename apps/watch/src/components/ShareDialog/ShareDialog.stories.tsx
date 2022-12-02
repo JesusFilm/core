@@ -38,7 +38,8 @@ const video: Video = {
   },
   description: videos[0].snippet,
   studyQuestions: [],
-  children: []
+  children: [],
+  variantLanguages: []
 }
 
 const routes = ['the-story-of-jesus-for-children']
