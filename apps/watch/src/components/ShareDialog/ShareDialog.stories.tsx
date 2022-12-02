@@ -4,6 +4,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { noop } from 'lodash'
 
 import { GetVideo_video as Video } from '../../../__generated__/GetVideo'
+import { GetVideoSiblings_video_children } from '../../../__generated__/GetVideoSiblings'
 import { VideoLabel } from '../../../__generated__/globalTypes'
 
 import { watchConfig } from '../../libs/storybook'
@@ -52,7 +53,10 @@ export const Basic = Template.bind({})
 Basic.args = {
   open: true,
   onClose: noop,
-  video: { ...video, label: VideoLabel.collection },
+  video: {
+    ...video,
+    children: [{ id: '1' }] as unknown as GetVideoSiblings_video_children[]
+  },
   routes
 }
 

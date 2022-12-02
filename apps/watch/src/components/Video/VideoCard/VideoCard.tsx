@@ -10,6 +10,7 @@ import PlayArrow from '@mui/icons-material/PlayArrow'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import Link from 'next/link'
 import Stack from '@mui/material/Stack'
+
 import { GetVideos_videos } from '../../../../__generated__/GetVideos'
 
 interface VideoCardProps {

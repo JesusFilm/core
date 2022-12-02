@@ -146,7 +146,7 @@ export function HomeVideoCard({ video }: VideoListCardProps): ReactElement {
                   </Typography>
                 </Stack>
               )}
-              {(video?.children ?? []).length > 0 && (
+              {(video?.children.length ?? 0) > 0 && (
                 <Typography variant="body1">
                   {video?.children.length} episodes
                 </Typography>
