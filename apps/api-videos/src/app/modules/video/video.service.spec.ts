@@ -5,7 +5,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
 import { AqlQuery } from 'arangojs/aql'
-import { IdType, VideoType } from '../../__generated__/graphql'
+import { IdType } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 const DEFAULT_QUERY = aql`
@@ -14,20 +14,19 @@ const DEFAULT_QUERY = aql`
       LIMIT ${0}, ${100}
       RETURN {
         _key: item._key,
-        type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
         ], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
+        childIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -36,23 +35,22 @@ const DEFAULT_QUERY = aql`
     `.query
 
 const VIDEO_EPISODES_QUERY = aql`
-    FOR item IN 
+    FOR item IN undefined
       FILTER item._key IN @value0
       RETURN {
         _key: item._key,
-        type: item.type,
+        label: item.label,
         title: item.title,
         snippet: item.snippet,
         description: item.description,
         studyQuestions: item.studyQuestions,
         image: item.image,
-        tagIds: item.tagIds,
         primaryLanguageId: item.primaryLanguageId,
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT], 0),
         variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
+        childIds: item.childIds,
         slug: item.slug,
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
@@ -65,25 +63,24 @@ const EPISODES_QUERY = aql`
       FILTER @value0 IN video.slug[*].value
       LIMIT 1
       FOR item IN 
-        FILTER item._key IN video.episodeIds
+        FILTER item._key IN video.childIds
         
         LIMIT @value1, @value2
         RETURN {
           _key: item._key,
-          type: item.type,
+          label: item.label,
           title: item.title,
           snippet: item.snippet,
           description: item.description,
           studyQuestions: item.studyQuestions,
           image: item.image,
-          tagIds: item.tagIds,
           primaryLanguageId: item.primaryLanguageId,
           variant: NTH(item.variants[* 
             FILTER CURRENT.languageId == NOT_NULL(@value3, item.primaryLanguageId)
             LIMIT 1 RETURN CURRENT
           ], 0),
           variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-          episodeIds: item.episodeIds,
+          childIds: item.childIds,
           slug: item.slug,
           noIndex: item.noIndex,
           seoTitle: item.seoTitle,
@@ -112,15 +109,6 @@ describe('VideoService', () => {
   })
 
   describe('videoFilter', () => {
-    it('should filter with specific types', async () => {
-      const filter = {
-        types: [VideoType.playlist, VideoType.standalone]
-      }
-      const response = await service.videoFilter(filter)
-      expect(response.query).toEqual('FILTER item.type IN @value0')
-      expect(response.bindVars).toEqual({ value0: filter.types })
-    })
-
     it('should filter with title', async () => {
       const filter = {
         title: 'abc'
@@ -209,7 +197,7 @@ describe('VideoService', () => {
 
   describe('filterEpisodes', () => {
     const filter = {
-      playlistId: 'playlistId',
+      id: 'playlistId',
       idType: IdType.slug
     }
     it('should query', async () => {
@@ -217,14 +205,14 @@ describe('VideoService', () => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(EPISODES_QUERY)
         expect(bindVars).toEqual({
-          value0: filter.playlistId,
+          value0: filter.id,
           value1: 0,
           value2: 100,
           value3: null
         })
         return { all: () => [] } as unknown as ArrayCursor
       })
-      expect(await service.filterEpisodes(filter)).toEqual([])
+      expect(await service.filterChildren(filter)).toEqual([])
     })
 
     it('should query with offset', async () => {
@@ -232,14 +220,14 @@ describe('VideoService', () => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(EPISODES_QUERY)
         expect(bindVars).toEqual({
-          value0: filter.playlistId,
+          value0: filter.id,
           value1: 200,
           value2: 100,
           value3: null
         })
         return { all: () => [] } as unknown as ArrayCursor
       })
-      expect(await service.filterEpisodes({ ...filter, offset: 200 })).toEqual(
+      expect(await service.filterChildren({ ...filter, offset: 200 })).toEqual(
         []
       )
     })
@@ -249,14 +237,14 @@ describe('VideoService', () => {
         const { query, bindVars } = q as unknown as AqlQuery
         expect(query).toEqual(EPISODES_QUERY)
         expect(bindVars).toEqual({
-          value0: filter.playlistId,
+          value0: filter.id,
           value1: 0,
           value2: 200,
           value3: null
         })
         return { all: () => [] } as unknown as ArrayCursor
       })
-      expect(await service.filterEpisodes({ ...filter, limit: 200 })).toEqual(
+      expect(await service.filterChildren({ ...filter, limit: 200 })).toEqual(
         []
       )
     })
@@ -293,7 +281,7 @@ describe('VideoService', () => {
     })
   })
 
-  describe('episodes', () => {
+  describe('children', () => {
     it('should query', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery

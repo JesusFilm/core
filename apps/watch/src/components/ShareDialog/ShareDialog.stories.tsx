@@ -1,9 +1,10 @@
-import { ComponentStory, Meta } from '@storybook/react'
+import { ComponentProps } from 'react'
+import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { noop } from 'lodash'
 
 import { GetVideo_video as Video } from '../../../__generated__/GetVideo'
-import { VideoType } from '../../../__generated__/globalTypes'
+import { GetVideoSiblings_video_children } from '../../../__generated__/GetVideoSiblings'
 
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/testData'
@@ -23,16 +24,26 @@ const video: Video = {
   variant: {
     __typename: 'VideoVariant',
     duration: videos[0].variant?.duration ?? 0,
-    hls: 'https://arc.gt/4jz75'
+    hls: 'https://arc.gt/4jz75',
+    language: {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'English'
+        }
+      ]
+    }
   },
   description: videos[0].snippet,
-  episodes: [],
-  variantLanguages: []
+  studyQuestions: [],
+  children: []
 }
 
 const routes = ['the-story-of-jesus-for-children']
 
-const Template: ComponentStory<typeof ShareDialog> = ({ ...args }) => {
+const Template: Story<ComponentProps<typeof ShareDialog>> = ({ ...args }) => {
   return <ShareDialog {...args} />
 }
 
@@ -40,7 +51,10 @@ export const Basic = Template.bind({})
 Basic.args = {
   open: true,
   onClose: noop,
-  video: { ...video, type: VideoType.playlist },
+  video: {
+    ...video,
+    children: [{ id: '1' }] as unknown as GetVideoSiblings_video_children[]
+  },
   routes
 }
 

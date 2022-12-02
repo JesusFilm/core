@@ -7,7 +7,7 @@ import Box from '@mui/material/Box'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import NewReleasesRounded from '@mui/icons-material/NewReleasesRounded'
 
-export interface ContactSupportProps {
+interface ContactSupportProps {
   title: string
   description: string
 }

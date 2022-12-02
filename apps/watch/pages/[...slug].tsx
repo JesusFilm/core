@@ -27,9 +27,15 @@ export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID) {
     video(id: $id, idType: slug) {
       id
-      type
+      label
       image
+      snippet(languageId: $languageId, primary: true) {
+        value
+      }
       description(languageId: $languageId, primary: true) {
+        value
+      }
+      studyQuestions(languageId: $languageId, primary: true) {
         value
       }
       title(languageId: $languageId, primary: true) {
@@ -38,10 +44,19 @@ export const GET_VIDEO = gql`
       variant {
         duration
         hls
+        language {
+          id
+          name(languageId: $languageId, primary: true) {
+            value
+          }
+        }
       }
-      episodes {
+      slug(languageId: $languageId, primary: true) {
+        value
+      }
+      children {
         id
-        type
+        label
         title(languageId: $languageId, primary: true) {
           value
         }
@@ -49,25 +64,15 @@ export const GET_VIDEO = gql`
         imageAlt(languageId: $languageId, primary: true) {
           value
         }
-        snippet(languageId: $languageId, primary: true) {
-          value
-        }
         slug(languageId: $languageId, primary: true) {
           value
         }
-        episodeIds
+        children {
+          id
+        }
         variant {
           duration
           hls
-        }
-      }
-      slug(languageId: $languageId, primary: true) {
-        value
-      }
-      variantLanguages {
-        id
-        name(languageId: $languageId, primary: true) {
-          value
         }
       }
     }
@@ -75,27 +80,32 @@ export const GET_VIDEO = gql`
 `
 
 export const GET_VIDEO_SIBLINGS = gql`
-  query GetVideoSiblings($playlistId: ID!, $languageId: ID) {
-    episodes(playlistId: $playlistId, idType: slug) {
+  query GetVideoSiblings($id: ID!, $languageId: ID) {
+    video(id: $id, idType: slug) {
       id
-      type
-      image
-      imageAlt(languageId: $languageId, primary: true) {
-        value
-      }
-      snippet(languageId: $languageId, primary: true) {
-        value
-      }
-      title(languageId: $languageId, primary: true) {
-        value
-      }
-      variant {
-        duration
-        hls
-      }
-      episodeIds
-      slug(languageId: $languageId, primary: true) {
-        value
+      children {
+        id
+        label
+        image
+        imageAlt(languageId: $languageId, primary: true) {
+          value
+        }
+        snippet(languageId: $languageId, primary: true) {
+          value
+        }
+        title(languageId: $languageId, primary: true) {
+          value
+        }
+        variant {
+          duration
+          hls
+        }
+        children {
+          id
+        }
+        slug(languageId: $languageId, primary: true) {
+          value
+        }
       }
     }
   }
@@ -124,11 +134,11 @@ export default function SeoFriendly(): ReactElement {
     }
   })
 
-  const playlistId = routes?.[routes.length - 2]
+  const id = routes?.[routes.length - 2]
   const { data: siblingsData } = useQuery(GET_VIDEO_SIBLINGS, {
-    skip: playlistId == null,
+    skip: id == null,
     variables: {
-      playlistId: playlistId ?? '',
+      id: id ?? '',
       languageId: router.locale ?? router.defaultLocale
     }
   })
@@ -160,15 +170,15 @@ export default function SeoFriendly(): ReactElement {
         {data?.video != null && (
           <>
             <Box sx={{ pt: '20px' }}>
-              {data.video.episodes.length > 0 && (
+              {data.video.children.length > 0 && (
                 <VideosCarousel
-                  videos={data.video.episodes}
+                  videos={data.video.children}
                   routePrefix={routes.join('/')}
                 />
               )}
-              {siblingsData?.episodes?.length > 0 && (
+              {siblingsData?.video.children?.length > 0 && (
                 <VideosCarousel
-                  videos={siblingsData.episodes}
+                  videos={siblingsData.video.children}
                   routePrefix={getSiblingRoute(routes).join('/')}
                 />
               )}

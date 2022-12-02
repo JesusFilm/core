@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { styled } from '@mui/material/styles'
 import MuiDialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -25,6 +25,7 @@ interface DialogAction {
 }
 
 interface DialogTitle {
+  icon?: ReactNode
   title: string
   closeButton?: boolean
 }
@@ -81,6 +82,7 @@ export function Dialog({
     >
       {dialogTitle != null && (
         <MuiDialogTitle>
+          {dialogTitle.icon != null && dialogTitle.icon}
           {dialogTitle.title}
           {dialogTitle.closeButton != null && dialogTitle.closeButton && (
             <IconButton

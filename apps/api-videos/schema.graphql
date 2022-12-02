@@ -1,8 +1,3 @@
-type VideoTag {
-  id: ID!
-  title(languageId: ID, primary: Boolean): [Translation!]!
-}
-
 type Translation {
   value: String!
   language: Language!
@@ -14,15 +9,18 @@ enum IdType {
   slug
 }
 
-enum VideoType {
+enum VideoLabel {
+  collection
   episode
-  standalone
-  playlist
+  featureFilm
+  segment
+  series
+  shortFilm
 }
 
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
-  type: VideoType!
+  label: VideoLabel!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
   seoTitle(languageId: ID, primary: Boolean): [Translation!]!
@@ -38,18 +36,14 @@ type Video @key(fields: "id primaryLanguageId") {
   """
   slug(languageId: ID, primary: Boolean): [Translation!]!
   noIndex: Boolean
-
-  """Episodes are child videos, currently only found in a playlist type"""
-  episodeIds: [ID!]!
-  episodes: [Video!]!
+  children: [Video!]!
   variant(languageId: ID): VideoVariant
 }
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
-  tagId: String
-  types: [VideoType!]
+  labels: [VideoLabel!]
 }
 
 enum VideoVariantDownloadQuality {
@@ -72,14 +66,11 @@ type VideoVariant {
   subtitle(languageId: ID, primary: Boolean): [Translation!]!
 }
 
-extend type Query {
-  videoTags: [VideoTag!]
-  videoTag(id: ID!): VideoTag
-  episodes(playlistId: ID!, idType: IdType, where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  video(id: ID!, idType: IdType): Video!
-}
-
 extend type Language @key(fields: "id") {
   id: ID! @external
+}
+
+extend type Query {
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
+  video(id: ID!, idType: IdType): Video!
 }

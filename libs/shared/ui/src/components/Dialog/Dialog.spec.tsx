@@ -1,13 +1,16 @@
+import { ComponentProps } from 'react'
 import Typography from '@mui/material/Typography'
+import Language from '@mui/icons-material/Language'
 import { fireEvent } from '@storybook/testing-library'
 import { render } from '@testing-library/react'
 import { Dialog } from './Dialog'
 
 describe('Dialog', () => {
-  const dialogProps: Parameters<typeof Dialog>[0] = {
+  const dialogProps: ComponentProps<typeof Dialog> = {
     open: true,
     onClose: jest.fn(),
     dialogTitle: {
+      icon: <Language />,
       title: 'Title',
       closeButton: true
     },
@@ -17,7 +20,10 @@ describe('Dialog', () => {
     children: <Typography>Children</Typography>
   }
   it('should display the content', () => {
-    const { getByText, getByRole } = render(<Dialog {...dialogProps} />)
+    const { getByText, getByRole, getByTestId } = render(
+      <Dialog {...dialogProps} />
+    )
+    expect(getByTestId('LanguageIcon')).toBeInTheDocument()
     expect(getByText('Title')).toBeInTheDocument()
     expect(getByText('Children')).toBeInTheDocument()
     expect(getByRole('button', { name: 'Save' })).toBeInTheDocument()
@@ -30,7 +36,7 @@ describe('Dialog', () => {
   })
 
   it('should show the custom labels for buttons', () => {
-    const input: Parameters<typeof Dialog>[0] = {
+    const input: ComponentProps<typeof Dialog> = {
       ...dialogProps,
       dialogAction: {
         onSubmit: jest.fn(),
@@ -44,7 +50,7 @@ describe('Dialog', () => {
   })
 
   it('should close the dialog when cancel is clicked', () => {
-    const input: Parameters<typeof Dialog>[0] = {
+    const input: ComponentProps<typeof Dialog> = {
       ...dialogProps,
       dialogAction: {
         onSubmit: jest.fn(),

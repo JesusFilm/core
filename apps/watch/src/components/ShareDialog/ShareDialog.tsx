@@ -1,4 +1,4 @@
-import { ReactElement, useState, SyntheticEvent } from 'react'
+import { ReactElement, useState, SyntheticEvent, ComponentProps } from 'react'
 import { useSnackbar } from 'notistack'
 import Image from 'next/image'
 import Box from '@mui/material/Box'
@@ -16,10 +16,9 @@ import { useTheme } from '@mui/material/styles'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { GetVideo_video } from '../../../__generated__/GetVideo'
-import { VideoType } from '../../../__generated__/globalTypes'
 
 interface ShareDialogProps
-  extends Pick<Parameters<typeof Dialog>[0], 'open' | 'onClose'> {
+  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
   video: GetVideo_video
   routes: string[]
 }
@@ -181,7 +180,7 @@ export function ShareDialog({
               <TwitterIcon sx={{ fontSize: 46 }} />
             </IconButton>
           </Stack>
-          {video.type === VideoType.playlist ? (
+          {video.children.length > 0 ? (
             <ShareLink />
           ) : (
             <>
