@@ -16,7 +16,6 @@ export const GET_VIDEOS = gql`
   ) {
     videos(where: $where, offset: $offset, limit: $limit) {
       id
-      type
       image
       snippet(languageId: $languageId, primary: true) {
         value
@@ -27,7 +26,9 @@ export const GET_VIDEOS = gql`
       variant {
         duration
       }
-      episodeIds
+      children {
+        id
+      }
       slug(languageId: $languageId, primary: true) {
         value
       }

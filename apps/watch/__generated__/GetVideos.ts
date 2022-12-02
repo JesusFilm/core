@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideosFilter, VideoType } from "./globalTypes";
+import { VideosFilter } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetVideos
@@ -24,6 +24,11 @@ export interface GetVideos_videos_variant {
   duration: number;
 }
 
+export interface GetVideos_videos_children {
+  __typename: "Video";
+  id: string;
+}
+
 export interface GetVideos_videos_slug {
   __typename: "Translation";
   value: string;
@@ -32,15 +37,11 @@ export interface GetVideos_videos_slug {
 export interface GetVideos_videos {
   __typename: "Video";
   id: string;
-  type: VideoType;
   image: string | null;
   snippet: GetVideos_videos_snippet[];
   title: GetVideos_videos_title[];
   variant: GetVideos_videos_variant | null;
-  /**
-   * Episodes are child videos, currently only found in a playlist type
-   */
-  episodeIds: string[];
+  children: GetVideos_videos_children[];
   /**
    * slug is a permanent link to the video. It should only be appended, not edited or deleted
    */

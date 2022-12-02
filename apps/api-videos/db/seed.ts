@@ -92,7 +92,7 @@ interface Video {
   imageAlt: Translation[]
   variants: VideoVariant[]
   slug: Translation[]
-  episodeIds: string[]
+  childIds: string[]
   noIndex: boolean
 }
 
@@ -140,6 +140,7 @@ async function getMediaComponentLanguage(
 }
 
 const usedTitles: string[] = []
+
 function getIteration(slug: string, collection: string[]): string {
   const exists = collection.find((t) => t === slug)
   if (exists != null && slug !== '') {
@@ -177,6 +178,11 @@ async function digestContent(
   languages: Language[],
   mediaComponent: MediaComponent
 ): Promise<void> {
+  console.log(
+    `${mediaComponent.componentType}:`,
+    mediaComponent.mediaComponentId
+  )
+
   const video = await getVideo(mediaComponent.mediaComponentId)
 
   const metadataLanguageId =
@@ -184,15 +190,28 @@ async function digestContent(
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
       ?.languageId.toString() ?? '529' // english by default
 
-  console.log('content:', mediaComponent.mediaComponentId)
-
   const variants: VideoVariant[] = []
-  for (const mediaComponentLanguage of await getMediaComponentLanguage(
+  if (mediaComponent.subType !== 'collection') {
+    for (const mediaComponentLanguage of await getMediaComponentLanguage(
+      mediaComponent.mediaComponentId
+    )) {
+      variants.push(
+        await digestMediaComponentLanguage(
+          mediaComponentLanguage,
+          mediaComponent
+        )
+      )
+    }
+  }
+
+  const childIds: string[] = []
+  for (const videoId of await getMediaComponentLinks(
     mediaComponent.mediaComponentId
   )) {
-    variants.push(
-      await digestMediaComponentLanguage(mediaComponentLanguage, mediaComponent)
-    )
+    const video = await getVideo(videoId)
+    if (video == null) continue
+
+    childIds.push(videoId)
   }
 
   const body = {
@@ -245,7 +264,8 @@ async function digestContent(
         primary: true
       }
     ],
-    episodeIds: [],
+    tagIds: [],
+    childIds,
     variants,
     slug: video?.slug ?? [
       {
@@ -319,120 +339,6 @@ async function getMediaComponentLinks(
   return response.linkedMediaComponentIds.contains ?? []
 }
 
-async function digestSeriesContainer(
-  mediaComponent,
-  languages,
-  video
-): Promise<Video> {
-  const metadataLanguageId =
-    languages
-      .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
-      ?.languageId.toString() ?? '529' // english by default
-
-  const variants: VideoVariant[] = []
-  for (const mediaComponentLanguage of await getMediaComponentLanguage(
-    mediaComponent.mediaComponentId
-  )) {
-    variants.push(
-      await digestMediaComponentLanguage(mediaComponentLanguage, mediaComponent)
-    )
-  }
-
-  return {
-    _key: mediaComponent.mediaComponentId,
-    type: VideoType.playlist,
-    label: mediaComponent.subType,
-    primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
-    title: [
-      {
-        value: mediaComponent.title,
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    seoTitle: [
-      {
-        value: mediaComponent.title,
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    snippet: [
-      {
-        value: mediaComponent.shortDescription,
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    description: [
-      {
-        value: mediaComponent.longDescription,
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => {
-      return {
-        languageId: metadataLanguageId,
-        value: studyQuestion,
-        primary: true
-      }
-    }),
-    image: mediaComponent.imageUrls.mobileCinematicHigh,
-    imageAlt: [
-      {
-        value:
-          mediaComponent.title.length <= 100
-            ? mediaComponent.title
-            : mediaComponent.title.substring(0, 99),
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    slug: video?.slug ?? [
-      {
-        value: getSeoSlug(mediaComponent.title, usedTitles),
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    episodeIds: [],
-    variants,
-    noIndex: false
-  }
-}
-
-async function digestContainer(
-  languages: Language[],
-  mediaComponent: MediaComponent
-): Promise<void> {
-  console.log('container:', mediaComponent.mediaComponentId)
-  let series, existingSeries
-  if (mediaComponent.subType === 'series') {
-    existingSeries = await getVideo(mediaComponent.mediaComponentId)
-    series = await digestSeriesContainer(
-      mediaComponent,
-      languages,
-      existingSeries
-    )
-  }
-  for (const videoId of await getMediaComponentLinks(
-    mediaComponent.mediaComponentId
-  )) {
-    const video = await getVideo(videoId)
-    if (video == null) continue
-
-    if (mediaComponent.subType === 'series') series.episodeIds.push(videoId)
-  }
-  if (mediaComponent.subType === 'series') {
-    if (existingSeries != null)
-      await db
-        .collection('videos')
-        .update(mediaComponent.mediaComponentId, series)
-    else await db.collection('videos').save(series)
-  }
-}
-
 async function getVideo(videoId: string): Promise<Video | undefined> {
   const rst = await db.query(aql`
   FOR item IN ${db.collection('videos')}
@@ -484,7 +390,7 @@ async function main(): Promise<void> {
           label: {
             analyzers: ['identity']
           },
-          episodeIds: {
+          childIds: {
             analyzers: ['identity']
           },
           slug: {
@@ -512,7 +418,7 @@ async function main(): Promise<void> {
   }
 
   for (const container of await getMediaComponents('container')) {
-    await digestContainer(languages, container)
+    await digestContent(languages, container)
   }
 
   await db.collection('videos').ensureIndex({
