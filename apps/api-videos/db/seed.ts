@@ -1,347 +1,48 @@
 import { aql } from 'arangojs'
-import { flatten } from 'lodash'
-import fetch from 'node-fetch'
-import slugify from 'slugify'
+import { fetchMediaComponentsAndTransformToVideos } from '../src/libs/arclight'
+import {
+  fetchMediaLanguagesAndTransformToLanguages,
+  Video
+} from '../src/libs/arclight/arclight'
 import { ArangoDB } from './db'
-
-interface Video {
-  _key: string
-}
 
 const db = ArangoDB()
 
-interface MediaComponent {
-  mediaComponentId: string
-  componentType: string
-  primaryLanguageId: number
-  title: string
-  shortDescription: string
-  longDescription: string
-  metadataLanguageTag: string
-  imageUrls: {
-    mobileCinematicHigh: string
-  }
-  subType: string
-  studyQuestions: string[]
-}
-
-interface MediaComponentLanguage {
-  refId: string
-  languageId: number
-  lengthInMilliseconds: number
-  subtitleUrls: {
-    vtt?: Array<{
-      languageId: number
-      url: string
-    }>
-  }
-  streamingUrls: {
-    hls: Array<{
-      url: string
-    }>
-  }
-  downloadUrls: {
-    low?: {
-      url: string
-      sizeInBytes: number
-    }
-    high?: {
-      url: string
-      sizeInBytes: number
-    }
-  }
-}
-
-interface Language {
-  languageId: number
-  bcp47: string
-}
-
-interface Translation {
-  value: string
-  languageId: string
-  primary: boolean
-}
-
-interface Download {
-  quality: string
-  size: number
-  url: string
-}
-
-interface VideoVariant {
-  id: string
-  subtitle: Translation[]
-  hls?: string
-  languageId: string
-  duration: number
-  downloads: Download[]
-}
-
-interface Video {
-  label: string
-  primaryLanguageId: string
-  title: Translation[]
-  seoTitle: Translation[]
-  snippet: Translation[]
-  description: Translation[]
-  studyQuestions: Translation[]
-  image: string
-  imageAlt: Translation[]
-  variants: VideoVariant[]
-  slug: Translation[]
-  childIds: string[]
-  noIndex: boolean
-}
-
-async function getLanguages(): Promise<Language[]> {
-  const response: {
-    _embedded: { mediaLanguages: Language[] }
-  } = await (
-    await fetch(
-      `https://api.arclight.org/v2/media-languages?limit=5000&filter=default&apiKey=${
-        process.env.ARCLIGHT_API_KEY ?? ''
-      }`
-    )
-  ).json()
-  return response._embedded.mediaLanguages
-}
-
-async function getMediaComponents(
-  type: 'content' | 'container'
-): Promise<MediaComponent[]> {
-  const response: {
-    _embedded: { mediaComponents: MediaComponent[] }
-  } = await (
-    await fetch(
-      `https://api.arclight.org/v2/media-components?limit=5000&isDeprecated=false&type=${type}&contentTypes=video&apiKey=${
-        process.env.ARCLIGHT_API_KEY ?? ''
-      }`
-    )
-  ).json()
-  return response._embedded.mediaComponents
-}
-
-async function getMediaComponentLanguage(
-  mediaComponentId: string
-): Promise<MediaComponentLanguage[]> {
-  const response: {
-    _embedded: { mediaComponentLanguage: MediaComponentLanguage[] }
-  } = await (
-    await fetch(
-      `https://api.arclight.org/v2/media-components/${mediaComponentId}/languages?platform=android&apiKey=${
-        process.env.ARCLIGHT_API_KEY ?? ''
-      }`
-    )
-  ).json()
-  return response._embedded.mediaComponentLanguage
-}
-
-const usedTitles: string[] = []
-
-function getIteration(slug: string, collection: string[]): string {
-  const exists = collection.find((t) => t === slug)
-  if (exists != null && slug !== '') {
-    const regex = slug.match(/^(.*?)-(\d+)$/)
-    const iteration = parseInt(regex?.[2] ?? '1') + 1
-    const title = regex?.[1] ?? slug
-    const value = `${title}-${iteration}`
-    return getIteration(value, collection)
-  }
-  return slug
-}
-
-function getSeoSlug(title: string, collection: string[]): string {
-  const slug = slugify(title, { lower: true, remove: /[^a-zA-Z\d\s:]/g })
-  const newSlug = getIteration(slug, collection)
-  collection.push(newSlug)
-  return newSlug
-}
-
-async function getAllSlugs(): Promise<void> {
-  const cursor = await db.query(aql`
-    FOR v IN videos
-      RETURN {
-        _key: v._key,
-        slug: v.slug
-      }
-  `)
-  const results = await cursor.all()
-  usedTitles.concat(
-    flatten(results.map(({ slug }) => slug.map((s) => s.value)))
-  )
-}
-
-async function digestContent(
-  languages: Language[],
-  mediaComponent: MediaComponent
-): Promise<void> {
-  console.log(
-    `${mediaComponent.componentType}:`,
-    mediaComponent.mediaComponentId
-  )
-
-  const video = await getVideo(mediaComponent.mediaComponentId)
-
-  const metadataLanguageId =
-    languages
-      .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
-      ?.languageId.toString() ?? '529' // english by default
-
-  const variants: VideoVariant[] = []
-  if (mediaComponent.subType !== 'collection') {
-    for (const mediaComponentLanguage of await getMediaComponentLanguage(
-      mediaComponent.mediaComponentId
-    )) {
-      variants.push(
-        await digestMediaComponentLanguage(
-          mediaComponentLanguage,
-          mediaComponent
-        )
-      )
-    }
-  }
-
-  const childIds: string[] = []
-  for (const videoId of await getMediaComponentLinks(
-    mediaComponent.mediaComponentId
-  )) {
-    const video = await getVideo(videoId)
-    if (video == null) continue
-
-    childIds.push(videoId)
-  }
-
-  const body = {
-    label: mediaComponent.subType,
-    primaryLanguageId: mediaComponent.primaryLanguageId.toString(),
-    title: [
-      {
-        value: mediaComponent.title,
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    seoTitle: [
-      {
-        value: mediaComponent.title,
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    snippet: [
-      {
-        value: mediaComponent.shortDescription,
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    description: [
-      {
-        value: mediaComponent.longDescription,
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    studyQuestions: mediaComponent.studyQuestions.map((studyQuestion) => {
-      return {
-        languageId: metadataLanguageId,
-        value: studyQuestion,
-        primary: true
-      }
-    }),
-    image: mediaComponent.imageUrls.mobileCinematicHigh,
-    imageAlt: [
-      {
-        value:
-          mediaComponent.title.length <= 100
-            ? mediaComponent.title
-            : mediaComponent.title.substring(0, 99),
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    childIds,
-    variants,
-    slug: video?.slug ?? [
-      {
-        value: getSeoSlug(mediaComponent.title, usedTitles),
-        languageId: metadataLanguageId,
-        primary: true
-      }
-    ],
-    noIndex: false
-  }
-
-  if (video != null) {
-    await db.collection('videos').update(mediaComponent.mediaComponentId, body)
-  } else {
-    await db
-      .collection('videos')
-      .save({ _key: mediaComponent.mediaComponentId, ...body })
-  }
-}
-
-async function digestMediaComponentLanguage(
-  mediaComponentLanguage: MediaComponentLanguage,
-  mediaComponent: MediaComponent
-): Promise<VideoVariant> {
-  if (mediaComponent.subType === 'series') {
-    return {
-      id: mediaComponentLanguage.refId,
-      languageId: mediaComponentLanguage.languageId.toString(),
-      duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001),
-      subtitle: [],
-      downloads: []
-    }
-  }
-  const downloads: Download[] = []
-  for (const [key, value] of Object.entries(
-    mediaComponentLanguage.downloadUrls
-  )) {
-    downloads.push({
-      quality: key,
-      size: value.sizeInBytes,
-      url: value.url
-    })
-  }
-  return {
-    id: mediaComponentLanguage.refId,
-    subtitle:
-      mediaComponentLanguage.subtitleUrls.vtt?.map(({ languageId, url }) => ({
-        languageId: languageId.toString(),
-        value: url,
-        primary: languageId === mediaComponentLanguage.languageId
-      })) ?? [],
-    hls: mediaComponentLanguage.streamingUrls.hls[0].url,
-    languageId: mediaComponentLanguage.languageId.toString(),
-    duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001),
-    downloads
-  }
-}
-
-async function getMediaComponentLinks(
-  mediaComponentId: string
-): Promise<string[]> {
-  const response: {
-    linkedMediaComponentIds: { contains: string[] }
-  } = await (
-    await fetch(
-      `https://api.arclight.org/v2/media-component-links/${mediaComponentId}?apiKey=${
-        process.env.ARCLIGHT_API_KEY ?? ''
-      }`
-    )
-  ).json()
-  return response.linkedMediaComponentIds.contains ?? []
-}
-
-async function getVideo(videoId: string): Promise<Video | undefined> {
+async function getVideo(
+  videoId: string
+): Promise<Record<string, unknown> | undefined> {
   const rst = await db.query(aql`
   FOR item IN ${db.collection('videos')}
     FILTER item._key == ${videoId}
     LIMIT 1
     RETURN item`)
   return await rst.next()
+}
+
+async function importMediaComponents(): Promise<void> {
+  const usedVideoSlugs = []
+  const languages = await fetchMediaLanguagesAndTransformToLanguages()
+  let videos: Video[]
+  let page = 1
+  const startTime = new Date().getTime()
+  do {
+    videos = await fetchMediaComponentsAndTransformToVideos(
+      languages,
+      usedVideoSlugs,
+      page
+    )
+    for (const video of videos) {
+      if ((await getVideo(video._key)) != null) {
+        await db.collection('videos').update(video._key, video)
+      } else {
+        await db.collection('videos').save(video)
+      }
+    }
+    const duration = new Date().getTime() - startTime
+    console.log('importMediaComponents duration(s):', duration * 0.001)
+    console.log('importMediaComponents page:', page)
+    page++
+  } while (videos.length > 0)
 }
 
 async function main(): Promise<void> {
@@ -370,6 +71,13 @@ async function main(): Promise<void> {
                     analyzers: ['identity']
                   }
                 }
+              },
+              slug: {
+                fields: {
+                  value: {
+                    analyzers: ['identity']
+                  }
+                }
               }
             }
           },
@@ -387,32 +95,29 @@ async function main(): Promise<void> {
             analyzers: ['identity']
           },
           slug: {
-            analyzers: ['identity']
+            fields: {
+              value: {
+                analyzers: ['identity']
+              }
+            }
           }
         }
       }
     }
   }
   if (await db.view('videosView').exists()) {
-    console.log('updating view')
+    console.log('updating view...')
     await db.view('videosView').updateProperties(view)
+    console.log('view created')
   } else {
-    console.log('creating view')
+    console.log('creating view...')
     await db.createView('videosView', view)
-  }
-  console.log('view created')
-
-  console.log('getting existing slugs')
-  await getAllSlugs()
-
-  const languages = await getLanguages()
-  for (const content of await getMediaComponents('content')) {
-    await digestContent(languages, content)
+    console.log('view created')
   }
 
-  for (const container of await getMediaComponents('container')) {
-    await digestContent(languages, container)
-  }
+  console.log('importing mediaComponents as videos...')
+  await importMediaComponents()
+  console.log('mediaComponents imported')
 
   await db.collection('videos').ensureIndex({
     name: 'slug',
