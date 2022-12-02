@@ -24,7 +24,6 @@ enum VideoLabel {
 
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
-  type: VideoType! @deprecated(reason: "No longer relevant")
   label: VideoLabel!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
@@ -46,7 +45,6 @@ type Video @key(fields: "id primaryLanguageId") {
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
-  types: [VideoType!] @deprecated(reason: "No longer relevant")
   labels: [VideoLabel!]
 }
 

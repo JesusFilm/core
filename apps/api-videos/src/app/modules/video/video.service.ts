@@ -24,7 +24,6 @@ export class VideoService extends BaseService {
     const {
       title,
       availableVariantLanguageIds = [],
-      types = null,
       labels = null
     } = filter ?? {}
 
@@ -39,7 +38,6 @@ export class VideoService extends BaseService {
           aql`AND`,
         (availableVariantLanguageIds?.length ?? 0) > 0 &&
           aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
-        types != null && aql`FILTER item.type IN ${types}`,
         labels != null && aql`FILTER item.label IN ${labels}`
       ].filter((x) => x !== false)
     )
@@ -71,7 +69,6 @@ export class VideoService extends BaseService {
         LIMIT ${offset}, ${limit}
         RETURN {
           _key: item._key,
-          type: item.type,
           label: item.label,
           title: item.title,
           snippet: item.snippet,
@@ -108,7 +105,6 @@ export class VideoService extends BaseService {
       LIMIT ${offset}, ${limit}
       RETURN {
         _key: item._key,
-        type: item.type,
         label: item.label,
         title: item.title,
         snippet: item.snippet,
@@ -141,7 +137,6 @@ export class VideoService extends BaseService {
       LIMIT 1
       RETURN {
         _key: item._key,
-        type: item.type,
         label: item.label,
         title: item.title,
         snippet: item.snippet,
@@ -177,7 +172,6 @@ export class VideoService extends BaseService {
       LIMIT 1
       RETURN {
         _key: item._key,
-        type: item.type,
         label: item.label,
         title: item.title,
         snippet: item.snippet,
@@ -212,7 +206,6 @@ export class VideoService extends BaseService {
       FILTER item._key IN ${keys}
       RETURN {
         _key: item._key,
-        type: item.type,
         label: item.label,
         title: item.title,
         snippet: item.snippet,
