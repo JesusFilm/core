@@ -29,11 +29,6 @@ export interface GetVideos_videos_children {
   id: string;
 }
 
-export interface GetVideos_videos_slug {
-  __typename: "Translation";
-  value: string;
-}
-
 export interface GetVideos_videos {
   __typename: "Video";
   id: string;
@@ -44,9 +39,9 @@ export interface GetVideos_videos {
   variant: GetVideos_videos_variant | null;
   children: GetVideos_videos_children[];
   /**
-   * slug is a permanent link to the video. It should only be appended, not edited or deleted.
+   * slug is a permanent link to the video.
    */
-  slug: GetVideos_videos_slug[];
+  slug: string;
 }
 
 export interface GetVideos {
