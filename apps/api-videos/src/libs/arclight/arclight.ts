@@ -1,4 +1,4 @@
-import fetch from 'node-fetch'
+import fetch, { Response, RequestInfo, RequestInit } from 'node-fetch'
 import { slugify } from '../slugify'
 
 export interface ArclightMediaLanguage {
@@ -95,13 +95,28 @@ export interface Video {
   noIndex: boolean
 }
 
+async function fetchPlus(
+  url: RequestInfo,
+  init?: RequestInit,
+  retries = 3
+): Promise<Response> {
+  try {
+    return await fetch(url, init)
+  } catch (error) {
+    if (error.name === 'FetchError' && retries > 0) {
+      return await fetchPlus(url, init, retries - 1)
+    }
+    throw new Error(error)
+  }
+}
+
 export async function getArclightMediaLanguages(): Promise<
   ArclightMediaLanguage[]
 > {
   const response: {
     _embedded: { mediaLanguages: ArclightMediaLanguage[] }
   } = await (
-    await fetch(
+    await fetchPlus(
       `https://api.arclight.org/v2/media-languages?limit=5000&filter=default&apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
@@ -115,13 +130,20 @@ export async function getArclightMediaComponents(
 ): Promise<ArclightMediaComponent[]> {
   const response: {
     _embedded: { mediaComponents: ArclightMediaComponent[] }
+    message?: string
   } = await (
-    await fetch(
-      `https://api.arclight.org/v2/media-components?limit=50&isDeprecated=false&contentTypes=video&page=${page}&apiKey=${
+    await fetchPlus(
+      `https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=${page}&apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
     )
   ).json()
+  if (
+    response.message?.match(
+      /Page \[\d\d\] does not exist. Given a limit of \[25\] per page, value must not be greater than \[\d\d\]\./
+    ) != null
+  )
+    return []
   return response._embedded.mediaComponents
 }
 
@@ -131,7 +153,7 @@ export async function getArclightMediaComponentLanguages(
   const response: {
     _embedded: { mediaComponentLanguage: ArclightMediaComponentLanguage[] }
   } = await (
-    await fetch(
+    await fetchPlus(
       `https://api.arclight.org/v2/media-components/${mediaComponentId}/languages?platform=android&apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
@@ -146,7 +168,7 @@ export async function getArclightMediaComponentLinks(
   const response: {
     linkedMediaComponentIds: { contains: string[] }
   } = await (
-    await fetch(
+    await fetchPlus(
       `https://api.arclight.org/v2/media-component-links/${mediaComponentId}?apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`

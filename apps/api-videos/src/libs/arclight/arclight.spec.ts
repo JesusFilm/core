@@ -45,7 +45,8 @@ describe('arclight', () => {
       } as unknown as Response)
       await expect(getArclightMediaLanguages()).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
-        'https://api.arclight.org/v2/media-languages?limit=5000&filter=default&apiKey='
+        'https://api.arclight.org/v2/media-languages?limit=5000&filter=default&apiKey=',
+        undefined
       )
     })
   })
@@ -63,7 +64,24 @@ describe('arclight', () => {
       } as unknown as Response)
       await expect(getArclightMediaComponents(1)).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
-        'https://api.arclight.org/v2/media-components?limit=50&isDeprecated=false&contentTypes=video&page=1&apiKey='
+        'https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=1&apiKey=',
+        undefined
+      )
+    })
+
+    it('returns empty array when arclight returns overpagination error', async () => {
+      const request = mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () =>
+          await Promise.resolve({
+            message:
+              'Page [30] does not exist. Given a limit of [25] per page, value must not be greater than [29].'
+          })
+      } as unknown as Response)
+      await expect(getArclightMediaComponents(1)).resolves.toEqual([])
+      expect(request).toHaveBeenCalledWith(
+        'https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=1&apiKey=',
+        undefined
       )
     })
   })
@@ -83,7 +101,8 @@ describe('arclight', () => {
         getArclightMediaComponentLanguages('mediaComponentId')
       ).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
-        'https://api.arclight.org/v2/media-components/mediaComponentId/languages?platform=android&apiKey='
+        'https://api.arclight.org/v2/media-components/mediaComponentId/languages?platform=android&apiKey=',
+        undefined
       )
     })
   })
@@ -103,7 +122,8 @@ describe('arclight', () => {
         getArclightMediaComponentLinks('mediaComponentId')
       ).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
-        'https://api.arclight.org/v2/media-component-links/mediaComponentId?apiKey='
+        'https://api.arclight.org/v2/media-component-links/mediaComponentId?apiKey=',
+        undefined
       )
     })
   })
@@ -591,7 +611,7 @@ describe('arclight', () => {
       mockFetch.mockImplementation(async (url) => {
         let response
         switch (url) {
-          case 'https://api.arclight.org/v2/media-components?limit=50&isDeprecated=false&contentTypes=video&page=1&apiKey=':
+          case 'https://api.arclight.org/v2/media-components?limit=25&isDeprecated=false&contentTypes=video&page=1&apiKey=':
             response = {
               _embedded: {
                 mediaComponents: [

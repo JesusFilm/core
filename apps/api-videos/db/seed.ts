@@ -24,6 +24,7 @@ async function importMediaComponents(): Promise<void> {
   const languages = await fetchMediaLanguagesAndTransformToLanguages()
   let videos: Video[]
   let page = 1
+  const startTime = new Date().getTime()
   do {
     videos = await fetchMediaComponentsAndTransformToVideos(
       languages,
@@ -37,6 +38,9 @@ async function importMediaComponents(): Promise<void> {
         await db.collection('videos').save(video)
       }
     }
+    const duration = new Date().getTime() - startTime
+    console.log('importMediaComponents duration(s):', duration * 0.001)
+    console.log('importMediaComponents page:', page)
     page++
   } while (videos.length > 0)
 }
