@@ -203,7 +203,6 @@ async function digestContent(
   }
 
   const childIds: string[] = []
-
   for (const videoId of await getMediaComponentLinks(
     mediaComponent.mediaComponentId
   )) {
