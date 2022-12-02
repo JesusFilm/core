@@ -35,7 +35,6 @@ export enum VideoVariantDownloadQuality {
 export class VideosFilter {
     availableVariantLanguageIds?: Nullable<string[]>;
     title?: Nullable<string>;
-    types?: Nullable<VideoType[]>;
     labels?: Nullable<VideoLabel[]>;
 }
 
@@ -49,7 +48,6 @@ export class Translation {
 export class Video {
     __typename?: 'Video';
     id: string;
-    type: VideoType;
     label: VideoLabel;
     primaryLanguageId: string;
     title: Translation[];
