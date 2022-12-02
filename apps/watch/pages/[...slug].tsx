@@ -176,6 +176,7 @@ export default function SeoFriendly(): ReactElement {
               <Stack
                 direction="row"
                 spacing="100px"
+                justifyContent="center"
                 sx={{
                   mx: 0,
                   mt: 19.5,

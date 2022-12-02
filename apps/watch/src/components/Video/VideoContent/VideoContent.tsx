@@ -24,7 +24,32 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
         value={tabValue}
         onChange={handleTabChange}
         aria-label="background tabs"
-        sx={{ mb: 10 }}
+        variant="scrollable"
+        allowScrollButtonsMobile
+        sx={{
+          mb: 10,
+          '> .MuiTabs-scroller': {
+            '> .MuiTabs-indicator': {
+              zIndex: 1
+            }
+          },
+          '> .MuiButtonBase-root.MuiTabScrollButton-root': {
+            ':first-child': {
+              display: 'none'
+            },
+            ':last-child': {
+              width: 40,
+              display: 'inline-flex',
+              ml: '-40px',
+              opacity: 1,
+              background:
+                'linear-gradient(270deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 50%)',
+              svg: {
+                display: 'none'
+              }
+            }
+          }
+        }}
       >
         <Tab label="Description" {...tabA11yProps('video-description', 0)} />
         {video.studyQuestions.length !== 0 && (
@@ -35,7 +60,11 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
         )}
       </Tabs>
       <TabPanel name="description" value={tabValue} index={0}>
-        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+        <Typography
+          variant="body1"
+          color="#4D4D4D"
+          sx={{ whiteSpace: 'pre-wrap' }}
+        >
           {video.description[0]?.value}
         </Typography>
       </TabPanel>
@@ -63,8 +92,7 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
               >
                 <Typography variant="h6">{index + 1}</Typography>
               </Box>
-
-              <Typography key={index} variant="body1">
+              <Typography key={index} variant="body1" color="#4D4D4D">
                 {question.value}
               </Typography>
             </Stack>
