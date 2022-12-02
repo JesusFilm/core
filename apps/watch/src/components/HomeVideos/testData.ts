@@ -1,10 +1,8 @@
-import { VideoType } from '../../../__generated__/globalTypes'
 import {
-  GetVideos_videos,
-  GetVideos_videos_children
-} from '../../../__generated__/GetVideos'
-import { FilmType } from './Card/HomeVideoCard'
-import { HomeVideo } from './HomeVideos'
+  GetHomeVideo_video,
+  GetHomeVideo_video_children
+} from '../../../__generated__/GetHomeVideo'
+import { VideoLabel } from '../../../__generated__/globalTypes'
 
 export const videos = [
   '1_jf-0-0',
@@ -170,8 +168,8 @@ export const data: GetHomeVideo_video[] = [
     variant: { duration: 118, __typename: 'VideoVariant' },
     __typename: 'Video',
     children: [
-      { id: '1' } as unknown as GetVideos_videos_children,
-      { id: '2' } as unknown as GetVideos_videos_children
+      { id: '1' } as unknown as GetHomeVideo_video_children,
+      { id: '2' } as unknown as GetHomeVideo_video_children
     ],
     slug: [
       {
