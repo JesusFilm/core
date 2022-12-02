@@ -10,22 +10,25 @@ import ButtonBase from '@mui/material/ButtonBase'
 import { GetHomeVideo_video } from '../../../../__generated__/GetHomeVideo'
 
 export enum FilmType {
-  animation = 'Animation',
   collection = 'Collection',
-  feature = 'Feature Film',
-  series = 'Series'
+  episode = 'Episode',
+  featureFilm = 'Feature Film',
+  segment = 'Segment',
+  series = 'Series',
+  shortFilm = 'Short Film'
 }
 
 const designationColors = {
-  [FilmType.animation]: '#7283BE',
-  [FilmType.collection]: '#FF9E00',
-  [FilmType.feature]: '#FF9E00',
-  [FilmType.series]: '#3AA74A'
+  collection: '#FF9E00',
+  episode: '#7283BE',
+  segment: '#7283BE',
+  featureFilm: '#FF9E00',
+  series: '#3AA74A',
+  shortFilm: '#FF9E00'
 }
 
 interface VideoListCardProps {
   video?: GetHomeVideo_video
-  designation?: FilmType
 }
 
 const ImageButton = styled(ButtonBase)(({ theme }) => ({
@@ -83,10 +86,7 @@ const ImageBackdrop = styled('span')(({ theme }) => ({
   border: '1px solid rgba(255, 255, 255, 0.18)'
 }))
 
-export function HomeVideoCard({
-  video,
-  designation
-}: VideoListCardProps): ReactElement {
+export function HomeVideoCard({ video }: VideoListCardProps): ReactElement {
   return (
     <Link href={`/${video?.slug[0]?.value ?? ''}`} passHref>
       <ImageButton focusRipple>
@@ -122,10 +122,10 @@ export function HomeVideoCard({
           >
             <Typography
               variant="overline2"
-              color={designationColors[designation?.toString() ?? '']}
+              color={designationColors[video?.label ?? ''] ?? ''}
               p={0}
             >
-              {designation}
+              {FilmType[video?.label ?? '']}
             </Typography>
             <Stack
               direction="row"

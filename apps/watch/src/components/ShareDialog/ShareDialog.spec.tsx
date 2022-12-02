@@ -17,12 +17,21 @@ const video: Video = {
   variant: {
     __typename: 'VideoVariant',
     duration: videos[0].variant?.duration ?? 0,
+    language: {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'en'
+        }
+      ]
+    },
     hls: 'https://arc.gt/4jz75'
   },
   description: videos[0].snippet,
   studyQuestions: [],
-  children: [],
-  variantLanguages: []
+  children: []
 }
 
 describe('ShareDialog', () => {

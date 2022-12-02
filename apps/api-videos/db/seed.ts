@@ -261,7 +261,6 @@ async function digestContent(
         primary: true
       }
     ],
-    tagIds: [],
     childIds,
     variants,
     slug: video?.slug ?? [

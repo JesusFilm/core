@@ -9,12 +9,6 @@ enum IdType {
   slug
 }
 
-enum VideoType {
-  episode
-  standalone
-  playlist
-}
-
 enum VideoLabel {
   collection
   episode

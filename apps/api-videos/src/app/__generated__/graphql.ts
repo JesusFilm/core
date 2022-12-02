@@ -12,12 +12,6 @@ export enum IdType {
     slug = "slug"
 }
 
-export enum VideoType {
-    episode = "episode",
-    standalone = "standalone",
-    playlist = "playlist"
-}
-
 export enum VideoLabel {
     collection = "collection",
     episode = "episode",
