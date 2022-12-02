@@ -1,92 +1,56 @@
 import { ReactElement } from 'react'
 import Grid from '@mui/material/Grid'
-import AddRounded from '@mui/icons-material/AddRounded'
-import LoadingButton from '@mui/lab/LoadingButton'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
-import { deepmerge } from '@mui/utils'
-import { getTheme, ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { GetVideos_videos } from '../../../../__generated__/GetVideos'
-import { VideoCard } from '../../Video'
+import { GetHomeVideo_video } from '../../../../__generated__/GetHomeVideo'
+import { FilmType } from '../../Video'
+import { GridItem } from './GridItem'
 
 interface VideosGridProps {
-  videos: GetVideos_videos[]
+  videos: Videos[]
+  data: GetHomeVideo_video[] | undefined
+  onLoadMore?: () => void
+  showLoadMore?: boolean
   loading?: boolean
   isEnd?: boolean
-  showLoadMore?: boolean
-  routePrefix?: string | undefined
-  onLoadMore: () => Promise<void>
+}
+export interface Videos {
+  id: string
+  designation?: FilmType
 }
 
-export function VideosGrid({
-  loading = false,
-  isEnd = false,
-  onLoadMore,
-  showLoadMore = true,
-  videos,
-  routePrefix = undefined
-}: VideosGridProps): ReactElement {
-  const gridTheme = createTheme(
-    deepmerge(
-      getTheme({ themeName: ThemeName.website, themeMode: ThemeMode.light }),
-      {
-        breakpoints: {
-          values: {
-            xs: 0,
-            sm: 725,
-            md: 1043,
-            lg: 1450,
-            xl: 1765
-          }
-        }
-      }
-    )
-  )
+export function VideosGrid({ data, videos }: VideosGridProps): ReactElement {
   return (
-    <ThemeProvider theme={gridTheme}>
-      <Grid container spacing={4} data-testid="videos-grid">
-        {(videos.length ?? 0) > 0 &&
-          videos.map((video, index) => (
-            <Grid item key={index} md={4} sm={6} xs={12} lg={3}>
-              <VideoCard video={video} />
-            </Grid>
-          ))}
-        {loading &&
-          [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
-            <Grid
-              item
-              key={index}
-              md={4}
-              sm={6}
-              xs={12}
-              data-testid="videos-grid-placeholder"
-              mr="16px"
-            >
-              <VideoCard />
-            </Grid>
-          ))}
-        {!isEnd && showLoadMore && (
-          <Grid item xs={12}>
-            <LoadingButton
-              data-testid="VideoListLoadMore"
-              variant="outlined"
-              onClick={onLoadMore}
-              loading={loading}
-              startIcon={
-                (videos?.length ?? 0) > 0 && !isEnd ? null : <AddRounded />
+    <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
+      <Grid container data-testid="video-list-grid" justifyContent="center">
+        {videos.map((item, index) => (
+          <Grid
+            item
+            mx={2}
+            my="6px"
+            key={index}
+            // minWidth={266}
+            // maxWidth={338}
+            // minHeight={136}
+            // maxHeight={160}
+            sx={{
+              display: {
+                xs: index > 5 ? 'none' : '',
+                sm: index > 5 ? 'none' : '',
+                md: 'inherit',
+                lg: 'inherit',
+                xl: 'inherit'
               }
-              disabled={(videos?.length ?? 0) === 0 || isEnd}
-              loadingPosition="start"
-              size="medium"
-            >
-              {loading && 'Loading...'}
-              {!loading &&
-                ((videos?.length ?? 0) > 0 && !isEnd
-                  ? 'Load More'
-                  : 'No More Videos')}
-            </LoadingButton>
+            }}
+          >
+            <GridItem video={data?.find((video) => video.id === item.id)} />
+            {/* <VideoCard
+                video={data?.find((video) => video.id === item.id)}
+                designation={item?.designation}
+              /> */}
           </Grid>
-        )}
+        ))}
       </Grid>
     </ThemeProvider>
   )
