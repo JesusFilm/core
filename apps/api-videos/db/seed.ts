@@ -262,7 +262,7 @@ async function digestContent(
         primary: true
       }
     ],
-    childIds: childIds,
+    childIds,
     variants,
     slug: video?.slug ?? [
       {
