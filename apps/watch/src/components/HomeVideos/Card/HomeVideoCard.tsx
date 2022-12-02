@@ -88,7 +88,7 @@ const ImageBackdrop = styled('span')(({ theme }) => ({
 
 export function HomeVideoCard({ video }: VideoListCardProps): ReactElement {
   return (
-    <Link href={`/${video?.slug[0]?.value ?? ''}`} passHref>
+    <Link href={`/${video?.slug ?? ''}`} passHref>
       <ImageButton focusRipple>
         <ImageSrc
           style={{

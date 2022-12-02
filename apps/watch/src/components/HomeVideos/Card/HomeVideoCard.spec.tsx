@@ -17,10 +17,7 @@ describe('HomeVideoCard', () => {
     })
     it('should link to video url', async () => {
       const { getByRole } = render(<HomeVideoCard video={data[0]} />)
-      expect(getByRole('link')).toHaveAttribute(
-        'href',
-        `/${data[0].slug[0].value}`
-      )
+      expect(getByRole('link')).toHaveAttribute('href', `/${data[0].slug}`)
     })
   })
 })
