@@ -113,7 +113,7 @@ export interface GetVideo_video {
 }
 
 export interface GetVideo {
-  video: GetVideo_video;
+  video: GetVideo_video | null;
 }
 
 export interface GetVideoVariables {

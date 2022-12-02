@@ -60,7 +60,7 @@ export interface GetVideoSiblings_video {
 }
 
 export interface GetVideoSiblings {
-  video: GetVideoSiblings_video;
+  video: GetVideoSiblings_video | null;
 }
 
 export interface GetVideoSiblingsVariables {
