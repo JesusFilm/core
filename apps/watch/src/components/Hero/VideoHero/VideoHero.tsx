@@ -13,7 +13,6 @@ import Circle from '@mui/icons-material/Circle'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 
-import { VideoType } from '../../../../__generated__/globalTypes'
 import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
 import { GetVideoSiblings as VideoSiblings } from '../../../../__generated__/GetVideoSiblings'
 
@@ -134,12 +133,12 @@ export function VideoHero({
                   sx={{ color: 'text.primary' }}
                 >
                   <Stack direction="row" spacing="20px">
-                    {video.type === VideoType.playlist && (
+                    {video.children.length > 0 && (
                       <Typography variant="subtitle1">
                         {video.children.length} episodes
                       </Typography>
                     )}
-                    {video.type !== VideoType.playlist && (
+                    {video.children.length === 0 && (
                       <>
                         <Button
                           size="large"
