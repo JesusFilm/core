@@ -124,12 +124,4 @@ export class VideoResolver {
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
   ): void {}
-
-  @ResolveField()
-  @TranslationField('slug')
-  slug(
-    @Parent() language,
-    @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean
-  ): void {}
 }

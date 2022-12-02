@@ -85,7 +85,7 @@ export class VideoService extends BaseService {
     variantLanguageId?: string
   ): Promise<T> {
     const res = await this.db.query(aql`
-    FOR item in ${this.videosView}
+    FOR item in ${this.collection}
       FILTER item._key == ${_key}
       LIMIT 1
       RETURN {
@@ -103,7 +103,7 @@ export class VideoService extends BaseService {
   @KeyAsId()
   public async getVideoBySlug<T>(slug: string): Promise<T> {
     const res = await this.db.query(aql`
-    FOR item IN ${this.videosView}
+    FOR item IN ${this.collection}
       FILTER ${slug} IN item.variants[*].slug
       LIMIT 1
       RETURN {
@@ -122,7 +122,7 @@ export class VideoService extends BaseService {
     variantLanguageId?: string
   ): Promise<T[]> {
     const res = await this.db.query(aql`
-    FOR item IN ${this.videosView}
+    FOR item IN ${this.collection}
       FILTER item._key IN ${keys}
       RETURN {
         ${aql.join(this.baseVideo)}

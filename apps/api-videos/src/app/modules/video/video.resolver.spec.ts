@@ -21,11 +21,7 @@ describe('VideoResolver', () => {
         videoId: '529'
       }
     ],
-    slug: [
-      {
-        value: 'video-slug'
-      }
-    ],
+    slug: 'video-slug',
     variant: [
       {
         slug: 'jesus/english'

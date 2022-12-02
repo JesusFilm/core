@@ -18,9 +18,9 @@ type VideoVariant {
   language: Language!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!
   """
-  slug is a permanent link to the video variant. It should only be appended, not edited or deleted.
+  slug is a permanent link to the video variant.
   """
-  slug(languageId: ID, primary: Boolean): [Translation!]!
+  slug: String!
 }
 
 extend type Video {

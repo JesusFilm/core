@@ -175,25 +175,13 @@ describe('arclight', () => {
       },
       studyQuestions: [],
       subType: 'video',
-      slug: [
-        {
-          value: 'title',
-          languageId: '529',
-          primary: true
-        }
-      ]
+      slug: 'title'
     }
     const language: Language = {
       languageId: 529,
       bcp47: 'en',
       name: 'English',
-      slug: [
-        {
-          value: 'english',
-          languageId: '529',
-          primary: true
-        }
-      ]
+      slug: 'english'
     }
     const videoVariant = {
       id: 'refId',
@@ -224,13 +212,7 @@ describe('arclight', () => {
           url: 'highUrl'
         }
       ],
-      slug: [
-        {
-          value: 'title/english',
-          languageId: '529',
-          primary: true
-        }
-      ]
+      slug: 'title/english'
     }
 
     it('transforms media component language to variant', () => {
@@ -335,13 +317,7 @@ describe('arclight', () => {
         languageId: 529,
         bcp47: 'en',
         name: 'English',
-        slug: [
-          {
-            value: 'english',
-            languageId: '529',
-            primary: true
-          }
-        ]
+        slug: 'english'
       }
     ]
     const video: Video = {
@@ -356,7 +332,7 @@ describe('arclight', () => {
       noIndex: false,
       primaryLanguageId: '529',
       seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
-      slug: [{ languageId: '529', primary: true, value: 'title' }],
+      slug: 'title',
       snippet: [
         { languageId: '529', primary: true, value: 'shortDescription' }
       ],
@@ -392,7 +368,7 @@ describe('arclight', () => {
               url: 'highUrl'
             }
           ],
-          slug: [{ languageId: '529', primary: true, value: 'title/english' }]
+          slug: 'title/english'
         }
       ]
     }
@@ -423,17 +399,11 @@ describe('arclight', () => {
         )
       ).toEqual({
         ...video,
-        slug: [
-          {
-            languageId: '529',
-            primary: true,
-            value: 'title-2'
-          }
-        ],
+        slug: 'title-2',
         variants: [
           {
             ...video.variants[0],
-            slug: [{ ...video.variants[0].slug[0], value: 'title-2/english' }]
+            slug: 'title-2/english'
           }
         ]
       })
@@ -517,24 +487,11 @@ describe('arclight', () => {
               'The Quick Brown Fox Jumps Over The Lazy Dog Many Times Over And Over Until It Gets Cut Off When Ove'
           }
         ],
-        slug: [
-          {
-            languageId: '529',
-            primary: true,
-            value:
-              'the-quick-brown-fox-jumps-over-the-lazy-dog-many-times-over-and-over-until-it-gets-cut-off-when-over-100-characters'
-          }
-        ],
+        slug: 'the-quick-brown-fox-jumps-over-the-lazy-dog-many-times-over-and-over-until-it-gets-cut-off-when-over-100-characters',
         variants: [
           {
             ...video.variants[0],
-            slug: [
-              {
-                ...video.variants[0].slug[0],
-                value:
-                  'the-quick-brown-fox-jumps-over-the-lazy-dog-many-times-over-and-over-until-it-gets-cut-off-when-over-100-characters/english'
-              }
-            ]
+            slug: 'the-quick-brown-fox-jumps-over-the-lazy-dog-many-times-over-and-over-until-it-gets-cut-off-when-over-100-characters/english'
           }
         ]
       })
@@ -554,9 +511,7 @@ describe('arclight', () => {
     it('adds slug', () => {
       expect(
         transformArclightMediaLanguageToLanguage(mediaLanguage, []).slug
-      ).toEqual([
-        { languageId: '987', primary: true, value: 'english-new-zealand' }
-      ])
+      ).toEqual('english-new-zealand')
     })
 
     it('when slug already used then slug value will have number following', () => {
@@ -564,9 +519,7 @@ describe('arclight', () => {
         transformArclightMediaLanguageToLanguage(mediaLanguage, [
           'english-new-zealand'
         ]).slug
-      ).toEqual([
-        { languageId: '987', primary: true, value: 'english-new-zealand-2' }
-      ])
+      ).toEqual('english-new-zealand-2')
     })
   })
 
@@ -594,13 +547,7 @@ describe('arclight', () => {
           name: 'English',
           bcp47: 'en',
           languageId: 529,
-          slug: [
-            {
-              languageId: '529',
-              primary: true,
-              value: 'english'
-            }
-          ]
+          slug: 'english'
         }
       ])
     })
@@ -692,13 +639,7 @@ describe('arclight', () => {
           name: 'English',
           bcp47: 'en',
           languageId: 529,
-          slug: [
-            {
-              languageId: '529',
-              primary: true,
-              value: 'english'
-            }
-          ]
+          slug: 'english'
         }
       ]
       await expect(
@@ -716,7 +657,7 @@ describe('arclight', () => {
           noIndex: false,
           primaryLanguageId: '529',
           seoTitle: [{ languageId: '529', primary: true, value: 'title' }],
-          slug: [{ languageId: '529', primary: true, value: 'title' }],
+          slug: 'title',
           snippet: [
             { languageId: '529', primary: true, value: 'shortDescription' }
           ],
@@ -732,9 +673,7 @@ describe('arclight', () => {
               hls: 'hlsUrl',
               id: 'refId',
               languageId: '529',
-              slug: [
-                { languageId: '529', primary: true, value: 'title/english' }
-              ],
+              slug: 'title/english',
               subtitle: [
                 { languageId: '529', primary: true, value: 'subtitleUrl529' },
                 {
