@@ -98,14 +98,14 @@ export function AudioDialog({ open, onClose }: AudioDialogProps): ReactElement {
             language:
               data?.video?.variant != null
                 ? {
-                  id: data?.video?.variant?.id,
-                  localName: data?.video?.variant?.language?.name.find(
-                    ({ primary }) => !primary
-                  )?.value,
-                  nativeName: data?.video?.variant?.language?.name.find(
-                    ({ primary }) => primary
-                  )?.value
-                }
+                    id: data?.video?.variant?.id,
+                    localName: data?.video?.variant?.language?.name.find(
+                      ({ primary }) => !primary
+                    )?.value,
+                    nativeName: data?.video?.variant?.language?.name.find(
+                      ({ primary }) => primary
+                    )?.value
+                  }
                 : undefined
           }}
           onSubmit={handleChange}
@@ -140,8 +140,9 @@ export function AudioDialog({ open, onClose }: AudioDialogProps): ReactElement {
                       hiddenLabel
                       placeholder="Search Language"
                       label="Language"
-                      helperText={`${data?.video?.variantLanguages.length ?? 0
-                        } Languages Available`}
+                      helperText={`${
+                        data?.video?.variantLanguages.length ?? 0
+                      } Languages Available`}
                     />
                   )}
                   renderOption={(props, { localName, nativeName }) => {
