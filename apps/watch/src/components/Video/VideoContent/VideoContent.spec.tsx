@@ -1,11 +1,9 @@
 import { fireEvent, render } from '@testing-library/react'
 import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
-import { VideoType } from '../../../../__generated__/globalTypes'
 import { VideoContent } from './VideoContent'
 
 const video: Video = {
   id: '2_0-FallingPlates',
-  type: VideoType.standalone,
   __typename: 'Video',
   image:
     'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
@@ -55,7 +53,7 @@ const video: Video = {
     hls: 'https://arc.gt/zbrvj',
     __typename: 'VideoVariant'
   },
-  episodes: [],
+  children: [],
   slug: [
     {
       value: 'fallingplates',
