@@ -32,7 +32,7 @@ export interface MediaComponent extends ArclightMediaComponent {
 export interface ArclightMediaComponentLanguage {
   refId: string
   languageId: number
-  lengthInMilliseconds: number
+  lengthInMilliseconds?: number
   subtitleUrls: {
     vtt?: Array<{
       languageId: number
@@ -174,7 +174,7 @@ export async function getArclightMediaComponentLinks(
       }`
     )
   ).json()
-  return response.linkedMediaComponentIds.contains
+  return response.linkedMediaComponentIds.contains ?? []
 }
 
 export function transformArclightMediaComponentLanguageToVideoVariant(
@@ -193,7 +193,9 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
     return {
       id: mediaComponentLanguage.refId,
       languageId: mediaComponentLanguage.languageId.toString(),
-      duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001),
+      duration: Math.round(
+        (mediaComponentLanguage.lengthInMilliseconds ?? 0) * 0.001
+      ),
       subtitle: [],
       downloads: [],
       slug: slugs
@@ -219,7 +221,9 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
       })) ?? [],
     hls: mediaComponentLanguage.streamingUrls.hls?.[0].url,
     languageId: mediaComponentLanguage.languageId.toString(),
-    duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001),
+    duration: Math.round(
+      (mediaComponentLanguage.lengthInMilliseconds ?? 0) * 0.001
+    ),
     downloads,
     slug: slugs
   }

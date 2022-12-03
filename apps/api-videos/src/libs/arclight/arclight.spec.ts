@@ -1,3 +1,4 @@
+import { omit } from 'lodash'
 import fetch, { Response } from 'node-fetch'
 import {
   getArclightMediaLanguages,
@@ -257,6 +258,23 @@ describe('arclight', () => {
         hls: undefined
       })
     })
+    it('handles null duration when media component is series', () => {
+      expect(
+        transformArclightMediaComponentLanguageToVideoVariant(
+          {
+            ...omit(mediaComponentLanguage, ['lengthInMilliseconds'])
+          },
+          { ...mediaComponent, subType: 'series' },
+          language
+        )
+      ).toEqual({
+        ...videoVariant,
+        duration: 0,
+        hls: undefined,
+        downloads: [],
+        subtitle: []
+      })
+    })
 
     it('transforms media component language without subtitleUrls to variant', () => {
       expect(
@@ -276,6 +294,18 @@ describe('arclight', () => {
           language
         )
       ).toEqual({ ...videoVariant, hls: undefined })
+    })
+    it('handles null duration', () => {
+      expect(
+        transformArclightMediaComponentLanguageToVideoVariant(
+          {
+            ...omit(mediaComponentLanguage, ['lengthInMilliseconds']),
+            streamingUrls: {}
+          },
+          mediaComponent,
+          language
+        )
+      ).toEqual({ ...videoVariant, duration: 0, hls: undefined })
     })
   })
 
