@@ -21,6 +21,7 @@ export const GET_HOME_VIDEO = gql`
       }
       variant {
         duration
+        slug
       }
       children {
         id

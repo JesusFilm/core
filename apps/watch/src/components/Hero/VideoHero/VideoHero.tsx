@@ -14,21 +14,13 @@ import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 
 import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
-import { GetVideoSiblings as VideoSiblings } from '../../../../__generated__/GetVideoSiblings'
 
 interface VideoHeroProps {
-  loading: boolean
-  routes: string[]
+  loading?: boolean
   video: Video
-  siblingVideos: VideoSiblings
 }
 
-export function VideoHero({
-  loading,
-  routes,
-  video,
-  siblingVideos
-}: VideoHeroProps): ReactElement {
+export function VideoHero({ loading, video }: VideoHeroProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState(false)
@@ -74,7 +66,7 @@ export function VideoHero({
 
   return (
     <>
-      {loading && <CircularProgress />}
+      {loading === true && <CircularProgress />}
       <>
         <Box
           sx={{

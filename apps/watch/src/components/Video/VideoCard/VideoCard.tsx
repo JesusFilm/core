@@ -11,18 +11,21 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import Link from 'next/link'
 import Stack from '@mui/material/Stack'
 
+import { compact } from 'lodash'
 import { GetVideos_videos } from '../../../../__generated__/GetVideos'
 
 interface VideoCardProps {
   video?: GetVideos_videos
   disabled?: boolean
-  routePrefix?: string | undefined
+  routePrefix?: string
+  routeSuffix?: string
 }
 
 export function VideoCard({
   video,
   disabled = false,
-  routePrefix = undefined
+  routePrefix,
+  routeSuffix
 }: VideoCardProps): ReactElement {
   return (
     <>
@@ -41,11 +44,9 @@ export function VideoCard({
         )}
         {video != null && (
           <Link
-            href={`/${
-              routePrefix == null
-                ? `/${video.slug ?? ''}`
-                : `/${routePrefix}/${video.slug ?? ''}`
-            }`}
+            href={`/${compact([routePrefix, video.slug, routeSuffix]).join(
+              '/'
+            )}`}
             passHref
           >
             <CardActionArea>

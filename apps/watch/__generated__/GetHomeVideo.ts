@@ -17,6 +17,10 @@ export interface GetHomeVideo_video_title {
 export interface GetHomeVideo_video_variant {
   __typename: "VideoVariant";
   duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
 }
 
 export interface GetHomeVideo_video_children {

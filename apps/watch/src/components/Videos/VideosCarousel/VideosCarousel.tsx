@@ -9,7 +9,8 @@ import { VideoCard } from '../../Video'
 interface VideosCarouselProps {
   videos: GetVideos_videos[]
   loading?: boolean
-  routePrefix?: string | undefined
+  routePrefix?: string
+  routeSuffix?: string
   onLoadMore?: () => Promise<void> | undefined
 }
 
@@ -37,7 +38,8 @@ export function VideosCarousel({
   loading = false,
   onLoadMore,
   videos,
-  routePrefix = undefined
+  routePrefix,
+  routeSuffix
 }: VideosCarouselProps): ReactElement {
   const [isMoving, setIsMoving] = useState(false)
   return (
@@ -68,6 +70,7 @@ export function VideosCarousel({
               key={index}
               disabled={isMoving}
               routePrefix={routePrefix}
+              routeSuffix={routeSuffix}
             />
           ))}
         {loading &&

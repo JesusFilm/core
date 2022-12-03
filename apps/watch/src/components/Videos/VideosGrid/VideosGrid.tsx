@@ -14,7 +14,6 @@ interface VideosGridProps {
   loading?: boolean
   isEnd?: boolean
   showLoadMore?: boolean
-  routePrefix?: string | undefined
   onLoadMore: () => Promise<void>
 }
 
@@ -23,8 +22,7 @@ export function VideosGrid({
   isEnd = false,
   onLoadMore,
   showLoadMore = true,
-  videos,
-  routePrefix = undefined
+  videos
 }: VideosGridProps): ReactElement {
   const gridTheme = createTheme(
     deepmerge(

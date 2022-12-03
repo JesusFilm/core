@@ -7,14 +7,14 @@ import Typography from '@mui/material/Typography'
 import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
 
 interface SimpleHeroProps {
-  loading: boolean
+  loading?: boolean
   video: Video
 }
 
 export function SimpleHero({ loading, video }: SimpleHeroProps): ReactElement {
   return (
     <>
-      {loading && <CircularProgress />}
+      {loading === true && <CircularProgress />}
       <Box
         sx={{
           backgroundImage: `url(${video.image as string})`,
