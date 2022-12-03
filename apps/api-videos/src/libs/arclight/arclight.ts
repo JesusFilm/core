@@ -32,7 +32,7 @@ export interface MediaComponent extends ArclightMediaComponent {
 export interface ArclightMediaComponentLanguage {
   refId: string
   languageId: number
-  lengthInMilliseconds: number
+  lengthInMilliseconds?: number
   subtitleUrls: {
     vtt?: Array<{
       languageId: number
@@ -166,7 +166,7 @@ export async function getArclightMediaComponentLinks(
   mediaComponentId: string
 ): Promise<string[]> {
   const response: {
-    linkedMediaComponentIds: { contains: string[] }
+    linkedMediaComponentIds: { contains?: string[] }
   } = await (
     await fetchPlus(
       `https://api.arclight.org/v2/media-component-links/${mediaComponentId}?apiKey=${
@@ -174,7 +174,7 @@ export async function getArclightMediaComponentLinks(
       }`
     )
   ).json()
-  return response.linkedMediaComponentIds.contains
+  return response.linkedMediaComponentIds.contains ?? []
 }
 
 export function transformArclightMediaComponentLanguageToVideoVariant(
@@ -187,7 +187,9 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
     return {
       id: mediaComponentLanguage.refId,
       languageId: mediaComponentLanguage.languageId.toString(),
-      duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001),
+      duration: Math.round(
+        (mediaComponentLanguage.lengthInMilliseconds ?? 0) * 0.001
+      ),
       subtitle: [],
       downloads: [],
       slug
@@ -213,7 +215,9 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
       })) ?? [],
     hls: mediaComponentLanguage.streamingUrls.hls?.[0].url,
     languageId: mediaComponentLanguage.languageId.toString(),
-    duration: Math.round(mediaComponentLanguage.lengthInMilliseconds * 0.001),
+    duration: Math.round(
+      (mediaComponentLanguage.lengthInMilliseconds ?? 0) * 0.001
+    ),
     downloads,
     slug
   }

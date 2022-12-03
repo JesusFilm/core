@@ -1,3 +1,4 @@
+import { omit } from 'lodash'
 import fetch, { Response } from 'node-fetch'
 import {
   getArclightMediaLanguages,
@@ -126,6 +127,22 @@ describe('arclight', () => {
         undefined
       )
     })
+    it('handles null media component links from arclight', async () => {
+      const request = mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () =>
+          await Promise.resolve({
+            linkedMediaComponentIds: {}
+          })
+      } as unknown as Response)
+      await expect(
+        getArclightMediaComponentLinks('mediaComponentId')
+      ).resolves.toEqual([])
+      expect(request).toHaveBeenCalledWith(
+        'https://api.arclight.org/v2/media-component-links/mediaComponentId?apiKey=',
+        undefined
+      )
+    })
   })
 
   describe('transformArclightMediaComponentLanguageToVideoVariant', () => {
@@ -239,6 +256,23 @@ describe('arclight', () => {
         hls: undefined
       })
     })
+    it('handles null duration when media component is series', () => {
+      expect(
+        transformArclightMediaComponentLanguageToVideoVariant(
+          {
+            ...omit(mediaComponentLanguage, ['lengthInMilliseconds'])
+          },
+          { ...mediaComponent, subType: 'series' },
+          language
+        )
+      ).toEqual({
+        ...videoVariant,
+        duration: 0,
+        hls: undefined,
+        downloads: [],
+        subtitle: []
+      })
+    })
 
     it('transforms media component language without subtitleUrls to variant', () => {
       expect(
@@ -258,6 +292,18 @@ describe('arclight', () => {
           language
         )
       ).toEqual({ ...videoVariant, hls: undefined })
+    })
+    it('handles null duration', () => {
+      expect(
+        transformArclightMediaComponentLanguageToVideoVariant(
+          {
+            ...omit(mediaComponentLanguage, ['lengthInMilliseconds']),
+            streamingUrls: {}
+          },
+          mediaComponent,
+          language
+        )
+      ).toEqual({ ...videoVariant, duration: 0, hls: undefined })
     })
   })
 
