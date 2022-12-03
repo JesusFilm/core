@@ -46,7 +46,9 @@ async function importMediaComponents(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  if (!(await db.collection('videos').exists())) {
+  if (await db.collection('videos').exists()) {
+    await db.collection('videos').truncate()
+  } else {
     await db.createCollection('videos', { keyOptions: { type: 'uuid' } })
   }
 
@@ -54,6 +56,20 @@ async function main(): Promise<void> {
     name: 'language_id',
     type: 'persistent',
     fields: ['variants[*].languageId']
+  })
+
+  await db.collection('videos').ensureIndex({
+    name: 'slug',
+    type: 'persistent',
+    fields: ['slug'],
+    unique: true
+  })
+
+  await db.collection('videos').ensureIndex({
+    name: 'variants_slug',
+    type: 'persistent',
+    fields: ['variants[*].slug'],
+    unique: true
   })
 
   const view = {
@@ -73,11 +89,7 @@ async function main(): Promise<void> {
                 }
               },
               slug: {
-                fields: {
-                  value: {
-                    analyzers: ['identity']
-                  }
-                }
+                analyzers: ['identity']
               }
             }
           },
@@ -95,11 +107,7 @@ async function main(): Promise<void> {
             analyzers: ['identity']
           },
           slug: {
-            fields: {
-              value: {
-                analyzers: ['identity']
-              }
-            }
+            analyzers: ['identity']
           }
         }
       }
@@ -118,13 +126,6 @@ async function main(): Promise<void> {
   console.log('importing mediaComponents as videos...')
   await importMediaComponents()
   console.log('mediaComponents imported')
-
-  await db.collection('videos').ensureIndex({
-    name: 'slug',
-    type: 'persistent',
-    fields: ['slug[*].value'],
-    unique: true
-  })
 }
 main().catch((e) => {
   console.error(e)

@@ -8,7 +8,7 @@ export interface ArclightMediaLanguage {
 }
 
 export interface Language extends ArclightMediaLanguage {
-  slug: Translation[]
+  slug: string
 }
 
 export interface ArclightMediaComponent {
@@ -26,7 +26,7 @@ export interface ArclightMediaComponent {
 }
 
 export interface MediaComponent extends ArclightMediaComponent {
-  slug: Translation[]
+  slug: string
 }
 
 export interface ArclightMediaComponentLanguage {
@@ -75,7 +75,7 @@ interface VideoVariant {
   languageId: string
   duration: number
   downloads: Download[]
-  slug: Translation[]
+  slug: string
 }
 
 export interface Video {
@@ -90,7 +90,7 @@ export interface Video {
   image: string
   imageAlt: Translation[]
   variants: VideoVariant[]
-  slug: Translation[]
+  slug: string
   childIds: string[]
   noIndex: boolean
 }
@@ -182,13 +182,7 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
   mediaComponent: MediaComponent,
   language: Language
 ): VideoVariant {
-  const slugs = [
-    {
-      value: `${mediaComponent.slug[0].value}/${language.slug[0].value}`,
-      languageId: mediaComponentLanguage.languageId.toString(),
-      primary: true
-    }
-  ]
+  const slug = `${mediaComponent.slug}/${language.slug}`
   if (mediaComponent.subType === 'series') {
     return {
       id: mediaComponentLanguage.refId,
@@ -198,7 +192,7 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
       ),
       subtitle: [],
       downloads: [],
-      slug: slugs
+      slug
     }
   }
   const downloads: Download[] = []
@@ -225,7 +219,7 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
       (mediaComponentLanguage.lengthInMilliseconds ?? 0) * 0.001
     ),
     downloads,
-    slug: slugs
+    slug
   }
 }
 
@@ -241,13 +235,7 @@ export function transformArclightMediaComponentToVideo(
       .find(({ bcp47 }) => bcp47 === mediaComponent.metadataLanguageTag)
       ?.languageId.toString() ?? '529' // english by default
 
-  const slug = [
-    {
-      value: slugify(mediaComponent.title, usedSlugs),
-      languageId: metadataLanguageId,
-      primary: true
-    }
-  ]
+  const slug = slugify(mediaComponent.title, usedSlugs)
 
   const variants: VideoVariant[] = []
   for (const mediaComponentLanguage of mediaComponentLanguages) {
@@ -326,13 +314,7 @@ export function transformArclightMediaLanguageToLanguage(
   mediaLanguage: ArclightMediaLanguage,
   usedSlugs: string[]
 ): Language {
-  const slug = [
-    {
-      value: slugify(mediaLanguage.name, usedSlugs),
-      languageId: mediaLanguage.languageId.toString(),
-      primary: true
-    }
-  ]
+  const slug = slugify(mediaLanguage.name, usedSlugs)
   return {
     ...mediaLanguage,
     slug

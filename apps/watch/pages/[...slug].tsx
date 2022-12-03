@@ -51,9 +51,7 @@ export const GET_VIDEO = gql`
           }
         }
       }
-      slug(languageId: $languageId, primary: true) {
-        value
-      }
+      slug
       children {
         id
         label
@@ -64,9 +62,7 @@ export const GET_VIDEO = gql`
         imageAlt(languageId: $languageId, primary: true) {
           value
         }
-        slug(languageId: $languageId, primary: true) {
-          value
-        }
+        slug
         children {
           id
         }
@@ -103,9 +99,7 @@ export const GET_VIDEO_SIBLINGS = gql`
         children {
           id
         }
-        slug(languageId: $languageId, primary: true) {
-          value
-        }
+        slug
       }
     }
   }

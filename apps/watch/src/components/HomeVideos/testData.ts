@@ -30,12 +30,7 @@ export const data: GetHomeVideo_video[] = [
     variant: { duration: 3680, __typename: 'VideoVariant' },
     __typename: 'Video',
     children: [],
-    slug: [
-      {
-        value: 'the-story-of-jesus-for-children',
-        __typename: 'Translation'
-      }
-    ]
+    slug: 'the-story-of-jesus-for-children'
   },
   {
     id: '1_jf-0-0',
@@ -46,7 +41,7 @@ export const data: GetHomeVideo_video[] = [
     variant: { duration: 7674, __typename: 'VideoVariant' },
     __typename: 'Video',
     children: [],
-    slug: [{ value: 'jesus', __typename: 'Translation' }]
+    slug: 'jesus'
   },
   {
     id: '1_wl-0-0',
@@ -62,12 +57,7 @@ export const data: GetHomeVideo_video[] = [
     variant: { duration: 4952, __typename: 'VideoVariant' },
     __typename: 'Video',
     children: [],
-    slug: [
-      {
-        value: 'magdalena-directors-cut',
-        __typename: 'Translation'
-      }
-    ]
+    slug: 'magdalena-directors-cut'
   },
   {
     id: '2_Acts-0-0',
@@ -78,7 +68,7 @@ export const data: GetHomeVideo_video[] = [
     variant: { duration: 11530, __typename: 'VideoVariant' },
     __typename: 'Video',
     children: [],
-    slug: [{ value: 'book-of-acts', __typename: 'Translation' }]
+    slug: 'book-of-acts'
   },
   {
     id: '2_CSF',
@@ -94,12 +84,7 @@ export const data: GetHomeVideo_video[] = [
     variant: { duration: 343, __typename: 'VideoVariant' },
     __typename: 'Video',
     children: [],
-    slug: [
-      {
-        value: 'a-day-and-a-night-with-creator-sets-free',
-        __typename: 'Translation'
-      }
-    ]
+    slug: 'a-day-and-a-night-with-creator-sets-free'
   },
   {
     id: '2_GOJ-0-0',
@@ -115,12 +100,7 @@ export const data: GetHomeVideo_video[] = [
     variant: { duration: 10994, __typename: 'VideoVariant' },
     __typename: 'Video',
     children: [],
-    slug: [
-      {
-        value: 'life-of-jesus-gospel-of-john',
-        __typename: 'Translation'
-      }
-    ]
+    slug: 'life-of-jesus-gospel-of-john'
   },
   {
     id: 'MAG1',
@@ -131,7 +111,7 @@ export const data: GetHomeVideo_video[] = [
     variant: { duration: 3665, __typename: 'VideoVariant' },
     __typename: 'Video',
     children: [],
-    slug: [{ value: 'magdalena', __typename: 'Translation' }]
+    slug: 'magdalena'
   },
   {
     id: '1_0-TrainV_1Install',
@@ -146,12 +126,7 @@ export const data: GetHomeVideo_video[] = [
     ],
     variant: { duration: 118, __typename: 'VideoVariant' },
     __typename: 'Video',
-    slug: [
-      {
-        value: 'installing-the-jesus-film-media-app',
-        __typename: 'Translation'
-      }
-    ],
+    slug: 'installing-the-jesus-film-media-app',
     children: []
   },
   {
@@ -171,11 +146,6 @@ export const data: GetHomeVideo_video[] = [
       { id: '1' } as unknown as GetHomeVideo_video_children,
       { id: '2' } as unknown as GetHomeVideo_video_children
     ],
-    slug: [
-      {
-        value: 'rivka',
-        __typename: 'Translation'
-      }
-    ]
+    slug: 'rivka'
   }
 ]
