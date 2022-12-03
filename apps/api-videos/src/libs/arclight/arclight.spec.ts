@@ -127,6 +127,22 @@ describe('arclight', () => {
         undefined
       )
     })
+    it('handles null media component links from arclight', async () => {
+      const request = mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () =>
+          await Promise.resolve({
+            linkedMediaComponentIds: {}
+          })
+      } as unknown as Response)
+      await expect(
+        getArclightMediaComponentLinks('mediaComponentId')
+      ).resolves.toEqual([])
+      expect(request).toHaveBeenCalledWith(
+        'https://api.arclight.org/v2/media-component-links/mediaComponentId?apiKey=',
+        undefined
+      )
+    })
   })
 
   describe('transformArclightMediaComponentLanguageToVideoVariant', () => {
