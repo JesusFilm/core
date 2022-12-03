@@ -166,7 +166,7 @@ export async function getArclightMediaComponentLinks(
   mediaComponentId: string
 ): Promise<string[]> {
   const response: {
-    linkedMediaComponentIds: { contains: string[] }
+    linkedMediaComponentIds: { contains?: string[] }
   } = await (
     await fetchPlus(
       `https://api.arclight.org/v2/media-component-links/${mediaComponentId}?apiKey=${
