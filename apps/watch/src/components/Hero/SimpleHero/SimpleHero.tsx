@@ -3,12 +3,11 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
-
-import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 
 interface SimpleHeroProps {
   loading?: boolean
-  video: Video
+  video: VideoContentFields
 }
 
 export function SimpleHero({ loading, video }: SimpleHeroProps): ReactElement {

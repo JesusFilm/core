@@ -9,6 +9,11 @@ import { VideoLabel } from "./globalTypes";
 // GraphQL query operation: GetVideoContainerAndVideoContent
 // ====================================================
 
+export interface GetVideoContainerAndVideoContent_container_imageAlt {
+  __typename: "Translation";
+  value: string;
+}
+
 export interface GetVideoContainerAndVideoContent_container_snippet {
   __typename: "Translation";
   value: string;
@@ -42,6 +47,7 @@ export interface GetVideoContainerAndVideoContent_container_variant_language {
 
 export interface GetVideoContainerAndVideoContent_container_variant {
   __typename: "VideoVariant";
+  id: string;
   duration: number;
   hls: string | null;
   language: GetVideoContainerAndVideoContent_container_variant_language;
@@ -73,8 +79,13 @@ export interface GetVideoContainerAndVideoContent_container_children_children {
 
 export interface GetVideoContainerAndVideoContent_container_children_variant {
   __typename: "VideoVariant";
+  id: string;
   duration: number;
   hls: string | null;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
 }
 
 export interface GetVideoContainerAndVideoContent_container_children {
@@ -98,6 +109,7 @@ export interface GetVideoContainerAndVideoContent_container {
   id: string;
   label: VideoLabel;
   image: string | null;
+  imageAlt: GetVideoContainerAndVideoContent_container_imageAlt[];
   snippet: GetVideoContainerAndVideoContent_container_snippet[];
   description: GetVideoContainerAndVideoContent_container_description[];
   studyQuestions: GetVideoContainerAndVideoContent_container_studyQuestions[];
@@ -108,6 +120,11 @@ export interface GetVideoContainerAndVideoContent_container {
    */
   slug: string;
   children: GetVideoContainerAndVideoContent_container_children[];
+}
+
+export interface GetVideoContainerAndVideoContent_content_imageAlt {
+  __typename: "Translation";
+  value: string;
 }
 
 export interface GetVideoContainerAndVideoContent_content_snippet {
@@ -143,6 +160,7 @@ export interface GetVideoContainerAndVideoContent_content_variant_language {
 
 export interface GetVideoContainerAndVideoContent_content_variant {
   __typename: "VideoVariant";
+  id: string;
   duration: number;
   hls: string | null;
   language: GetVideoContainerAndVideoContent_content_variant_language;
@@ -174,8 +192,13 @@ export interface GetVideoContainerAndVideoContent_content_children_children {
 
 export interface GetVideoContainerAndVideoContent_content_children_variant {
   __typename: "VideoVariant";
+  id: string;
   duration: number;
   hls: string | null;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
 }
 
 export interface GetVideoContainerAndVideoContent_content_children {
@@ -199,6 +222,7 @@ export interface GetVideoContainerAndVideoContent_content {
   id: string;
   label: VideoLabel;
   image: string | null;
+  imageAlt: GetVideoContainerAndVideoContent_content_imageAlt[];
   snippet: GetVideoContainerAndVideoContent_content_snippet[];
   description: GetVideoContainerAndVideoContent_content_description[];
   studyQuestions: GetVideoContainerAndVideoContent_content_studyQuestions[];

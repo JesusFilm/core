@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { watchConfig } from '../../libs/storybook'
-import { data } from './testData'
+import { videos } from '../Videos/testData'
 import { HomeVideos } from '.'
 
 const HomeVideosStory = {
@@ -14,7 +14,7 @@ const HomeVideosStory = {
 const Template: Story = ({ ...args }) => {
   return (
     <ThemeProvider themeMode={ThemeMode.dark} themeName={ThemeName.website}>
-      <HomeVideos data={data} />
+      <HomeVideos data={videos} />
     </ThemeProvider>
   )
 }

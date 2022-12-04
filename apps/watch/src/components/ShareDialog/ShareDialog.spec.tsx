@@ -1,10 +1,10 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-
 import {
-  GetVideo_video as Video,
-  GetVideo_video_children
-} from '../../../__generated__/GetVideo'
+  VideoContentFields,
+  VideoContentFields_children
+} from '../../../__generated__/VideoContentFields'
+
 import { videos } from '../Videos/testData'
 import { ShareDialog } from './ShareDialog'
 
@@ -12,10 +12,11 @@ const onClose = jest.fn()
 const originalEnv = process.env
 const routes = ['the-story-of-jesus-for-children']
 
-const video: Video = {
+const video: VideoContentFields = {
   ...videos[0],
   variant: {
     __typename: 'VideoVariant',
+    id: 'videoVariantId',
     duration: videos[0].variant?.duration ?? 0,
     language: {
       __typename: 'Language',
@@ -27,7 +28,8 @@ const video: Video = {
         }
       ]
     },
-    hls: 'https://arc.gt/4jz75'
+    hls: 'https://arc.gt/4jz75',
+    slug: `${videos[0].slug}/english`
   },
   description: videos[0].snippet,
   studyQuestions: [],
@@ -51,7 +53,7 @@ describe('ShareDialog', () => {
         <ShareDialog
           video={{
             ...video,
-            children: [{ id: '1' }] as unknown as GetVideo_video_children[]
+            children: [{ id: '1' }] as unknown as VideoContentFields_children[]
           }}
           routes={routes}
           open

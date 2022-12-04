@@ -4,8 +4,8 @@ import { ReactElement } from 'react'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { VideoContainer } from '../../../src/components/VideoContainer'
 import { createApolloClient } from '../../../src/libs/client'
-import { VIDEO_CONTENT_FIELDS } from '../[part2]'
 import { GetVideoContainerAndVideoContent } from '../../../__generated__/GetVideoContainerAndVideoContent'
+import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
 
 export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}

@@ -12,10 +12,10 @@ import Link from 'next/link'
 import Stack from '@mui/material/Stack'
 
 import { compact } from 'lodash'
-import { GetVideos_videos } from '../../../../__generated__/GetVideos'
+import { VideoContentFields_children } from '../../../../__generated__/VideoContentFields'
 
 interface VideoCardProps {
-  video?: GetVideos_videos
+  video?: VideoContentFields_children
   disabled?: boolean
   routePrefix?: string
   routeSuffix?: string

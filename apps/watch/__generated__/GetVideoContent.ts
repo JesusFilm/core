@@ -9,6 +9,11 @@ import { VideoLabel } from "./globalTypes";
 // GraphQL query operation: GetVideoContent
 // ====================================================
 
+export interface GetVideoContent_content_imageAlt {
+  __typename: "Translation";
+  value: string;
+}
+
 export interface GetVideoContent_content_snippet {
   __typename: "Translation";
   value: string;
@@ -42,6 +47,7 @@ export interface GetVideoContent_content_variant_language {
 
 export interface GetVideoContent_content_variant {
   __typename: "VideoVariant";
+  id: string;
   duration: number;
   hls: string | null;
   language: GetVideoContent_content_variant_language;
@@ -73,8 +79,13 @@ export interface GetVideoContent_content_children_children {
 
 export interface GetVideoContent_content_children_variant {
   __typename: "VideoVariant";
+  id: string;
   duration: number;
   hls: string | null;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
 }
 
 export interface GetVideoContent_content_children {
@@ -98,6 +109,7 @@ export interface GetVideoContent_content {
   id: string;
   label: VideoLabel;
   image: string | null;
+  imageAlt: GetVideoContent_content_imageAlt[];
   snippet: GetVideoContent_content_snippet[];
   description: GetVideoContent_content_description[];
   studyQuestions: GetVideoContent_content_studyQuestions[];

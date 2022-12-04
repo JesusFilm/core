@@ -1,13 +1,12 @@
 import Box from '@mui/material/Box'
 import { ReactElement, useState } from 'react'
 import Carousel from 'react-multi-carousel'
-import 'react-multi-carousel/lib/styles.css'
-
-import { GetVideos_videos } from '../../../../__generated__/GetVideos'
 import { VideoCard } from '../../Video'
+import 'react-multi-carousel/lib/styles.css'
+import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 
 interface VideosCarouselProps {
-  videos: GetVideos_videos[]
+  videos: VideoChildFields[]
   loading?: boolean
   routePrefix?: string
   routeSuffix?: string

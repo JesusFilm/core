@@ -5,60 +5,7 @@ import { VideoContentFields } from '../../__generated__/VideoContentFields'
 import { GetVideoContent } from '../../__generated__/GetVideoContent'
 import { createApolloClient } from '../../src/libs/client'
 import { VideoContainer } from '../../src/components/VideoContainer'
-
-export const VIDEO_CONTENT_FIELDS = gql`
-  fragment VideoContentFields on Video {
-    id
-    label
-    image
-    snippet(languageId: $languageId, primary: true) {
-      value
-    }
-    description(languageId: $languageId, primary: true) {
-      value
-    }
-    studyQuestions(languageId: $languageId, primary: true) {
-      value
-    }
-    title(languageId: $languageId, primary: true) {
-      value
-    }
-    variant {
-      duration
-      hls
-      language {
-        id
-        name(languageId: $languageId, primary: true) {
-          value
-        }
-      }
-      slug
-    }
-    slug
-    children {
-      id
-      label
-      title(languageId: $languageId, primary: true) {
-        value
-      }
-      image
-      imageAlt(languageId: $languageId, primary: true) {
-        value
-      }
-      snippet(languageId: $languageId, primary: true) {
-        value
-      }
-      slug
-      children {
-        id
-      }
-      variant {
-        duration
-        hls
-      }
-    }
-  }
-`
+import { VIDEO_CONTENT_FIELDS } from '../../src/libs/videoContentFields'
 
 export const GET_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}

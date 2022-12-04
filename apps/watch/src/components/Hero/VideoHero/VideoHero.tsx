@@ -9,15 +9,13 @@ import Button from '@mui/material/Button'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import AccessTime from '@mui/icons-material/AccessTime'
 import Circle from '@mui/icons-material/Circle'
-
 import videojs from 'video.js'
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import 'video.js/dist/video-js.css'
-
-import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
 
 interface VideoHeroProps {
   loading?: boolean
-  video: Video
+  video: VideoContentFields
 }
 
 export function VideoHero({ loading, video }: VideoHeroProps): ReactElement {
