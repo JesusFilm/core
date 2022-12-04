@@ -49,7 +49,7 @@ export function GridItem({ video, routePrefix }: GridItemProps): ReactElement {
             }`}
             passHref
           >
-            <CardActionArea>
+            <CardActionArea aria-label="collection page video card">
               <Box
                 sx={{
                   position: 'relative'
@@ -82,17 +82,15 @@ export function GridItem({ video, routePrefix }: GridItemProps): ReactElement {
                 </Box>
               </Box>
               <CardContent sx={{ px: 0, pt: '8px', pb: '20px' }}>
-                <Link href={`/${video?.slug[0]?.value ?? ''}`} passHref>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      cursor: 'pointer',
-                      color: 'rgba(29, 28, 28, 0.9)'
-                    }}
-                  >
-                    {video?.title[0]?.value}
-                  </Typography>
-                </Link>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    cursor: 'pointer',
+                    color: 'rgba(29, 28, 28, 0.9)'
+                  }}
+                >
+                  {video?.title[0]?.value}
+                </Typography>
               </CardContent>
             </CardActionArea>
           </Link>

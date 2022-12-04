@@ -21,7 +21,7 @@ const Template: Story = ({ ...args }) => {
 export const Default = Template.bind({})
 
 Default.args = {
-  video: videos[1]
+  video: videos[0]
 }
 
 export default GridItemStory as Meta
