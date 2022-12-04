@@ -227,7 +227,6 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
     video19.video
   ])
 
-  console.log(JSON.stringify(videos))
   return {
     props: {
       videos
