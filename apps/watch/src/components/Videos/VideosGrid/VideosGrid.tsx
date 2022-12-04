@@ -7,8 +7,8 @@ import { GetVideos_videos } from '../../../../__generated__/GetVideos'
 import { GridItem } from './GridItem'
 
 interface VideosGridProps {
-  videos: GetVideos_videos[]
-  routePrefix: string
+  videos?: GetVideos_videos[]
+  routePrefix?: string
 }
 
 export function VideosGrid({
@@ -32,7 +32,7 @@ export function VideosGrid({
           pb: 10
         }}
       >
-        {videos.map((item, index) => (
+        {videos?.map((item, index) => (
           <GridItem
             key={index}
             video={videos.find((video) => video.id === item.id)}
