@@ -27,7 +27,7 @@ export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID) {
     video(id: $id, idType: slug) {
       id
-      type
+      label
       image
       snippet(languageId: $languageId, primary: true) {
         value
@@ -44,10 +44,17 @@ export const GET_VIDEO = gql`
       variant {
         duration
         hls
+        language {
+          id
+          name(languageId: $languageId, primary: true) {
+            value
+          }
+        }
       }
+      slug
       children {
         id
-        type
+        label
         title(languageId: $languageId, primary: true) {
           value
         }
@@ -55,27 +62,13 @@ export const GET_VIDEO = gql`
         imageAlt(languageId: $languageId, primary: true) {
           value
         }
-        snippet(languageId: $languageId, primary: true) {
-          value
-        }
-        slug(languageId: $languageId, primary: true) {
-          value
-        }
+        slug
         children {
           id
         }
         variant {
           duration
           hls
-        }
-      }
-      slug(languageId: $languageId, primary: true) {
-        value
-      }
-      variantLanguages {
-        id
-        name(languageId: $languageId, primary: true) {
-          value
         }
       }
     }
@@ -88,7 +81,7 @@ export const GET_VIDEO_SIBLINGS = gql`
       id
       children {
         id
-        type
+        label
         image
         imageAlt(languageId: $languageId, primary: true) {
           value
@@ -106,9 +99,7 @@ export const GET_VIDEO_SIBLINGS = gql`
         children {
           id
         }
-        slug(languageId: $languageId, primary: true) {
-          value
-        }
+        slug
       }
     }
   }
@@ -179,7 +170,7 @@ export default function SeoFriendly(): ReactElement {
                   routePrefix={routes.join('/')}
                 />
               )}
-              {siblingsData?.children?.length > 0 && (
+              {siblingsData?.video.children?.length > 0 && (
                 <VideosCarousel
                   videos={siblingsData.video.children}
                   routePrefix={getSiblingRoute(routes).join('/')}

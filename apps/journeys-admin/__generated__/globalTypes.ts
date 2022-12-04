@@ -179,12 +179,6 @@ export enum VideoLabel {
   shortFilm = "shortFilm",
 }
 
-export enum VideoType {
-  episode = "episode",
-  playlist = "playlist",
-  standalone = "standalone",
-}
-
 /**
  * The status of a visitor according to team members interacting with the
  * visitor admin interface. This enum should map to an emoji when displayed
@@ -514,7 +508,6 @@ export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
   labels?: VideoLabel[] | null;
   title?: string | null;
-  types?: VideoType[] | null;
 }
 
 /**
