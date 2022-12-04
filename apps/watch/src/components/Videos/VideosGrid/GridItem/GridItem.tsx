@@ -11,31 +11,19 @@ import Typography from '@mui/material/Typography'
 import Link from 'next/link'
 import { ReactElement } from 'react'
 
-import { GetHomeVideo_video } from '../../../../../__generated__/GetHomeVideo'
+import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
 
 export interface GridItemProps {
-  video?: GetHomeVideo_video
-  data?: GetHomeVideo_video[] | undefined
-  disabled?: boolean
-  loading?: boolean
+  video?: GetVideos_videos
   routePrefix?: string
 }
 
-export function GridItem({
-  video,
-  data,
-  disabled = false,
-  loading = false,
-  routePrefix = undefined
-}: GridItemProps): ReactElement {
+export function GridItem({ video, routePrefix }: GridItemProps): ReactElement {
   return (
     <>
       <Card
         sx={{
           boxShadow: 0,
-          minWidth: 338,
-          maxWidth: 338,
-          minHeight: 160,
           bgcolor: 'rgba(0,0,0,0)',
           borderRadius: '8px'
         }}
@@ -64,15 +52,13 @@ export function GridItem({
             <CardActionArea>
               <Box
                 sx={{
-                  position: 'relative',
-                  alignContent: 'end'
+                  position: 'relative'
                 }}
               >
                 <CardMedia
                   sx={{ borderRadius: '8px' }}
                   component="img"
                   image={video.image ?? ''}
-                  height="160"
                 />
                 <Box
                   sx={{
@@ -87,8 +73,10 @@ export function GridItem({
                 >
                   <Stack direction="row" sx={{ alignItems: 'center' }}>
                     <PlayArrow sx={{ fontSize: '1rem' }} />
-                    <Typography variant="body1" sx={{ lineHeight: '21px' }}>
-                      {secondsToTimeFormat(video.variant?.duration ?? 0)}
+                    <Typography variant="body1" sx={{ lineHeight: '1rem' }}>
+                      {secondsToTimeFormat(
+                        video.variant?.duration ?? 0
+                      ).substring(3, 8)}
                     </Typography>
                   </Stack>
                 </Box>
@@ -98,10 +86,6 @@ export function GridItem({
                   <Typography
                     variant="h6"
                     sx={{
-                      maxWidth: 338,
-                      whiteSpace: 'nowrap',
-                      overflow: 'none',
-                      textOverflow: 'ellipsis',
                       cursor: 'pointer',
                       color: 'rgba(29, 28, 28, 0.9)'
                     }}
