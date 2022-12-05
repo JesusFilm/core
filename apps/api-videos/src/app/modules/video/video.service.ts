@@ -29,7 +29,8 @@ export class VideoService extends BaseService {
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
         imageAlt: item.imageAlt,
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],`
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        variantLanguagesWithSlug: item.variants[* RETURN {slug: CURRENT.slug, languageId: CURRENT.languageId}],`
   ]
 
   videosView = this.db.view('videosView')

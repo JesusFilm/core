@@ -550,6 +550,11 @@ enum LanguageIdType {
   databaseId
 }
 
+type LanguageWithSlug {
+  languageId: String
+  slug: String
+}
+
 type LinkAction implements Action {
   gtmEventName: String
   parentBlockId: ID!
@@ -1199,6 +1204,7 @@ type Video
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
+  variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: VIDEOS)
 }
 
 type VideoBlock implements Block {

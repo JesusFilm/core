@@ -18,6 +18,11 @@ enum VideoLabel {
   shortFilm
 }
 
+type LanguageWithSlug {
+  languageId: String
+  slug: String
+}
+
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
   label: VideoLabel!
@@ -35,6 +40,7 @@ type Video @key(fields: "id primaryLanguageId") {
   slug: String!
   noIndex: Boolean
   children: [Video!]!
+  variantLanguagesWithSlug: [LanguageWithSlug!]!
   variant(languageId: ID): VideoVariant
 }
 

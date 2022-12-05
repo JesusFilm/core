@@ -39,6 +39,12 @@ export class Translation {
     primary: boolean;
 }
 
+export class LanguageWithSlug {
+    __typename?: 'LanguageWithSlug';
+    languageId?: Nullable<string>;
+    slug?: Nullable<string>;
+}
+
 export class Video {
     __typename?: 'Video';
     id: string;
@@ -55,6 +61,7 @@ export class Video {
     slug: string;
     noIndex?: Nullable<boolean>;
     children: Video[];
+    variantLanguagesWithSlug: LanguageWithSlug[];
     variant?: Nullable<VideoVariant>;
 }
 
