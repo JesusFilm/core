@@ -3,9 +3,9 @@ import { secondsToTimeFormat, timeFormatToSeconds } from '.'
 describe('timeFormat', () => {
   describe('secondsToTimeFormat', () => {
     it('should convert seconds to time format', () => {
-      expect(secondsToTimeFormat(0)).toEqual('00:00:00')
-      expect(secondsToTimeFormat(1)).toEqual('00:00:01')
-      expect(secondsToTimeFormat(60)).toEqual('00:01:00')
+      expect(secondsToTimeFormat(0)).toEqual('00:00')
+      expect(secondsToTimeFormat(1)).toEqual('00:01')
+      expect(secondsToTimeFormat(60)).toEqual('01:00')
       expect(secondsToTimeFormat(3600)).toEqual('01:00:00')
       expect(secondsToTimeFormat(3661)).toEqual('01:01:01')
     })
