@@ -41,14 +41,7 @@ export function GridItem({ video, routePrefix }: GridItemProps): ReactElement {
           </>
         )}
         {video != null && (
-          <Link
-            href={`/${
-              routePrefix == null
-                ? `/${video.slug[0]?.value ?? ''}`
-                : `/${routePrefix}/${video.slug[0]?.value ?? ''}`
-            }`}
-            passHref
-          >
+          <Link href={`/${video?.slug ?? ''}`} passHref>
             <CardActionArea aria-label="collection page video card">
               <Box
                 sx={{
