@@ -18,28 +18,22 @@ const video = {
     }
   ],
   variant: {
+    hls: '',
     duration: 100,
     slug: '2_video-0-0/english'
   },
-  children: []
+  children: [{ id: 'child.id' } as unknown as VideoContentFields_children]
 } as unknown as VideoContentFields
 
 describe('VideoContentPage', () => {
   it('should render VideoHero', () => {
-    const withHls = {
-      ...video,
-      variant: {
-        hls: ''
-      }
-    } as unknown as VideoContentFields
-
     const { getAllByRole } = render(
       <SnackbarProvider>
-        <VideoContentPage content={withHls} />
+        <VideoContentPage content={video} />
       </SnackbarProvider>
     )
 
-    expect(getAllByRole('button', { name: 'Play Video' })).toHaveLength(2)
+    expect(getAllByRole('button', { name: 'Play Video' })).toHaveLength(1)
   })
 
   it('should render description', () => {
@@ -52,13 +46,9 @@ describe('VideoContentPage', () => {
   })
 
   it('should render related videos', () => {
-    const withChildren = {
-      ...video,
-      children: [{ id: 'child.id' } as unknown as VideoContentFields_children]
-    }
     const { getByTestId } = render(
       <SnackbarProvider>
-        <VideoContentPage content={withChildren} />
+        <VideoContentPage content={video} />
       </SnackbarProvider>
     )
 
