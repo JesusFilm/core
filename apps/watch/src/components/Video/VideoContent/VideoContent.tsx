@@ -43,7 +43,7 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
               ml: '-40px',
               opacity: 1,
               background:
-                'linear-gradient(270deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 50%)',
+                'linear-gradient(270deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 60%)',
               svg: {
                 display: 'none'
               }

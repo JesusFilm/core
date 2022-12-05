@@ -1,6 +1,8 @@
-import { Meta, ComponentStory } from '@storybook/react'
-import { watchConfig } from '../../../libs/storybook'
+import { Meta, Story } from '@storybook/react'
+import { ComponentProps } from 'react'
 import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
+import { VideoLabel } from '../../../../__generated__/globalTypes'
+import { watchConfig } from '../../../libs/storybook'
 import { VideoContent } from './VideoContent'
 
 const VideoContentStory = {
@@ -10,8 +12,9 @@ const VideoContentStory = {
 }
 
 const video: Video = {
-  id: '2_0-FallingPlates',
   __typename: 'Video',
+  id: '2_0-FallingPlates',
+  label: VideoLabel.shortFilm,
   image:
     'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
   snippet: [
@@ -58,19 +61,23 @@ const video: Video = {
   variant: {
     duration: 247,
     hls: 'https://arc.gt/zbrvj',
-    __typename: 'VideoVariant'
-  },
-  children: [],
-  slug: [
-    {
-      value: 'fallingplates',
-      __typename: 'Translation'
+    __typename: 'VideoVariant',
+    language: {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'English'
+        }
+      ]
     }
-  ],
-  variantLanguages: []
+  },
+  slug: 'fallingplates',
+  children: []
 }
 
-const Template: ComponentStory<typeof VideoContent> = () => (
+const Template: Story<ComponentProps<typeof VideoContent>> = () => (
   <VideoContent video={video} />
 )
 
