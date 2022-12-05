@@ -4,7 +4,9 @@ import { ReactElement } from 'react'
 import { VideoContentFields } from '../../__generated__/VideoContentFields'
 import { GetVideoContent } from '../../__generated__/GetVideoContent'
 import { createApolloClient } from '../../src/libs/client'
-import { VideoContainer } from '../../src/components/VideoContainer'
+import { VideoContentPage } from '../../src/components/VideoContentPage'
+import { VideoContainerPage } from '../../src/components/VideoContainerPage/VideoContainerPage'
+import { LanguageProvider } from '../../src/libs/languageContext/LanguageContext'
 import { VIDEO_CONTENT_FIELDS } from '../../src/libs/videoContentFields'
 
 export const GET_VIDEO_CONTENT = gql`
@@ -21,7 +23,15 @@ interface Part2PageProps {
 }
 
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
-  return <VideoContainer content={content} />
+  return (
+    <LanguageProvider>
+      {content.variant?.hls != null ? (
+        <VideoContentPage content={content} />
+      ) : (
+        <VideoContainerPage content={content} />
+      )}
+    </LanguageProvider>
+  )
 }
 
 export const getStaticProps: GetStaticProps<Part2PageProps> = async (
