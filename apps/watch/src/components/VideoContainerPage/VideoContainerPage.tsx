@@ -15,6 +15,7 @@ interface VideoContainerPageProps {
   content: VideoContentFields
 }
 
+// Usually Series or Collection Videos
 export function VideoContainerPage({
   content
 }: VideoContainerPageProps): ReactElement {

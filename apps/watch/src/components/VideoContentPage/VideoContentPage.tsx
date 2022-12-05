@@ -22,6 +22,7 @@ interface VideoContentPageProps {
   content: VideoContentFields
 }
 
+// Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage({
   container,
   content
