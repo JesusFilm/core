@@ -1,4 +1,5 @@
 import Container from '@mui/material/Container'
+import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import 'video.js/dist/video-js.css'
 
@@ -16,20 +17,27 @@ interface VideoContainerPageProps {
 export function VideoContainerPage({
   content
 }: VideoContainerPageProps): ReactElement {
+  const router = useRouter()
   const [openShare, setOpenShare] = useState(false)
+  const newArray: string[] = []
+  Object.values(router.query).forEach((value) => {
+    if (typeof value === 'string') {
+      newArray.push(value)
+    }
+  })
 
   return (
     <PageWrapper hero={<SimpleHero video={content} />}>
       {content != null && (
         <Container maxWidth="xxl">
           <ContainerDescription
-            value={content.snippet[0]?.value}
+            value={content.snippet[0].value}
             setOpenShare={() => setOpenShare(true)}
           />
           <ShareDialog
             open={openShare}
             video={content}
-            routes={[]}
+            routes={newArray}
             onClose={() => setOpenShare(false)}
           />
           {/* Add grid here */}

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 
 import { SnackbarProvider } from 'notistack'
 import {
@@ -41,27 +41,26 @@ describe('VideoContainerPage', () => {
   })
 
   it('should render share button', () => {
-    const { getByRole } = render(
+    const { getByRole, getByLabelText } = render(
       <SnackbarProvider>
         <VideoContainerPage content={video} />
       </SnackbarProvider>
     )
-    expect(screen.getByLabelText('collection-share-button')).toBeInTheDocument()
-    fireEvent.click(screen.getByLabelText('collection-share-button'))
+    expect(getByLabelText('collection-share-button')).toBeInTheDocument()
+    fireEvent.click(getByLabelText('collection-share-button'))
     expect(
       getByRole('dialog', { name: 'Share this video' })
     ).toBeInTheDocument()
   })
 
   it('should render description text', () => {
-    const setOpenShare = jest.fn()
-    render(
+    const { getByText } = render(
       <ContainerDescription
-        setOpenShare={setOpenShare}
+        setOpenShare={jest.fn()}
         value={video.snippet[0].value}
       />
     )
-    expect(screen.getByText(video.snippet[0].value)).toBeInTheDocument()
+    expect(getByText(video.snippet[0].value)).toBeInTheDocument()
   })
 
   xit('should render videos', () => {

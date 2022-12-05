@@ -5,7 +5,7 @@ import { ContainerDescription } from './ContainerDescription'
 const ContainerDescriptionStory = {
   ...watchConfig,
   component: ContainerDescription,
-  title: 'Watch/ContainerDescription',
+  title: 'Watch/VideoContainerPage/ContainerDescription',
   parameters: {
     layout: 'fullscreen'
   }
