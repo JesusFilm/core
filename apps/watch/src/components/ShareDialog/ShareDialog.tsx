@@ -14,12 +14,11 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { createSvgIcon } from '@mui/material/utils'
 import { useTheme } from '@mui/material/styles'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-
-import { GetVideo_video } from '../../../__generated__/GetVideo'
+import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 
 interface ShareDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
-  video: GetVideo_video
+  video: VideoContentFields
   routes: string[]
 }
 
