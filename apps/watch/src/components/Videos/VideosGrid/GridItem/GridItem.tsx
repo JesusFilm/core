@@ -11,11 +11,10 @@ import Typography from '@mui/material/Typography'
 import Link from 'next/link'
 import { ReactElement } from 'react'
 
-import { GetVideos_videos } from '../../../../../__generated__/GetVideos'
+import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 
 export interface GridItemProps {
-  video?: GetVideos_videos
-  routePrefix?: string
+  video?: VideoChildFields
 }
 
 export function GridItem({ video }: GridItemProps): ReactElement {
