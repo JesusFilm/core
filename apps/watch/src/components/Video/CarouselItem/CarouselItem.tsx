@@ -11,9 +11,8 @@ import 'swiper/swiper.min.css'
 
 interface CarouselItemProps extends Pick<Video, 'title' | 'variant' | 'image'> {
   videoType: string
-  episodeIds?: number[]
+  index?: number
   isPlaying?: boolean
-  loading?: boolean
   onClick: () => void
 }
 
@@ -22,9 +21,8 @@ export function CarouselItem({
   image,
   variant,
   videoType,
-  episodeIds,
+  index,
   isPlaying = false,
-  loading = false,
   onClick
 }: CarouselItemProps): ReactElement {
   const videoTitle = title[0].value
@@ -105,9 +103,9 @@ export function CarouselItem({
           <Typography>{secondsToTimeFormat(variant?.duration ?? 0)}</Typography>
         </Box>
       )}
-      {videoType !== 'standalone' && episodeIds !== undefined ? (
+      {videoType !== 'standalone' && index != null ? (
         <Typography variant="overline2" mb={3}>
-          {episodeIds[0]}
+          {videoType === 'segment' ? `Chapter ${index}` : `Episode ${index}`}
         </Typography>
       ) : (
         <Skeleton sx={{ width: '90px' }} />
