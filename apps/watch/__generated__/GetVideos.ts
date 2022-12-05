@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideosFilter } from "./globalTypes";
+import { VideosFilter, VideoLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetVideos
@@ -29,23 +29,19 @@ export interface GetVideos_videos_children {
   id: string;
 }
 
-export interface GetVideos_videos_slug {
-  __typename: "Translation";
-  value: string;
-}
-
 export interface GetVideos_videos {
   __typename: "Video";
   id: string;
+  label: VideoLabel;
   image: string | null;
   snippet: GetVideos_videos_snippet[];
   title: GetVideos_videos_title[];
   variant: GetVideos_videos_variant | null;
   children: GetVideos_videos_children[];
   /**
-   * slug is a permanent link to the video. It should only be appended, not edited or deleted
+   * slug is a permanent link to the video.
    */
-  slug: GetVideos_videos_slug[];
+  slug: string;
 }
 
 export interface GetVideos {

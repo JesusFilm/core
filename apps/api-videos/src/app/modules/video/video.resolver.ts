@@ -47,9 +47,13 @@ export class VideoResolver {
     const variantLanguageId = info.fieldNodes[0].selectionSet.selections
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
-    return idType === IdType.databaseId
-      ? await this.videoService.getVideo(id, variantLanguageId)
-      : await this.videoService.getVideoBySlug(id, variantLanguageId)
+
+    switch (idType) {
+      case IdType.databaseId:
+        return await this.videoService.getVideo(id, variantLanguageId)
+      case IdType.slug:
+        return await this.videoService.getVideoBySlug(id)
+    }
   }
 
   @ResolveReference()
@@ -116,14 +120,6 @@ export class VideoResolver {
   @ResolveField()
   @TranslationField('imageAlt')
   imageAlt(
-    @Parent() language,
-    @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean
-  ): void {}
-
-  @ResolveField()
-  @TranslationField('slug')
-  slug(
     @Parent() language,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean

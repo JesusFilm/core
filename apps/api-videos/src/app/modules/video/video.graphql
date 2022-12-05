@@ -7,12 +7,6 @@ enum IdType {
   slug
 }
 
-enum VideoType {
-  episode
-  standalone
-  playlist
-}
-
 enum VideoLabel {
   collection
   episode
@@ -35,9 +29,9 @@ type Video @key(fields: "id primaryLanguageId") {
   imageAlt(languageId: ID, primary: Boolean): [Translation!]!
   variantLanguages: [Language!]!
   """
-  slug is a permanent link to the video. It should only be appended, not edited or deleted
+  slug is a permanent link to the video.
   """
-  slug(languageId: ID, primary: Boolean): [Translation!]!
+  slug: String!
   noIndex: Boolean
   children: [Video!]!
 }
