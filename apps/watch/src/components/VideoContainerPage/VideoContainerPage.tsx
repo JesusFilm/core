@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
@@ -24,7 +25,7 @@ export function VideoContainerPage({
   return (
     <PageWrapper hero={<SimpleHero video={content} />}>
       {content != null && (
-        <>
+        <Container maxWidth="xxl">
           <Stack
             direction="row"
             spacing="100px"
@@ -52,7 +53,7 @@ export function VideoContainerPage({
             onClose={() => setOpenShare(false)}
           />
           {/* Add grid here */}
-        </>
+        </Container>
       )}
     </PageWrapper>
   )
