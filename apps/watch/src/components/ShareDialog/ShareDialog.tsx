@@ -35,6 +35,9 @@ export function ShareDialog({
     setValue(newValue)
   }
 
+  const shareDescription =
+    video.description[0].value ?? video.snippet[0].value ?? ''
+
   const shareLink =
     routes != null
       ? `${
@@ -153,10 +156,7 @@ export function ShareDialog({
               {video.title[0].value}
             </Typography>
             <Typography>
-              {`${video.description[0].value
-                .split(' ')
-                .slice(0, 18)
-                .join(' ')}...`}
+              {`${shareDescription.split(' ').slice(0, 18).join(' ')}...`}
             </Typography>
           </Stack>
         </Stack>
