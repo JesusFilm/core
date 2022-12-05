@@ -36,7 +36,11 @@ export function ShareDialog({
   }
 
   const shareDescription =
-    video.description[0].value ?? video.snippet[0].value ?? ''
+    video.description != null && video.description.length > 0
+      ? video.description[0].value
+      : video.snippet != null && video.snippet.length > 0
+      ? video.snippet[0].value
+      : ''
 
   const shareLink =
     routes != null
