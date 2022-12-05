@@ -8,13 +8,13 @@ import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import IconButton from '@mui/material/IconButton'
 
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
-import { Overlay } from '../Overlay'
+import { HeroOverlay } from '../../HeroOverlay'
 
 interface Props {
   video: VideoContentFields
 }
 
-export function PlaylistHero({ video }: Props): ReactElement {
+export function ContainerHero({ video }: Props): ReactElement {
   const type = video.label === 'series' ? 'series' : 'collection'
   const title = video.title[0].value
   const length = video.children.length
@@ -33,7 +33,7 @@ export function PlaylistHero({ video }: Props): ReactElement {
       {image != null && (
         <Image src={image} alt="Home Hero" layout="fill" objectFit="cover" />
       )}
-      <Overlay />
+      <HeroOverlay />
       <Container
         maxWidth="xxl"
         sx={{

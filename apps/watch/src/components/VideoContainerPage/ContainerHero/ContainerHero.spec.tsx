@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
-import { PlaylistHero } from '.'
+import { ContainerHero } from '.'
 
-describe('PlaylistHero', () => {
+describe('ContainerHero', () => {
   const defaultVideo = {
     label: VideoLabel.collection,
     title: [{ value: 'Collection video title' }],
@@ -19,13 +19,13 @@ describe('PlaylistHero', () => {
   } as unknown as VideoContentFields
 
   it('should render hero for a collection', () => {
-    const { getByText } = render(<PlaylistHero video={defaultVideo} />)
+    const { getByText } = render(<ContainerHero video={defaultVideo} />)
 
     expect(getByText('collection')).toBeInTheDocument()
   })
 
   it('should render hero for a series', () => {
-    const { getByText } = render(<PlaylistHero video={seriesVideo} />)
+    const { getByText } = render(<ContainerHero video={seriesVideo} />)
 
     expect(getByText('series')).toBeInTheDocument()
   })

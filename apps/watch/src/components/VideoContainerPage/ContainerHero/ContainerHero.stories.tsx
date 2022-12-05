@@ -2,16 +2,16 @@ import { ComponentStory, Meta } from '@storybook/react'
 import { watchConfig } from '../../../libs/storybook'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
-import { PlaylistHero } from '.'
+import { ContainerHero } from '.'
 
-const PlaylistHeroStory = {
+const ContainerHeroStory = {
   ...watchConfig,
-  component: PlaylistHero,
-  title: 'Watch/Hero/PlaylistHero'
+  component: ContainerHero,
+  title: 'Watch/Hero/ContainerHero'
 }
 
-const Template: ComponentStory<typeof PlaylistHero> = ({ ...args }) => (
-  <PlaylistHero {...args} />
+const Template: ComponentStory<typeof ContainerHero> = ({ ...args }) => (
+  <ContainerHero {...args} />
 )
 
 const defaultVideo = {
@@ -34,4 +34,4 @@ Default.args = { video: defaultVideo }
 export const Series = Template.bind({})
 Series.args = { video: seriesVideo }
 
-export default PlaylistHeroStory as Meta
+export default ContainerHeroStory as Meta
