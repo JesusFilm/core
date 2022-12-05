@@ -744,7 +744,6 @@ type Query {
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed @join__field(graph: JOURNEYS)
   countries: [Country!]! @join__field(graph: LANGUAGES)
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
-  episodes(idType: IdType, limit: Int, offset: Int, playlistId: ID!, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
@@ -752,8 +751,6 @@ type Query {
   languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
   video(id: ID!, idType: IdType): Video! @join__field(graph: VIDEOS)
-  videoTag(id: ID!): VideoTag @join__field(graph: VIDEOS)
-  videoTags: [VideoTag!] @join__field(graph: VIDEOS)
   videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 
   """Get a single visitor"""
@@ -1185,26 +1182,21 @@ type Video
   @join__type(graph: VIDEOS, key: "id primaryLanguageId")
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
 {
+  children: [Video!]! @join__field(graph: VIDEOS)
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-
-  """Episodes are child videos, currently only found in a playlist type"""
-  episodeIds: [ID!]! @join__field(graph: VIDEOS)
-  episodes: [Video!]! @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
   imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  label: VideoLabel! @join__field(graph: VIDEOS)
   noIndex: Boolean @join__field(graph: VIDEOS)
   primaryLanguageId: ID! @join__field(graph: VIDEOS)
   seoTitle(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
 
-  """
-  slug is a permanent link to the video. It should only be appended, not edited or deleted
-  """
-  slug(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  """slug is a permanent link to the video."""
+  slug: String! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  type: VideoType! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
 }
@@ -1346,7 +1338,7 @@ input VideoBlockCreateInput {
 enum VideoBlockObjectFit {
   """
   The video is scaled to maintain its aspect ratio while filling the
-   entire VideoBlock. If the video's aspect ratio does not match the 
+   entire VideoBlock. If the video's aspect ratio does not match the
    aspect ratio of the VideoBlock, then the video will be clipped to fit.
   """
   fill
@@ -1543,6 +1535,15 @@ input VideoExpandEventCreateInput {
   value: VideoBlockSource
 }
 
+enum VideoLabel {
+  collection
+  episode
+  featureFilm
+  segment
+  series
+  shortFilm
+}
+
 type VideoPauseEvent implements Event {
   """time event was created"""
   createdAt: DateTime!
@@ -1681,9 +1682,8 @@ input VideoProgressEventCreateInput {
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
-  tagId: String
+  labels: [VideoLabel!]
   title: String
-  types: [VideoType!]
 }
 
 type VideoStartEvent implements Event {
@@ -1728,11 +1728,6 @@ input VideoStartEventCreateInput {
   value: VideoBlockSource
 }
 
-type VideoTag {
-  id: ID!
-  title(languageId: ID, primary: Boolean): [Translation!]!
-}
-
 """
 VideoTriggerBlock is a block that indicates the video to navigate
 to the next block at the designated time.
@@ -1751,18 +1746,15 @@ type VideoTriggerBlock implements Block {
   triggerStart: Int!
 }
 
-enum VideoType {
-  episode
-  playlist
-  standalone
-}
-
 type VideoVariant {
   downloads: [VideoVariantDownload!]!
   duration: Int!
   hls: String
   id: String!
   language: Language!
+
+  """slug is a permanent link to the video variant."""
+  slug: String!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!
 }
 

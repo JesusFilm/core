@@ -14,13 +14,11 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { createSvgIcon } from '@mui/material/utils'
 import { useTheme } from '@mui/material/styles'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-
-import { GetVideo_video } from '../../../__generated__/GetVideo'
-import { VideoType } from '../../../__generated__/globalTypes'
+import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 
 interface ShareDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
-  video: GetVideo_video
+  video: VideoContentFields
   routes: string[]
 }
 
@@ -181,7 +179,7 @@ export function ShareDialog({
               <TwitterIcon sx={{ fontSize: 46 }} />
             </IconButton>
           </Stack>
-          {video.type === VideoType.playlist ? (
+          {video.children.length > 0 ? (
             <ShareLink />
           ) : (
             <>
