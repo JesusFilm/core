@@ -6,11 +6,18 @@ import Stack from '@mui/material/Stack'
 
 export interface Props {
   value: string
+  setOpenShare: (isOpen: boolean) => void
 }
 
-export function Description({ value }: Props): ReactElement {
+export function Description({ value, setOpenShare }: Props): ReactElement {
   return (
-    <Stack direction="row" spacing={4} alignItems="flex-start">
+    <Stack
+      direction="row"
+      justifyContent="space-between"
+      alignItems="flex-start"
+      spacing={4}
+      sx={{ pt: { xs: 7, sm: 10 }, pb: { xs: '32px', sm: '46px' } }}
+    >
       <Typography variant="subtitle1" color="text.primary">
         {value}
       </Typography>
@@ -19,6 +26,7 @@ export function Description({ value }: Props): ReactElement {
         variant="outlined"
         color="secondary"
         aria-label="collection-share-button"
+        onClick={() => setOpenShare(true)}
         sx={{
           display: { xs: 'none', sm: 'flex' },
           minWidth: 220,

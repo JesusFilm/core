@@ -16,6 +16,7 @@ import { SimpleHero, VideoHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
 import { VideosCarousel } from '../Videos/VideosCarousel/VideosCarousel'
 import { ShareDialog } from '../ShareDialog'
+import { Description } from '../Description'
 
 interface VideoContainerProps {
   container?: VideoContentFields
@@ -49,63 +50,80 @@ export function VideoContainer({
           <>
             <Box sx={{ pt: '20px' }}>
               {content.children.length > 0 && (
-                <VideosCarousel
-                  videos={content.children}
-                  routePrefix={content.slug}
-                  routeSuffix={content.variant?.slug.split('/')[1]}
-                />
-              )}
-              {container != null && container.children.length > 0 && (
-                <VideosCarousel
-                  videos={container.children}
-                  routePrefix={container.slug}
-                  routeSuffix={container.variant?.slug.split('/')[1]}
-                />
-              )}
-            </Box>
-            <Stack
-              direction="row"
-              spacing="100px"
-              sx={{
-                mx: 0,
-                mt: 20,
-                mb: 80,
-                maxWidth: '100%'
-              }}
-            >
-              <Box width="100%">
-                <Tabs
-                  value={tabValue}
-                  onChange={handleTabChange}
-                  aria-label="background tabs"
-                  variant="fullWidth"
-                  centered
-                  sx={{ marginBottom: '40px' }}
-                >
-                  <Tab
-                    label="Description"
-                    {...tabA11yProps('video-description', 0)}
+                <>
+                  <Description
+                    value={content.description[0]?.value}
+                    setOpenShare={setOpenShare}
                   />
-                </Tabs>
-                <TabPanel name="video-description" value={tabValue} index={0}>
-                  <Typography variant="body1">
-                    {content.description[0]?.value}
-                  </Typography>
-                </TabPanel>
-              </Box>
-              <Box width="336px">
-                <Stack direction="row" spacing="20px" mb="40px">
-                  <Button variant="outlined">
-                    <SaveAlt />
-                    &nbsp; Download
-                  </Button>
-                  <Button variant="outlined" onClick={() => setOpenShare(true)}>
-                    <Share />
-                    &nbsp; Share
-                  </Button>
-                </Stack>
-              </Box>
-            </Stack>
+                  <VideosCarousel
+                    videos={content.children}
+                    routePrefix={content.slug}
+                    routeSuffix={content.variant?.slug.split('/')[1]}
+                  />
+                </>
+              )}
+              {container != null &&
+                (container.children.length > 0 ||
+                  container.children.length === 0) && (
+                  <>
+                    <VideosCarousel
+                      videos={container.children}
+                      routePrefix={container.slug}
+                      routeSuffix={container.variant?.slug.split('/')[1]}
+                    />
+                    <Stack
+                      direction="row"
+                      spacing="100px"
+                      sx={{
+                        mx: 0,
+                        mt: 20,
+                        mb: 80,
+                        maxWidth: '100%'
+                      }}
+                    >
+                      <Box width="100%">
+                        <Tabs
+                          value={tabValue}
+                          onChange={handleTabChange}
+                          aria-label="background tabs"
+                          variant="fullWidth"
+                          centered
+                          sx={{ marginBottom: '40px' }}
+                        >
+                          <Tab
+                            label="Description"
+                            {...tabA11yProps('video-description', 0)}
+                          />
+                        </Tabs>
+                        <TabPanel
+                          name="video-description"
+                          value={tabValue}
+                          index={0}
+                        >
+                          <Typography variant="body1">
+                            {content.description[0]?.value}
+                          </Typography>
+                        </TabPanel>
+                      </Box>
+                      <Box width="336px">
+                        <Stack direction="row" spacing="20px" mb="40px">
+                          <Button variant="outlined">
+                            <SaveAlt />
+                            &nbsp; Download
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            onClick={() => setOpenShare(true)}
+                          >
+                            <Share />
+                            &nbsp; Share
+                          </Button>
+                        </Stack>
+                      </Box>
+                    </Stack>
+                  </>
+                )}
+            </Box>
             <ShareDialog
               open={openShare}
               video={content}
