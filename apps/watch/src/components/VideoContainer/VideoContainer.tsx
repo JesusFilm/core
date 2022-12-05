@@ -12,7 +12,7 @@ import 'video.js/dist/video-js.css'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { LanguageProvider } from '../../libs/languageContext/LanguageContext'
-import { SimpleHero, VideoHero } from '../Hero'
+import { PlaylistHero, VideoHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
 import { VideosCarousel } from '../Videos/VideosCarousel/VideosCarousel'
 import { ShareDialog } from '../ShareDialog'
@@ -32,16 +32,18 @@ export function VideoContainer({
     setTabValue(newValue)
   }
 
+  console.log(content.variant)
+
   return (
     <LanguageProvider>
       <PageWrapper
         hero={
           content == null ? (
             <></>
-          ) : content.variant?.hls != null ? (
-            <VideoHero video={content} />
+          ) : content.children.length > 0 ? (
+            <PlaylistHero video={content} />
           ) : (
-            <SimpleHero video={content} />
+            <VideoHero video={content} />
           )
         }
       >

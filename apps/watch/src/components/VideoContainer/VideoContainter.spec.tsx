@@ -17,6 +17,13 @@ const video = {
       value: 'video description'
     }
   ],
+  variant: {
+    duration: 3505,
+    slug: 'content/slug',
+    variant: {
+      slug: 'variant-slug/english'
+    }
+  },
   children: []
 } as unknown as VideoContentFields
 

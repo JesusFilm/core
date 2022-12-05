@@ -7,11 +7,11 @@ import { ReactElement } from 'react'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import IconButton from '@mui/material/IconButton'
 
-import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { Overlay } from '../Overlay'
 
 interface Props {
-  video: Video
+  video: VideoContentFields
 }
 
 export function PlaylistHero({ video }: Props): ReactElement {
