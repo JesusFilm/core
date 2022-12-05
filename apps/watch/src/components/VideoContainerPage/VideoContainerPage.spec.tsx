@@ -5,7 +5,7 @@ import {
   VideoContentFields,
   VideoContentFields_children
 } from '../../../__generated__/VideoContentFields'
-import { Description } from '../Description'
+import { ContainerDescription } from './ContainerDescription'
 import { VideoContainerPage } from '.'
 
 const video = {
@@ -56,7 +56,10 @@ describe('VideoContainerPage', () => {
   it('should render description text', () => {
     const setOpenShare = jest.fn()
     render(
-      <Description setOpenShare={setOpenShare} value={video.snippet[0].value} />
+      <ContainerDescription
+        setOpenShare={setOpenShare}
+        value={video.snippet[0].value}
+      />
     )
     expect(screen.getByText(video.snippet[0].value)).toBeInTheDocument()
   })

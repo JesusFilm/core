@@ -6,7 +6,7 @@ import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { SimpleHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
-import { Description } from '../Description'
+import { ContainerDescription } from './ContainerDescription'
 
 interface VideoContainerPageProps {
   content: VideoContentFields
@@ -22,7 +22,7 @@ export function VideoContainerPage({
     <PageWrapper hero={<SimpleHero video={content} />}>
       {content != null && (
         <Container maxWidth="xxl">
-          <Description
+          <ContainerDescription
             value={content.snippet[0]?.value}
             setOpenShare={() => setOpenShare(true)}
           />
