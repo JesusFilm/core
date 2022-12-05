@@ -7,7 +7,7 @@ import { GetVideos_videos } from '../../../../__generated__/GetVideos'
 import { GridItem } from './GridItem'
 
 interface VideosGridProps {
-  videos: GetVideos_videos[]
+  videos?: GetVideos_videos[]
   loading?: boolean
   isEnd?: boolean
   showLoadMore?: boolean
