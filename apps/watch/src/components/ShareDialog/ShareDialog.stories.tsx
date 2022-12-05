@@ -25,6 +25,7 @@ const video: Video = {
     __typename: 'VideoVariant',
     duration: videos[0].variant?.duration ?? 0,
     hls: 'https://arc.gt/4jz75',
+    downloads: [],
     language: {
       __typename: 'Language',
       id: '529',

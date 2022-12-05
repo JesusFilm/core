@@ -11,7 +11,7 @@ import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import FormGroup from '@mui/material/FormGroup'
 
-import { GetVideo_video_variant_downloads } from '../../__generated__/GetVideo'
+import { GetVideo_video_variant_downloads } from '../../../__generated__/GetVideo'
 
 interface DownloadDialogProps {
   downloads: GetVideo_video_variant_downloads[]

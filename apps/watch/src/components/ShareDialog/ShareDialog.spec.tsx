@@ -17,6 +17,7 @@ const video: Video = {
   variant: {
     __typename: 'VideoVariant',
     duration: videos[0].variant?.duration ?? 0,
+    downloads: [],
     language: {
       __typename: 'Language',
       id: '529',
