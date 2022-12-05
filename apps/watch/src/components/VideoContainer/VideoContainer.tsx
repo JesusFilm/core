@@ -14,8 +14,8 @@ import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { LanguageProvider } from '../../libs/languageContext/LanguageContext'
 import { SimpleHero, VideoHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
-import { VideosCarousel } from '../Videos/VideosCarousel/VideosCarousel'
 import { ShareDialog } from '../ShareDialog'
+import { VideosGrid } from '../Videos/VideosGrid/VideosGrid'
 
 interface VideoContainerProps {
   container?: VideoContentFields
@@ -47,29 +47,13 @@ export function VideoContainer({
       >
         {content != null && (
           <>
-            <Box sx={{ pt: '20px' }}>
-              {content.children.length > 0 && (
-                <VideosCarousel
-                  videos={content.children}
-                  routePrefix={content.slug}
-                  routeSuffix={content.variant?.slug.split('/')[1]}
-                />
-              )}
-              {container != null && container.children.length > 0 && (
-                <VideosCarousel
-                  videos={container.children}
-                  routePrefix={container.slug}
-                  routeSuffix={container.variant?.slug.split('/')[1]}
-                />
-              )}
-            </Box>
             <Stack
               direction="row"
               spacing="100px"
               sx={{
                 mx: 0,
                 mt: 20,
-                mb: 80,
+                mb: 12,
                 maxWidth: '100%'
               }}
             >
@@ -112,6 +96,22 @@ export function VideoContainer({
               routes={[]}
               onClose={() => setOpenShare(false)}
             />
+            <Box sx={{ pt: '20px' }}>
+              {content.children.length > 0 && (
+                <VideosGrid
+                  videos={content.children}
+                  routePrefix={content.slug}
+                  routeSuffix={content.variant?.slug.split('/')[1]}
+                />
+              )}
+              {container != null && container.children.length > 0 && (
+                <VideosGrid
+                  videos={container.children}
+                  routePrefix={container.slug}
+                  routeSuffix={container.variant?.slug.split('/')[1]}
+                />
+              )}
+            </Box>
           </>
         )}
       </PageWrapper>

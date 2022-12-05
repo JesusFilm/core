@@ -5,23 +5,27 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { deepmerge } from '@mui/utils'
 import { getTheme, ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { VideoCard } from '../../Video'
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
+import { VideosGridCard } from './Card'
 
 interface VideosGridProps {
   videos: VideoChildFields[]
   loading?: boolean
   isEnd?: boolean
   showLoadMore?: boolean
-  onLoadMore: () => Promise<void>
+  onLoadMore?: () => Promise<void>
+  routePrefix?: string
+  routeSuffix?: string
 }
 
 export function VideosGrid({
   loading = false,
   isEnd = false,
   onLoadMore,
-  showLoadMore = true,
-  videos
+  showLoadMore = onLoadMore !== undefined,
+  videos,
+  routePrefix,
+  routeSuffix
 }: VideosGridProps): ReactElement {
   const gridTheme = createTheme(
     deepmerge(
@@ -32,7 +36,7 @@ export function VideosGrid({
             xs: 0,
             sm: 725,
             md: 1043,
-            lg: 1450,
+            lg: 1412,
             xl: 1765
           }
         }
@@ -44,8 +48,12 @@ export function VideosGrid({
       <Grid container spacing={4} data-testid="videos-grid">
         {(videos.length ?? 0) > 0 &&
           videos.map((video, index) => (
-            <Grid item key={index} md={4} sm={6} xs={12} lg={3}>
-              <VideoCard video={video} />
+            <Grid item key={index} md={6} sm={12} xs={12} lg={4} xl={3}>
+              <VideosGridCard
+                video={video}
+                routePrefix={routePrefix}
+                routeSuffix={routeSuffix}
+              />
             </Grid>
           ))}
         {loading &&
@@ -59,7 +67,7 @@ export function VideosGrid({
               data-testid="videos-grid-placeholder"
               mr="16px"
             >
-              <VideoCard />
+              <VideosGridCard />
             </Grid>
           ))}
         {!isEnd && showLoadMore && (

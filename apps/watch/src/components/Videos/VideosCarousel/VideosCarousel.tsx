@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import { ReactElement, useState } from 'react'
 import Carousel from 'react-multi-carousel'
-import { VideoCard } from '../../Video'
-import 'react-multi-carousel/lib/styles.css'
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
+import { VideosCarouselCard } from './Card'
+import 'react-multi-carousel/lib/styles.css'
 
 interface VideosCarouselProps {
   videos: VideoChildFields[]
@@ -64,7 +64,7 @@ export function VideosCarousel({
       >
         {(videos.length ?? 0) > 0 &&
           videos.map((video, index) => (
-            <VideoCard
+            <VideosCarouselCard
               video={video}
               key={index}
               disabled={isMoving}
@@ -73,7 +73,9 @@ export function VideosCarousel({
             />
           ))}
         {loading &&
-          [1, 2, 3, 4, 5, 6, 7, 8].map((index) => <VideoCard key={index} />)}
+          [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
+            <VideosCarouselCard key={index} />
+          ))}
       </Carousel>
     </Box>
   )

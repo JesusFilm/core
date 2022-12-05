@@ -10,26 +10,36 @@ import PlayArrow from '@mui/icons-material/PlayArrow'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import Link from 'next/link'
 import Stack from '@mui/material/Stack'
-
 import { compact } from 'lodash'
-import { VideoContentFields_children } from '../../../../__generated__/VideoContentFields'
 
-interface VideoCardProps {
+import { VideoContentFields_children } from '../../../../../__generated__/VideoContentFields'
+
+interface VideosGridCardProps {
   video?: VideoContentFields_children
-  disabled?: boolean
   routePrefix?: string
   routeSuffix?: string
 }
 
-export function VideoCard({
+export function VideosGridCard({
   video,
-  disabled = false,
   routePrefix,
   routeSuffix
-}: VideoCardProps): ReactElement {
+}: VideosGridCardProps): ReactElement {
   return (
     <>
-      <Card sx={{ width: 338, height: 140, my: 5, mr: 20, mb: '14px', mt: 0 }}>
+      <Card
+        sx={{
+          minWidth: 266,
+          maxWidth: 338,
+          minHeight: 136,
+          maxHeight: 160,
+          width: `100%`,
+          my: 5,
+          mr: 20,
+          mb: '14px',
+          mt: 0
+        }}
+      >
         {video == null && (
           <>
             <CardMedia

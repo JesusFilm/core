@@ -5,8 +5,8 @@ import { useLanguage } from '../../libs/languageContext/LanguageContext'
 import { GetVideos } from '../../../__generated__/GetVideos'
 import { VideosFilter } from '../../../__generated__/globalTypes'
 import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
-import { VideosCarousel } from './VideosCarousel/VideosCarousel'
-import { VideosGrid } from './VideosGrid/VideosGrid'
+import { VideosCarousel } from './VideosCarousel'
+import { VideosGrid } from './VideosGrid'
 
 export const GET_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}
