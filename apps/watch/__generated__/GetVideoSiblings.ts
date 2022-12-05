@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { VideoLabel } from "./globalTypes";
+
 // ====================================================
 // GraphQL query operation: GetVideoSiblings
 // ====================================================
@@ -33,14 +35,10 @@ export interface GetVideoSiblings_video_children_children {
   id: string;
 }
 
-export interface GetVideoSiblings_video_children_slug {
-  __typename: "Translation";
-  value: string;
-}
-
 export interface GetVideoSiblings_video_children {
   __typename: "Video";
   id: string;
+  label: VideoLabel;
   image: string | null;
   imageAlt: GetVideoSiblings_video_children_imageAlt[];
   snippet: GetVideoSiblings_video_children_snippet[];
@@ -48,9 +46,9 @@ export interface GetVideoSiblings_video_children {
   variant: GetVideoSiblings_video_children_variant | null;
   children: GetVideoSiblings_video_children_children[];
   /**
-   * slug is a permanent link to the video. It should only be appended, not edited or deleted
+   * slug is a permanent link to the video.
    */
-  slug: GetVideoSiblings_video_children_slug[];
+  slug: string;
 }
 
 export interface GetVideoSiblings_video {

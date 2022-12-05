@@ -5,6 +5,7 @@ import { noop } from 'lodash'
 
 import { GetVideo_video as Video } from '../../../__generated__/GetVideo'
 import { GetVideoSiblings_video_children } from '../../../__generated__/GetVideoSiblings'
+
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/testData'
 import { ShareDialog } from './ShareDialog'
@@ -23,12 +24,21 @@ const video: Video = {
   variant: {
     __typename: 'VideoVariant',
     duration: videos[0].variant?.duration ?? 0,
-    hls: 'https://arc.gt/4jz75'
+    hls: 'https://arc.gt/4jz75',
+    language: {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'English'
+        }
+      ]
+    }
   },
   description: videos[0].snippet,
   studyQuestions: [],
-  children: [],
-  variantLanguages: []
+  children: []
 }
 
 const routes = ['the-story-of-jesus-for-children']

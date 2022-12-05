@@ -43,8 +43,8 @@ export function VideoCard({
           <Link
             href={`/${
               routePrefix == null
-                ? `/${video.slug[0]?.value ?? ''}`
-                : `/${routePrefix}/${video.slug[0]?.value ?? ''}`
+                ? `/${video.slug ?? ''}`
+                : `/${routePrefix}/${video.slug ?? ''}`
             }`}
             passHref
           >
@@ -85,7 +85,7 @@ export function VideoCard({
           </Link>
         )}
       </Card>
-      <Link href={`/${video?.slug[0]?.value ?? ''}`} passHref>
+      <Link href={`/${video?.slug ?? ''}`} passHref>
         <Typography
           variant="body1"
           sx={{
