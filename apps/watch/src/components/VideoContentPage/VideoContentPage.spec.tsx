@@ -1,11 +1,11 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 
 import { SnackbarProvider } from 'notistack'
 import {
   VideoContentFields,
   VideoContentFields_children
 } from '../../../__generated__/VideoContentFields'
-import { VideoContainer } from '.'
+import { VideoContentPage } from '.'
 
 const video = {
   id: '2_video-0-0',
@@ -17,28 +17,14 @@ const video = {
       value: 'video description'
     }
   ],
+  variant: {
+    duration: 100,
+    slug: '2_video-0-0/english'
+  },
   children: []
 } as unknown as VideoContentFields
 
-describe('VideoContainer', () => {
-  it('should render description', () => {
-    const { getByText } = render(
-      <SnackbarProvider>
-        <VideoContainer content={video} />
-      </SnackbarProvider>
-    )
-    expect(getByText('video description')).toBeInTheDocument()
-  })
-
-  it('should render SimpleHero', () => {
-    const { getByText } = render(
-      <SnackbarProvider>
-        <VideoContainer content={video} />
-      </SnackbarProvider>
-    )
-    expect(getByText('video title')).toBeInTheDocument()
-  })
-
+describe('VideoContentPage', () => {
   it('should render VideoHero', () => {
     const withHls = {
       ...video,
@@ -49,47 +35,46 @@ describe('VideoContainer', () => {
 
     const { getAllByRole } = render(
       <SnackbarProvider>
-        <VideoContainer content={withHls} />
+        <VideoContentPage content={withHls} />
       </SnackbarProvider>
     )
 
     expect(getAllByRole('button', { name: 'Play Video' })).toHaveLength(2)
   })
 
-  it('should render Video Carousel for content', () => {
+  it('should render description', () => {
+    const { getByText } = render(
+      <SnackbarProvider>
+        <VideoContentPage content={video} />
+      </SnackbarProvider>
+    )
+    expect(getByText('video description')).toBeInTheDocument()
+  })
+
+  it('should render related videos', () => {
     const withChildren = {
       ...video,
       children: [{ id: 'child.id' } as unknown as VideoContentFields_children]
     }
     const { getByTestId } = render(
       <SnackbarProvider>
-        <VideoContainer content={withChildren} />
+        <VideoContentPage content={withChildren} />
       </SnackbarProvider>
     )
 
     expect(getByTestId('videos-carousel')).toBeInTheDocument()
   })
 
-  it('should render Video Carousel for container', () => {
-    const container = {
-      ...video,
-      children: [{ id: 'child.id' } as unknown as VideoContentFields_children]
-    }
-    const { getByTestId } = render(
-      <SnackbarProvider>
-        <VideoContainer content={video} container={container} />
-      </SnackbarProvider>
-    )
-
-    expect(getByTestId('videos-carousel')).toBeInTheDocument()
-  })
-
-  it('should render open share dialog', () => {
+  it('should render share button', () => {
     const { getByRole } = render(
       <SnackbarProvider>
-        <VideoContainer content={video} />
+        <VideoContentPage content={video} />
       </SnackbarProvider>
     )
     expect(getByRole('button', { name: 'Share' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Share' }))
+    expect(
+      getByRole('dialog', { name: 'Share this video' })
+    ).toBeInTheDocument()
   })
 })

@@ -12,20 +12,20 @@ import 'video.js/dist/video-js.css'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { LanguageProvider } from '../../libs/languageContext/LanguageContext'
-import { SimpleHero, VideoHero } from '../Hero'
+import { VideoHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
 import { VideosCarousel } from '../Videos/VideosCarousel/VideosCarousel'
 import { ShareDialog } from '../ShareDialog'
 
-interface VideoContainerProps {
+interface VideoContentPageProps {
   container?: VideoContentFields
   content: VideoContentFields
 }
 
-export function VideoContainer({
+export function VideoContentPage({
   container,
   content
-}: VideoContainerProps): ReactElement {
+}: VideoContentPageProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const [openShare, setOpenShare] = useState(false)
   const handleTabChange = (_event, newValue): void => {
@@ -34,21 +34,12 @@ export function VideoContainer({
 
   return (
     <LanguageProvider>
-      <PageWrapper
-        hero={
-          content == null ? (
-            <></>
-          ) : content.variant?.hls != null ? (
-            <VideoHero video={content} />
-          ) : (
-            <SimpleHero video={content} />
-          )
-        }
-      >
+      <PageWrapper hero={<VideoHero video={content} />}>
         {content != null && (
           <>
             <Box sx={{ pt: '20px' }}>
-              {content.children.length > 0 && (
+              {/* TODO: combine content and container children? */}
+              {content?.children.length > 0 && (
                 <VideosCarousel
                   videos={content.children}
                   routePrefix={content.slug}
