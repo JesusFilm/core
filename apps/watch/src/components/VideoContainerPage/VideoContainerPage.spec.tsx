@@ -1,10 +1,11 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { SnackbarProvider } from 'notistack'
 import {
   VideoContentFields,
   VideoContentFields_children
 } from '../../../__generated__/VideoContentFields'
+import { Description } from '../Description'
 import { VideoContainerPage } from '.'
 
 const video = {
@@ -45,11 +46,19 @@ describe('VideoContainerPage', () => {
         <VideoContainerPage content={video} />
       </SnackbarProvider>
     )
-    expect(getByRole('button', { name: 'Share' })).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Share' }))
+    expect(screen.getByLabelText('collection-share-button')).toBeInTheDocument()
+    fireEvent.click(screen.getByLabelText('collection-share-button'))
     expect(
       getByRole('dialog', { name: 'Share this video' })
     ).toBeInTheDocument()
+  })
+
+  it('should render description text', () => {
+    const setOpenShare = jest.fn()
+    render(
+      <Description setOpenShare={setOpenShare} value={video.snippet[0].value} />
+    )
+    expect(screen.getByText(video.snippet[0].value)).toBeInTheDocument()
   })
 
   xit('should render videos', () => {
@@ -58,7 +67,6 @@ describe('VideoContainerPage', () => {
         <VideoContainerPage content={video} />
       </SnackbarProvider>
     )
-
     expect(getByTestId('videos-grid')).toBeInTheDocument()
   })
 })

@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 
 export interface Props {
   value: string
-  setOpenShare: (isOpen: boolean) => void
+  setOpenShare?: (isOpen: boolean) => void
 }
 
 export function Description({ value, setOpenShare }: Props): ReactElement {
