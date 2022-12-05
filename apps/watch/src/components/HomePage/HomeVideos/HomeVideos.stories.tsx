@@ -1,14 +1,14 @@
 import { Story, Meta } from '@storybook/react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
-import { watchConfig } from '../../libs/storybook'
-import { videos } from '../Videos/testData'
+import { watchConfig } from '../../../libs/storybook'
+import { videos } from '../../Videos/testData'
 import { HomeVideos } from '.'
 
 const HomeVideosStory = {
   ...watchConfig,
   component: HomeVideos,
-  title: 'Watch/HomeVideos'
+  title: 'Watch/HomePage/HomeVideos'
 }
 
 const Template: Story = ({ ...args }) => {
