@@ -2,9 +2,11 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { Meta, Story } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { VideoType } from '../../../../__generated__/globalTypes'
+import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { watchConfig } from '../../../libs/storybook'
 import { VideoHero } from './VideoHero'
+
+import '../../../../public/styles/video-js.css'
 
 const VideoHeroStory = {
   ...watchConfig,
@@ -23,7 +25,7 @@ Default.args = {
   loading: false,
   video: {
     id: '1_cl-0-0',
-    type: VideoType.standalone,
+    label: VideoLabel.episode,
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl-0-0.mobileCinematicHigh.jpg',
     snippet: [

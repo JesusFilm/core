@@ -34,6 +34,29 @@ export function VideoHero({
   const [isPlaying, setIsPlaying] = useState(false)
 
   useEffect(() => {
+    const Button = videojs.getComponent('Button')
+    class SubtitleControl extends Button {
+      constructor(player, options) {
+        super(player, options)
+        this.addClass('vjs-subtitles-button')
+        this.controlText(player.localize('Subtitle'))
+      }
+
+      // open subtitle dialog
+    }
+    class AudioControl extends Button {
+      constructor(player, options) {
+        super(player, options)
+        this.addClass('vjs-audio-button')
+        this.controlText(player.localize('Audio Language'))
+      }
+
+      // open audio dialog
+    }
+
+    videojs.registerComponent('SubtitleControl', SubtitleControl)
+    videojs.registerComponent('AudioControl', AudioControl)
+
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: false,
@@ -44,8 +67,8 @@ export function VideoHero({
         },
         controlBar: {
           playToggle: true,
-          captionsButton: true,
-          subtitlesButton: true,
+          captionsButton: false,
+          subtitlesButton: false,
           remainingTimeDisplay: true,
           progressControl: {
             seekBar: true
@@ -60,8 +83,10 @@ export function VideoHero({
       })
       playerRef.current.on('pause', pauseVideo)
       playerRef.current.on('play', playVideo)
+      playerRef?.current?.getChild('ControlBar')?.addChild('AudioControl')
+      playerRef?.current?.getChild('ControlBar')?.addChild('SubtitleControl')
     }
-  })
+  }, [playerRef, video])
 
   function playVideo(): void {
     setIsPlaying(true)
