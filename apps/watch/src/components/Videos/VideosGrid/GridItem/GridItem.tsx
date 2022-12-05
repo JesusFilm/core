@@ -1,4 +1,4 @@
-import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+import { secondsToTimeFormatTrimmed } from '@core/shared/ui/timeFormat'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
@@ -66,7 +66,7 @@ export function GridItem({ video }: GridItemProps): ReactElement {
                 <Stack direction="row" sx={{ alignItems: 'center' }}>
                   <PlayArrow sx={{ fontSize: '1rem' }} />
                   <Typography variant="body1" sx={{ lineHeight: '1rem' }}>
-                    {secondsToTimeFormat(video.variant?.duration ?? 0)}
+                    {secondsToTimeFormatTrimmed(video.variant?.duration ?? 0)}
                   </Typography>
                 </Stack>
               </Box>

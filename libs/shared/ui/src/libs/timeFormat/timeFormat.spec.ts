@@ -1,11 +1,15 @@
-import { secondsToTimeFormat, timeFormatToSeconds } from '.'
+import {
+  secondsToTimeFormat,
+  timeFormatToSeconds,
+  secondsToTimeFormatTrimmed
+} from '.'
 
 describe('timeFormat', () => {
   describe('secondsToTimeFormat', () => {
     it('should convert seconds to time format', () => {
-      expect(secondsToTimeFormat(0)).toEqual('00:00')
-      expect(secondsToTimeFormat(1)).toEqual('00:01')
-      expect(secondsToTimeFormat(60)).toEqual('01:00')
+      expect(secondsToTimeFormat(0)).toEqual('00:00:00')
+      expect(secondsToTimeFormat(1)).toEqual('00:00:01')
+      expect(secondsToTimeFormat(60)).toEqual('00:01:00')
       expect(secondsToTimeFormat(3600)).toEqual('01:00:00')
       expect(secondsToTimeFormat(3661)).toEqual('01:01:01')
     })
@@ -18,5 +22,13 @@ describe('timeFormat', () => {
       expect(timeFormatToSeconds('01:00:00')).toEqual(3600)
       expect(timeFormatToSeconds('01:01:01')).toEqual(3661)
     })
+  })
+
+  it('should convert seconds to time format and trim it', () => {
+    expect(secondsToTimeFormatTrimmed(0)).toEqual('00:00')
+    expect(secondsToTimeFormatTrimmed(1)).toEqual('00:01')
+    expect(secondsToTimeFormatTrimmed(60)).toEqual('01:00')
+    expect(secondsToTimeFormatTrimmed(3600)).toEqual('01:00:00')
+    expect(secondsToTimeFormatTrimmed(3661)).toEqual('01:01:01')
   })
 })
