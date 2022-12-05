@@ -18,77 +18,73 @@ export interface GridItemProps {
   routePrefix?: string
 }
 
-export function GridItem({ video, routePrefix }: GridItemProps): ReactElement {
+export function GridItem({ video }: GridItemProps): ReactElement {
   return (
-    <>
-      <Card
-        sx={{
-          boxShadow: 0,
-          bgcolor: 'rgba(0,0,0,0)',
-          borderRadius: '8px'
-        }}
-      >
-        {video == null && (
-          <>
-            <CardMedia
-              component="img"
-              image="/loading-blurhash.png"
-              height="160"
-            />
-            <CardContent color="white">
-              <LinearProgress />
-            </CardContent>
-          </>
-        )}
-        {video != null && (
-          <Link href={`/${video?.slug ?? ''}`} passHref>
-            <CardActionArea aria-label="collection page video card">
+    <Card
+      sx={{
+        boxShadow: 0,
+        bgcolor: 'rgba(0,0,0,0)',
+        borderRadius: '8px'
+      }}
+    >
+      {video == null && (
+        <>
+          <CardMedia
+            component="img"
+            image="/loading-blurhash.png"
+            height="160"
+          />
+          <CardContent color="white">
+            <LinearProgress />
+          </CardContent>
+        </>
+      )}
+      {video != null && (
+        <Link href={`/${video?.slug ?? ''}`} passHref>
+          <CardActionArea aria-label="collection page video card">
+            <Box
+              sx={{
+                position: 'relative'
+              }}
+            >
+              <CardMedia
+                sx={{ borderRadius: '8px' }}
+                component="img"
+                image={video.image ?? ''}
+              />
               <Box
                 sx={{
-                  position: 'relative'
+                  position: 'absolute',
+                  bottom: 5,
+                  right: 5,
+                  bgcolor: 'rgba(0, 0, 0, 0.5)',
+                  color: 'primary.contrastText',
+                  borderRadius: '8px',
+                  padding: '8px'
                 }}
               >
-                <CardMedia
-                  sx={{ borderRadius: '8px' }}
-                  component="img"
-                  image={video.image ?? ''}
-                />
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    bottom: 5,
-                    right: 5,
-                    bgcolor: 'rgba(0, 0, 0, 0.5)',
-                    color: 'primary.contrastText',
-                    borderRadius: '8px',
-                    padding: '8px'
-                  }}
-                >
-                  <Stack direction="row" sx={{ alignItems: 'center' }}>
-                    <PlayArrow sx={{ fontSize: '1rem' }} />
-                    <Typography variant="body1" sx={{ lineHeight: '1rem' }}>
-                      {secondsToTimeFormat(
-                        video.variant?.duration ?? 0
-                      ).substring(3, 8)}
-                    </Typography>
-                  </Stack>
-                </Box>
+                <Stack direction="row" sx={{ alignItems: 'center' }}>
+                  <PlayArrow sx={{ fontSize: '1rem' }} />
+                  <Typography variant="body1" sx={{ lineHeight: '1rem' }}>
+                    {secondsToTimeFormat(video.variant?.duration ?? 0)}
+                  </Typography>
+                </Stack>
               </Box>
-              <CardContent sx={{ px: 0, pt: '8px', pb: '20px' }}>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    cursor: 'pointer',
-                    color: 'rgba(29, 28, 28, 0.9)'
-                  }}
-                >
-                  {video?.title[0]?.value}
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-          </Link>
-        )}
-      </Card>
-    </>
+            </Box>
+            <CardContent sx={{ px: 0, pt: '8px', pb: '20px' }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  cursor: 'pointer',
+                  color: 'rgba(29, 28, 28, 0.9)'
+                }}
+              >
+                {video?.title[0]?.value}
+              </Typography>
+            </CardContent>
+          </CardActionArea>
+        </Link>
+      )}
+    </Card>
   )
 }

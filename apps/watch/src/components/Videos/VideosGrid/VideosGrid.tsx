@@ -8,13 +8,9 @@ import { GridItem } from './GridItem'
 
 interface VideosGridProps {
   videos?: GetVideos_videos[]
-  routePrefix?: string
 }
 
-export function VideosGrid({
-  videos,
-  routePrefix
-}: VideosGridProps): ReactElement {
+export function VideosGrid({ videos }: VideosGridProps): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.light}>
       <Container
@@ -36,7 +32,6 @@ export function VideosGrid({
           <GridItem
             key={index}
             video={videos.find((video) => video.id === item.id)}
-            routePrefix={routePrefix}
           />
         ))}
       </Container>
