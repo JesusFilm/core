@@ -1,15 +1,15 @@
 import Box from '@mui/material/Box'
 import { ReactElement, useState } from 'react'
 import Carousel from 'react-multi-carousel'
-import 'react-multi-carousel/lib/styles.css'
-
-import { GetVideos_videos } from '../../../../__generated__/GetVideos'
 import { VideoCard } from '../../Video'
+import 'react-multi-carousel/lib/styles.css'
+import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 
 interface VideosCarouselProps {
-  videos: GetVideos_videos[]
+  videos: VideoChildFields[]
   loading?: boolean
-  routePrefix?: string | undefined
+  routePrefix?: string
+  routeSuffix?: string
   onLoadMore?: () => Promise<void> | undefined
 }
 
@@ -37,7 +37,8 @@ export function VideosCarousel({
   loading = false,
   onLoadMore,
   videos,
-  routePrefix = undefined
+  routePrefix,
+  routeSuffix
 }: VideosCarouselProps): ReactElement {
   const [isMoving, setIsMoving] = useState(false)
   return (
@@ -68,6 +69,7 @@ export function VideosCarousel({
               key={index}
               disabled={isMoving}
               routePrefix={routePrefix}
+              routeSuffix={routeSuffix}
             />
           ))}
         {loading &&

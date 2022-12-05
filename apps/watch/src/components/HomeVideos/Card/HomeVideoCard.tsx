@@ -6,8 +6,7 @@ import Link from 'next/link'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import ButtonBase from '@mui/material/ButtonBase'
-
-import { GetHomeVideo_video } from '../../../../__generated__/GetHomeVideo'
+import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 
 export enum FilmType {
   collection = 'Collection',
@@ -28,7 +27,7 @@ const designationColors = {
 }
 
 interface VideoListCardProps {
-  video?: GetHomeVideo_video
+  video?: VideoChildFields
 }
 
 const ImageButton = styled(ButtonBase)(({ theme }) => ({
@@ -88,7 +87,7 @@ const ImageBackdrop = styled('span')(({ theme }) => ({
 
 export function HomeVideoCard({ video }: VideoListCardProps): ReactElement {
   return (
-    <Link href={`/${video?.slug ?? ''}`} passHref>
+    <Link href={`/${video?.variant?.slug ?? ''}`} passHref>
       <ImageButton focusRipple>
         <ImageSrc
           style={{

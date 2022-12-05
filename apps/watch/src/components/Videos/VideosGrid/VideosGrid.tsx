@@ -3,15 +3,14 @@ import Container from '@mui/material/Container'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { GetVideos_videos } from '../../../../__generated__/GetVideos'
+import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 import { GridItem } from './GridItem'
 
 interface VideosGridProps {
-  videos?: GetVideos_videos[]
+  videos?: VideoChildFields[]
   loading?: boolean
   isEnd?: boolean
   showLoadMore?: boolean
-  routePrefix?: string | undefined
   onLoadMore?: () => Promise<void>
 }
 
