@@ -7,7 +7,12 @@ import { GetVideos_videos } from '../../../../__generated__/GetVideos'
 import { GridItem } from './GridItem'
 
 interface VideosGridProps {
-  videos?: GetVideos_videos[]
+  videos: GetVideos_videos[]
+  loading?: boolean
+  isEnd?: boolean
+  showLoadMore?: boolean
+  routePrefix?: string | undefined
+  onLoadMore?: () => Promise<void>
 }
 
 export function VideosGrid({ videos }: VideosGridProps): ReactElement {
