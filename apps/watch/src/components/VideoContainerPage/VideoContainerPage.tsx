@@ -1,10 +1,5 @@
-import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
-import Button from '@mui/material/Button'
-import Share from '@mui/icons-material/Share'
 import 'video.js/dist/video-js.css'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
