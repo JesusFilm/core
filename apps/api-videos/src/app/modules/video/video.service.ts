@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common'
 import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
-import { AqlQuery } from 'arangojs/aql'
-import { IdType, VideosFilter } from '../../__generated__/graphql'
+import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
+import { VideosFilter } from '../../__generated__/graphql'
 
 interface ExtendedVideosFilter extends VideosFilter {
   variantLanguageId?: string
@@ -12,15 +12,29 @@ interface ExtendedVideosFilter extends VideosFilter {
   limit?: number
 }
 
-interface EpisodesFilter extends ExtendedVideosFilter {
-  id: string
-  idType: IdType.databaseId | IdType.slug
-}
 @Injectable()
 export class VideoService extends BaseService {
   collection: DocumentCollection = this.db.collection('videos')
+  baseVideo: GeneratedAqlQuery[] = [
+    aql`_key: item._key,
+        label: item.label,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        primaryLanguageId: item.primaryLanguageId,
+        childIds: item.childIds,
+        slug: item.slug,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt,
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],`
+  ]
 
-  videoFilter(filter?: VideosFilter): AqlQuery {
+  videosView = this.db.view('videosView')
+
+  public videoFilter(filter?: VideosFilter): AqlQuery {
     const {
       title,
       availableVariantLanguageIds = [],
@@ -44,160 +58,66 @@ export class VideoService extends BaseService {
   }
 
   @KeyAsId()
-  async filterChildren<T>(filter?: EpisodesFilter): Promise<T[]> {
-    const {
-      id,
-      idType,
-      variantLanguageId,
-      offset = 0,
-      limit = 100
-    } = filter ?? {}
-    const videosView = this.db.view('videosView')
-    const search = this.videoFilter(filter)
-    const idFilter =
-      idType === IdType.databaseId
-        ? aql`FILTER video._key == ${id}`
-        : aql`FILTER ${id} IN video.slug[*].value`
-
-    const res = await this.db.query(aql`
-    FOR video IN ${this.collection}
-      ${idFilter}
-      LIMIT 1
-      FOR item IN ${videosView}
-        FILTER item._key IN video.childIds
-        ${search}
-        LIMIT ${offset}, ${limit}
-        RETURN {
-          _key: item._key,
-          label: item.label,
-          title: item.title,
-          snippet: item.snippet,
-          description: item.description,
-          studyQuestions: item.studyQuestions,
-          image: item.image,
-          primaryLanguageId: item.primaryLanguageId,
-          variant: NTH(item.variants[* 
-            FILTER CURRENT.languageId == NOT_NULL(${
-              variantLanguageId ?? null
-            }, item.primaryLanguageId)
-            LIMIT 1 RETURN CURRENT
-          ], 0),
-          variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-          childIds: item.childIds,
-          slug: item.slug,
-          noIndex: item.noIndex,
-          seoTitle: item.seoTitle,
-          imageAlt: item.imageAlt
-        }
-    `)
-    return await res.all()
-  }
-
-  @KeyAsId()
-  async filterAll<T>(filter?: ExtendedVideosFilter): Promise<T[]> {
+  public async filterAll<T>(filter?: ExtendedVideosFilter): Promise<T[]> {
     const { variantLanguageId, offset = 0, limit = 100 } = filter ?? {}
-    const videosView = this.db.view('videosView')
     const search = this.videoFilter(filter)
 
     const res = await this.db.query(aql`
-    FOR item IN ${videosView}
+    FOR item IN ${this.videosView}
       ${search}
       LIMIT ${offset}, ${limit}
       RETURN {
-        _key: item._key,
-        label: item.label,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        primaryLanguageId: item.primaryLanguageId,
+        ${aql.join(this.baseVideo)}
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
           }, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
-        ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        childIds: item.childIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
+        ], 0)
       }
     `)
     return await res.all()
   }
 
   @KeyAsId()
-  async getVideo<T>(_key: string, variantLanguageId?: string): Promise<T> {
+  public async getVideo<T>(
+    _key: string,
+    variantLanguageId?: string
+  ): Promise<T> {
     const res = await this.db.query(aql`
     FOR item in ${this.collection}
       FILTER item._key == ${_key}
       LIMIT 1
       RETURN {
-        _key: item._key,
-        label: item.label,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        primaryLanguageId: item.primaryLanguageId,
+        ${aql.join(this.baseVideo)}
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
           }, item.primaryLanguageId)
-          LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
-        ],
-        childIds: item.childIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
+          LIMIT 1 RETURN CURRENT], 0)
       }
     `)
     return await res.next()
   }
 
   @KeyAsId()
-  async getVideoBySlug<T>(
-    slug: string,
-    variantLanguageId?: string
-  ): Promise<T> {
+  public async getVideoBySlug<T>(slug: string): Promise<T> {
     const res = await this.db.query(aql`
-    FOR item in ${this.collection}
-      FILTER ${slug} IN item.slug[*].value
+    FOR item IN ${this.collection}
+      FILTER ${slug} IN item.variants[*].slug
       LIMIT 1
       RETURN {
-        _key: item._key,
-        label: item.label,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        playlist: item.playlist,
-        variant: NTH(item.variants[* 
-          FILTER CURRENT.languageId == NOT_NULL(${
-            variantLanguageId ?? null
-          }, item.primaryLanguageId)
-          LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }        
-        ],
-        childIds: item.childIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
+        ${aql.join(this.baseVideo)}
+        variant: NTH(item.variants[*
+          FILTER CURRENT.slug == ${slug}
+          LIMIT 1 RETURN CURRENT], 0)
       }
     `)
     return await res.next()
   }
 
   @KeyAsId()
-  async getVideosByIds<T>(
+  public async getVideosByIds<T>(
     keys: string[],
     variantLanguageId?: string
   ): Promise<T[]> {
@@ -205,25 +125,12 @@ export class VideoService extends BaseService {
     FOR item IN ${this.collection}
       FILTER item._key IN ${keys}
       RETURN {
-        _key: item._key,
-        label: item.label,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        primaryLanguageId: item.primaryLanguageId,
-        variant: NTH(item.variants[* 
+        ${aql.join(this.baseVideo)}
+        variant: NTH(item.variants[*
           FILTER CURRENT.languageId == NOT_NULL(${
             variantLanguageId ?? null
           }, item.primaryLanguageId)
-          LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        childIds: item.childIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
+          LIMIT 1 RETURN CURRENT], 0)
       }
     `)
     return await res.all()

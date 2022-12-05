@@ -14,7 +14,7 @@ export const cache: InMemoryCache = new InMemoryCache({
       fields: {
         videos: {
           ...offsetLimitPagination(),
-          keyArgs: ['where', ['types', 'availableVariantLanguageIds', 'title']]
+          keyArgs: ['where', ['labels', 'availableVariantLanguageIds', 'title']]
         }
       }
     }
