@@ -5,13 +5,12 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Typography from '@mui/material/Typography'
 import Tab from '@mui/material/Tab'
 import Stack from '@mui/material/Stack'
-import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
 
-interface VideoContentProps {
-  video: Video
-}
+// interface VideoContentProps {
+//   video: Video
+// }
 
-export function VideoContent({ video }: VideoContentProps): ReactElement {
+export function VideoContent({ video }): ReactElement {
   const [tabValue, setTabValue] = useState(0)
 
   const handleTabChange = (_event, newValue): void => {
