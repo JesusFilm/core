@@ -7,9 +7,7 @@ describe('VideosGrid', () => {
 
   it('should render correct number of videos', () => {
     render(<VideosGrid videos={videoList} />)
-    const expectedVideos = screen.getAllByLabelText(
-      /collection page video card/i
-    )
-    expect(expectedVideos.length).toBe(8)
+    const outputVideos = screen.getAllByLabelText(/collection page video card/i)
+    expect(outputVideos.length).toBe(videoList.length)
   })
 })

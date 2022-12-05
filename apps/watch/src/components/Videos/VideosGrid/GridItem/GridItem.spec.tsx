@@ -7,14 +7,14 @@ describe('GridItem', () => {
 
   it('should render title correctly', () => {
     render(<GridItem video={inputVideo} />)
-    const expectedText = screen.getByText('The Story of Jesus for Children')
-    expect(expectedText).toBeInTheDocument()
+    const outputText = screen.getByText('The Story of Jesus for Children')
+    expect(outputText).toBeInTheDocument()
   })
 
   it('should render video duration correctly', () => {
     render(<GridItem video={inputVideo} />)
-    const expectedText = screen.getByText('01:20')
-    expect(expectedText).toBeInTheDocument()
+    const outputText = screen.getByText('01:01:20')
+    expect(outputText).toBeInTheDocument()
   })
 
   it('should have correct video link', () => {
