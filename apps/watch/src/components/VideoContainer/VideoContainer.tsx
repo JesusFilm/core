@@ -32,8 +32,6 @@ export function VideoContainer({
     setTabValue(newValue)
   }
 
-  console.log(content.variant)
-
   return (
     <LanguageProvider>
       <PageWrapper
