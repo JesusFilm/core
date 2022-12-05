@@ -9,27 +9,16 @@ import Button from '@mui/material/Button'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import AccessTime from '@mui/icons-material/AccessTime'
 import Circle from '@mui/icons-material/Circle'
-
 import videojs from 'video.js'
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import 'video.js/dist/video-js.css'
 
-import { VideoType } from '../../../../__generated__/globalTypes'
-import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
-import { GetVideoSiblings as VideoSiblings } from '../../../../__generated__/GetVideoSiblings'
-
 interface VideoHeroProps {
-  loading: boolean
-  routes: string[]
-  video: Video
-  siblingVideos: VideoSiblings
+  loading?: boolean
+  video: VideoContentFields
 }
 
-export function VideoHero({
-  loading,
-  routes,
-  video,
-  siblingVideos
-}: VideoHeroProps): ReactElement {
+export function VideoHero({ loading, video }: VideoHeroProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState(false)
@@ -75,7 +64,7 @@ export function VideoHero({
 
   return (
     <>
-      {loading && <CircularProgress />}
+      {loading === true && <CircularProgress />}
       <>
         <Box
           sx={{
@@ -134,12 +123,12 @@ export function VideoHero({
                   sx={{ color: 'text.primary' }}
                 >
                   <Stack direction="row" spacing="20px">
-                    {video.type === VideoType.playlist && (
+                    {video.children.length > 0 && (
                       <Typography variant="subtitle1">
-                        {video.episodes.length} episodes
+                        {video.children.length} episodes
                       </Typography>
                     )}
-                    {video.type !== VideoType.playlist && (
+                    {video.children.length === 0 && (
                       <>
                         <Button
                           size="large"

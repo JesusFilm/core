@@ -67,7 +67,7 @@ const only = (key: Breakpoint): string => {
   // Use max-height over orientation for storybook / chromatic checks
   const overlappingMobileCheck =
     key === 'sm'
-      ? `(min-width: ${minWidths.md}px) and (max-width: 961px) and (max-height: ${minHeights.md}px), `
+      ? `(min-width: ${minWidths.md}px) and (max-width: 9999px) and (max-height: ${minHeights.md}px), `
       : ''
 
   return `@media ${overlappingMobileCheck}${defaultBreakpointCheck}`
