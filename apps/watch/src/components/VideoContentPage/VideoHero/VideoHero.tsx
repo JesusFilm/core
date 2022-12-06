@@ -14,7 +14,6 @@ export function VideoHero({ video }: VideoHeroProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState(false)
-  const [muted, setMuted] = useState(false)
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -38,18 +37,12 @@ export function VideoHero({ video }: VideoHeroProps): ReactElement {
             inline: false
           }
         },
-        muted: false,
         responsive: true,
         poster: video?.image ?? undefined
       })
       playerRef.current.on('play', handlePlay)
     }
   }, [video])
-
-  function handleMute(): void {
-    setMuted(!muted)
-    playerRef.current?.muted(!muted)
-  }
 
   function handlePlay(): void {
     setIsPlaying(true)
@@ -82,14 +75,7 @@ export function VideoHero({ video }: VideoHeroProps): ReactElement {
           <source src={video.variant.hls} type="application/x-mpegURL" />
         </video>
       )}
-      {!isPlaying && (
-        <VideoHeroOverlay
-          video={video}
-          isMuted={muted}
-          handleMute={handleMute}
-          handlePlay={handlePlay}
-        />
-      )}
+      {!isPlaying && <VideoHeroOverlay video={video} handlePlay={handlePlay} />}
     </Box>
   )
 }

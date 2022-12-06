@@ -1,24 +1,41 @@
 import { render, fireEvent } from '@testing-library/react'
-import { VideoType } from '../../../../../__generated__/globalTypes'
-import { GetVideo_video as Video } from '../../../../../__generated__/GetVideo'
+import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
+import { VideoLabel } from '../../../../../__generated__/globalTypes'
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 
 describe('VideoHeroOverlay', () => {
-  const video: Video = {
+  const video: VideoContentFields = {
     id: '1_cl-0-0',
     __typename: 'Video',
-    type: VideoType.standalone,
+    label: VideoLabel.featureFilm,
     description: [],
     studyQuestions: [],
     snippet: [],
-    variantLanguages: [],
     children: [],
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl-0-0.mobileCinematicHigh.jpg',
+    imageAlt: [
+      {
+        __typename: 'Translation',
+        value: 'The Story of Jesus for Children'
+      }
+    ],
     variant: {
+      id: '1_529-cl-0-0',
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
+          {
+            __typename: 'Translation',
+            value: 'English'
+          }
+        ]
+      },
       duration: 3680,
       __typename: 'VideoVariant',
-      hls: 'https://arc.gt/zbrvj'
+      hls: 'https://arc.gt/zbrvj',
+      slug: 'the-story-of-jesus-for-children/english'
     },
     title: [
       {
@@ -26,12 +43,7 @@ describe('VideoHeroOverlay', () => {
         __typename: 'Translation'
       }
     ],
-    slug: [
-      {
-        value: 'the-story-of-jesus-for-children',
-        __typename: 'Translation'
-      }
-    ]
+    slug: 'the-story-of-jesus-for-children'
   }
 
   it('should render the Video Hero Overlay', () => {
@@ -41,7 +53,7 @@ describe('VideoHeroOverlay', () => {
     expect(getByText('The Story of Jesus for Children')).toBeInTheDocument()
     expect(getByText('61 min')).toBeInTheDocument()
     expect(getByRole('button', { name: 'Play Video' })).toBeInTheDocument()
-    expect(getByTestId('VolumeUpOutlinedIcon').parentElement).toHaveClass(
+    expect(getByTestId('VolumeOffOutlinedIcon').parentElement).toHaveClass(
       'MuiIconButton-root'
     )
   })
@@ -55,12 +67,12 @@ describe('VideoHeroOverlay', () => {
     expect(handlePlay).toHaveBeenCalled()
   })
 
-  it('should mute video on the Mute Icon click', () => {
-    const handleMute = jest.fn()
+  it('should play video on the Mute Icon click', () => {
+    const handlePlay = jest.fn()
     const { getByTestId } = render(
-      <VideoHeroOverlay video={video} handleMute={handleMute} />
+      <VideoHeroOverlay video={video} handlePlay={handlePlay} />
     )
-    fireEvent.click(getByTestId('VolumeUpOutlinedIcon'))
-    expect(handleMute).toHaveBeenCalled()
+    fireEvent.click(getByTestId('VolumeOffOutlinedIcon'))
+    expect(handlePlay).toHaveBeenCalled()
   })
 })

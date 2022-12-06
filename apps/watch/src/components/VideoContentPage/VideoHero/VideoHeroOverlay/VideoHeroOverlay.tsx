@@ -9,23 +9,17 @@ import Typography from '@mui/material/Typography'
 import AccessTime from '@mui/icons-material/AccessTime'
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
-import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
 import Image from 'next/image'
-import { GetVideo_video as Video } from '../../../../../__generated__/GetVideo'
-
-import HeroTexture from '../../../../../public/images/hero-texture.svg'
+import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
+import { HeroOverlay } from '../../../HeroOverlay'
 
 interface VideoHeroOverlayProps {
-  video: Video
-  isMuted?: boolean
-  handleMute?: () => void
+  video: VideoContentFields
   handlePlay?: () => void
 }
 
 export function VideoHeroOverlay({
   video,
-  isMuted,
-  handleMute,
   handlePlay
 }: VideoHeroOverlayProps): ReactElement {
   return (
@@ -35,7 +29,7 @@ export function VideoHeroOverlay({
         height: '100%',
         width: '100%',
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'end',
         zIndex: 1
       }}
     >
@@ -47,29 +41,14 @@ export function VideoHeroOverlay({
           objectFit="cover"
         />
       )}
-      <Box
-        sx={{
-          position: 'absolute',
-          height: '100%',
-          width: '100%',
-          zIndex: 2,
-          background:
-            'linear-gradient(180deg, rgba(50, 50, 51, 0) 34%, rgba(38, 38, 38, 0.3) 46%, rgba(27, 27, 28, 0.46) 66%, #000000 100%), linear-gradient(90deg, #141414 0%, rgba(10, 10, 10, 0.5) 21%, rgba(4, 4, 4, 0.2) 36%, rgba(0, 0, 0, 0) 60%)'
-        }}
-      />
-      <Image
-        src={HeroTexture}
-        alt="watch hero texture"
-        layout="fill"
-        objectFit="cover"
-        style={{
-          zIndex: 3
-        }}
-      />
-      <Container maxWidth="xl" sx={{ zIndex: 4 }}>
+      <HeroOverlay />
+      <Container
+        maxWidth="xxl"
+        sx={{ zIndex: 4, pb: { xs: 25, md: 20, lg: 43 } }}
+      >
         <Stack spacing={{ xs: 2, lg: 5 }}>
           <IconButton
-            onClick={handleMute}
+            onClick={handlePlay}
             sx={{
               width: 68,
               height: 68,
@@ -77,23 +56,37 @@ export function VideoHeroOverlay({
               backgroundColor: 'background.default',
               opacity: 0.5,
               alignSelf: 'end',
-              mb: { xs: 20, lg: 20 },
+              mb: { xs: 15, lg: 30 },
               '&:hover': {
                 backgroundColor: 'background.default'
               }
             }}
           >
-            {isMuted === true ? <VolumeOffOutlined /> : <VolumeUpOutlined />}
+            <VolumeOffOutlined />
           </IconButton>
-          <Typography variant="h2" color="text.primary">
+          <Typography variant="h1" color="text.primary" sx={{ width: '70%' }}>
             {video.title[0]?.value}
           </Typography>
           <Stack
-            spacing={4}
+            spacing={8}
             direction={{ xs: 'column-reverse', md: 'row' }}
-            sx={{ color: 'text.primary', width: '100%' }}
+            sx={{ color: 'text.primary', width: '100%', pt: { xs: 0, md: 15 } }}
           >
-            <Button size="medium" variant="contained" onClick={handlePlay}>
+            <Button
+              size="large"
+              variant="contained"
+              onClick={handlePlay}
+              sx={{ display: { xs: 'none', md: 'flex' }, width: 220 }}
+            >
+              <PlayArrowRounded />
+              Play
+            </Button>
+            <Button
+              size="small"
+              variant="contained"
+              onClick={handlePlay}
+              sx={{ display: { xs: 'flex', md: 'none' } }}
+            >
               <PlayArrowRounded />
               Play Video
             </Button>

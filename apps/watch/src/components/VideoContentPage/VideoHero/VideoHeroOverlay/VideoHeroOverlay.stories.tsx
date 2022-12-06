@@ -3,14 +3,14 @@ import { ComponentProps } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import Box from '@mui/system/Box'
-import { VideoType } from '../../../../../__generated__/globalTypes'
+import { VideoLabel } from '../../../../../__generated__/globalTypes'
 import { watchConfig } from '../../../../libs/storybook'
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 
 const VideoHeroOverlayStory = {
   ...watchConfig,
   component: VideoHeroOverlay,
-  title: 'Watch/Hero/VideoHero/VideoHeroOverlay',
+  title: 'Watch/VideoContentPage/VideoHero/VideoHeroOverlay',
   parameters: {
     fullscreen: true
   }
@@ -36,35 +36,44 @@ export const Default = Template.bind({})
 Default.args = {
   video: {
     id: '1_cl-0-0',
-    type: VideoType.standalone,
+    __typename: 'Video',
+    label: VideoLabel.featureFilm,
+    description: [],
+    studyQuestions: [],
+    snippet: [],
+    children: [],
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl-0-0.mobileCinematicHigh.jpg',
-    snippet: [
+    imageAlt: [
       {
-        value:
-          "In the first century, a group of children meet together to talk about what they've seen and heard about Jesus. Some believe Jesus is the Son of God. But others think Jesus may just be tricking the people.",
-        __typename: 'Translation'
+        __typename: 'Translation',
+        value: 'The Story of Jesus for Children'
       }
     ],
+    variant: {
+      id: '1_529-cl-0-0',
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
+          {
+            __typename: 'Translation',
+            value: 'English'
+          }
+        ]
+      },
+      duration: 3680,
+      __typename: 'VideoVariant',
+      hls: 'https://arc.gt/zbrvj',
+      slug: 'the-story-of-jesus-for-children/english'
+    },
     title: [
       {
         value: 'The Story of Jesus for Children',
         __typename: 'Translation'
       }
     ],
-    variant: {
-      duration: 3680,
-      __typename: 'VideoVariant',
-      hls: 'https://arc.gt/4jz75'
-    },
-    __typename: 'Video',
-    episodeIds: [],
-    slug: [
-      {
-        value: 'the-story-of-jesus-for-children',
-        __typename: 'Translation'
-      }
-    ]
+    slug: 'the-story-of-jesus-for-children'
   }
 }
 
