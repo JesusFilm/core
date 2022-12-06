@@ -12,14 +12,6 @@ describe('ContainerDescription', () => {
     expect(getByText(sampleText)).toBeInTheDocument()
   })
 
-  it('should render button text correctly', () => {
-    const { getByLabelText } = render(
-      <ContainerDescription value={sampleText} setOpenShare={setOpenShare} />
-    )
-    const shareButton = getByLabelText('collection-share-button')
-    expect(shareButton).toHaveTextContent('Share')
-  })
-
   it('should execute share button operation', () => {
     const { getByLabelText } = render(
       <ContainerDescription value={sampleText} setOpenShare={setOpenShare} />
