@@ -70,6 +70,14 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
         >
           Small Contained button
         </Button>
+        <Button
+          startIcon={<AddIcon fontSize="small" />}
+          size="small"
+          variant="contained"
+          disabled
+        >
+          Disabled Contained button
+        </Button>
       </Stack>
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
         <Button
@@ -92,6 +100,14 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
           variant="outlined"
         >
           Small Outlined button
+        </Button>
+        <Button
+          startIcon={<AddIcon fontSize="small" />}
+          size="small"
+          variant="outlined"
+          disabled
+        >
+          Disabled Outlined button
         </Button>
       </Stack>
       <Button

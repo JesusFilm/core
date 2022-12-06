@@ -110,7 +110,7 @@ export function VideoContentPage({
                           onClick={() => setOpenDownload(true)}
                         >
                           <SaveAlt />
-                          &nbsp; Download
+                          Download
                         </Button>
                       )}
                     <Button
@@ -118,7 +118,7 @@ export function VideoContentPage({
                       onClick={() => setOpenShare(true)}
                     >
                       <Share />
-                      &nbsp; Share
+                      Share
                     </Button>
                   </Stack>
                 </Box>
