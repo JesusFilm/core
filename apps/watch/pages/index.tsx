@@ -1,23 +1,20 @@
 import { ReactElement } from 'react'
 import { GetStaticProps } from 'next'
-import Box from '@mui/material/Box'
 import { gql } from '@apollo/client'
 
 import { compact } from 'lodash'
-import { HomeHero } from '../src/components/Hero'
-import { PageWrapper } from '../src/components/PageWrapper'
-import { HomeVideos } from '../src/components/HomeVideos'
+
 import { createApolloClient } from '../src/libs/client'
 import { GetHomeVideo } from '../__generated__/GetHomeVideo'
-import { IntroText } from '../src/components/IntroText'
-import { VideoContentFields } from '../__generated__/VideoContentFields'
-import { VIDEO_CONTENT_FIELDS } from '../src/libs/videoContentFields'
+import { HomePage as VideoHomePage } from '../src/components/HomePage'
+import { VideoChildFields } from '../__generated__/VideoChildFields'
+import { VIDEO_CHILD_FIELDS } from '../src/libs/videoChildFields'
 
 export const GET_HOME_VIDEO = gql`
-  ${VIDEO_CONTENT_FIELDS}
+  ${VIDEO_CHILD_FIELDS}
   query GetHomeVideo($id: ID!, $languageId: ID) {
     video(id: $id) {
-      ...VideoContentFields
+      ...VideoChildFields
     }
   }
 `
@@ -46,18 +43,11 @@ const videoIds = [
 ]
 
 interface HomePageProps {
-  videos: VideoContentFields[]
+  videos: VideoChildFields[]
 }
 
 function HomePage({ videos }: HomePageProps): ReactElement {
-  return (
-    <PageWrapper hero={<HomeHero />}>
-      <Box sx={{ paddingY: '4rem' }}>
-        <HomeVideos data={videos} />
-      </Box>
-      <IntroText />
-    </PageWrapper>
-  )
+  return <VideoHomePage videos={videos} />
 }
 
 export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
