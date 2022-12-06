@@ -21,11 +21,13 @@ export function VideoContainerPage({
   const [openShare, setOpenShare] = useState(false)
   const newArray: string[] = []
 
-  Object.values(router?.query).forEach((value) => {
-    if (typeof value === 'string') {
-      newArray.push(value)
-    }
-  })
+  if (router != null) {
+    Object.values(router?.query).forEach((value) => {
+      if (typeof value === 'string') {
+        newArray.push(value)
+      }
+    })
+  }
 
   return (
     <PageWrapper hero={<SimpleHero video={content} />}>
@@ -38,7 +40,7 @@ export function VideoContainerPage({
           <ShareDialog
             open={openShare}
             video={content}
-            routes={[content.slug]}
+            routes={newArray}
             onClose={() => setOpenShare(false)}
           />
           {/* Add grid here */}
