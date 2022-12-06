@@ -4,17 +4,15 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Checkbox from '@mui/material/Checkbox'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
-import { Theme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useState } from 'react'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import FormGroup from '@mui/material/FormGroup'
 
-import { GetVideo_video_variant_downloads } from '../../../__generated__/GetVideo'
+import { VideoContentFields_variant_downloads as Downloads } from '../../../__generated__/VideoContentFields'
 
 interface DownloadDialogProps {
-  downloads: GetVideo_video_variant_downloads[]
+  downloads: Downloads[]
   open?: boolean
   title: string
   onClose: () => void
@@ -38,7 +36,6 @@ export function DownloadDialog({
   title,
   onClose
 }: DownloadDialogProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [selectedUrl, setSelectedUrl] = useState(downloads[0].url)
   const [termsAgreed, setTermsAgreed] = useState(true)
   const { size, percentage, download, cancel, error, isInProgress } =
@@ -69,7 +66,6 @@ export function DownloadDialog({
         closeLabel: 'Cancel'
       }}
       divider
-      fullscreen={!smUp}
     >
       <>
         {isInProgress && (

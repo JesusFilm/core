@@ -17,7 +17,7 @@ export function Footer(): ReactElement {
     >
       {/* desktop view */}
       <Container
-        maxWidth="xl"
+        maxWidth="xxl"
         sx={{
           display: { xs: 'none', sm: 'block' },
           height: '350px'
@@ -61,7 +61,7 @@ export function Footer(): ReactElement {
       </Container>
 
       {/* mobile view */}
-      <Container maxWidth="xl" sx={{ display: { xs: 'block', sm: 'none' } }}>
+      <Container maxWidth="xxl" sx={{ display: { xs: 'block', sm: 'none' } }}>
         <Stack alignItems="end">
           <FooterSocials />
         </Stack>

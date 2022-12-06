@@ -2,10 +2,10 @@ import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { noop } from 'lodash'
-
-import { GetVideo_video as Video } from '../../../__generated__/GetVideo'
-import { GetVideoSiblings_video_children } from '../../../__generated__/GetVideoSiblings'
-
+import {
+  VideoContentFields,
+  VideoContentFields_children
+} from '../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/testData'
 import { ShareDialog } from './ShareDialog'
@@ -19,9 +19,10 @@ const ShareDialogStory = {
   }
 }
 
-const video: Video = {
+const video: VideoContentFields = {
   ...videos[0],
   variant: {
+    id: 'videoVariantId',
     __typename: 'VideoVariant',
     duration: videos[0].variant?.duration ?? 0,
     hls: 'https://arc.gt/4jz75',
@@ -35,7 +36,8 @@ const video: Video = {
           value: 'English'
         }
       ]
-    }
+    },
+    slug: `${videos[0].slug}/english`
   },
   description: videos[0].snippet,
   studyQuestions: [],
@@ -54,7 +56,7 @@ Basic.args = {
   onClose: noop,
   video: {
     ...video,
-    children: [{ id: '1' }] as unknown as GetVideoSiblings_video_children[]
+    children: [{ id: '1' }] as unknown as VideoContentFields_children[]
   },
   routes
 }

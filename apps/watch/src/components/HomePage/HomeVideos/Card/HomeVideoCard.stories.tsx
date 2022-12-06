@@ -1,14 +1,14 @@
 import { Story, Meta } from '@storybook/react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
-import { watchConfig } from '../../../libs/storybook'
-import { data } from '../testData'
+import { watchConfig } from '../../../../libs/storybook'
+import { videos } from '../../../Videos/testData'
 import { HomeVideoCard } from '.'
 
 const HomeVideoCardStory = {
   ...watchConfig,
   component: HomeVideoCard,
-  title: 'Watch/HomeVideoCard'
+  title: 'Watch/HomePage/HomeVideos/HomeVideoCard'
 }
 
 const Template: Story = ({ ...args }) => {
@@ -21,12 +21,12 @@ const Template: Story = ({ ...args }) => {
 
 export const Standalone = Template.bind({})
 Standalone.args = {
-  video: data[0]
+  video: videos[0]
 }
 
 export const Playlist = Template.bind({})
 Playlist.args = {
-  video: data[8]
+  video: videos[8]
 }
 
 export default HomeVideoCardStory as Meta

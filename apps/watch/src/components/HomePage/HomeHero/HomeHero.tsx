@@ -35,7 +35,7 @@ export function HomeHero(): ReactElement {
         }}
       />
       <Container
-        maxWidth="xl"
+        maxWidth="xxl"
         sx={{ display: 'flex', justifyContent: 'center', pt: 30 }}
       >
         <Stack
