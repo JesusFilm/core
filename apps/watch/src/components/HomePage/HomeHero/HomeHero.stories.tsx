@@ -5,7 +5,7 @@ import { HomeHero } from './HomeHero'
 const HomeHeroStory = {
   ...watchConfig,
   component: HomeHero,
-  title: 'Watch/Hero/HomeHero',
+  title: 'Watch/HomePage/HomeHero',
   parameters: {
     fullscreen: true
   }
