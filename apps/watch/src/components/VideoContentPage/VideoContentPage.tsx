@@ -125,8 +125,9 @@ export function VideoContentPage({
               </Stack>
               {content.variant != null && content.variant.downloads.length > 0 && (
                 <DownloadDialog
+                  {...content}
                   open={openDownload}
-                  title={content.title[0].value}
+                  language={content.variant.language}
                   downloads={content.variant.downloads}
                   onClose={() => {
                     setOpenDownload(false)

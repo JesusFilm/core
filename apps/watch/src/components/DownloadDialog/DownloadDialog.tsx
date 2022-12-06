@@ -1,26 +1,36 @@
-import { ReactElement, useEffect } from 'react'
+import { ComponentProps, ReactElement, useEffect } from 'react'
 import useDownloader from 'react-use-downloader'
 import { Formik, Form } from 'formik'
+import Image from 'next/image'
+import Box from '@mui/material/Box'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Checkbox from '@mui/material/Checkbox'
 import FormGroup from '@mui/material/FormGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import CircularProgress from '@mui/material/CircularProgress'
 import LinearProgress from '@mui/material/LinearProgress'
 import MenuItem from '@mui/material/MenuItem'
-import { Dialog } from '@core/shared/ui/Dialog'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import LanguageIcon from '@mui/icons-material/Language'
+import { useTheme } from '@mui/material/styles'
 
-import { VideoContentFields_variant_downloads as Downloads } from '../../../__generated__/VideoContentFields'
-// import { VideoVariantDownloadQuality } from '../../../__generated__/globalTypes'
+import { Dialog } from '@core/shared/ui/Dialog'
 
-interface DownloadDialogProps {
+import {
+  VideoContentFields,
+  VideoContentFields_variant_downloads as Downloads,
+  VideoContentFields_variant_language as Language
+} from '../../../__generated__/VideoContentFields'
+
+interface DownloadDialogProps
+  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'>,
+    Pick<VideoContentFields, 'title' | 'image' | 'imageAlt'> {
+  // video: Omit<VideoContentFields, 'variant'>
   downloads: Downloads[]
-  open?: boolean
-  title: string
-  onClose: () => void
+  language: Language
 }
 
 function formatBytes(bytes, decimals = 2): string {
@@ -36,11 +46,15 @@ function formatBytes(bytes, decimals = 2): string {
 }
 
 export function DownloadDialog({
-  open = false,
-  downloads,
+  open,
+  onClose,
   title,
-  onClose
+  image,
+  imageAlt,
+  downloads,
+  language
 }: DownloadDialogProps): ReactElement {
+  const theme = useTheme()
   const { percentage, download, cancel, isInProgress } = useDownloader()
 
   useEffect(() => {
@@ -49,7 +63,14 @@ export function DownloadDialog({
     }
   }, [percentage, onClose])
 
-  console.log('download', percentage, downloads)
+  console.log(
+    'download',
+    percentage,
+    downloads,
+    title[0].value,
+    image,
+    language
+  )
 
   const initialValues = {
     file: downloads[0].url,
@@ -68,75 +89,106 @@ export function DownloadDialog({
         closeButton: true
       }}
     >
-      <Formik
-        initialValues={initialValues}
-        onSubmit={(values) => {
-          void download(values.file, `${title}.mp4`)
-        }}
-      >
-        {({ values, errors, handleChange, handleBlur }) => (
-          <Form>
-            <TextField
-              name="file"
-              label="Select a file size"
-              fullWidth
-              value={values.file}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              helperText={errors.file}
-              error={errors.file != null}
-              select
-            >
-              {downloads.map((download) => (
-                <MenuItem key={download.quality} value={download.url}>
-                  {download.quality} ({formatBytes(download.size)})
-                </MenuItem>
-              ))}
-            </TextField>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              sx={{ my: 4 }}
-            >
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      name="terms"
-                      defaultChecked
-                      checked={values.terms}
-                      onChange={handleChange}
+      <>
+        <Stack
+          direction={{ xs: 'column-reverse', sm: 'row' }}
+          spacing={4}
+          alignItems="flex-start"
+          sx={{ mb: { xs: 0, sm: 4 } }}
+        >
+          {image != null && (
+            <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+              <Image
+                src={image}
+                alt={imageAlt[0].value}
+                width={240}
+                height={115}
+                objectFit="cover"
+                style={{ borderRadius: theme.spacing(2) }}
+              />
+            </Box>
+          )}
+          <Stack>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              {title[0].value}
+            </Typography>
+            <Stack direction="row" alignItems="center">
+              <LanguageIcon fontSize="small" sx={{ mr: 1 }} />
+              <Typography variant="body1">{language.name[0].value}</Typography>
+            </Stack>
+          </Stack>
+        </Stack>
+        <Formik
+          initialValues={initialValues}
+          onSubmit={(values) => {
+            void download(values.file, `${title[0].value}.mp4`)
+          }}
+        >
+          {({ values, errors, handleChange, handleBlur }) => (
+            <Form>
+              <TextField
+                name="file"
+                label="Select a file size"
+                fullWidth
+                value={values.file}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                helperText={errors.file}
+                error={errors.file != null}
+                select
+              >
+                {downloads.map((download) => (
+                  <MenuItem key={download.quality} value={download.url}>
+                    {download.quality} ({formatBytes(download.size)})
+                  </MenuItem>
+                ))}
+              </TextField>
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                justifyContent="space-between"
+                gap={3}
+                sx={{ my: 3 }}
+              >
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        name="terms"
+                        defaultChecked
+                        checked={values.terms}
+                        onChange={handleChange}
+                      />
+                    }
+                    label="I agree to the Terms of Use"
+                  />
+                </FormGroup>
+                <LoadingButton
+                  type="submit"
+                  variant="contained"
+                  size="small"
+                  disabled={!values.terms}
+                  startIcon={<ArrowDownwardIcon />}
+                  sx={{
+                    pr: '64px'
+                  }}
+                  loading={isInProgress}
+                  // loadingPosition="end"
+                  loadingIndicator={
+                    <CircularProgress
+                      variant="determinate"
+                      value={percentage}
+                      sx={{ color: 'primary.contrastText' }}
                     />
                   }
-                  label="I agree to the Terms of Use"
-                />
-              </FormGroup>
-              <LoadingButton
-                type="submit"
-                variant="contained"
-                size="small"
-                disabled={!values.terms}
-                startIcon={<ArrowDownwardIcon />}
-                sx={{
-                  pr: '64px'
-                }}
-                loading={isInProgress}
-                loadingPosition="end"
-                loadingIndicator={
-                  <CircularProgress
-                    variant="determinate"
-                    value={percentage}
-                    sx={{ color: 'primary.contrastText' }}
-                  />
-                }
-              >
-                Download
-              </LoadingButton>
-            </Stack>
-            <LinearProgress variant="determinate" value={percentage} />
-          </Form>
-        )}
-      </Formik>
+                >
+                  Download
+                </LoadingButton>
+              </Stack>
+              <LinearProgress variant="determinate" value={percentage} />
+            </Form>
+          )}
+        </Formik>
+      </>
     </Dialog>
   )
 }
