@@ -7,7 +7,6 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { Formik, Form } from 'formik'
 import { noop } from 'lodash'
-import { useTranslation } from 'react-i18next'
 import { TextResponseHintUpdate } from '../../../../../../../../../__generated__/TextResponseHintUpdate'
 import { GetJourney_journey_blocks_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/GetJourney'
 
@@ -25,7 +24,6 @@ export const TEXT_RESPONSE_HINT_UPDATE = gql`
 `
 
 export function Hint(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [textResponseHintUpdate] = useMutation<TextResponseHintUpdate>(
     TEXT_RESPONSE_HINT_UPDATE
   )
@@ -62,7 +60,6 @@ export function Hint(): ReactElement {
           textResponseHint: selectedBlock.hint ?? ''
         }
       : null
-  const maxCharacters = 22
 
   return (
     <Box sx={{ px: 6, py: 4 }}>
@@ -77,10 +74,7 @@ export function Hint(): ReactElement {
                 label="Hint"
                 fullWidth
                 value={values.textResponseHint}
-                inputProps={{ maxLength: maxCharacters }}
-                helperText={t('Can only be {{maxCharacters}} characters', {
-                  maxCharacters
-                })}
+                inputProps={{ maxLength: 250 }}
                 onChange={handleChange}
                 onBlur={(e) => {
                   handleBlur(e)
