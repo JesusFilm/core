@@ -110,7 +110,7 @@ export function CarouselItem({
           </Stack>
         </Stack>
       )}
-      {label !== 'featureFilm' && index != null ? (
+      {label !== 'featureFilm' && label !== 'shortFilm' && index != null ? (
         <Typography variant="overline2" mb={3}>
           {label === 'segment' ? `Chapter ${index}` : `Episode ${index}`}
         </Typography>
