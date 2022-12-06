@@ -29,7 +29,7 @@ interface Part3PageProps {
   content: VideoContentFields
 }
 
-export default function Part2Page({
+export default function Part3Page({
   container,
   content
 }: Part3PageProps): ReactElement {
