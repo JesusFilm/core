@@ -1,24 +1,31 @@
 import Box from '@mui/material/Box'
 import Tabs from '@mui/material/Tabs'
-import { ReactElement, useState } from 'react'
+import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Typography from '@mui/material/Typography'
 import Tab from '@mui/material/Tab'
 import Stack from '@mui/material/Stack'
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 
-// interface VideoContentProps {
-//   video: Video
-// }
-
-export function VideoContent({ video }): ReactElement {
+interface VideoContentProps {
+  video: VideoContentFields
+}
+export function VideoContent({ video }: VideoContentProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
 
-  const handleTabChange = (_event, newValue): void => {
+  const handleTabChange = (
+    _event: SyntheticEvent<Element, Event>,
+    newValue: number
+  ): void => {
     setTabValue(newValue)
   }
 
+  useEffect(() => {
+    setTabValue(0)
+  }, [video])
+
   return (
-    <Box>
+    <Box width="100%">
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
@@ -67,37 +74,44 @@ export function VideoContent({ video }): ReactElement {
           {video.description[0]?.value}
         </Typography>
       </TabPanel>
-      <TabPanel name="discussion-questions" value={tabValue} index={1}>
-        <Stack
-          direction="column"
-          spacing={4}
-          sx={{
-            pt: 2,
-            pb: 2
-          }}
-        >
-          {video.studyQuestions?.map((question, index: number) => (
-            <Stack direction="row" spacing={4} alignItems="center" key={index}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  minHeight: '38px',
-                  minWidth: '38px',
-                  backgroundColor: '#EDEDED',
-                  borderRadius: '50%',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
+      {video.studyQuestions.length !== 0 && (
+        <TabPanel name="discussion-questions" value={tabValue} index={1}>
+          <Stack
+            direction="column"
+            spacing={4}
+            sx={{
+              pt: 2,
+              pb: 2
+            }}
+          >
+            {video.studyQuestions?.map((question, index: number) => (
+              <Stack
+                direction="row"
+                spacing={4}
+                alignItems="center"
+                key={index}
               >
-                <Typography variant="h6">{index + 1}</Typography>
-              </Box>
-              <Typography key={index} variant="body1" color="#4D4D4D">
-                {question.value}
-              </Typography>
-            </Stack>
-          ))}
-        </Stack>
-      </TabPanel>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    minHeight: '38px',
+                    minWidth: '38px',
+                    backgroundColor: '#EDEDED',
+                    borderRadius: '50%',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <Typography variant="h6">{index + 1}</Typography>
+                </Box>
+                <Typography key={index} variant="body1" color="#4D4D4D">
+                  {question.value}
+                </Typography>
+              </Stack>
+            ))}
+          </Stack>
+        </TabPanel>
+      )}
     </Box>
   )
 }
