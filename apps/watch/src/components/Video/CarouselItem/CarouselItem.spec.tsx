@@ -1,5 +1,3 @@
-// Note: some Carousel tests are missing currently due to an inability to mock the Carousel component.
-
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { CarouselItem } from './CarouselItem'
