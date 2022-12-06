@@ -4,10 +4,10 @@ import { ReactElement, useState } from 'react'
 import 'video.js/dist/video-js.css'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-import { SimpleHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { ContainerDescription } from './ContainerDescription'
+import { ContainerHero } from './ContainerHero'
 
 interface VideoContainerPageProps {
   content: VideoContentFields
@@ -30,7 +30,7 @@ export function VideoContainerPage({
   }
 
   return (
-    <PageWrapper hero={<SimpleHero video={content} />}>
+    <PageWrapper hero={<ContainerHero video={content} />}>
       {content != null && (
         <Container maxWidth="xxl">
           <ContainerDescription
