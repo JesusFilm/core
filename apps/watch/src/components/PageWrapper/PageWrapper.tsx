@@ -1,4 +1,5 @@
 import { ReactElement, ReactNode } from 'react'
+import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -34,9 +35,8 @@ export function PageWrapper({
             {hero}
           </ThemeProvider>
         </Container>
-        <Container maxWidth="xxl" sx={{ flexGrow: 1 }}>
-          {children}
-        </Container>
+
+        <Box sx={{ flexGrow: 1 }}>{children}</Box>
 
         <Footer />
       </Stack>
