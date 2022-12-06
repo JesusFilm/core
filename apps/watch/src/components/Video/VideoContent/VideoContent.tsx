@@ -58,7 +58,7 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
         }}
       >
         <Tab label="Description" {...tabA11yProps('video-description', 0)} />
-        {video.studyQuestions.length !== 0 && (
+        {video.studyQuestions?.length !== 0 && (
           <Tab
             label="Discussion Questions"
             {...tabA11yProps('discussion-questions', 1)}
@@ -74,7 +74,7 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
           {video.description[0]?.value}
         </Typography>
       </TabPanel>
-      {video.studyQuestions.length !== 0 && (
+      {video.studyQuestions?.length !== 0 && (
         <TabPanel name="discussion-questions" value={tabValue} index={1}>
           <Stack
             direction="column"
