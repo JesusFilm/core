@@ -19,12 +19,12 @@ export function VideoContainerPage({
 }: VideoContainerPageProps): ReactElement {
   const router = useRouter()
   const [openShare, setOpenShare] = useState(false)
-  const newArray: string[] = []
+  const routeArray: string[] = []
 
   if (router != null) {
     Object.values(router?.query).forEach((value) => {
       if (typeof value === 'string') {
-        newArray.push(value)
+        routeArray.push(value)
       }
     })
   }
@@ -40,7 +40,7 @@ export function VideoContainerPage({
           <ShareDialog
             open={openShare}
             video={content}
-            routes={newArray}
+            routes={routeArray}
             onClose={() => setOpenShare(false)}
           />
           {/* Add grid here */}
