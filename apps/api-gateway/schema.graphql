@@ -551,7 +551,7 @@ enum LanguageIdType {
 }
 
 type LanguageWithSlug {
-  languageId: String
+  language: Language
   slug: String
 }
 

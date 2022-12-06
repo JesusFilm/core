@@ -17,7 +17,7 @@ enum VideoLabel {
 }
 
 type LanguageWithSlug {
-  languageId: String
+  language: Language
   slug: String
 }
 

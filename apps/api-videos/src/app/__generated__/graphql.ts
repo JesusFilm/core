@@ -41,7 +41,7 @@ export class Translation {
 
 export class LanguageWithSlug {
     __typename?: 'LanguageWithSlug';
-    languageId?: Nullable<string>;
+    language?: Nullable<Language>;
     slug?: Nullable<string>;
 }
 
