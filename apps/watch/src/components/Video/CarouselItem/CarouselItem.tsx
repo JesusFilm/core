@@ -10,7 +10,7 @@ import { GetVideos_videos as Video } from '../../../../__generated__/GetVideos'
 import 'swiper/swiper.min.css'
 
 interface CarouselItemProps extends Pick<Video, 'title' | 'variant' | 'image'> {
-  videoType: string
+  label: string
   index?: number
   isPlaying?: boolean
   onClick: () => void
@@ -20,7 +20,7 @@ export function CarouselItem({
   title,
   image,
   variant,
-  videoType,
+  label,
   index,
   isPlaying = false,
   onClick
@@ -33,7 +33,7 @@ export function CarouselItem({
         width: 338
       }}
     >
-      {image != null ? (
+      {image != null && image !== '' ? (
         <>
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Image
@@ -80,32 +80,39 @@ export function CarouselItem({
             }}
           >
             <PlayArrow sx={{ color: 'primary.contrastText' }} />
-            <Typography variant="body1">Playing Now</Typography>
+            <Typography variant="body1">Play Now</Typography>
           </Stack>
         </Stack>
       ) : (
-        <Box
-          alignItems="center"
-          justifyContent="center"
-          flexDirection="row"
-          display="flex"
+        <Stack
+          alignItems="flex-end"
+          justifyContent="flex-end"
           sx={{
             position: 'absolute',
-            right: '10%',
-            bottom: '5%',
-            height: '15%',
-            width: '20%',
-            background: '#00000080',
-            borderRadius: '8px'
+            height: { xs: 110, md: 160 },
+            width: { xs: 232, md: 338 }
           }}
         >
-          <PlayArrow sx={{ color: 'primary.contrastText' }} />
-          <Typography>{secondsToTimeFormat(variant?.duration ?? 0)}</Typography>
-        </Box>
+          <Stack
+            sx={{
+              flexDirection: 'row',
+              padding: '5px 9px',
+              gap: '2px',
+              background: '#00000080',
+              borderRadius: '8px',
+              m: 1
+            }}
+          >
+            <PlayArrow sx={{ color: 'primary.contrastText' }} />
+            <Typography>
+              {secondsToTimeFormat(variant?.duration ?? 0)}
+            </Typography>
+          </Stack>
+        </Stack>
       )}
-      {videoType !== 'standalone' && index != null ? (
+      {label !== 'featureFilm' && index != null ? (
         <Typography variant="overline2" mb={3}>
-          {videoType === 'segment' ? `Chapter ${index}` : `Episode ${index}`}
+          {label === 'segment' ? `Chapter ${index}` : `Episode ${index}`}
         </Typography>
       ) : (
         <Skeleton sx={{ width: '90px' }} />
