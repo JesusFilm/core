@@ -5,8 +5,16 @@ import {
   VideoContentFields,
   VideoContentFields_children
 } from '../../../__generated__/VideoContentFields'
-import { ContainerDescription } from './ContainerDescription'
 import { VideoContainerPage } from '.'
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: () => {
+    return {
+      query: {}
+    }
+  }
+}))
 
 const video = {
   id: '2_video-0-0',
@@ -55,10 +63,9 @@ describe('VideoContainerPage', () => {
 
   it('should render description text', () => {
     const { getByText } = render(
-      <ContainerDescription
-        setOpenShare={jest.fn()}
-        value={video.snippet[0].value}
-      />
+      <SnackbarProvider>
+        <VideoContainerPage content={video} />
+      </SnackbarProvider>
     )
     expect(getByText(video.snippet[0].value)).toBeInTheDocument()
   })

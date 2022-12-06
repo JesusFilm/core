@@ -3,24 +3,24 @@ import { ContainerDescription } from './ContainerDescription'
 
 describe('ContainerDescription', () => {
   const sampleText = 'This text should appear in the description'
+  const setOpenShare = jest.fn()
 
   it('should render description text correctly', () => {
     const { getByText } = render(
-      <ContainerDescription value={sampleText} setOpenShare={jest.fn()} />
+      <ContainerDescription value={sampleText} setOpenShare={setOpenShare} />
     )
     expect(getByText(sampleText)).toBeInTheDocument()
   })
 
   it('should render button text correctly', () => {
     const { getByLabelText } = render(
-      <ContainerDescription value={sampleText} setOpenShare={jest.fn()} />
+      <ContainerDescription value={sampleText} setOpenShare={setOpenShare} />
     )
     const shareButton = getByLabelText('collection-share-button')
     expect(shareButton).toHaveTextContent('Share')
   })
 
   it('should execute share button operation', () => {
-    const setOpenShare = jest.fn()
     const { getByLabelText } = render(
       <ContainerDescription value={sampleText} setOpenShare={setOpenShare} />
     )
