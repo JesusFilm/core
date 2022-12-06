@@ -20,6 +20,12 @@ describe('VideoResolver', () => {
         primary: false,
         videoId: '529'
       }
+    ],
+    slug: 'video-slug',
+    variant: [
+      {
+        slug: 'jesus/english'
+      }
     ]
   }
 
@@ -28,9 +34,9 @@ describe('VideoResolver', () => {
       provide: VideoService,
       useFactory: () => ({
         filterAll: jest.fn(() => [video, video]),
-        filterEpisodes: jest.fn(() => [video, video]),
         getVideosByIds: jest.fn(() => [video, video]),
-        getVideo: jest.fn(() => video)
+        getVideo: jest.fn(() => video),
+        getVideoBySlug: jest.fn(() => video)
       })
     }
     const module: TestingModule = await Test.createTestingModule({
@@ -38,66 +44,6 @@ describe('VideoResolver', () => {
     }).compile()
     resolver = module.get<VideoResolver>(VideoResolver)
     service = await module.resolve(VideoService)
-  })
-
-  describe('episodes', () => {
-    it('returns Videos', async () => {
-      const playlistId = 'rivka'
-      const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
-      expect(
-        await resolver.episodesQuery(info, playlistId, IdType.slug)
-      ).toEqual([video, video])
-      expect(service.filterEpisodes).toHaveBeenCalledWith({
-        idType: IdType.slug,
-        playlistId
-      })
-    })
-
-    it('returns filtered Videos', async () => {
-      const playlistId = 'rivka_1'
-
-      const info = {
-        fieldNodes: [
-          {
-            selectionSet: {
-              selections: [
-                {
-                  name: { value: 'variant' },
-                  arguments: [
-                    {
-                      name: { value: 'languageId' },
-                      value: { value: 'en' }
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        ]
-      }
-      expect(
-        await resolver.episodesQuery(
-          info,
-          playlistId,
-          IdType.databaseId,
-          {
-            title: 'abc',
-            availableVariantLanguageIds: ['fr']
-          },
-          100,
-          200
-        )
-      ).toEqual([video, video])
-      expect(service.filterEpisodes).toHaveBeenCalledWith({
-        playlistId,
-        idType: IdType.databaseId,
-        title: 'abc',
-        availableVariantLanguageIds: ['fr'],
-        variantLanguageId: 'en',
-        offset: 100,
-        limit: 200
-      })
-    })
   })
 
   describe('videos', () => {
@@ -149,14 +95,14 @@ describe('VideoResolver', () => {
   })
 
   describe('video', () => {
+    const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
     it('return a video', async () => {
-      const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
       expect(await resolver.video(info, '20615')).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', undefined)
     })
 
     it('return a filtered video', async () => {
-      const info = {
+      const filteredInfo = {
         fieldNodes: [
           {
             selectionSet: {
@@ -175,8 +121,15 @@ describe('VideoResolver', () => {
           }
         ]
       }
-      expect(await resolver.video(info, '20615')).toEqual(video)
+      expect(await resolver.video(filteredInfo, '20615')).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', 'en')
+    })
+
+    it('should return video with slug as idtype', async () => {
+      expect(await resolver.video(info, 'jesus/english', IdType.slug)).toEqual(
+        video
+      )
+      expect(service.getVideoBySlug).toHaveBeenCalledWith('jesus/english')
     })
   })
 

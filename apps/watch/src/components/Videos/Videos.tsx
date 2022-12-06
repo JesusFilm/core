@@ -4,10 +4,12 @@ import { ReactElement, useEffect, useState } from 'react'
 import { useLanguage } from '../../libs/languageContext/LanguageContext'
 import { GetVideos } from '../../../__generated__/GetVideos'
 import { VideosFilter } from '../../../__generated__/globalTypes'
+import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
 import { VideosCarousel } from './VideosCarousel/VideosCarousel'
 import { VideosGrid } from './VideosGrid/VideosGrid'
 
 export const GET_VIDEOS = gql`
+  ${VIDEO_CHILD_FIELDS}
   query GetVideos(
     $where: VideosFilter
     $offset: Int
@@ -15,22 +17,7 @@ export const GET_VIDEOS = gql`
     $languageId: ID
   ) {
     videos(where: $where, offset: $offset, limit: $limit) {
-      id
-      type
-      image
-      snippet(languageId: $languageId, primary: true) {
-        value
-      }
-      title(languageId: $languageId, primary: true) {
-        value
-      }
-      variant {
-        duration
-      }
-      episodeIds
-      slug(languageId: $languageId, primary: true) {
-        value
-      }
+      ...VideoChildFields
     }
   }
 `
