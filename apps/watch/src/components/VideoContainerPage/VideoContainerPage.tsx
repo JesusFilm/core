@@ -11,6 +11,7 @@ import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { SimpleHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
+import { VideosGrid } from '../Videos/VideosGrid/VideosGrid'
 
 interface VideoContainerPageProps {
   content: VideoContentFields
@@ -32,7 +33,7 @@ export function VideoContainerPage({
             sx={{
               mx: 0,
               mt: 20,
-              mb: 80,
+              mb: 5,
               maxWidth: '100%'
             }}
           >
@@ -52,7 +53,7 @@ export function VideoContainerPage({
             routes={[]}
             onClose={() => setOpenShare(false)}
           />
-          {/* Add grid here */}
+          <VideosGrid videos={content.children} />
         </Container>
       )}
     </PageWrapper>
