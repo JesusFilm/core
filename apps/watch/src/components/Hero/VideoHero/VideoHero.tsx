@@ -1,13 +1,13 @@
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import videojs from 'video.js'
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import 'video.js/dist/video-js.css'
 
-import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 
 interface VideoHeroProps {
-  video: Video
+  video: VideoContentFields
 }
 
 export function VideoHero({ video }: VideoHeroProps): ReactElement {

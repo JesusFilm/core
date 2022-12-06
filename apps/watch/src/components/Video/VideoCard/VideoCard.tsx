@@ -11,19 +11,21 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import Link from 'next/link'
 import Stack from '@mui/material/Stack'
 
-import { VideoType } from '../../../../__generated__/globalTypes'
-import { GetVideos_videos } from '../../../../__generated__/GetVideos'
+import { compact } from 'lodash'
+import { VideoContentFields_children } from '../../../../__generated__/VideoContentFields'
 
 interface VideoCardProps {
-  video?: GetVideos_videos
+  video?: VideoContentFields_children
   disabled?: boolean
-  routePrefix?: string | undefined
+  routePrefix?: string
+  routeSuffix?: string
 }
 
 export function VideoCard({
   video,
   disabled = false,
-  routePrefix = undefined
+  routePrefix,
+  routeSuffix
 }: VideoCardProps): ReactElement {
   return (
     <>
@@ -42,11 +44,9 @@ export function VideoCard({
         )}
         {video != null && (
           <Link
-            href={`/${
-              routePrefix == null
-                ? `/${video.slug[0]?.value ?? ''}`
-                : `/${routePrefix}/${video.slug[0]?.value ?? ''}`
-            }`}
+            href={`/${compact([routePrefix, video.slug, routeSuffix]).join(
+              '/'
+            )}`}
             passHref
           >
             <CardActionArea>
@@ -67,7 +67,7 @@ export function VideoCard({
                     padding: '5px'
                   }}
                 >
-                  {video.type !== VideoType.playlist && (
+                  {video.children.length === 0 && (
                     <Stack direction="row">
                       <PlayArrow sx={{ fontSize: '1rem' }} />
                       <Typography variant="body1" sx={{ lineHeight: '16px' }}>
@@ -75,7 +75,7 @@ export function VideoCard({
                       </Typography>
                     </Stack>
                   )}
-                  {video.type === VideoType.playlist && (
+                  {video.children.length > 0 && (
                     <Typography variant="body1">
                       {video.children.length} episodes
                     </Typography>
@@ -86,7 +86,7 @@ export function VideoCard({
           </Link>
         )}
       </Card>
-      <Link href={`/${video?.slug[0]?.value ?? ''}`} passHref>
+      <Link href={`/${video?.slug ?? ''}`} passHref>
         <Typography
           variant="body1"
           sx={{
