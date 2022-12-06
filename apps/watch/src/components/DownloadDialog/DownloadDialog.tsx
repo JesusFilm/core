@@ -41,8 +41,7 @@ export function DownloadDialog({
   title,
   onClose
 }: DownloadDialogProps): ReactElement {
-  const { size, percentage, download, cancel, error, isInProgress } =
-    useDownloader()
+  const { percentage, download, cancel, isInProgress } = useDownloader()
 
   useEffect(() => {
     if (percentage === 100) {
