@@ -1,15 +1,20 @@
+import { ReactElement, useEffect } from 'react'
 import useDownloader from 'react-use-downloader'
-import { Dialog } from '@core/shared/ui/Dialog'
-import FormControlLabel from '@mui/material/FormControlLabel'
+import { Formik, Form } from 'formik'
+import LoadingButton from '@mui/lab/LoadingButton'
 import Checkbox from '@mui/material/Checkbox'
-import MenuItem from '@mui/material/MenuItem'
-import Select from '@mui/material/Select'
-import { ReactElement, useState } from 'react'
-import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
 import FormGroup from '@mui/material/FormGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import TextField from '@mui/material/TextField'
+import Stack from '@mui/material/Stack'
+import CircularProgress from '@mui/material/CircularProgress'
+import LinearProgress from '@mui/material/LinearProgress'
+import MenuItem from '@mui/material/MenuItem'
+import { Dialog } from '@core/shared/ui/Dialog'
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 
 import { VideoContentFields_variant_downloads as Downloads } from '../../../__generated__/VideoContentFields'
+// import { VideoVariantDownloadQuality } from '../../../__generated__/globalTypes'
 
 interface DownloadDialogProps {
   downloads: Downloads[]
@@ -36,13 +41,20 @@ export function DownloadDialog({
   title,
   onClose
 }: DownloadDialogProps): ReactElement {
-  const [selectedUrl, setSelectedUrl] = useState(downloads[0].url)
-  const [termsAgreed, setTermsAgreed] = useState(true)
   const { size, percentage, download, cancel, error, isInProgress } =
     useDownloader()
 
-  if (percentage === 100) {
-    onClose()
+  useEffect(() => {
+    if (percentage === 100) {
+      onClose()
+    }
+  }, [percentage, onClose])
+
+  console.log('download', percentage, downloads)
+
+  const initialValues = {
+    file: downloads[0].url,
+    terms: false
   }
 
   return (
@@ -53,62 +65,79 @@ export function DownloadDialog({
         onClose()
       }}
       dialogTitle={{
-        title: 'Download this video',
+        title: 'Download Video',
         closeButton: true
       }}
-      dialogAction={{
-        onSubmit: () => {
-          if (termsAgreed) {
-            void download(selectedUrl, `${title}.mp4`)
-          }
-        },
-        submitLabel: 'Download',
-        closeLabel: 'Cancel'
-      }}
-      divider
     >
-      <>
-        {isInProgress && (
-          <>
-            <p>Preparing..</p>
-            <p>Download size in bytes {formatBytes(size)}</p>
-            <label htmlFor="file">Downloading progress:</label>
-            <progress id="file" value={percentage} max="100" />
-            {error != null && <p>possible error {JSON.stringify(error)}</p>}
-          </>
-        )}
-
-        {!isInProgress && (
-          <FormGroup>
-            <FormControl variant="filled">
-              <InputLabel sx={{ '&.MuiFormLabel-root': { lineHeight: 1.5 } }}>
-                Select a File size
-              </InputLabel>
-
-              <Select
-                onChange={(e) => setSelectedUrl(e.target.value)}
-                defaultValue={downloads[0].url}
-              >
-                {downloads.map((download) => (
-                  <MenuItem value={download.url} key={download.quality}>
-                    {download.quality} ({formatBytes(download.size)})
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  defaultChecked
-                  checked={termsAgreed}
-                  onChange={(e) => setTermsAgreed(e.target.checked)}
+      <Formik
+        initialValues={initialValues}
+        onSubmit={(values) => {
+          void download(values.file, `${title}.mp4`)
+        }}
+      >
+        {({ values, errors, handleChange, handleBlur }) => (
+          <Form>
+            <TextField
+              name="file"
+              label="Select a file size"
+              fullWidth
+              value={values.file}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              helperText={errors.file}
+              error={errors.file != null}
+              select
+            >
+              {downloads.map((download) => (
+                <MenuItem key={download.quality} value={download.url}>
+                  {download.quality} ({formatBytes(download.size)})
+                </MenuItem>
+              ))}
+            </TextField>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              sx={{ my: 4 }}
+            >
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name="terms"
+                      defaultChecked
+                      checked={values.terms}
+                      onChange={handleChange}
+                    />
+                  }
+                  label="I agree to the Terms of Use"
                 />
-              }
-              label="I have read the Terms of Use and I agree to them."
-            />
-          </FormGroup>
+              </FormGroup>
+              <LoadingButton
+                type="submit"
+                variant="contained"
+                size="small"
+                disabled={!values.terms}
+                startIcon={<ArrowDownwardIcon />}
+                sx={{
+                  pr: '64px'
+                }}
+                loading={isInProgress}
+                loadingPosition="end"
+                loadingIndicator={
+                  <CircularProgress
+                    variant="determinate"
+                    value={percentage}
+                    sx={{ color: 'primary.contrastText' }}
+                  />
+                }
+              >
+                Download
+              </LoadingButton>
+            </Stack>
+            <LinearProgress variant="determinate" value={percentage} />
+          </Form>
         )}
-      </>
+      </Formik>
     </Dialog>
   )
 }
