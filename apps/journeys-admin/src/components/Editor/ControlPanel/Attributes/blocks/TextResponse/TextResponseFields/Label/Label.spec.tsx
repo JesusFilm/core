@@ -67,20 +67,11 @@ describe('Edit Label field', () => {
     expect(field).toHaveValue('Your answer')
   })
 
-  it('should display max label length', () => {
-    const { getByRole } = render(<LabelMock />)
-    const field = getByRole('textbox', { name: 'Label' })
-
-    expect(field).toHaveAccessibleDescription(
-      'Can only be {{maxCharacters}} characters'
-    )
-  })
-
   it('should not be able to type beyond max character limit', () => {
     const { getByRole } = render(<LabelMock />)
     const field = getByRole('textbox', { name: 'Label' })
 
-    expect(field).toHaveAttribute('maxlength', '16')
+    expect(field).toHaveAttribute('maxlength', '250')
   })
 
   it('should update the label on blur', async () => {
