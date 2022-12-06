@@ -173,9 +173,7 @@ export default function SeoFriendly(): ReactElement {
         }}
         facebook={
           process.env.NEXT_PUBLIC_FACEBOOK_APP_ID != null
-            ? {
-                appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID
-              }
+            ? { appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID }
             : undefined
         }
         twitter={{
@@ -189,12 +187,7 @@ export default function SeoFriendly(): ReactElement {
             data?.video == null ? (
               <></>
             ) : siblingsData != null ? (
-              <VideoHero
-                loading={loading}
-                video={data.video}
-                siblingVideos={siblingsData}
-                routes={routes}
-              />
+              <VideoHero loading={loading} video={data.video} />
             ) : (
               <SimpleHero loading={loading} video={data.video} />
             )
