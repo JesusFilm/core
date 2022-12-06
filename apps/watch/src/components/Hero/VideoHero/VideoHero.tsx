@@ -2,15 +2,16 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 import { secondsToMinutes } from '@core/shared/ui/timeFormat'
 import Container from '@mui/material/Container'
 import Button from '@mui/material/Button'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import AccessTime from '@mui/icons-material/AccessTime'
 import Circle from '@mui/icons-material/Circle'
-import videojs from 'video.js'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
+import { VideoHeroPlayer } from './VideoHeroPlayer'
+
 import 'video.js/dist/video-js.css'
 
 interface VideoHeroProps {
@@ -19,68 +20,14 @@ interface VideoHeroProps {
 }
 
 export function VideoHero({ loading, video }: VideoHeroProps): ReactElement {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState(false)
-
-  useEffect(() => {
-    const Button = videojs.getComponent('Button')
-    class SubtitleControl extends Button {
-      constructor(player, options) {
-        super(player, options)
-        this.addClass('vjs-subtitles-button')
-        this.controlText(player.localize('Subtitle'))
-      }
-
-      // open subtitle dialog
-    }
-    class AudioControl extends Button {
-      constructor(player, options) {
-        super(player, options)
-        this.addClass('vjs-audio-button')
-        this.controlText(player.localize('Audio Language'))
-      }
-
-      // open audio dialog
-    }
-
-    videojs.registerComponent('SubtitleControl', SubtitleControl)
-    videojs.registerComponent('AudioControl', AudioControl)
-
-    if (videoRef.current != null) {
-      playerRef.current = videojs(videoRef.current, {
-        autoplay: false,
-        controls: true,
-        userActions: {
-          hotkeys: true,
-          doubleClick: true
-        },
-        controlBar: {
-          playToggle: true,
-          captionsButton: false,
-          subtitlesButton: false,
-          remainingTimeDisplay: true,
-          progressControl: {
-            seekBar: true
-          },
-          fullscreenToggle: true,
-          volumePanel: {
-            inline: false
-          }
-        },
-        responsive: true,
-        poster: video?.image ?? undefined
-      })
-      playerRef.current.on('pause', pauseVideo)
-      playerRef.current.on('play', playVideo)
-      playerRef?.current?.getChild('ControlBar')?.addChild('AudioControl')
-      playerRef?.current?.getChild('ControlBar')?.addChild('SubtitleControl')
-    }
-  }, [playerRef, video])
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   function playVideo(): void {
     setIsPlaying(true)
-    videoRef?.current?.play()
+    if (videoRef?.current != null) {
+      videoRef?.current?.play()
+    }
   }
 
   function pauseVideo(): void {
@@ -99,18 +46,12 @@ export function VideoHero({ loading, video }: VideoHeroProps): ReactElement {
             height: 776
           }}
         >
-          {video.variant?.hls != null && (
-            <video
-              ref={videoRef}
-              className="vjs-jfp video-js vjs-fill"
-              style={{
-                alignSelf: 'center'
-              }}
-              playsInline
-            >
-              <source src={video.variant.hls} type="application/x-mpegURL" />
-            </video>
-          )}
+          <VideoHeroPlayer
+            video={video}
+            videoRef={videoRef}
+            playVideo={playVideo}
+            pauseVideo={pauseVideo}
+          />
           {!isPlaying && (
             <>
               <Container

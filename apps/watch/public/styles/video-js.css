@@ -16,15 +16,30 @@
   background: #6d6f81 !important;
 }
 
+.vjs-jfp .vjs-button > .vjs-icon-placeholder:before {
+  font-size: 30px;
+  line-height: 1;
+}
+
 .vjs-jfp .vjs-control-bar {
   background: transparent !important;
+  margin-bottom: 15px;
+  padding-left: 100px;
+  padding-right: 100px;
 }
 
 .vjs-jfp .vjs-progress-holder,
 .vjs-jfp .vjs-load-progress,
 .vjs-jfp .vjs-slider-horizontal {
   line-height: 24px;
-  height: 9px !important;
+  height: 8px;
+  border-radius: 10px;
+}
+
+.vjs-jfp .vjs-progress-holder,
+.vjs-jfp .vjs-play-progress {
+  line-height: 24px;
+  height: 8px;
   border-radius: 10px;
 }
 

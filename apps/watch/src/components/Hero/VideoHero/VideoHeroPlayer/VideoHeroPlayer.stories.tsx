@@ -1,28 +1,37 @@
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { Meta, Story } from '@storybook/react'
-import { ComponentProps } from 'react'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { VideoLabel } from '../../../../__generated__/globalTypes'
-import { watchConfig } from '../../../libs/storybook'
-import { VideoHero } from './VideoHero'
+import { ComponentProps, useRef } from 'react'
+import Box from '@mui/material/Box'
+import { noop } from 'lodash'
+import { VideoLabel } from '../../../../../__generated__/globalTypes'
+import { watchConfig } from '../../../../libs/storybook'
+import { VideoHeroPlayer } from './VideoHeroPlayer'
 
-import '../../../../public/styles/video-js.css'
+import '../../../../../public/styles/video-js.css'
 
-const VideoHeroStory = {
+const VideoHeroPlayerStory = {
   ...watchConfig,
-  component: VideoHero,
-  title: 'Watch/Hero/VideoHero'
+  component: VideoHeroPlayer,
+  title: 'Watch/Hero/VideoHero/VideoHeroPlayer'
 }
 
-const Template: Story<ComponentProps<typeof VideoHero>> = ({ ...args }) => (
-  <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
-    <VideoHero {...args} />
-  </ThemeProvider>
-)
+const Template: Story<ComponentProps<typeof VideoHeroPlayer>> = ({
+  ...args
+}) => {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  return (
+    <Box sx={{ height: '100vh' }}>
+      <VideoHeroPlayer
+        videoRef={videoRef}
+        video={args.video}
+        playVideo={args.playVideo}
+        pauseVideo={args.pauseVideo}
+      />
+    </Box>
+  )
+}
 
 export const Default = Template.bind({})
 Default.args = {
-  loading: false,
   video: {
     id: '1_cl-0-0',
     label: VideoLabel.episode,
@@ -55,7 +64,9 @@ Default.args = {
       }
     ],
     children: []
-  }
+  },
+  playVideo: noop,
+  pauseVideo: noop
 }
 
-export default VideoHeroStory as Meta
+export default VideoHeroPlayerStory as Meta
