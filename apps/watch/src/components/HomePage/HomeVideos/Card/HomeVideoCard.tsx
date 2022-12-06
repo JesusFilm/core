@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import ButtonBase from '@mui/material/ButtonBase'
-import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
+import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 
 export enum FilmType {
   collection = 'Collection',
