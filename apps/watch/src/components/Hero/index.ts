@@ -1,2 +1,1 @@
-export { HomeHero } from './HomeHero'
-export { VideoHero } from './VideoHero'
+export { VideoHero } from './VideoHero/VideoHero'

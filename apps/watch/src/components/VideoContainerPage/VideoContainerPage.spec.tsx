@@ -21,7 +21,7 @@ const video = {
 } as unknown as VideoContentFields
 
 describe('VideoContainerPage', () => {
-  it('should render PlaylistHero', () => {
+  it('should render ContainerHero', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <VideoContainerPage content={video} />
