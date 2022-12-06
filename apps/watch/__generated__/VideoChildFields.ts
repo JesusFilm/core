@@ -6,30 +6,30 @@
 import { VideoLabel } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: GetHomeVideo
+// GraphQL fragment: VideoChildFields
 // ====================================================
 
-export interface GetHomeVideo_video_title {
+export interface VideoChildFields_title {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetHomeVideo_video_imageAlt {
+export interface VideoChildFields_imageAlt {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetHomeVideo_video_snippet {
+export interface VideoChildFields_snippet {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetHomeVideo_video_children {
+export interface VideoChildFields_children {
   __typename: "Video";
   id: string;
 }
 
-export interface GetHomeVideo_video_variant {
+export interface VideoChildFields_variant {
   __typename: "VideoVariant";
   id: string;
   duration: number;
@@ -40,27 +40,18 @@ export interface GetHomeVideo_video_variant {
   slug: string;
 }
 
-export interface GetHomeVideo_video {
+export interface VideoChildFields {
   __typename: "Video";
   id: string;
   label: VideoLabel;
-  title: GetHomeVideo_video_title[];
+  title: VideoChildFields_title[];
   image: string | null;
-  imageAlt: GetHomeVideo_video_imageAlt[];
-  snippet: GetHomeVideo_video_snippet[];
+  imageAlt: VideoChildFields_imageAlt[];
+  snippet: VideoChildFields_snippet[];
   /**
    * slug is a permanent link to the video.
    */
   slug: string;
-  children: GetHomeVideo_video_children[];
-  variant: GetHomeVideo_video_variant | null;
-}
-
-export interface GetHomeVideo {
-  video: GetHomeVideo_video;
-}
-
-export interface GetHomeVideoVariables {
-  id: string;
-  languageId?: string | null;
+  children: VideoChildFields_children[];
+  variant: VideoChildFields_variant | null;
 }

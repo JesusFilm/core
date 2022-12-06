@@ -14,12 +14,11 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { createSvgIcon } from '@mui/material/utils'
 import { useTheme } from '@mui/material/styles'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-
-import { GetVideo_video } from '../../../__generated__/GetVideo'
+import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 
 interface ShareDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
-  video: GetVideo_video
+  video: VideoContentFields
   routes: string[]
 }
 
@@ -35,6 +34,13 @@ export function ShareDialog({
   const handleChange = (e: SyntheticEvent, newValue: number): void => {
     setValue(newValue)
   }
+
+  const shareDescription =
+    video.description != null && video.description.length > 0
+      ? video.description[0].value
+      : video.snippet != null && video.snippet.length > 0
+      ? video.snippet[0].value
+      : ''
 
   const shareLink =
     routes != null
@@ -154,10 +160,7 @@ export function ShareDialog({
               {video.title[0].value}
             </Typography>
             <Typography>
-              {`${video.description[0].value
-                .split(' ')
-                .slice(0, 18)
-                .join(' ')}...`}
+              {`${shareDescription.split(' ').slice(0, 18).join(' ')}...`}
             </Typography>
           </Stack>
         </Stack>
