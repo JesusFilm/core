@@ -18,7 +18,7 @@ import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { LanguageProvider } from '../../libs/languageContext/LanguageContext'
 import { VideoHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
-import { VideosCarousel } from '../Videos/VideosCarousel/VideosCarousel'
+import { VideosCarousel } from './VideosCarousel/VideosCarousel'
 import { ShareDialog } from '../ShareDialog'
 
 interface VideoContentPageProps {
