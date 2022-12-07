@@ -19,7 +19,11 @@ export function ContainerDescription({
       justifyContent="space-between"
       alignItems="flex-start"
       spacing={4}
-      sx={{ pt: { xs: 7, sm: 10 }, pb: { xs: '32px', sm: '46px' } }}
+      sx={{
+        pt: { xs: 7, sm: 10 },
+        pb: { xs: '32px', sm: '44px' },
+        pt: { xs: '28px', sm: '68px' }
+      }}
     >
       <Typography variant="subtitle1" color="text.primary">
         {value}
