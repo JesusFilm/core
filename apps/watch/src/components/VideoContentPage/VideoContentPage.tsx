@@ -14,7 +14,6 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import 'video.js/dist/video-js.css'
 
-import { LanguageProvider } from '../../libs/languageContext/LanguageContext'
 import { VideoHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
 import { VideosCarousel } from '../Videos/VideosCarousel/VideosCarousel'
@@ -31,86 +30,82 @@ export function VideoContentPage(): ReactElement {
   }
 
   return (
-    <LanguageProvider>
-      <PageWrapper hero={<VideoHero />}>
-        <>
-          <ThemeProvider
-            themeName={ThemeName.website}
-            themeMode={ThemeMode.dark}
-            nested
+    <PageWrapper hero={<VideoHero />}>
+      <>
+        <ThemeProvider
+          themeName={ThemeName.website}
+          themeMode={ThemeMode.dark}
+          nested
+        >
+          <Paper elevation={0} square sx={{ pt: '20px' }}>
+            <Container maxWidth="xxl">
+              {/* TODO: combine content and container children? */}
+              {children.length > 0 && (
+                <VideosCarousel
+                  videos={children}
+                  routePrefix={slug}
+                  routeSuffix={variant?.slug.split('/')[1]}
+                />
+              )}
+              {container != null && container.children.length > 0 && (
+                <VideosCarousel
+                  videos={container.children}
+                  routePrefix={container.slug}
+                  routeSuffix={container.variant?.slug.split('/')[1]}
+                />
+              )}
+            </Container>
+          </Paper>
+        </ThemeProvider>
+        <Container maxWidth="xxl">
+          <Stack
+            direction="row"
+            spacing="100px"
+            sx={{
+              mx: 0,
+              mt: 20,
+              mb: 80,
+              maxWidth: '100%'
+            }}
           >
-            <Paper elevation={0} square sx={{ pt: '20px' }}>
-              <Container maxWidth="xxl">
-                {/* TODO: combine content and container children? */}
-                {children.length > 0 && (
-                  <VideosCarousel
-                    videos={children}
-                    routePrefix={slug}
-                    routeSuffix={variant?.slug.split('/')[1]}
-                  />
-                )}
-                {container != null && container.children.length > 0 && (
-                  <VideosCarousel
-                    videos={container.children}
-                    routePrefix={container.slug}
-                    routeSuffix={container.variant?.slug.split('/')[1]}
-                  />
-                )}
-              </Container>
-            </Paper>
-          </ThemeProvider>
-          <Container maxWidth="xxl">
-            <Stack
-              direction="row"
-              spacing="100px"
-              sx={{
-                mx: 0,
-                mt: 20,
-                mb: 80,
-                maxWidth: '100%'
-              }}
-            >
-              <Box width="100%">
-                <Tabs
-                  value={tabValue}
-                  onChange={handleTabChange}
-                  aria-label="background tabs"
-                  variant="fullWidth"
-                  centered
-                  sx={{ marginBottom: '40px' }}
-                >
-                  <Tab
-                    label="Description"
-                    {...tabA11yProps('video-description', 0)}
-                  />
-                </Tabs>
-                <TabPanel name="video-description" value={tabValue} index={0}>
-                  <Typography variant="body1">
-                    {description[0]?.value}
-                  </Typography>
-                </TabPanel>
-              </Box>
-              <Box width="336px">
-                <Stack direction="row" spacing="20px" mb="40px">
-                  <Button variant="outlined">
-                    <SaveAlt />
-                    &nbsp; Download
-                  </Button>
-                  <Button variant="outlined" onClick={() => setOpenShare(true)}>
-                    <Share />
-                    &nbsp; Share
-                  </Button>
-                </Stack>
-              </Box>
-            </Stack>
-            <ShareDialog
-              open={openShare}
-              routes={[]}
-              onClose={() => setOpenShare(false)}
-            />
-          </Container>
-        </>
-      </PageWrapper>
-    </LanguageProvider>
+            <Box width="100%">
+              <Tabs
+                value={tabValue}
+                onChange={handleTabChange}
+                aria-label="background tabs"
+                variant="fullWidth"
+                centered
+                sx={{ marginBottom: '40px' }}
+              >
+                <Tab
+                  label="Description"
+                  {...tabA11yProps('video-description', 0)}
+                />
+              </Tabs>
+              <TabPanel name="video-description" value={tabValue} index={0}>
+                <Typography variant="body1">{description[0]?.value}</Typography>
+              </TabPanel>
+            </Box>
+            <Box width="336px">
+              <Stack direction="row" spacing="20px" mb="40px">
+                <Button variant="outlined">
+                  <SaveAlt />
+                  &nbsp; Download
+                </Button>
+                <Button variant="outlined" onClick={() => setOpenShare(true)}>
+                  <Share />
+                  &nbsp; Share
+                </Button>
+              </Stack>
+            </Box>
+          </Stack>
+          <ShareDialog
+            open={openShare}
+            routes={[]}
+            onClose={() => setOpenShare(false)}
+          />
+        </Container>
+      </>
+    </PageWrapper>
   )
 }
