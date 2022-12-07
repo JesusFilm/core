@@ -76,8 +76,7 @@ describe('VideoContext', () => {
 
     expect(handleClick).toHaveBeenCalledWith({
       ...chapter1,
-      container: videos[0],
-      isPlaying: false
+      container: videos[0]
     })
   })
 })

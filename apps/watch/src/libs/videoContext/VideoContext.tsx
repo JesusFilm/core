@@ -8,7 +8,6 @@ interface VideoPageProps {
 
 interface Context extends Omit<VideoContentFields, '__typename'> {
   container?: VideoContentFields
-  isPlaying?: boolean
 }
 
 const VideoContext = createContext<Context | undefined>(undefined)
@@ -34,7 +33,7 @@ export function VideoProvider({
 }: VideoProviderProps): ReactElement {
   return (
     <VideoContext.Provider
-      value={{ ...value.content, container: value.container, isPlaying: false }}
+      value={{ ...value.content, container: value.container }}
     >
       {children}
     </VideoContext.Provider>
