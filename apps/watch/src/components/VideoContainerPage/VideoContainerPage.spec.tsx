@@ -7,7 +7,7 @@ import { VideoContainerPage } from '.'
 const video = videos[0]
 
 describe('VideoContainerPage', () => {
-  it('should render SimpleHero', () => {
+  it('should render ContainerHero', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <VideoContainerPage content={video} />

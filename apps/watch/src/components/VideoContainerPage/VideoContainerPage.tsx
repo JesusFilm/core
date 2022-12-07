@@ -8,10 +8,10 @@ import Share from '@mui/icons-material/Share'
 import 'video.js/dist/video-js.css'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-import { SimpleHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { VideosGrid } from '../Videos/VideosGrid/VideosGrid'
+import { ContainerHero } from './ContainerHero'
 
 interface VideoContainerPageProps {
   content: VideoContentFields
@@ -24,7 +24,7 @@ export function VideoContainerPage({
   const [openShare, setOpenShare] = useState(false)
 
   return (
-    <PageWrapper hero={<SimpleHero video={content} />}>
+    <PageWrapper hero={<ContainerHero video={content} />}>
       {content != null && (
         <Container maxWidth="xxl">
           <Stack
