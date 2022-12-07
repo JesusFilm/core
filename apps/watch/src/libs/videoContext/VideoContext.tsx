@@ -8,7 +8,7 @@ interface VideoPageProps {
 
 interface Context extends Omit<VideoContentFields, '__typename'> {
   container?: VideoContentFields
-  isPlaying: boolean
+  isPlaying?: boolean
 }
 
 const VideoContext = createContext<Context | undefined>(undefined)

@@ -48,7 +48,6 @@ export function VideoContainerPage({
           </Stack>
           <ShareDialog
             open={openShare}
-            video={content}
             routes={[]}
             onClose={() => setOpenShare(false)}
           />
