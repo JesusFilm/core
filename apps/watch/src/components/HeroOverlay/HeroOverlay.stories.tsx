@@ -6,7 +6,7 @@ import { HeroOverlay } from '.'
 const HeroOverlayStory = {
   ...watchConfig,
   component: HeroOverlay,
-  title: 'Watch/Hero/HeroOverlay'
+  title: 'Watch/HeroOverlay'
 }
 
 const Template: ComponentStory<typeof HeroOverlay> = () => (
