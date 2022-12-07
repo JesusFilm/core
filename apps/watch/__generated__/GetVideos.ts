@@ -40,11 +40,6 @@ export interface GetVideos_videos_variant {
   slug: string;
 }
 
-export interface GetVideos_videos_children {
-  __typename: "Video";
-  id: string;
-}
-
 export interface GetVideos_videos {
   __typename: "Video";
   id: string;
