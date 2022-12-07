@@ -3,15 +3,15 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
-import { Videos, GET_VIDEOS, limit } from './Videos'
+import { VideosPage, GET_VIDEOS, limit } from './VideosPage'
 import { videos } from './testData'
 
-describe('Videos', () => {
+describe('VideosPage', () => {
   describe('grid', () => {
     it('should render a grid', () => {
       const { getByTestId } = render(
         <MockedProvider>
-          <Videos />
+          <VideosPage />
         </MockedProvider>
       )
       expect(getByTestId('videos-grid')).toBeInTheDocument()
@@ -38,7 +38,7 @@ describe('Videos', () => {
             }
           ]}
         >
-          <Videos />
+          <VideosPage />
         </MockedProvider>
       )
       await waitFor(() => {

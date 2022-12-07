@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { watchConfig } from '../../../libs/storybook'
-import { videos } from '../../Videos/testData'
+import { videos } from '../../VideosPage/testData'
 import { HomeVideos } from '.'
 
 const HomeVideosStory = {

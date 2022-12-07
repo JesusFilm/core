@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
-import { videos } from '../../Videos/testData'
+import { videos } from '../../VideosPage/testData'
 import { HomeVideos } from '.'
 
 describe('HomeVideos', () => {

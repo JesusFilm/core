@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
-import { videos } from '../../Videos/testData'
-import { GET_VIDEOS } from '../../Videos/Videos'
+import { videos } from '../../VideosPage/testData'
+import { GET_VIDEOS } from '../../VideosPage/VideosPage'
 import { VideosCarousel } from './VideosCarousel'
 
 describe('carousel', () => {

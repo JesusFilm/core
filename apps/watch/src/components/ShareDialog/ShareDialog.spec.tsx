@@ -5,7 +5,7 @@ import {
   VideoContentFields_children
 } from '../../../__generated__/VideoContentFields'
 
-import { videos } from '../Videos/testData'
+import { videos } from '../VideosPage/testData'
 import { ShareDialog } from './ShareDialog'
 
 const onClose = jest.fn()

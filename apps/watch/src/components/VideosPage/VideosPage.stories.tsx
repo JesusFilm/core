@@ -2,12 +2,12 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../libs/storybook'
 import { videos } from './testData'
-import { GET_VIDEOS, Videos } from './Videos'
+import { GET_VIDEOS, VideosPage } from './VideosPage'
 
 const VideosStory = {
   ...watchConfig,
-  component: Videos,
-  title: 'Watch/Videos'
+  component: VideosPage,
+  title: 'Watch/VideosPage'
 }
 
 const Template: Story = ({ ...args }) => {
@@ -33,7 +33,7 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <Videos />
+      <VideosPage />
     </MockedProvider>
   )
 }
