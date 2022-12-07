@@ -33,24 +33,13 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <Videos
-        filter={{ availableVariantLanguageIds: ['529'] }}
-        layout={args.layout}
-        variant={args.variant}
-      />
+      <Videos />
     </MockedProvider>
   )
 }
 
-export const Carousel = Template.bind({})
-Carousel.args = {
-  layout: 'carousel',
-  limit: 8
-}
-
-export const Grid = Template.bind({})
-Grid.args = {
-  layout: 'grid',
+export const Default = Template.bind({})
+Default.args = {
   limit: 20
 }
 
