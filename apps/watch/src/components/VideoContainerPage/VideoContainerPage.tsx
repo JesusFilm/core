@@ -1,16 +1,13 @@
-import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
-import Button from '@mui/material/Button'
-import Share from '@mui/icons-material/Share'
 import 'video.js/dist/video-js.css'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { VideosGrid } from '../Videos/VideosGrid/VideosGrid'
+import { ContainerDescription } from './ContainerDescription'
 import { ContainerHero } from './ContainerHero'
 
 interface VideoContainerPageProps {
@@ -21,36 +18,29 @@ interface VideoContainerPageProps {
 export function VideoContainerPage({
   content
 }: VideoContainerPageProps): ReactElement {
+  const router = useRouter()
   const [openShare, setOpenShare] = useState(false)
+  const routeArray: string[] = []
+
+  if (router != null) {
+    Object.values(router?.query).forEach((value) => {
+      if (typeof value === 'string') {
+        routeArray.push(value)
+      }
+    })
+  }
 
   return (
     <PageWrapper hero={<ContainerHero video={content} />}>
       {content != null && (
         <Container maxWidth="xxl">
-          <Stack
-            direction="row"
-            spacing="100px"
-            sx={{
-              mx: 0,
-              mt: 20,
-              mb: 5,
-              maxWidth: '100%'
-            }}
-          >
-            <Typography variant="body1">{content.snippet[0]?.value}</Typography>
-            <Box width="336px">
-              <Stack direction="row" spacing="20px" mb="40px">
-                <Button variant="outlined" onClick={() => setOpenShare(true)}>
-                  <Share />
-                  &nbsp; Share
-                </Button>
-              </Stack>
-            </Box>
-          </Stack>
+          <ContainerDescription
+            value={content.snippet[0].value}
+            setOpenShare={() => setOpenShare(true)}
+          />
           <ShareDialog
             open={openShare}
-            video={content}
-            routes={[]}
+            routes={routeArray}
             onClose={() => setOpenShare(false)}
           />
           <VideosGrid
