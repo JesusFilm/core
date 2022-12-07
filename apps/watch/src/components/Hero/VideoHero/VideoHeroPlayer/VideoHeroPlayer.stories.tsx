@@ -24,7 +24,6 @@ const Template: Story<ComponentProps<typeof VideoHeroPlayer>> = ({
         videoRef={videoRef}
         video={args.video}
         playVideo={args.playVideo}
-        pauseVideo={args.pauseVideo}
       />
     </Box>
   )
@@ -65,8 +64,7 @@ Default.args = {
     ],
     children: []
   },
-  playVideo: noop,
-  pauseVideo: noop
+  playVideo: noop
 }
 
 export default VideoHeroPlayerStory as Meta

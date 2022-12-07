@@ -2,7 +2,6 @@ import { ReactElement, RefObject, useEffect, useRef } from 'react'
 
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
-// import LanguageRoundedIcon from '@mui/icons-material/LanguageRounded'
 
 import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
 
@@ -10,14 +9,12 @@ interface VideoHeroPlayerProps {
   video: VideoContentFields
   videoRef: RefObject<HTMLVideoElement>
   playVideo: () => void
-  pauseVideo: () => void
 }
 
 export function VideoHeroPlayer({
   video,
   videoRef,
-  playVideo,
-  pauseVideo
+  playVideo
 }: VideoHeroPlayerProps): ReactElement {
   const playerRef = useRef<videojs.Player>()
 
@@ -86,7 +83,6 @@ export function VideoHeroPlayer({
         poster: video?.image ?? undefined
       })
       playerRef.current.on('play', playVideo)
-      // playerRef.current.on('pause', pauseVideo)
     }
   }, [playerRef, video, videoRef, playVideo])
 
@@ -95,6 +91,7 @@ export function VideoHeroPlayer({
       {video?.variant?.hls != null && (
         <video
           ref={videoRef}
+          id="vjs-jfp"
           className="vjs-jfp video-js vjs-fill"
           style={{
             alignSelf: 'center'

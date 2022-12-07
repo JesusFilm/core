@@ -21,6 +21,16 @@
   line-height: 1;
 }
 
+.vjs-icon-audio:before,
+.vjs-jfp .vjs-audio-button .vjs-icon-placeholder:before {
+  content: url('../icons/audio.svg');
+}
+
+.vjs-icon-subtitles:before,
+.vjs-jfp .vjs-subtitles-button .vjs-icon-placeholder:before {
+  content: url('../icons/subtitle.svg');
+}
+
 .vjs-jfp .vjs-control-bar {
   background: transparent !important;
   margin-bottom: 15px;
