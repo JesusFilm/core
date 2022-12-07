@@ -7,7 +7,7 @@ import { ContainerHero } from '.'
 const ContainerHeroStory = {
   ...watchConfig,
   component: ContainerHero,
-  title: 'Watch/Hero/ContainerHero'
+  title: 'Watch/VideoContainerPage/ContainerHero'
 }
 
 const Template: ComponentStory<typeof ContainerHero> = ({ ...args }) => (
