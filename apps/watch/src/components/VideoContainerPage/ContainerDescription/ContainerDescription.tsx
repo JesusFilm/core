@@ -25,6 +25,7 @@ export function ContainerDescription({
         {value}
       </Typography>
       <Button
+        startIcon={<ShareOutlinedIcon />}
         size="medium"
         variant="outlined"
         color="secondary"
@@ -32,14 +33,10 @@ export function ContainerDescription({
         onClick={() => setOpenShare(true)}
         sx={{
           display: { xs: 'none', sm: 'flex' },
-          minWidth: 220,
-          gap: '11px'
+          minWidth: 220
         }}
       >
-        <ShareOutlinedIcon />
-        <Typography variant="subtitle1" color="text.secondary">
-          Share
-        </Typography>
+        Share
       </Button>
     </Stack>
   )
