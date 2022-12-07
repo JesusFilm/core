@@ -10,14 +10,21 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
 import { ReactElement } from 'react'
+import { compact } from 'lodash'
 
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 
 export interface GridItemProps {
   video?: VideoChildFields
+  routePrefix?: string
+  routeSuffix?: string
 }
 
-export function GridItem({ video }: GridItemProps): ReactElement {
+export function GridItem({
+  video,
+  routePrefix,
+  routeSuffix = 'english'
+}: GridItemProps): ReactElement {
   return (
     <Card
       sx={{
@@ -39,8 +46,11 @@ export function GridItem({ video }: GridItemProps): ReactElement {
         </>
       )}
       {video != null && (
-        <Link href={`/${video?.slug ?? ''}`} passHref>
-          <CardActionArea aria-label="collection page video card">
+        <Link
+          href={`/${compact([routePrefix, video.slug, routeSuffix]).join('/')}`}
+          passHref
+        >
+          <CardActionArea aria-label="collection-page-video-card">
             <Box
               sx={{
                 position: 'relative'

@@ -12,12 +12,19 @@ interface VideosGridProps {
   isEnd?: boolean
   showLoadMore?: boolean
   onLoadMore?: () => Promise<void>
+  routePrefix?: string
+  routeSuffix?: string
 }
 
-export function VideosGrid({ videos }: VideosGridProps): ReactElement {
+export function VideosGrid({
+  videos,
+  routePrefix,
+  routeSuffix
+}: VideosGridProps): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.light}>
       <Container
+        aria-label="videos-grid"
         disableGutters
         maxWidth="xxl"
         sx={{
@@ -36,6 +43,8 @@ export function VideosGrid({ videos }: VideosGridProps): ReactElement {
           <GridItem
             key={index}
             video={videos.find((video) => video.id === item.id)}
+            routePrefix={routePrefix}
+            routeSuffix={routeSuffix}
           />
         ))}
       </Container>

@@ -53,7 +53,11 @@ export function VideoContainerPage({
             routes={[]}
             onClose={() => setOpenShare(false)}
           />
-          <VideosGrid videos={content.children} />
+          <VideosGrid
+            videos={content.children}
+            routePrefix={content.slug}
+            routeSuffix={content.variant?.slug.split('/')[1]}
+          />
         </Container>
       )}
     </PageWrapper>

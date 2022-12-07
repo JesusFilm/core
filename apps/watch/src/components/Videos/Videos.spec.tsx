@@ -58,7 +58,7 @@ describe('Videos', () => {
   })
   describe('grid', () => {
     it('should render a grid', () => {
-      const { getByTestId } = render(
+      const { getByLabelText } = render(
         <MockedProvider>
           <Videos
             filter={{ availableVariantLanguageIds: ['529'] }}
@@ -66,7 +66,7 @@ describe('Videos', () => {
           />
         </MockedProvider>
       )
-      expect(getByTestId('videos-grid')).toBeInTheDocument()
+      expect(getByLabelText('videos-grid')).toBeInTheDocument()
     })
     it('should display videos', async () => {
       const { getByText } = render(
