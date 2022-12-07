@@ -42,10 +42,7 @@ export function VideoHeroOverlay({
         />
       )}
       <HeroOverlay />
-      <Container
-        maxWidth="xxl"
-        sx={{ zIndex: 4, pb: { xs: 25, md: 20, lg: 43 } }}
-      >
+      <Container maxWidth="xxl" sx={{ zIndex: 4, pb: { xs: 15, lg: 33 } }}>
         <Stack spacing={{ xs: 2, lg: 5 }}>
           <IconButton
             onClick={handlePlay}
@@ -54,17 +51,21 @@ export function VideoHeroOverlay({
               height: 68,
               borderRadius: 10,
               backgroundColor: 'background.default',
-              opacity: 0.5,
+              opacity: 0.7,
               alignSelf: 'end',
-              mb: { xs: 15, lg: 30 },
               '&:hover': {
                 backgroundColor: 'background.default'
-              }
+              },
+              zIndex: 2
             }}
           >
             <VolumeOffOutlined />
           </IconButton>
-          <Typography variant="h1" color="text.primary" sx={{ width: '70%' }}>
+          <Typography
+            variant="h1"
+            color="text.primary"
+            sx={{ width: { xs: '100%', lg: '70%' } }}
+          >
             {video.title[0]?.value}
           </Typography>
           <Stack
