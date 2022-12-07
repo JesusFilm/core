@@ -8,6 +8,15 @@ import {
 import { VideoProvider } from '../../libs/videoContext'
 import { VideoContainerPage } from '.'
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: () => {
+    return {
+      query: {}
+    }
+  }
+}))
+
 const video = {
   id: '2_video-0-0',
   image:
@@ -45,15 +54,15 @@ describe('VideoContainerPage', () => {
   })
 
   it('should render share button', () => {
-    const { getByRole } = render(
+    const { getByRole, getByLabelText } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: video }}>
           <VideoContainerPage content={video} />
         </VideoProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button', { name: 'Share' })).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Share' }))
+    expect(getByLabelText('collection-share-button')).toBeInTheDocument()
+    fireEvent.click(getByLabelText('collection-share-button'))
     expect(
       getByRole('dialog', { name: 'Share this video' })
     ).toBeInTheDocument()
@@ -67,7 +76,6 @@ describe('VideoContainerPage', () => {
         </VideoProvider>
       </SnackbarProvider>
     )
-
     expect(getByTestId('videos-grid')).toBeInTheDocument()
   })
 })
