@@ -89,7 +89,7 @@ const Template: Story = ({ onChange }) => {
 
 export const Default = Template.bind({})
 Default.play = () => {
-  const button = screen.getByRole('button', { name: 'Open' })
+  const button = screen.getAllByRole('button', { name: 'Open' })[0]
   userEvent.click(button)
 }
 
