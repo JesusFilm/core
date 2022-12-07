@@ -21,7 +21,8 @@ const baseVideo: GeneratedAqlQuery[] = [
         noIndex: item.noIndex,
         seoTitle: item.seoTitle,
         imageAlt: item.imageAlt,
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],`
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        variantLanguagesWithSlug: item.variants[* RETURN {slug: CURRENT.slug, languageId: CURRENT.languageId}],`
 ]
 
 const DEFAULT_QUERY = aql`
