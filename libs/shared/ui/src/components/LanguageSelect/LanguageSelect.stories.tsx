@@ -2,14 +2,14 @@ import { useState } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import Box from '@mui/material/Box'
-import { simpleComponentConfig } from '../../libs/storybook'
-import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
+import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import { LanguageFields } from './__generated__/LanguageFields'
 import { LanguageSelect, LanguageSelectOption } from '.'
 
 const LanguageSelectStory = {
   ...simpleComponentConfig,
   component: LanguageSelect,
-  title: 'Journeys-Admin/LanguageSelect',
+  title: 'Shared-Ui/LanguageSelect',
   argTypes: { onChange: { action: 'onChange' } },
   parameters: {
     ...simpleComponentConfig.parameters,
@@ -17,7 +17,7 @@ const LanguageSelectStory = {
   }
 }
 
-const languages: Language[] = [
+const languages: LanguageFields[] = [
   {
     __typename: 'Language',
     id: '529',

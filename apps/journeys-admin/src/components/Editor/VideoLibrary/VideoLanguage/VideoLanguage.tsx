@@ -9,8 +9,11 @@ import Typography from '@mui/material/Typography'
 import Close from '@mui/icons-material/Close'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
+import {
+  LanguageSelect,
+  LanguageSelectOption
+} from '@core/shared/ui/LanguageSelect'
 import { GetLanguages_languages as Language } from '../../../../../__generated__/GetLanguages'
-import { LanguageSelect, LanguageSelectOption } from '../../../LanguageSelect'
 
 export const DRAWER_WIDTH = 328
 

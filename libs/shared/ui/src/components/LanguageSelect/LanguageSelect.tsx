@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
-import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
+import { LanguageFields } from './__generated__/LanguageFields'
 
 export interface LanguageSelectOption {
   id: string
@@ -15,7 +15,7 @@ export interface LanguageSelectOption {
 interface LanguageSelectProps {
   onChange: (value?: LanguageSelectOption) => void
   value?: LanguageSelectOption
-  languages?: Language[]
+  languages?: LanguageFields[]
   loading: boolean
 }
 

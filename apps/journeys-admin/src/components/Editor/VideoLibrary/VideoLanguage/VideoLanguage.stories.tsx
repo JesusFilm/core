@@ -2,7 +2,7 @@ import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
 import { simpleComponentConfig } from '../../../../libs/storybook'
 import { GetVideo_video_variantLanguages as Language } from '../../../../../__generated__/GetVideo'
-import { LanguageSelectOption } from '../../../LanguageSelect'
+import { LanguageSelectOption } from '../../../../../../../libs/shared/ui/src/components/LanguageSelect'
 import { VideoLanguage } from '.'
 
 const VideoLanguageStory = {

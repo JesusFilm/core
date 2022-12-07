@@ -1,9 +1,9 @@
 import { fireEvent, render } from '@testing-library/react'
-import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
+import { LanguageFields } from './__generated__/LanguageFields'
 import { LanguageSelect } from '.'
 
 describe('LanguageSelect', () => {
-  const languages: Language[] = [
+  const languages: LanguageFields[] = [
     {
       id: '496',
       __typename: 'Language',

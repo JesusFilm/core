@@ -4,8 +4,8 @@ import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { LanguageSelect } from '@core/shared/ui/LanguageSelect'
 import { JourneyLanguageUpdate } from '../../../../../__generated__/JourneyLanguageUpdate'
-import { LanguageSelect } from '../../../LanguageSelect'
 import { GetLanguages } from '../../../../../__generated__/GetLanguages'
 
 export const JOURNEY_LANGUAGE_UPDATE = gql`
