@@ -28,15 +28,14 @@ export function VideosGrid({
         disableGutters
         maxWidth="xxl"
         sx={{
+          mb: 8,
           display: 'grid',
+          gap: '10px 16px',
           gridTemplateColumns: {
             xs: 'auto',
             md: 'repeat(2, auto)',
             lg: 'repeat(4, auto)'
-          },
-          columnGap: 3,
-          rowGap: 2,
-          pb: 10
+          }
         }}
       >
         {videos?.map((item, index) => (
