@@ -8,7 +8,7 @@ import { GetVideos } from '../../../__generated__/GetVideos'
 import { VideosFilter } from '../../../__generated__/globalTypes'
 import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
 import { PageWrapper } from '../PageWrapper'
-import { VideosGrid } from './Grid/VideosGrid'
+import { VideosGrid } from '../VideosGrid/VideosGrid'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 

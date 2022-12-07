@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 
-import { videos } from '../testData'
+import { videos } from '../VideosPage/testData'
 import { VideosGrid } from './VideosGrid'
 
 describe('VideosGrid', () => {
