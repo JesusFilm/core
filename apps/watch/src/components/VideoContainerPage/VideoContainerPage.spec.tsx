@@ -5,6 +5,7 @@ import {
   VideoContentFields,
   VideoContentFields_children
 } from '../../../__generated__/VideoContentFields'
+import { VideoProvider } from '../../libs/videoContext'
 import { VideoContainerPage } from '.'
 
 jest.mock('next/router', () => ({
@@ -33,7 +34,9 @@ describe('VideoContainerPage', () => {
   it('should render ContainerHero', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <VideoContainerPage content={video} />
+        <VideoProvider value={{ content: video }}>
+          <VideoContainerPage content={video} />
+        </VideoProvider>
       </SnackbarProvider>
     )
     expect(getByText('video title')).toBeInTheDocument()
@@ -42,7 +45,9 @@ describe('VideoContainerPage', () => {
   it('should render snippet', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <VideoContainerPage content={video} />
+        <VideoProvider value={{ content: video }}>
+          <VideoContainerPage content={video} />
+        </VideoProvider>
       </SnackbarProvider>
     )
     expect(getByText('video description')).toBeInTheDocument()
@@ -51,7 +56,9 @@ describe('VideoContainerPage', () => {
   it('should render share button', () => {
     const { getByRole, getByLabelText } = render(
       <SnackbarProvider>
-        <VideoContainerPage content={video} />
+        <VideoProvider value={{ content: video }}>
+          <VideoContainerPage content={video} />
+        </VideoProvider>
       </SnackbarProvider>
     )
     expect(getByLabelText('collection-share-button')).toBeInTheDocument()
@@ -73,7 +80,9 @@ describe('VideoContainerPage', () => {
   xit('should render videos', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
-        <VideoContainerPage content={video} />
+        <VideoProvider value={{ content: video }}>
+          <VideoContainerPage content={video} />
+        </VideoProvider>
       </SnackbarProvider>
     )
     expect(getByTestId('videos-grid')).toBeInTheDocument()

@@ -1,6 +1,7 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { watchConfig } from '../../libs/storybook'
+import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/testData'
 import { VideoContainerPage } from '.'
 
@@ -16,7 +17,11 @@ const VideoContainerPageStory = {
 
 const Template: Story<ComponentProps<typeof VideoContainerPage>> = ({
   ...args
-}) => <VideoContainerPage {...args} />
+}) => (
+  <VideoProvider value={{ content: videos[0] }}>
+    <VideoContainerPage {...args} />
+  </VideoProvider>
+)
 
 export const Default = Template.bind({})
 Default.args = {

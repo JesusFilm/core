@@ -7,6 +7,7 @@ import { createApolloClient } from '../../src/libs/client'
 import { VideoContentPage } from '../../src/components/VideoContentPage'
 import { VideoContainerPage } from '../../src/components/VideoContainerPage/VideoContainerPage'
 import { LanguageProvider } from '../../src/libs/languageContext/LanguageContext'
+import { VideoProvider } from '../../src/libs/videoContext'
 import { VIDEO_CONTENT_FIELDS } from '../../src/libs/videoContentFields'
 
 export const GET_VIDEO_CONTENT = gql`
@@ -25,11 +26,13 @@ interface Part2PageProps {
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
   return (
     <LanguageProvider>
-      {content.variant?.hls != null ? (
-        <VideoContentPage content={content} />
-      ) : (
-        <VideoContainerPage content={content} />
-      )}
+      <VideoProvider value={{ content }}>
+        {content.variant?.hls != null ? (
+          <VideoContentPage />
+        ) : (
+          <VideoContainerPage content={content} />
+        )}
+      </VideoProvider>
     </LanguageProvider>
   )
 }
