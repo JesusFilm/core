@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { IdType } from '../../__generated__/graphql'
-import { VideoResolver } from './video.resolver'
+import { LanguageWithSlugResolver, VideoResolver } from './video.resolver'
 import { VideoService } from './video.service'
 
 describe('VideoResolver', () => {
@@ -165,6 +165,24 @@ describe('VideoResolver', () => {
         })
       ).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', undefined)
+    })
+  })
+})
+
+describe('LangugageWithSlugResolver', () => {
+  let resolver: LanguageWithSlugResolver
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [LanguageWithSlugResolver]
+    }).compile()
+    resolver = module.get<LanguageWithSlugResolver>(LanguageWithSlugResolver)
+  })
+
+  it('should resolve field language with slug', async () => {
+    expect(await resolver.language({ languageId: 'id' })).toEqual({
+      __typename: 'Language',
+      id: 'id'
     })
   })
 })
