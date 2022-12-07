@@ -68,15 +68,6 @@ describe('VideoContainerPage', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render description text', () => {
-    const { getByText } = render(
-      <SnackbarProvider>
-        <VideoContainerPage content={video} />
-      </SnackbarProvider>
-    )
-    expect(getByText(video.snippet[0].value)).toBeInTheDocument()
-  })
-
   xit('should render videos', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
