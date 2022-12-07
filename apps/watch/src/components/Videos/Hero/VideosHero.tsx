@@ -22,11 +22,10 @@ export function VideosHero(): ReactElement {
         }}
       >
         <Container
-          maxWidth="xl"
+          maxWidth="xxl"
           style={{
             position: 'absolute',
             top: 194,
-            paddingLeft: 100,
             margin: 0,
             textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)'
           }}
