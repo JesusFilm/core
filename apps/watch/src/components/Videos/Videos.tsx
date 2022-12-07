@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState, ReactNode } from 'react'
 
 import { useLanguage } from '../../libs/languageContext/LanguageContext'
 import { GetVideos } from '../../../__generated__/GetVideos'
@@ -25,8 +25,8 @@ export const GET_VIDEOS = gql`
 interface VideosProps {
   filter?: VideosFilter
   layout?: 'grid' | 'carousel'
-  variant?: 'small' | 'large'
   limit?: number
+  renderItem: (props: unknown) => ReactNode
   showLoadMore?: boolean
 }
 
@@ -38,8 +38,8 @@ function isAtEnd(count: number, limit: number, previousCount: number): boolean {
 export function Videos({
   layout = 'grid',
   filter = {},
-  variant = 'large',
   limit = 8,
+  renderItem,
   showLoadMore = true
 }: VideosProps): ReactElement {
   const languageContext = useLanguage()
@@ -74,7 +74,8 @@ export function Videos({
       {layout === 'carousel' && (
         <VideosCarousel
           videos={data?.videos ?? []}
-          onLoadMore={handleLoadMore}
+          renderItem={renderItem}
+          onLoadMore={showLoadMore ? handleLoadMore : undefined}
           loading={loading}
         />
       )}

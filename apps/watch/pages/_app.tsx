@@ -16,6 +16,7 @@ import { createApolloClient } from '../src/libs/client'
 import '../public/fonts/fonts.css'
 import '../public/styles/carousel.css'
 import '../public/styles/video-js.css'
+import 'swiper/swiper.min.css'
 
 const clientSideEmotionCache = createEmotionCache({})
 

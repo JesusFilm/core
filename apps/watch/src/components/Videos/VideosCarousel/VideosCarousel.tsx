@@ -1,80 +1,45 @@
-import Box from '@mui/material/Box'
-import { ReactElement, useState } from 'react'
-import Carousel from 'react-multi-carousel'
-import { VideoCard } from '../../Video'
-import 'react-multi-carousel/lib/styles.css'
+import { ReactElement, ReactNode } from 'react'
+import { Swiper, SwiperSlide } from 'swiper/react'
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 
 interface VideosCarouselProps {
   videos: VideoChildFields[]
   loading?: boolean
-  routePrefix?: string
-  routeSuffix?: string
+  renderItem: (props: unknown) => ReactNode
   onLoadMore?: () => Promise<void> | undefined
 }
 
-const responsive = {
-  superLargeDesktop: {
-    // the naming can be any, depends on you.
-    breakpoint: { max: 15000, min: 1450 },
-    items: 4
-  },
-  desktop: {
-    breakpoint: { max: 1450, min: 1040 },
-    items: 3
-  },
-  tablet: {
-    breakpoint: { max: 1040, min: 725 },
-    items: 2
-  },
-  mobile: {
-    breakpoint: { max: 400, min: 0 },
-    items: 1
-  }
-}
-
 export function VideosCarousel({
-  loading = false,
-  onLoadMore,
   videos,
-  routePrefix,
-  routeSuffix
+  loading = false,
+  renderItem,
+  onLoadMore
 }: VideosCarouselProps): ReactElement {
-  const [isMoving, setIsMoving] = useState(false)
+  const handleLoadMore = async (): Promise<void> => {
+    if (onLoadMore != null) await onLoadMore()
+  }
+
   return (
-    <Box data-testid="videos-carousel">
-      <Carousel
-        responsive={responsive}
-        autoPlay={false}
-        removeArrowOnDeviceType={['tablet', 'mobile']}
-        partialVisible
-        itemClass="carousel-item"
-        beforeChange={async (nextSlide, state) => {
-          setIsMoving(true)
-          if (nextSlide > videos.length - 7) {
-            if (onLoadMore !== undefined) await onLoadMore()
-            state.totalItems = videos.length
-          }
-        }}
-        afterChange={async (nextSlide, state) => {
-          state.totalItems = videos.length
-          setIsMoving(false)
-        }}
-        shouldResetAutoplay={false}
-      >
-        {(videos.length ?? 0) > 0 &&
-          videos.map((video, index) => (
-            <VideoCard
-              video={video}
-              key={index}
-              disabled={isMoving}
-              routePrefix={routePrefix}
-              routeSuffix={routeSuffix}
-            />
-          ))}
-        {loading &&
-          [1, 2, 3, 4, 5, 6, 7, 8].map((index) => <VideoCard key={index} />)}
-      </Carousel>
-    </Box>
+    <Swiper
+      data-testid="videos-carousel"
+      spaceBetween={20}
+      slidesPerView="auto"
+      width={null}
+      // TODO: add a11y https://github.com/nolimits4web/swiper/issues/3824
+      onSlideNextTransitionStart={(swiper) => {
+        console.log('slide next transition', swiper.activeIndex)
+        if (swiper.activeIndex > videos.length - 8) {
+          void handleLoadMore()
+        }
+      }}
+    >
+      {videos.map((video, index) => (
+        <SwiperSlide key={index} style={{ width: 'auto' }}>
+          {({ isActive }) => {
+            return renderItem({ ...video, loading })
+          }}
+        </SwiperSlide>
+      ))}
+    </Swiper>
   )
 }

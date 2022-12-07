@@ -1,13 +1,17 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../libs/storybook'
+import { CarouselItem } from '../Video/CarouselItem'
 import { videos } from './testData'
 import { GET_VIDEOS, Videos } from './Videos'
 
 const VideosStory = {
   ...watchConfig,
   component: Videos,
-  title: 'Watch/Videos'
+  title: 'Watch/Videos',
+  argTypes: {
+    fetchMore: { action: 'fetched more' }
+  }
 }
 
 const Template: Story = ({ ...args }) => {
@@ -21,22 +25,26 @@ const Template: Story = ({ ...args }) => {
               where: {
                 availableVariantLanguageIds: ['529']
               },
-              page: 1,
-              limit: args.limit
+              offset: 0,
+              limit: args.limit ?? undefined,
+              languageId: '529'
             }
           },
           result: {
             data: {
-              videos: videos
+              videos: videos.slice(0, args.limit)
             }
           }
         }
       ]}
     >
       <Videos
+        renderItem={(props: Parameters<typeof CarouselItem>[0]) => (
+          <CarouselItem {...props} />
+        )}
         filter={{ availableVariantLanguageIds: ['529'] }}
+        limit={args.limit ?? undefined}
         layout={args.layout}
-        variant={args.variant}
       />
     </MockedProvider>
   )
