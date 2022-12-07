@@ -24,6 +24,7 @@ import { CarouselItem } from '../Video/CarouselItem/CarouselItem'
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
   const { container, children, description } = useVideo()
+  const [playingVideoId, setPlayingVideoId] = useState('')
   const [tabValue, setTabValue] = useState(0)
   const [openShare, setOpenShare] = useState(false)
   const handleTabChange = (_event, newValue): void => {
@@ -31,7 +32,14 @@ export function VideoContentPage(): ReactElement {
   }
 
   return (
-    <PageWrapper hero={<VideoHero />}>
+    <PageWrapper
+      hero={
+        <VideoHero
+          playingVideoId={playingVideoId}
+          setPlayingVideoId={setPlayingVideoId}
+        />
+      }
+    >
       <>
         <ThemeProvider
           themeName={ThemeName.website}
@@ -44,6 +52,7 @@ export function VideoContentPage(): ReactElement {
               {children.length > 0 && (
                 <VideosCarousel
                   videos={children}
+                  playingVideoId={playingVideoId}
                   renderItem={(props: Parameters<typeof CarouselItem>[0]) => {
                     return <CarouselItem {...props} />
                   }}
@@ -52,6 +61,7 @@ export function VideoContentPage(): ReactElement {
               {container != null && container.children.length > 0 && (
                 <VideosCarousel
                   videos={container.children}
+                  playingVideoId={playingVideoId}
                   renderItem={(props: Parameters<typeof CarouselItem>[0]) => {
                     return <CarouselItem {...props} />
                   }}

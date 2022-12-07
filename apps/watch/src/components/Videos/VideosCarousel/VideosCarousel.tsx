@@ -4,6 +4,7 @@ import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 
 interface VideosCarouselProps {
   videos: VideoChildFields[]
+  playingVideoId: string
   loading?: boolean
   renderItem: (props: unknown) => ReactNode
   onLoadMore?: () => Promise<void> | undefined
@@ -12,6 +13,7 @@ interface VideosCarouselProps {
 export function VideosCarousel({
   videos,
   loading = false,
+  playingVideoId,
   renderItem,
   onLoadMore
 }: VideosCarouselProps): ReactElement {
@@ -35,8 +37,12 @@ export function VideosCarousel({
     >
       {videos.map((video, index) => (
         <SwiperSlide key={index} style={{ width: 'auto' }}>
-          {({ isActive }) => {
-            return renderItem({ ...video, loading })
+          {() => {
+            return renderItem({
+              ...video,
+              loading,
+              isPlaying: video.id === playingVideoId
+            })
           }}
         </SwiperSlide>
       ))}

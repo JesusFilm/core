@@ -12,6 +12,7 @@ describe('VideosCarousel', () => {
       <VideosCarousel
         videos={videos}
         loading
+        playingVideoId=""
         onLoadMore={onLoadMore}
         renderItem={renderItem}
       />
@@ -28,6 +29,7 @@ describe('VideosCarousel', () => {
     render(
       <VideosCarousel
         videos={videos}
+        playingVideoId={videos[0].id}
         onLoadMore={onLoadMore}
         renderItem={renderItem}
       />
@@ -36,7 +38,13 @@ describe('VideosCarousel', () => {
     expect(renderItem).toHaveBeenCalledTimes(videos.length * 2)
     expect(renderItem).toHaveBeenNthCalledWith(1, {
       ...videos[0],
-      loading: false
+      loading: false,
+      isPlaying: true
+    })
+    expect(renderItem).toHaveBeenNthCalledWith(2, {
+      ...videos[1],
+      loading: false,
+      isPlaying: false
     })
   })
 
@@ -45,6 +53,7 @@ describe('VideosCarousel', () => {
     const { getAllByTestId } = render(
       <VideosCarousel
         videos={videos}
+        playingVideoId=""
         onLoadMore={onLoadMore}
         renderItem={() => <div data-testid="video-carousel-item" />}
       />

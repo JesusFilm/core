@@ -2,7 +2,13 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import {
+  ReactElement,
+  useEffect,
+  useRef,
+  Dispatch,
+  SetStateAction
+} from 'react'
 import { secondsToMinutes } from '@core/shared/ui/timeFormat'
 import Container from '@mui/material/Container'
 import Button from '@mui/material/Button'
@@ -14,14 +20,19 @@ import 'video.js/dist/video-js.css'
 import { useVideo } from '../../../libs/videoContext'
 
 interface VideoHeroProps {
+  playingVideoId: string
+  setPlayingVideoId: Dispatch<SetStateAction<string>>
   loading?: boolean
 }
 
-export function VideoHero({ loading }: VideoHeroProps): ReactElement {
-  const { variant, title, image, children } = useVideo()
+export function VideoHero({
+  loading,
+  playingVideoId,
+  setPlayingVideoId
+}: VideoHeroProps): ReactElement {
+  const { id, variant, title, image, children } = useVideo()
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
-  const [isPlaying, setIsPlaying] = useState(false)
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -54,12 +65,12 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
   })
 
   function playVideo(): void {
-    setIsPlaying(true)
+    setPlayingVideoId(id)
     videoRef?.current?.play()
   }
 
   function pauseVideo(): void {
-    setIsPlaying(false)
+    setPlayingVideoId('')
   }
 
   return (
@@ -86,7 +97,7 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
               <source src={variant.hls} type="application/x-mpegURL" />
             </video>
           )}
-          {!isPlaying && (
+          {playingVideoId !== '' && (
             <>
               <Container
                 maxWidth="xl"

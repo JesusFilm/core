@@ -8,7 +8,7 @@ import { GetVideos_videos as Video } from '../../../../__generated__/GetVideos'
 interface CarouselItemProps
   extends Pick<Video, 'title' | 'variant' | 'image' | 'label'> {
   // videoType: eg featureFilm etc
-  isPlaying?: boolean
+  isPlaying: boolean
   loading?: boolean
 }
 
@@ -16,7 +16,7 @@ export function CarouselItem({
   title,
   image,
   variant,
-  isPlaying = false,
+  isPlaying,
   loading = false
 }: CarouselItemProps): ReactElement {
   const videoTitle = title[0].value
