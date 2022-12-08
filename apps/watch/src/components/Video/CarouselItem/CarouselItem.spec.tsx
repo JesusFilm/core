@@ -273,7 +273,7 @@ describe('carouselItem', () => {
       expect(onClick).toHaveBeenCalled()
     })
   })
-  it('should display chapter label for segement', async () => {
+  it('should display chapter label for segment', async () => {
     const { getByText } = render(
       <VideoProvider
         value={{
