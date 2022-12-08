@@ -7,6 +7,7 @@ import {
   VideoContentFields_children
 } from '../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../libs/storybook'
+import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/testData'
 import { ShareDialog } from './ShareDialog'
 
@@ -45,8 +46,14 @@ const video: VideoContentFields = {
 
 const routes = ['the-story-of-jesus-for-children']
 
-const Template: Story<ComponentProps<typeof ShareDialog>> = ({ ...args }) => {
-  return <ShareDialog {...args} />
+const Template: Story<
+  ComponentProps<typeof ShareDialog> & { video: VideoContentFields }
+> = ({ ...args }) => {
+  return (
+    <VideoProvider value={{ content: args.video }}>
+      <ShareDialog {...args} />
+    </VideoProvider>
+  )
 }
 
 export const Basic = Template.bind({})

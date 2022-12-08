@@ -125,3 +125,12 @@ export class VideoResolver {
     @Args('primary') primary?: boolean
   ): void {}
 }
+
+@Resolver('LanguageWithSlug')
+export class LanguageWithSlugResolver {
+  @ResolveField('language')
+  language(@Parent() languageWithSlug): { __typename: 'Language'; id: string } {
+    // 529 (english) is default if not set
+    return { __typename: 'Language', id: languageWithSlug.languageId ?? '529' }
+  }
+}
