@@ -81,7 +81,9 @@ export function TrashJourneyDialog({
       }}
     >
       <Typography>
-        By selecting “delete”, this journey will be moved to the trash. It will remain there for 40 days, before being automatically and permanently deleted.
+        By selecting “delete”, this journey will be moved to the trash. It will
+        remain there for 40 days, before being automatically and permanently
+        deleted.
       </Typography>
     </Dialog>
   )
