@@ -5,6 +5,7 @@ import {
   VideoContentFields,
   VideoContentFields_children
 } from '../../../__generated__/VideoContentFields'
+import { VideoProvider } from '../../libs/videoContext'
 import { VideoContentPage } from '.'
 
 const video = {
@@ -29,7 +30,9 @@ describe('VideoContentPage', () => {
   it('should render VideoHero', () => {
     const { getAllByRole } = render(
       <SnackbarProvider>
-        <VideoContentPage content={video} />
+        <VideoProvider value={{ content: video }}>
+          <VideoContentPage />
+        </VideoProvider>
       </SnackbarProvider>
     )
 
@@ -39,7 +42,9 @@ describe('VideoContentPage', () => {
   it('should render description', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <VideoContentPage content={video} />
+        <VideoProvider value={{ content: video }}>
+          <VideoContentPage />
+        </VideoProvider>
       </SnackbarProvider>
     )
     expect(getByText('video description')).toBeInTheDocument()
@@ -48,7 +53,9 @@ describe('VideoContentPage', () => {
   it('should render related videos', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
-        <VideoContentPage content={video} />
+        <VideoProvider value={{ content: video }}>
+          <VideoContentPage />
+        </VideoProvider>
       </SnackbarProvider>
     )
 
@@ -58,7 +65,9 @@ describe('VideoContentPage', () => {
   it('should render share button', () => {
     const { getByRole } = render(
       <SnackbarProvider>
-        <VideoContentPage content={video} />
+        <VideoProvider value={{ content: video }}>
+          <VideoContentPage />
+        </VideoProvider>
       </SnackbarProvider>
     )
     expect(getByRole('button', { name: 'Share' })).toBeInTheDocument()

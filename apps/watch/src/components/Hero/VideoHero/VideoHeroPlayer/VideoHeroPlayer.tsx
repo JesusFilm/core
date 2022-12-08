@@ -1,21 +1,20 @@
 import { ReactElement, RefObject, useEffect, useRef } from 'react'
-
 import videojs from 'video.js'
+
+import { useVideo } from '../../../../libs/videoContext'
+
 import 'video.js/dist/video-js.css'
 
-import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
-
 interface VideoHeroPlayerProps {
-  video: VideoContentFields
   videoRef: RefObject<HTMLVideoElement>
   playVideo: () => void
 }
 
 export function VideoHeroPlayer({
-  video,
   videoRef,
   playVideo
 }: VideoHeroPlayerProps): ReactElement {
+  const { variant } = useVideo()
   const playerRef = useRef<videojs.Player>()
 
   const Button = videojs.getComponent('Button')
@@ -79,16 +78,15 @@ export function VideoHeroPlayer({
             'fullscreenToggle'
           ]
         },
-        responsive: true,
-        poster: video?.image ?? undefined
+        responsive: true
       })
       playerRef.current.on('play', playVideo)
     }
-  }, [playerRef, video, videoRef, playVideo])
+  }, [playerRef, videoRef, playVideo])
 
   return (
     <>
-      {video?.variant?.hls != null && (
+      {variant?.hls != null && (
         <video
           ref={videoRef}
           id="vjs-jfp"
@@ -98,7 +96,7 @@ export function VideoHeroPlayer({
           }}
           playsInline
         >
-          <source src={video.variant.hls} type="application/x-mpegURL" />
+          <source src={variant.hls} type="application/x-mpegURL" />
         </video>
       )}
     </>
