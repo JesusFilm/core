@@ -20,7 +20,7 @@ import {
 } from '../src/libs/languageContext/LanguageContext'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { VideosCarousel } from '../src/components/Videos/VideosCarousel/VideosCarousel'
-import { VideoHero, SimpleHero } from '../src/components/Hero'
+import { VideoHero } from '../src/components/Hero'
 import { ShareDialog } from '../src/components/ShareDialog'
 
 export const GET_VIDEO = gql`
@@ -187,9 +187,9 @@ export default function SeoFriendly(): ReactElement {
             data?.video == null ? (
               <></>
             ) : siblingsData != null ? (
-              <VideoHero loading={loading} video={data.video} />
+              <VideoHero loading={loading} />
             ) : (
-              <SimpleHero loading={loading} video={data.video} />
+              <></>
             )
           }
         >
@@ -258,7 +258,6 @@ export default function SeoFriendly(): ReactElement {
               </Stack>
               <ShareDialog
                 open={openShare}
-                video={data.video}
                 routes={routes}
                 onClose={() => setOpenShare(false)}
               />
