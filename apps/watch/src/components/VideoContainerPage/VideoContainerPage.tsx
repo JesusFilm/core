@@ -25,6 +25,10 @@ export function VideoContainerPage({
     setShareDialog(true)
   }
 
+  function handleCloseDialog(): void {
+    setShareDialog(false)
+  }
+
   if (router != null) {
     Object.values(router?.query).forEach((value) => {
       if (typeof value === 'string') {
@@ -46,7 +50,7 @@ export function VideoContainerPage({
           <ShareDialog
             open={shareDialog}
             routes={routeArray}
-            onClose={handleOpenDialog}
+            onClose={handleCloseDialog}
           />
           {/* Add grid here */}
         </Container>
