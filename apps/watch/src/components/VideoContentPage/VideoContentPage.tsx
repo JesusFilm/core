@@ -14,11 +14,11 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import 'video.js/dist/video-js.css'
 
-import { VideoHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
 import { VideosCarousel } from '../Videos/VideosCarousel/VideosCarousel'
 import { ShareDialog } from '../ShareDialog'
 import { useVideo } from '../../libs/videoContext'
+import { VideoHero } from './VideoHero'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {

@@ -12,20 +12,17 @@ import { VideoHeroPlayer } from './VideoHeroPlayer'
 const VideoHeroPlayerStory = {
   ...watchConfig,
   component: VideoHeroPlayer,
-  title: 'Watch/Hero/VideoHero/VideoHeroPlayer'
+  title: 'Watch/VideoContentPage/VideoHero/VideoHeroPlayer'
 }
 
-const Template: Story<ComponentProps<typeof VideoHeroPlayer> & { video: VideoContentFields }> = ({
-  ...args
-}) => {
+const Template: Story<
+  ComponentProps<typeof VideoHeroPlayer> & { video: VideoContentFields }
+> = ({ ...args }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   return (
     <VideoProvider value={{ content: args.video }}>
       <Box sx={{ height: '100vh' }}>
-        <VideoHeroPlayer
-          videoRef={videoRef}
-          playVideo={args.playVideo}
-        />
+        <VideoHeroPlayer videoRef={videoRef} playVideo={args.playVideo} />
       </Box>
     </VideoProvider>
   )
