@@ -2,18 +2,18 @@ import Box from '@mui/material/Box'
 import { Story, Meta } from '@storybook/react'
 import { watchConfig } from '../../../../libs/storybook'
 import { videos } from '../../testData'
-import { GridItem } from './GridItem'
+import { VideoGridCard } from './VideoGridCard'
 
-const GridItemStory = {
+const VideoGridCardStory = {
   ...watchConfig,
-  component: GridItem,
-  title: 'Watch/GridItem'
+  component: VideoGridCard,
+  title: 'Watch/VideoGridCard'
 }
 
 const Template: Story = ({ ...args }) => {
   return (
     <Box sx={{ maxWidth: '338px', display: 'flex', alignItems: 'flex-start' }}>
-      <GridItem {...args} />
+      <VideoGridCard {...args} />
     </Box>
   )
 }
@@ -24,4 +24,4 @@ Default.args = {
   video: videos[0]
 }
 
-export default GridItemStory as Meta
+export default VideoGridCardStory as Meta

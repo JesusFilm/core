@@ -28,7 +28,17 @@ const video = {
       value: 'video description'
     }
   ],
-  children: [{ id: 'child.id' } as unknown as VideoContentFields_children]
+  children: [
+    {
+      id: 'child.id',
+      slug: 'slug',
+      image: 'image url',
+      variant: {
+        duration: 1
+      },
+      title: [{ value: 'child title' }]
+    } as unknown as VideoContentFields_children
+  ]
 } as unknown as VideoContentFields
 
 describe('VideoContainerPage', () => {

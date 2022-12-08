@@ -4,7 +4,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
-import { GridItem } from './GridItem'
+import { VideoGridCard } from './VideoGridCard'
 
 interface VideosGridProps {
   videos?: VideoChildFields[]
@@ -13,13 +13,11 @@ interface VideosGridProps {
   showLoadMore?: boolean
   onLoadMore?: () => Promise<void>
   routePrefix?: string
-  routeSuffix?: string
 }
 
 export function VideosGrid({
   videos,
-  routePrefix,
-  routeSuffix
+  routePrefix
 }: VideosGridProps): ReactElement {
   return (
     <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.light}>
@@ -28,7 +26,7 @@ export function VideosGrid({
         disableGutters
         maxWidth="xxl"
         sx={{
-          mb: 8,
+          mb: 17,
           display: 'grid',
           gap: '10px 16px',
           gridTemplateColumns: {
@@ -39,11 +37,10 @@ export function VideosGrid({
         }}
       >
         {videos?.map((item, index) => (
-          <GridItem
+          <VideoGridCard
             key={index}
             video={videos.find((video) => video.id === item.id)}
             routePrefix={routePrefix}
-            routeSuffix={routeSuffix}
           />
         ))}
       </Container>

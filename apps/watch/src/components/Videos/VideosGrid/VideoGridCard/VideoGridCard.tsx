@@ -14,17 +14,15 @@ import { compact } from 'lodash'
 
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 
-export interface GridItemProps {
+export interface VideoGridCardProps {
   video?: VideoChildFields
   routePrefix?: string
-  routeSuffix?: string
 }
 
-export function GridItem({
+export function VideoGridCard({
   video,
-  routePrefix,
-  routeSuffix = 'english'
-}: GridItemProps): ReactElement {
+  routePrefix
+}: VideoGridCardProps): ReactElement {
   return (
     <Card
       sx={{
@@ -47,7 +45,7 @@ export function GridItem({
       )}
       {video != null && (
         <Link
-          href={`/${compact([routePrefix, video.slug, routeSuffix]).join('/')}`}
+          href={`/${compact([routePrefix, video.variant?.slug]).join('/')}`}
           passHref
         >
           <CardActionArea aria-label="collection-page-video-card">
@@ -88,7 +86,7 @@ export function GridItem({
                   color: 'rgba(29, 28, 28, 0.9)'
                 }}
               >
-                {video?.title[0]?.value}
+                {video?.title[0].value}
               </Typography>
             </CardContent>
           </CardActionArea>

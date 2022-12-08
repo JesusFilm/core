@@ -1,4 +1,5 @@
 import Container from '@mui/material/Container'
+import Divider from '@mui/material/Divider'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import 'video.js/dist/video-js.css'
@@ -43,13 +44,10 @@ export function VideoContainerPage({
             routes={routeArray}
             onClose={() => setOpenShare(false)}
           />
-          <VideosGrid
-            videos={content.children}
-            routePrefix={content.slug}
-            routeSuffix={content.variant?.slug.split('/')[1]}
-          />
+          <VideosGrid videos={content.children} routePrefix={content.slug} />
         </Container>
       )}
+      <Divider />
     </PageWrapper>
   )
 }
