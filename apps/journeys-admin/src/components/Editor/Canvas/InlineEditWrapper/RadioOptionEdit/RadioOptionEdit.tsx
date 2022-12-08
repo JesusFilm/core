@@ -20,11 +20,14 @@ export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
     }
   }
 `
-interface RadioOptionEditProps extends TreeBlock<RadioOptionFields> {}
+interface RadioOptionEditProps extends TreeBlock<RadioOptionFields> {
+  visibleCaret
+}
 
 export function RadioOptionEdit({
   id,
   label,
+  visibleCaret,
   ...radioOptionProps
 }: RadioOptionEditProps): ReactElement {
   const [radioOptionBlockUpdate] = useMutation<RadioOptionBlockUpdateContent>(
@@ -68,6 +71,7 @@ export function RadioOptionEdit({
         setValue(e.currentTarget.value)
       }}
       onClick={(e) => e.stopPropagation()}
+      sx={visibleCaret===false? {caretColor: 'transparent'}: {}}
     />
   )
 

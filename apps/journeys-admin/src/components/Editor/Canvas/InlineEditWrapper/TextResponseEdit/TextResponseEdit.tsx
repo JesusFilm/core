@@ -20,11 +20,14 @@ export const TEXT_RESPONSE_BLOCK_UPDATE_CONTENT = gql`
     }
   }
 `
-interface TextResponseEditProps extends TreeBlock<TextResponseFields> {}
+interface TextResponseEditProps extends TreeBlock<TextResponseFields> {
+  visibleCaret
+}
 
 export function TextResponseEdit({
   id,
   submitLabel,
+  visibleCaret,
   ...textResponseProps
 }: TextResponseEditProps): ReactElement {
   const [textResponseBlockUpdate] = useMutation<TextResponseBlockUpdateContent>(
@@ -68,6 +71,7 @@ export function TextResponseEdit({
         setValue(e.currentTarget.value)
       }}
       onClick={(e) => e.stopPropagation()}
+      sx={visibleCaret===false? {caretColor: 'transparent'}: {}}
     />
   )
 

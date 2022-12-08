@@ -19,5 +19,5 @@ export const InlineEditInput = styled(InputBase)<StyledInputProps>(() => ({
   lineHeight: 'inherit',
   letterSpacing: 'inherit',
   padding: '0px',
-  caretColor: adminPrimaryColor.main
+  // caretColor: adminPrimaryColor.contrastText
 }))

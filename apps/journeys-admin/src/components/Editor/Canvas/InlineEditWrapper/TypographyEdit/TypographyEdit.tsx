@@ -22,6 +22,7 @@ export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
 `
 interface TypographyEditProps extends TreeBlock<TypographyFields> {
   deleteSelf: () => void
+  visibleCaret
 }
 
 export function TypographyEdit({
@@ -31,6 +32,7 @@ export function TypographyEdit({
   color,
   content,
   deleteSelf,
+  visibleCaret=true,
   ...props
 }: TypographyEditProps): ReactElement {
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateContent>(
@@ -80,6 +82,7 @@ export function TypographyEdit({
         setValue(e.currentTarget.value)
       }}
       onClick={(e) => e.stopPropagation()}
+      sx={visibleCaret===false? {caretColor: 'transparent'}: {}}
     />
   )
 
