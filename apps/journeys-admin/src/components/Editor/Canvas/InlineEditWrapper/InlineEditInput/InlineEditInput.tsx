@@ -1,12 +1,11 @@
-// import { styled, SimplePaletteColorOptions } from '@mui/material/styles'
-import { styled } from '@mui/material/styles'
+import { styled, SimplePaletteColorOptions } from '@mui/material/styles'
 import InputBase, { InputBaseProps } from '@mui/material/InputBase'
-// import { adminTheme } from '../../../../ThemeProvider/admin/theme'
+import { adminTheme } from '../../../../ThemeProvider/admin/theme'
 
 interface StyledInputProps extends InputBaseProps {}
 
-// const adminPrimaryColor = adminTheme.palette
-//   .primary as SimplePaletteColorOptions
+const adminPrimaryColor = adminTheme.palette
+  .primary as SimplePaletteColorOptions
 
 export const InlineEditInput = styled(InputBase)<StyledInputProps>(() => ({
   '& .MuiInputBase-input': {
@@ -20,6 +19,5 @@ export const InlineEditInput = styled(InputBase)<StyledInputProps>(() => ({
   lineHeight: 'inherit',
   letterSpacing: 'inherit',
   padding: '0px',
-  // caretColor: adminPrimaryColor.contrastText
-  caretColor: 'white'
+  caretColor: adminPrimaryColor.main
 }))
