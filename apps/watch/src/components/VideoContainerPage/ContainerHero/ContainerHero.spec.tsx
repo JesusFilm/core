@@ -1,4 +1,5 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
+import { noop } from 'lodash'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { ContainerHero } from '.'
@@ -19,14 +20,27 @@ describe('ContainerHero', () => {
   } as unknown as VideoContentFields
 
   it('should render hero for a collection', () => {
-    const { getByText } = render(<ContainerHero video={defaultVideo} />)
+    const { getByText } = render(
+      <ContainerHero video={defaultVideo} openDialog={noop} />
+    )
 
     expect(getByText('collection')).toBeInTheDocument()
   })
 
   it('should render hero for a series', () => {
-    const { getByText } = render(<ContainerHero video={seriesVideo} />)
+    const { getByText } = render(
+      <ContainerHero video={seriesVideo} openDialog={noop} />
+    )
 
     expect(getByText('series')).toBeInTheDocument()
+  })
+
+  it('should call openDialog on click', () => {
+    const openDialog = jest.fn()
+    const { getByRole } = render(
+      <ContainerHero video={defaultVideo} openDialog={openDialog} />
+    )
+    fireEvent.click(getByRole('button', { name: 'Share' }))
+    expect(openDialog).toHaveBeenCalled()
   })
 })

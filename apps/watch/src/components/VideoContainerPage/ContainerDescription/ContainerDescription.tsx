@@ -6,12 +6,12 @@ import Stack from '@mui/material/Stack'
 
 export interface Props {
   value: string
-  setOpenShare: (isOpen: boolean) => void
+  openDialog: () => void
 }
 
 export function ContainerDescription({
   value,
-  setOpenShare
+  openDialog
 }: Props): ReactElement {
   return (
     <Stack
@@ -33,7 +33,7 @@ export function ContainerDescription({
         variant="outlined"
         color="secondary"
         aria-label="collection-share-button"
-        onClick={() => setOpenShare(true)}
+        onClick={() => openDialog()}
         sx={{
           display: { xs: 'none', sm: 'flex' },
           minWidth: 220

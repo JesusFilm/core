@@ -1,4 +1,5 @@
 import { ComponentStory, Meta } from '@storybook/react'
+import { noop } from 'lodash'
 import { watchConfig } from '../../../libs/storybook'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
@@ -29,9 +30,9 @@ const seriesVideo = {
 }
 
 export const Default = Template.bind({})
-Default.args = { video: defaultVideo }
+Default.args = { video: defaultVideo, openDialog: noop }
 
 export const Series = Template.bind({})
-Series.args = { video: seriesVideo }
+Series.args = { video: seriesVideo, openDialog: noop }
 
 export default ContainerHeroStory as Meta
