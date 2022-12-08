@@ -40,7 +40,7 @@ describe('ContainerHero', () => {
     const { getByRole } = render(
       <ContainerHero video={defaultVideo} openDialog={openDialog} />
     )
-    fireEvent.click(getByRole('button', { name: 'Share' }))
+    fireEvent.click(getByRole('button'))
     expect(openDialog).toHaveBeenCalled()
   })
 })
