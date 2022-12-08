@@ -5,13 +5,10 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Typography from '@mui/material/Typography'
 import Tab from '@mui/material/Tab'
 import Stack from '@mui/material/Stack'
-import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
+import { useVideo } from '../../../libs/videoContext'
 
-interface VideoContentProps {
-  video: VideoContentFields
-}
-
-export function VideoContent({ video }: VideoContentProps): ReactElement {
+export function VideoContent(): ReactElement {
+  const { description, studyQuestions } = useVideo()
   const [tabValue, setTabValue] = useState(0)
 
   const handleTabChange = (
@@ -23,7 +20,7 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
 
   useEffect(() => {
     setTabValue(0)
-  }, [video])
+  }, [description])
 
   return (
     <Box width="100%">
@@ -62,7 +59,7 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
           label={<Typography variant="overline1">Description</Typography>}
           {...tabA11yProps('description', 0)}
         />
-        {video.studyQuestions?.length !== 0 && (
+        {studyQuestions?.length !== 0 && (
           <Tab
             label={
               <>
@@ -90,10 +87,10 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
           color="text.secondary"
           sx={{ whiteSpace: 'pre-wrap' }}
         >
-          {video.description[0]?.value}
+          {description[0]?.value}
         </Typography>
       </TabPanel>
-      {video.studyQuestions?.length !== 0 && (
+      {studyQuestions?.length !== 0 && (
         <TabPanel name="discussion-questions" value={tabValue} index={1}>
           <Stack
             direction="column"
@@ -103,7 +100,7 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
               pb: 2
             }}
           >
-            {video.studyQuestions?.map((question, index: number) => (
+            {studyQuestions?.map((question, index: number) => (
               <Stack
                 direction="row"
                 spacing={4}
