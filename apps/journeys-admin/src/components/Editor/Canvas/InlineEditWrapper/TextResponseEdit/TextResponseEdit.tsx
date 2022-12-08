@@ -21,7 +21,7 @@ export const TEXT_RESPONSE_BLOCK_UPDATE_CONTENT = gql`
   }
 `
 interface TextResponseEditProps extends TreeBlock<TextResponseFields> {
-  visibleCaret
+  visibleCaret?: boolean
 }
 
 export function TextResponseEdit({
@@ -71,7 +71,7 @@ export function TextResponseEdit({
         setValue(e.currentTarget.value)
       }}
       onClick={(e) => e.stopPropagation()}
-      sx={visibleCaret===false? {caretColor: 'transparent'}: {}}
+      sx={visibleCaret ?? true ? {} : { caretColor: 'transparent' }}
     />
   )
 

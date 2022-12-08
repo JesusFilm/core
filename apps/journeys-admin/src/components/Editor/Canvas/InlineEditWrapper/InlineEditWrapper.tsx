@@ -85,5 +85,5 @@ export function InlineEditWrapper({
       children
     )
 
-  return EditComponent
+  return showEditable? EditComponent: children
 }

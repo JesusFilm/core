@@ -21,7 +21,7 @@ export const BUTTON_BLOCK_UPDATE_CONTENT = gql`
   }
 `
 interface ButtonEditProps extends TreeBlock<ButtonFields> {
-  visibleCaret
+  visibleCaret?: boolean
 }
 
 export function ButtonEdit({
@@ -72,7 +72,7 @@ export function ButtonEdit({
         setValue(e.currentTarget.value)
       }}
       onClick={(e) => e.stopPropagation()}
-      sx={visibleCaret===false? {caretColor: 'transparent'}: {}}
+      sx={visibleCaret ?? true ? {} : { caretColor: 'transparent' }}
     />
   )
 

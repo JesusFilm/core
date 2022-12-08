@@ -21,7 +21,7 @@ export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
   }
 `
 interface RadioOptionEditProps extends TreeBlock<RadioOptionFields> {
-  visibleCaret
+  visibleCaret?: boolean
 }
 
 export function RadioOptionEdit({
@@ -71,7 +71,7 @@ export function RadioOptionEdit({
         setValue(e.currentTarget.value)
       }}
       onClick={(e) => e.stopPropagation()}
-      sx={visibleCaret===false? {caretColor: 'transparent'}: {}}
+      sx={(visibleCaret ?? true) ? {} : { caretColor: 'transparent' }}
     />
   )
 
