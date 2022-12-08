@@ -1,7 +1,7 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { watchConfig } from '../../libs/storybook'
-import { videos } from '../VideosPage/testData'
+import { videos } from '../Videos/testData'
 import { HomePage } from '.'
 
 const VideoContainerPageStory = {

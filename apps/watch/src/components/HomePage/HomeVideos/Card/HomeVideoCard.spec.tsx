@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { render } from '@testing-library/react'
-import { videos } from '../../../VideosPage/testData'
+import { videos } from '../../../Videos/testData'
 import { HomeVideoCard, FilmType } from '.'
 
 describe('HomeVideoCard', () => {
