@@ -13,6 +13,11 @@ const video = {
   id: '2_video-0-0',
   image:
     'https://images.unsplash.com/photo-1670140274562-2496ccaa5271?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1887&q=80',
+  imageAlt: [
+    {
+      value: 'image ali'
+    }
+  ],
   title: [{ value: 'video title' }],
   description: [
     {
