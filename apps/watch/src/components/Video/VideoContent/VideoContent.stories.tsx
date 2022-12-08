@@ -1,5 +1,4 @@
 import { Meta, Story } from '@storybook/react'
-import { ComponentProps } from 'react'
 import { VideoProvider } from '../../../libs/videoContext'
 import { watchConfig } from '../../../libs/storybook'
 import { videos } from '../../Videos/testData'
@@ -11,7 +10,7 @@ const VideoContentStory = {
   title: 'Watch/Video/VideoContent'
 }
 
-const Template: Story<ComponentProps<typeof VideoContent>> = () => (
+const Template: Story = () => (
   <VideoProvider value={{ content: videos[0] }}>
     <VideoContent />
   </VideoProvider>
