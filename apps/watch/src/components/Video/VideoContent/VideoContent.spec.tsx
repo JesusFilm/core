@@ -1,13 +1,18 @@
 import { fireEvent, render } from '@testing-library/react'
 import { videos } from '../../Videos/testData'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
+import { VideoProvider } from '../../../libs/videoContext'
 import { VideoContent } from './VideoContent'
 
 const video: VideoContentFields = videos[0]
 
 describe('VideoContent', () => {
   it('should switch tabs', () => {
-    const { getByRole, getByText } = render(<VideoContent video={video} />)
+    const { getByRole, getByText } = render(
+      <VideoProvider value={{ content: video }}>
+        <VideoContent />
+      </VideoProvider>
+    )
     fireEvent.click(
       getByRole('tab', { name: 'Discussion Discussion Questions' })
     )
@@ -15,7 +20,9 @@ describe('VideoContent', () => {
   })
   it('should hide the dicussion questions tab if no questions', () => {
     const { queryByRole } = render(
-      <VideoContent video={{ ...video, studyQuestions: [] }} />
+      <VideoProvider value={{ content: { ...video, studyQuestions: [] } }}>
+        <VideoContent />
+      </VideoProvider>
     )
     expect(
       queryByRole('tab', {
