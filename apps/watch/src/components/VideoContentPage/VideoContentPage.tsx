@@ -16,9 +16,9 @@ import 'video.js/dist/video-js.css'
 
 import { VideoHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
+import { VideosCarousel } from '../Videos/VideosCarousel/VideosCarousel'
 import { ShareDialog } from '../ShareDialog'
 import { useVideo } from '../../libs/videoContext'
-import { VideosCarousel } from './VideosCarousel/VideosCarousel'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {

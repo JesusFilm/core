@@ -8,7 +8,7 @@ import {
 } from '../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
-import { videos } from '../VideosPage/testData'
+import { videos } from '../Videos/testData'
 import { ShareDialog } from './ShareDialog'
 
 const ShareDialogStory = {

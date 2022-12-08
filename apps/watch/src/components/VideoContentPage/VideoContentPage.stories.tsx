@@ -2,7 +2,7 @@ import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
-import { videos } from '../VideosPage/testData'
+import { videos } from '../Videos/testData'
 import { VideoContentPage } from '.'
 
 const VideoContentPageStory = {
