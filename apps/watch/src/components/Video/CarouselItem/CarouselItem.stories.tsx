@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { ComponentProps } from 'react'
 import { watchConfig } from '../../../libs/storybook'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { CarouselItem } from './CarouselItem'
@@ -10,16 +11,17 @@ const CarouselItemStory = {
   title: 'Watch/Video/CarouselItem'
 }
 
-const Template: Story = ({ ...args }) => {
+const Template: Story<ComponentProps<typeof CarouselItem>> = ({ ...args }) => {
   return (
     <MockedProvider>
       <CarouselItem
         title={args.title}
         image={args.image}
+        imageAlt={args.imageAlt}
         variant={args.variant}
         index={args.index}
         label={args.label}
-        isPlaying={args.playing}
+        isPlaying={args.isPlaying}
         onClick={() => console.log('clicked')}
       />
     </MockedProvider>
@@ -28,87 +30,42 @@ const Template: Story = ({ ...args }) => {
 
 export const Item = Template.bind({})
 Item.args = {
-  __typename: 'Video',
-  id: '1_jf6101-0-0',
   label: VideoLabel.segment,
   title: [{ __typename: 'Translation', value: 'The Beginning' }],
   image:
     'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg',
-  imageAlt: [{ __typename: 'Translation', value: 'The Beginning' }],
+  imageAlt: [{ __typename: 'Translation', value: 'JESUS' }],
   index: 5,
-  playing: true,
-  snippet: [
-    {
-      __typename: 'Translation',
-      value:
-        'The story of Jesus fits within the larger story of the Judeo Christian tradition. The purpose of everything since creation has been to point to the life of Jesus.'
-    }
-  ],
-  slug: 'the-beginning',
-  children: [],
+  isPlaying: true,
   variant: {
-    __typename: 'VideoVariant',
-    id: '1_529-jf6101-0-0',
-    duration: 488,
-    hls: 'https://arc.gt/pm6g1',
-    slug: 'the-beginning/english'
+    duration: 488
   }
 }
 
 export const ItemLoading = Template.bind({})
 ItemLoading.args = {
-  __typename: 'Video',
-  id: '1_jf6101-0-0',
   label: VideoLabel.episode,
   title: [{ __typename: 'Translation', value: 'The Beginning' }],
-  image: '',
-  imageAlt: [{ __typename: 'Translation', value: 'The Beginning' }],
+  image: null,
+  imageAlt: [{ __typename: 'Translation', value: 'JESUS' }],
   index: 5,
-  playing: true,
-  snippet: [
-    {
-      __typename: 'Translation',
-      value:
-        'The story of Jesus fits within the larger story of the Judeo Christian tradition. The purpose of everything since creation has been to point to the life of Jesus.'
-    }
-  ],
-  slug: 'the-beginning',
-  children: [],
+  isPlaying: true,
   variant: {
-    __typename: 'VideoVariant',
-    id: '1_529-jf6101-0-0',
-    duration: 488,
-    hls: 'https://arc.gt/pm6g1',
-    slug: 'the-beginning/english'
+    duration: 488
   }
 }
 
 export const ItemPlaying = Template.bind({})
 ItemPlaying.args = {
-  __typename: 'Video',
-  id: '1_jf6101-0-0',
   label: VideoLabel.featureFilm,
   title: [{ __typename: 'Translation', value: 'The Beginning' }],
   image:
     'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg',
-  imageAlt: [{ __typename: 'Translation', value: 'The Beginning' }],
+  imageAlt: [{ __typename: 'Translation', value: 'JESUS' }],
   index: 5,
-  playing: false,
-  snippet: [
-    {
-      __typename: 'Translation',
-      value:
-        'The story of Jesus fits within the larger story of the Judeo Christian tradition. The purpose of everything since creation has been to point to the life of Jesus.'
-    }
-  ],
-  slug: 'the-beginning',
-  children: [],
+  isPlaying: false,
   variant: {
-    __typename: 'VideoVariant',
-    id: '1_529-jf6101-0-0',
-    duration: 488,
-    hls: 'https://arc.gt/pm6g1',
-    slug: 'the-beginning/english'
+    duration: 488
   }
 }
 

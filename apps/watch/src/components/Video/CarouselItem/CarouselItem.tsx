@@ -9,7 +9,8 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { GetVideos_videos as Video } from '../../../../__generated__/GetVideos'
 import 'swiper/swiper.min.css'
 
-interface CarouselItemProps extends Pick<Video, 'title' | 'variant' | 'image'> {
+interface CarouselItemProps
+  extends Pick<Video, 'title' | 'variant' | 'image' | 'imageAlt'> {
   label: string
   index?: number
   isPlaying?: boolean
@@ -19,6 +20,7 @@ interface CarouselItemProps extends Pick<Video, 'title' | 'variant' | 'image'> {
 export function CarouselItem({
   title,
   image,
+  imageAlt,
   variant,
   label,
   index,
@@ -33,12 +35,12 @@ export function CarouselItem({
         width: 338
       }}
     >
-      {image != null && image !== '' ? (
+      {image != null ? (
         <>
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Image
               src={image}
-              alt={videoTitle ?? ''}
+              alt={imageAlt[0].value ?? ''}
               width={338}
               height={160}
               layout="fixed"
@@ -59,57 +61,35 @@ export function CarouselItem({
       ) : (
         <Skeleton sx={{ width: '338px' }} />
       )}
-      {isPlaying ? (
+      <Stack
+        alignItems="flex-end"
+        justifyContent="flex-end"
+        sx={{
+          position: 'absolute',
+          height: { xs: 110, md: 160 },
+          width: { xs: 232, md: 338 }
+        }}
+      >
         <Stack
-          alignItems="flex-end"
-          justifyContent="flex-end"
+          direction="row"
           sx={{
-            position: 'absolute',
-            height: { xs: 110, md: 160 },
-            width: { xs: 232, md: 338 }
+            padding: '5px 9px',
+            gap: '2px',
+            backgroundColor: `${
+              isPlaying ? 'rgba(0, 0, 0, 0.5)' : 'primary.main'
+            }`,
+            borderRadius: '8px',
+            m: 1
           }}
         >
-          <Stack
-            sx={{
-              flexDirection: 'row',
-              padding: '5px 9px',
-              gap: '2px',
-              backgroundColor: 'primary.main',
-              borderRadius: '8px',
-              m: 1
-            }}
-          >
-            <PlayArrow sx={{ color: 'primary.contrastText' }} />
-            <Typography variant="body1">Play Now</Typography>
-          </Stack>
+          <PlayArrow sx={{ color: 'primary.contrastText' }} />
+          <Typography variant="body1">
+            {isPlaying
+              ? `${secondsToTimeFormat(variant?.duration ?? 0)}`
+              : 'Play Now'}
+          </Typography>
         </Stack>
-      ) : (
-        <Stack
-          alignItems="flex-end"
-          justifyContent="flex-end"
-          sx={{
-            position: 'absolute',
-            height: { xs: 110, md: 160 },
-            width: { xs: 232, md: 338 }
-          }}
-        >
-          <Stack
-            sx={{
-              flexDirection: 'row',
-              padding: '5px 9px',
-              gap: '2px',
-              background: '#00000080',
-              borderRadius: '8px',
-              m: 1
-            }}
-          >
-            <PlayArrow sx={{ color: 'primary.contrastText' }} />
-            <Typography>
-              {secondsToTimeFormat(variant?.duration ?? 0)}
-            </Typography>
-          </Stack>
-        </Stack>
-      )}
+      </Stack>
       {label !== 'featureFilm' && label !== 'shortFilm' && index != null ? (
         <Typography variant="overline2" mb={3}>
           {label === 'segment' ? `Chapter ${index}` : `Episode ${index}`}

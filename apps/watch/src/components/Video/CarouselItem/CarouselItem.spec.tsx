@@ -11,6 +11,7 @@ describe('carouselItem', () => {
         <CarouselItem
           title={[{ __typename: 'Translation', value: 'The Beginning' }]}
           image="https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg"
+          imageAlt={[{ __typename: 'Translation', value: 'JESUS' }]}
           variant={{
             __typename: 'VideoVariant',
             id: '1_529-jf6101-0-0',
@@ -26,7 +27,7 @@ describe('carouselItem', () => {
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(getAllByAltText('The Beginning')[0]).toBeInTheDocument()
+      expect(getAllByAltText('JESUS')[0]).toBeInTheDocument()
     })
   })
   it('should have onClick called', async () => {
@@ -35,6 +36,7 @@ describe('carouselItem', () => {
         <CarouselItem
           title={[{ __typename: 'Translation', value: 'The Beginning' }]}
           image="https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg"
+          imageAlt={[{ __typename: 'Translation', value: 'JESUS' }]}
           variant={{
             __typename: 'VideoVariant',
             id: '1_529-jf6101-0-0',
@@ -44,7 +46,7 @@ describe('carouselItem', () => {
           }}
           index={4}
           label="segment"
-          isPlaying
+          isPlaying={false}
           onClick={onClick}
         />
       </MockedProvider>
@@ -60,6 +62,7 @@ describe('carouselItem', () => {
         <CarouselItem
           title={[{ __typename: 'Translation', value: 'The Beginning' }]}
           image="https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg"
+          imageAlt={[{ __typename: 'Translation', value: 'JESUS' }]}
           variant={{
             __typename: 'VideoVariant',
             id: '1_529-jf6101-0-0',
@@ -84,6 +87,7 @@ describe('carouselItem', () => {
         <CarouselItem
           title={[{ __typename: 'Translation', value: 'The Beginning' }]}
           image="https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg"
+          imageAlt={[{ __typename: 'Translation', value: 'JESUS' }]}
           variant={{
             __typename: 'VideoVariant',
             id: '1_529-jf6101-0-0',
@@ -108,6 +112,7 @@ describe('carouselItem', () => {
         <CarouselItem
           title={[{ __typename: 'Translation', value: 'The Beginning' }]}
           image="https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg"
+          imageAlt={[{ __typename: 'Translation', value: 'JESUS' }]}
           variant={{
             __typename: 'VideoVariant',
             id: '1_529-jf6101-0-0',
@@ -132,6 +137,7 @@ describe('carouselItem', () => {
         <CarouselItem
           title={[{ __typename: 'Translation', value: 'The Beginning' }]}
           image="https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg"
+          imageAlt={[{ __typename: 'Translation', value: 'JESUS' }]}
           variant={{
             __typename: 'VideoVariant',
             id: '1_529-jf6101-0-0',
@@ -156,6 +162,7 @@ describe('carouselItem', () => {
         <CarouselItem
           title={[{ __typename: 'Translation', value: 'The Beginning' }]}
           image="https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg"
+          imageAlt={[{ __typename: 'Translation', value: 'JESUS' }]}
           variant={{
             __typename: 'VideoVariant',
             id: '1_529-jf6101-0-0',
@@ -181,6 +188,7 @@ describe('carouselItem', () => {
         <CarouselItem
           title={[{ __typename: 'Translation', value: 'The Beginning' }]}
           image="https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg"
+          imageAlt={[{ __typename: 'Translation', value: 'JESUS' }]}
           variant={{
             __typename: 'VideoVariant',
             id: '1_529-jf6101-0-0',
