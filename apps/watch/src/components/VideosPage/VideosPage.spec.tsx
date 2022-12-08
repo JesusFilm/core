@@ -3,8 +3,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
+import { videos } from '../Videos/testData'
 import { VideosPage, GET_VIDEOS, limit } from './VideosPage'
-import { videos } from './testData'
 
 describe('VideosPage', () => {
   describe('grid', () => {

@@ -3,7 +3,7 @@ import { ReactElement } from 'react'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { VideoLabel } from '../../../__generated__/globalTypes'
-import { videos } from '../../components/VideosPage/testData'
+import { videos } from '../../components/Videos/testData'
 import { VideoProvider, useVideo } from './VideoContext'
 
 const chapter1: VideoContentFields = {
