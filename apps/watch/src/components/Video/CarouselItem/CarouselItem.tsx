@@ -72,9 +72,9 @@ export function CarouselItem({
       >
         <Stack
           direction="row"
+          spacing="2px"
           sx={{
             padding: '5px 9px',
-            gap: '2px',
             backgroundColor: `${
               isPlaying ? 'rgba(0, 0, 0, 0.5)' : 'primary.main'
             }`,
