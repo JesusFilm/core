@@ -10,6 +10,7 @@ import { VideoContentFields } from '../../../../__generated__/VideoContentFields
 interface VideoContentProps {
   video: VideoContentFields
 }
+
 export function VideoContent({ video }: VideoContentProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
 
@@ -33,7 +34,7 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
         variant="scrollable"
         allowScrollButtonsMobile
         sx={{
-          mb: 10,
+          mb: { xs: 5, md: 10 },
           '> .MuiTabs-scroller': {
             '> .MuiTabs-indicator': {
               zIndex: 1
@@ -57,10 +58,28 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
           }
         }}
       >
-        <Tab label="Description" {...tabA11yProps('video-description', 0)} />
+        <Tab
+          label={<Typography variant="overline1">Description</Typography>}
+          {...tabA11yProps('description', 0)}
+        />
         {video.studyQuestions?.length !== 0 && (
           <Tab
-            label="Discussion Questions"
+            label={
+              <>
+                <Typography
+                  variant="overline1"
+                  sx={{ display: { xs: 'flex', md: 'none' } }}
+                >
+                  Discussion
+                </Typography>
+                <Typography
+                  variant="overline1"
+                  sx={{ display: { xs: 'none', md: 'flex' } }}
+                >
+                  Discussion Questions
+                </Typography>
+              </>
+            }
             {...tabA11yProps('discussion-questions', 1)}
           />
         )}
@@ -68,7 +87,7 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
       <TabPanel name="description" value={tabValue} index={0}>
         <Typography
           variant="body1"
-          color="#4D4D4D"
+          color="text.secondary"
           sx={{ whiteSpace: 'pre-wrap' }}
         >
           {video.description[0]?.value}
@@ -94,8 +113,8 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
                 <Box
                   sx={{
                     display: 'flex',
-                    minHeight: '38px',
-                    minWidth: '38px',
+                    minHeight: 38,
+                    minWidth: 38,
                     backgroundColor: '#EDEDED',
                     borderRadius: '50%',
                     alignItems: 'center',
@@ -104,7 +123,7 @@ export function VideoContent({ video }: VideoContentProps): ReactElement {
                 >
                   <Typography variant="h6">{index + 1}</Typography>
                 </Box>
-                <Typography key={index} variant="body1" color="#4D4D4D">
+                <Typography key={index} variant="body1" color="text.secondary">
                   {question.value}
                 </Typography>
               </Stack>

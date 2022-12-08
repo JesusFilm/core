@@ -65,8 +65,8 @@ export function VideoContentPage({
                 spacing="100px"
                 sx={{
                   mx: 0,
-                  mt: 20,
-                  mb: 20,
+                  mt: { xs: 5, md: 10 },
+                  mb: { xs: 5, md: 10 },
                   maxWidth: '100%'
                 }}
               >
