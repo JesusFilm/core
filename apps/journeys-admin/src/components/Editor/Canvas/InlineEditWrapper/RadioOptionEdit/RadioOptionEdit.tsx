@@ -71,7 +71,7 @@ export function RadioOptionEdit({
         setValue(e.currentTarget.value)
       }}
       onClick={(e) => e.stopPropagation()}
-      sx={(visibleCaret ?? true) ? {} : { caretColor: 'transparent' }}
+      sx={visibleCaret ?? true ? {} : { caretColor: 'transparent' }}
     />
   )
 

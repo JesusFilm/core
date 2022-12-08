@@ -70,20 +70,27 @@ export function InlineEditWrapper({
 
   const EditComponent =
     block.__typename === 'TypographyBlock' ? (
-      <TypographyEdit {...block} deleteSelf={handleDeleteBlock} visibleCaret={showEditable} />
+      <TypographyEdit
+        {...block}
+        deleteSelf={handleDeleteBlock}
+        visibleCaret={showEditable}
+      />
     ) : block.__typename === 'ButtonBlock' ? (
-      <ButtonEdit {...block} visibleCaret={showEditable}/>
+      <ButtonEdit {...block} visibleCaret={showEditable} />
     ) : block.__typename === 'RadioOptionBlock' ? (
-      <RadioOptionEdit {...block} visibleCaret={showEditable}/>
+      <RadioOptionEdit {...block} visibleCaret={showEditable} />
     ) : block.__typename === 'RadioQuestionBlock' ? (
-      <RadioQuestionEdit {...block} wrappers={children.props.wrappers} />
+      showEditable ? (
+        <RadioQuestionEdit {...block} wrappers={children.props.wrappers} />
+      ) : (
+        children
+      )
     ) : block.__typename === 'TextResponseBlock' ? (
-      <TextResponseEdit {...block} visibleCaret={showEditable}/>
+      <TextResponseEdit {...block} visibleCaret={showEditable} />
     ) : block.__typename === 'SignUpBlock' ? (
       <SignUpEdit {...block} />
     ) : (
       children
     )
-
-  return showEditable? EditComponent: children
+  return EditComponent
 }
