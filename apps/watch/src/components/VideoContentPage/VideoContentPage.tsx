@@ -62,7 +62,7 @@ export function VideoContentPage(): ReactElement {
             }}
           >
             <VideoContent />
-            <Box width="336px">
+            <Box width="336px" sx={{ display: { xs: 'none', md: 'block' } }}>
               <Stack direction="row" spacing="20px" mb="40px">
                 <Button variant="outlined">
                   <SaveAlt />
