@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography'
 import Link from 'next/link'
 import { ReactElement } from 'react'
 import { compact } from 'lodash'
+import Image from 'next/image'
 
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 
@@ -54,10 +55,18 @@ export function VideoGridCard({
                 position: 'relative'
               }}
             >
-              <CardMedia
+              {/* <CardMedia
                 sx={{ borderRadius: '8px' }}
                 component="img"
                 image={video.image ?? ''}
+              /> */}
+              <Image
+                src={video.image ?? ''}
+                alt={video.imageAlt[0].value}
+                width="100%"
+                height="160px"
+                // objectFit="cover"
+                style={{ borderRadius: '8' }}
               />
               <Box
                 sx={{
