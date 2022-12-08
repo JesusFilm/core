@@ -90,13 +90,16 @@ export function VideoContentPage(): ReactElement {
             </Box>
             <Box width="336px">
               <Stack direction="row" spacing="20px" mb="40px">
-                <Button variant="outlined">
+                <Button
+                  variant="outlined"
+                  onClick={() => setOpenDownload(true)}
+                >
                   <SaveAlt />
-                  &nbsp; Download
+                  Download
                 </Button>
                 <Button variant="outlined" onClick={() => setOpenShare(true)}>
                   <Share />
-                  &nbsp; Share
+                  Share
                 </Button>
               </Stack>
             </Box>

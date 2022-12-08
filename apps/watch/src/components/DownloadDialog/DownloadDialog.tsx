@@ -11,27 +11,21 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import CircularProgress from '@mui/material/CircularProgress'
-import LinearProgress from '@mui/material/LinearProgress'
 import MenuItem from '@mui/material/MenuItem'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
 import LanguageIcon from '@mui/icons-material/Language'
 import { useTheme } from '@mui/material/styles'
 
+import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { Dialog } from '@core/shared/ui/Dialog'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 
-import {
-  VideoContentFields,
-  VideoContentFields_variant_downloads as Downloads,
-  VideoContentFields_variant_language as Language
-} from '../../../__generated__/VideoContentFields'
+import { useVideo } from '../../libs/videoContext'
 
 interface DownloadDialogProps
-  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'>,
-    Pick<VideoContentFields, 'title' | 'image' | 'imageAlt'> {
-  // video: Omit<VideoContentFields, 'variant'>
-  downloads: Downloads[]
-  language: Language
-}
+  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
 
 function formatBytes(bytes, decimals = 2): string {
   if ((bytes ?? 0) <= 0) return '0 Bytes'
@@ -47,15 +41,18 @@ function formatBytes(bytes, decimals = 2): string {
 
 export function DownloadDialog({
   open,
-  onClose,
-  title,
-  image,
-  imageAlt,
-  downloads,
-  language
+  onClose
 }: DownloadDialogProps): ReactElement {
   const theme = useTheme()
+  const { title, image, imageAlt, variant } = useVideo()
   const { percentage, download, cancel, isInProgress } = useDownloader()
+
+  const downloads = variant?.downloads ?? []
+  const language = variant?.language ?? {
+    __typename: 'Language',
+    id: '529',
+    name: [{ __typename: 'Translation', value: 'English' }]
+  }
 
   useEffect(() => {
     if (percentage === 100) {
@@ -94,19 +91,47 @@ export function DownloadDialog({
           direction={{ xs: 'column-reverse', sm: 'row' }}
           spacing={4}
           alignItems="flex-start"
-          sx={{ mb: { xs: 0, sm: 4 } }}
+          sx={{ mt: { xs: 0, sm: 1 }, mb: { xs: 0, sm: 5 } }}
         >
           {image != null && (
-            <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-              <Image
-                src={image}
-                alt={imageAlt[0].value}
-                width={240}
-                height={115}
-                objectFit="cover"
-                style={{ borderRadius: theme.spacing(2) }}
-              />
-            </Box>
+            <ThemeProvider
+              themeName={ThemeName.website}
+              themeMode={ThemeMode.dark}
+            >
+              <Box
+                sx={{
+                  display: { xs: 'none', sm: 'flex' },
+                  justifyContent: 'end',
+                  alignItems: 'end'
+                }}
+              >
+                <Image
+                  src={image}
+                  alt={imageAlt[0].value}
+                  width={240}
+                  height={115}
+                  objectFit="cover"
+                  style={{ borderRadius: theme.spacing(2) }}
+                />
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  sx={{
+                    position: 'absolute',
+                    color: 'primary.contrastText',
+                    backgroundColor: 'background.default',
+                    padding: '5px 9px',
+                    borderRadius: 2,
+                    m: 1
+                  }}
+                >
+                  <PlayArrowRoundedIcon />
+                  <Typography>
+                    {secondsToTimeFormat(variant?.duration ?? 0)}
+                  </Typography>
+                </Stack>
+              </Box>
+            </ThemeProvider>
           )}
           <Stack>
             <Typography variant="h6" sx={{ mb: 1 }}>
@@ -139,7 +164,8 @@ export function DownloadDialog({
               >
                 {downloads.map((download) => (
                   <MenuItem key={download.quality} value={download.url}>
-                    {download.quality} ({formatBytes(download.size)})
+                    {download.quality.charAt(0).toUpperCase()}
+                    {download.quality.slice(1)} ({formatBytes(download.size)})
                   </MenuItem>
                 ))}
               </TextField>
@@ -147,7 +173,7 @@ export function DownloadDialog({
                 direction={{ xs: 'column', sm: 'row' }}
                 justifyContent="space-between"
                 gap={3}
-                sx={{ my: 3 }}
+                sx={{ mt: 6 }}
               >
                 <FormGroup>
                   <FormControlLabel
@@ -168,23 +194,21 @@ export function DownloadDialog({
                   size="small"
                   disabled={!values.terms}
                   startIcon={<ArrowDownwardIcon />}
-                  sx={{
-                    pr: '64px'
-                  }}
                   loading={isInProgress}
-                  // loadingPosition="end"
+                  loadingPosition="start"
                   loadingIndicator={
                     <CircularProgress
                       variant="determinate"
                       value={percentage}
-                      sx={{ color: 'primary.contrastText' }}
+                      sx={{ color: 'primary.contrastText', ml: 1 }}
+                      // Mui has style that overrides sx. Use style
+                      style={{ width: '20px', height: '20px' }}
                     />
                   }
                 >
                   Download
                 </LoadingButton>
               </Stack>
-              <LinearProgress variant="determinate" value={percentage} />
             </Form>
           )}
         </Formik>
