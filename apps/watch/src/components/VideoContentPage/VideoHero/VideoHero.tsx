@@ -1,16 +1,13 @@
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import videojs from 'video.js'
-import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import 'video.js/dist/video-js.css'
 
+import { useVideo } from '../../../libs/videoContext'
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 
-interface VideoHeroProps {
-  video: VideoContentFields
-}
-
-export function VideoHero({ video }: VideoHeroProps): ReactElement {
+export function VideoHero(): ReactElement {
+  const { variant } = useVideo()
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState(false)
@@ -37,12 +34,11 @@ export function VideoHero({ video }: VideoHeroProps): ReactElement {
             inline: false
           }
         },
-        responsive: true,
-        poster: video?.image ?? undefined
+        responsive: true
       })
       playerRef.current.on('play', handlePlay)
     }
-  }, [video])
+  })
 
   function handlePlay(): void {
     setIsPlaying(true)
@@ -62,7 +58,7 @@ export function VideoHero({ video }: VideoHeroProps): ReactElement {
         }
       }}
     >
-      {video.variant?.hls != null && (
+      {variant?.hls != null && (
         <video
           ref={videoRef}
           className="vjs-jfp video-js vjs-fill"
@@ -72,10 +68,10 @@ export function VideoHero({ video }: VideoHeroProps): ReactElement {
           }}
           playsInline
         >
-          <source src={video.variant.hls} type="application/x-mpegURL" />
+          <source src={variant.hls} type="application/x-mpegURL" />
         </video>
       )}
-      {!isPlaying && <VideoHeroOverlay video={video} handlePlay={handlePlay} />}
+      {!isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />}
     </Box>
   )
 }

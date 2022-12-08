@@ -1,6 +1,7 @@
 import { render, fireEvent } from '@testing-library/react'
 import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
 import { VideoLabel } from '../../../../../__generated__/globalTypes'
+import { VideoProvider } from '../../../../libs/videoContext'
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 
 describe('VideoHeroOverlay', () => {
@@ -48,7 +49,9 @@ describe('VideoHeroOverlay', () => {
 
   it('should render the Video Hero Overlay', () => {
     const { getByRole, getByText, getByTestId } = render(
-      <VideoHeroOverlay video={video} />
+      <VideoProvider value={{ content: video }}>
+        <VideoHeroOverlay />
+      </VideoProvider>
     )
     expect(getByText('The Story of Jesus for Children')).toBeInTheDocument()
     expect(getByText('61 min')).toBeInTheDocument()
@@ -61,7 +64,9 @@ describe('VideoHeroOverlay', () => {
   it('should play video on the Play Video button click', () => {
     const handlePlay = jest.fn()
     const { getByRole } = render(
-      <VideoHeroOverlay video={video} handlePlay={handlePlay} />
+      <VideoProvider value={{ content: video }}>
+        <VideoHeroOverlay handlePlay={handlePlay} />
+      </VideoProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Play Video' }))
     expect(handlePlay).toHaveBeenCalled()
@@ -70,7 +75,9 @@ describe('VideoHeroOverlay', () => {
   it('should play video on the Mute Icon click', () => {
     const handlePlay = jest.fn()
     const { getByTestId } = render(
-      <VideoHeroOverlay video={video} handlePlay={handlePlay} />
+      <VideoProvider value={{ content: video }}>
+        <VideoHeroOverlay handlePlay={handlePlay} />
+      </VideoProvider>
     )
     fireEvent.click(getByTestId('VolumeOffOutlinedIcon'))
     expect(handlePlay).toHaveBeenCalled()

@@ -10,18 +10,18 @@ import AccessTime from '@mui/icons-material/AccessTime'
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import Image from 'next/image'
-import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
+import { useVideo } from '../../../../libs/videoContext'
 import { HeroOverlay } from '../../../HeroOverlay'
 
 interface VideoHeroOverlayProps {
-  video: VideoContentFields
   handlePlay?: () => void
 }
 
 export function VideoHeroOverlay({
-  video,
   handlePlay
 }: VideoHeroOverlayProps): ReactElement {
+  const { image, imageAlt, title, variant } = useVideo()
+
   return (
     <Box
       sx={{
@@ -33,10 +33,10 @@ export function VideoHeroOverlay({
         zIndex: 1
       }}
     >
-      {video.image != null && (
+      {image != null && (
         <Image
-          src={video.image}
-          alt={video.title[0].value}
+          src={image}
+          alt={imageAlt[0].value}
           layout="fill"
           objectFit="cover"
         />
@@ -51,7 +51,8 @@ export function VideoHeroOverlay({
               height: 68,
               borderRadius: 10,
               backgroundColor: 'background.default',
-              opacity: 0.7,
+              opacity: 0.45,
+              mb: { xs: 0, lg: 35 },
               alignSelf: 'end',
               '&:hover': {
                 backgroundColor: 'background.default'
@@ -66,7 +67,7 @@ export function VideoHeroOverlay({
             color="text.primary"
             sx={{ width: { xs: '100%', lg: '70%' } }}
           >
-            {video.title[0]?.value}
+            {title[0]?.value}
           </Typography>
           <Stack
             spacing={8}
@@ -77,7 +78,11 @@ export function VideoHeroOverlay({
               size="large"
               variant="contained"
               onClick={handlePlay}
-              sx={{ display: { xs: 'none', md: 'flex' }, width: 220 }}
+              sx={{
+                display: { xs: 'none', md: 'flex' },
+                width: 220,
+                backgroundColor: 'primary.main'
+              }}
             >
               <PlayArrowRounded />
               Play
@@ -86,7 +91,10 @@ export function VideoHeroOverlay({
               size="small"
               variant="contained"
               onClick={handlePlay}
-              sx={{ display: { xs: 'flex', md: 'none' } }}
+              sx={{
+                display: { xs: 'flex', md: 'none' },
+                backgroundColor: 'primary.main'
+              }}
             >
               <PlayArrowRounded />
               Play Video
@@ -100,9 +108,9 @@ export function VideoHeroOverlay({
               }}
             >
               <AccessTime sx={{ width: 17, height: 17 }} />
-              {video.variant !== null && (
+              {variant !== null && (
                 <Typography variant="body1">
-                  {secondsToMinutes(video.variant.duration)} min
+                  {secondsToMinutes(variant.duration)} min
                 </Typography>
               )}
             </Stack>
