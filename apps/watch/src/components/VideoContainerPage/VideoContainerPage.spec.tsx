@@ -5,7 +5,17 @@ import {
   VideoContentFields,
   VideoContentFields_children
 } from '../../../__generated__/VideoContentFields'
+import { VideoProvider } from '../../libs/videoContext'
 import { VideoContainerPage } from '.'
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: () => {
+    return {
+      query: {}
+    }
+  }
+}))
 
 const video = {
   id: '2_video-0-0',
@@ -21,10 +31,12 @@ const video = {
 } as unknown as VideoContentFields
 
 describe('VideoContainerPage', () => {
-  it('should render SimpleHero', () => {
+  it('should render ContainerHero', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <VideoContainerPage content={video} />
+        <VideoProvider value={{ content: video }}>
+          <VideoContainerPage content={video} />
+        </VideoProvider>
       </SnackbarProvider>
     )
     expect(getByText('video title')).toBeInTheDocument()
@@ -33,20 +45,24 @@ describe('VideoContainerPage', () => {
   it('should render snippet', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <VideoContainerPage content={video} />
+        <VideoProvider value={{ content: video }}>
+          <VideoContainerPage content={video} />
+        </VideoProvider>
       </SnackbarProvider>
     )
     expect(getByText('video description')).toBeInTheDocument()
   })
 
   it('should render share button', () => {
-    const { getByRole } = render(
+    const { getByRole, getByLabelText } = render(
       <SnackbarProvider>
-        <VideoContainerPage content={video} />
+        <VideoProvider value={{ content: video }}>
+          <VideoContainerPage content={video} />
+        </VideoProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('button', { name: 'Share' })).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Share' }))
+    expect(getByLabelText('collection-share-button')).toBeInTheDocument()
+    fireEvent.click(getByLabelText('collection-share-button'))
     expect(
       getByRole('dialog', { name: 'Share this video' })
     ).toBeInTheDocument()
@@ -55,10 +71,11 @@ describe('VideoContainerPage', () => {
   xit('should render videos', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
-        <VideoContainerPage content={video} />
+        <VideoProvider value={{ content: video }}>
+          <VideoContainerPage content={video} />
+        </VideoProvider>
       </SnackbarProvider>
     )
-
     expect(getByTestId('videos-grid')).toBeInTheDocument()
   })
 })

@@ -4,6 +4,7 @@ import {
   VideoContentFields,
   VideoContentFields_children
 } from '../../../__generated__/VideoContentFields'
+import { VideoProvider } from '../../libs/videoContext'
 
 import { videos } from '../Videos/testData'
 import { ShareDialog } from './ShareDialog'
@@ -52,7 +53,9 @@ describe('ShareDialog', () => {
   it('closes the modal on cancel icon click', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
-        <ShareDialog video={video} open routes={routes} onClose={onClose} />
+        <VideoProvider value={{ content: video }}>
+          <ShareDialog open routes={routes} onClose={onClose} />
+        </VideoProvider>
       </SnackbarProvider>
     )
     fireEvent.click(getByTestId('dialog-close-button'))
@@ -62,15 +65,18 @@ describe('ShareDialog', () => {
   it('only shows share link on playlist video', () => {
     const { getByRole, queryAllByRole } = render(
       <SnackbarProvider>
-        <ShareDialog
-          video={{
-            ...video,
-            children: [{ id: '1' }] as unknown as VideoContentFields_children[]
+        <VideoProvider
+          value={{
+            content: {
+              ...video,
+              children: [
+                { id: '1' }
+              ] as unknown as VideoContentFields_children[]
+            }
           }}
-          routes={routes}
-          open
-          onClose={onClose}
-        />
+        >
+          <ShareDialog routes={routes} open onClose={onClose} />
+        </VideoProvider>
       </SnackbarProvider>
     )
 
@@ -101,7 +107,9 @@ describe('ShareDialog', () => {
 
       const { getByRole } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} routes={routes} open onClose={onClose} />
+          <VideoProvider value={{ content: video }}>
+            <ShareDialog routes={routes} open onClose={onClose} />
+          </VideoProvider>
         </SnackbarProvider>
       )
 
@@ -122,7 +130,9 @@ describe('ShareDialog', () => {
 
       const { getByRole } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} routes={routes} open onClose={onClose} />
+          <VideoProvider value={{ content: video }}>
+            <ShareDialog routes={routes} open onClose={onClose} />
+          </VideoProvider>
         </SnackbarProvider>
       )
 
@@ -154,7 +164,9 @@ describe('ShareDialog', () => {
 
       const { getByRole } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} routes={routes} open onClose={onClose} />
+          <VideoProvider value={{ content: video }}>
+            <ShareDialog routes={routes} open onClose={onClose} />
+          </VideoProvider>
         </SnackbarProvider>
       )
 
@@ -173,7 +185,9 @@ describe('ShareDialog', () => {
 
       const { getByRole } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} routes={routes} open onClose={onClose} />
+          <VideoProvider value={{ content: video }}>
+            <ShareDialog routes={routes} open onClose={onClose} />
+          </VideoProvider>
         </SnackbarProvider>
       )
 
@@ -215,7 +229,9 @@ describe('ShareDialog', () => {
         'https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children'
       const { getByRole, getByText } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} routes={routes} open onClose={onClose} />
+          <VideoProvider value={{ content: video }}>
+            <ShareDialog routes={routes} open onClose={onClose} />
+          </VideoProvider>
         </SnackbarProvider>
       )
       expect(getByRole('textbox')).toHaveValue(link)
@@ -233,7 +249,9 @@ describe('ShareDialog', () => {
 
       const { getByRole, getByText } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} routes={routes} open onClose={onClose} />
+          <VideoProvider value={{ content: video }}>
+            <ShareDialog routes={routes} open onClose={onClose} />
+          </VideoProvider>
         </SnackbarProvider>
       )
 
