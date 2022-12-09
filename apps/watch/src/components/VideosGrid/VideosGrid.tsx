@@ -5,8 +5,8 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { deepmerge } from '@mui/utils'
 import { getTheme, ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { VideoCard } from '../../Video'
-import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
+import { VideoCard } from '../Video'
+import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 
 interface VideosGridProps {
   videos: VideoChildFields[]
