@@ -1,18 +1,11 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import useDownloader from 'react-use-downloader'
-// import { SnackbarProvider } from 'notistack'
-// import { setupServer } from 'msw/node'
-// import { SWRConfig } from 'swr'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../libs/videoContext'
 
 import { videos } from '../Videos/testData'
 import { DownloadDialog } from './DownloadDialog'
-// import {
-//   getLowQualityVideo,
-//   getHighQualityVideo
-// } from './DownloadDialog.handlers'
 
 jest.mock('react-use-downloader', () => ({
   __esModule: true,
@@ -66,36 +59,6 @@ describe('DownloadDialog', () => {
     await waitFor(() => {
       expect(onDownload).toBeCalledWith(
         video.variant?.downloads[0].url,
-        `${video.title[0].value}.mp4`
-      )
-    })
-  })
-
-  it('downloads high quality videos', async () => {
-    const { getByRole } = render(
-      <VideoProvider value={{ content: video }}>
-        <DownloadDialog open onClose={onClose} />
-      </VideoProvider>
-    )
-
-    const downloadButton = getByRole('button', { name: 'Download' })
-
-    fireEvent.mouseDown(
-      getByRole('button', { name: 'Select a file size Low (197.69 MB)' })
-    )
-    fireEvent.click(getByRole('option', { name: 'High (2.2 GB)' }), {
-      name: 'High'
-    })
-
-    fireEvent.click(getByRole('checkbox'))
-
-    expect(downloadButton).not.toBeDisabled()
-
-    fireEvent.click(getByRole('button', { name: 'Download' }))
-
-    await waitFor(() => {
-      expect(onDownload).toBeCalledWith(
-        video.variant?.downloads[1].url,
         `${video.title[0].value}.mp4`
       )
     })
