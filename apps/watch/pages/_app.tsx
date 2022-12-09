@@ -13,10 +13,9 @@ import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { firebaseClient } from '../src/libs/firebaseClient'
 import { createApolloClient } from '../src/libs/client'
-import '../public/fonts/fonts.css'
-import '../public/styles/carousel.css'
-import '../public/styles/video-js.css'
 import 'swiper/swiper.min.css'
+import '../public/fonts/fonts.css'
+import '../public/styles/video-js.css'
 
 const clientSideEmotionCache = createEmotionCache({})
 

@@ -39,25 +39,23 @@ export function VideoContentPage(): ReactElement {
           nested
         >
           <Paper elevation={0} square sx={{ pt: '20px' }}>
-            <Container maxWidth="xxl">
-              {/* TODO: combine content and container children? */}
-              {children.length > 0 && (
-                <VideosCarousel
-                  videos={children}
-                  renderItem={(props: Parameters<typeof CarouselItem>[0]) => {
-                    return <CarouselItem {...props} />
-                  }}
-                />
-              )}
-              {container != null && container.children.length > 0 && (
-                <VideosCarousel
-                  videos={container.children}
-                  renderItem={(props: Parameters<typeof CarouselItem>[0]) => {
-                    return <CarouselItem {...props} />
-                  }}
-                />
-              )}
-            </Container>
+            {/* TODO: combine content and container children? */}
+            {children.length > 0 && (
+              <VideosCarousel
+                videos={children}
+                renderItem={(props: Parameters<typeof CarouselItem>[0]) => {
+                  return <CarouselItem {...props} />
+                }}
+              />
+            )}
+            {container != null && container.children.length > 0 && (
+              <VideosCarousel
+                videos={container.children}
+                renderItem={(props: Parameters<typeof CarouselItem>[0]) => {
+                  return <CarouselItem {...props} />
+                }}
+              />
+            )}
           </Paper>
         </ThemeProvider>
         <Container maxWidth="xxl">

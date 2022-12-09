@@ -27,7 +27,7 @@ export function CarouselItem({
   // Add onClick
 
   return (
-    <Box>
+    <Box sx={{ width: 338 }}>
       {image != null ? (
         <Image
           src={image}
@@ -39,7 +39,7 @@ export function CarouselItem({
       ) : (
         <Skeleton />
       )}
-      <Typography variant="body1" mb={3}>
+      <Typography variant="body1" mb={3} flexWrap="wrap">
         {videoTitle}
       </Typography>
     </Box>

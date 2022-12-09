@@ -72,12 +72,7 @@ export function Videos({
   return (
     <>
       {layout === 'carousel' && (
-        <VideosCarousel
-          videos={data?.videos ?? []}
-          renderItem={renderItem}
-          onLoadMore={showLoadMore ? handleLoadMore : undefined}
-          loading={loading}
-        />
+        <VideosCarousel videos={data?.videos ?? []} renderItem={renderItem} />
       )}
       {layout === 'grid' && (
         <VideosGrid
