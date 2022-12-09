@@ -21,14 +21,13 @@ const Template: Story = ({ ...args }) => {
               where: {
                 availableVariantLanguageIds: ['529']
               },
-              offset: 0,
-              limit: args.limit ?? undefined,
-              languageId: '529'
+              page: 1,
+              limit: args.limit
             }
           },
           result: {
             data: {
-              videos: videos.slice(0, args.limit)
+              videos: videos
             }
           }
         }
