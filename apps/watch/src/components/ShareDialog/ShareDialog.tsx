@@ -14,7 +14,6 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { createSvgIcon } from '@mui/material/utils'
 import { useTheme } from '@mui/material/styles'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-import { compact } from 'lodash'
 import { useVideo } from '../../libs/videoContext'
 
 interface ShareDialogProps
