@@ -2,10 +2,10 @@ import { Meta, Story } from '@storybook/react'
 import { ComponentProps, useRef } from 'react'
 import Box from '@mui/material/Box'
 import { noop } from 'lodash'
+import videojs from 'video.js'
 import { VideoLabel } from '../../../../../__generated__/globalTypes'
 import { watchConfig } from '../../../../libs/storybook'
 import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
-import '../../../../../public/styles/video-js.css'
 import { VideoProvider } from '../../../../libs/videoContext'
 import { VideoHeroPlayer } from './VideoHeroPlayer'
 
@@ -19,10 +19,15 @@ const Template: Story<
   ComponentProps<typeof VideoHeroPlayer> & { video: VideoContentFields }
 > = ({ ...args }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const playerRef = useRef<videojs.Player>()
   return (
     <VideoProvider value={{ content: args.video }}>
       <Box sx={{ height: '100vh' }}>
-        <VideoHeroPlayer videoRef={videoRef} playVideo={args.playVideo} />
+        <VideoHeroPlayer
+          videoRef={videoRef}
+          playerRef={playerRef}
+          playVideo={args.playVideo}
+        />
       </Box>
     </VideoProvider>
   )

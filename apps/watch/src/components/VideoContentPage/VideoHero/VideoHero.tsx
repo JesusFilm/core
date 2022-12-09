@@ -9,10 +9,10 @@ import Button from '@mui/material/Button'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import AccessTime from '@mui/icons-material/AccessTime'
 import Circle from '@mui/icons-material/Circle'
+import videojs from 'video.js'
 import { useVideo } from '../../../libs/videoContext'
 import { VideoHeroPlayer } from './VideoHeroPlayer'
-
-import 'video.js/dist/video-js.css'
+import { VideoControls } from './VideoControls'
 
 interface VideoHeroProps {
   loading?: boolean
@@ -22,6 +22,7 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
   const { image, variant, children, title } = useVideo()
   const [isPlaying, setIsPlaying] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const playerRef = useRef<videojs.Player>()
 
   function playVideo(): void {
     setIsPlaying(true)
@@ -39,10 +40,19 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
             backgroundImage: `url(${image as string})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            height: 776
+            height: 776,
+            position: 'relative',
+            '> .video-js .vjs-big-play-button': {
+              display: 'none'
+            }
           }}
         >
-          <VideoHeroPlayer videoRef={videoRef} playVideo={playVideo} />
+          <VideoHeroPlayer
+            videoRef={videoRef}
+            playerRef={playerRef}
+            playVideo={playVideo}
+          />
+          <VideoControls playerRef={playerRef} />
           {!isPlaying && (
             <>
               <Container
