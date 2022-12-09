@@ -2,13 +2,12 @@ import { ReactElement } from 'react'
 import { GetStaticProps } from 'next'
 import Box from '@mui/material/Box'
 import { gql } from '@apollo/client'
-
 import { HomeHero } from '../src/components/Hero'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { HomeVideo, HomeVideos } from '../src/components/HomeVideos'
 import { FilmType } from '../src/components/HomeVideos/Card'
 import { createApolloClient } from '../src/libs/client'
-import { GetHomeVideo } from '../__generated__/GetHomeVideo'
+import { GetHomeVideo, GetHomeVideo_video } from '../__generated__/GetHomeVideo'
 import { IntroText } from '../src/components/IntroText'
 
 export const GET_HOME_VIDEO = gql`
@@ -59,14 +58,20 @@ export const videos: HomeVideo[] = [
 ]
 
 interface HomePageProps {
-  data: GetHomeVideo[]
+  data: Array<GetHomeVideo | null>
 }
 
 function HomePage({ data }: HomePageProps): ReactElement {
+  const videoArray: GetHomeVideo_video[] = []
+  data.forEach((item) => {
+    if (item?.video != null) {
+      videoArray.push(item.video)
+    }
+  })
   return (
     <PageWrapper hero={<HomeHero />}>
       <Box sx={{ paddingY: '4rem' }}>
-        <HomeVideos data={data?.map(({ video }) => video)} videos={videos} />
+        <HomeVideos data={videoArray} videos={videos} />
       </Box>
       <IntroText />
     </PageWrapper>

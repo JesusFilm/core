@@ -13,7 +13,7 @@ export interface HomeVideo {
 
 interface VideoListGridProps {
   videos: HomeVideo[] | undefined
-  data: GetHomeVideo_video[] | undefined
+  data: GetHomeVideo_video[]
   loading?: boolean
 }
 
@@ -30,7 +30,7 @@ export function HomeVideos({ data, videos }: VideoListGridProps): ReactElement {
         pt={0}
         px="76px"
       >
-        {(data?.length ?? 0) > 0 &&
+        {data.length > 0 &&
           videos?.map((item, index) => (
             <Grid
               item
@@ -56,7 +56,7 @@ export function HomeVideos({ data, videos }: VideoListGridProps): ReactElement {
               }}
             >
               <HomeVideoCard
-                video={data?.find((video) => video.id === item.id)}
+                video={data.find((video) => video.id === item.id)}
                 designation={item?.designation}
               />
             </Grid>
