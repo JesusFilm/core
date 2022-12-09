@@ -1,7 +1,7 @@
-import Box from '@mui/material/Box'
 import { Story, Meta } from '@storybook/react'
-import { watchConfig } from '../../../../libs/storybook'
-import { videos } from '../../testData'
+import Grid from '@mui/material/Grid'
+import { watchConfig } from '../../../libs/storybook/config'
+import { videos } from '../../Videos/testData'
 import { VideoGridCard } from './VideoGridCard'
 
 const VideoGridCardStory = {
@@ -12,9 +12,9 @@ const VideoGridCardStory = {
 
 const Template: Story = ({ ...args }) => {
   return (
-    <Box sx={{ maxWidth: '338px', display: 'flex', alignItems: 'flex-start' }}>
+    <Grid item md={3} sm={6} xs={6} lg={2} xl={2}>
       <VideoGridCard {...args} />
-    </Box>
+    </Grid>
   )
 }
 

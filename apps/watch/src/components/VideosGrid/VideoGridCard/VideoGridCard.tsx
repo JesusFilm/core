@@ -13,7 +13,7 @@ import { ReactElement } from 'react'
 import { compact } from 'lodash'
 import Image from 'next/image'
 
-import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
+import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 
 export interface VideoGridCardProps {
   video?: VideoChildFields

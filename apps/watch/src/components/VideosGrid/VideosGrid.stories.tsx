@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
-import { watchConfig } from '../../../libs/storybook'
-import { videos } from '../testData'
+import { watchConfig } from '../../libs/storybook/config'
+import { videos } from '../Videos/testData'
 import { VideosGrid } from './VideosGrid'
 
 const VideosGridStory = {
@@ -16,7 +16,7 @@ const Template: Story = ({ ...args }) => {
 export const Default = Template.bind({})
 
 Default.args = {
-  videos: videos
+  videos
 }
 
 export default VideosGridStory as Meta
