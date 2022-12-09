@@ -62,6 +62,7 @@ export function VideoContent(): ReactElement {
         />
         {studyQuestions?.length !== 0 && (
           <Tab
+            data-testid="discussion"
             label={
               <>
                 <Typography
