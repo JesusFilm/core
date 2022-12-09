@@ -1,6 +1,6 @@
 import { secondsToTimeFormatTrimmed } from '@core/shared/ui/timeFormat'
 import { render } from '@testing-library/react'
-import { videos } from '../../testData'
+import { videos } from '../../Videos/testData'
 import { VideoGridCard } from './VideoGridCard'
 
 describe('VideoGridCard', () => {

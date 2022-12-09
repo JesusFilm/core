@@ -6,7 +6,7 @@ import 'video.js/dist/video-js.css'
 
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
-import { VideosGrid } from '../Videos/VideosGrid/VideosGrid'
+import { VideosGrid } from '../VideosGrid/VideosGrid'
 import { useVideo } from '../../libs/videoContext'
 import { ContainerDescription } from './ContainerDescription'
 import { ContainerHero } from './ContainerHero'
