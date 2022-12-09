@@ -47,7 +47,7 @@ export function VideosGrid({
         container
         rowSpacing="10px"
         columnSpacing="16px"
-        sx={{ mb: 17 }}
+        sx={{ mb: 16 }}
         data-testid="videos-grid"
       >
         {(videos?.length ?? 0) > 0 &&

@@ -89,16 +89,8 @@ export function VideoGridCard({
               </CardMedia>
             </Box>
 
-            <CardContent sx={{ px: 0, pt: '8px', pb: '20px' }}>
-              <Typography
-                variant="h6"
-                sx={{
-                  cursor: 'pointer',
-                  color: 'rgba(29, 28, 28, 0.9)'
-                }}
-              >
-                {video?.title[0].value}
-              </Typography>
+            <CardContent sx={{ px: 0, pt: 3, pb: 5 }}>
+              <Typography variant="h6">{video?.title[0].value}</Typography>
             </CardContent>
           </CardActionArea>
         </Link>
