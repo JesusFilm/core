@@ -1,4 +1,5 @@
-import { ComponentStory, Meta } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
+import { VideoProvider } from '../../../libs/videoContext'
 import { watchConfig } from '../../../libs/storybook'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
@@ -10,8 +11,10 @@ const ContainerHeroStory = {
   title: 'Watch/VideoContainerPage/ContainerHero'
 }
 
-const Template: ComponentStory<typeof ContainerHero> = ({ ...args }) => (
-  <ContainerHero {...args} />
+const Template: Story = ({ ...args }) => (
+  <VideoProvider value={{ content: args.video }}>
+    <ContainerHero />
+  </VideoProvider>
 )
 
 const defaultVideo = {
