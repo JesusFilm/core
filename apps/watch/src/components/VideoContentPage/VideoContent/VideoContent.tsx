@@ -32,6 +32,7 @@ export function VideoContent(): ReactElement {
         allowScrollButtonsMobile
         sx={{
           mb: { xs: 5, md: 10 },
+          // Styling to fade out tabs with long label
           '> .MuiTabs-scroller': {
             '> .MuiTabs-indicator': {
               zIndex: 1
@@ -96,8 +97,7 @@ export function VideoContent(): ReactElement {
             direction="column"
             spacing={4}
             sx={{
-              pt: 2,
-              pb: 2
+              py: 2
             }}
           >
             {studyQuestions?.map((question, index: number) => (

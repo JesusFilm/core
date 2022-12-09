@@ -7,7 +7,7 @@ import { VideoContent } from './VideoContent'
 const VideoContentStory = {
   ...watchConfig,
   component: VideoContent,
-  title: 'Watch/Video/VideoContent'
+  title: 'Watch/VideoContentPage/VideoContent'
 }
 
 const Template: Story = () => (
