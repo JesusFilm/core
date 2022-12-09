@@ -1,5 +1,5 @@
 import client from './client'
 
-export { createApolloClient } from './client'
+export { useApolloClient, createApolloClient } from './client'
 
 export default client
