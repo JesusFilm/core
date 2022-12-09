@@ -3,11 +3,6 @@ export const secondsToTimeFormat = (seconds: number): string => {
   return date.toISOString().substring(11, 19)
 }
 
-export const secondsToHoursMinutes = (seconds: number): string => {
-  const time = secondsToTimeFormat(seconds).split(':')
-  return `${time[0]}:${time[1]}`
-}
-
 export const secondsToMinutes = (seconds: number): number => {
   return Math.round(seconds / 60)
 }

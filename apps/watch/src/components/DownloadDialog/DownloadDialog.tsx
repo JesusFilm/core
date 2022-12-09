@@ -51,7 +51,7 @@ export function DownloadDialog({
     id: '529',
     name: [{ __typename: 'Translation', value: 'English' }]
   }
-  const time = secondsToTimeFormat(variant?.duration ?? 0).split(':')
+  const time = secondsToTimeFormat(variant?.duration ?? 0)
 
   useEffect(() => {
     if (percentage === 100) {
@@ -122,7 +122,9 @@ export function DownloadDialog({
                   }}
                 >
                   <PlayArrowRoundedIcon />
-                  <Typography>{`${time[0]}:${time[1]}`}</Typography>
+                  <Typography>{`${time.split(':')[0]}${time.slice(
+                    2
+                  )}`}</Typography>
                 </Stack>
               </Box>
             </>
@@ -174,7 +176,6 @@ export function DownloadDialog({
                     control={
                       <Checkbox
                         name="terms"
-                        defaultChecked
                         checked={values.terms}
                         onChange={handleChange}
                       />
