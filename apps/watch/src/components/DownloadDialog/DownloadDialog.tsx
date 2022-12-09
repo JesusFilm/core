@@ -19,8 +19,6 @@ import { useTheme } from '@mui/material/styles'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { Dialog } from '@core/shared/ui/Dialog'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 
 import { useVideo } from '../../libs/videoContext'
 
@@ -53,6 +51,7 @@ export function DownloadDialog({
     id: '529',
     name: [{ __typename: 'Translation', value: 'English' }]
   }
+  const time = secondsToTimeFormat(variant?.duration ?? 0).split(':')
 
   useEffect(() => {
     if (percentage === 100) {
@@ -94,10 +93,7 @@ export function DownloadDialog({
           sx={{ mt: { xs: 0, sm: 1 }, mb: { xs: 0, sm: 5 } }}
         >
           {image != null && (
-            <ThemeProvider
-              themeName={ThemeName.website}
-              themeMode={ThemeMode.dark}
-            >
+            <>
               <Box
                 sx={{
                   display: { xs: 'none', sm: 'flex' },
@@ -119,19 +115,17 @@ export function DownloadDialog({
                   sx={{
                     position: 'absolute',
                     color: 'primary.contrastText',
-                    backgroundColor: 'background.default',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     padding: '5px 9px',
                     borderRadius: 2,
                     m: 1
                   }}
                 >
                   <PlayArrowRoundedIcon />
-                  <Typography>
-                    {secondsToTimeFormat(variant?.duration ?? 0)}
-                  </Typography>
+                  <Typography>{`${time[0]}:${time[1]}`}</Typography>
                 </Stack>
               </Box>
-            </ThemeProvider>
+            </>
           )}
           <Stack>
             <Typography variant="h6" sx={{ mb: 1 }}>
@@ -200,7 +194,7 @@ export function DownloadDialog({
                     <CircularProgress
                       variant="determinate"
                       value={percentage}
-                      sx={{ color: 'primary.contrastText', ml: 1 }}
+                      sx={{ color: 'action.disabled', ml: 1 }}
                       // Mui has style that overrides sx. Use style
                       style={{ width: '20px', height: '20px' }}
                     />
