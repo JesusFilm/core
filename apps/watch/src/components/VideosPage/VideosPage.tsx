@@ -27,6 +27,7 @@ export const GET_VIDEOS = gql`
 `
 
 export const limit = 20
+export const defaultFilter: VideosFilter = {}
 
 function isAtEnd(count: number, limit: number, previousCount: number): boolean {
   if (count === previousCount) return true
@@ -37,7 +38,7 @@ export function VideosPage(): ReactElement {
   const languageContext = useLanguage()
   const [isEnd, setIsEnd] = useState(false)
   const [previousCount, setPreviousCount] = useState(0)
-  const [filter] = useState<VideosFilter>({})
+  const [filter] = useState<VideosFilter>(defaultFilter)
   const { data, loading, fetchMore } = useQuery<GetVideos>(GET_VIDEOS, {
     variables: {
       where: filter,
