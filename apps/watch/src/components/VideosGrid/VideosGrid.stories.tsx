@@ -16,7 +16,7 @@ const Template: Story = ({ ...args }) => {
 export const Default = Template.bind({})
 
 Default.args = {
-  videos
+  videos: videos.slice(0, 8)
 }
 
 export default VideosGridStory as Meta
