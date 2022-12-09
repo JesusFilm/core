@@ -1,17 +1,13 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../libs/storybook'
-import { CarouselItem } from '../Video/CarouselItem'
-import { videos } from './testData'
-import { GET_VIDEOS, Videos } from './Videos'
+import { videos } from '../Videos/testData'
+import { GET_VIDEOS, VideosPage } from './VideosPage'
 
 const VideosStory = {
   ...watchConfig,
-  component: Videos,
-  title: 'Watch/Videos',
-  argTypes: {
-    fetchMore: { action: 'fetched more' }
-  }
+  component: VideosPage,
+  title: 'Watch/VideosPage'
 }
 
 const Template: Story = ({ ...args }) => {
@@ -38,27 +34,13 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <Videos
-        renderItem={(props: Parameters<typeof CarouselItem>[0]) => (
-          <CarouselItem {...props} />
-        )}
-        filter={{ availableVariantLanguageIds: ['529'] }}
-        limit={args.limit ?? undefined}
-        layout={args.layout}
-      />
+      <VideosPage />
     </MockedProvider>
   )
 }
 
-export const Carousel = Template.bind({})
-Carousel.args = {
-  layout: 'carousel',
-  limit: 8
-}
-
-export const Grid = Template.bind({})
-Grid.args = {
-  layout: 'grid',
+export const Default = Template.bind({})
+Default.args = {
   limit: 20
 }
 
