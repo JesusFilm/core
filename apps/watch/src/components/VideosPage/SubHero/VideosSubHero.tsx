@@ -7,11 +7,11 @@ function VideosSubHeroStats(): ReactElement {
   return (
     <Stack direction="row" justifyContent="space-around" spacing={10}>
       <div>
-        <Typography variant="h3">724</Typography>
+        <Typography variant="h3">134</Typography>
         <Typography variant="overline">Videos</Typography>
       </div>
       <div>
-        <Typography variant="h3">2,042</Typography>
+        <Typography variant="h3">140</Typography>
         <Typography variant="overline">Languages</Typography>
       </div>
       <div>
