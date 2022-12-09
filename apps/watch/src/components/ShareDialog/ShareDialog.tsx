@@ -14,6 +14,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { createSvgIcon } from '@mui/material/utils'
 import { useTheme } from '@mui/material/styles'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+import { compact } from 'lodash'
 import { useVideo } from '../../libs/videoContext'
 
 interface ShareDialogProps
@@ -26,7 +27,8 @@ export function ShareDialog({
   ...dialogProps
 }: ShareDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const { description, snippet, id, image, title, children } = useVideo()
+  const { description, snippet, id, image, title, children, slug, variant } =
+    useVideo()
   const [value, setValue] = useState(0)
   const theme = useTheme()
 
@@ -44,9 +46,9 @@ export function ShareDialog({
   const shareLink =
     routes != null
       ? `${
-          process.env.NEXT_PUBLIC_WATCH_URL ??
-          'https://watch-jesusfilm.vercel.app'
-        }/${routes?.join('/')}`.trim()
+          // process.env.NEXT_PUBLIC_WATCH_URL ??
+          'https://watch-git-22-90-je-feat-update-seo-images-shar-be22f3-jesusfilm.vercel.app'
+        }/${slug}/${variant?.language?.name[0]?.value.toLowerCase() ?? ''}`
       : ''
 
   const handleShareLinkClick = async (): Promise<void> => {
