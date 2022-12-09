@@ -45,8 +45,8 @@ export function ShareDialog({
   const shareLink =
     routes != null
       ? `${
-          // process.env.NEXT_PUBLIC_WATCH_URL ??
-          'https://watch-git-22-90-je-feat-update-seo-images-shar-be22f3-jesusfilm.vercel.app'
+          process.env.NEXT_PUBLIC_WATCH_URL ??
+          'https://watch-jesusfilm.vercel.app'
         }/${slug}/${variant?.language?.name[0]?.value.toLowerCase() ?? ''}`
       : ''
 
