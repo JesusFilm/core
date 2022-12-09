@@ -28,11 +28,10 @@ export function VideoGridCard({
     <Card
       sx={{
         boxShadow: 0,
-        bgcolor: 'rgba(0,0,0,0)',
         borderRadius: '8px'
       }}
     >
-      {video == null && (
+      {video == null ? (
         <>
           <CardMedia
             component="img"
@@ -43,50 +42,53 @@ export function VideoGridCard({
             <LinearProgress />
           </CardContent>
         </>
-      )}
-      {video != null && (
+      ) : (
         <Link
           href={`/${compact([routePrefix, video.variant?.slug]).join('/')}`}
           passHref
         >
-          <CardActionArea aria-label="collection-page-video-card">
-            <Box
-              sx={{
-                position: 'relative'
-              }}
-            >
-              {/* <CardMedia
-                sx={{ borderRadius: '8px' }}
-                component="img"
-                image={video.image ?? ''}
-              /> */}
-              <Image
-                src={video.image ?? ''}
-                alt={video.imageAlt[0].value}
-                width="100%"
-                height="160px"
-                // objectFit="cover"
-                style={{ borderRadius: '8' }}
-              />
-              <Box
+          <CardActionArea
+            aria-label="collection-page-video-card"
+            sx={{
+              height: '100%',
+              width: '100%'
+            }}
+          >
+            <Box sx={{ position: 'relative', alignContent: 'end' }}>
+              <CardMedia
                 sx={{
-                  position: 'absolute',
-                  bottom: 5,
-                  right: 5,
-                  bgcolor: 'rgba(0, 0, 0, 0.5)',
-                  color: 'primary.contrastText',
-                  borderRadius: '8px',
-                  padding: '8px'
+                  height: { xs: '168px', sm: '146', md: '160px' },
+                  width: 'auto'
                 }}
               >
-                <Stack direction="row" sx={{ alignItems: 'center' }}>
+                <Image
+                  src={video.image ?? ''}
+                  alt={video.imageAlt[0].value}
+                  layout="fill"
+                  objectFit="cover"
+                  style={{ borderRadius: '8px' }}
+                />
+                <Stack
+                  direction="row"
+                  sx={{
+                    alignItems: 'center',
+                    position: 'absolute',
+                    bottom: 5,
+                    right: 5,
+                    bgcolor: 'rgba(0, 0, 0, 0.5)',
+                    color: 'primary.contrastText',
+                    borderRadius: '8px',
+                    padding: '8px'
+                  }}
+                >
                   <PlayArrow sx={{ fontSize: '1rem' }} />
                   <Typography variant="body1" sx={{ lineHeight: '1rem' }}>
                     {secondsToTimeFormatTrimmed(video.variant?.duration ?? 0)}
                   </Typography>
                 </Stack>
-              </Box>
+              </CardMedia>
             </Box>
+
             <CardContent sx={{ px: 0, pt: '8px', pb: '20px' }}>
               <Typography
                 variant="h6"
