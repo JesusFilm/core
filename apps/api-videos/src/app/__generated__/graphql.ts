@@ -12,12 +12,6 @@ export enum IdType {
     slug = "slug"
 }
 
-export enum VideoType {
-    episode = "episode",
-    standalone = "standalone",
-    playlist = "playlist"
-}
-
 export enum VideoLabel {
     collection = "collection",
     episode = "episode",
@@ -45,6 +39,12 @@ export class Translation {
     primary: boolean;
 }
 
+export class LanguageWithSlug {
+    __typename?: 'LanguageWithSlug';
+    language?: Nullable<Language>;
+    slug?: Nullable<string>;
+}
+
 export class Video {
     __typename?: 'Video';
     id: string;
@@ -58,9 +58,10 @@ export class Video {
     image?: Nullable<string>;
     imageAlt: Translation[];
     variantLanguages: Language[];
-    slug: Translation[];
+    slug: string;
     noIndex?: Nullable<boolean>;
     children: Video[];
+    variantLanguagesWithSlug: LanguageWithSlug[];
     variant?: Nullable<VideoVariant>;
 }
 
@@ -79,6 +80,7 @@ export class VideoVariant {
     duration: number;
     language: Language;
     subtitle: Translation[];
+    slug: string;
 }
 
 export class Language {

@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { VideoResolver } from './video.resolver'
+import { IdType } from '../../__generated__/graphql'
+import { LanguageWithSlugResolver, VideoResolver } from './video.resolver'
 import { VideoService } from './video.service'
 
 describe('VideoResolver', () => {
@@ -19,6 +20,12 @@ describe('VideoResolver', () => {
         primary: false,
         videoId: '529'
       }
+    ],
+    slug: 'video-slug',
+    variant: [
+      {
+        slug: 'jesus/english'
+      }
     ]
   }
 
@@ -27,9 +34,9 @@ describe('VideoResolver', () => {
       provide: VideoService,
       useFactory: () => ({
         filterAll: jest.fn(() => [video, video]),
-        filterChildren: jest.fn(() => [video, video]),
         getVideosByIds: jest.fn(() => [video, video]),
-        getVideo: jest.fn(() => video)
+        getVideo: jest.fn(() => video),
+        getVideoBySlug: jest.fn(() => video)
       })
     }
     const module: TestingModule = await Test.createTestingModule({
@@ -88,14 +95,14 @@ describe('VideoResolver', () => {
   })
 
   describe('video', () => {
+    const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
     it('return a video', async () => {
-      const info = { fieldNodes: [{ selectionSet: { selections: [] } }] }
       expect(await resolver.video(info, '20615')).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', undefined)
     })
 
     it('return a filtered video', async () => {
-      const info = {
+      const filteredInfo = {
         fieldNodes: [
           {
             selectionSet: {
@@ -114,8 +121,15 @@ describe('VideoResolver', () => {
           }
         ]
       }
-      expect(await resolver.video(info, '20615')).toEqual(video)
+      expect(await resolver.video(filteredInfo, '20615')).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', 'en')
+    })
+
+    it('should return video with slug as idtype', async () => {
+      expect(await resolver.video(info, 'jesus/english', IdType.slug)).toEqual(
+        video
+      )
+      expect(service.getVideoBySlug).toHaveBeenCalledWith('jesus/english')
     })
   })
 
@@ -151,6 +165,24 @@ describe('VideoResolver', () => {
         })
       ).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', undefined)
+    })
+  })
+})
+
+describe('LangugageWithSlugResolver', () => {
+  let resolver: LanguageWithSlugResolver
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [LanguageWithSlugResolver]
+    }).compile()
+    resolver = module.get<LanguageWithSlugResolver>(LanguageWithSlugResolver)
+  })
+
+  it('should resolve field language with slug', async () => {
+    expect(await resolver.language({ languageId: 'id' })).toEqual({
+      __typename: 'Language',
+      id: 'id'
     })
   })
 })

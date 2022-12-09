@@ -1,10 +1,11 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-
 import {
-  GetVideo_video as Video,
-  GetVideo_video_children
-} from '../../../__generated__/GetVideo'
+  VideoContentFields,
+  VideoContentFields_children
+} from '../../../__generated__/VideoContentFields'
+import { VideoProvider } from '../../libs/videoContext'
+
 import { videos } from '../Videos/testData'
 import { ShareDialog } from './ShareDialog'
 
@@ -12,24 +13,48 @@ const onClose = jest.fn()
 const originalEnv = process.env
 const routes = ['the-story-of-jesus-for-children']
 
-const video: Video = {
+const video: VideoContentFields = {
   ...videos[0],
   variant: {
     __typename: 'VideoVariant',
+    id: 'videoVariantId',
     duration: videos[0].variant?.duration ?? 0,
-    hls: 'https://arc.gt/4jz75'
+    language: {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'en'
+        }
+      ]
+    },
+    hls: 'https://arc.gt/4jz75',
+    slug: `${videos[0].slug}/english`
   },
   description: videos[0].snippet,
   studyQuestions: [],
-  children: [],
-  variantLanguages: []
+  children: []
 }
 
 describe('ShareDialog', () => {
+  jest.resetModules()
+  beforeEach(() => {
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_WATCH_URL: 'http://localhost:4300'
+    }
+  })
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
   it('closes the modal on cancel icon click', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
-        <ShareDialog video={video} open routes={routes} onClose={onClose} />
+        <VideoProvider value={{ content: video }}>
+          <ShareDialog open routes={routes} onClose={onClose} />
+        </VideoProvider>
       </SnackbarProvider>
     )
     fireEvent.click(getByTestId('dialog-close-button'))
@@ -39,20 +64,24 @@ describe('ShareDialog', () => {
   it('only shows share link on playlist video', () => {
     const { getByRole, queryAllByRole } = render(
       <SnackbarProvider>
-        <ShareDialog
-          video={{
-            ...video,
-            children: [{ id: '1' }] as unknown as GetVideo_video_children[]
+        <VideoProvider
+          value={{
+            content: {
+              ...video,
+              children: [
+                { id: '1' }
+              ] as unknown as VideoContentFields_children[]
+            }
           }}
-          routes={routes}
-          open
-          onClose={onClose}
-        />
+        >
+          <ShareDialog routes={routes} open onClose={onClose} />
+        </VideoProvider>
       </SnackbarProvider>
     )
 
-    const link =
-      'https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children'
+    const link = `${
+      process.env.NEXT_PUBLIC_WATCH_URL as string
+    }/the-story-of-jesus-for-children`
     expect(getByRole('textbox')).toHaveValue(link)
     expect(getByRole('button', { name: 'Copy Link' })).toBeInTheDocument()
     expect(queryAllByRole('tab')).toHaveLength(0)
@@ -77,7 +106,9 @@ describe('ShareDialog', () => {
 
       const { getByRole } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} routes={routes} open onClose={onClose} />
+          <VideoProvider value={{ content: video }}>
+            <ShareDialog routes={routes} open onClose={onClose} />
+          </VideoProvider>
         </SnackbarProvider>
       )
 
@@ -98,7 +129,9 @@ describe('ShareDialog', () => {
 
       const { getByRole } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} routes={routes} open onClose={onClose} />
+          <VideoProvider value={{ content: video }}>
+            <ShareDialog routes={routes} open onClose={onClose} />
+          </VideoProvider>
         </SnackbarProvider>
       )
 
@@ -130,7 +163,9 @@ describe('ShareDialog', () => {
 
       const { getByRole } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} routes={routes} open onClose={onClose} />
+          <VideoProvider value={{ content: video }}>
+            <ShareDialog routes={routes} open onClose={onClose} />
+          </VideoProvider>
         </SnackbarProvider>
       )
 
@@ -149,7 +184,9 @@ describe('ShareDialog', () => {
 
       const { getByRole } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} routes={routes} open onClose={onClose} />
+          <VideoProvider value={{ content: video }}>
+            <ShareDialog routes={routes} open onClose={onClose} />
+          </VideoProvider>
         </SnackbarProvider>
       )
 
@@ -191,7 +228,9 @@ describe('ShareDialog', () => {
         'https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children'
       const { getByRole, getByText } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} routes={routes} open onClose={onClose} />
+          <VideoProvider value={{ content: video }}>
+            <ShareDialog routes={routes} open onClose={onClose} />
+          </VideoProvider>
         </SnackbarProvider>
       )
       expect(getByRole('textbox')).toHaveValue(link)
@@ -205,11 +244,13 @@ describe('ShareDialog', () => {
     })
 
     it('should copy embed code', async () => {
-      const code = `<div class="arc-cont"><iframe src="https://api.arclight.org/videoPlayerUrl?refId=1_529-cl-0-0&playerStyle=default" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe><style>.arc-cont{position:relative;display:block;margin:10px auto;width:100%}.arc-cont:after{padding-top:59%;display:block;content:""}.arc-cont>iframe{position:absolute;top:0;bottom:0;right:0;left:0;width:98%;height:98%;border:0}</style></div>`
+      const code = `<div class="arc-cont"><iframe src="https://api.arclight.org/videoPlayerUrl?refId=1_529-jf-0-0&playerStyle=default" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe><style>.arc-cont{position:relative;display:block;margin:10px auto;width:100%}.arc-cont:after{padding-top:59%;display:block;content:""}.arc-cont>iframe{position:absolute;top:0;bottom:0;right:0;left:0;width:98%;height:98%;border:0}</style></div>`
 
       const { getByRole, getByText } = render(
         <SnackbarProvider>
-          <ShareDialog video={video} routes={routes} open onClose={onClose} />
+          <VideoProvider value={{ content: video }}>
+            <ShareDialog routes={routes} open onClose={onClose} />
+          </VideoProvider>
         </SnackbarProvider>
       )
 

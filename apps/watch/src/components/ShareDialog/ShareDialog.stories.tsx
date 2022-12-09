@@ -2,10 +2,12 @@ import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { noop } from 'lodash'
-
-import { GetVideo_video as Video } from '../../../__generated__/GetVideo'
-import { GetVideoSiblings_video_children } from '../../../__generated__/GetVideoSiblings'
+import {
+  VideoContentFields,
+  VideoContentFields_children
+} from '../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../libs/storybook'
+import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/testData'
 import { ShareDialog } from './ShareDialog'
 
@@ -18,23 +20,40 @@ const ShareDialogStory = {
   }
 }
 
-const video: Video = {
+const video: VideoContentFields = {
   ...videos[0],
   variant: {
+    id: 'videoVariantId',
     __typename: 'VideoVariant',
     duration: videos[0].variant?.duration ?? 0,
-    hls: 'https://arc.gt/4jz75'
+    hls: 'https://arc.gt/4jz75',
+    language: {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          __typename: 'Translation',
+          value: 'English'
+        }
+      ]
+    },
+    slug: `${videos[0].slug}/english`
   },
   description: videos[0].snippet,
   studyQuestions: [],
-  children: [],
-  variantLanguages: []
+  children: []
 }
 
 const routes = ['the-story-of-jesus-for-children']
 
-const Template: Story<ComponentProps<typeof ShareDialog>> = ({ ...args }) => {
-  return <ShareDialog {...args} />
+const Template: Story<
+  ComponentProps<typeof ShareDialog> & { video: VideoContentFields }
+> = ({ ...args }) => {
+  return (
+    <VideoProvider value={{ content: args.video }}>
+      <ShareDialog {...args} />
+    </VideoProvider>
+  )
 }
 
 export const Basic = Template.bind({})
@@ -43,7 +62,7 @@ Basic.args = {
   onClose: noop,
   video: {
     ...video,
-    children: [{ id: '1' }] as unknown as GetVideoSiblings_video_children[]
+    children: [{ id: '1' }] as unknown as VideoContentFields_children[]
   },
   routes
 }
