@@ -1,13 +1,13 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../libs/storybook'
-import { videos } from './testData'
-import { GET_VIDEOS, Videos } from './Videos'
+import { videos } from '../Videos/testData'
+import { GET_VIDEOS, VideosPage } from './VideosPage'
 
 const VideosStory = {
   ...watchConfig,
-  component: Videos,
-  title: 'Watch/Videos'
+  component: VideosPage,
+  title: 'Watch/VideosPage'
 }
 
 const Template: Story = ({ ...args }) => {
@@ -33,24 +33,13 @@ const Template: Story = ({ ...args }) => {
         }
       ]}
     >
-      <Videos
-        filter={{ availableVariantLanguageIds: ['529'] }}
-        layout={args.layout}
-        variant={args.variant}
-      />
+      <VideosPage />
     </MockedProvider>
   )
 }
 
-export const Carousel = Template.bind({})
-Carousel.args = {
-  layout: 'carousel',
-  limit: 8
-}
-
-export const Grid = Template.bind({})
-Grid.args = {
-  layout: 'grid',
+export const Default = Template.bind({})
+Default.args = {
   limit: 20
 }
 

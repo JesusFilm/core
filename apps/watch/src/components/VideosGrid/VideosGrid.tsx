@@ -5,7 +5,7 @@ import AddRounded from '@mui/icons-material/AddRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { deepmerge } from '@mui/utils'
 import { getTheme, ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
+import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideoGridCard } from './VideoGridCard'
 
 interface VideosGridProps {
