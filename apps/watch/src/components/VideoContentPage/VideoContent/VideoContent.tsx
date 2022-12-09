@@ -121,7 +121,11 @@ export function VideoContent(): ReactElement {
                 >
                   <Typography variant="h6">{index + 1}</Typography>
                 </Box>
-                <Typography key={index} variant="body1" color="text.secondary">
+                <Typography
+                  key={index}
+                  variant="subtitle1"
+                  color="text.secondary"
+                >
                   {question.value}
                 </Typography>
               </Stack>
