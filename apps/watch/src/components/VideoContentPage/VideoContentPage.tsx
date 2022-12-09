@@ -18,7 +18,7 @@ import { VideoHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { useVideo } from '../../libs/videoContext'
-import { VideosCarousel } from '../Videos/VideosCarousel/VideosCarousel'
+import { VideosCarousel } from '../VideosCarousel/VideosCarousel'
 import { CarouselItem } from '../Video/CarouselItem/CarouselItem'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos

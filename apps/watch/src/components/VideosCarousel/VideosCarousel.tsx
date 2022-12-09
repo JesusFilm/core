@@ -6,7 +6,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
 import { useTheme } from '@mui/material/styles'
 
-import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
+import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 
 interface VideosCarouselProps {
   videos: VideoChildFields[]
@@ -33,8 +33,10 @@ export function VideosCarousel({
     display: { xs: 'none', xl: overflowSlides ? 'flex' : 'none' },
     width: 56,
     height: '100%',
+    color: 'primary.contrastText',
+    backgroundColor: 'rgba(19, 17, 17, 0.25)',
     '&:hover': {
-      backgroundColor: 'rgba(19, 17, 17, 0.26)'
+      backgroundColor: 'rgba(19, 17, 17, 0.50)'
     },
     '&.swiper-button-disabled': {
       display: 'none'
