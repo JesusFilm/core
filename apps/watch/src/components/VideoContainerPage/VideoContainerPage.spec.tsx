@@ -33,12 +33,14 @@ const video = {
       id: 'child.id',
       slug: 'slug',
       image: 'image url',
+      imageAlt: [{ value: 'image alt' }],
       variant: {
         duration: 1
       },
       title: [{ value: 'child title' }]
     } as unknown as VideoContentFields_children
-  ]
+  ],
+  slug: 'video-slug'
 } as unknown as VideoContentFields
 
 describe('VideoContainerPage', () => {
@@ -46,7 +48,7 @@ describe('VideoContainerPage', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: video }}>
-          <VideoContainerPage content={video} />
+          <VideoContainerPage />
         </VideoProvider>
       </SnackbarProvider>
     )
@@ -57,7 +59,7 @@ describe('VideoContainerPage', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: video }}>
-          <VideoContainerPage content={video} />
+          <VideoContainerPage />
         </VideoProvider>
       </SnackbarProvider>
     )
@@ -68,7 +70,7 @@ describe('VideoContainerPage', () => {
     const { getByRole, getByLabelText } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: video }}>
-          <VideoContainerPage content={video} />
+          <VideoContainerPage />
         </VideoProvider>
       </SnackbarProvider>
     )
@@ -83,7 +85,7 @@ describe('VideoContainerPage', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: video }}>
-          <VideoContainerPage content={video} />
+          <VideoContainerPage />
         </VideoProvider>
       </SnackbarProvider>
     )

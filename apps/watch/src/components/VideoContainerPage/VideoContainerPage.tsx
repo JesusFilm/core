@@ -4,21 +4,16 @@ import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import 'video.js/dist/video-js.css'
 
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { VideosGrid } from '../Videos/VideosGrid/VideosGrid'
+import { useVideo } from '../../libs/videoContext'
 import { ContainerDescription } from './ContainerDescription'
 import { ContainerHero } from './ContainerHero'
 
-interface VideoContainerPageProps {
-  content: VideoContentFields
-}
-
 // Usually Series or Collection Videos
-export function VideoContainerPage({
-  content
-}: VideoContainerPageProps): ReactElement {
+export function VideoContainerPage(): ReactElement {
+  const { snippet, children, slug } = useVideo()
   const router = useRouter()
   const [openShare, setOpenShare] = useState(false)
   const routeArray: string[] = []
@@ -32,21 +27,19 @@ export function VideoContainerPage({
   }
 
   return (
-    <PageWrapper hero={<ContainerHero video={content} />}>
-      {content != null && (
-        <Container maxWidth="xxl">
-          <ContainerDescription
-            value={content.snippet[0].value}
-            setOpenShare={() => setOpenShare(true)}
-          />
-          <ShareDialog
-            open={openShare}
-            routes={routeArray}
-            onClose={() => setOpenShare(false)}
-          />
-          <VideosGrid videos={content.children} routePrefix={content.slug} />
-        </Container>
-      )}
+    <PageWrapper hero={<ContainerHero />}>
+      <Container maxWidth="xxl">
+        <ContainerDescription
+          value={snippet[0].value}
+          setOpenShare={() => setOpenShare(true)}
+        />
+        <ShareDialog
+          open={openShare}
+          routes={routeArray}
+          onClose={() => setOpenShare(false)}
+        />
+        <VideosGrid videos={children} routePrefix={slug} />
+      </Container>
       <Divider />
     </PageWrapper>
   )

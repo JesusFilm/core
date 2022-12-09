@@ -7,18 +7,12 @@ import { ReactElement } from 'react'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import IconButton from '@mui/material/IconButton'
 
-import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { HeroOverlay } from '../../HeroOverlay'
+import { useVideo } from '../../../libs/videoContext'
 
-interface Props {
-  video: VideoContentFields
-}
-
-export function ContainerHero({ video }: Props): ReactElement {
-  const type = video.label === 'series' ? 'series' : 'collection'
-  const title = video.title[0].value
-  const length = video.children.length
-  const image = video.image
+export function ContainerHero(): ReactElement {
+  const { label, title, children, image } = useVideo()
+  const type = label === 'series' ? 'series' : 'collection'
 
   return (
     <Box
@@ -62,7 +56,7 @@ export function ContainerHero({ video }: Props): ReactElement {
                 zIndex: 2
               }}
             >
-              {title}
+              {title[0].value}
             </Typography>
           </Stack>
 
@@ -84,7 +78,9 @@ export function ContainerHero({ video }: Props): ReactElement {
                 opacity: 0.7
               }}
             >
-              {`${length} ${type === 'series' ? 'Episodes' : 'Chapters'}`}
+              {`${children.length} ${
+                type === 'series' ? 'Episodes' : 'Chapters'
+              }`}
             </Typography>
             <IconButton
               sx={{

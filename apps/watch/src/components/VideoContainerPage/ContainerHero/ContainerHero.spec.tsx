@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+import { VideoProvider } from '../../../libs/videoContext'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { ContainerHero } from '.'
@@ -19,13 +20,21 @@ describe('ContainerHero', () => {
   } as unknown as VideoContentFields
 
   it('should render hero for a collection', () => {
-    const { getByText } = render(<ContainerHero video={defaultVideo} />)
+    const { getByText } = render(
+      <VideoProvider value={{ content: defaultVideo }}>
+        <ContainerHero />
+      </VideoProvider>
+    )
 
     expect(getByText('collection')).toBeInTheDocument()
   })
 
   it('should render hero for a series', () => {
-    const { getByText } = render(<ContainerHero video={seriesVideo} />)
+    const { getByText } = render(
+      <VideoProvider value={{ content: seriesVideo }}>
+        <ContainerHero />
+      </VideoProvider>
+    )
 
     expect(getByText('series')).toBeInTheDocument()
   })

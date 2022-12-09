@@ -30,7 +30,7 @@ export default function Part2Page({ content }: Part2PageProps): ReactElement {
         {content.variant?.hls != null ? (
           <VideoContentPage />
         ) : (
-          <VideoContainerPage content={content} />
+          <VideoContainerPage />
         )}
       </VideoProvider>
     </LanguageProvider>
