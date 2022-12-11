@@ -12,7 +12,7 @@ import { CacheProvider } from '@emotion/react'
 import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { firebaseClient } from '../src/libs/firebaseClient'
-import { createApolloClient } from '../src/libs/client'
+import { useApolloClient } from '../src/libs/client'
 import 'swiper/swiper.min.css'
 import '../public/fonts/fonts.css'
 import '../public/styles/video-js.css'
@@ -26,7 +26,10 @@ export default function WatchApp({
 }: AppProps & { emotionCache?: EmotionCache }): ReactElement {
   const auth = getAuth(firebaseClient)
   const [user] = useAuthState(auth)
-  const client = createApolloClient(user?.accessToken)
+  const client = useApolloClient(
+    user?.accessToken,
+    pageProps.initialApolloState
+  )
   const signIn = useCallback(async (): Promise<void> => {
     await signInAnonymously(auth)
   }, [auth])
