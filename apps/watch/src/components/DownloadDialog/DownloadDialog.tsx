@@ -59,15 +59,6 @@ export function DownloadDialog({
     }
   }, [percentage, onClose])
 
-  console.log(
-    'download',
-    percentage,
-    downloads,
-    title[0].value,
-    image,
-    language
-  )
-
   const initialValues = {
     file: downloads[0].url,
     terms: false
