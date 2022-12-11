@@ -82,7 +82,7 @@ export function VideoGridCard({
                   }}
                 >
                   <PlayArrow sx={{ fontSize: '1rem' }} />
-                  <Typography variant="body1" sx={{ lineHeight: '1rem' }}>
+                  <Typography variant="body1">
                     {secondsToTimeFormatTrimmed(video.variant?.duration ?? 0)}
                   </Typography>
                 </Stack>
