@@ -67,7 +67,7 @@ export function CarouselItem({
                 backgroundColor: `${
                   isPlaying ? 'rgba(0, 0, 0, 0.5)' : 'primary.main'
                 }`,
-                borderRadius: '8px',
+                borderRadius: 2,
                 m: 1
               }}
             >
