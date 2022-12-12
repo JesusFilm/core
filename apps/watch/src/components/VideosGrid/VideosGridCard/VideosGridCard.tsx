@@ -15,15 +15,15 @@ import Image from 'next/image'
 
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 
-export interface VideoGridCardProps {
+export interface VideosGridCardProps {
   video?: VideoChildFields
   routePrefix?: string
 }
 
-export function VideoGridCard({
+export function VideosGridCard({
   video,
   routePrefix
-}: VideoGridCardProps): ReactElement {
+}: VideosGridCardProps): ReactElement {
   return (
     <Card
       sx={{

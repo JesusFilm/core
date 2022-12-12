@@ -6,7 +6,7 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import { deepmerge } from '@mui/utils'
 import { getTheme, ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
-import { VideoGridCard } from './VideoGridCard'
+import { VideosGridCard } from './VideosGridCard'
 
 interface VideosGridProps {
   videos?: VideoChildFields[]
@@ -53,7 +53,7 @@ export function VideosGrid({
         {(videos?.length ?? 0) > 0 &&
           videos?.map((video, index) => (
             <Grid item key={index} md={6} sm={12} xs={12} lg={4} xl={3}>
-              <VideoGridCard video={video} routePrefix={routePrefix} />
+              <VideosGridCard video={video} routePrefix={routePrefix} />
             </Grid>
           ))}
         {loading &&
@@ -67,7 +67,7 @@ export function VideosGrid({
               data-testid="videos-grid-placeholder"
               gap="10px 16px"
             >
-              <VideoGridCard />
+              <VideosGridCard />
             </Grid>
           ))}
         {!isEnd && showLoadMore && (
