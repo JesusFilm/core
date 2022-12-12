@@ -1,49 +1,40 @@
 import { fireEvent, render } from '@testing-library/react'
-import { LanguageFields } from './__generated__/LanguageFields'
-import { LanguageAutocomplete } from '.'
+import { LanguageAutocomplete, Language } from '.'
 
 describe('LanguageAutocomplete', () => {
-  const languages: LanguageFields[] = [
+  const languages: Language[] = [
     {
       id: '496',
-      __typename: 'Language',
       name: [
         {
           value: 'Français',
-          primary: true,
-          __typename: 'Translation'
+          primary: true
         },
         {
           value: 'French',
-          primary: false,
-          __typename: 'Translation'
+          primary: false
         }
       ]
     },
     {
-      __typename: 'Language',
       id: '529',
       name: [
         {
           value: 'English',
-          primary: true,
-          __typename: 'Translation'
+          primary: true
         }
       ]
     },
     {
       id: '1106',
-      __typename: 'Language',
       name: [
         {
           value: 'Deutsch',
-          primary: true,
-          __typename: 'Translation'
+          primary: true
         },
         {
           value: 'German, Standard',
-          primary: false,
-          __typename: 'Translation'
+          primary: false
         }
       ]
     }

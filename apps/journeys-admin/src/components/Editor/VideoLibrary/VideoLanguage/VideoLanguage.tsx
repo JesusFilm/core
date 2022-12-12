@@ -11,7 +11,7 @@ import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import {
   LanguageAutocomplete,
-  LanguageAutocompleteOption
+  LanguageOption
 } from '@core/shared/ui/LanguageAutocomplete'
 import { GetLanguages_languages as Language } from '../../../../../__generated__/GetLanguages'
 
@@ -20,8 +20,8 @@ export const DRAWER_WIDTH = 328
 interface VideoLanguageProps {
   open?: boolean
   onClose: () => void
-  onChange: (language: LanguageAutocompleteOption) => void
-  language: LanguageAutocompleteOption
+  onChange: (language: LanguageOption) => void
+  language: LanguageOption
   languages?: Language[]
   loading: boolean
 }

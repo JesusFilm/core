@@ -3,8 +3,7 @@ import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import Box from '@mui/material/Box'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { LanguageFields } from './__generated__/LanguageFields'
-import { LanguageAutocomplete, LanguageAutocompleteOption } from '.'
+import { LanguageAutocomplete, LanguageOption, Language } from '.'
 
 const LanguageAutocompleteStory = {
   ...simpleComponentConfig,
@@ -17,60 +16,52 @@ const LanguageAutocompleteStory = {
   }
 }
 
-const languages: LanguageFields[] = [
+const languages: Language[] = [
   {
-    __typename: 'Language',
     id: '529',
     name: [
       {
         value: 'English',
-        primary: true,
-        __typename: 'Translation'
+        primary: true
       }
     ]
   },
   {
     id: '496',
-    __typename: 'Language',
     name: [
       {
         value: 'Français',
-        primary: true,
-        __typename: 'Translation'
+        primary: true
       },
       {
         value: 'French',
-        primary: false,
-        __typename: 'Translation'
+        primary: false
       }
     ]
   },
   {
     id: '1106',
-    __typename: 'Language',
     name: [
       {
         value: 'Deutsch',
-        primary: true,
-        __typename: 'Translation'
+        primary: true
       },
       {
         value: 'German, Standard',
-        primary: false,
-        __typename: 'Translation'
+        primary: false
       }
     ]
   }
 ]
 
 const Template: Story = ({ onChange }) => {
-  const [value, setValue] = useState<LanguageAutocompleteOption | undefined>({
+  const [value, setValue] = useState<LanguageOption | undefined>({
     id: '529',
     localName: undefined,
     nativeName: 'English'
   })
 
-  const handleChange = (value?: LanguageAutocompleteOption): void => {
+  const handleChange = (value?: LanguageOption): void => {
     setValue(value)
     onChange(value)
   }

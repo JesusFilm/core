@@ -4,18 +4,27 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
-import { LanguageFields } from './__generated__/LanguageFields'
 
-export interface LanguageAutocompleteOption {
+export interface Language {
+  id: string
+  name: Translation[]
+}
+
+export interface Translation {
+  value: string
+  primary: boolean
+}
+
+export interface LanguageOption {
   id: string
   localName?: string
   nativeName?: string
 }
 
 interface LanguageAutocompleteProps {
-  onChange: (value?: LanguageAutocompleteOption) => void
-  value?: LanguageAutocompleteOption
-  languages?: LanguageFields[]
+  onChange: (value?: LanguageOption) => void
+  value?: LanguageOption
+  languages?: Language[]
   loading: boolean
 }
 
