@@ -10,15 +10,15 @@ import PlayArrow from '@mui/icons-material/PlayArrow'
 import AccessTime from '@mui/icons-material/AccessTime'
 import Circle from '@mui/icons-material/Circle'
 import videojs from 'video.js'
-import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import 'video.js/dist/video-js.css'
+import { useVideo } from '../../../libs/videoContext'
 
 interface VideoHeroProps {
   loading?: boolean
-  video: VideoContentFields
 }
 
-export function VideoHero({ loading, video }: VideoHeroProps): ReactElement {
+export function VideoHero({ loading }: VideoHeroProps): ReactElement {
+  const { variant, title, image, children } = useVideo()
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState(false)
@@ -46,7 +46,7 @@ export function VideoHero({ loading, video }: VideoHeroProps): ReactElement {
           }
         },
         responsive: true,
-        poster: video?.image ?? undefined
+        poster: image ?? undefined
       })
       playerRef.current.on('pause', pauseVideo)
       playerRef.current.on('play', playVideo)
@@ -68,13 +68,13 @@ export function VideoHero({ loading, video }: VideoHeroProps): ReactElement {
       <>
         <Box
           sx={{
-            backgroundImage: `url(${video.image as string})`,
+            backgroundImage: `url(${image as string})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             height: 776
           }}
         >
-          {video.variant?.hls != null && (
+          {variant?.hls != null && (
             <video
               ref={videoRef}
               className="vjs-jfp video-js vjs-fill"
@@ -83,7 +83,7 @@ export function VideoHero({ loading, video }: VideoHeroProps): ReactElement {
               }}
               playsInline
             >
-              <source src={video.variant.hls} type="application/x-mpegURL" />
+              <source src={variant.hls} type="application/x-mpegURL" />
             </video>
           )}
           {!isPlaying && (
@@ -105,7 +105,7 @@ export function VideoHero({ loading, video }: VideoHeroProps): ReactElement {
                     color: 'text.primary'
                   }}
                 >
-                  {video.title[0]?.value}
+                  {title[0]?.value}
                 </Typography>
               </Container>
               <Box
@@ -123,12 +123,12 @@ export function VideoHero({ loading, video }: VideoHeroProps): ReactElement {
                   sx={{ color: 'text.primary' }}
                 >
                   <Stack direction="row" spacing="20px">
-                    {video.children.length > 0 && (
+                    {children.length > 0 && (
                       <Typography variant="subtitle1">
-                        {video.children.length} episodes
+                        {children.length} episodes
                       </Typography>
                     )}
-                    {video.children.length === 0 && (
+                    {children.length === 0 && (
                       <>
                         <Button
                           size="large"
@@ -139,14 +139,14 @@ export function VideoHero({ loading, video }: VideoHeroProps): ReactElement {
                           <PlayArrow />
                           &nbsp; Play Video
                         </Button>
-                        {video.variant !== null && (
+                        {variant !== null && (
                           <Stack height="71px" direction="row">
                             <AccessTime sx={{ paddingTop: '23px' }} />
                             <Typography
                               variant="body2"
                               sx={{ lineHeight: '71px', paddingLeft: '10px' }}
                             >
-                              {secondsToMinutes(video.variant.duration)} min
+                              {secondsToMinutes(variant.duration)} min
                             </Typography>
                           </Stack>
                         )}
