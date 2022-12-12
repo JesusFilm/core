@@ -6,25 +6,25 @@ import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
 import { LanguageFields } from './__generated__/LanguageFields'
 
-export interface LanguageSelectOption {
+export interface LanguageAutocompleteOption {
   id: string
   localName?: string
   nativeName?: string
 }
 
-interface LanguageSelectProps {
-  onChange: (value?: LanguageSelectOption) => void
-  value?: LanguageSelectOption
+interface LanguageAutocompleteProps {
+  onChange: (value?: LanguageAutocompleteOption) => void
+  value?: LanguageAutocompleteOption
   languages?: LanguageFields[]
   loading: boolean
 }
 
-export function LanguageSelect({
+export function LanguageAutocomplete({
   onChange: handleChange,
   value,
   languages,
   loading
-}: LanguageSelectProps): ReactElement {
+}: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
     return (
       languages?.map(({ id, name }) => {

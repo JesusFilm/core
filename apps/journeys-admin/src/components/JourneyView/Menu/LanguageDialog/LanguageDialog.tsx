@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack'
 import { Formik, Form, FormikValues } from 'formik'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { LanguageSelect } from '@core/shared/ui/LanguageSelect'
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import { JourneyLanguageUpdate } from '../../../../../__generated__/JourneyLanguageUpdate'
 import { GetLanguages } from '../../../../../__generated__/GetLanguages'
 
@@ -130,7 +130,7 @@ export function LanguageDialog({
               }}
             >
               <Form>
-                <LanguageSelect
+                <LanguageAutocomplete
                   onChange={(value) => setFieldValue('language', value)}
                   value={values.language}
                   languages={data?.languages}

@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/react'
 import { useState } from 'react'
-import { LanguageSelectOption } from '@core/shared/ui/LanguageSelect'
+import { LanguageAutocompleteOption } from '@core/shared/ui/LanguageAutocomplete'
 import { simpleComponentConfig } from '../../../../libs/storybook'
 import { GetVideo_video_variantLanguages as Language } from '../../../../../__generated__/GetVideo'
 import { VideoLanguage } from '.'
@@ -60,12 +60,12 @@ const languages: Language[] = [
 
 const Template: Story = ({ onSelect }) => {
   const [open, setOpen] = useState(true)
-  const [language, setLanguage] = useState<LanguageSelectOption>({
+  const [language, setLanguage] = useState<LanguageAutocompleteOption>({
     id: '529',
     localName: undefined,
     nativeName: 'English'
   })
-  const handleChange = (language: LanguageSelectOption): void => {
+  const handleChange = (language: LanguageAutocompleteOption): void => {
     setLanguage(language)
     onSelect(language)
   }

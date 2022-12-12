@@ -1,8 +1,8 @@
 import { fireEvent, render } from '@testing-library/react'
 import { LanguageFields } from './__generated__/LanguageFields'
-import { LanguageSelect } from '.'
+import { LanguageAutocomplete } from '.'
 
-describe('LanguageSelect', () => {
+describe('LanguageAutocomplete', () => {
   const languages: LanguageFields[] = [
     {
       id: '496',
@@ -52,7 +52,7 @@ describe('LanguageSelect', () => {
   it('should sort language options alphabetically', async () => {
     const handleChange = jest.fn()
     const { getByRole, queryAllByRole } = render(
-      <LanguageSelect
+      <LanguageAutocomplete
         onChange={handleChange}
         value={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}
@@ -69,7 +69,7 @@ describe('LanguageSelect', () => {
   it('should select languages via option click', async () => {
     const handleChange = jest.fn()
     const { getByRole } = render(
-      <LanguageSelect
+      <LanguageAutocomplete
         onChange={handleChange}
         value={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}
@@ -88,7 +88,7 @@ describe('LanguageSelect', () => {
 
   it('should set default value', async () => {
     const { getByRole } = render(
-      <LanguageSelect
+      <LanguageAutocomplete
         onChange={jest.fn()}
         value={{
           id: '1106',
@@ -104,7 +104,7 @@ describe('LanguageSelect', () => {
 
   it('should show loading animation if loading', async () => {
     const { getByRole } = render(
-      <LanguageSelect
+      <LanguageAutocomplete
         onChange={jest.fn()}
         value={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}

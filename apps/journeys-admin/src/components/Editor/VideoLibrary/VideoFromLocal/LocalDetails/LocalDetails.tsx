@@ -8,7 +8,7 @@ import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
 import Check from '@mui/icons-material/Check'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
-import { LanguageSelectOption } from '@core/shared/ui/LanguageSelect'
+import { LanguageAutocompleteOption } from '@core/shared/ui/LanguageAutocomplete'
 import { gql, useLazyQuery } from '@apollo/client'
 import { GetVideo } from '../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
@@ -56,7 +56,7 @@ export function LocalDetails({
   const [playing, setPlaying] = useState(false)
   const [openLanguage, setOpenLanguage] = useState(false)
   const [selectedLanguage, setSelectedLanguage] =
-    useState<LanguageSelectOption>({
+    useState<LanguageAutocompleteOption>({
       id: '529',
       localName: undefined,
       nativeName: 'English'
@@ -65,7 +65,7 @@ export function LocalDetails({
     variables: { id, languageId: '529' }
   })
 
-  const handleChange = (selectedLanguage: LanguageSelectOption): void => {
+  const handleChange = (selectedLanguage: LanguageAutocompleteOption): void => {
     setSelectedLanguage(selectedLanguage)
   }
 

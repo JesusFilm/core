@@ -10,9 +10,9 @@ import Close from '@mui/icons-material/Close'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import {
-  LanguageSelect,
-  LanguageSelectOption
-} from '@core/shared/ui/LanguageSelect'
+  LanguageAutocomplete,
+  LanguageAutocompleteOption
+} from '@core/shared/ui/LanguageAutocomplete'
 import { GetLanguages_languages as Language } from '../../../../../__generated__/GetLanguages'
 
 export const DRAWER_WIDTH = 328
@@ -20,8 +20,8 @@ export const DRAWER_WIDTH = 328
 interface VideoLanguageProps {
   open?: boolean
   onClose: () => void
-  onChange: (language: LanguageSelectOption) => void
-  language: LanguageSelectOption
+  onChange: (language: LanguageAutocompleteOption) => void
+  language: LanguageAutocompleteOption
   languages?: Language[]
   loading: boolean
 }
@@ -72,7 +72,7 @@ export function VideoLanguage({
         </Toolbar>
       </AppBar>
       <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 6 }}>
-        <LanguageSelect
+        <LanguageAutocomplete
           onChange={handleChange}
           value={language}
           languages={languages}
