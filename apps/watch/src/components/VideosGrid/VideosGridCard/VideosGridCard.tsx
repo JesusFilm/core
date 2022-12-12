@@ -81,11 +81,22 @@ export function VideosGridCard({
                     padding: '8px'
                   }}
                 >
-                  <PlayArrow sx={{ fontSize: '1rem' }} />
-                  <Typography variant="body1">
-                    {secondsToTimeFormatTrimmed(video.variant?.duration ?? 0)}
-                  </Typography>
+                  {video.children.length === 0 ? (
+                    <>
+                      <PlayArrow sx={{ fontSize: '1rem' }} />
+                      <Typography variant="body1">
+                        {secondsToTimeFormatTrimmed(
+                          video.variant?.duration ?? 0
+                        )}
+                      </Typography>
+                    </>
+                  ) : (
+                    <Typography variant="body1">
+                      {`${video.children.length} episodes`}
+                    </Typography>
+                  )}
                 </Stack>
+                )
               </CardMedia>
             </Box>
 
