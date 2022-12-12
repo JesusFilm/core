@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
 import PlayArrow from '@mui/icons-material/PlayArrow'
-import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+import { secondsToTimeFormatTrimmed } from '@core/shared/ui/timeFormat'
 import Link from 'next/link'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
@@ -141,7 +141,7 @@ export function HomeVideoCard({ video }: VideoListCardProps): ReactElement {
                 <Stack direction="row">
                   <PlayArrow sx={{ fontSize: '1rem' }} />
                   <Typography variant="body1" sx={{ lineHeight: '16px' }}>
-                    {secondsToTimeFormat(video?.variant?.duration ?? 0)}
+                    {secondsToTimeFormatTrimmed(video?.variant?.duration ?? 0)}
                   </Typography>
                 </Stack>
               )}

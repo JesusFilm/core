@@ -80,7 +80,7 @@ export function VideosGridCard({
                     padding: '8px'
                   }}
                 >
-                  {video.children.length !== 0 ? (
+                  {video.children.length === 0 ? (
                     <>
                       <PlayArrow sx={{ fontSize: '1rem' }} />
                       <Typography variant="body1">
