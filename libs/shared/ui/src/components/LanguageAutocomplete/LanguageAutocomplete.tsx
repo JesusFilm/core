@@ -41,7 +41,7 @@ export function LanguageAutocomplete({
   }, [languages])
 
   const sortedOptions = useMemo(() => {
-    if (options !== []) {
+    if (options.length > 0) {
       return options.sort((a, b) => {
         return (a.localName ?? a.nativeName ?? '').localeCompare(
           b.localName ?? b.nativeName ?? ''
