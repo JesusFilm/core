@@ -6,6 +6,10 @@
   padding-left: 14%;
 }
 
+.vjs-jfp .vjs-big-play-button {
+  display: 'none';
+}
+
 /* Progress Bar */
 .vjs-jfp .vjs-progress-holder,
 .vjs-jfp .vjs-play-progress,
@@ -44,6 +48,16 @@
   align-items: center;
 }
 
+.vjs-icon-audio:before,
+.vjs-jfp .vjs-audio-button .vjs-icon-placeholder:before {
+  content: url('../icons/audio.svg');
+}
+
+.vjs-icon-subtitles:before,
+.vjs-jfp .vjs-subtitles-button .vjs-icon-placeholder:before {
+  content: url('../icons/subtitle.svg');
+}
+
 .vjs-jfp .vjs-volume-panel,
 .vjs-jfp .vjs-audio-button,
 .vjs-jfp .vjs-subtitles-button,
@@ -62,30 +76,3 @@
 .vjs-jfp.vjs-paused .vjs-big-play-button {
   display: none;
 }
-
-@media only screen and (max-width: 1400px) {
-  /* Control Bar */
-  .vjs-jfp .vjs-control-bar {
-    padding-right: 2%;
-    padding-left: 2%;
-  }
-}
-
-@media only screen and (max-width: 1600px) {
-  /* Control Bar */
-  .vjs-jfp .vjs-control-bar {
-    padding-right: 5%;
-    padding-left: 5%;
-  }
-}
-
-/* Custom Icons */
-/* .vjs-icon-audio:before,
-.vjs-jfp .vjs-audio-button .vjs-icon-placeholder:before {
-  content: url('../icons/audio.svg');
-}
-
-.vjs-icon-subtitles:before,
-.vjs-jfp .vjs-subtitles-button .vjs-icon-placeholder:before {
-  content: url('../icons/subtitle.svg');
-} */

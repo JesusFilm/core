@@ -21,6 +21,7 @@ interface VideoHeroProps {
 export function VideoHero({ loading }: VideoHeroProps): ReactElement {
   const { image, variant, children, title } = useVideo()
   const [isPlaying, setIsPlaying] = useState(false)
+  const [fullscreen, setFullscreen] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
 
@@ -40,10 +41,12 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
             backgroundImage: `url(${image as string})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            height: 776,
+            display: 'flex',
+            width: '100%',
+            height: { xs: 502, lg: 777 },
             position: 'relative',
-            '> .video-js .vjs-big-play-button': {
-              display: 'none'
+            '> .video-js .vjs-control-bar': {
+              display: fullscreen ? 'flex' : 'none'
             }
           }}
         >
@@ -52,7 +55,11 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
             playerRef={playerRef}
             playVideo={playVideo}
           />
-          <VideoControls playerRef={playerRef} />
+          <VideoControls
+            playerRef={playerRef}
+            fullscreen={fullscreen}
+            setFullscreen={(value: boolean) => setFullscreen(value)}
+          />
           {!isPlaying && (
             <>
               <Container

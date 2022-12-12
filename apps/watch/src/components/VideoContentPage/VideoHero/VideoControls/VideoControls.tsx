@@ -14,15 +14,19 @@ import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
 import LanguageRounded from '@mui/icons-material/LanguageRounded'
 import FullscreenOutlined from '@mui/icons-material/FullscreenOutlined'
-import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
 
 interface VideoControlProps {
   playerRef: MutableRefObject<videojs.Player | undefined>
+  fullscreen: boolean
+  setFullscreen: (fullscreen: boolean) => void
 }
 
-export function VideoControls({ playerRef }: VideoControlProps): ReactElement {
+export function VideoControls({
+  playerRef,
+  fullscreen,
+  setFullscreen
+}: VideoControlProps): ReactElement {
   const [play, setPlay] = useState(false)
-  const [fullscreen, setFullscreen] = useState(false)
   const [currentTime, setCurrentTime] = useState<string>()
   const [progress, setProgress] = useState(0)
   const [volume, setVolume] = useState(0)
@@ -48,10 +52,9 @@ export function VideoControls({ playerRef }: VideoControlProps): ReactElement {
           setVolume(playerRef.current.volume() * 100)
         }
       })
-      playerRef.current.on('timeupdate', () => {
+      playerRef.current.on('play', () => {
         if (playerRef.current != null) {
-          setCurrentTime(timeFormatToHHMMSS(playerRef?.current?.currentTime()))
-          setProgress(Math.round(playerRef.current.currentTime()))
+          setPlay(true)
         }
       })
       playerRef.current.on('pause', () => {
@@ -59,13 +62,21 @@ export function VideoControls({ playerRef }: VideoControlProps): ReactElement {
           setPlay(false)
         }
       })
-      playerRef.current.on('play', () => {
+      playerRef.current.on('timeupdate', () => {
         if (playerRef.current != null) {
-          setPlay(true)
+          setCurrentTime(timeFormatToHHMMSS(playerRef?.current?.currentTime()))
+          setProgress(Math.round(playerRef.current.currentTime()))
+        }
+      })
+      playerRef.current.on('fullscreenchange', () => {
+        if (playerRef.current != null) {
+          if (!playerRef.current.isFullscreen()) {
+            setFullscreen(false)
+          }
         }
       })
     }
-  }, [playerRef, currentTime])
+  }, [playerRef, currentTime, setFullscreen])
 
   function handlePlay(): void {
     if (playerRef?.current == null) return
@@ -93,17 +104,7 @@ export function VideoControls({ playerRef }: VideoControlProps): ReactElement {
     if (!fullscreen) {
       setFullscreen(true)
       playerRef.current.requestFullscreen()
-    } else {
-      setFullscreen(false)
-      playerRef.current.exitFullscreen()
     }
-  }
-
-  function handleMute(): void {
-    if (playerRef?.current == null) return
-    setVolume(0)
-    setMute(!mute)
-    playerRef?.current?.muted(!mute)
   }
 
   function handleProgress(_event: Event, value: number | number[]): void {
@@ -115,6 +116,12 @@ export function VideoControls({ playerRef }: VideoControlProps): ReactElement {
     }
   }
 
+  function handleMute(): void {
+    if (playerRef?.current == null) return
+    setMute(!mute)
+    playerRef?.current?.muted(!mute)
+  }
+
   function handleVolume(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
       setVolume(value)
@@ -124,31 +131,70 @@ export function VideoControls({ playerRef }: VideoControlProps): ReactElement {
     }
   }
 
+  console.log(playerRef.current)
+
   return (
     <Container
       maxWidth="xxl"
       sx={{
         position: 'relative',
-        backgroundColor: 'background.default',
-        zIndex: 5
+        backgroundColor: 'transparent',
+        alignSelf: 'end',
+        zIndex: 5,
+        pb: 4
       }}
     >
-      <Stack direction="row" gap={5} alignItems="center">
-        <IconButton onClick={handlePlay}>
-          {!play ? <PlayArrowRounded /> : <PauseRounded />}
+      <Slider
+        aria-label="progress-control"
+        min={0}
+        max={durationSeconds}
+        value={progress}
+        valueLabelFormat={(value) => {
+          return timeFormatToHHMMSS(value)
+        }}
+        valueLabelDisplay="auto"
+        onChange={handleProgress}
+        sx={{
+          height: 8.4,
+          display: { xs: 'flex', md: 'none' },
+          '& .MuiSlider-thumb': {
+            width: 13,
+            height: 13
+          }
+        }}
+      />
+      <Stack
+        direction="row"
+        gap={5}
+        justifyContent={{ xs: 'space-between', md: 'none' }}
+        alignItems="center"
+      >
+        <IconButton
+          onClick={handlePlay}
+          sx={{ display: { xs: 'none', md: 'flex' } }}
+        >
+          {!play ? (
+            <PlayArrowRounded fontSize="large" />
+          ) : (
+            <PauseRounded fontSize="large" />
+          )}
         </IconButton>
         <Slider
           aria-label="progress-control"
           min={0}
           max={durationSeconds}
           value={progress}
+          valueLabelFormat={(value) => {
+            return timeFormatToHHMMSS(value)
+          }}
           valueLabelDisplay="auto"
           onChange={handleProgress}
           sx={{
             height: 8.4,
+            display: { xs: 'none', md: 'flex' },
             '& .MuiSlider-thumb': {
-              width: 15,
-              height: 15
+              width: 13,
+              height: 13
             }
           }}
         />
@@ -157,42 +203,65 @@ export function VideoControls({ playerRef }: VideoControlProps): ReactElement {
             {currentTime}/{duration}
           </Typography>
         )}
-        <Stack alignItems="center" spacing={1} direction="row">
-          <IconButton onClick={handleMute}>
-            {mute || volume === 0 ? (
-              <VolumeOffOutlined />
-            ) : volume > 60 ? (
-              <VolumeUpOutlined />
-            ) : volume > 30 ? (
-              <VolumeDownOutlined />
-            ) : (
-              <VolumeMuteOutlined />
-            )}
-          </IconButton>
-          <Slider
-            aria-label="progress-control"
-            min={0}
-            max={100}
-            value={volume}
-            onChange={handleVolume}
+        <Stack direction="row" spacing={2}>
+          <Stack
+            alignItems="center"
+            spacing={2}
+            direction="row"
             sx={{
-              width: 70,
-              '& .MuiSlider-thumb': {
-                width: 10,
-                height: 10
+              '> .MuiSlider-root': {
+                width: 0,
+                opacity: 0,
+                transition: 'all 0.2s ease-out'
+              },
+              '&:hover': {
+                '> .MuiSlider-root': {
+                  width: 70,
+                  opacity: 1
+                }
               }
             }}
-          />
+          >
+            <IconButton onClick={handleMute}>
+              {mute || volume === 0 ? (
+                <VolumeOffOutlined />
+              ) : volume > 60 ? (
+                <VolumeUpOutlined />
+              ) : volume > 30 ? (
+                <VolumeDownOutlined />
+              ) : (
+                <VolumeMuteOutlined />
+              )}
+            </IconButton>
+            <Slider
+              aria-label="progress-control"
+              min={0}
+              max={100}
+              value={mute ? 0 : volume}
+              valueLabelFormat={(value) => {
+                return `${value}%`
+              }}
+              valueLabelDisplay="auto"
+              onChange={handleVolume}
+              sx={{
+                width: 70,
+                '& .MuiSlider-thumb': {
+                  width: 10,
+                  height: 10
+                }
+              }}
+            />
+          </Stack>
+          <IconButton onClick={handleLanguage}>
+            <LanguageRounded />
+          </IconButton>
+          <IconButton onClick={handleSubtitles}>
+            <SubtitlesOutlined />
+          </IconButton>
+          <IconButton onClick={handleFullscreen}>
+            <FullscreenOutlined />
+          </IconButton>
         </Stack>
-        <IconButton onClick={handleLanguage}>
-          <LanguageRounded />
-        </IconButton>
-        <IconButton onClick={handleSubtitles}>
-          <SubtitlesOutlined />
-        </IconButton>
-        <IconButton onClick={handleFullscreen}>
-          {!fullscreen ? <FullscreenOutlined /> : <FullscreenExitOutlined />}
-        </IconButton>
       </Stack>
     </Container>
   )
