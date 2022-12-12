@@ -18,8 +18,16 @@ export function VideoContainerPage({
   content
 }: VideoContainerPageProps): ReactElement {
   const router = useRouter()
-  const [openShare, setOpenShare] = useState(false)
+  const [shareDialog, setShareDialog] = useState<boolean>(false)
   const routeArray: string[] = []
+
+  function handleOpenDialog(): void {
+    setShareDialog(true)
+  }
+
+  function handleCloseDialog(): void {
+    setShareDialog(false)
+  }
 
   if (router != null) {
     Object.values(router?.query).forEach((value) => {
@@ -30,17 +38,19 @@ export function VideoContainerPage({
   }
 
   return (
-    <PageWrapper hero={<ContainerHero video={content} />}>
+    <PageWrapper
+      hero={<ContainerHero video={content} openDialog={handleOpenDialog} />}
+    >
       {content != null && (
         <Container maxWidth="xxl">
           <ContainerDescription
             value={content.snippet[0].value}
-            setOpenShare={() => setOpenShare(true)}
+            openDialog={handleOpenDialog}
           />
           <ShareDialog
-            open={openShare}
+            open={shareDialog}
             routes={routeArray}
-            onClose={() => setOpenShare(false)}
+            onClose={handleCloseDialog}
           />
           {/* Add grid here */}
         </Container>
