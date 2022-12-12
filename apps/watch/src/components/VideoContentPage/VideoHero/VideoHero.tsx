@@ -1,29 +1,87 @@
 import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
+import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useRef, useState } from 'react'
+import { ReactElement, useRef, useEffect, useState } from 'react'
 import { secondsToMinutes } from '@core/shared/ui/timeFormat'
 import Container from '@mui/material/Container'
-import Button from '@mui/material/Button'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import AccessTime from '@mui/icons-material/AccessTime'
 import Circle from '@mui/icons-material/Circle'
 import videojs from 'video.js'
 import { useVideo } from '../../../libs/videoContext'
-import { VideoHeroPlayer } from './VideoHeroPlayer'
 import { VideoControls } from './VideoControls'
 
-interface VideoHeroProps {
-  loading?: boolean
-}
-
-export function VideoHero({ loading }: VideoHeroProps): ReactElement {
-  const { image, variant, children, title } = useVideo()
+export function VideoHero(): ReactElement {
+  const { id, image, variant, children, title } = useVideo()
   const [isPlaying, setIsPlaying] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
+
+  const ControlButton = videojs.getComponent('Button')
+
+  class AudioControl extends ControlButton {
+    constructor(player, options) {
+      super(player, options)
+      this.addClass('vjs-audio-button')
+      this.controlText(player.localize('Audio Language'))
+    }
+
+    handleClick(): void {
+      alert('open Audio Dialog')
+    }
+  }
+
+  class SubtitleControl extends ControlButton {
+    constructor(player, options) {
+      super(player, options)
+      this.addClass('vjs-subtitles-button')
+      this.controlText(player.localize('Subtitle'))
+    }
+
+    handleClick(): void {
+      alert('open Subtitle Dialog')
+    }
+  }
+
+  videojs.registerComponent('audioControl', AudioControl)
+  videojs.registerComponent('subtitleControl', SubtitleControl)
+
+  useEffect(() => {
+    if (videoRef.current != null) {
+      playerRef.current = videojs(videoRef.current, {
+        autoplay: false,
+        controls: true,
+        userActions: {
+          hotkeys: true,
+          doubleClick: true
+        },
+        controlBar: {
+          playToggle: true,
+          remainingTimeDisplay: true,
+          progressControl: {
+            seekBar: true
+          },
+          fullscreenToggle: true,
+          volumePanel: {
+            inline: false
+          },
+          children: [
+            'playToggle',
+            'progressControl',
+            'remainingTimeDisplay',
+            'volumePanel',
+            'audioControl',
+            'subtitleControl',
+            'fullscreenToggle'
+          ]
+        },
+        responsive: true
+      })
+      playerRef.current.on('play', playVideo)
+    }
+  }, [playerRef, videoRef])
 
   function playVideo(): void {
     setIsPlaying(true)
@@ -34,9 +92,9 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
 
   return (
     <>
-      {loading === true && <CircularProgress />}
       <>
         <Box
+          data-testid={`video-${id}`}
           sx={{
             backgroundImage: `url(${image as string})`,
             backgroundSize: 'cover',
@@ -50,16 +108,27 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
             }
           }}
         >
-          <VideoHeroPlayer
-            videoRef={videoRef}
-            playerRef={playerRef}
-            playVideo={playVideo}
-          />
-          <VideoControls
-            playerRef={playerRef}
-            fullscreen={fullscreen}
-            setFullscreen={(value: boolean) => setFullscreen(value)}
-          />
+          {variant?.hls != null && (
+            <video
+              ref={videoRef}
+              id="vjs-jfp"
+              className="vjs-jfp video-js vjs-fill"
+              style={{
+                alignSelf: 'center',
+                position: 'absolute'
+              }}
+              playsInline
+            >
+              <source src={variant.hls} type="application/x-mpegURL" />
+            </video>
+          )}
+          {playerRef.current != null && (
+            <VideoControls
+              player={playerRef.current}
+              fullscreen={fullscreen}
+              setFullscreen={(value: boolean) => setFullscreen(value)}
+            />
+          )}
           {!isPlaying && (
             <>
               <Container

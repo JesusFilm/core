@@ -1,1 +1,0 @@
-export { VideoHeroPlayer } from './VideoHeroPlayer'

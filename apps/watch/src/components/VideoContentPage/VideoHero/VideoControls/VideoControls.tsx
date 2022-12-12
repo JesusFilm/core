@@ -1,4 +1,4 @@
-import { MutableRefObject, ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import Container from '@mui/material/Container'
 import videojs from 'video.js'
 import Stack from '@mui/material/Stack'
@@ -16,13 +16,13 @@ import LanguageRounded from '@mui/icons-material/LanguageRounded'
 import FullscreenOutlined from '@mui/icons-material/FullscreenOutlined'
 
 interface VideoControlProps {
-  playerRef: MutableRefObject<videojs.Player | undefined>
+  player: videojs.Player
   fullscreen: boolean
   setFullscreen: (fullscreen: boolean) => void
 }
 
 export function VideoControls({
-  playerRef,
+  player,
   fullscreen,
   setFullscreen
 }: VideoControlProps): ReactElement {
@@ -38,54 +38,35 @@ export function VideoControls({
       : new Date(time * 1000).toISOString().substring(11, 19)
   }
 
-  let duration
-  let durationSeconds
-  if (playerRef?.current != null) {
-    duration = timeFormatToHHMMSS(playerRef?.current?.duration())
-    durationSeconds = Math.round(playerRef?.current?.duration())
-  }
+  const duration = timeFormatToHHMMSS(Math.round(player.duration()))
+  const durationSeconds = Math.round(player.duration())
 
   useEffect(() => {
-    if (playerRef.current != null) {
-      playerRef.current.on('ready', () => {
-        if (playerRef.current != null) {
-          setVolume(playerRef.current.volume() * 100)
-        }
-      })
-      playerRef.current.on('play', () => {
-        if (playerRef.current != null) {
-          setPlay(true)
-        }
-      })
-      playerRef.current.on('pause', () => {
-        if (playerRef.current != null) {
-          setPlay(false)
-        }
-      })
-      playerRef.current.on('timeupdate', () => {
-        if (playerRef.current != null) {
-          setCurrentTime(timeFormatToHHMMSS(playerRef?.current?.currentTime()))
-          setProgress(Math.round(playerRef.current.currentTime()))
-        }
-      })
-      playerRef.current.on('fullscreenchange', () => {
-        if (playerRef.current != null) {
-          if (!playerRef.current.isFullscreen()) {
-            setFullscreen(false)
-          }
-        }
-      })
-    }
-  }, [playerRef, currentTime, setFullscreen])
+    setVolume(player.volume() * 100)
+    player.on('play', () => {
+      setPlay(true)
+    })
+    player.on('pause', () => {
+      setPlay(false)
+    })
+    player.on('timeupdate', () => {
+      setCurrentTime(timeFormatToHHMMSS(player?.currentTime()))
+      setProgress(Math.round(player.currentTime()))
+    })
+    player.on('fullscreenchange', () => {
+      if (!player.isFullscreen()) {
+        setFullscreen(false)
+      }
+    })
+  }, [player, currentTime, setFullscreen])
 
   function handlePlay(): void {
-    if (playerRef?.current == null) return
     if (!play) {
       setPlay(true)
-      playerRef?.current.play()
+      void player.play()
     } else {
       setPlay(false)
-      playerRef?.current.pause()
+      player.pause()
     }
   }
 
@@ -100,41 +81,34 @@ export function VideoControls({
   }
 
   function handleFullscreen(): void {
-    if (playerRef?.current == null) return
     if (!fullscreen) {
       setFullscreen(true)
-      playerRef.current.requestFullscreen()
+      player.requestFullscreen()
     }
   }
 
   function handleProgress(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
       setProgress(value)
-      if (playerRef.current != null) {
-        playerRef.current.currentTime(value)
-      }
+      player.currentTime(value)
     }
   }
 
   function handleMute(): void {
-    if (playerRef?.current == null) return
     setMute(!mute)
-    playerRef?.current?.muted(!mute)
+    player?.muted(!mute)
   }
 
   function handleVolume(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
       setVolume(value)
-      if (playerRef.current != null) {
-        playerRef.current.volume(value / 100)
-      }
+      player.volume(value / 100)
     }
   }
 
-  console.log(playerRef.current)
-
   return (
     <Container
+      data-testid="vjs-jfp-custom-controls"
       maxWidth="xxl"
       sx={{
         position: 'relative',
@@ -198,7 +172,7 @@ export function VideoControls({
             }
           }}
         />
-        {playerRef?.current != null && (
+        {player != null && (
           <Typography variant="body2" color="secondary.contrastText">
             {currentTime}/{duration}
           </Typography>

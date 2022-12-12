@@ -51,11 +51,13 @@
 .vjs-icon-audio:before,
 .vjs-jfp .vjs-audio-button .vjs-icon-placeholder:before {
   content: url('../icons/audio.svg');
+  padding-bottom: 10px;
 }
 
 .vjs-icon-subtitles:before,
 .vjs-jfp .vjs-subtitles-button .vjs-icon-placeholder:before {
   content: url('../icons/subtitle.svg');
+  padding-bottom: 13px;
 }
 
 .vjs-jfp .vjs-volume-panel,

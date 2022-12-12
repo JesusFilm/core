@@ -1,37 +1,30 @@
+import { ComponentProps } from 'react'
 import { Meta, Story } from '@storybook/react'
-import { ComponentProps, useRef } from 'react'
-import Box from '@mui/material/Box'
-import { noop } from 'lodash'
-import videojs from 'video.js'
-import { VideoLabel } from '../../../../../__generated__/globalTypes'
-import { watchConfig } from '../../../../libs/storybook'
-import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
-import { VideoProvider } from '../../../../libs/videoContext'
-import { VideoHeroPlayer } from './VideoHeroPlayer'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
+import { VideoLabel } from '../../../../__generated__/globalTypes'
+import { watchConfig } from '../../../libs/storybook'
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
+import { VideoProvider } from '../../../libs/videoContext'
+import { VideoHero } from './VideoHero'
 
-const VideoHeroPlayerStory = {
+import '../../../../public/styles/video-js.css'
+
+const VideoHeroStory = {
   ...watchConfig,
-  component: VideoHeroPlayer,
-  title: 'Watch/VideoContentPage/VideoHero/VideoHeroPlayer'
+  component: VideoHero,
+  title: 'Watch/VideoContentPage/VideoHero'
 }
 
 const Template: Story<
-  ComponentProps<typeof VideoHeroPlayer> & { video: VideoContentFields }
-> = ({ ...args }) => {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
-  return (
+  ComponentProps<typeof VideoHero> & { video: VideoContentFields }
+> = ({ ...args }) => (
+  <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
     <VideoProvider value={{ content: args.video }}>
-      <Box sx={{ height: '100vh' }}>
-        <VideoHeroPlayer
-          videoRef={videoRef}
-          playerRef={playerRef}
-          playVideo={args.playVideo}
-        />
-      </Box>
+      <VideoHero />
     </VideoProvider>
-  )
-}
+  </ThemeProvider>
+)
 
 export const Default = Template.bind({})
 Default.args = {
@@ -75,8 +68,7 @@ Default.args = {
       }
     ],
     slug: 'the-story-of-jesus-for-children'
-  },
-  playVideo: noop
+  }
 }
 
-export default VideoHeroPlayerStory as Meta
+export default VideoHeroStory as Meta
