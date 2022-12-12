@@ -32,16 +32,15 @@ function JourneyPage({ journey }: JourneyPageProps): ReactElement {
   return (
     <>
       <NextSeo
-        title={journey.title}
-        description={journey.description ?? undefined}
+        title={journey.seoTitle ?? undefined}
+        description={journey.seoDescription ?? undefined}
         openGraph={{
           type: 'website',
-          title: journey.seoTitle ?? journey.title,
+          title: journey.seoTitle ?? undefined,
           url: `https://${
             process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
           }/${journey.slug}`,
-          description:
-            journey.seoDescription ?? journey.description ?? undefined,
+          description: journey.seoDescription ?? undefined,
           images:
             journey.primaryImageBlock?.src != null
               ? [

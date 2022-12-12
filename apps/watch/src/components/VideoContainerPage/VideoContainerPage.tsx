@@ -1,15 +1,12 @@
-import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
-import Button from '@mui/material/Button'
-import Share from '@mui/icons-material/Share'
 import 'video.js/dist/video-js.css'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
+import { ContainerDescription } from './ContainerDescription'
 import { ContainerHero } from './ContainerHero'
 
 interface VideoContainerPageProps {
@@ -20,37 +17,40 @@ interface VideoContainerPageProps {
 export function VideoContainerPage({
   content
 }: VideoContainerPageProps): ReactElement {
-  const [openShare, setOpenShare] = useState(false)
+  const router = useRouter()
+  const [shareDialog, setShareDialog] = useState<boolean>(false)
+  const routeArray: string[] = []
+
+  function handleOpenDialog(): void {
+    setShareDialog(true)
+  }
+
+  function handleCloseDialog(): void {
+    setShareDialog(false)
+  }
+
+  if (router != null) {
+    Object.values(router?.query).forEach((value) => {
+      if (typeof value === 'string') {
+        routeArray.push(value)
+      }
+    })
+  }
 
   return (
-    <PageWrapper hero={<ContainerHero video={content} />}>
+    <PageWrapper
+      hero={<ContainerHero video={content} openDialog={handleOpenDialog} />}
+    >
       {content != null && (
         <Container maxWidth="xxl">
-          <Stack
-            direction="row"
-            spacing="100px"
-            sx={{
-              mx: 0,
-              mt: 20,
-              mb: 80,
-              maxWidth: '100%'
-            }}
-          >
-            <Typography variant="body1">{content.snippet[0]?.value}</Typography>
-            <Box width="336px">
-              <Stack direction="row" spacing="20px" mb="40px">
-                <Button variant="outlined" onClick={() => setOpenShare(true)}>
-                  <Share />
-                  &nbsp; Share
-                </Button>
-              </Stack>
-            </Box>
-          </Stack>
+          <ContainerDescription
+            value={content.snippet[0].value}
+            openDialog={handleOpenDialog}
+          />
           <ShareDialog
-            open={openShare}
-            video={content}
-            routes={[]}
-            onClose={() => setOpenShare(false)}
+            open={shareDialog}
+            routes={routeArray}
+            onClose={handleCloseDialog}
           />
           {/* Add grid here */}
         </Container>

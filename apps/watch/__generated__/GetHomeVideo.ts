@@ -57,7 +57,7 @@ export interface GetHomeVideo_video {
 }
 
 export interface GetHomeVideo {
-  video: GetHomeVideo_video;
+  video: GetHomeVideo_video | null;
 }
 
 export interface GetHomeVideoVariables {
