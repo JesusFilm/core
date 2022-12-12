@@ -12,7 +12,6 @@ import Link from 'next/link'
 import { ReactElement } from 'react'
 import { compact } from 'lodash'
 import Image from 'next/image'
-
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 
 export interface VideosGridCardProps {
@@ -81,7 +80,7 @@ export function VideosGridCard({
                     padding: '8px'
                   }}
                 >
-                  {video.children.length === 0 ? (
+                  {video.children.length !== 0 ? (
                     <>
                       <PlayArrow sx={{ fontSize: '1rem' }} />
                       <Typography variant="body1">
@@ -96,10 +95,8 @@ export function VideosGridCard({
                     </Typography>
                   )}
                 </Stack>
-                )
               </CardMedia>
             </Box>
-
             <CardContent sx={{ px: 0, pt: 3, pb: 5 }}>
               <Typography variant="h6">{video?.title[0].value}</Typography>
             </CardContent>

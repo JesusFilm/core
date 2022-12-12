@@ -37,7 +37,8 @@ const video = {
       variant: {
         duration: 1
       },
-      title: [{ value: 'child title' }]
+      title: [{ value: 'child title' }],
+      children: []
     } as unknown as VideoContentFields_children
   ],
   slug: 'video-slug'
