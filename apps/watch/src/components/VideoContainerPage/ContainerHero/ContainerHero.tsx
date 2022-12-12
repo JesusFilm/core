@@ -10,7 +10,13 @@ import IconButton from '@mui/material/IconButton'
 import { HeroOverlay } from '../../HeroOverlay'
 import { useVideo } from '../../../libs/videoContext'
 
-export function ContainerHero(): ReactElement {
+interface ContainerHeroProps {
+  openDialog: () => void
+}
+
+export function ContainerHero({
+  openDialog
+}: ContainerHeroProps): ReactElement {
   const { label, title, children, image } = useVideo()
   const type = label === 'series' ? 'series' : 'collection'
 
@@ -87,6 +93,7 @@ export function ContainerHero(): ReactElement {
                 display: { xs: 'flex', sm: 'none' },
                 ml: 'auto'
               }}
+              onClick={() => openDialog()}
             >
               <ShareOutlinedIcon
                 color="primary"

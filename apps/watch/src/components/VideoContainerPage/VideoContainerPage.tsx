@@ -15,8 +15,16 @@ import { ContainerHero } from './ContainerHero'
 export function VideoContainerPage(): ReactElement {
   const { snippet, children, slug } = useVideo()
   const router = useRouter()
-  const [openShare, setOpenShare] = useState(false)
+  const [shareDialog, setShareDialog] = useState<boolean>(false)
   const routeArray: string[] = []
+
+  function handleOpenDialog(): void {
+    setShareDialog(true)
+  }
+
+  function handleCloseDialog(): void {
+    setShareDialog(false)
+  }
 
   if (router != null) {
     Object.values(router?.query).forEach((value) => {
@@ -27,19 +35,21 @@ export function VideoContainerPage(): ReactElement {
   }
 
   return (
-    <PageWrapper hero={<ContainerHero />}>
-      <Container maxWidth="xxl">
-        <ContainerDescription
-          value={snippet[0].value}
-          setOpenShare={() => setOpenShare(true)}
-        />
-        <ShareDialog
-          open={openShare}
-          routes={routeArray}
-          onClose={() => setOpenShare(false)}
-        />
-        <VideosGrid videos={children} routePrefix={slug} />
-      </Container>
+    <PageWrapper hero={<ContainerHero openDialog={handleOpenDialog} />}>
+      {snippet != null && (
+        <Container maxWidth="xxl">
+          <ContainerDescription
+            value={snippet[0].value}
+            openDialog={handleOpenDialog}
+          />
+          <ShareDialog
+            open={shareDialog}
+            routes={routeArray}
+            onClose={handleCloseDialog}
+          />
+          <VideosGrid videos={children} routePrefix={slug} />
+        </Container>
+      )}
       <Divider />
     </PageWrapper>
   )
