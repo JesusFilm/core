@@ -1,4 +1,3 @@
-import { secondsToTimeFormatTrimmed } from '@core/shared/ui/timeFormat'
 import { render } from '@testing-library/react'
 import { videos } from '../../Videos/testData'
 import { VideosGridCard } from './VideosGridCard'
@@ -12,11 +11,9 @@ describe('VideosGridCard', () => {
     expect(outputText).toBeInTheDocument()
   })
 
-  it('should render video duration correctly', () => {
+  it('should render episode count correctly', () => {
     const { getByText } = render(<VideosGridCard video={inputVideo} />)
-    const outputText = getByText(
-      secondsToTimeFormatTrimmed(inputVideo.variant?.duration ?? 0)
-    )
+    const outputText = getByText(`${inputVideo.children.length} episodes`)
     expect(outputText).toBeInTheDocument()
   })
 
