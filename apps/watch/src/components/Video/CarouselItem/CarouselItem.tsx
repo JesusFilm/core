@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 import Skeleton from '@mui/material/Skeleton'
-import PlayArrow from '@mui/icons-material/PlayArrow'
+import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { useVideo } from '../../../libs/videoContext'
 
@@ -61,6 +61,8 @@ export function CarouselItem({
           >
             <Stack
               direction="row"
+              alignItems="center"
+              justifyContent="center"
               spacing="2px"
               sx={{
                 padding: '5px 9px',
@@ -71,8 +73,8 @@ export function CarouselItem({
                 m: 1
               }}
             >
-              <PlayArrow sx={{ color: 'primary.contrastText' }} />
-              <Typography variant="body1">
+              <PlayArrowRounded sx={{ color: 'primary.contrastText' }} />
+              <Typography variant="body1" color="#FFFFFF">
                 {isPlaying
                   ? `${secondsToTimeFormat(variant?.duration ?? 0)}`
                   : 'Play Now'}
@@ -85,7 +87,12 @@ export function CarouselItem({
       )}
 
       {label !== 'featureFilm' && label !== 'shortFilm' && index != null ? (
-        <Typography variant="overline2" mb={3}>
+        <Typography
+          variant="overline2"
+          mb={3}
+          paddingTop="10px"
+          sx={{ opacity: '50%' }}
+        >
           {label === 'segment' ? `Chapter ${index}` : `Episode ${index}`}
         </Typography>
       ) : (

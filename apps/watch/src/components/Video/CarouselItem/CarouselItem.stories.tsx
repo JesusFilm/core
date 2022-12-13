@@ -1,10 +1,10 @@
 import { Story, Meta } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { watchConfig } from '../../../libs/storybook'
-import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { videos } from '../../Videos/testData'
 import { VideoProvider } from '../../../libs/videoContext'
+import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { CarouselItem } from './CarouselItem'
 
 const CarouselItemStory = {
@@ -13,89 +13,62 @@ const CarouselItemStory = {
   title: 'Watch/Video/CarouselItem'
 }
 
-const chapter1: VideoContentFields = {
+const noImage: VideoContentFields = {
   __typename: 'Video',
-  id: '1_jf6101-0-0',
-  label: VideoLabel.segment,
-  image:
-    'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg',
-  imageAlt: [{ __typename: 'Translation', value: 'The Beginning' }],
-  snippet: [
-    {
-      __typename: 'Translation',
-      value:
-        'The story of Jesus fits within the larger story of the Judeo Christian tradition. The purpose of everything since creation has been to point to the life of Jesus.'
-    }
-  ],
-  description: [
-    {
-      __typename: 'Translation',
-      value:
-        'The story of Jesus fits within the larger story of the Judeo Christian tradition. The purpose of everything since creation has been to point to the life of Jesus.\n\nAll of creation speaks of the majesty of God. As God created man and woman he intended them to live in peace with him forever. But because of their disobedience mankind was separated from God. But God still loved mankind so throughout the Scriptures God reveals his plan to save the world.'
-    }
-  ],
-  studyQuestions: [],
-  title: [{ __typename: 'Translation', value: 'The Beginning' }],
-  variant: {
-    __typename: 'VideoVariant',
-    id: '1_529-jf6101-0-0',
-    duration: 488,
-    hls: 'https://arc.gt/pm6g1',
-    language: {
-      __typename: 'Language',
-      id: '529',
-      name: [{ __typename: 'Translation', value: 'English' }]
-    },
-    slug: 'the-beginning/english'
-  },
-  slug: 'the-beginning',
-  children: []
-}
-
-const chapter2: VideoContentFields = {
-  __typename: 'Video',
-  id: '1_jf6101-0-0',
+  id: '3_0-8DWJ-WIJ_06-0-0',
   label: VideoLabel.episode,
   image: null,
-  imageAlt: [{ __typename: 'Translation', value: 'The Beginning' }],
+  imageAlt: [{ __typename: 'Translation', value: 'Day 6: Jesus Died for Me' }],
   snippet: [
     {
       __typename: 'Translation',
       value:
-        'The story of Jesus fits within the larger story of the Judeo Christian tradition. The purpose of everything since creation has been to point to the life of Jesus.'
+        'MentorLink International and The JESUS Film Project have partnered to develop "Days with Jesus", a series of innovative tools specifically designed to help users deepen their walk with Christ. "Days with Jesus" delivers video clips from The JESUS Film along with thought-provoking questions designed to challenge and transform a person’s heart, character, values and motives. Take this opportunity to enhance and deepen your understanding of Jesus, the Son of God. Visit www.mentorlink.org for more information.'
     }
   ],
   description: [
     {
       __typename: 'Translation',
       value:
-        'The story of Jesus fits within the larger story of the Judeo Christian tradition. The purpose of everything since creation has been to point to the life of Jesus.\n\nAll of creation speaks of the majesty of God. As God created man and woman he intended them to live in peace with him forever. But because of their disobedience mankind was separated from God. But God still loved mankind so throughout the Scriptures God reveals his plan to save the world.'
+        "They arrive at the place where the crosses are being set up. Others are being tied to their crosses. Jesus is stripped and led to His own cross. They throw Him down on it. There are cries as the others are nailed to their crosses.\n\nThe nails are hammered through Jesus's wrists and feet as He screams. Then slowly, the crosses are erected as Romans pulls the ropes. Jesus is lifted high in the air. He hangs on the cross, tired and in pain. He prays for those in the crowd. He asks God to forgive them because they don't know what they do.\n\nThe crowd murmurs at the feet of the cross. Annas and Caiaphas comment that He saved others. They wonder why He doesn't save Himself. The crowd starts to jeer. They urge Him to save Himself. But He doesn't."
     }
   ],
-  studyQuestions: [],
-  title: [{ __typename: 'Translation', value: 'The Beginning' }],
+  studyQuestions: [
+    {
+      __typename: 'Translation',
+      value: 'How do I feel about Jesus being crucified?'
+    },
+    {
+      __typename: 'Translation',
+      value: "How do Jesus' words to the thief on the cross give me hope?"
+    }
+  ],
+  title: [{ __typename: 'Translation', value: 'Day 6: Jesus Died for Me' }],
   variant: {
     __typename: 'VideoVariant',
-    id: '1_529-jf6101-0-0',
+    id: '3_529-0-8DWJ-WIJ_06-0-0',
     duration: 488,
-    hls: 'https://arc.gt/pm6g1',
+    hls: 'https://arc.gt/xqav7',
     language: {
       __typename: 'Language',
       id: '529',
       name: [{ __typename: 'Translation', value: 'English' }]
     },
-    slug: 'the-beginning/english'
+    slug: 'day-6-jesus-died-for-me/english'
   },
-  slug: 'the-beginning',
+  slug: 'day-6-jesus-died-for-me',
   children: []
 }
 
-const Template: Story<ComponentProps<typeof CarouselItem>> = ({ ...args }) => {
+const Template: Story<
+  ComponentProps<typeof CarouselItem> & {
+    content: VideoContentFields
+  }
+> = ({ ...args }) => {
   return (
     <VideoProvider
       value={{
-        content: chapter1,
-        container: videos[0]
+        content: args.content
       }}
     >
       <CarouselItem
@@ -107,37 +80,30 @@ const Template: Story<ComponentProps<typeof CarouselItem>> = ({ ...args }) => {
   )
 }
 
-const Template2: Story<ComponentProps<typeof CarouselItem>> = ({ ...args }) => {
-  return (
-    <VideoProvider
-      value={{
-        content: chapter2,
-        container: videos[0]
-      }}
-    >
-      <CarouselItem
-        index={args.index}
-        isPlaying={args.isPlaying}
-        onClick={() => console.log('clicked')}
-      />
-    </VideoProvider>
-  )
-}
-
-export const Item = Template.bind({})
-Item.args = {
+export const Default = Template.bind({})
+Default.args = {
+  content: videos[0],
   index: 5,
   isPlaying: false
 }
 
-export const ItemLoading = Template2.bind({})
-ItemLoading.args = {
+export const Label = Template.bind({})
+Label.args = {
+  content: videos[6],
   index: 5,
   isPlaying: false
 }
 
-export const ItemPlaying = Template.bind({})
-ItemPlaying.args = {
+export const NoImage = Template.bind({})
+NoImage.args = {
+  content: noImage,
+  index: 5,
+  isPlaying: false
+}
+
+export const IsPlaying = Template.bind({})
+IsPlaying.args = {
+  content: videos[0],
   index: 5,
   isPlaying: true
 }
