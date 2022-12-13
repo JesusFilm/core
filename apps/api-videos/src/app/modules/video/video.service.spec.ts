@@ -6,7 +6,6 @@ import { DocumentCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
 import { VideoLabel } from '../../__generated__/graphql'
-import { VideoLabel } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 const baseVideo: GeneratedAqlQuery[] = [
@@ -105,28 +104,6 @@ describe('VideoService', () => {
       )
       expect(response.bindVars).toEqual({
         value0: filter.availableVariantLanguageIds
-      })
-    })
-
-    it('should filter by label', () => {
-      const filter = {
-        labels: [VideoLabel.collection]
-      }
-      const response = service.videoFilter(filter)
-      expect(response.query).toEqual('FILTER item.label IN @value0')
-      expect(response.bindVars).toEqual({
-        value0: filter.labels
-      })
-    })
-
-    it('should filter by id', () => {
-      const filter = {
-        ids: ['videoId']
-      }
-      const response = service.videoFilter(filter)
-      expect(response.query).toEqual('FILTER item._key IN @value0')
-      expect(response.bindVars).toEqual({
-        value0: filter.ids
       })
     })
 
