@@ -39,20 +39,31 @@ export class VideoService extends BaseService {
     const {
       title,
       availableVariantLanguageIds = [],
-      labels = null
+      labels = null,
+      subtitleLanguageIds = []
     } = filter ?? {}
+
+    const hasTitle = title != null
+    const hasAvailableVariantLanguageIds =
+      (availableVariantLanguageIds?.length ?? 0) > 0
+    const hasSubtitleLanguageIds = (subtitleLanguageIds?.length ?? 0) > 0
 
     return aql.join(
       [
-        (title != null || (availableVariantLanguageIds?.length ?? 0) > 0) &&
+        (hasTitle ||
+          hasAvailableVariantLanguageIds ||
+          hasSubtitleLanguageIds) &&
           aql`SEARCH`,
-        title != null &&
+        hasTitle &&
           aql`ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
-        title != null &&
-          (availableVariantLanguageIds?.length ?? 0) > 0 &&
+        hasTitle &&
+          (hasAvailableVariantLanguageIds || hasSubtitleLanguageIds) &&
           aql`AND`,
-        (availableVariantLanguageIds?.length ?? 0) > 0 &&
+        hasAvailableVariantLanguageIds &&
           aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
+        hasAvailableVariantLanguageIds && hasSubtitleLanguageIds && aql`AND`,
+        hasSubtitleLanguageIds &&
+          aql`item.variants.subtitle.languageId IN ${subtitleLanguageIds}`,
         labels != null && aql`FILTER item.label IN ${labels}`
       ].filter((x) => x !== false)
     )
@@ -63,7 +74,7 @@ export class VideoService extends BaseService {
     const { variantLanguageId, offset = 0, limit = 100 } = filter ?? {}
     const search = this.videoFilter(filter)
 
-    const res = await this.db.query(aql`
+    const query = aql`
     FOR item IN ${this.videosView}
       ${search}
       LIMIT ${offset}, ${limit}
@@ -76,7 +87,8 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT
         ], 0)
       }
-    `)
+    `
+    const res = await this.db.query(query)
     return await res.all()
   }
 

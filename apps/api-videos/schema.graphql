@@ -48,6 +48,7 @@ input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
   labels: [VideoLabel!]
+  subtitleLanguageIds: [ID!]
 }
 
 enum VideoVariantDownloadQuality {
