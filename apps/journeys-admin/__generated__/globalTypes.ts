@@ -506,6 +506,7 @@ export interface VideoStartEventCreateInput {
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
+  ids?: string[] | null;
   labels?: VideoLabel[] | null;
   subtitleLanguageIds?: string[] | null;
   title?: string | null;

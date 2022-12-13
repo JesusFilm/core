@@ -4,6 +4,7 @@ import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
+import { compact } from 'lodash'
 import { VideosFilter } from '../../__generated__/graphql'
 
 interface ExtendedVideosFilter extends VideosFilter {
@@ -35,37 +36,26 @@ export class VideoService extends BaseService {
 
   videosView = this.db.view('videosView')
 
-  public videoFilter(filter?: VideosFilter): AqlQuery {
+  public videoFilter(filter: VideosFilter = {}): AqlQuery {
     const {
       title,
-      availableVariantLanguageIds = [],
-      labels = null,
-      subtitleLanguageIds = []
-    } = filter ?? {}
-
-    const hasTitle = title != null
-    const hasAvailableVariantLanguageIds =
-      (availableVariantLanguageIds?.length ?? 0) > 0
-    const hasSubtitleLanguageIds = (subtitleLanguageIds?.length ?? 0) > 0
+      availableVariantLanguageIds,
+      labels,
+      ids,
+      subtitleLanguageIds
+    } = filter
 
     return aql.join(
-      [
-        (hasTitle ||
-          hasAvailableVariantLanguageIds ||
-          hasSubtitleLanguageIds) &&
-          aql`SEARCH`,
-        hasTitle &&
-          aql`ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
-        hasTitle &&
-          (hasAvailableVariantLanguageIds || hasSubtitleLanguageIds) &&
-          aql`AND`,
-        hasAvailableVariantLanguageIds &&
-          aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
-        hasAvailableVariantLanguageIds && hasSubtitleLanguageIds && aql`AND`,
-        hasSubtitleLanguageIds &&
-          aql`item.variants.subtitle.languageId IN ${subtitleLanguageIds}`,
-        labels != null && aql`FILTER item.label IN ${labels}`
-      ].filter((x) => x !== false)
+      compact([
+        title != null &&
+          aql`SEARCH ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
+        availableVariantLanguageIds != null &&
+          aql`FILTER item.variants.languageId IN ${availableVariantLanguageIds}`,
+        labels != null && aql`FILTER item.label IN ${labels}`,
+        ids != null && aql`FILTER item._key IN ${ids}`,
+        subtitleLanguageIds != null &&
+          aql`FILTER item.variants.subtitle.languageId IN ${subtitleLanguageIds}`
+      ])
     )
   }
 
