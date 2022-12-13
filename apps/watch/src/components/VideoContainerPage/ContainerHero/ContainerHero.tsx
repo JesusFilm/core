@@ -17,6 +17,7 @@ interface Props {
 
 export function ContainerHero({ openDialog }: Props): ReactElement {
   const { label, title, children, image } = useVideo()
+  const childrenLabel = getChildrenLabel(children)
 
   return (
     <Box
@@ -82,7 +83,7 @@ export function ContainerHero({ openDialog }: Props): ReactElement {
                 opacity: 0.7
               }}
             >
-              {`${children.length} ${getChildrenLabel(children)}`}
+              {`${children.length} ${childrenLabel}`}
             </Typography>
             <IconButton
               sx={{
