@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState, useEffect, useCallback } from 'react'
 import Container from '@mui/material/Container'
 import videojs from 'video.js'
 import Stack from '@mui/material/Stack'
@@ -32,13 +32,19 @@ export function VideoControls({
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
 
-  const timeFormatToHHMMSS = (time: number): string => {
-    return time < 3600
-      ? new Date(time * 1000).toISOString().substring(14, 19)
-      : new Date(time * 1000).toISOString().substring(11, 19)
-  }
+  const timeFormatToHHMMSS = useCallback((time: number): string => {
+    let durationFormat
+    const valid = !Number.isNaN(time)
+    if (valid) {
+      durationFormat =
+        time < 3600
+          ? new Date(time * 1000).toISOString().slice(14, 19)
+          : new Date(time * 1000).toISOString().slice(11, 19)
+    }
+    return durationFormat
+  }, [])
 
-  const duration = timeFormatToHHMMSS(Math.round(player.duration()))
+  const duration = timeFormatToHHMMSS(player.duration())
   const durationSeconds = Math.round(player.duration())
 
   useEffect(() => {
@@ -58,7 +64,7 @@ export function VideoControls({
         setFullscreen(false)
       }
     })
-  }, [player, currentTime, setFullscreen])
+  }, [player, currentTime, setFullscreen, timeFormatToHHMMSS])
 
   function handlePlay(): void {
     if (!play) {
@@ -112,10 +118,11 @@ export function VideoControls({
       maxWidth="xxl"
       sx={{
         position: 'relative',
-        backgroundColor: 'transparent',
         alignSelf: 'end',
         zIndex: 5,
-        pb: 4
+        pb: 4,
+        background:
+          'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%)'
       }}
     >
       <Slider
@@ -183,6 +190,7 @@ export function VideoControls({
             spacing={2}
             direction="row"
             sx={{
+              display: { xs: 'none', md: 'flex' },
               '> .MuiSlider-root': {
                 width: 0,
                 opacity: 0,
