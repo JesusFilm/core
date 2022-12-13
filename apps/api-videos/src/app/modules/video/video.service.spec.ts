@@ -108,6 +108,23 @@ describe('VideoService', () => {
       })
     })
 
+    it('should filter with title, availableVariantLanguageIds, and subtitleLanguageIds', async () => {
+      const filter = {
+        title: 'abc',
+        availableVariantLanguageIds: ['en'],
+        subtitleLanguageIds: ['529']
+      }
+      const response = await service.videoFilter(filter)
+      expect(response.query).toEqual(
+        'SEARCH ANALYZER(TOKENS(@value0, "text_en") ALL == item.title.value, "text_en") AND item.variants.languageId IN @value1 AND item.variants.subtitle.languageId IN @value2'
+      )
+      expect(response.bindVars).toEqual({
+        value0: filter.title,
+        value1: filter.availableVariantLanguageIds,
+        value2: filter.subtitleLanguageIds
+      })
+    })
+
     it('should filter with availableVariantLanguageIds', async () => {
       const filter = {
         availableVariantLanguageIds: ['en']
@@ -119,6 +136,34 @@ describe('VideoService', () => {
       expect(response.bindVars).toEqual({
         value0: filter.availableVariantLanguageIds
       })
+    })
+  })
+
+  it('should filter with availableVariantLanguageIds and subtitleLanguageIds', async () => {
+    const filter = {
+      availableVariantLanguageIds: ['en'],
+      subtitleLanguageIds: ['529']
+    }
+    const response = await service.videoFilter(filter)
+    expect(response.query).toEqual(
+      'SEARCH item.variants.languageId IN @value0 AND item.variants.subtitle.languageId IN @value1'
+    )
+    expect(response.bindVars).toEqual({
+      value0: filter.availableVariantLanguageIds,
+      value1: filter.subtitleLanguageIds
+    })
+  })
+
+  it('should filter with subtitleLanguageIds', async () => {
+    const filter = {
+      subtitleLanguageIds: ['529']
+    }
+    const response = await service.videoFilter(filter)
+    expect(response.query).toEqual(
+      'SEARCH item.variants.subtitle.languageId IN @value0'
+    )
+    expect(response.bindVars).toEqual({
+      value0: filter.subtitleLanguageIds
     })
   })
 
