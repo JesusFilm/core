@@ -5,7 +5,6 @@ import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
 import { compact } from 'lodash'
-import { compact } from 'lodash'
 import { VideosFilter } from '../../__generated__/graphql'
 
 interface ExtendedVideosFilter extends VideosFilter {
@@ -47,7 +46,6 @@ export class VideoService extends BaseService {
     } = filter
 
     return aql.join(
-      compact([
       compact([
         title != null &&
           aql`SEARCH ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
