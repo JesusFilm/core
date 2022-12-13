@@ -38,9 +38,7 @@ export function VideoContainerPage({
   }
 
   return (
-    <PageWrapper
-      hero={<ContainerHero video={content} openDialog={handleOpenDialog} />}
-    >
+    <PageWrapper hero={<ContainerHero openDialog={handleOpenDialog} />}>
       {content != null && (
         <Container maxWidth="xxl">
           <ContainerDescription
