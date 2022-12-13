@@ -49,7 +49,8 @@ export class VideoService extends BaseService {
       title == null &&
       availableVariantLanguageIds == null &&
       labels == null &&
-      ids == null
+      ids == null &&
+      subtitleLanguageIds == null
     )
       return aql``
 
@@ -63,7 +64,7 @@ export class VideoService extends BaseService {
           labels != null && aql`item.label IN ${labels}`,
           ids != null && aql`item._key IN ${ids}`,
           subtitleLanguageIds != null &&
-            aql`FILTER item.variants.subtitle.languageId IN ${subtitleLanguageIds}`
+            aql`item.variants.subtitle.languageId IN ${subtitleLanguageIds}`
         ]),
         ' AND '
       )}

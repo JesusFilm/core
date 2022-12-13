@@ -154,8 +154,8 @@ describe('VideoService', () => {
       subtitleLanguageIds: ['529']
     }
     const response = await service.videoFilter(filter)
-    expect(response.query).toEqual(
-      'FILTER item.variants.subtitle.languageId IN @value0'
+    expect(response.query).toContain(
+      'SEARCH item.variants.subtitle.languageId IN @value0'
     )
     expect(response.bindVars).toEqual({
       value0: filter.subtitleLanguageIds
