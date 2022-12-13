@@ -1,11 +1,10 @@
-import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Navigation, A11y } from 'swiper'
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
-import { styled, useTheme } from '@mui/material/styles'
+import { useTheme } from '@mui/material/styles'
 
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 
@@ -15,18 +14,6 @@ interface VideosCarouselProps {
 }
 
 SwiperCore.use([Navigation, A11y])
-
-const Slide = styled('div')<ComponentProps<typeof SwiperSlide>>(
-  ({ theme }) => ({
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '25%'
-    },
-    [theme.breakpoints.up('xl')]: {
-      width: '20%'
-    }
-  })
-)
 
 export function VideosCarousel({
   videos,
@@ -60,20 +47,48 @@ export function VideosCarousel({
       // Show multiple slides with gaps between
       spaceBetween={16}
       slidesPerView="auto"
-      // centeredSlides
-      // centeredSlidesBounds
-      // centerInsufficientSlides
+      slidesPerGroup={3}
       breakpoints={{
-        1200: {
-          // slidesPerView: 4,
-          slidesPerGroup: 3
+        1454: {
+          spaceBetween: 20,
+          slidesPerGroup: 3,
+          slidesPerView: 3.92
         },
-        1550: {
+        1620: {
+          spaceBetween: 20,
           slidesPerGroup: 4,
-          spaceBetween: 20
+          slidesPerView: 4.2
         },
-        2100: {
-          slidesPerGroup: 5
+        1680: {
+          slidesPerView: 'auto'
+        },
+        2242: {
+          spaceBetween: 20,
+          slidesPerGroup: 4,
+          slidesPerView: 4.92
+        },
+        2312: {
+          spaceBetween: 20,
+          slidesPerGroup: 5,
+          slidesPerView: 5.2
+        },
+        2370: {
+          slidesPerView: 'auto'
+        },
+        2928: {
+          spaceBetween: 20,
+          slidesPerGroup: 5,
+          slidesPerView: 5.92
+        },
+        3008: {
+          spaceBetween: 20,
+          slidesPerGroup: 6,
+          slidesPerView: 6.2
+        },
+        3070: {
+          spaceBetween: 20,
+          slidesPerGroup: 6,
+          slidesPerView: 'auto'
         }
       }}
       // Set custom navigation
@@ -85,6 +100,8 @@ export function VideosCarousel({
       updateOnWindowResize
       onResize={(swiper) => {
         setMarginOffset(calculateMarginOffset(theme.breakpoints.values.xxl))
+        // Fix slide width after resize
+        swiper.updateSlides()
         // Set touch move on resize
         swiper.allowTouchMove = window.innerWidth < theme.breakpoints.values.xl
       }}
