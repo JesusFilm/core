@@ -76,20 +76,11 @@ describe('Edit Hint field', () => {
     expect(field).toHaveValue('A hint message')
   })
 
-  it('should display max hint length', () => {
-    const { getByRole } = render(<HintMock />)
-    const field = getByRole('textbox', { name: 'Hint' })
-
-    expect(field).toHaveAccessibleDescription(
-      'Can only be {{maxCharacters}} characters'
-    )
-  })
-
   it('should not be able to type beyond max character limit', () => {
     const { getByRole } = render(<HintMock />)
     const field = getByRole('textbox', { name: 'Hint' })
 
-    expect(field).toHaveAttribute('maxlength', '22')
+    expect(field).toHaveAttribute('maxlength', '250')
   })
 
   it('should update the hint on blur', async () => {

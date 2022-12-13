@@ -59,7 +59,6 @@ export function Label(): ReactElement {
 
   const initialValues =
     selectedBlock != null ? { textResponseLabel: selectedBlock.label } : null
-  const maxCharacters = 16
 
   return (
     <Box sx={{ px: 6, py: 4 }}>
@@ -75,10 +74,7 @@ export function Label(): ReactElement {
                 fullWidth
                 value={values.textResponseLabel}
                 placeholder={t('Your answer here')}
-                inputProps={{ maxLength: maxCharacters }}
-                helperText={t('Can only be {{maxCharacters}} characters', {
-                  maxCharacters
-                })}
+                inputProps={{ maxLength: 250 }}
                 onChange={handleChange}
                 onBlur={(e) => {
                   handleBlur(e)

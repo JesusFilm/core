@@ -12,12 +12,6 @@ export enum IdType {
     slug = "slug"
 }
 
-export enum VideoType {
-    episode = "episode",
-    standalone = "standalone",
-    playlist = "playlist"
-}
-
 export enum VideoLabel {
     collection = "collection",
     episode = "episode",
@@ -35,7 +29,6 @@ export enum VideoVariantDownloadQuality {
 export class VideosFilter {
     availableVariantLanguageIds?: Nullable<string[]>;
     title?: Nullable<string>;
-    types?: Nullable<VideoType[]>;
     labels?: Nullable<VideoLabel[]>;
 }
 
@@ -46,10 +39,15 @@ export class Translation {
     primary: boolean;
 }
 
+export class LanguageWithSlug {
+    __typename?: 'LanguageWithSlug';
+    language?: Nullable<Language>;
+    slug?: Nullable<string>;
+}
+
 export class Video {
     __typename?: 'Video';
     id: string;
-    type: VideoType;
     label: VideoLabel;
     primaryLanguageId: string;
     title: Translation[];
@@ -60,9 +58,10 @@ export class Video {
     image?: Nullable<string>;
     imageAlt: Translation[];
     variantLanguages: Language[];
-    slug: Translation[];
+    slug: string;
     noIndex?: Nullable<boolean>;
     children: Video[];
+    variantLanguagesWithSlug: LanguageWithSlug[];
     variant?: Nullable<VideoVariant>;
 }
 
@@ -81,6 +80,7 @@ export class VideoVariant {
     duration: number;
     language: Language;
     subtitle: Translation[];
+    slug: string;
 }
 
 export class Language {
@@ -90,7 +90,7 @@ export class Language {
 export abstract class IQuery {
     abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 
-    abstract video(id: string, idType?: Nullable<IdType>): Video | Promise<Video>;
+    abstract video(id: string, idType?: Nullable<IdType>): Nullable<Video> | Promise<Nullable<Video>>;
 }
 
 type Nullable<T> = T | null;

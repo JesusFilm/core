@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoType } from "./globalTypes";
+import { VideoLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetHomeVideo
@@ -14,9 +14,14 @@ export interface GetHomeVideo_video_title {
   value: string;
 }
 
-export interface GetHomeVideo_video_variant {
-  __typename: "VideoVariant";
-  duration: number;
+export interface GetHomeVideo_video_imageAlt {
+  __typename: "Translation";
+  value: string;
+}
+
+export interface GetHomeVideo_video_snippet {
+  __typename: "Translation";
+  value: string;
 }
 
 export interface GetHomeVideo_video_children {
@@ -24,27 +29,35 @@ export interface GetHomeVideo_video_children {
   id: string;
 }
 
-export interface GetHomeVideo_video_slug {
-  __typename: "Translation";
-  value: string;
+export interface GetHomeVideo_video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  hls: string | null;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
 }
 
 export interface GetHomeVideo_video {
   __typename: "Video";
   id: string;
-  type: VideoType;
-  image: string | null;
+  label: VideoLabel;
   title: GetHomeVideo_video_title[];
-  variant: GetHomeVideo_video_variant | null;
-  children: GetHomeVideo_video_children[];
+  image: string | null;
+  imageAlt: GetHomeVideo_video_imageAlt[];
+  snippet: GetHomeVideo_video_snippet[];
   /**
-   * slug is a permanent link to the video. It should only be appended, not edited or deleted
+   * slug is a permanent link to the video.
    */
-  slug: GetHomeVideo_video_slug[];
+  slug: string;
+  children: GetHomeVideo_video_children[];
+  variant: GetHomeVideo_video_variant | null;
 }
 
 export interface GetHomeVideo {
-  video: GetHomeVideo_video;
+  video: GetHomeVideo_video | null;
 }
 
 export interface GetHomeVideoVariables {
