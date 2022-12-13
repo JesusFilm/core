@@ -22,8 +22,6 @@ export function VideoContentPage(): ReactElement {
   const { container, children, slug, variant } = useVideo()
   const [openShare, setOpenShare] = useState(false)
 
-  children.forEach((child) => console.log(child.label))
-
   return (
     <PageWrapper hero={<VideoHero />}>
       <>
