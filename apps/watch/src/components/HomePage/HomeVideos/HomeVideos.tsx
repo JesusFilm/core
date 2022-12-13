@@ -5,7 +5,7 @@ import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 import { HomeVideoCard } from './Card'
 
 interface VideoListGridProps {
-  data: VideoChildFields[] | undefined
+  data: VideoChildFields[]
   loading?: boolean
 }
 
@@ -46,9 +46,7 @@ export function HomeVideos({ data }: VideoListGridProps): ReactElement {
               }
             }}
           >
-            <HomeVideoCard
-              video={data?.find((video) => video.id === item.id)}
-            />
+            <HomeVideoCard video={item} />
           </Grid>
         ))}
     </Grid>

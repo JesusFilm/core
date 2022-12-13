@@ -45,18 +45,29 @@ export class VideoService extends BaseService {
       subtitleLanguageIds
     } = filter
 
-    return aql.join(
-      compact([
-        title != null &&
-          aql`SEARCH ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
-        availableVariantLanguageIds != null &&
-          aql`FILTER item.variants.languageId IN ${availableVariantLanguageIds}`,
-        labels != null && aql`FILTER item.label IN ${labels}`,
-        ids != null && aql`FILTER item._key IN ${ids}`,
-        subtitleLanguageIds != null &&
-          aql`FILTER item.variants.subtitle.languageId IN ${subtitleLanguageIds}`
-      ])
+    if (
+      title == null &&
+      availableVariantLanguageIds == null &&
+      labels == null &&
+      ids == null
     )
+      return aql``
+
+    return aql`
+      SEARCH ${aql.join(
+        compact([
+          title != null &&
+            aql`ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
+          availableVariantLanguageIds != null &&
+            aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
+          labels != null && aql`item.label IN ${labels}`,
+          ids != null && aql`item._key IN ${ids}`,
+          subtitleLanguageIds != null &&
+            aql`FILTER item.variants.subtitle.languageId IN ${subtitleLanguageIds}`
+        ]),
+        ' AND '
+      )}
+    `
   }
 
   @KeyAsId()
