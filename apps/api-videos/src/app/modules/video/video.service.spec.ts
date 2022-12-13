@@ -6,6 +6,7 @@ import { DocumentCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
 import { VideoLabel } from '../../__generated__/graphql'
+import { VideoLabel } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 const baseVideo: GeneratedAqlQuery[] = [
