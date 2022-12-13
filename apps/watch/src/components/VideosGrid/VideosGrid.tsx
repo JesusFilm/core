@@ -23,7 +23,7 @@ export function VideosGrid({
   onLoadMore,
   showLoadMore = onLoadMore !== undefined,
   videos,
-  routePrefix
+  routePrefix = ''
 }: VideosGridProps): ReactElement {
   const gridTheme = createTheme(
     deepmerge(
@@ -53,11 +53,12 @@ export function VideosGrid({
         {(videos?.length ?? 0) > 0 &&
           videos?.map((video, index) => (
             <Grid item key={index} md={6} sm={12} xs={12} lg={4} xl={3}>
-              {video.label === 'collection' ? (
-                <VideosGridCard video={video} />
-              ) : (
-                <VideosGridCard video={video} routePrefix={routePrefix} />
-              )}
+              <VideosGridCard
+                video={video}
+                routePrefix={
+                  video.children.length > 0 ? undefined : routePrefix
+                }
+              />
             </Grid>
           ))}
         {loading &&

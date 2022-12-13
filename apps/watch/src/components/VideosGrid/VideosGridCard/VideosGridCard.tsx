@@ -27,7 +27,8 @@ export function VideosGridCard({
     <Card
       sx={{
         boxShadow: 0,
-        borderRadius: '8px'
+        borderRadius: '8px',
+        overflow: 'hidden'
       }}
     >
       {video == null ? (
@@ -53,11 +54,23 @@ export function VideosGridCard({
               width: '100%'
             }}
           >
-            <Box sx={{ position: 'relative', alignContent: 'end' }}>
+            <Box
+              sx={{
+                overflow: 'hidden',
+                position: 'relative',
+                alignContent: 'end',
+                borderRadius: '8px'
+              }}
+            >
               <CardMedia
                 sx={{
                   height: { xs: '168px', sm: '146', md: '160px' },
-                  width: 'auto'
+                  width: 'auto',
+                  transition: 'transform .10s ease',
+                  transform: 'scale(100%)',
+                  '&:hover': {
+                    transform: 'scale(103%)'
+                  }
                 }}
               >
                 <Image
@@ -65,37 +78,34 @@ export function VideosGridCard({
                   alt={video.imageAlt[0].value}
                   layout="fill"
                   objectFit="cover"
-                  style={{ borderRadius: '8px' }}
                 />
-                <Stack
-                  direction="row"
-                  sx={{
-                    alignItems: 'center',
-                    position: 'absolute',
-                    bottom: 5,
-                    right: 5,
-                    bgcolor: 'rgba(0, 0, 0, 0.5)',
-                    color: 'primary.contrastText',
-                    borderRadius: '8px',
-                    padding: '8px'
-                  }}
-                >
-                  {video.children.length === 0 ? (
-                    <>
-                      <PlayArrow sx={{ fontSize: '1rem' }} />
-                      <Typography variant="body1">
-                        {secondsToTimeFormatTrimmed(
-                          video.variant?.duration ?? 0
-                        )}
-                      </Typography>
-                    </>
-                  ) : (
-                    <Typography variant="body1">
-                      {`${video.children.length} episodes`}
-                    </Typography>
-                  )}
-                </Stack>
               </CardMedia>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: 'center',
+                  position: 'absolute',
+                  bottom: 5,
+                  right: 5,
+                  bgcolor: 'rgba(0, 0, 0, 0.5)',
+                  color: 'primary.contrastText',
+                  borderRadius: '8px',
+                  padding: '8px'
+                }}
+              >
+                {video.children.length === 0 ? (
+                  <>
+                    <PlayArrow sx={{ fontSize: '1rem' }} />
+                    <Typography variant="body1">
+                      {secondsToTimeFormatTrimmed(video.variant?.duration ?? 0)}
+                    </Typography>
+                  </>
+                ) : (
+                  <Typography variant="body1">
+                    {`${video.children.length} episodes`}
+                  </Typography>
+                )}
+              </Stack>
             </Box>
             <CardContent sx={{ px: 0, pt: 3, pb: 5 }}>
               <Typography variant="h6">{video?.title[0].value}</Typography>

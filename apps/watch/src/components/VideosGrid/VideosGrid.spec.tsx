@@ -27,4 +27,12 @@ describe('VideosGrid', () => {
       videos.length
     )
   })
+
+  // it('should display correct link', () => {
+  //   const routePrefix = 'thisIsTheRoutePrefix'
+  //   const { getAllByLabelText } = render(
+  //     <VideosGrid videos={videos.slice(0, 7)} routePrefix={routePrefix} />
+  //   )
+  //   const videosGridArray = getAllByLabelText('collection-page-video-card')
+  // })
 })
