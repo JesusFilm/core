@@ -12,9 +12,10 @@ import { HeroOverlay } from '../../HeroOverlay'
 
 interface Props {
   video: VideoContentFields
+  openDialog: () => void
 }
 
-export function ContainerHero({ video }: Props): ReactElement {
+export function ContainerHero({ video, openDialog }: Props): ReactElement {
   const type = video.label === 'series' ? 'series' : 'collection'
   const title = video.title[0].value
   const length = video.children.length
@@ -91,6 +92,7 @@ export function ContainerHero({ video }: Props): ReactElement {
                 display: { xs: 'flex', sm: 'none' },
                 ml: 'auto'
               }}
+              onClick={() => openDialog()}
             >
               <ShareOutlinedIcon
                 color="primary"
