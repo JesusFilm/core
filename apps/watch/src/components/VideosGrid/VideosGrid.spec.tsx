@@ -1,5 +1,4 @@
 import { fireEvent, render } from '@testing-library/react'
-
 import { videos } from '../Videos/testData'
 import { VideosGrid } from './VideosGrid'
 
@@ -28,11 +27,25 @@ describe('VideosGrid', () => {
     )
   })
 
-  // it('should display correct link', () => {
-  //   const routePrefix = 'thisIsTheRoutePrefix'
-  //   const { getAllByLabelText } = render(
-  //     <VideosGrid videos={videos.slice(0, 7)} routePrefix={routePrefix} />
-  //   )
-  //   const videosGridArray = getAllByLabelText('collection-page-video-card')
-  // })
+  it('should omit route prefix for collection link', () => {
+    const routePrefix = 'thisIsTheRoutePrefix'
+    const { getByLabelText } = render(
+      <VideosGrid videos={[videos[0]]} routePrefix={routePrefix} />
+    )
+    expect(getByLabelText('collection-page-video-card')).toHaveAttribute(
+      'href',
+      `/${videos[0].slug}/english`
+    )
+  })
+
+  it('should have route prefix for non-collection link', () => {
+    const routePrefix = 'thisIsTheRoutePrefix'
+    const { getByLabelText } = render(
+      <VideosGrid videos={[videos[2]]} routePrefix={routePrefix} />
+    )
+    expect(getByLabelText('collection-page-video-card')).toHaveAttribute(
+      'href',
+      `/${routePrefix}/${videos[2].slug}/english`
+    )
+  })
 })
