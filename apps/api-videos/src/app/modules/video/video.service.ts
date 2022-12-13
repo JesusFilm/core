@@ -4,6 +4,7 @@ import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
+import { compact } from 'lodash'
 import { VideosFilter } from '../../__generated__/graphql'
 
 interface ExtendedVideosFilter extends VideosFilter {
@@ -35,26 +36,18 @@ export class VideoService extends BaseService {
 
   videosView = this.db.view('videosView')
 
-  public videoFilter(filter?: VideosFilter): AqlQuery {
-    const {
-      title,
-      availableVariantLanguageIds = [],
-      labels = null
-    } = filter ?? {}
+  public videoFilter(filter: VideosFilter = {}): AqlQuery {
+    const { title, availableVariantLanguageIds, labels, ids } = filter
 
     return aql.join(
-      [
-        (title != null || (availableVariantLanguageIds?.length ?? 0) > 0) &&
-          aql`SEARCH`,
+      compact([
         title != null &&
-          aql`ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
-        title != null &&
-          (availableVariantLanguageIds?.length ?? 0) > 0 &&
-          aql`AND`,
-        (availableVariantLanguageIds?.length ?? 0) > 0 &&
-          aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
-        labels != null && aql`FILTER item.label IN ${labels}`
-      ].filter((x) => x !== false)
+          aql`SEARCH ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
+        availableVariantLanguageIds != null &&
+          aql`FILTER item.variants.languageId IN ${availableVariantLanguageIds}`,
+        labels != null && aql`FILTER item.label IN ${labels}`,
+        ids != null && aql`FILTER item._key IN ${ids}`
+      ])
     )
   }
 
