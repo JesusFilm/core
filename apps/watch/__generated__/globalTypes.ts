@@ -280,6 +280,7 @@ export interface VideoStartEventCreateInput {
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
+  ids?: string[] | null;
   labels?: VideoLabel[] | null;
   title?: string | null;
 }

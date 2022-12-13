@@ -78,7 +78,8 @@ describe('VideoResolver', () => {
           info,
           {
             title: 'abc',
-            availableVariantLanguageIds: ['fr']
+            availableVariantLanguageIds: ['fr'],
+            ids: ['1_jf-0-0']
           },
           100,
           200
@@ -87,6 +88,7 @@ describe('VideoResolver', () => {
       expect(service.filterAll).toHaveBeenCalledWith({
         title: 'abc',
         availableVariantLanguageIds: ['fr'],
+        ids: ['1_jf-0-0'],
         variantLanguageId: 'en',
         offset: 100,
         limit: 200
