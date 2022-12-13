@@ -1,4 +1,5 @@
 import { ComponentStory, Meta } from '@storybook/react'
+import { noop } from 'lodash'
 import { watchConfig } from '../../../libs/storybook/config'
 import { ContainerDescription } from './ContainerDescription'
 
@@ -19,7 +20,8 @@ export const Default = Template.bind({})
 
 Default.args = {
   value:
-    'This is where the description will go, to the left hand side of the share button'
+    'This is where the description will go, to the left hand side of the share button',
+  openDialog: noop
 }
 
 export default ContainerDescriptionStory as Meta

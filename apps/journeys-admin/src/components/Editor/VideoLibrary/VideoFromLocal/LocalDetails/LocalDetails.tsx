@@ -79,7 +79,7 @@ export function LocalDetails({
     })
   }
 
-  const time = data?.video.variant?.duration ?? 0
+  const time = data?.video?.variant?.duration ?? 0
   const duration =
     time < 3600
       ? new Date(time * 1000).toISOString().substring(14, 19)
@@ -90,7 +90,7 @@ export function LocalDetails({
       playerRef.current = videojs(videoRef.current, {
         fluid: true,
         controls: true,
-        poster: data.video.image ?? undefined
+        poster: data.video?.image ?? undefined
       })
       playerRef.current.on('playing', () => {
         setPlaying(true)
@@ -137,7 +137,7 @@ export function LocalDetails({
               playsInline
             >
               <source
-                src={data?.video.variant?.hls ?? ''}
+                src={data?.video?.variant?.hls ?? ''}
                 type="application/x-mpegURL"
               />
             </video>
@@ -196,7 +196,7 @@ export function LocalDetails({
         onClose={() => setOpenLanguage(false)}
         onChange={handleChange}
         language={selectedLanguage}
-        languages={data?.video.variantLanguages}
+        languages={data?.video?.variantLanguages}
         loading={loading}
       />
     </Stack>
