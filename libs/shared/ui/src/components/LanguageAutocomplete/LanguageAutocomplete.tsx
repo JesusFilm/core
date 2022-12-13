@@ -1,5 +1,7 @@
-import { ReactElement, useMemo } from 'react'
-import Autocomplete from '@mui/material/Autocomplete'
+import { ReactElement, ReactNode, useMemo, HTMLAttributes } from 'react'
+import Autocomplete, {
+  AutocompleteRenderInputParams
+} from '@mui/material/Autocomplete'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -26,13 +28,22 @@ interface LanguageAutocompleteProps {
   value?: LanguageOption
   languages?: Language[]
   loading: boolean
+  renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
+  renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
+}
+
+interface DefaultRenderOptionProps {
+  localName?: string
+  nativeName?: string
 }
 
 export function LanguageAutocomplete({
   onChange: handleChange,
   value,
   languages,
-  loading
+  loading,
+  renderInput,
+  renderOption
 }: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
     return (
@@ -60,6 +71,45 @@ export function LanguageAutocomplete({
     return []
   }, [options])
 
+  const defaultRenderInput = (
+    params: AutocompleteRenderInputParams
+  ): ReactNode => (
+    <TextField
+      {...params}
+      hiddenLabel
+      placeholder="Search Language"
+      variant="filled"
+      InputProps={{
+        ...params.InputProps,
+        sx: { paddingBottom: 2 },
+        endAdornment: (
+          <>
+            {loading ? <CircularProgress color="inherit" size={20} /> : null}
+            {params.InputProps.endAdornment}
+          </>
+        )
+      }}
+    />
+  )
+
+  const defaultRenderOption = (
+    props: HTMLAttributes<HTMLLIElement>,
+    { localName, nativeName }: DefaultRenderOptionProps
+  ): ReactNode => {
+    return (
+      <li {...props}>
+        <Stack>
+          <Typography>{localName ?? nativeName}</Typography>
+          {localName != null && nativeName != null && (
+            <Typography variant="body2" color="text.secondary">
+              {nativeName}
+            </Typography>
+          )}
+        </Stack>
+      </li>
+    )
+  }
+
   return (
     <Autocomplete
       disableClearable
@@ -72,40 +122,8 @@ export function LanguageAutocomplete({
       options={sortedOptions}
       loading={loading}
       disablePortal={process.env.NODE_ENV === 'test'}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          hiddenLabel
-          placeholder="Search Language"
-          variant="filled"
-          InputProps={{
-            ...params.InputProps,
-            sx: { paddingBottom: 2 },
-            endAdornment: (
-              <>
-                {loading ? (
-                  <CircularProgress color="inherit" size={20} />
-                ) : null}
-                {params.InputProps.endAdornment}
-              </>
-            )
-          }}
-        />
-      )}
-      renderOption={(props, { localName, nativeName }) => {
-        return (
-          <li {...props}>
-            <Stack>
-              <Typography>{localName ?? nativeName}</Typography>
-              {localName != null && nativeName != null && (
-                <Typography variant="body2" color="text.secondary">
-                  {nativeName}
-                </Typography>
-              )}
-            </Stack>
-          </li>
-        )
-      }}
+      renderInput={renderInput != null ? renderInput : defaultRenderInput}
+      renderOption={renderOption != null ? renderOption : defaultRenderOption}
     />
   )
 }

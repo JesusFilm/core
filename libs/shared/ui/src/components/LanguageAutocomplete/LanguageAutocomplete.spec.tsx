@@ -1,4 +1,8 @@
 import { fireEvent, render } from '@testing-library/react'
+import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete'
+import { ReactNode, HTMLAttributes } from 'react'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { LanguageAutocomplete, Language } from '.'
 
 describe('LanguageAutocomplete', () => {
@@ -103,5 +107,40 @@ describe('LanguageAutocomplete', () => {
       />
     )
     expect(getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('should render with custom render input and render option', () => {
+    const renderInput = (params: AutocompleteRenderInputParams): ReactNode => (
+      <TextField
+        {...params}
+        InputProps={{
+          ...params.InputProps
+        }}
+        data-testid="test-input"
+      />
+    )
+
+    const renderOption = (props: HTMLAttributes<HTMLLIElement>): ReactNode => (
+      <li {...props} data-testid="test-option">
+        <Typography>hello world</Typography>
+      </li>
+    )
+    const { getAllByTestId, getByTestId, getByRole } = render(
+      <LanguageAutocomplete
+        onChange={jest.fn()}
+        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={languages}
+        loading={false}
+        renderInput={renderInput}
+        renderOption={renderOption}
+      />
+    )
+
+    expect(getByTestId('test-input')).toBeInTheDocument()
+
+    fireEvent.focus(getByRole('textbox'))
+    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
+
+    expect(getAllByTestId('test-option')).toHaveLength(3)
   })
 })
