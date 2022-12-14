@@ -32,11 +32,6 @@ interface LanguageAutocompleteProps {
   renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
 }
 
-interface DefaultRenderOptionProps {
-  localName?: string
-  nativeName?: string
-}
-
 export function LanguageAutocomplete({
   onChange: handleChange,
   value,
@@ -94,7 +89,7 @@ export function LanguageAutocomplete({
 
   const defaultRenderOption = (
     props: HTMLAttributes<HTMLLIElement>,
-    { localName, nativeName }: DefaultRenderOptionProps
+    { localName, nativeName }: LanguageOption
   ): ReactNode => {
     return (
       <li {...props}>
