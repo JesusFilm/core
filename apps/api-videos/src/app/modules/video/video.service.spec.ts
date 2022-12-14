@@ -149,6 +149,19 @@ describe('VideoService', () => {
     })
   })
 
+  it('should filter with subtitleLanguageIds', async () => {
+    const filter = {
+      subtitleLanguageIds: ['529']
+    }
+    const response = await service.videoFilter(filter)
+    expect(response.query).toContain(
+      'SEARCH item.variants.subtitle.languageId IN @value0'
+    )
+    expect(response.bindVars).toEqual({
+      value0: filter.subtitleLanguageIds
+    })
+  })
+
   describe('filterAll', () => {
     it('should query', async () => {
       db.query.mockImplementationOnce(async (q) => {

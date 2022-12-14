@@ -1,1 +1,1 @@
-export { FilmType, HomeVideoCard } from './HomeVideoCard'
+export { HomeVideoCard } from './HomeVideoCard'
