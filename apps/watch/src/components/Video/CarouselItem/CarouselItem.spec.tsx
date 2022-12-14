@@ -49,7 +49,7 @@ describe('CarouselItem', () => {
       expect(getByText('Chapter 4')).toBeInTheDocument()
     })
   })
-  it('should display episode label for collection', async () => {
+  it('should display chapter label for collection', async () => {
     const { getByText } = render(
       <VideoProvider
         value={{
@@ -60,7 +60,7 @@ describe('CarouselItem', () => {
       </VideoProvider>
     )
     await waitFor(() => {
-      expect(getByText('Episode 4')).toBeInTheDocument()
+      expect(getByText('Chapter 4')).toBeInTheDocument()
     })
   })
   it('should display episode label for episode', async () => {

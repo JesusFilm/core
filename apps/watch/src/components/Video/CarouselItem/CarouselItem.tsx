@@ -93,7 +93,9 @@ export function CarouselItem({
           paddingTop="10px"
           sx={{ opacity: '50%' }}
         >
-          {label === 'segment' ? `Chapter ${index}` : `Episode ${index}`}
+          {label === 'segment' || label === 'collection'
+            ? `Chapter ${index}`
+            : `Episode ${index}`}
         </Typography>
       ) : (
         <Skeleton sx={{ width: '90px' }} />
