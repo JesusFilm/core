@@ -49,7 +49,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
   container_definitions = jsonencode([
     {
-      name      = var.service_config.name
+      name      = "jfp-${var.service_config.name}-${var.env}"
       image     = "${aws_ecr_repository.ecr_repository.repository_url}:latest"
       cpu       = var.service_config.cpu
       memory    = var.service_config.memory
@@ -78,6 +78,22 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   ])
 }
 
+resource "aws_alb_listener" "alb_listener" {
+  load_balancer_arn = var.service_config.alb_listener.alb_arn
+  port              = var.service_config.alb_listener.port
+  protocol          = var.service_config.alb_listener.protocol
+  certificate_arn   = var.service_config.alb_listener.protocol == "HTTPS" ? var.service_config.alb_listener.certificate_arn : null
+
+  default_action {
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "No routes defined"
+      status_code  = "200"
+    }
+  }
+}
+
 resource "aws_alb_target_group" "alb_target_group" {
   name        = "${var.service_config.name}-${var.env}-tg"
   port        = var.service_config.alb_target_group.port
@@ -86,13 +102,16 @@ resource "aws_alb_target_group" "alb_target_group" {
   vpc_id      = var.ecs_config.vpc_id
 
   health_check {
-    path     = var.service_config.alb_target_group.health_check_path
-    protocol = var.service_config.alb_target_group.protocol
+    healthy_threshold = 2
+    interval          = 5
+    timeout           = 4
+    path              = var.service_config.alb_target_group.health_check_path
+    protocol          = var.service_config.alb_target_group.protocol
   }
 }
 
 resource "aws_alb_listener_rule" "alb_listener_rule" {
-  listener_arn = var.ecs_config.alb_listener_arn
+  listener_arn = aws_alb_listener.alb_listener.arn
   action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.alb_target_group.arn
@@ -120,7 +139,7 @@ resource "aws_ecs_service" "ecs_service" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.alb_target_group.arn
-    container_name   = var.service_config.name
+    container_name   = "jfp-${var.service_config.name}-${var.env}"
     container_port   = var.service_config.container_port
   }
 
@@ -170,7 +189,7 @@ resource "aws_appautoscaling_policy" "ecs_policy_cpu" {
 }
 
 resource "aws_route53_record" "record" {
-  name    = var.env == "prod" ? var.service_config.name : "${var.service_config.name}-${var.env}"
+  name    = var.service_config.name
   type    = "CNAME"
   ttl     = 300
   zone_id = var.service_config.zone_id

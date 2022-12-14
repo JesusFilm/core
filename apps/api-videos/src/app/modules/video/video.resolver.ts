@@ -31,8 +31,10 @@ export class VideoResolver {
       title: where?.title ?? undefined,
       availableVariantLanguageIds:
         where?.availableVariantLanguageIds ?? undefined,
+      ids: where?.ids ?? undefined,
       variantLanguageId,
       labels: where?.labels ?? undefined,
+      subtitleLanguageIds: where?.subtitleLanguageIds ?? undefined,
       offset,
       limit
     })

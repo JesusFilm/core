@@ -54,13 +54,15 @@ export function HeaderMenuPanel({
     <Paper elevation={0}>
       <Stack spacing={0.5} direction="row" justifyContent="space-between" p={8}>
         <NextLink href="/" passHref>
-          <Image
-            src={logo}
-            width="160"
-            height="40"
-            alt="Watch Logo"
-            style={{ cursor: 'pointer' }}
-          />
+          <a>
+            <Image
+              src={logo}
+              width="160"
+              height="40"
+              alt="Watch Logo"
+              style={{ cursor: 'pointer' }}
+            />
+          </a>
         </NextLink>
         <IconButton
           color="inherit"

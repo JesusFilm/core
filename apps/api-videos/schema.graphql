@@ -48,6 +48,8 @@ input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
   labels: [VideoLabel!]
+  ids: [ID!]
+  subtitleLanguageIds: [ID!]
 }
 
 enum VideoVariantDownloadQuality {
@@ -79,5 +81,5 @@ extend type Language @key(fields: "id") {
 
 extend type Query {
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  video(id: ID!, idType: IdType): Video!
+  video(id: ID!, idType: IdType): Video
 }

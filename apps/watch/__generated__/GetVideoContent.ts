@@ -131,7 +131,7 @@ export interface GetVideoContent_content {
 }
 
 export interface GetVideoContent {
-  content: GetVideoContent_content;
+  content: GetVideoContent_content | null;
 }
 
 export interface GetVideoContentVariables {
