@@ -4,91 +4,62 @@ import { Database, aql } from 'arangojs'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
-import { AqlQuery } from 'arangojs/aql'
-import { IdType, VideoType } from '../../__generated__/graphql'
+import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
+import { VideoLabel } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
+
+const baseVideo: GeneratedAqlQuery[] = [
+  aql`_key: item._key,
+        label: item.label,
+        title: item.title,
+        snippet: item.snippet,
+        description: item.description,
+        studyQuestions: item.studyQuestions,
+        image: item.image,
+        primaryLanguageId: item.primaryLanguageId,
+        childIds: item.childIds,
+        slug: item.slug,
+        noIndex: item.noIndex,
+        seoTitle: item.seoTitle,
+        imageAlt: item.imageAlt,
+        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
+        variantLanguagesWithSlug: item.variants[* RETURN {slug: CURRENT.slug, languageId: CURRENT.languageId}],`
+]
 
 const DEFAULT_QUERY = aql`
     FOR item IN 
       
       LIMIT ${0}, ${100}
       RETURN {
-        _key: item._key,
-        type: item.type,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        tagIds: item.tagIds,
-        primaryLanguageId: item.primaryLanguageId,
+        ${aql.join(baseVideo)}
         variant: NTH(item.variants[* 
           FILTER CURRENT.languageId == NOT_NULL(${null}, item.primaryLanguageId)
           LIMIT 1 RETURN CURRENT
-        ], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
+        ], 0)
       }
     `.query
 
-const VIDEO_EPISODES_QUERY = aql`
-    FOR item IN 
+const VIDEO_CHILDREN_QUERY = aql`
+    FOR item IN undefined
       FILTER item._key IN @value0
       RETURN {
-        _key: item._key,
-        type: item.type,
-        title: item.title,
-        snippet: item.snippet,
-        description: item.description,
-        studyQuestions: item.studyQuestions,
-        image: item.image,
-        tagIds: item.tagIds,
-        primaryLanguageId: item.primaryLanguageId,
-        variant: NTH(item.variants[* 
+        ${aql.join(baseVideo)}
+        variant: NTH(item.variants[*
           FILTER CURRENT.languageId == NOT_NULL(@value1, item.primaryLanguageId)
-          LIMIT 1 RETURN CURRENT], 0),
-        variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-        episodeIds: item.episodeIds,
-        slug: item.slug,
-        noIndex: item.noIndex,
-        seoTitle: item.seoTitle,
-        imageAlt: item.imageAlt
+          LIMIT 1 RETURN CURRENT], 0)
       }
     `.query
 
-const EPISODES_QUERY = aql`
-    FOR video IN undefined
-      FILTER @value0 IN video.slug[*].value
+const GET_VIDEO_BY_SLUG_QUERY = aql`
+    FOR item IN undefined
+      FILTER @value0 IN item.variants[*].slug
       LIMIT 1
-      FOR item IN 
-        FILTER item._key IN video.episodeIds
-        
-        LIMIT @value1, @value2
-        RETURN {
-          _key: item._key,
-          type: item.type,
-          title: item.title,
-          snippet: item.snippet,
-          description: item.description,
-          studyQuestions: item.studyQuestions,
-          image: item.image,
-          tagIds: item.tagIds,
-          primaryLanguageId: item.primaryLanguageId,
-          variant: NTH(item.variants[* 
-            FILTER CURRENT.languageId == NOT_NULL(@value3, item.primaryLanguageId)
-            LIMIT 1 RETURN CURRENT
-          ], 0),
-          variantLanguages: item.variants[* RETURN { id : CURRENT.languageId }],
-          episodeIds: item.episodeIds,
-          slug: item.slug,
-          noIndex: item.noIndex,
-          seoTitle: item.seoTitle,
-          imageAlt: item.imageAlt
-        }
+      RETURN {
+        ${aql.join(baseVideo)}
+        variant: NTH(item.variants[*
+          FILTER CURRENT.slug == @value0
+          LIMIT 1 RETURN CURRENT], 0)
+      }
     `.query
 
 describe('VideoService', () => {
@@ -112,51 +83,68 @@ describe('VideoService', () => {
   })
 
   describe('videoFilter', () => {
-    it('should filter with specific types', async () => {
-      const filter = {
-        types: [VideoType.playlist, VideoType.standalone]
-      }
-      const response = await service.videoFilter(filter)
-      expect(response.query).toEqual('FILTER item.type IN @value0')
-      expect(response.bindVars).toEqual({ value0: filter.types })
-    })
-
-    it('should filter with title', async () => {
+    it('should search with title', () => {
       const filter = {
         title: 'abc'
       }
-      const response = await service.videoFilter(filter)
-      expect(response.query).toEqual(
+      const response = service.videoFilter(filter)
+      expect(response.query).toContain(
         'SEARCH ANALYZER(TOKENS(@value0, "text_en") ALL == item.title.value, "text_en")'
       )
       expect(response.bindVars).toEqual({ value0: filter.title })
     })
 
-    it('should filter with title and availableVariantLanguageIds', async () => {
-      const filter = {
-        title: 'abc',
-        availableVariantLanguageIds: ['en']
-      }
-      const response = await service.videoFilter(filter)
-      expect(response.query).toEqual(
-        'SEARCH ANALYZER(TOKENS(@value0, "text_en") ALL == item.title.value, "text_en") AND item.variants.languageId IN @value1'
-      )
-      expect(response.bindVars).toEqual({
-        value0: filter.title,
-        value1: filter.availableVariantLanguageIds
-      })
-    })
-
-    it('should filter with availableVariantLanguageIds', async () => {
+    it('should filter with availableVariantLanguageIds', () => {
       const filter = {
         availableVariantLanguageIds: ['en']
       }
-      const response = await service.videoFilter(filter)
-      expect(response.query).toEqual(
+      const response = service.videoFilter(filter)
+      expect(response.query).toContain(
         'SEARCH item.variants.languageId IN @value0'
       )
       expect(response.bindVars).toEqual({
         value0: filter.availableVariantLanguageIds
+      })
+    })
+
+    it('should filter by label', () => {
+      const filter = {
+        labels: [VideoLabel.collection]
+      }
+      const response = service.videoFilter(filter)
+      expect(response.query).toContain('SEARCH item.label IN @value0')
+      expect(response.bindVars).toEqual({
+        value0: filter.labels
+      })
+    })
+
+    it('should filter by id', () => {
+      const filter = {
+        ids: ['videoId']
+      }
+      const response = service.videoFilter(filter)
+      expect(response.query).toContain('SEARCH item._key IN @value0')
+      expect(response.bindVars).toEqual({
+        value0: filter.ids
+      })
+    })
+
+    it('should filter and search by all', () => {
+      const filter = {
+        title: 'abc',
+        availableVariantLanguageIds: ['en'],
+        labels: [VideoLabel.collection],
+        ids: ['videoId']
+      }
+      const response = service.videoFilter(filter)
+      expect(response.query).toContain(
+        'SEARCH ANALYZER(TOKENS(@value0, "text_en") ALL == item.title.value, "text_en") AND item.variants.languageId IN @value1 AND item.label IN @value2 AND item._key IN @value3'
+      )
+      expect(response.bindVars).toEqual({
+        value0: filter.title,
+        value1: filter.availableVariantLanguageIds,
+        value2: filter.labels,
+        value3: filter.ids
       })
     })
   })
@@ -207,61 +195,6 @@ describe('VideoService', () => {
     })
   })
 
-  describe('filterEpisodes', () => {
-    const filter = {
-      playlistId: 'playlistId',
-      idType: IdType.slug
-    }
-    it('should query', async () => {
-      db.query.mockImplementationOnce(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(EPISODES_QUERY)
-        expect(bindVars).toEqual({
-          value0: filter.playlistId,
-          value1: 0,
-          value2: 100,
-          value3: null
-        })
-        return { all: () => [] } as unknown as ArrayCursor
-      })
-      expect(await service.filterEpisodes(filter)).toEqual([])
-    })
-
-    it('should query with offset', async () => {
-      db.query.mockImplementationOnce(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(EPISODES_QUERY)
-        expect(bindVars).toEqual({
-          value0: filter.playlistId,
-          value1: 200,
-          value2: 100,
-          value3: null
-        })
-        return { all: () => [] } as unknown as ArrayCursor
-      })
-      expect(await service.filterEpisodes({ ...filter, offset: 200 })).toEqual(
-        []
-      )
-    })
-
-    it('should query with limit', async () => {
-      db.query.mockImplementationOnce(async (q) => {
-        const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(EPISODES_QUERY)
-        expect(bindVars).toEqual({
-          value0: filter.playlistId,
-          value1: 0,
-          value2: 200,
-          value3: null
-        })
-        return { all: () => [] } as unknown as ArrayCursor
-      })
-      expect(await service.filterEpisodes({ ...filter, limit: 200 })).toEqual(
-        []
-      )
-    })
-  })
-
   describe('getVideo', () => {
     const video = {
       id: '20615',
@@ -293,11 +226,26 @@ describe('VideoService', () => {
     })
   })
 
-  describe('episodes', () => {
+  describe('getVideoBySlug', () => {
+    it('should query the video by slug', async () => {
+      db.query.mockImplementationOnce(async (q) => {
+        const { query, bindVars } = q as unknown as AqlQuery
+        expect(query).toEqual(GET_VIDEO_BY_SLUG_QUERY)
+        expect(bindVars).toEqual({
+          value0: 'jesus/english'
+        })
+        return { next: () => [] } as unknown as ArrayCursor
+      })
+
+      expect(await service.getVideoBySlug('jesus/english')).toEqual([])
+    })
+  })
+
+  describe('children', () => {
     it('should query', async () => {
       db.query.mockImplementationOnce(async (q) => {
         const { query, bindVars } = q as unknown as AqlQuery
-        expect(query).toEqual(VIDEO_EPISODES_QUERY)
+        expect(query).toEqual(VIDEO_CHILDREN_QUERY)
         expect(bindVars).toEqual({ value0: ['20615', '20616'], value1: null })
         return { all: () => [] } as unknown as ArrayCursor
       })

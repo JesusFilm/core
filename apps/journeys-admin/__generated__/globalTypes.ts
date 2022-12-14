@@ -170,10 +170,13 @@ export enum VideoBlockSource {
   youTube = "youTube",
 }
 
-export enum VideoType {
+export enum VideoLabel {
+  collection = "collection",
   episode = "episode",
-  playlist = "playlist",
-  standalone = "standalone",
+  featureFilm = "featureFilm",
+  segment = "segment",
+  series = "series",
+  shortFilm = "shortFilm",
 }
 
 /**
@@ -503,9 +506,9 @@ export interface VideoStartEventCreateInput {
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
-  tagId?: string | null;
+  ids?: string[] | null;
+  labels?: VideoLabel[] | null;
   title?: string | null;
-  types?: VideoType[] | null;
 }
 
 /**

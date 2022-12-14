@@ -9,27 +9,16 @@ import Button from '@mui/material/Button'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import AccessTime from '@mui/icons-material/AccessTime'
 import Circle from '@mui/icons-material/Circle'
-
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
-
-import { VideoType } from '../../../../__generated__/globalTypes'
-import { GetVideo_video as Video } from '../../../../__generated__/GetVideo'
-import { GetVideoSiblings as VideoSiblings } from '../../../../__generated__/GetVideoSiblings'
+import { useVideo } from '../../../libs/videoContext'
 
 interface VideoHeroProps {
-  loading: boolean
-  routes: string[]
-  video: Video
-  siblingVideos: VideoSiblings
+  loading?: boolean
 }
 
-export function VideoHero({
-  loading,
-  routes,
-  video,
-  siblingVideos
-}: VideoHeroProps): ReactElement {
+export function VideoHero({ loading }: VideoHeroProps): ReactElement {
+  const { variant, title, image, children } = useVideo()
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState(false)
@@ -57,7 +46,7 @@ export function VideoHero({
           }
         },
         responsive: true,
-        poster: video?.image ?? undefined
+        poster: image ?? undefined
       })
       playerRef.current.on('pause', pauseVideo)
       playerRef.current.on('play', playVideo)
@@ -75,17 +64,17 @@ export function VideoHero({
 
   return (
     <>
-      {loading && <CircularProgress />}
+      {loading === true && <CircularProgress />}
       <>
         <Box
           sx={{
-            backgroundImage: `url(${video.image as string})`,
+            backgroundImage: `url(${image as string})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             height: 776
           }}
         >
-          {video.variant?.hls != null && (
+          {variant?.hls != null && (
             <video
               ref={videoRef}
               className="vjs-jfp video-js vjs-fill"
@@ -94,7 +83,7 @@ export function VideoHero({
               }}
               playsInline
             >
-              <source src={video.variant.hls} type="application/x-mpegURL" />
+              <source src={variant.hls} type="application/x-mpegURL" />
             </video>
           )}
           {!isPlaying && (
@@ -116,7 +105,7 @@ export function VideoHero({
                     color: 'text.primary'
                   }}
                 >
-                  {video.title[0]?.value}
+                  {title[0]?.value}
                 </Typography>
               </Container>
               <Box
@@ -134,12 +123,12 @@ export function VideoHero({
                   sx={{ color: 'text.primary' }}
                 >
                   <Stack direction="row" spacing="20px">
-                    {video.type === VideoType.playlist && (
+                    {children.length > 0 && (
                       <Typography variant="subtitle1">
-                        {video.episodes.length} episodes
+                        {children.length} episodes
                       </Typography>
                     )}
-                    {video.type !== VideoType.playlist && (
+                    {children.length === 0 && (
                       <>
                         <Button
                           size="large"
@@ -150,14 +139,14 @@ export function VideoHero({
                           <PlayArrow />
                           &nbsp; Play Video
                         </Button>
-                        {video.variant !== null && (
+                        {variant !== null && (
                           <Stack height="71px" direction="row">
                             <AccessTime sx={{ paddingTop: '23px' }} />
                             <Typography
                               variant="body2"
                               sx={{ lineHeight: '71px', paddingLeft: '10px' }}
                             >
-                              {secondsToMinutes(video.variant.duration)} min
+                              {secondsToMinutes(variant.duration)} min
                             </Typography>
                           </Stack>
                         )}
