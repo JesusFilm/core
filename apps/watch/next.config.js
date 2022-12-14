@@ -7,12 +7,7 @@ const withImages = require('next-images')
  **/
 const nextConfig = {
   images: {
-    domains: [
-      'images.unsplash.com',
-      'localhost',
-      'unsplash.com',
-      'd1wl257kev7hsz.cloudfront.net'
-    ],
+    domains: ['localhost', 'd1wl257kev7hsz.cloudfront.net'],
     disableStaticImages: true
   },
   nx: {
