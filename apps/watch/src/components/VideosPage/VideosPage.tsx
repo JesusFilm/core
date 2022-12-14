@@ -8,7 +8,7 @@ import { GetVideos } from '../../../__generated__/GetVideos'
 import { VideosFilter } from '../../../__generated__/globalTypes'
 import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
 import { PageWrapper } from '../PageWrapper'
-import { VideosGrid } from '../VideosGrid/VideosGrid'
+import { VideoGrid } from '../VideoGrid/VideoGrid'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 
@@ -72,7 +72,7 @@ export function VideosPage(): ReactElement {
         sx={{ height: 2, mb: 12, background: 'rgba(33, 33, 33, 0.08)' }}
       />
       <Container maxWidth="xxl">
-        <VideosGrid
+        <VideoGrid
           videos={data?.videos ?? []}
           onLoadMore={handleLoadMore}
           showLoadMore
