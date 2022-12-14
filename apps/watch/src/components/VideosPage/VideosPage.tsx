@@ -2,6 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import { ReactElement, useEffect, useState } from 'react'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
+import Stack from '@mui/material/Stack'
 
 import { useLanguage } from '../../libs/languageContext/LanguageContext'
 import { GetVideos } from '../../../__generated__/GetVideos'
@@ -11,6 +12,8 @@ import { PageWrapper } from '../PageWrapper'
 import { VideosGrid } from '../VideosGrid/VideosGrid'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
+import { LanguagesFilter } from './LanguagesFilter'
+import { CurrentFilters } from './CurrentFilters'
 
 export const GET_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}
@@ -67,18 +70,23 @@ export function VideosPage(): ReactElement {
     <PageWrapper hero={<VideosHero />}>
       <Container maxWidth="xxl">
         <VideosSubHero />
-      </Container>
-      <Divider
-        sx={{ height: 2, mb: 12, background: 'rgba(33, 33, 33, 0.08)' }}
-      />
-      <Container maxWidth="xxl">
-        <VideosGrid
-          videos={data?.videos ?? []}
-          onLoadMore={handleLoadMore}
-          showLoadMore
-          loading={loading}
-          isEnd={isEnd}
+        <Divider
+          sx={{ height: 2, mb: 12, background: 'rgba(33, 33, 33, 0.08)' }}
         />
+        <CurrentFilters />
+        <Stack
+          direction={{ xs: 'column', md: 'column', lg: 'row' }}
+          spacing={19}
+        >
+          <LanguagesFilter />
+          <VideosGrid
+            videos={data?.videos ?? []}
+            onLoadMore={handleLoadMore}
+            showLoadMore
+            loading={loading}
+            isEnd={isEnd}
+          />
+        </Stack>
       </Container>
     </PageWrapper>
   )
