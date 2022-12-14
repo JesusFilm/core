@@ -141,7 +141,7 @@ export function HomeVideoCard({ video }: VideoListCardProps): ReactElement {
                 <Stack direction="row">
                   <PlayArrow sx={{ fontSize: '1rem' }} />
                   <Typography variant="body1" sx={{ lineHeight: '16px' }}>
-                    {secondsToTimeFormat(video?.variant?.duration ?? 0, true)}
+                    {secondsToTimeFormat(video?.variant?.duration ?? 0)}
                   </Typography>
                 </Stack>
               )}

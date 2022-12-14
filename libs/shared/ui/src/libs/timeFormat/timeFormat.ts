@@ -1,13 +1,12 @@
 export const secondsToTimeFormat = (
   seconds: number,
-  isTrim?: boolean
+  options?: { trimSeconds: boolean }
 ): string => {
   const date = new Date(seconds * 1000)
-  return isTrim === true && seconds < 3600
+  return seconds < 3600 && options?.trimSeconds === true
     ? date.toISOString().substring(14, 19)
     : date.toISOString().substring(11, 19)
 }
-
 export const secondsToMinutes = (seconds: number): number => {
   return Math.round(seconds / 60)
 }
