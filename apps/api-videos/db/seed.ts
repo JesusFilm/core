@@ -1,4 +1,5 @@
 import { aql } from 'arangojs'
+import { ArangoSearchViewPropertiesOptions } from 'arangojs/view'
 import { fetchMediaComponentsAndTransformToVideos } from '../src/libs/arclight'
 import {
   fetchMediaLanguagesAndTransformToLanguages,
@@ -46,9 +47,7 @@ async function importMediaComponents(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  if (await db.collection('videos').exists()) {
-    await db.collection('videos').truncate()
-  } else {
+  if (!(await db.collection('videos').exists())) {
     await db.createCollection('videos', { keyOptions: { type: 'uuid' } })
   }
 
@@ -72,10 +71,13 @@ async function main(): Promise<void> {
     unique: true
   })
 
-  const view = {
+  const view: ArangoSearchViewPropertiesOptions = {
     links: {
       videos: {
         fields: {
+          _key: {
+            analyzers: ['identity']
+          },
           variants: {
             fields: {
               languageId: {
