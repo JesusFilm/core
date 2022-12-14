@@ -1,6 +1,11 @@
-export const secondsToTimeFormat = (seconds: number): string => {
+export const secondsToTimeFormat = (
+  seconds: number,
+  isTrim?: boolean
+): string => {
   const date = new Date(seconds * 1000)
-  return date.toISOString().substring(11, 19)
+  return isTrim === true && seconds < 3600
+    ? date.toISOString().substring(14, 19)
+    : date.toISOString().substring(11, 19)
 }
 
 export const secondsToMinutes = (seconds: number): number => {
@@ -10,11 +15,4 @@ export const secondsToMinutes = (seconds: number): number => {
 export const timeFormatToSeconds = (time: string): number => {
   const [hours, minutes, seconds] = time.split(':')
   return Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds)
-}
-
-export const secondsToTimeFormatTrimmed = (seconds: number): string => {
-  const date = new Date(seconds * 1000)
-  return seconds < 3600
-    ? date.toISOString().substring(14, 19)
-    : date.toISOString().substring(11, 19)
 }

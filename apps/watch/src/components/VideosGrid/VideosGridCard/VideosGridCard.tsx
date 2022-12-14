@@ -1,4 +1,4 @@
-import { secondsToTimeFormatTrimmed } from '@core/shared/ui/timeFormat'
+import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
@@ -97,7 +97,7 @@ export function VideosGridCard({
                   <>
                     <PlayArrow sx={{ fontSize: '1rem' }} />
                     <Typography variant="body1">
-                      {secondsToTimeFormatTrimmed(video.variant?.duration ?? 0)}
+                      {secondsToTimeFormat(video.variant?.duration ?? 0, true)}
                     </Typography>
                   </>
                 ) : (
