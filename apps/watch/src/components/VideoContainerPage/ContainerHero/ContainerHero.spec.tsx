@@ -27,7 +27,7 @@ describe('ContainerHero', () => {
       </VideoProvider>
     )
 
-    expect(getByText('collection')).toBeInTheDocument()
+    expect(getByText('Collection')).toBeInTheDocument()
   })
 
   it('should render hero for a series', () => {
@@ -37,7 +37,7 @@ describe('ContainerHero', () => {
       </VideoProvider>
     )
 
-    expect(getByText('series')).toBeInTheDocument()
+    expect(getByText('Series')).toBeInTheDocument()
   })
 
   it('should call openDialog on click', () => {

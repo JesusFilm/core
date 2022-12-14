@@ -16,8 +16,8 @@ interface Props {
 }
 
 export function ContainerHero({ openDialog }: Props): ReactElement {
-  const { label, title, children, image } = useVideo()
-  const { childLabel } = getLabelDetails(label)
+  const { label: videoLabel, title, children, image } = useVideo()
+  const { label, childLabel } = getLabelDetails(videoLabel)
 
   return (
     <Box
