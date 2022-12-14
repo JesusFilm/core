@@ -64,9 +64,11 @@ const Template: Story = () => (
     <VideoProvider value={{ content: video }}>
       <Box
         sx={{
+          display: 'flex',
+          alignItems: 'center',
           position: 'relative',
           width: '100%',
-          height: 776
+          height: { xs: 502, lg: 777 }
         }}
       >
         <VideoHeroOverlay />
