@@ -167,6 +167,7 @@ export function DownloadDialog({
                     control={
                       <Checkbox
                         name="terms"
+                        disabled={isInProgress}
                         checked={values.terms}
                         onChange={handleChange}
                       />
@@ -185,7 +186,7 @@ export function DownloadDialog({
                   loadingIndicator={
                     <CircularProgress
                       variant="determinate"
-                      value={percentage}
+                      value={Math.max(10, percentage)}
                       sx={{ color: 'action.disabled', ml: 1 }}
                       // Mui has style that overrides sx. Use style
                       style={{ width: '20px', height: '20px' }}
