@@ -1,0 +1,260 @@
+import { ComponentProps, ReactElement } from 'react'
+import Typography from '@mui/material/Typography'
+import PlayArrow from '@mui/icons-material/PlayArrowRounded'
+import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+import NextLink from 'next/link'
+import Stack from '@mui/material/Stack'
+import Link from '@mui/material/Link'
+import { styled } from '@mui/material/styles'
+import ButtonBase from '@mui/material/ButtonBase'
+import NextImage from 'next/image'
+import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
+import { VideoLabel } from '../../../__generated__/globalTypes'
+import { VideoChildFields } from '../../../__generated__/VideoChildFields'
+
+interface VideoCardProps {
+  video?: VideoChildFields
+  variant?: 'contained' | 'expanded'
+  color?: ComponentProps<typeof Typography>['color']
+  containerSlug?: string
+}
+
+const ImageButton = styled(ButtonBase)(({ theme }) => ({
+  borderRadius: 8,
+  width: '100%',
+  position: 'relative'
+}))
+
+const Layer = styled(Box)({
+  position: 'absolute',
+  left: 0,
+  right: 0,
+  top: 0,
+  bottom: 0,
+  borderRadius: 8,
+  overflow: 'hidden'
+})
+
+export function VideoCard({
+  video,
+  containerSlug,
+  variant,
+  color
+}: VideoCardProps): ReactElement {
+  let label = 'Item'
+  let labelColor = '#FFF'
+  let childLabel = 'items'
+
+  switch (video?.label) {
+    case VideoLabel.collection:
+      label = 'Collection'
+      labelColor = '#FF9E00'
+      break
+    case VideoLabel.episode:
+      label = 'Episode'
+      labelColor = '#7283BE'
+      break
+    case VideoLabel.featureFilm:
+      label = 'Feature Film'
+      labelColor = '#FF9E00'
+      childLabel = 'chapters'
+      break
+    case VideoLabel.segment:
+      label = 'Clip'
+      labelColor = '#7283BE'
+      break
+    case VideoLabel.series:
+      label = 'Series'
+      labelColor = '#3AA74A'
+      childLabel = 'episodes'
+      break
+    case VideoLabel.shortFilm:
+      label = 'Short Film'
+      labelColor = '#FF9E00'
+      break
+  }
+
+  return (
+    <NextLink
+      href={`/${containerSlug != null ? `${containerSlug}/` : ''}${
+        video?.variant?.slug ?? ''
+      }`}
+      passHref
+    >
+      <Link
+        display="block"
+        underline="none"
+        color="inherit"
+        sx={{ pointerEvents: video != null ? 'auto' : 'none' }}
+      >
+        <ImageButton
+          disabled={video == null}
+          sx={{
+            overflow: 'hidden',
+            height: {
+              xs: 166,
+              md: 136,
+              xl: 146
+            },
+            '&:hover, &.Mui-focusVisible': {
+              '& .MuiImageBackground-root': {
+                transform: 'scale(1.02)'
+              },
+              '& .MuiImageBackdrop-contained-root': {
+                opacity: 0.15
+              },
+              '& .MuiImageBackdrop-expanded-root': {
+                opacity: 0.5
+              }
+            }
+          }}
+        >
+          <Layer
+            className="MuiImageBackground-root"
+            sx={{
+              transition: (theme) => theme.transitions.create('transform')
+            }}
+          >
+            {video?.image != null ? (
+              <NextImage
+                src={video.image}
+                layout="fill"
+                objectFit="cover"
+                objectPosition="left top"
+              />
+            ) : (
+              <Skeleton
+                sx={{
+                  height: {
+                    xs: 166,
+                    md: 136,
+                    xl: 146
+                  }
+                }}
+                variant="rectangular"
+                animation={false}
+              />
+            )}
+          </Layer>
+          {variant === 'contained' && (
+            <Layer
+              sx={{
+                background:
+                  'linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.8) 100%)',
+                transition: (theme) => theme.transitions.create('opacity'),
+                boxShadow: 'inset 0px 0px 0px 1px rgba(255, 255, 255, 0.12)'
+              }}
+              className="MuiImageBackdrop-contained-root"
+            />
+          )}
+          {variant === 'expanded' && (
+            <Layer
+              sx={{
+                background:
+                  'linear-gradient(180deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.6) 100%)',
+                transition: (theme) => theme.transitions.create('opacity'),
+                opacity: 0.15
+              }}
+              className="MuiImageBackdrop-expanded-root"
+            />
+          )}
+          <Layer
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-end',
+              p: 4
+            }}
+          >
+            {variant === 'contained' && (
+              <Typography
+                variant="h6"
+                color="primary.contrastText"
+                sx={{
+                  textAlign: 'left',
+                  textShadow:
+                    '0px 4px 4px rgba(0, 0, 0, 0.25), 0px 2px 3px rgba(0, 0, 0, 0.45)'
+                }}
+              >
+                {video != null ? (
+                  video?.title[0].value
+                ) : (
+                  <Skeleton width="60%" />
+                )}
+              </Typography>
+            )}
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="flex-end"
+              sx={{ minWidth: 0 }}
+              spacing={2}
+            >
+              <Box
+                sx={{
+                  textAlign: 'left'
+                }}
+              >
+                {variant === 'contained' && (
+                  <Typography
+                    variant="overline2"
+                    color={labelColor}
+                    sx={{
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      lineHeight: '29px'
+                    }}
+                  >
+                    {video != null ? label : <Skeleton width={50} />}
+                  </Typography>
+                )}
+              </Box>
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={1}
+                sx={{
+                  p: 2,
+                  borderRadius: 2,
+                  height: 29,
+                  color: 'primary.contrastText',
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  flexShrink: 0
+                }}
+              >
+                {video == null && (
+                  <>
+                    <PlayArrow sx={{ fontSize: '1rem' }} />
+                    <Skeleton width={20} />
+                  </>
+                )}
+                {video?.children.length === 0 && (
+                  <>
+                    <PlayArrow sx={{ fontSize: '1rem' }} />
+                    <Typography variant="body1" sx={{ lineHeight: '16px' }}>
+                      {secondsToTimeFormat(video?.variant?.duration ?? 0, {
+                        trimZeroes: true
+                      })}
+                    </Typography>
+                  </>
+                )}
+                {(video?.children.length ?? 0) > 0 && (
+                  <Typography variant="body1">
+                    {video?.children.length} {childLabel}
+                  </Typography>
+                )}
+              </Stack>
+            </Stack>
+          </Layer>
+        </ImageButton>
+        {variant === 'expanded' && (
+          <Typography variant="body1" sx={{ py: 2 }} color={color}>
+            {video != null ? video?.title[0].value : <Skeleton width="60%" />}
+          </Typography>
+        )}
+      </Link>
+    </NextLink>
+  )
+}

@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import Grid from '@mui/material/Grid'
 
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
-import { HomeVideoCard } from './Card'
+import { VideoCard } from '../../VideoCard'
 
 interface VideoListGridProps {
   data: VideoChildFields[]
@@ -15,7 +15,7 @@ export function HomeVideos({ data }: VideoListGridProps): ReactElement {
       {(data?.length ?? 0) > 0 &&
         data?.map((item, index) => (
           <Grid item key={index} xs={12} md={4} xl={3}>
-            <HomeVideoCard video={item} />
+            <VideoCard video={item} variant="contained" />
           </Grid>
         ))}
     </Grid>

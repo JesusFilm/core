@@ -13,7 +13,8 @@ import { ContainerHero } from './ContainerHero'
 
 // Usually Series or Collection Videos
 export function VideoContainerPage(): ReactElement {
-  const { snippet, children, slug } = useVideo()
+  const video = useVideo()
+  const { snippet, children } = video
   const router = useRouter()
   const [shareDialog, setShareDialog] = useState<boolean>(false)
   const routeArray: string[] = []
@@ -47,7 +48,7 @@ export function VideoContainerPage(): ReactElement {
             routes={routeArray}
             onClose={handleCloseDialog}
           />
-          <VideosGrid videos={children} routePrefix={slug} />
+          <VideosGrid containerSlug={video.slug} videos={children} />
         </Container>
       )}
       <Divider />
