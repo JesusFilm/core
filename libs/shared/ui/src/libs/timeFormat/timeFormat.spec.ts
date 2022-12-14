@@ -21,10 +21,10 @@ describe('timeFormat', () => {
   })
 
   it('should convert seconds to time format and trim it', () => {
-    expect(secondsToTimeFormat(0, true)).toEqual('00:00')
-    expect(secondsToTimeFormat(1, true)).toEqual('00:01')
-    expect(secondsToTimeFormat(60, true)).toEqual('01:00')
-    expect(secondsToTimeFormat(3600, true)).toEqual('01:00:00')
-    expect(secondsToTimeFormat(3661, true)).toEqual('01:01:01')
+    expect(secondsToTimeFormat(0, { trimSeconds: true })).toEqual('00:00')
+    expect(secondsToTimeFormat(1, { trimSeconds: true })).toEqual('00:01')
+    expect(secondsToTimeFormat(60, { trimSeconds: true })).toEqual('01:00')
+    expect(secondsToTimeFormat(3600, { trimSeconds: true })).toEqual('01:00:00')
+    expect(secondsToTimeFormat(3661, { trimSeconds: true })).toEqual('01:01:01')
   })
 })
