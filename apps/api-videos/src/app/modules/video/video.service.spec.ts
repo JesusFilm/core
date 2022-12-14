@@ -88,7 +88,7 @@ describe('VideoService', () => {
         title: 'abc'
       }
       const response = service.videoFilter(filter)
-      expect(response.query).toEqual(
+      expect(response.query).toContain(
         'SEARCH ANALYZER(TOKENS(@value0, "text_en") ALL == item.title.value, "text_en")'
       )
       expect(response.bindVars).toEqual({ value0: filter.title })
@@ -99,8 +99,8 @@ describe('VideoService', () => {
         availableVariantLanguageIds: ['en']
       }
       const response = service.videoFilter(filter)
-      expect(response.query).toEqual(
-        'FILTER item.variants.languageId IN @value0'
+      expect(response.query).toContain(
+        'SEARCH item.variants.languageId IN @value0'
       )
       expect(response.bindVars).toEqual({
         value0: filter.availableVariantLanguageIds
@@ -112,7 +112,7 @@ describe('VideoService', () => {
         labels: [VideoLabel.collection]
       }
       const response = service.videoFilter(filter)
-      expect(response.query).toEqual('FILTER item.label IN @value0')
+      expect(response.query).toContain('SEARCH item.label IN @value0')
       expect(response.bindVars).toEqual({
         value0: filter.labels
       })
@@ -123,7 +123,7 @@ describe('VideoService', () => {
         ids: ['videoId']
       }
       const response = service.videoFilter(filter)
-      expect(response.query).toEqual('FILTER item._key IN @value0')
+      expect(response.query).toContain('SEARCH item._key IN @value0')
       expect(response.bindVars).toEqual({
         value0: filter.ids
       })
@@ -137,8 +137,8 @@ describe('VideoService', () => {
         ids: ['videoId']
       }
       const response = service.videoFilter(filter)
-      expect(response.query).toEqual(
-        'SEARCH ANALYZER(TOKENS(@value0, "text_en") ALL == item.title.value, "text_en") FILTER item.variants.languageId IN @value1 FILTER item.label IN @value2 FILTER item._key IN @value3'
+      expect(response.query).toContain(
+        'SEARCH ANALYZER(TOKENS(@value0, "text_en") ALL == item.title.value, "text_en") AND item.variants.languageId IN @value1 AND item.label IN @value2 AND item._key IN @value3'
       )
       expect(response.bindVars).toEqual({
         value0: filter.title,
