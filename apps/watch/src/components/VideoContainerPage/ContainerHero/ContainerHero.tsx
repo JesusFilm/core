@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton'
 
 import { HeroOverlay } from '../../HeroOverlay'
 import { useVideo } from '../../../libs/videoContext'
-import { getChildrenLabel } from '../../../libs/utils/getChildrenLabel/getChildrenLabel'
+import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
 
 interface Props {
   openDialog: () => void
@@ -17,7 +17,7 @@ interface Props {
 
 export function ContainerHero({ openDialog }: Props): ReactElement {
   const { label, title, children, image } = useVideo()
-  const childrenLabel = getChildrenLabel(label)
+  const { childLabel } = getLabelDetails(label)
 
   return (
     <Box
@@ -83,7 +83,7 @@ export function ContainerHero({ openDialog }: Props): ReactElement {
                 opacity: 0.7
               }}
             >
-              {`${children.length} ${childrenLabel}`}
+              {`${children.length} ${childLabel}`}
             </Typography>
             <IconButton
               sx={{

@@ -8,7 +8,7 @@ import { styled } from '@mui/material/styles'
 import ButtonBase from '@mui/material/ButtonBase'
 import NextImage from 'next/image'
 import Box from '@mui/material/Box'
-import { VideoLabel } from '../../../../../__generated__/globalTypes'
+import { getLabelDetails } from '../../../../libs/utils/getLabelDetails/getLabelDetails'
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 
 interface VideoListCardProps {
@@ -41,39 +41,7 @@ const Layer = styled(Box)({
 })
 
 export function HomeVideoCard({ video }: VideoListCardProps): ReactElement {
-  let label = 'Item'
-  let color = '#FFF'
-  let childLabel = 'items'
-
-  switch (video?.label) {
-    case VideoLabel.collection:
-      label = 'Collection'
-      color = '#FF9E00'
-      break
-    case VideoLabel.episode:
-      label = 'Episode'
-      color = '#7283BE'
-      break
-    case VideoLabel.featureFilm:
-      label = 'Feature Film'
-      color = '#FF9E00'
-      childLabel = 'chapters'
-      break
-    case VideoLabel.segment:
-      label = 'Segment'
-      color = '#7283BE'
-      break
-    case VideoLabel.series:
-      label = 'Series'
-      color = '#3AA74A'
-      childLabel = 'episodes'
-      break
-    case VideoLabel.shortFilm:
-      label = 'Short Film'
-      color = '#FF9E00'
-      break
-  }
-
+  const { label, color, childLabel } = getLabelDetails(video?.label)
   return (
     <Link href={`/${video?.variant?.slug ?? ''}`} passHref>
       <ImageButton
