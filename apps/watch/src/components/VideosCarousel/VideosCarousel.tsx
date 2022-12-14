@@ -87,7 +87,11 @@ export function VideosCarousel({
         1400: { ...desktopSlideConfig, spaceBetween: 12 },
         // Need config at each breakpoint as resizing causes issues
         // Hides gap between rightmost slide and right edge of screen
-        1552: { ...desktopSlideConfig, spaceBetween: 16 },
+        1552: { ...desktopSlideConfig, spaceBetween: 22 },
+        1600: {
+          ...desktopSlideConfig,
+          spaceBetween: 20
+        },
         1800: { ...desktopSlideConfig, spaceBetween: 20 }
       }}
       // Set custom navigation
@@ -110,12 +114,18 @@ export function VideosCarousel({
       onSwiper={(swiper) => {
         console.log('onSwiper', swiper)
         updateMarginLeftOffset(swiper)
-        // TODO: Fix bug where end is not detected properly.
+        // TODO: Fixes bug where end is not detected properly.
 
-        // Extract swiper navigation overflow state to hide custom nav
-        if (!swiper.allowSlideNext && !swiper.allowSlidePrev) {
+        // If all slides fit on screen
+        if (swiper.isBeginning && swiper.isEnd) {
+          // Extract swiper navigation overflow state to hide custom nav
           setOverflowSlides(false)
           console.log('hide nav')
+          // Left align slides
+          swiper.params.centeredSlides = false
+          swiper.params.centeredSlidesBounds = false
+          swiper.params.centerInsufficientSlides = false
+          swiper.update()
         }
       }}
     >
