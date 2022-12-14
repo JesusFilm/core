@@ -27,45 +27,22 @@ export function CarouselItem({
   // Add onClick
 
   return (
-    <>
-      <Box
-        sx={{
-          width: { xs: 232, xl: 338 },
-          display: { xs: 'block', xl: 'none' }
-        }}
-      >
-        {image != null && (
-          <Image
-            src={image}
-            alt={videoTitle ?? ''}
-            width={232}
-            height={110}
-            layout="fixed"
-          />
-        )}
-        <Typography variant="body1" mb={3} flexWrap="wrap">
-          {videoTitle}
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          width: { xs: 232, xl: 338 },
-          display: { xs: 'none', xl: 'block' }
-        }}
-      >
-        {image != null && (
-          <Image
-            src={image}
-            alt={videoTitle ?? ''}
-            width={338}
-            height={160}
-            layout="fixed"
-          />
-        )}
-        <Typography variant="body1" mb={3} flexWrap="wrap">
-          {videoTitle}
-        </Typography>
-      </Box>
-    </>
+    <Box sx={{ width: '100%' }}>
+      {image != null ? (
+        <Image
+          src={image}
+          alt={videoTitle ?? ''}
+          width="100%"
+          height="47.5%"
+          layout="responsive"
+          objectFit="contain"
+        />
+      ) : (
+        <Skeleton sx={{ width: '100%', height: '47.5%' }} />
+      )}
+      <Typography variant="body1" mb={3} flexWrap="wrap">
+        {videoTitle}
+      </Typography>
+    </Box>
   )
 }

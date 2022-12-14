@@ -1,0 +1,49 @@
+/* 
+- Swiper slides don't have sx. Cannot use breakpoints.
+- Custom swiper slides not registered by swiper/react. Cannot use styled.
+- Flakey result and clutters code when applying styles by js onEvent trigger.
+- Add styles here as last resort
+*/
+
+.swiper-slide {
+  width: 232px;
+  min-width: 232px;
+}
+
+@media (min-width: 345px) {
+  .swiper-slide {
+    max-width: 232px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .swiper-slide {
+    width: 325px;
+    min-width: 325px;
+    max-width: 325px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .swiper-slide {
+    width: 242px;
+    min-width: 242px;
+    max-width: 242px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .swiper-slide {
+    width: 280px;
+    min-width: 280px;
+    max-width: 280px;
+  }
+}
+
+@media (min-width: 1800px) {
+  .swiper-slide {
+    width: 314px;
+    min-width: 314px;
+    max-width: 314px;
+  }
+}
