@@ -37,13 +37,20 @@ export class VideoService extends BaseService {
   videosView = this.db.view('videosView')
 
   public videoFilter(filter: VideosFilter = {}): AqlQuery {
-    const { title, availableVariantLanguageIds, labels, ids } = filter
+    const {
+      title,
+      availableVariantLanguageIds,
+      labels,
+      ids,
+      subtitleLanguageIds
+    } = filter
 
     if (
       title == null &&
       availableVariantLanguageIds == null &&
       labels == null &&
-      ids == null
+      ids == null &&
+      subtitleLanguageIds == null
     )
       return aql``
 
@@ -55,7 +62,9 @@ export class VideoService extends BaseService {
           availableVariantLanguageIds != null &&
             aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
           labels != null && aql`item.label IN ${labels}`,
-          ids != null && aql`item._key IN ${ids}`
+          ids != null && aql`item._key IN ${ids}`,
+          subtitleLanguageIds != null &&
+            aql`item.variants.subtitle.languageId IN ${subtitleLanguageIds}`
         ]),
         ' AND '
       )}
@@ -67,7 +76,7 @@ export class VideoService extends BaseService {
     const { variantLanguageId, offset = 0, limit = 100 } = filter ?? {}
     const search = this.videoFilter(filter)
 
-    const res = await this.db.query(aql`
+    const query = aql`
     FOR item IN ${this.videosView}
       ${search}
       LIMIT ${offset}, ${limit}
@@ -80,7 +89,8 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT
         ], 0)
       }
-    `)
+    `
+    const res = await this.db.query(query)
     return await res.all()
   }
 
