@@ -1,9 +1,10 @@
 module "prod" {
-  source            = "../../modules/aws"
-  certificate_arn   = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
-  env               = "prod"
-  cidr              = "10.10.0.0/16"
-  internal_url_name = "service.internal"
+  source              = "../../modules/aws"
+  certificate_arn     = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
+  env                 = "prod"
+  cidr                = "10.10.0.0/16"
+  internal_url_name   = "service.internal"
+  vpn_certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
 }
 
 locals {
@@ -11,28 +12,34 @@ locals {
     vpc_id                  = module.prod.vpc.id
     is_public               = true
     subnets                 = module.prod.vpc.public_subnets
-    alb_listener_arn        = module.prod.public_alb.aws_alb_listener["HTTPS"].arn
     security_group_id       = module.prod.ecs.public_ecs_security_group_id
     task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
     cluster                 = module.prod.ecs.ecs_cluster
     alb_dns_name            = module.prod.public_alb.dns_name
-    image_tag               = "main"
     zone_id                 = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
     alb_target_group        = local.alb_target_group
+    alb_listener = {
+      alb_arn         = module.prod.public_alb.arn
+      port            = 443
+      protocol        = "HTTPS"
+      certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
+    }
   }
 
   internal_ecs_config = {
     vpc_id                  = module.prod.vpc.id
     is_public               = false
     subnets                 = module.prod.vpc.internal_subnets
-    alb_listener_arn        = module.prod.internal_alb.aws_alb_listener["HTTP"].arn
     security_group_id       = module.prod.ecs.internal_ecs_security_group_id
     task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
     cluster                 = module.prod.ecs.ecs_cluster
     alb_dns_name            = module.prod.internal_alb.dns_name
-    image_tag               = "main"
     zone_id                 = module.prod.route53_private_zone_id
     alb_target_group        = local.alb_target_group
+    alb_listener = {
+      alb_arn  = module.prod.internal_alb.arn
+      protocol = "HTTP"
+    }
   }
 }
 
