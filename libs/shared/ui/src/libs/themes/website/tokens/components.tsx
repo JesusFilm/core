@@ -67,6 +67,7 @@ export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {
       styleOverrides: {
         notchedOutline: {
           top: 0,
+          borderWidth: '2px',
           '> legend': {
             display: 'none'
           }

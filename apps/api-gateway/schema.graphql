@@ -1690,6 +1690,7 @@ input VideosFilter {
   availableVariantLanguageIds: [ID!]
   ids: [ID!]
   labels: [VideoLabel!]
+  subtitleLanguageIds: [ID!]
   title: String
 }
 
