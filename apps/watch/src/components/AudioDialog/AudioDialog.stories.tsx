@@ -13,6 +13,7 @@ const AudioDialogStory = {
 
 const Template: Story = () => {
   const [open, setOpen] = useState(true)
+  const slug = 'the-story-of-jesus-for-children/english'
 
   return (
     <MockedProvider
@@ -21,20 +22,13 @@ const Template: Story = () => {
           request: {
             query: GET_VIDEO_LANGUAGES,
             variables: {
-              id: '1_jf-0-0',
-              languageId: '529'
+              id: slug
             }
           },
           result: {
             data: {
               video: {
                 id: '1_jf-0-0',
-                slug: [
-                  {
-                    value: 'the-story-of-jesus-for-children',
-                    __typename: 'Translation'
-                  }
-                ],
                 variant: {
                   id: '529',
                   language: {
@@ -48,49 +42,58 @@ const Template: Story = () => {
                     ]
                   }
                 },
-                variantLanguages: [
+                variantLanguagesWithSlug: [
                   {
-                    __typename: 'Language',
-                    id: '529',
-                    name: [
-                      {
-                        value: 'English',
-                        primary: true,
-                        __typename: 'Translation'
-                      }
-                    ]
+                    slug: 'the-story-of-jesus-for-children/english',
+                    language: {
+                      id: '529',
+                      __typename: 'Language',
+                      name: [
+                        {
+                          value: 'English',
+                          primary: true,
+                          __typename: 'Translation'
+                        }
+                      ]
+                    }
                   },
                   {
-                    id: '496',
-                    __typename: 'Language',
-                    name: [
-                      {
-                        value: 'Français',
-                        primary: true,
-                        __typename: 'Translation'
-                      },
-                      {
-                        value: 'French',
-                        primary: false,
-                        __typename: 'Translation'
-                      }
-                    ]
+                    slug: 'the-story-of-jesus-for-children/french',
+                    language: {
+                      id: '496',
+                      __typename: 'Language',
+                      name: [
+                        {
+                          value: 'Français',
+                          primary: true,
+                          __typename: 'Translation'
+                        },
+                        {
+                          value: 'French',
+                          primary: false,
+                          __typename: 'Translation'
+                        }
+                      ]
+                    }
                   },
                   {
-                    id: '1106',
-                    __typename: 'Language',
-                    name: [
-                      {
-                        value: 'Deutsch',
-                        primary: true,
-                        __typename: 'Translation'
-                      },
-                      {
-                        value: 'German, Standard',
-                        primary: false,
-                        __typename: 'Translation'
-                      }
-                    ]
+                    slug: 'the-story-of-jesus-for-children/Deutsch',
+                    language: {
+                      id: '1106',
+                      __typename: 'Language',
+                      name: [
+                        {
+                          value: 'Deutsch',
+                          primary: true,
+                          __typename: 'Translation'
+                        },
+                        {
+                          value: 'German, Standard',
+                          primary: false,
+                          __typename: 'Translation'
+                        }
+                      ]
+                    }
                   }
                 ]
               }
@@ -99,7 +102,7 @@ const Template: Story = () => {
         }
       ]}
     >
-      <AudioDialog open={open} onClose={() => setOpen(false)} />
+      <AudioDialog slug={slug} open={open} onClose={() => setOpen(false)} />
     </MockedProvider>
   )
 }

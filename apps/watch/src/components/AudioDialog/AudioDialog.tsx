@@ -1,6 +1,6 @@
-import { ReactElement, useMemo } from 'react'
+import { ComponentProps, ReactElement, useMemo } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
-import { Formik, Form } from 'formik'
+import { Formik, Form, FormikValues } from 'formik'
 import { useQuery, gql } from '@apollo/client'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
@@ -8,76 +8,83 @@ import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import Language from '@mui/icons-material/Language'
 import { useRouter } from 'next/router'
-
 import { GetVideoLanguages } from '../../../__generated__/GetVideoLanguages'
 
-// Query to be updated once URL/Path work is fixed
 export const GET_VIDEO_LANGUAGES = gql`
-  query GetVideoLanguages($id: ID!, $languageId: ID!) {
+  query GetVideoLanguages($id: ID!) {
     video(id: $id, idType: slug) {
       id
-      slug(languageId: $languageId) {
-        value
-      }
       variant {
         id
         language {
-          name(languageId: $languageId) {
+          name {
             value
             primary
           }
         }
       }
-      variantLanguages {
-        id
-        name {
-          value
-          primary
+      variantLanguagesWithSlug {
+        slug
+        language {
+          id
+          name {
+            value
+            primary
+          }
         }
       }
     }
   }
 `
 
-interface AudioDialogProps {
-  open: boolean
-  onClose: () => void
+interface AudioDialogProps
+  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
+  slug: string
 }
 
-export function AudioDialog({ open, onClose }: AudioDialogProps): ReactElement {
-  // udpate the query once URL work is merged
+export function AudioDialog({
+  open,
+  slug,
+  onClose
+}: AudioDialogProps): ReactElement {
+  const router = useRouter()
   const { data } = useQuery<GetVideoLanguages>(GET_VIDEO_LANGUAGES, {
     variables: {
-      id: '1_jf-0-0',
-      languageId: '529'
+      id: slug
     }
   })
-  const router = useRouter()
+  const variant = data?.video?.variant
+  const variantLanguagesWithSlug = data?.video?.variantLanguagesWithSlug
 
-  const handleChange = (newValue: {
-    language: { id: string; localName: string; nativeName: string }
-  }): void => {
-    // TODO: Redirect to the right audio URL once URL work is merged
-    if (data?.video?.slug != null && data?.video?.slug.length > 0) {
-      console.log(`/${data?.video.slug[0].value}/${newValue.language.id}`)
-      void router.push(`/${data?.video.slug[0].value}/${newValue.language.id}`)
+  const languages = variantLanguagesWithSlug?.map(({ language }) => language)
+
+  const handleSubmit = (value: FormikValues): void => {
+    const selectedLanguageSlug = variantLanguagesWithSlug?.find(
+      (languages) => languages.language?.id === value.language.id
+    )?.slug
+    if (selectedLanguageSlug != null) {
+      void router.push(`/${selectedLanguageSlug}`)
     }
   }
 
   const options = useMemo(() => {
     return (
-      data?.video?.variantLanguages.map(({ id, name }) => {
-        const localLanguageName = name.find(({ primary }) => !primary)?.value
-        const nativeLanguageName = name.find(({ primary }) => primary)?.value
+      languages?.map((language) => {
+        const localLanguageName = language?.name.find(
+          ({ primary }) => !primary
+        )?.value
+        const nativeLanguageName = language?.name.find(
+          ({ primary }) => primary
+        )?.value
 
         return {
-          id: id,
+          id: language?.id,
           localName: localLanguageName,
           nativeName: nativeLanguageName
         }
       }) ?? undefined
     )
-  }, [data])
+  }, [languages])
 
   const sortedOptions = useMemo(() => {
     if (options != null) {
@@ -96,21 +103,21 @@ export function AudioDialog({ open, onClose }: AudioDialogProps): ReactElement {
         <Formik
           initialValues={{
             language:
-              data?.video?.variant != null
+              variant != null
                 ? {
-                    id: data?.video?.variant?.id,
-                    localName: data?.video?.variant?.language?.name.find(
+                    id: variant?.id,
+                    localName: variant?.language?.name.find(
                       ({ primary }) => !primary
                     )?.value,
-                    nativeName: data?.video?.variant?.language?.name.find(
+                    nativeName: variant?.language?.name.find(
                       ({ primary }) => primary
                     )?.value
                   }
                 : undefined
           }}
-          onSubmit={handleChange}
+          onSubmit={handleSubmit}
         >
-          {({ values, handleChange, setFieldValue }) => (
+          {({ values, handleSubmit, setFieldValue }) => (
             <Dialog
               open={open}
               onClose={onClose}
@@ -118,6 +125,7 @@ export function AudioDialog({ open, onClose }: AudioDialogProps): ReactElement {
                 icon: <Language sx={{ mr: 3 }} />,
                 title: 'Language'
               }}
+              divider
             >
               <Form>
                 <Autocomplete
@@ -132,7 +140,7 @@ export function AudioDialog({ open, onClose }: AudioDialogProps): ReactElement {
                   }
                   onChange={(_event, option) => {
                     setFieldValue('language', option)
-                    handleChange(option)
+                    handleSubmit(option)
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -141,7 +149,7 @@ export function AudioDialog({ open, onClose }: AudioDialogProps): ReactElement {
                       placeholder="Search Language"
                       label="Language"
                       helperText={`${
-                        data?.video?.variantLanguages.length ?? 0
+                        languages?.length ?? 0
                       } Languages Available`}
                     />
                   )}
