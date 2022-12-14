@@ -49,8 +49,8 @@ export default function WatchApp({
   return (
     <CacheProvider value={emotionCache}>
       <DefaultSeo
-        titleTemplate="%s | Next Steps"
-        defaultTitle="Next Steps | Helping you find the next best step on your spiritual journey"
+        titleTemplate="%s | Jesus Film Project"
+        defaultTitle="Watch | Jesus Film Project"
       />
       <Head>
         <meta
