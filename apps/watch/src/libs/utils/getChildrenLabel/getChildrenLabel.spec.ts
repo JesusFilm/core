@@ -7,7 +7,7 @@ describe('getChildrenLabel', () => {
   })
 
   it('should return items label', () => {
-    expect(getChildrenLabel(VideoLabel.collection)).toEqual('collections')
+    expect(getChildrenLabel(VideoLabel.collection)).toEqual('items')
   })
 
   it('should return episodes label', () => {
@@ -15,6 +15,6 @@ describe('getChildrenLabel', () => {
   })
 
   it('should return chapters label', () => {
-    expect(getChildrenLabel(VideoLabel.featureFilm)).toEqual('featureFilms')
+    expect(getChildrenLabel(VideoLabel.featureFilm)).toEqual('chapters')
   })
 })
