@@ -1,7 +1,7 @@
-import { simpleComponentConfig } from '@core/shared/ui/simpleComponentConfig'
 import Stack from '@mui/material/Stack'
 import { Meta, Story } from '@storybook/react'
 import { noop } from 'lodash'
+import { simpleComponentConfig } from '../../../simpleComponentConfig'
 import { ThemeName } from '../..'
 import {
   LanguageAutocomplete,
