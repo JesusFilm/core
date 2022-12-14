@@ -12,6 +12,7 @@ import Circle from '@mui/icons-material/Circle'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 import { useVideo } from '../../../libs/videoContext'
+import { SubtitleDialog } from '../../SubtitleDialog'
 
 interface VideoHeroProps {
   loading?: boolean
@@ -22,7 +23,6 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
   const [isPlaying, setIsPlaying] = useState(false)
-  const [openAudio, setOpenAudio] = useState(false)
   const [openSubtitle, setOpenSubtitle] = useState(false)
 
   useEffect(() => {
@@ -39,20 +39,8 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
           setOpenSubtitle(true)
         }
       }
-      class AudioControl extends Button {
-        constructor(player, options) {
-          super(player, options)
-          this.addClass('vjs-audio-button')
-          this.controlText(player.localize('Audio Language'))
-        }
-
-        handleClick(): void {
-          setOpenAudio(true)
-        }
-      }
 
       videojs.registerComponent('SubtitleControl', SubtitleControl)
-      videojs.registerComponent('AudioControl', AudioControl)
 
       playerRef.current = videojs(videoRef.current, {
         autoplay: false,
@@ -80,10 +68,9 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
       })
       playerRef.current.on('pause', pauseVideo)
       playerRef.current.on('play', playVideo)
-      playerRef?.current?.getChild('ControlBar')?.addChild('AudioControl')
       playerRef?.current?.getChild('ControlBar')?.addChild('SubtitleControl')
     }
-  }, [playerRef, video?.image])
+  }, [playerRef, image])
 
   function playVideo(): void {
     setIsPlaying(true)
@@ -92,33 +79,6 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
 
   function pauseVideo(): void {
     setIsPlaying(false)
-  }
-
-  function updateSubtitle({ label, id, url, language }): void {
-    playerRef?.current?.addRemoteTextTrack(
-      {
-        id: id,
-        src: url,
-        kind: 'subtitles',
-        language: language,
-        label: label,
-        mode: 'showing',
-        default: true
-      },
-      true
-    )
-
-    const tracks = playerRef?.current?.textTracks() ?? []
-
-    for (let i = 0; i < tracks.length; i++) {
-      const track = tracks[i]
-
-      if (track.id === id) {
-        track.mode = 'showing'
-      } else {
-        track.mode = 'disabled'
-      }
-    }
   }
 
   return (
@@ -210,14 +170,6 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
                           </Stack>
                         )}
                         <Circle sx={{ fontSize: '10px', paddingTop: '30px' }} />
-                        <Button
-                          size="large"
-                          variant="contained"
-                          sx={{ height: 71, fontSize: '24px' }}
-                          onClick={() => setOpenAudio(true)}
-                        >
-                          Change Language
-                        </Button>
                       </>
                     )}
                   </Stack>
@@ -240,16 +192,10 @@ export function VideoHero({ loading }: VideoHeroProps): ReactElement {
           )}
         </Box>
       </>
-      <AudioDialog
-        open={openAudio}
-        video={video}
-        routes={routes}
-        onClose={() => setOpenAudio(false)}
-      />
+
       <SubtitleDialog
         open={openSubtitle}
-        video={video}
-        updateSubtitle={updateSubtitle}
+        playerRef={playerRef}
         onClose={() => setOpenSubtitle(false)}
       />
     </>

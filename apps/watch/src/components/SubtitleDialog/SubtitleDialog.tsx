@@ -1,43 +1,68 @@
-import { ReactElement, SyntheticEvent, ComponentProps } from 'react'
-import Typography from '@mui/material/Typography'
+import {
+  ReactElement,
+  SyntheticEvent,
+  ComponentProps,
+  MutableRefObject
+} from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Stack from '@mui/material/Stack'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
-
-import { GetVideo_video } from '../../../__generated__/GetVideo'
+// import videojs from 'video.js'
+import { VideoJsPlayer } from 'video.js'
+import { useVideo } from '../../libs/videoContext'
 
 interface SubtitleDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
-  video: GetVideo_video
-  updateSubtitle: ({
-    label,
-    id,
-    url,
-    language
-  }: {
-    label: string
-    id: string
-    url: string
-    language: string
-  }) => void
+  playerRef: MutableRefObject<VideoJsPlayer | undefined>
 }
 
 export function SubtitleDialog({
-  video,
-  updateSubtitle,
-  ...dialogProps
+  open,
+  onClose,
+  playerRef
 }: SubtitleDialogProps): ReactElement {
+  const { variant } = useVideo()
+
+  console.log(variant)
+
   const handleChange = (
     e: SyntheticEvent,
     newValue: { label: string; id: string; url: string; language: string }
   ): void => {
     e.preventDefault()
-    updateSubtitle(newValue)
+    updateSubtitle(newValue, playerRef)
+  }
+
+  function updateSubtitle({ label, id, url, language }, playerRef): void {
+    playerRef?.current?.addRemoteTextTrack(
+      {
+        id: id,
+        src: url,
+        kind: 'subtitles',
+        language: language,
+        label: label,
+        mode: 'showing',
+        default: true
+      },
+      true
+    )
+
+    const tracks = playerRef?.current?.textTracks() ?? []
+
+    for (let i = 0; i < tracks.length; i++) {
+      const track = tracks[i]
+
+      if (track.id === id) {
+        track.mode = 'showing'
+      } else {
+        track.mode = 'disabled'
+      }
+    }
   }
 
   const options =
-    video?.variant?.subtitle?.map((subtitle) => ({
+    variant?.subtitle?.map((subtitle) => ({
       label: subtitle.language.name.map((name) => name.value).join(', '),
       id: subtitle.language.id,
       url: subtitle.value,
@@ -59,7 +84,8 @@ export function SubtitleDialog({
 
   return (
     <Dialog
-      {...dialogProps}
+      open={open}
+      onClose={onClose}
       dialogTitle={{
         title: 'Subtitle this video',
         closeButton: true
@@ -74,9 +100,6 @@ export function SubtitleDialog({
           sx={{ mb: 4 }}
         >
           <Stack sx={{ maxWidth: '100%' }}>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              {video.title[0].value}
-            </Typography>
             <SubtitleLink />
           </Stack>
         </Stack>

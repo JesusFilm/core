@@ -45,6 +45,24 @@ export interface GetVideoContent_content_variant_language {
   name: GetVideoContent_content_variant_language_name[];
 }
 
+export interface GetVideoContent_content_variant_subtitle_language_name {
+  __typename: "Translation";
+  value: string;
+}
+
+export interface GetVideoContent_content_variant_subtitle_language {
+  __typename: "Language";
+  name: GetVideoContent_content_variant_subtitle_language_name[];
+  bcp47: string | null;
+  id: string;
+}
+
+export interface GetVideoContent_content_variant_subtitle {
+  __typename: "Translation";
+  language: GetVideoContent_content_variant_subtitle_language;
+  value: string;
+}
+
 export interface GetVideoContent_content_variant {
   __typename: "VideoVariant";
   id: string;
@@ -55,6 +73,7 @@ export interface GetVideoContent_content_variant {
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: GetVideoContent_content_variant_subtitle[];
 }
 
 export interface GetVideoContent_content_children_title {
@@ -77,6 +96,24 @@ export interface GetVideoContent_content_children_children {
   id: string;
 }
 
+export interface GetVideoContent_content_children_variant_subtitle_language_name {
+  __typename: "Translation";
+  value: string;
+}
+
+export interface GetVideoContent_content_children_variant_subtitle_language {
+  __typename: "Language";
+  name: GetVideoContent_content_children_variant_subtitle_language_name[];
+  bcp47: string | null;
+  id: string;
+}
+
+export interface GetVideoContent_content_children_variant_subtitle {
+  __typename: "Translation";
+  language: GetVideoContent_content_children_variant_subtitle_language;
+  value: string;
+}
+
 export interface GetVideoContent_content_children_variant {
   __typename: "VideoVariant";
   id: string;
@@ -86,6 +123,7 @@ export interface GetVideoContent_content_children_variant {
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: GetVideoContent_content_children_variant_subtitle[];
 }
 
 export interface GetVideoContent_content_children {

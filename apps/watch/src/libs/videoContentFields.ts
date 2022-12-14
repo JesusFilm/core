@@ -33,6 +33,16 @@ export const VIDEO_CONTENT_FIELDS = gql`
         }
       }
       slug
+      subtitle {
+        language {
+          name {
+            value
+          }
+          bcp47
+          id
+        }
+        value
+      }
     }
     slug
     children {
