@@ -1,27 +1,27 @@
 import { fireEvent, render } from '@testing-library/react'
 import { videos } from '../Videos/testData'
-import { VideosGrid } from './VideosGrid'
+import { VideoGrid } from './VideoGrid'
 
-describe('VideosGrid', () => {
+describe('VideoGrid', () => {
   const onLoadMore = jest.fn()
 
   it('should display loading placeholders', async () => {
     const { getByText, getAllByTestId } = render(
-      <VideosGrid videos={[]} loading onLoadMore={onLoadMore} />
+      <VideoGrid videos={[]} loading onLoadMore={onLoadMore} />
     )
     expect(getAllByTestId('videos-grid-placeholder')).toHaveLength(8)
     expect(getByText('Loading...')).toBeInTheDocument()
   })
   it('should request more videos', async () => {
     const { getByText } = render(
-      <VideosGrid videos={videos} loading={false} onLoadMore={onLoadMore} />
+      <VideoGrid videos={videos} loading={false} onLoadMore={onLoadMore} />
     )
     fireEvent.click(getByText('Load More'))
     expect(onLoadMore).toHaveBeenCalled()
   })
 
   it('should render correct number of videos', () => {
-    const { getAllByLabelText } = render(<VideosGrid videos={videos} />)
+    const { getAllByLabelText } = render(<VideoGrid videos={videos} />)
     expect(getAllByLabelText('collection-page-video-card').length).toBe(
       videos.length
     )
@@ -30,7 +30,7 @@ describe('VideosGrid', () => {
   it('should omit route prefix for collection link', () => {
     const routePrefix = 'thisIsTheRoutePrefix'
     const { getByLabelText } = render(
-      <VideosGrid videos={[videos[0]]} routePrefix={routePrefix} />
+      <VideoGrid videos={[videos[0]]} routePrefix={routePrefix} />
     )
     expect(getByLabelText('collection-page-video-card')).toHaveAttribute(
       'href',
@@ -41,7 +41,7 @@ describe('VideosGrid', () => {
   it('should have route prefix for non-collection link', () => {
     const routePrefix = 'thisIsTheRoutePrefix'
     const { getByLabelText } = render(
-      <VideosGrid videos={[videos[2]]} routePrefix={routePrefix} />
+      <VideoGrid videos={[videos[2]]} routePrefix={routePrefix} />
     )
     expect(getByLabelText('collection-page-video-card')).toHaveAttribute(
       'href',

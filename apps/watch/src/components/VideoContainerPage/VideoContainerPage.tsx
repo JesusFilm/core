@@ -6,7 +6,7 @@ import 'video.js/dist/video-js.css'
 
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
-import { VideosGrid } from '../VideosGrid/VideosGrid'
+import { VideoGrid } from '../VideoGrid/VideoGrid'
 import { useVideo } from '../../libs/videoContext'
 import { ContainerDescription } from './ContainerDescription'
 import { ContainerHero } from './ContainerHero'
@@ -48,7 +48,7 @@ export function VideoContainerPage(): ReactElement {
             routes={routeArray}
             onClose={handleCloseDialog}
           />
-          <VideosGrid containerSlug={video.slug} videos={children} />
+          <VideoGrid containerSlug={video.slug} videos={children} />
         </Container>
       )}
       <Divider />
