@@ -6,30 +6,30 @@
 import { VideoLabel } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: GetHomeVideo
+// GraphQL query operation: GetHomeVideos
 // ====================================================
 
-export interface GetHomeVideo_video_title {
+export interface GetHomeVideos_videos_title {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetHomeVideo_video_imageAlt {
+export interface GetHomeVideos_videos_imageAlt {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetHomeVideo_video_snippet {
+export interface GetHomeVideos_videos_snippet {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetHomeVideo_video_children {
+export interface GetHomeVideos_videos_children {
   __typename: "Video";
   id: string;
 }
 
-export interface GetHomeVideo_video_variant {
+export interface GetHomeVideos_videos_variant {
   __typename: "VideoVariant";
   id: string;
   duration: number;
@@ -40,27 +40,27 @@ export interface GetHomeVideo_video_variant {
   slug: string;
 }
 
-export interface GetHomeVideo_video {
+export interface GetHomeVideos_videos {
   __typename: "Video";
   id: string;
   label: VideoLabel;
-  title: GetHomeVideo_video_title[];
+  title: GetHomeVideos_videos_title[];
   image: string | null;
-  imageAlt: GetHomeVideo_video_imageAlt[];
-  snippet: GetHomeVideo_video_snippet[];
+  imageAlt: GetHomeVideos_videos_imageAlt[];
+  snippet: GetHomeVideos_videos_snippet[];
   /**
    * slug is a permanent link to the video.
    */
   slug: string;
-  children: GetHomeVideo_video_children[];
-  variant: GetHomeVideo_video_variant | null;
+  children: GetHomeVideos_videos_children[];
+  variant: GetHomeVideos_videos_variant | null;
 }
 
-export interface GetHomeVideo {
-  video: GetHomeVideo_video;
+export interface GetHomeVideos {
+  videos: GetHomeVideos_videos[];
 }
 
-export interface GetHomeVideoVariables {
-  id: string;
+export interface GetHomeVideosVariables {
+  ids: string[];
   languageId?: string | null;
 }

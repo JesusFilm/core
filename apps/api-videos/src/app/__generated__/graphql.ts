@@ -30,6 +30,7 @@ export class VideosFilter {
     availableVariantLanguageIds?: Nullable<string[]>;
     title?: Nullable<string>;
     labels?: Nullable<VideoLabel[]>;
+    ids?: Nullable<string[]>;
 }
 
 export class Translation {
@@ -90,7 +91,7 @@ export class Language {
 export abstract class IQuery {
     abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
 
-    abstract video(id: string, idType?: Nullable<IdType>): Video | Promise<Video>;
+    abstract video(id: string, idType?: Nullable<IdType>): Nullable<Video> | Promise<Nullable<Video>>;
 }
 
 type Nullable<T> = T | null;

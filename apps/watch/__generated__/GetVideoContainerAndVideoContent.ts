@@ -236,8 +236,8 @@ export interface GetVideoContainerAndVideoContent_content {
 }
 
 export interface GetVideoContainerAndVideoContent {
-  container: GetVideoContainerAndVideoContent_container;
-  content: GetVideoContainerAndVideoContent_content;
+  container: GetVideoContainerAndVideoContent_container | null;
+  content: GetVideoContainerAndVideoContent_content | null;
 }
 
 export interface GetVideoContainerAndVideoContentVariables {

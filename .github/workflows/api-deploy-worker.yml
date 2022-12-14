@@ -12,6 +12,12 @@ on:
       branch:
         required: true
         type: string
+      ecs_cluster:
+        required: true
+        type: string
+      ecs_service:
+        required: true
+        type: string
     secrets:
       ARANGODB_URL:
         required: true
@@ -28,6 +34,16 @@ on:
       KUBE_CONFIG_DATA:
         required: true
       ARCLIGHT_API_KEY:
+        required: true
+      JFP_AWS_ACCESS_KEY_ID:
+        required: true
+      JFP_AWS_SECRET_ACCESS_KEY:
+        required: true
+      CA_CRT:
+        required: true
+      USER_CRT:
+        required: true
+      USER_KEY:
         required: true
 
 jobs:
@@ -68,7 +84,7 @@ jobs:
         run: npm install -g nx --silent
 
       - name: Get affected apps
-        run: echo "::set-output name=apps::$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)"
+        run: echo "apps=$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)" >> $GITHUB_OUTPUT
         id: affected-apps
 
       - name: Build ${{ inputs.name }}
@@ -101,7 +117,7 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/${{ inputs.name }}/Dockerfile
           echo "Pushing image to ECR..."
           docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Deploy to Kubernetes cluster
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
@@ -121,7 +137,7 @@ jobs:
           args: rollout status deploy ${{ inputs.name }}-$ENV_SUFFIX
 
       - name: Get affected app seed
-        run: echo "::set-output name=dbs::$(git diff --name-only HEAD~1 HEAD | grep 'apps/${{ inputs.name }}/db/seed.ts')"
+        run: echo "dbs=$(git diff --name-only HEAD~1 HEAD | grep 'apps/${{ inputs.name }}/db/seed.ts')" >> $GITHUB_OUTPUT
         id: affected-dbs
 
       - name: Seed Database
@@ -133,3 +149,66 @@ jobs:
         with:
           targets: seed
           projects: ${{ inputs.name }}
+
+      # ECS Deployment
+      - name: Install Open VPN
+        run: sudo apt-get install openvpn
+
+      - name: Setup VPN CONFIG
+        run: |
+          echo "${{ secrets.CA_CRT }}" > ca.crt
+          echo "${{ secrets.USER_CRT }}" > user.crt
+          echo "${{ secrets.USER_KEY }}" > user.key
+
+      - name: Connect VPN
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+        run: sudo openvpn --config ".github/vpn/${{ inputs.branch }}.ovpn" --daemon
+
+      - name: Wait for a VPN connection
+        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'main')
+        timeout-minutes: 1
+        run: until dig api-journeys.service.internal A +time=1; do sleep 2; done
+
+      - name: Wait for a VPN connection
+        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'stage')
+        timeout-minutes: 1
+        run: until dig api-journeys.stage.internal A +time=1; do sleep 2; done
+
+      - name: Configure ECS AWS credentials
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Login to Amazon ECR
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+        id: login-ecr-ecs
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push the image to Amazon ECR
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+        id: build-image-ecs
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
+        run: |
+          # Build a docker container and push it to ECR 
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/${{ inputs.name }}/Dockerfile
+          echo "Pushing image to ECR..."
+          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Download task definition
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+        run: |
+          aws ecs describe-task-definition --task-definition ${{ inputs.repository }} --query taskDefinition > task-definition.json
+
+      - name: Redeploy ECS service
+        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          service: ${{ inputs.ecs_service }}
+          cluster: ${{ inputs.ecs_cluster }}
+          wait-for-service-stability: true
