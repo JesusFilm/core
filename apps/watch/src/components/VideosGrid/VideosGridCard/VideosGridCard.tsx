@@ -98,7 +98,7 @@ export function VideosGridCard({
                     <PlayArrow sx={{ fontSize: '1rem' }} />
                     <Typography variant="body1">
                       {secondsToTimeFormat(video.variant?.duration ?? 0, {
-                        trimSeconds: true
+                        trimZeroes: true
                       })}
                     </Typography>
                   </>
