@@ -1,6 +1,5 @@
 export {
   secondsToTimeFormat,
   timeFormatToSeconds,
-  secondsToMinutes,
-  secondsToTimeFormatTrimmed
+  secondsToMinutes
 } from './timeFormat'
