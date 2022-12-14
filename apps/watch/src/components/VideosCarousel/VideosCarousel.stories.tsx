@@ -8,7 +8,11 @@ import { VideosCarousel } from './VideosCarousel'
 const VideosCarouselStory = {
   ...watchConfig,
   component: VideosCarousel,
-  title: 'Watch/VideosCarousel'
+  title: 'Watch/VideosCarousel',
+  parameters: {
+    ...watchConfig.parameters,
+    layout: 'fullscreen'
+  }
 }
 
 const Template: Story<ComponentProps<typeof VideosCarousel>> = ({

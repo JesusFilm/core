@@ -2,12 +2,10 @@ import { ReactElement, ReactNode, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Navigation, A11y } from 'swiper'
 import Stack from '@mui/material/Stack'
-import NavigateNextIcon from '@mui/icons-material/NavigateNext'
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
 import { useTheme } from '@mui/material/styles'
 
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
-// import { VideosCarouselNavButton } from './VideosCarouselNavButton/VideosCarouselNavButton'
+import { VideosCarouselNavButton } from './VideosCarouselNavButton/VideosCarouselNavButton'
 
 type auto = 'auto'
 
@@ -18,36 +16,33 @@ interface VideosCarouselProps {
 
 SwiperCore.use([Navigation, A11y])
 
-const navOverlayBackground = (deg: number): string =>
-  `linear-gradient(${deg}deg, rgba(3, 3, 3, 0.85) 0%, rgba(3, 3, 3, 0.4) 50%, rgba(3, 3, 3, 0.1) 80%, rgba(3, 3, 3, 0.04) 90%, rgba(3, 3, 3, 0.02) 95%, rgba(3, 3, 3, 0.01) 100%)`
-
-const navOverlayHover = (deg: number): string =>
-  `linear-gradient(${deg}deg, rgba(3, 3, 3, 0.85) 0%, rgba(3, 3, 3, 0.4) 50%, rgba(3, 3, 3, 0.1) 80%, rgba(3, 3, 3, 0.04) 90%, rgba(3, 3, 3, 0.02) 95%, rgba(3, 3, 3, 0.01) 100%)`
-
 export function VideosCarousel({
   videos,
   renderItem
 }: VideosCarouselProps): ReactElement {
+  const minPageMargin = 24
+
   const theme = useTheme()
   const [overflowSlides, setOverflowSlides] = useState(true)
+  const [marginOffset, setMarginOffset] = useState(minPageMargin)
 
-  const navigationStyles = {
-    width: 50,
-    height: '100%',
-    color: 'primary.contrastText',
-    background: navOverlayBackground(90),
-    '&.swiper-button-disabled': {
-      display: 'none'
-    },
-    '&:hover': {
-      background: navOverlayHover(90)
+  // Page margin
+  const getMarginOffset = (): number => {
+    const maxContentWidth = theme.breakpoints.values.xxl
+
+    if (window != null) {
+      return window.innerWidth <= maxContentWidth
+        ? minPageMargin
+        : (window.innerWidth - maxContentWidth) / 2 + minPageMargin
     }
+    return minPageMargin
   }
 
-  // Adds and removes left margin on carousel.
+  // Smoothly show/hide left margin on carousel.
   // slidesOffsetBefore causes bug with centering slides
   // Update left margin on carousel initiation (onSwiper), onResize and onSlideChangeTransitionEnd()
   const updateMarginLeftOffset = (swiper: SwiperCore): void => {
+    swiper.wrapperEl.style.transition = '0.2s all ease-out'
     if (swiper.isBeginning) {
       swiper.wrapperEl.style.paddingLeft = '24px'
     } else {
@@ -71,7 +66,7 @@ export function VideosCarousel({
   // Laptop and desktop slides scroll by group size
   const laptopSlideConfig = {
     slidesPerView: 'auto' as auto,
-    slidesPerGroup: 4,
+    slidesPerGroup: 3,
     centeredSlides: true,
     centeredSlidesBounds: true,
     centerInsufficientSlides: true,
@@ -80,7 +75,7 @@ export function VideosCarousel({
 
   const desktopSlideConfig = {
     ...laptopSlideConfig,
-    slidePerGroup: 5
+    slidesPerGroup: 5
   }
 
   return (
@@ -115,6 +110,7 @@ export function VideosCarousel({
       onSwiper={(swiper) => {
         console.log('onSwiper', swiper)
         updateMarginLeftOffset(swiper)
+        // TODO: Fix bug where end is not detected properly.
 
         // Extract swiper navigation overflow state to hide custom nav
         if (!swiper.allowSlideNext && !swiper.allowSlidePrev) {
@@ -125,7 +121,9 @@ export function VideosCarousel({
     >
       {/* Slides */}
       {videos.map((video, index) => (
-        <SwiperSlide key={index}>{renderItem({ ...video })}</SwiperSlide>
+        <SwiperSlide key={index} style={{ transition: '.35s all ease' }}>
+          {renderItem({ ...video })}
+        </SwiperSlide>
       ))}
       {/* Navigation overlay */}
       <Stack
@@ -149,36 +147,8 @@ export function VideosCarousel({
           }
         }}
       >
-        {/* <VideosCarouselNavButton variant="prev" />
-        <VideosCarouselNavButton variant="prev" /> */}
-        <Stack
-          alignSelf="flex-start"
-          justifyContent="center"
-          alignItems="center"
-          className="jfp-button-prev"
-          onClick={(e) => e.preventDefault()}
-          sx={navigationStyles}
-        >
-          <NavigateBeforeIcon fontSize="large" />
-        </Stack>
-        <Stack
-          alignSelf="flex-end"
-          justifyContent="center"
-          alignItems="center"
-          className="jfp-button-next"
-          onClick={(e) => e.preventDefault()}
-          sx={{
-            ...navigationStyles,
-            background: navOverlayBackground(270),
-            '&:hover': {
-              background: navOverlayHover(270)
-            },
-            position: 'absolute',
-            right: 0
-          }}
-        >
-          <NavigateNextIcon fontSize="large" />
-        </Stack>
+        <VideosCarouselNavButton variant="prev" />
+        <VideosCarouselNavButton variant="next" />
       </Stack>
     </Swiper>
   )
