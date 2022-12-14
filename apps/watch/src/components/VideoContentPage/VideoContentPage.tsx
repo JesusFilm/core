@@ -122,7 +122,7 @@ export function VideoContentPage(): ReactElement {
             </Stack>
             <ShareDialog
               open={openShare}
-              routes={[]}
+              routes={container != null ? [container.slug] : []}
               onClose={() => setOpenShare(false)}
             />
           </Container>

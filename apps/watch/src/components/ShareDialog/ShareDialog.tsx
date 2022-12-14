@@ -26,8 +26,7 @@ export function ShareDialog({
   ...dialogProps
 }: ShareDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const { description, snippet, id, image, title, children, slug, variant } =
-    useVideo()
+  const { description, snippet, id, image, title, children } = useVideo()
   const [value, setValue] = useState(0)
   const theme = useTheme()
 
@@ -45,9 +44,9 @@ export function ShareDialog({
   const shareLink =
     routes != null
       ? `${
-          process.env.NEXT_PUBLIC_WATCH_URL ??
+          // process.env.NEXT_PUBLIC_WATCH_URL ??
           'https://watch-jesusfilm.vercel.app'
-        }/${slug}/${variant?.language?.name[0]?.value.toLowerCase() ?? ''}`
+        }/${routes?.join('/')}`.trim()
       : ''
 
   const handleShareLinkClick = async (): Promise<void> => {
