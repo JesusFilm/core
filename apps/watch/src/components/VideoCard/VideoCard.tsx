@@ -39,7 +39,7 @@ const Layer = styled(Box)({
 export function VideoCard({
   video,
   containerSlug,
-  variant,
+  variant = 'expanded',
   color
 }: VideoCardProps): ReactElement {
   let label = 'Item'

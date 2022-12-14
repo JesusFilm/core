@@ -45,7 +45,6 @@ const Template: ComponentStory<typeof VideoCard> = (args) => {
 }
 
 export const Expanded = Template.bind({})
-Expanded.args = { variant: 'expanded' }
 
 export const Contained = Template.bind({})
 Contained.args = { variant: 'contained' }
