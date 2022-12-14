@@ -1,12 +1,13 @@
-import { ComponentProps, ReactElement, useMemo } from 'react'
+import { ComponentProps, ReactElement } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
+import {
+  Language,
+  LanguageAutocomplete
+} from '@core/shared/ui/LanguageAutocomplete'
 import { Formik, Form, FormikValues } from 'formik'
 import { useQuery, gql } from '@apollo/client'
-import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import Language from '@mui/icons-material/Language'
+import LanguageIcon from '@mui/icons-material/Language'
 import { useRouter } from 'next/router'
 import { GetVideoLanguages } from '../../../__generated__/GetVideoLanguages'
 
@@ -48,7 +49,7 @@ export function AudioDialog({
   onClose
 }: AudioDialogProps): ReactElement {
   const router = useRouter()
-  const { data } = useQuery<GetVideoLanguages>(GET_VIDEO_LANGUAGES, {
+  const { data, loading } = useQuery<GetVideoLanguages>(GET_VIDEO_LANGUAGES, {
     variables: {
       id: slug
     }
@@ -56,46 +57,18 @@ export function AudioDialog({
   const variant = data?.video?.variant
   const variantLanguagesWithSlug = data?.video?.variantLanguagesWithSlug
 
-  const languages = variantLanguagesWithSlug?.map(({ language }) => language)
+  const languages = variantLanguagesWithSlug?.map(
+    ({ language }) => language
+  ) as unknown as Language[]
 
   const handleSubmit = (value: FormikValues): void => {
     const selectedLanguageSlug = variantLanguagesWithSlug?.find(
-      (languages) => languages.language?.id === value.language.id
+      (languages) => languages.language?.id === value.id
     )?.slug
     if (selectedLanguageSlug != null) {
       void router.push(`/${selectedLanguageSlug}`)
     }
   }
-
-  const options = useMemo(() => {
-    return (
-      languages?.map((language) => {
-        const localLanguageName = language?.name.find(
-          ({ primary }) => !primary
-        )?.value
-        const nativeLanguageName = language?.name.find(
-          ({ primary }) => primary
-        )?.value
-
-        return {
-          id: language?.id,
-          localName: localLanguageName,
-          nativeName: nativeLanguageName
-        }
-      }) ?? undefined
-    )
-  }, [languages])
-
-  const sortedOptions = useMemo(() => {
-    if (options != null) {
-      return options.sort((a, b) => {
-        return (a.localName ?? a.nativeName ?? '').localeCompare(
-          b.localName ?? b.nativeName ?? ''
-        )
-      })
-    }
-    return []
-  }, [options])
 
   return (
     <>
@@ -117,57 +90,44 @@ export function AudioDialog({
           }}
           onSubmit={handleSubmit}
         >
-          {({ values, handleSubmit, setFieldValue }) => (
+          {({ values, setFieldValue }) => (
             <Dialog
               open={open}
               onClose={onClose}
               dialogTitle={{
-                icon: <Language sx={{ mr: 3 }} />,
+                icon: <LanguageIcon sx={{ mr: 3 }} />,
                 title: 'Language'
               }}
               divider
             >
               <Form>
-                <Autocomplete
-                  disableClearable
-                  options={sortedOptions}
-                  value={values.language}
-                  isOptionEqualToValue={(option, value) =>
-                    option.id === value.id
-                  }
-                  getOptionLabel={({ localName, nativeName }) =>
-                    localName ?? nativeName ?? ''
-                  }
-                  onChange={(_event, option) => {
-                    setFieldValue('language', option)
-                    handleSubmit(option)
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      hiddenLabel
-                      placeholder="Search Language"
-                      label="Language"
-                      helperText={`${
-                        languages?.length ?? 0
-                      } Languages Available`}
-                    />
-                  )}
-                  renderOption={(props, { localName, nativeName }) => {
-                    return (
-                      <li {...props}>
-                        <Stack>
-                          <Typography>{localName ?? nativeName}</Typography>
-                          {localName != null && nativeName != null && (
-                            <Typography variant="body2" color="text.secondary">
-                              {nativeName}
-                            </Typography>
-                          )}
-                        </Stack>
-                      </li>
-                    )
-                  }}
-                />
+                {languages != null && (
+                  <LanguageAutocomplete
+                    onChange={(value) => {
+                      setFieldValue('language', value)
+                      if (value != null) handleSubmit(value)
+                    }}
+                    value={values.language}
+                    languages={languages}
+                    loading={loading}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        hiddenLabel
+                        placeholder="Search Language"
+                        label="Language"
+                        helperText={`${
+                          languages?.length ?? 0
+                        } Languages Available`}
+                        sx={{
+                          '> .MuiOutlinedInput-root': {
+                            borderRadius: 2
+                          }
+                        }}
+                      />
+                    )}
+                  />
+                )}
               </Form>
             </Dialog>
           )}
