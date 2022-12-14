@@ -13,7 +13,7 @@ import { useVideo } from '../../../libs/videoContext'
 import { VideoControls } from './VideoControls'
 
 export function VideoHero(): ReactElement {
-  const { id, image, variant, children, title } = useVideo()
+  const { id, image, variant, title } = useVideo()
   const [isPlaying, setIsPlaying] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -81,12 +81,12 @@ export function VideoHero(): ReactElement {
       })
       playerRef.current.on('play', playVideo)
     }
-  }, [playerRef, videoRef])
+  }, [variant, playerRef, videoRef])
 
   function playVideo(): void {
     setIsPlaying(true)
-    if (videoRef?.current != null) {
-      videoRef?.current?.play()
+    if (playerRef?.current != null) {
+      playerRef?.current?.play()
     }
   }
 
@@ -122,7 +122,7 @@ export function VideoHero(): ReactElement {
               <source src={variant.hls} type="application/x-mpegURL" />
             </video>
           )}
-          {playerRef.current != null && (
+          {playerRef.current != null && isPlaying && (
             <VideoControls
               player={playerRef.current}
               fullscreen={fullscreen}
@@ -166,36 +166,27 @@ export function VideoHero(): ReactElement {
                   sx={{ color: 'text.primary' }}
                 >
                   <Stack direction="row" spacing="20px">
-                    {children.length > 0 && (
-                      <Typography variant="subtitle1">
-                        {children.length} episodes
-                      </Typography>
-                    )}
-                    {children.length === 0 && (
-                      <>
-                        <Button
-                          size="large"
-                          variant="contained"
-                          sx={{ height: 71, fontSize: '24px' }}
-                          onClick={playVideo}
+                    <Button
+                      size="large"
+                      variant="contained"
+                      sx={{ height: 71, fontSize: '24px' }}
+                      onClick={playVideo}
+                    >
+                      <PlayArrow />
+                      &nbsp; Play Video
+                    </Button>
+                    {variant !== null && (
+                      <Stack height="71px" direction="row">
+                        <AccessTime sx={{ paddingTop: '23px' }} />
+                        <Typography
+                          variant="body2"
+                          sx={{ lineHeight: '71px', paddingLeft: '10px' }}
                         >
-                          <PlayArrow />
-                          &nbsp; Play Video
-                        </Button>
-                        {variant !== null && (
-                          <Stack height="71px" direction="row">
-                            <AccessTime sx={{ paddingTop: '23px' }} />
-                            <Typography
-                              variant="body2"
-                              sx={{ lineHeight: '71px', paddingLeft: '10px' }}
-                            >
-                              {secondsToMinutes(variant.duration)} min
-                            </Typography>
-                          </Stack>
-                        )}
-                        <Circle sx={{ fontSize: '10px', paddingTop: '30px' }} />
-                      </>
+                          {secondsToMinutes(variant.duration)} min
+                        </Typography>
+                      </Stack>
                     )}
+                    <Circle sx={{ fontSize: '10px', paddingTop: '30px' }} />
                   </Stack>
                 </Stack>
               </Box>

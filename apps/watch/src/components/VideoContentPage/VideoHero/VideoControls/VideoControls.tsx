@@ -64,7 +64,7 @@ export function VideoControls({
         setFullscreen(false)
       }
     })
-  }, [player, currentTime, setFullscreen, timeFormatToHHMMSS])
+  }, [player, setFullscreen, timeFormatToHHMMSS])
 
   function handlePlay(): void {
     if (!play) {
@@ -93,7 +93,7 @@ export function VideoControls({
     }
   }
 
-  function handleProgress(_event: Event, value: number | number[]): void {
+  function handleSeek(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
       setProgress(value)
       player.currentTime(value)
@@ -126,7 +126,7 @@ export function VideoControls({
       }}
     >
       <Slider
-        aria-label="progress-control"
+        aria-label="mobile-progress-control"
         min={0}
         max={durationSeconds}
         value={progress}
@@ -134,7 +134,7 @@ export function VideoControls({
           return timeFormatToHHMMSS(value)
         }}
         valueLabelDisplay="auto"
-        onChange={handleProgress}
+        onChange={handleSeek}
         sx={{
           height: 8.4,
           display: { xs: 'flex', md: 'none' },
@@ -161,7 +161,7 @@ export function VideoControls({
           )}
         </IconButton>
         <Slider
-          aria-label="progress-control"
+          aria-label="desktop-progress-control"
           min={0}
           max={durationSeconds}
           value={progress}
@@ -169,7 +169,7 @@ export function VideoControls({
             return timeFormatToHHMMSS(value)
           }}
           valueLabelDisplay="auto"
-          onChange={handleProgress}
+          onChange={handleSeek}
           sx={{
             height: 8.4,
             display: { xs: 'none', md: 'flex' },
@@ -216,7 +216,7 @@ export function VideoControls({
               )}
             </IconButton>
             <Slider
-              aria-label="progress-control"
+              aria-label="volume-control"
               min={0}
               max={100}
               value={mute ? 0 : volume}

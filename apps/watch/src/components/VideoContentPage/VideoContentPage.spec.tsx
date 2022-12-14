@@ -36,7 +36,7 @@ describe('VideoContentPage', () => {
       </SnackbarProvider>
     )
 
-    expect(getAllByRole('button', { name: 'Play Video' })).toHaveLength(1)
+    expect(getAllByRole('button', { name: 'Play Video' })).toHaveLength(2)
   })
 
   it('should render description', () => {

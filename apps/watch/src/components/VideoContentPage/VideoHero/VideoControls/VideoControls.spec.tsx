@@ -65,8 +65,6 @@ describe('VideoControls', () => {
     expect(pauseStub).toHaveBeenCalled()
   })
 
-  // TODO: test for progress bar
-
   it('mutes the video on mute icon click', () => {
     const mutedStub = jest.spyOn(player, 'muted').mockImplementation(() => ({
       muted: jest.fn()
@@ -82,8 +80,6 @@ describe('VideoControls', () => {
     expect(mutedStub).toHaveBeenCalled()
     expect(getByTestId('VolumeOffOutlinedIcon')).toBeInTheDocument()
   })
-
-  // TODO: test for volume control
 
   it('fullscreens the video on fullscreen icon click', () => {
     const fullscreenStub = jest
