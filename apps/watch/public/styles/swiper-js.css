@@ -22,7 +22,7 @@
 
 @media (min-width: 1200px) {
   .jfp-watch .swiper-wrapper {
-    transition: 'transform 0.75s ease 0.15s, padding 0.150s ease-out';
+    transition: 'transform 0.75s ease-out 0.15s, padding 0.15s ease-out';
   }
   .jfp-watch .swiper-slide {
     width: 325px;

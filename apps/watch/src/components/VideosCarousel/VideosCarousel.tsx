@@ -158,11 +158,7 @@ export function VideosCarousel({
       watchOverflow
       // Set spacing at carousel end.
       slidesOffsetAfter={minPageMargin}
-      onSlideChangeTransitionStart={() => {
-        setOverflowSlides(false)
-      }}
       onSlideChangeTransitionEnd={(swiper: SwiperExtended) => {
-        setOverflowSlides(true)
         updateMarginLeftOffset(swiper)
         updateSlidesAlignment(swiper)
       }}
@@ -190,7 +186,7 @@ export function VideosCarousel({
       <Stack
         direction="row"
         sx={{
-          transition: 'opacity 0.5s ease',
+          // transition: 'opacity 0.5s ease',
           opacity: { xs: 0, xl: overflowSlides ? 1 : 0 },
           position: 'absolute',
           zIndex: 1,
