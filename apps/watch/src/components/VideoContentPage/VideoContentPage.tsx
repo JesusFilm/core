@@ -21,7 +21,7 @@ import { VideoContent } from './VideoContent/VideoContent'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
-  const { variant, children, container } = useVideo()
+  const { variant, children } = useVideo()
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
 
