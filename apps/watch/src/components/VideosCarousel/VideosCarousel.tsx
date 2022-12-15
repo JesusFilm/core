@@ -66,30 +66,30 @@ export function VideosCarousel({
       swiper.slidesGrid[swiper.slidesGrid.length - 1] +
       minPageMargin
 
-    console.log('lastSnap', translateToEnd)
-    const slidesPerGroup = swiper.params.slidesPerGroup ?? 1
+    // const spaceBetween = swiper.params.spaceBetween ?? 12
+
+    // TODO: Perfectly align slides per group. Bugged where we cannot nav to beginning
+    // const updateMiddleSnapPoints = (): void => {
+    //   snapGrid.forEach((snapPoint, index) => {
+    //     if (index !== 0 && index !== snapGrid.length - 1) {
+    //       snapGrid[index] = snapPoint + swiper.slidesSizesGrid[0] + spaceBetween
+    //     }
+    //   })
+    // }
 
     // Slide less far
     if (snapGrid[snapGrid.length - 1] > translateToEnd) {
       snapGrid[snapGrid.length - 1] = translateToEnd
     }
-
     // Slide further to end
     if (translateToEnd > snapGrid[snapGrid.length - 1]) {
-      console.log('slide further', swiper.slides.length % slidesPerGroup)
-
       snapGrid.push(translateToEnd)
-
-      // TODO: Perfectly align slides per group
-      // if (swiper.slides.length / slidesPerGroup === snapGrid.length) {
-      // TODO: Fix bug cannot go back
-      // snapGrid[snapGrid.length - 1] = translateToEnd
-      // }
     }
 
-    // swiper.snapGrid = snapGrid
-
-    // console.log('update snap', swiper.snapGrid)
+    // if (snapGrid[snapGrid.length - 1] === translateToEnd) {
+    //   console.log('fits already')
+    //   updateMiddleSnapPoints()
+    // }
   }
 
   // Smoothly show/hide left margin on carousel.
