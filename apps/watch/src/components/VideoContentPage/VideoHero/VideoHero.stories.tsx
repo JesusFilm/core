@@ -1,17 +1,17 @@
 import { Meta, Story } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import Box from '@mui/system/Box'
-import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
-import { VideoLabel } from '../../../../../__generated__/globalTypes'
-import { watchConfig } from '../../../../libs/storybook'
-import { VideoProvider } from '../../../../libs/videoContext'
-import { VideoHeroOverlay } from './VideoHeroOverlay'
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
+import { VideoLabel } from '../../../../__generated__/globalTypes'
+import { watchConfig } from '../../../libs/storybook'
+import { VideoProvider } from '../../../libs/videoContext'
+import { VideoHero } from './VideoHero'
 
-const VideoHeroOverlayStory = {
+const VideoHeroStory = {
   ...watchConfig,
-  component: VideoHeroOverlay,
-  title: 'Watch/VideoContentPage/VideoHero/VideoHeroOverlay',
+  component: VideoHero,
+  title: 'Watch/VideoContentPage/VideoHero',
   parameters: {
     fullscreen: true
   }
@@ -62,21 +62,17 @@ const video: VideoContentFields = {
 const Template: Story = () => (
   <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
     <VideoProvider value={{ content: video }}>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          position: 'relative',
-          width: '100%',
-          height: { xs: 502, lg: 777 }
-        }}
-      >
-        <VideoHeroOverlay />
-      </Box>
+      <VideoHero />
     </VideoProvider>
   </ThemeProvider>
 )
 
 export const Default = Template.bind({})
 
-export default VideoHeroOverlayStory as Meta
+export const VideoPlayer = Template.bind({})
+VideoPlayer.play = async () => {
+  const PlayVideo = screen.getByRole('button', { name: 'Play' })
+  userEvent.click(PlayVideo)
+}
+
+export default VideoHeroStory as Meta
