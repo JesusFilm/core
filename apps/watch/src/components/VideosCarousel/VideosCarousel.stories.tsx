@@ -1,3 +1,4 @@
+import Typography from '@mui/material/Typography'
 import { Story, Meta } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { watchConfig } from '../../libs/storybook'
@@ -18,7 +19,14 @@ const VideosCarouselStory = {
 const Template: Story<ComponentProps<typeof VideosCarousel>> = ({
   ...args
 }) => {
-  return <VideosCarousel {...args} />
+  return (
+    <>
+      <Typography gutterBottom>
+        View without storybook sidebar for correct spacing
+      </Typography>
+      <VideosCarousel {...args} />
+    </>
+  )
 }
 
 export const Default = Template.bind({})
