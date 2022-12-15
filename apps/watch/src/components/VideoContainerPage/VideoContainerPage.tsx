@@ -38,7 +38,7 @@ export function VideoContainerPage(): ReactElement {
 
   return (
     <PageWrapper hero={<ContainerHero openDialog={handleOpenDialog} />}>
-      {snippet != null && (
+      {children != null && (
         <Container maxWidth="xxl">
           <Stack
             spacing={{ xs: 4, md: 11 }}
