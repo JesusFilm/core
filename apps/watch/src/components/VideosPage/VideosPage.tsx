@@ -54,11 +54,8 @@ export function VideosPage(): ReactElement {
   const languageContext = useLanguage()
   const [isEnd, setIsEnd] = useState(false)
   const [previousCount, setPreviousCount] = useState(0)
-  const [languageFilter, setLanguageFilter] = useState<string[]>(['529'])
-  const [filter, setFilter] = useState<VideosFilter>({
-    ...defaultFilter,
-    availableVariantLanguageIds: languageFilter
-  })
+  const [languageFilter, setLanguageFilter] = useState<LanguageOption[]>([])
+  const [filter, setFilter] = useState<VideosFilter>(defaultFilter)
 
   const { data, loading, fetchMore, refetch } = useQuery<GetVideos>(
     GET_VIDEOS,
@@ -101,14 +98,29 @@ export function VideosPage(): ReactElement {
     })
   }, [filter, refetch, languageContext])
 
-  function handleChangeLanguage(selectedLanguage: LanguageOption): void {
+  function handleChange(selectedLanguage: LanguageOption): void {
     const activeLanguage = languageFilter.find(
-      (id) => id === selectedLanguage.id
+      (language) => language === selectedLanguage
     )
     if (activeLanguage == null) {
-      setLanguageFilter([...languageFilter, selectedLanguage.id])
-      setFilter({ ...filter, availableVariantLanguageIds: languageFilter })
+      setLanguageFilter([...languageFilter, selectedLanguage])
+      const languageIds = languageFilter.map((language) => language.id)
+      setFilter({
+        ...filter,
+        availableVariantLanguageIds: languageIds
+      })
     }
+  }
+
+  function handleRemove(selectedLanguage: LanguageOption): void {
+    setLanguageFilter(
+      languageFilter.filter((language) => language.id !== selectedLanguage.id)
+    )
+    const languageIds = languageFilter.map((language) => language.id)
+    setFilter({
+      ...filter,
+      availableVariantLanguageIds: languageIds
+    })
   }
 
   return (
@@ -118,7 +130,10 @@ export function VideosPage(): ReactElement {
         <Divider
           sx={{ height: 2, mb: 12, background: 'rgba(33, 33, 33, 0.08)' }}
         />
-        <CurrentFilters />
+        <CurrentFilters
+          languageFilters={languageFilter}
+          onDelete={handleRemove}
+        />
         <Stack
           direction={{ xs: 'column', md: 'column', lg: 'row' }}
           spacing={19}
@@ -126,7 +141,7 @@ export function VideosPage(): ReactElement {
           <Stack direction="column" spacing={5} sx={{ minWidth: '278px' }}>
             <Divider />
             <LanguagesFilter
-              onChange={handleChangeLanguage}
+              onChange={handleChange}
               languages={languagesData?.languages}
               loading={languagesLoading}
             />
