@@ -52,8 +52,6 @@ function HomePage({ videos }: HomePageProps): ReactElement {
 
 export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
   const apolloClient = createApolloClient()
-  // unfortunately we have to grab videos individually. Getting them in batch causes out of memory issues
-  // TODO: replace once we migrate off arangodb
   const { data } = await apolloClient.query<GetHomeVideos>({
     query: GET_HOME_VIDEOS,
     variables: {

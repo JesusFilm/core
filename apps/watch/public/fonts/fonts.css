@@ -7,6 +7,7 @@
     url('/fonts/apercu_bold.svg') format('svg'), url('/fonts/ApercuBold.otf');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -17,4 +18,5 @@
     url('/fonts/apercu_regular.svg') format('svg'), url('/fonts/ApercuBold.otf');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }

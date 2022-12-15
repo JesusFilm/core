@@ -1,49 +1,44 @@
 import { fireEvent, render } from '@testing-library/react'
-import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
-import { LanguageSelect } from '.'
+import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete'
+import { ReactNode, HTMLAttributes } from 'react'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import { LanguageAutocomplete, Language } from '.'
 
-describe('LanguageSelect', () => {
+describe('LanguageAutocomplete', () => {
   const languages: Language[] = [
     {
       id: '496',
-      __typename: 'Language',
       name: [
         {
           value: 'Français',
-          primary: true,
-          __typename: 'Translation'
+          primary: true
         },
         {
           value: 'French',
-          primary: false,
-          __typename: 'Translation'
+          primary: false
         }
       ]
     },
     {
-      __typename: 'Language',
       id: '529',
       name: [
         {
           value: 'English',
-          primary: true,
-          __typename: 'Translation'
+          primary: true
         }
       ]
     },
     {
       id: '1106',
-      __typename: 'Language',
       name: [
         {
           value: 'Deutsch',
-          primary: true,
-          __typename: 'Translation'
+          primary: true
         },
         {
           value: 'German, Standard',
-          primary: false,
-          __typename: 'Translation'
+          primary: false
         }
       ]
     }
@@ -52,7 +47,7 @@ describe('LanguageSelect', () => {
   it('should sort language options alphabetically', async () => {
     const handleChange = jest.fn()
     const { getByRole, queryAllByRole } = render(
-      <LanguageSelect
+      <LanguageAutocomplete
         onChange={handleChange}
         value={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}
@@ -69,7 +64,7 @@ describe('LanguageSelect', () => {
   it('should select languages via option click', async () => {
     const handleChange = jest.fn()
     const { getByRole } = render(
-      <LanguageSelect
+      <LanguageAutocomplete
         onChange={handleChange}
         value={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}
@@ -88,7 +83,7 @@ describe('LanguageSelect', () => {
 
   it('should set default value', async () => {
     const { getByRole } = render(
-      <LanguageSelect
+      <LanguageAutocomplete
         onChange={jest.fn()}
         value={{
           id: '1106',
@@ -104,7 +99,7 @@ describe('LanguageSelect', () => {
 
   it('should show loading animation if loading', async () => {
     const { getByRole } = render(
-      <LanguageSelect
+      <LanguageAutocomplete
         onChange={jest.fn()}
         value={{ id: '529', localName: undefined, nativeName: 'English' }}
         languages={languages}
@@ -112,5 +107,40 @@ describe('LanguageSelect', () => {
       />
     )
     expect(getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('should render with custom render input and render option', () => {
+    const renderInput = (params: AutocompleteRenderInputParams): ReactNode => (
+      <TextField
+        {...params}
+        InputProps={{
+          ...params.InputProps
+        }}
+        data-testid="test-input"
+      />
+    )
+
+    const renderOption = (props: HTMLAttributes<HTMLLIElement>): ReactNode => (
+      <li {...props} data-testid="test-option">
+        <Typography>hello world</Typography>
+      </li>
+    )
+    const { getAllByTestId, getByTestId, getByRole } = render(
+      <LanguageAutocomplete
+        onChange={jest.fn()}
+        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={languages}
+        loading={false}
+        renderInput={renderInput}
+        renderOption={renderOption}
+      />
+    )
+
+    expect(getByTestId('test-input')).toBeInTheDocument()
+
+    fireEvent.focus(getByRole('textbox'))
+    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
+
+    expect(getAllByTestId('test-option')).toHaveLength(3)
   })
 })

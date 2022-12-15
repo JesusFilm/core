@@ -47,6 +47,7 @@ input VideosFilter {
   title: String
   labels: [VideoLabel!]
   ids: [ID!]
+  subtitleLanguageIds: [ID!]
 }
 
 extend type Query {
