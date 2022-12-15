@@ -1,4 +1,4 @@
-import { ComponentProps, ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
 import PlayArrow from '@mui/icons-material/PlayArrowRounded'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
@@ -16,7 +16,6 @@ import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 interface VideoCardProps {
   video?: VideoChildFields
   variant?: 'contained' | 'expanded'
-  color?: ComponentProps<typeof Typography>['color']
   containerSlug?: string
   index?: number
   active?: boolean
@@ -42,7 +41,6 @@ export function VideoCard({
   video,
   containerSlug,
   variant = 'expanded',
-  color,
   index,
   active
 }: VideoCardProps): ReactElement {
@@ -127,6 +125,7 @@ export function VideoCard({
                   layout="fill"
                   objectFit="cover"
                   objectPosition="left top"
+                  alt={video.title[0].value}
                 />
               ) : (
                 <Skeleton
@@ -139,6 +138,7 @@ export function VideoCard({
                   }}
                   variant="rectangular"
                   animation={false}
+                  data-testid="MuiImageBackground-loading"
                 />
               )}
             </Layer>
@@ -270,11 +270,7 @@ export function VideoCard({
           {variant === 'expanded' && (
             <>
               {index != null && (
-                <Typography
-                  variant="overline2"
-                  sx={{ opacity: 0.5 }}
-                  color={color}
-                >
+                <Typography variant="overline2" sx={{ opacity: 0.5 }}>
                   {video != null ? (
                     `${label} ${index + 1}`
                   ) : (
@@ -282,7 +278,7 @@ export function VideoCard({
                   )}
                 </Typography>
               )}
-              <Typography variant="h6" color={color}>
+              <Typography variant="h6">
                 {video != null ? (
                   video?.title[0].value
                 ) : (
