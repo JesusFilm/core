@@ -1,6 +1,4 @@
-import { useRef } from 'react'
 import { fireEvent, render } from '@testing-library/react'
-import videojs from 'video.js'
 import { VideoProvider } from '../../libs/videoContext'
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
@@ -89,7 +87,6 @@ const video: VideoContentFields = {
   slug: 'jesus',
   children: []
 }
-// const playerRef = useRef<videojs.Player>()
 
 let playerRef
 
