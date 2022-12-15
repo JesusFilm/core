@@ -4,7 +4,6 @@ import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
-
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { useLanguage } from '../../libs/languageContext/LanguageContext'
 import { GetVideos } from '../../../__generated__/GetVideos'
@@ -102,22 +101,14 @@ export function VideosPage(): ReactElement {
     })
   }, [filter, refetch, languageContext])
 
-  // toggles languages to be filtered
   function handleChangeLanguage(selectedLanguage: LanguageOption): void {
     const activeLanguage = languageFilter.find(
       (id) => id === selectedLanguage.id
     )
-    if (activeLanguage != null) {
-      setLanguageFilter(
-        languageFilter.filter(
-          (languageId) => languageId !== selectedLanguage.id
-        )
-      )
-    } else {
+    if (activeLanguage == null) {
       setLanguageFilter([...languageFilter, selectedLanguage.id])
+      setFilter({ ...filter, availableVariantLanguageIds: languageFilter })
     }
-
-    setFilter({ ...filter, availableVariantLanguageIds: languageFilter })
   }
 
   return (
@@ -132,11 +123,16 @@ export function VideosPage(): ReactElement {
           direction={{ xs: 'column', md: 'column', lg: 'row' }}
           spacing={19}
         >
-          <LanguagesFilter
-            onChange={handleChangeLanguage}
-            languages={languagesData?.languages}
-            loading={languagesLoading}
-          />
+          <Stack direction="column" spacing={5} sx={{ minWidth: '278px' }}>
+            <Divider />
+            <LanguagesFilter
+              onChange={handleChangeLanguage}
+              languages={languagesData?.languages}
+              loading={languagesLoading}
+            />
+            <Divider />
+          </Stack>
+
           <VideoGrid
             videos={data?.videos ?? []}
             onLoadMore={handleLoadMore}

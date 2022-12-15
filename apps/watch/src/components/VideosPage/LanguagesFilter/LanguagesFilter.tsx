@@ -2,22 +2,40 @@ import {
   LanguageAutocomplete,
   LanguageAutocompleteProps
 } from '@core/shared/ui/LanguageAutocomplete'
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
-import Divider from '@mui/material/Divider'
+import { ReactElement, ReactNode } from 'react'
+import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete'
+import CircularProgress from '@mui/material/CircularProgress'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
 
 export function LanguagesFilter(
   props: LanguageAutocompleteProps
 ): ReactElement {
+  const renderInput = (params: AutocompleteRenderInputParams): ReactNode => (
+    <TextField
+      {...params}
+      label="Search Languages"
+      variant="filled"
+      helperText="+2000 languages"
+      InputProps={{
+        ...params.InputProps,
+        sx: { paddingBottom: 2 },
+        endAdornment: (
+          <>
+            {props.loading === true ? (
+              <CircularProgress color="inherit" size={20} />
+            ) : null}
+            {params.InputProps.endAdornment}
+          </>
+        )
+      }}
+    />
+  )
+
   return (
-    <Stack direction="column" spacing={5} sx={{ minWidth: '278px' }}>
-      <Divider />
+    <>
       <Typography>Languages</Typography>
-      <LanguageAutocomplete {...props} />
-      <Button>+180 Languages</Button>
-      <Divider />
-    </Stack>
+      <LanguageAutocomplete {...props} renderInput={renderInput} />
+    </>
   )
 }
