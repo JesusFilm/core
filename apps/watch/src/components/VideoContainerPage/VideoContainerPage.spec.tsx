@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 
 import { SnackbarProvider } from 'notistack'
+
 import {
   VideoContentFields,
   VideoContentFields_children
@@ -27,7 +28,20 @@ const video = {
       value: 'video description'
     }
   ],
-  children: [{ id: 'child.id' } as unknown as VideoContentFields_children]
+  children: [
+    {
+      id: 'child.id',
+      slug: 'slug',
+      image: 'image url',
+      imageAlt: [{ value: 'image alt' }],
+      variant: {
+        duration: 1
+      },
+      title: [{ value: 'child title' }],
+      children: []
+    } as unknown as VideoContentFields_children
+  ],
+  slug: 'video-slug'
 } as unknown as VideoContentFields
 
 describe('VideoContainerPage', () => {
@@ -35,29 +49,29 @@ describe('VideoContainerPage', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: video }}>
-          <VideoContainerPage content={video} />
+          <VideoContainerPage />
         </VideoProvider>
       </SnackbarProvider>
     )
-    expect(getByText('video title')).toBeInTheDocument()
+    expect(getByText(video.title[0].value)).toBeInTheDocument()
   })
 
   it('should render snippet', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: video }}>
-          <VideoContainerPage content={video} />
+          <VideoContainerPage />
         </VideoProvider>
       </SnackbarProvider>
     )
-    expect(getByText('video description')).toBeInTheDocument()
+    expect(getByText(video.snippet[0].value)).toBeInTheDocument()
   })
 
   it('should render share button', () => {
     const { getByRole, getByLabelText } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: video }}>
-          <VideoContainerPage content={video} />
+          <VideoContainerPage />
         </VideoProvider>
       </SnackbarProvider>
     )
@@ -72,7 +86,7 @@ describe('VideoContainerPage', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: video }}>
-          <VideoContainerPage content={video} />
+          <VideoContainerPage />
         </VideoProvider>
       </SnackbarProvider>
     )

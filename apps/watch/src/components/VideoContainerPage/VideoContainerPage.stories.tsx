@@ -1,11 +1,10 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/testData'
 import { VideoContainerPage } from '.'
 
-const VideoContainerPageStory = {
+const VideoContainerPageStory: ComponentMeta<typeof VideoContainerPage> = {
   ...watchConfig,
   component: VideoContainerPage,
   title: 'Watch/VideoContainerPage',
@@ -15,17 +14,12 @@ const VideoContainerPageStory = {
   }
 }
 
-const Template: Story<ComponentProps<typeof VideoContainerPage>> = ({
-  ...args
-}) => (
+const Template: ComponentStory<typeof VideoContainerPage> = () => (
   <VideoProvider value={{ content: videos[0] }}>
-    <VideoContainerPage {...args} />
+    <VideoContainerPage />
   </VideoProvider>
 )
 
 export const Default = Template.bind({})
-Default.args = {
-  content: videos[0]
-}
 
-export default VideoContainerPageStory as Meta
+export default VideoContainerPageStory
