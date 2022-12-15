@@ -37,6 +37,7 @@ export const VIDEO_CONTENT_FIELDS = gql`
         language {
           name {
             value
+            primary
           }
           bcp47
           id

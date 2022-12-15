@@ -48,6 +48,7 @@ export interface GetVideoContent_content_variant_language {
 export interface GetVideoContent_content_variant_subtitle_language_name {
   __typename: "Translation";
   value: string;
+  primary: boolean;
 }
 
 export interface GetVideoContent_content_variant_subtitle_language {
@@ -99,6 +100,7 @@ export interface GetVideoContent_content_children_children {
 export interface GetVideoContent_content_children_variant_subtitle_language_name {
   __typename: "Translation";
   value: string;
+  primary: boolean;
 }
 
 export interface GetVideoContent_content_children_variant_subtitle_language {

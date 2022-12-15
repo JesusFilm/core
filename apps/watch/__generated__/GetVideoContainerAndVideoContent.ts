@@ -48,6 +48,7 @@ export interface GetVideoContainerAndVideoContent_container_variant_language {
 export interface GetVideoContainerAndVideoContent_container_variant_subtitle_language_name {
   __typename: "Translation";
   value: string;
+  primary: boolean;
 }
 
 export interface GetVideoContainerAndVideoContent_container_variant_subtitle_language {
@@ -99,6 +100,7 @@ export interface GetVideoContainerAndVideoContent_container_children_children {
 export interface GetVideoContainerAndVideoContent_container_children_variant_subtitle_language_name {
   __typename: "Translation";
   value: string;
+  primary: boolean;
 }
 
 export interface GetVideoContainerAndVideoContent_container_children_variant_subtitle_language {
@@ -199,6 +201,7 @@ export interface GetVideoContainerAndVideoContent_content_variant_language {
 export interface GetVideoContainerAndVideoContent_content_variant_subtitle_language_name {
   __typename: "Translation";
   value: string;
+  primary: boolean;
 }
 
 export interface GetVideoContainerAndVideoContent_content_variant_subtitle_language {
@@ -250,6 +253,7 @@ export interface GetVideoContainerAndVideoContent_content_children_children {
 export interface GetVideoContainerAndVideoContent_content_children_variant_subtitle_language_name {
   __typename: "Translation";
   value: string;
+  primary: boolean;
 }
 
 export interface GetVideoContainerAndVideoContent_content_children_variant_subtitle_language {

@@ -1,14 +1,11 @@
-import {
-  ReactElement,
-  SyntheticEvent,
-  ComponentProps,
-  MutableRefObject
-} from 'react'
+import { ReactElement, ComponentProps, MutableRefObject, useState } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
-import Stack from '@mui/material/Stack'
-import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
-// import videojs from 'video.js'
+import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
+import {
+  Language,
+  LanguageAutocomplete
+} from '@core/shared/ui/LanguageAutocomplete'
 import { VideoJsPlayer } from 'video.js'
 import { useVideo } from '../../libs/videoContext'
 
@@ -23,31 +20,44 @@ export function SubtitleDialog({
   playerRef
 }: SubtitleDialogProps): ReactElement {
   const { variant } = useVideo()
+  const languages = variant?.subtitle?.map(
+    ({ language }) => language
+  ) as unknown as Language[]
 
-  console.log(variant)
+  const [selected, setSelected] = useState<Language | undefined>(languages[0])
 
-  const handleChange = (
-    e: SyntheticEvent,
-    newValue: { label: string; id: string; url: string; language: string }
-  ): void => {
-    e.preventDefault()
-    updateSubtitle(newValue, playerRef)
+  const tracks = playerRef?.current?.textTracks() ?? []
+  for (let i = 0; i < tracks.length; i++) {
+    const track = tracks[i]
+    if (track.mode === 'showing') {
+      const selectedLanguage = languages.find(
+        (language) => language.id === track.id
+      )
+      setSelected(selectedLanguage)
+    }
   }
 
-  function updateSubtitle({ label, id, url, language }, playerRef): void {
+  const handleChange = ({ id }): void => {
+    updateSubtitle(id)
+  }
+
+  function updateSubtitle(id): void {
+    const selected = variant?.subtitle?.find(
+      (subtitle) => subtitle.language.id === id
+    )
+
     playerRef?.current?.addRemoteTextTrack(
       {
         id: id,
-        src: url,
+        src: selected?.value,
         kind: 'subtitles',
-        language: language,
-        label: label,
+        language: selected?.language.bcp47 == null && undefined,
+        label: selected?.language.name.map((name) => name.value).join(', '),
         mode: 'showing',
         default: true
       },
       true
     )
-
     const tracks = playerRef?.current?.textTracks() ?? []
 
     for (let i = 0; i < tracks.length; i++) {
@@ -59,51 +69,40 @@ export function SubtitleDialog({
         track.mode = 'disabled'
       }
     }
+
+    onClose()
   }
-
-  const options =
-    variant?.subtitle?.map((subtitle) => ({
-      label: subtitle.language.name.map((name) => name.value).join(', '),
-      id: subtitle.language.id,
-      url: subtitle.value,
-      language: subtitle.language.bcp47
-    })) ?? []
-
-  const SubtitleLink = (): ReactElement => (
-    <Stack direction="column" spacing={4} sx={{ height: '430px' }}>
-      <Autocomplete
-        id="combo-box-demo"
-        open
-        options={options}
-        onChange={handleChange}
-        sx={{ width: '100vw', maxWidth: '100%' }}
-        renderInput={(params) => <TextField {...params} label="Language" />}
-      />
-    </Stack>
-  )
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
       dialogTitle={{
-        title: 'Subtitle this video',
-        closeButton: true
+        icon: <SubtitlesOutlined sx={{ mr: 3 }} />,
+        title: 'Subtitles'
       }}
       divider
     >
-      <>
-        <Stack
-          direction="row"
-          spacing={4}
-          alignItems="flex-start"
-          sx={{ mb: 4 }}
-        >
-          <Stack sx={{ maxWidth: '100%' }}>
-            <SubtitleLink />
-          </Stack>
-        </Stack>
-      </>
+      <LanguageAutocomplete
+        onChange={handleChange}
+        value={selected}
+        languages={languages}
+        loading={false}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            hiddenLabel
+            placeholder="Search Language"
+            label="Language"
+            helperText={`${languages?.length ?? 0} Languages Available`}
+            sx={{
+              '> .MuiOutlinedInput-root': {
+                borderRadius: 2
+              }
+            }}
+          />
+        )}
+      />
     </Dialog>
   )
 }

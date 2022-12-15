@@ -32,6 +32,7 @@ export interface GetHomeVideos_videos_children {
 export interface GetHomeVideos_videos_variant_subtitle_language_name {
   __typename: "Translation";
   value: string;
+  primary: boolean;
 }
 
 export interface GetHomeVideos_videos_variant_subtitle_language {

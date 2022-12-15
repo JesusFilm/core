@@ -32,6 +32,7 @@ export interface VideoChildFields_children {
 export interface VideoChildFields_variant_subtitle_language_name {
   __typename: "Translation";
   value: string;
+  primary: boolean;
 }
 
 export interface VideoChildFields_variant_subtitle_language {
