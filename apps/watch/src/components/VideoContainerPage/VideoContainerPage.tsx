@@ -1,22 +1,21 @@
 import Container from '@mui/material/Container'
+import Divider from '@mui/material/Divider'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import 'video.js/dist/video-js.css'
-
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
+import { VideoGrid } from '../VideoGrid/VideoGrid'
+import { useVideo } from '../../libs/videoContext'
 import { ContainerDescription } from './ContainerDescription'
 import { ContainerHero } from './ContainerHero'
 
-interface VideoContainerPageProps {
-  content: VideoContentFields
-}
-
 // Usually Series or Collection Videos
-export function VideoContainerPage({
-  content
-}: VideoContainerPageProps): ReactElement {
+export function VideoContainerPage(): ReactElement {
+  const video = useVideo()
+  const { snippet, children } = video
   const router = useRouter()
   const [shareDialog, setShareDialog] = useState<boolean>(false)
   const routeArray: string[] = []
@@ -39,20 +38,33 @@ export function VideoContainerPage({
 
   return (
     <PageWrapper hero={<ContainerHero openDialog={handleOpenDialog} />}>
-      {content != null && (
+      {children != null && (
         <Container maxWidth="xxl">
-          <ContainerDescription
-            value={content.snippet[0].value}
-            openDialog={handleOpenDialog}
-          />
-          <ShareDialog
-            open={shareDialog}
-            routes={routeArray}
-            onClose={handleCloseDialog}
-          />
-          {/* Add grid here */}
+          <Stack
+            spacing={{ xs: 4, md: 11 }}
+            py={{ xs: 7, md: 17 }}
+            direction="column"
+          >
+            <ContainerDescription
+              value={snippet[0].value}
+              openDialog={handleOpenDialog}
+            />
+            <ShareDialog
+              open={shareDialog}
+              routes={routeArray}
+              onClose={handleCloseDialog}
+            />
+            <Box>
+              <VideoGrid
+                containerSlug={video.slug}
+                videos={children}
+                variant="expanded"
+              />
+            </Box>
+          </Stack>
         </Container>
       )}
+      <Divider />
     </PageWrapper>
   )
 }

@@ -33,7 +33,7 @@ describe('getLabelDetails', () => {
   })
   it('should return segment label details', () => {
     expect(getLabelDetails(VideoLabel.segment)).toEqual({
-      label: 'Clip',
+      label: 'Chapter',
       color: '#7283BE',
       childLabel: 'items'
     })
