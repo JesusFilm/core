@@ -138,7 +138,7 @@ export function VideoCard({
                   }}
                   variant="rectangular"
                   animation={false}
-                  data-testid="MuiImageBackground-loading"
+                  data-testid="VideoImageSkeleton"
                 />
               )}
             </Layer>
@@ -185,7 +185,7 @@ export function VideoCard({
                   {video != null ? (
                     video?.title[0].value
                   ) : (
-                    <Skeleton width="60%" />
+                    <Skeleton width="60%" data-testid="VideoTitleSkeleton" />
                   )}
                 </Typography>
               )}
@@ -212,7 +212,11 @@ export function VideoCard({
                         lineHeight: '29px'
                       }}
                     >
-                      {video != null ? label : <Skeleton width={50} />}
+                      {video != null ? (
+                        label
+                      ) : (
+                        <Skeleton width={50} data-testid="VideoLabelSkeleton" />
+                      )}
                     </Typography>
                   )}
                 </Box>
@@ -240,7 +244,10 @@ export function VideoCard({
                       {video == null && (
                         <>
                           <PlayArrow sx={{ fontSize: '1rem' }} />
-                          <Skeleton width={20} />
+                          <Skeleton
+                            width={20}
+                            data-testid="VideoVariantDurationSkeleton"
+                          />
                         </>
                       )}
                       {video?.children.length === 0 && (
@@ -274,7 +281,10 @@ export function VideoCard({
                   {video != null ? (
                     `${label} ${index + 1}`
                   ) : (
-                    <Skeleton width="20%" />
+                    <Skeleton
+                      width="20%"
+                      data-testid="VideoLabelIndexSkeleton"
+                    />
                   )}
                 </Typography>
               )}
@@ -282,7 +292,7 @@ export function VideoCard({
                 {video != null ? (
                   video?.title[0].value
                 ) : (
-                  <Skeleton width="60%" />
+                  <Skeleton width="60%" data-testid="VideoTitleSkeleton" />
                 )}
               </Typography>
             </>
