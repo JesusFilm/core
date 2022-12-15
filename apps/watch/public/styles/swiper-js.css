@@ -5,19 +5,26 @@
 - Add styles here as last resort
 */
 
-.swiper-slide {
+.jfp-watch .swiper-slide {
   width: 232px;
   min-width: 232px;
 }
 
+.jfp-watch .swiper-wrapper {
+  transition: 'transform 0.25s ease, padding 0.1s ease-out';
+}
+
 @media (min-width: 345px) {
-  .swiper-slide {
+  .jfp-watch .swiper-slide {
     max-width: 232px;
   }
 }
 
 @media (min-width: 1200px) {
-  .swiper-slide {
+  .jfp-watch .swiper-wrapper {
+    transition: 'transform 0.75s ease 0.15s, padding 0.150s ease-out';
+  }
+  .jfp-watch .swiper-slide {
     width: 325px;
     min-width: 325px;
     max-width: 325px;
@@ -25,7 +32,7 @@
 }
 
 @media (min-width: 1400px) {
-  .swiper-slide {
+  .jfp-watch .swiper-slide {
     width: 242px;
     min-width: 242px;
     max-width: 242px;
@@ -33,7 +40,7 @@
 }
 
 @media (min-width: 1600px) {
-  .swiper-slide {
+  .jfp-watch.swiper-slide {
     width: 280px;
     min-width: 280px;
     max-width: 280px;
@@ -41,7 +48,7 @@
 }
 
 @media (min-width: 1800px) {
-  .swiper-slide {
+  .jfp-watch .swiper-slide {
     width: 314px;
     min-width: 314px;
     max-width: 314px;
@@ -49,7 +56,7 @@
 }
 
 @media (min-width: 2000px) {
-  .swiper-slide {
+  .jfp-watch .swiper-slide {
     width: 245px;
     min-width: 245px;
     max-width: 245px;

@@ -83,7 +83,6 @@ export function VideosCarousel({
   // slidesOffsetBefore causes bug with centering slides
   // Update left margin on carousel initiation (onSwiper), onResize and onSlideChangeTransitionEnd()
   const updateMarginLeftOffset = (swiper: SwiperCore): void => {
-    swiper.wrapperEl.style.transition = '0.2s all ease-out'
     if (swiper.isBeginning) {
       swiper.wrapperEl.style.paddingLeft = '24px'
     } else {
@@ -121,6 +120,8 @@ export function VideosCarousel({
 
   return (
     <Swiper
+      // TODO: Use wrapperClass after updating Swiper version. Currently not supported for swiper/react
+      className="jfp-watch"
       data-testid="videos-carousel"
       {...mobileSlideConfig}
       breakpoints={{
@@ -146,6 +147,8 @@ export function VideosCarousel({
         }
         // TODO: fix gap issue on extra-wide screens
       }}
+      // TODO: Dynamic speed based on number of slides transformed
+      speed={850}
       // Set custom navigation
       navigation={{
         nextEl: '.jfp-button-next',
@@ -155,12 +158,15 @@ export function VideosCarousel({
       watchOverflow
       // Set spacing at carousel end.
       slidesOffsetAfter={minPageMargin}
-      // Set spacing at carousel start
+      onSlideChangeTransitionStart={() => {
+        setOverflowSlides(false)
+      }}
       onSlideChangeTransitionEnd={(swiper: SwiperExtended) => {
+        setOverflowSlides(true)
         updateMarginLeftOffset(swiper)
         updateSlidesAlignment(swiper)
       }}
-      // On resize and init, update spacing and
+      // On resize and init, update spacing and nav features
       onResize={(swiper: SwiperExtended) => {
         updateMarginLeftOffset(swiper)
         updateSlidesAlignment(swiper)
@@ -184,8 +190,8 @@ export function VideosCarousel({
       <Stack
         direction="row"
         sx={{
-          display: { xs: 'none', xl: overflowSlides ? 'flex' : 'none' },
-          transition: '.55s all ease',
+          transition: 'opacity 0.5s ease',
+          opacity: { xs: 0, xl: overflowSlides ? 1 : 0 },
           position: 'absolute',
           zIndex: 1,
           top: 0,
