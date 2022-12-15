@@ -28,8 +28,6 @@ export function VideoHeroOverlay({
         position: 'absolute',
         height: '100%',
         width: '100%',
-        display: 'flex',
-        alignItems: 'end',
         zIndex: 1
       }}
     >
@@ -42,26 +40,37 @@ export function VideoHeroOverlay({
         />
       )}
       <HeroOverlay />
-      <Container maxWidth="xxl" sx={{ zIndex: 4, pb: { xs: 15, lg: 33 } }}>
-        <Stack spacing={{ xs: 2, lg: 5 }}>
-          <IconButton
-            onClick={handlePlay}
-            sx={{
-              width: 68,
-              height: 68,
-              borderRadius: 10,
-              backgroundColor: 'background.default',
-              opacity: 0.45,
-              mb: { xs: 0, lg: 35 },
-              alignSelf: 'end',
-              '&:hover': {
-                backgroundColor: 'background.default'
-              },
-              zIndex: 2
-            }}
-          >
-            <VolumeOffOutlined />
-          </IconButton>
+      <Container
+        maxWidth="xxl"
+        sx={{
+          zIndex: 4,
+          position: 'relative',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'flex-end'
+        }}
+      >
+        <IconButton
+          onClick={handlePlay}
+          sx={{
+            position: 'absolute',
+            top: 80,
+            right: 35,
+            width: 68,
+            height: 68,
+            borderRadius: 10,
+            backgroundColor: 'background.default',
+            opacity: 0.45,
+            alignSelf: 'end',
+            '&:hover': {
+              backgroundColor: 'background.default'
+            },
+            zIndex: 2
+          }}
+        >
+          <VolumeOffOutlined />
+        </IconButton>
+        <Stack spacing={{ xs: 2, lg: 5 }} sx={{ pb: { xs: 15, lg: 33 } }}>
           <Typography
             variant="h1"
             color="text.primary"
