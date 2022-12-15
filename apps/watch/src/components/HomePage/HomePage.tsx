@@ -8,8 +8,8 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { PageWrapper } from '../PageWrapper'
+import { VideoGrid } from '../VideoGrid'
 import { HomeHero } from './HomeHero'
-import { HomeVideos } from './HomeVideos'
 import { SeeAllVideos } from './SeeAllVideos'
 
 interface HomePageProps {
@@ -21,7 +21,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
     <PageWrapper hero={<HomeHero />}>
       <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
         <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
-          <HomeVideos data={videos} />
+          <VideoGrid videos={videos} variant="contained" />
           <SeeAllVideos />
           <Box
             sx={{

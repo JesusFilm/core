@@ -28,7 +28,7 @@ export function SeeAllVideos({ value = '' }: Props): ReactElement {
       <Link href="/videos" passHref>
         <>
           <Button
-            size="medium"
+            size="small"
             color="secondary"
             variant="outlined"
             aria-label="all-videos-button"
