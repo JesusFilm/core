@@ -1,6 +1,5 @@
 import { useState, SyntheticEvent, ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
-import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -12,6 +11,11 @@ import MenuItem from '@mui/material/MenuItem'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 
+import { noop } from 'lodash'
+import {
+  LanguageAutocomplete,
+  Language
+} from '../../../../components/LanguageAutocomplete'
 import { TabPanel, tabA11yProps } from '../../../../components/TabPanel'
 import { simpleComponentConfig } from '../../../simpleComponentConfig'
 import { ThemeName } from '../..'
@@ -34,13 +38,42 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
     setValue(newValue)
   }
 
-  const audioLanguages = [
-    { label: 'English', value: 'en' },
-    { label: 'Spanish', value: 'es' },
-    { label: 'French', value: 'fr' },
-    { label: 'Chinese - Simplified', value: 'zh-hans' },
-    { label: 'Chinese - Traditional', value: 'zh-hant' },
-    { label: 'Arabic', value: 'ar' }
+  const languages: Language[] = [
+    {
+      id: '529',
+      name: [
+        {
+          value: 'English',
+          primary: true
+        }
+      ]
+    },
+    {
+      id: '496',
+      name: [
+        {
+          value: 'Français',
+          primary: true
+        },
+        {
+          value: 'French',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '1106',
+      name: [
+        {
+          value: 'Deutsch',
+          primary: true
+        },
+        {
+          value: 'German, Standard',
+          primary: false
+        }
+      ]
+    }
   ]
 
   return (
@@ -142,18 +175,12 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
         <MenuItem value="high">High (59.83 MB)</MenuItem>
         <MenuItem value="low">Low (12 MB)</MenuItem>
       </TextField>
-      {/* AUTOCOMPLETE */}
-      <Autocomplete
-        disablePortal
-        fullWidth
-        options={audioLanguages}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Audio"
-            helperText="6 options available"
-          />
-        )}
+      {/* LANGUAGE AUTOCOMPLETE */}
+      <LanguageAutocomplete
+        onChange={noop}
+        value={languages[0]}
+        languages={languages}
+        loading={false}
       />
       {/* TABS */}
       <Tabs value={value} onChange={handleChange} aria-label="tabs example">
