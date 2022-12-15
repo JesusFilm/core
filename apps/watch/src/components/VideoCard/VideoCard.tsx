@@ -10,6 +10,7 @@ import ButtonBase from '@mui/material/ButtonBase'
 import NextImage from 'next/image'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
+import { VideoLabel } from '../../../__generated__/globalTypes'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 
@@ -48,9 +49,11 @@ export function VideoCard({
 
   return (
     <NextLink
-      href={`/${containerSlug != null ? `${containerSlug}/` : ''}${
-        video?.variant?.slug ?? ''
-      }`}
+      href={`/${
+        containerSlug != null && video?.label !== VideoLabel.collection
+          ? `${containerSlug}/`
+          : ''
+      }${video?.variant?.slug ?? ''}`}
       passHref
     >
       <Link
