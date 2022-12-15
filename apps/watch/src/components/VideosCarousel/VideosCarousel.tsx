@@ -59,6 +59,7 @@ export function VideosCarousel({
     }
   }
 
+  // Fix slides cut off at end
   const updateSnapGrid = (swiper: SwiperExtended): void => {
     const snapGrid = swiper.snapGrid
     const translateToEnd =
@@ -66,16 +67,7 @@ export function VideosCarousel({
       swiper.slidesGrid[swiper.slidesGrid.length - 1] +
       minPageMargin
 
-    // const spaceBetween = swiper.params.spaceBetween ?? 12
-
     // TODO: Perfectly align slides per group. Bugged where we cannot nav to beginning
-    // const updateMiddleSnapPoints = (): void => {
-    //   snapGrid.forEach((snapPoint, index) => {
-    //     if (index !== 0 && index !== snapGrid.length - 1) {
-    //       snapGrid[index] = snapPoint + swiper.slidesSizesGrid[0] + spaceBetween
-    //     }
-    //   })
-    // }
 
     // Slide less far
     if (snapGrid[snapGrid.length - 1] > translateToEnd) {
@@ -85,11 +77,6 @@ export function VideosCarousel({
     if (translateToEnd > snapGrid[snapGrid.length - 1]) {
       snapGrid.push(translateToEnd)
     }
-
-    // if (snapGrid[snapGrid.length - 1] === translateToEnd) {
-    //   console.log('fits already')
-    //   updateMiddleSnapPoints()
-    // }
   }
 
   // Smoothly show/hide left margin on carousel.
@@ -170,20 +157,17 @@ export function VideosCarousel({
       slidesOffsetAfter={minPageMargin}
       // Set spacing at carousel start
       onSlideChangeTransitionEnd={(swiper: SwiperExtended) => {
-        console.log('slide change', swiper)
         updateMarginLeftOffset(swiper)
         updateSlidesAlignment(swiper)
       }}
       // On resize and init, update spacing and
       onResize={(swiper: SwiperExtended) => {
-        console.log('resize', swiper)
         updateMarginLeftOffset(swiper)
         updateSlidesAlignment(swiper)
         updateShowHideNav(swiper)
         updateSnapGrid(swiper)
       }}
       onSwiper={(swiper: SwiperExtended) => {
-        console.log('onSwiper', swiper, swiper.snapGrid)
         updateMarginLeftOffset(swiper)
         updateSlidesAlignment(swiper)
         updateShowHideNav(swiper)
