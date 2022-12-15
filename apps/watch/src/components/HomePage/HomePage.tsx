@@ -18,29 +18,26 @@ interface HomePageProps {
 export function HomePage({ videos }: HomePageProps): ReactElement {
   return (
     <PageWrapper hero={<HomeHero />}>
-      <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
+      <Box sx={{ backgroundColor: '#131111' }}>
         <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
           <VideoGrid videos={videos} variant="contained" />
-          <Box
-            sx={{
-              display: 'flex',
-              width: '100%',
-              alignItems: 'center',
-              position: 'relative',
-              py: { xs: 10, lg: 20 }
-            }}
-          >
+          <Box sx={{ py: { xs: 10, lg: 20 } }}>
             <Stack spacing={10}>
-              <Typography variant="h3">About Our Project</Typography>
+              <Typography variant="h3" color="white">
+                About Our Project
+              </Typography>
               <Stack direction="row" spacing={4}>
                 <Box
                   sx={{
                     backgroundColor: 'primary.main',
-                    height: 'inherit',
                     width: { xs: 38, lg: 14 }
                   }}
                 />
-                <Typography variant="subtitle2" sx={{ opacity: 0.85 }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ opacity: 0.85 }}
+                  color="white"
+                >
                   With 70% of the world not being able to speak English, there
                   is a huge opportunity for the gospel to spread to unreached
                   places. We have a vision to make it easier to watch, download
@@ -48,7 +45,11 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
                   language.
                 </Typography>
               </Stack>
-              <Typography variant="subtitle1" sx={{ opacity: 0.8 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{ opacity: 0.8 }}
+                color="white"
+              >
                 Jesus Film Project is a Christian ministry with a vision to
                 reach the world with the gospel of Jesus Christ through
                 evangelistic videos. Watch from over 2000 languages on any
@@ -57,7 +58,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
             </Stack>
           </Box>
         </Container>
-      </ThemeProvider>
+      </Box>
     </PageWrapper>
   )
 }
