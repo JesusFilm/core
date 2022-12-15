@@ -11,14 +11,8 @@ const SeeAllVideosStory = {
   }
 }
 
-const Template: ComponentStory<typeof SeeAllVideos> = ({ ...args }) => (
-  <SeeAllVideos {...args} />
-)
+const Template: ComponentStory<typeof SeeAllVideos> = () => <SeeAllVideos />
 
 export const Default = Template.bind({})
-
-Default.args = {
-  value: '+53 Short Evangelical Films'
-}
 
 export default SeeAllVideosStory as Meta

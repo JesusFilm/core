@@ -4,55 +4,60 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Link from 'next/link'
 
-export interface Props {
-  value?: string
-}
-
-export function SeeAllVideos({ value = '' }: Props): ReactElement {
+export function SeeAllVideos(): ReactElement {
   return (
-    <Stack
-      direction={{ xs: 'column', sm: 'row' }}
-      justifyContent="space-between"
-      alignItems="flex-start"
-      spacing={4}
-      sx={{
-        pb: { xs: '32px', sm: '44px' },
-        pt: { xs: '28px', sm: '68px' }
-      }}
-    >
+    <Stack sx={{ pt: '54px' }}>
       <Typography
-        sx={{ typography: { xs: 'h5', sm: 'h4', md: 'h3', lg: 'h2' } }}
+        variant="overline1"
+        color="#7283BE"
+        sx={{
+          pb: 3
+        }}
       >
-        {value.length < 0 ? value : '+53 Short Evangelical Films'}
+        Conversation Starters
       </Typography>
-      <Link href="/videos" passHref>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems="flex-start"
+        spacing={4}
+      >
+        <Typography
+          sx={{ typography: { xs: 'h5', sm: 'h4', md: 'h3', lg: 'h2' } }}
+        >
+          +53 Short Evangelical Films
+        </Typography>
         <>
-          <Button
-            size="small"
-            color="secondary"
-            variant="outlined"
-            aria-label="all-videos-button"
-            sx={{
-              display: { xs: 'flex', lg: 'none' },
-              whiteSpace: 'nowrap'
-            }}
-          >
-            See Full Lineup
-          </Button>
-          <Button
-            size="large"
-            color="secondary"
-            variant="outlined"
-            aria-label="all-videos-button"
-            sx={{
-              display: { xs: 'none', lg: 'flex' },
-              whiteSpace: 'nowrap'
-            }}
-          >
-            See Full Lineup
-          </Button>
+          <Link href="/videos" passHref>
+            <Button
+              size="small"
+              color="secondary"
+              variant="outlined"
+              aria-label="all-videos-button-small"
+              sx={{
+                display: { xs: 'flex', lg: 'none' },
+                whiteSpace: 'nowrap'
+              }}
+            >
+              See Full Lineup
+            </Button>
+          </Link>
+          <Link href="/videos" passHref>
+            <Button
+              size="large"
+              color="secondary"
+              variant="outlined"
+              aria-label="all-videos-button-large"
+              sx={{
+                display: { xs: 'none', lg: 'flex' },
+                whiteSpace: 'nowrap'
+              }}
+            >
+              See Full Lineup
+            </Button>
+          </Link>
         </>
-      </Link>
+      </Stack>
     </Stack>
   )
 }

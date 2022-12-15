@@ -1,25 +1,22 @@
-import { render, fireEvent } from '@testing-library/react'
-import { noop } from 'lodash'
+import { render } from '@testing-library/react'
 import { SeeAllVideos } from './SeeAllVideos'
 
 describe('SeeAllVideos', () => {
-  const sampleText = 'This text should appear in the description'
-
-  xit('should render description text correctly', () => {
-    const { getByText } = render(
-      <SeeAllVideos value={sampleText} openDialog={noop} />
-    )
-    expect(getByText(sampleText)).toBeInTheDocument()
+  it('should render hardcoded text', () => {
+    const { getByText } = render(<SeeAllVideos />)
+    expect(getByText('Conversation Starters')).toBeInTheDocument()
+    expect(getByText('+53 Short Evangelical Films')).toBeInTheDocument()
   })
 
-  xit('should execute share button operation', () => {
-    const setOpenShare = jest.fn()
-
-    const { getByLabelText } = render(
-      <SeeAllVideos value={sampleText} openDialog={setOpenShare} />
+  it('button should have correct link', () => {
+    const { getByLabelText } = render(<SeeAllVideos />)
+    expect(getByLabelText('all-videos-button-large')).toHaveAttribute(
+      'href',
+      '/videos'
     )
-
-    fireEvent.click(getByLabelText('all-videos-button'))
-    expect(setOpenShare).toHaveBeenCalled()
+    expect(getByLabelText('all-videos-button-small')).toHaveAttribute(
+      'href',
+      '/videos'
+    )
   })
 })
