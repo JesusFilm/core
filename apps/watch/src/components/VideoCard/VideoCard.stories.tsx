@@ -12,27 +12,27 @@ const VideoCardStory: ComponentMeta<typeof VideoCard> = {
 
 const Template: ComponentStory<typeof VideoCard> = (args) => {
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} rowSpacing={8}>
       <Grid item xs={12} md={4} xl={3}>
         <VideoCard video={videos[0]} {...args} />
       </Grid>
       <Grid item xs={12} md={4} xl={3}>
-        <VideoCard video={videos[2]} {...args} />
+        <VideoCard video={videos[2]} {...args} active />
       </Grid>
       <Grid item xs={12} md={4} xl={3}>
         <VideoCard video={videos[5]} {...args} />
       </Grid>
       <Grid item xs={12} md={4} xl={3}>
-        <VideoCard video={videos[6]} {...args} />
+        <VideoCard video={videos[6]} index={0} {...args} />
       </Grid>
       <Grid item xs={12} md={4} xl={3}>
-        <VideoCard video={videos[9]} {...args} />
+        <VideoCard video={videos[9]} index={1} {...args} />
       </Grid>
       <Grid item xs={12} md={4} xl={3}>
-        <VideoCard video={videos[12]} {...args} />
+        <VideoCard video={videos[12]} index={2} {...args} />
       </Grid>
       <Grid item xs={12} md={4} xl={3}>
-        <VideoCard {...args} />
+        <VideoCard index={4} {...args} />
       </Grid>
       <Grid item xs={12} md={4} xl={3}>
         <VideoCard {...args} />

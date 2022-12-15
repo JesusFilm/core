@@ -18,6 +18,8 @@ interface VideoCardProps {
   variant?: 'contained' | 'expanded'
   color?: ComponentProps<typeof Typography>['color']
   containerSlug?: string
+  index?: number
+  active?: boolean
 }
 
 const ImageButton = styled(ButtonBase)(({ theme }) => ({
@@ -40,7 +42,9 @@ export function VideoCard({
   video,
   containerSlug,
   variant = 'expanded',
-  color
+  color,
+  index,
+  active
 }: VideoCardProps): ReactElement {
   let label = 'Item'
   let labelColor = '#FFF'
@@ -61,7 +65,7 @@ export function VideoCard({
       childLabel = 'chapters'
       break
     case VideoLabel.segment:
-      label = 'Clip'
+      label = 'Chapter'
       labelColor = '#7283BE'
       break
     case VideoLabel.series:
@@ -88,172 +92,206 @@ export function VideoCard({
         color="inherit"
         sx={{ pointerEvents: video != null ? 'auto' : 'none' }}
       >
-        <ImageButton
-          disabled={video == null}
-          sx={{
-            overflow: 'hidden',
-            height: {
-              xs: 166,
-              md: 136,
-              xl: 146
-            },
-            '&:hover, &.Mui-focusVisible': {
-              '& .MuiImageBackground-root': {
-                transform: 'scale(1.02)'
-              },
-              '& .MuiImageBackdrop-contained-root': {
-                opacity: 0.15
-              },
-              '& .MuiImageBackdrop-expanded-root': {
-                opacity: 0.5
-              }
-            }
-          }}
-        >
-          <Layer
-            className="MuiImageBackground-root"
+        <Stack spacing={3}>
+          <ImageButton
+            disabled={video == null}
             sx={{
-              transition: (theme) => theme.transitions.create('transform')
+              overflow: 'hidden',
+              height: {
+                xs: 166,
+                md: 136,
+                xl: 146
+              },
+              '&:hover, &.Mui-focusVisible': {
+                '& .MuiImageBackground-root': {
+                  transform: 'scale(1.02)'
+                },
+                '& .MuiImageBackdrop-contained-root': {
+                  opacity: 0.15
+                },
+                '& .MuiImageBackdrop-expanded-root': {
+                  opacity: 0.5
+                }
+              }
             }}
           >
-            {video?.image != null ? (
-              <NextImage
-                src={video.image}
-                layout="fill"
-                objectFit="cover"
-                objectPosition="left top"
-              />
-            ) : (
-              <Skeleton
+            <Layer
+              className="MuiImageBackground-root"
+              sx={{
+                transition: (theme) => theme.transitions.create('transform')
+              }}
+            >
+              {video?.image != null ? (
+                <NextImage
+                  src={video.image}
+                  layout="fill"
+                  objectFit="cover"
+                  objectPosition="left top"
+                />
+              ) : (
+                <Skeleton
+                  sx={{
+                    height: {
+                      xs: 166,
+                      md: 136,
+                      xl: 146
+                    }
+                  }}
+                  variant="rectangular"
+                  animation={false}
+                />
+              )}
+            </Layer>
+            {variant === 'contained' && (
+              <Layer
                 sx={{
-                  height: {
-                    xs: 166,
-                    md: 136,
-                    xl: 146
-                  }
+                  background:
+                    'linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.8) 100%)',
+                  transition: (theme) => theme.transitions.create('opacity'),
+                  boxShadow: 'inset 0px 0px 0px 1px rgba(255, 255, 255, 0.12)'
                 }}
-                variant="rectangular"
-                animation={false}
+                className="MuiImageBackdrop-contained-root"
               />
             )}
-          </Layer>
-          {variant === 'contained' && (
-            <Layer
-              sx={{
-                background:
-                  'linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.8) 100%)',
-                transition: (theme) => theme.transitions.create('opacity'),
-                boxShadow: 'inset 0px 0px 0px 1px rgba(255, 255, 255, 0.12)'
-              }}
-              className="MuiImageBackdrop-contained-root"
-            />
-          )}
-          {variant === 'expanded' && (
-            <Layer
-              sx={{
-                background:
-                  'linear-gradient(180deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.6) 100%)',
-                transition: (theme) => theme.transitions.create('opacity'),
-                opacity: 0.15
-              }}
-              className="MuiImageBackdrop-expanded-root"
-            />
-          )}
-          <Layer
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'flex-end',
-              p: 4
-            }}
-          >
-            {variant === 'contained' && (
-              <Typography
-                variant="h6"
-                color="primary.contrastText"
+            {variant === 'expanded' && (
+              <Layer
                 sx={{
-                  textAlign: 'left',
-                  textShadow:
-                    '0px 4px 4px rgba(0, 0, 0, 0.25), 0px 2px 3px rgba(0, 0, 0, 0.45)'
+                  background:
+                    'linear-gradient(180deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.6) 100%)',
+                  transition: (theme) => theme.transitions.create('opacity'),
+                  opacity: 0.15
                 }}
+                className="MuiImageBackdrop-expanded-root"
+              />
+            )}
+            <Layer
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                p: variant === 'contained' ? 4 : 1
+              }}
+            >
+              {variant === 'contained' && (
+                <Typography
+                  variant="h6"
+                  color="primary.contrastText"
+                  sx={{
+                    textAlign: 'left',
+                    textShadow:
+                      '0px 4px 4px rgba(0, 0, 0, 0.25), 0px 2px 3px rgba(0, 0, 0, 0.45)'
+                  }}
+                >
+                  {video != null ? (
+                    video?.title[0].value
+                  ) : (
+                    <Skeleton width="60%" />
+                  )}
+                </Typography>
+              )}
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="flex-end"
+                sx={{ minWidth: 0 }}
+                spacing={2}
               >
+                <Box
+                  sx={{
+                    textAlign: 'left'
+                  }}
+                >
+                  {variant === 'contained' && (
+                    <Typography
+                      variant="overline2"
+                      color={labelColor}
+                      sx={{
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        lineHeight: '29px'
+                      }}
+                    >
+                      {video != null ? label : <Skeleton width={50} />}
+                    </Typography>
+                  )}
+                </Box>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  spacing={1}
+                  sx={{
+                    p: 2,
+                    borderRadius: 2,
+                    height: 29,
+                    color: 'primary.contrastText',
+                    backgroundColor:
+                      active === true ? 'primary.main' : 'rgba(0, 0, 0, 0.5)',
+                    flexShrink: 0
+                  }}
+                >
+                  {active === true ? (
+                    <>
+                      <PlayArrow sx={{ fontSize: '1rem' }} />
+                      <Typography>Playing now</Typography>
+                    </>
+                  ) : (
+                    <>
+                      {video == null && (
+                        <>
+                          <PlayArrow sx={{ fontSize: '1rem' }} />
+                          <Skeleton width={20} />
+                        </>
+                      )}
+                      {video?.children.length === 0 && (
+                        <>
+                          <PlayArrow sx={{ fontSize: '1rem' }} />
+                          <Typography>
+                            {secondsToTimeFormat(
+                              video?.variant?.duration ?? 0,
+                              {
+                                trimZeroes: true
+                              }
+                            )}
+                          </Typography>
+                        </>
+                      )}
+                      {(video?.children.length ?? 0) > 0 && (
+                        <Typography>
+                          {video?.children.length} {childLabel}
+                        </Typography>
+                      )}
+                    </>
+                  )}
+                </Stack>
+              </Stack>
+            </Layer>
+          </ImageButton>
+          {variant === 'expanded' && (
+            <>
+              {index != null && (
+                <Typography
+                  variant="overline2"
+                  sx={{ opacity: 0.5 }}
+                  color={color}
+                >
+                  {video != null ? (
+                    `${label} ${index + 1}`
+                  ) : (
+                    <Skeleton width="20%" />
+                  )}
+                </Typography>
+              )}
+              <Typography variant="h6" color={color}>
                 {video != null ? (
                   video?.title[0].value
                 ) : (
                   <Skeleton width="60%" />
                 )}
               </Typography>
-            )}
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="flex-end"
-              sx={{ minWidth: 0 }}
-              spacing={2}
-            >
-              <Box
-                sx={{
-                  textAlign: 'left'
-                }}
-              >
-                {variant === 'contained' && (
-                  <Typography
-                    variant="overline2"
-                    color={labelColor}
-                    sx={{
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      lineHeight: '29px'
-                    }}
-                  >
-                    {video != null ? label : <Skeleton width={50} />}
-                  </Typography>
-                )}
-              </Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                spacing={1}
-                sx={{
-                  p: 2,
-                  borderRadius: 2,
-                  height: 29,
-                  color: 'primary.contrastText',
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                  flexShrink: 0
-                }}
-              >
-                {video == null && (
-                  <>
-                    <PlayArrow sx={{ fontSize: '1rem' }} />
-                    <Skeleton width={20} />
-                  </>
-                )}
-                {video?.children.length === 0 && (
-                  <>
-                    <PlayArrow sx={{ fontSize: '1rem' }} />
-                    <Typography variant="body1" sx={{ lineHeight: '16px' }}>
-                      {secondsToTimeFormat(video?.variant?.duration ?? 0, {
-                        trimZeroes: true
-                      })}
-                    </Typography>
-                  </>
-                )}
-                {(video?.children.length ?? 0) > 0 && (
-                  <Typography variant="body1">
-                    {video?.children.length} {childLabel}
-                  </Typography>
-                )}
-              </Stack>
-            </Stack>
-          </Layer>
-        </ImageButton>
-        {variant === 'expanded' && (
-          <Typography variant="body1" sx={{ py: 2 }} color={color}>
-            {video != null ? video?.title[0].value : <Skeleton width="60%" />}
-          </Typography>
-        )}
+            </>
+          )}
+        </Stack>
       </Link>
     </NextLink>
   )

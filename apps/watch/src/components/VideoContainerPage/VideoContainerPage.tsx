@@ -48,7 +48,11 @@ export function VideoContainerPage(): ReactElement {
             routes={routeArray}
             onClose={handleCloseDialog}
           />
-          <VideoGrid containerSlug={video.slug} videos={children} />
+          <VideoGrid
+            containerSlug={video.slug}
+            videos={children}
+            variant="expanded"
+          />
         </Container>
       )}
       <Divider />

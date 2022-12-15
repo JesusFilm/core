@@ -21,14 +21,20 @@ export function VideoGrid({
   onLoadMore,
   videos,
   containerSlug,
-  variant
+  variant = 'expanded'
 }: VideoGridProps): ReactElement {
   return (
-    <Grid container spacing="14px" data-testid="videos-grid">
+    <Grid
+      container
+      spacing={4}
+      rowSpacing={variant === 'expanded' ? 8 : 4}
+      data-testid="videos-grid"
+    >
       {(videos?.length ?? 0) > 0 &&
         videos?.map((video, index) => (
           <Grid item key={index} xs={12} md={4} xl={3}>
             <VideoCard
+              index={index}
               video={video}
               containerSlug={containerSlug}
               variant={variant}
