@@ -89,6 +89,7 @@ export function VideoCard({
         underline="none"
         color="inherit"
         sx={{ pointerEvents: video != null ? 'auto' : 'none' }}
+        data-testid="VideoCard"
       >
         <Stack spacing={3}>
           <ImageButton
