@@ -1,6 +1,9 @@
 import { render, fireEvent } from '@testing-library/react'
 import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
-import { VideoLabel } from '../../../../../__generated__/globalTypes'
+import {
+  VideoLabel,
+  VideoVariantDownloadQuality
+} from '../../../../../__generated__/globalTypes'
 import { VideoProvider } from '../../../../libs/videoContext'
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 
@@ -33,6 +36,20 @@ describe('VideoHeroOverlay', () => {
           }
         ]
       },
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 13138402,
+          url: 'https://arc.gt/ist3s'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 149736452,
+          url: 'https://arc.gt/zxqki'
+        }
+      ],
       duration: 3680,
       __typename: 'VideoVariant',
       hls: 'https://arc.gt/zbrvj',
