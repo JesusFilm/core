@@ -11,12 +11,12 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { useVideo } from '../../libs/videoContext'
-import { VideoHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { VideosCarousel } from '../VideosCarousel/VideosCarousel'
 import { CarouselItem } from '../Video/CarouselItem/CarouselItem'
 import { DownloadDialog } from '../DownloadDialog'
+import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
