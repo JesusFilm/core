@@ -40,7 +40,7 @@ export const websiteColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
 export const websiteColorsDark: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
     mode: 'dark',
-    background: { default: '#252424', paper: '#303030' },
+    background: { default: '#131111', paper: '#303030' },
     primary: websiteColorsLight.palette.primary,
     secondary: {
       main: '#BBBCBC',
