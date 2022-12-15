@@ -19,6 +19,7 @@ SwiperCore.use([Navigation, A11y])
 // Remove when we can update to latest swiper version
 type SwiperExtended = SwiperCore & {
   snapGrid: number[]
+  snapIndex: number
   slidesGrid: number[]
   slidesSizesGrid: number[]
   virtualSize: number
@@ -43,15 +44,47 @@ export function VideosCarousel({
   }
 
   const updateSlidesAlignment = (swiper: SwiperExtended): void => {
-    // Check if all slides fit on screen
-    if (
-      swiper.slidesGrid.length <= (swiper.params.slidesPerGroup ?? 1) &&
-      swiper.params.centeredSlides === true
-    ) {
-      swiper.params.centeredSlides = false
-      swiper.params.centeredSlidesBounds = false
-      swiper.params.centerInsufficientSlides = false
-      swiper.update()
+    if (swiper.params.centeredSlides === true) {
+      const slidesPerGroup = swiper.params.slidesPerGroup ?? 1
+
+      // Left align if all slides fit on screen
+      if (swiper.slidesGrid.length <= slidesPerGroup) {
+        swiper.params.centeredSlides = false
+        swiper.params.centeredSlidesBounds = false
+        swiper.params.centerInsufficientSlides = false
+        swiper.update()
+      }
+    }
+  }
+
+  const updateEndSlideCutOff = (swiper: SwiperExtended): void => {
+    if (swiper.params.centeredSlides === true) {
+      const slidesPerGroup = swiper.params.slidesPerGroup ?? 1
+
+      const middleSlidesLength = (swiper.snapGrid.length - 1) * slidesPerGroup
+
+      const cutOff =
+        (swiper.slides.length - 1) / slidesPerGroup - swiper.snapGrid.length - 1
+
+      console.log(
+        swiper.slides.length,
+        middleSlidesLength,
+        swiper.realIndex,
+        cutOff * -1
+      )
+
+      // Left align if end slide is cut off
+      if (cutOff * -1 < 2) {
+        if (swiper.isEnd) {
+          console.log('end slide is cut off')
+          swiper.wrapperEl.style.transition = '0.2s all ease-out'
+          swiper.wrapperEl.style.transform = `translate3d(-${
+            swiper.slidesGrid[middleSlidesLength] +
+            swiper.slidesSizesGrid[0] / 2 +
+            (swiper.params.spaceBetween ?? 12) / 2
+          }px, 0px, 0px)`
+        }
+      }
     }
   }
 
@@ -109,7 +142,18 @@ export function VideosCarousel({
           ...desktopSlideConfig,
           spaceBetween: 20
         },
-        1800: { ...desktopSlideConfig, spaceBetween: 20 }
+        1800: { ...desktopSlideConfig, spaceBetween: 20 },
+        2000: {
+          ...desktopSlideConfig,
+          slidesPerGroup: 7,
+          spaceBetween: 20
+        },
+        2080: {
+          ...desktopSlideConfig,
+          slidesPerGroup: 7,
+          spaceBetween: 22
+        }
+        // TODO: fix gap issue on extra-wide screens
       }}
       // Set custom navigation
       navigation={{
@@ -122,7 +166,11 @@ export function VideosCarousel({
       slidesOffsetAfter={minPageMargin}
       // Set spacing at carousel start
       onSlideChangeTransitionEnd={(swiper: SwiperExtended) => {
+        console.log('slide change', swiper)
         updateMarginLeftOffset(swiper)
+        updateSlidesAlignment(swiper)
+        updateEndSlideCutOff(swiper)
+        updateShowHideNav(swiper)
       }}
       // On resize and init, update spacing and
       onResize={(swiper: SwiperExtended) => {
@@ -164,6 +212,9 @@ export function VideosCarousel({
           },
           [theme.breakpoints.up(1800)]: {
             height: '147.5px'
+          },
+          [theme.breakpoints.up(2000)]: {
+            height: '115px'
           }
         }}
       >

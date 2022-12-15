@@ -47,3 +47,11 @@
     max-width: 314px;
   }
 }
+
+@media (min-width: 2000px) {
+  .swiper-slide {
+    width: 245px;
+    min-width: 245px;
+    max-width: 245px;
+  }
+}
