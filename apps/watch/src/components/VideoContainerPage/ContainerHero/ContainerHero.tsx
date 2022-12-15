@@ -9,16 +9,15 @@ import IconButton from '@mui/material/IconButton'
 
 import { HeroOverlay } from '../../HeroOverlay'
 import { useVideo } from '../../../libs/videoContext'
+import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
 
-interface ContainerHeroProps {
+interface Props {
   openDialog: () => void
 }
 
-export function ContainerHero({
-  openDialog
-}: ContainerHeroProps): ReactElement {
-  const { label, title, children, image } = useVideo()
-  const type = label === 'series' ? 'series' : 'collection'
+export function ContainerHero({ openDialog }: Props): ReactElement {
+  const { label: videoLabel, title, children, image } = useVideo()
+  const { label, childLabel } = getLabelDetails(videoLabel)
 
   return (
     <Box
@@ -53,7 +52,7 @@ export function ContainerHero({
                 zIndex: 2
               }}
             >
-              {type}
+              {label}
             </Typography>
             <Typography
               variant="h1"
@@ -84,9 +83,7 @@ export function ContainerHero({
                 opacity: 0.7
               }}
             >
-              {`${children.length} ${
-                type === 'series' ? 'Episodes' : 'Chapters'
-              }`}
+              {`${children.length} ${childLabel}`}
             </Typography>
             <IconButton
               sx={{

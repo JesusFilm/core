@@ -2,14 +2,13 @@ import { useState } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import Box from '@mui/material/Box'
-import { simpleComponentConfig } from '../../libs/storybook'
-import { GetLanguages_languages as Language } from '../../../__generated__/GetLanguages'
-import { LanguageSelect, LanguageSelectOption } from '.'
+import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import { LanguageAutocomplete, LanguageOption, Language } from '.'
 
-const LanguageSelectStory = {
+const LanguageAutocompleteStory = {
   ...simpleComponentConfig,
-  component: LanguageSelect,
-  title: 'Journeys-Admin/LanguageSelect',
+  component: LanguageAutocomplete,
+  title: 'Shared-Ui/LanguageAutocomplete',
   argTypes: { onChange: { action: 'onChange' } },
   parameters: {
     ...simpleComponentConfig.parameters,
@@ -19,65 +18,57 @@ const LanguageSelectStory = {
 
 const languages: Language[] = [
   {
-    __typename: 'Language',
     id: '529',
     name: [
       {
         value: 'English',
-        primary: true,
-        __typename: 'Translation'
+        primary: true
       }
     ]
   },
   {
     id: '496',
-    __typename: 'Language',
     name: [
       {
         value: 'Français',
-        primary: true,
-        __typename: 'Translation'
+        primary: true
       },
       {
         value: 'French',
-        primary: false,
-        __typename: 'Translation'
+        primary: false
       }
     ]
   },
   {
     id: '1106',
-    __typename: 'Language',
     name: [
       {
         value: 'Deutsch',
-        primary: true,
-        __typename: 'Translation'
+        primary: true
       },
       {
         value: 'German, Standard',
-        primary: false,
-        __typename: 'Translation'
+        primary: false
       }
     ]
   }
 ]
 
 const Template: Story = ({ onChange }) => {
-  const [value, setValue] = useState<LanguageSelectOption | undefined>({
+  const [value, setValue] = useState<LanguageOption | undefined>({
     id: '529',
     localName: undefined,
     nativeName: 'English'
   })
 
-  const handleChange = (value?: LanguageSelectOption): void => {
+  const handleChange = (value?: LanguageOption): void => {
     setValue(value)
     onChange(value)
   }
 
   return (
     <Box sx={{ m: 4 }}>
-      <LanguageSelect
+      <LanguageAutocomplete
         onChange={handleChange}
         value={value}
         languages={languages}
@@ -89,8 +80,8 @@ const Template: Story = ({ onChange }) => {
 
 export const Default = Template.bind({})
 Default.play = () => {
-  const button = screen.getByRole('button', { name: 'Open' })
+  const button = screen.getAllByRole('button', { name: 'Open' })[0]
   userEvent.click(button)
 }
 
-export default LanguageSelectStory as Meta
+export default LanguageAutocompleteStory as Meta

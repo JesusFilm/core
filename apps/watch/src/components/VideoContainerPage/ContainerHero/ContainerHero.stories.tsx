@@ -1,25 +1,25 @@
-import { ComponentStory, Meta } from '@storybook/react'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { noop } from 'lodash'
-import { watchConfig } from '../../../libs/storybook'
 import { VideoProvider } from '../../../libs/videoContext'
+import { watchConfig } from '../../../libs/storybook'
 import { videos } from '../../Videos/testData'
 import { ContainerHero } from '.'
 
-const ContainerHeroStory = {
+const ContainerHeroStory: ComponentMeta<typeof ContainerHero> = {
   ...watchConfig,
   component: ContainerHero,
   title: 'Watch/VideoContainerPage/ContainerHero'
 }
 
-const Template: ComponentStory<typeof ContainerHero> = ({ ...args }) => (
+const Template: ComponentStory<typeof ContainerHero> = (args) => (
   <VideoProvider value={{ content: videos[1] }}>
-    <ContainerHero openDialog={noop} />
+    <ContainerHero {...args} />
   </VideoProvider>
 )
 
 export const Default = Template.bind({})
 Default.args = {
-  content: videos[1]
+  openDialog: noop
 }
 
-export default ContainerHeroStory as Meta
+export default ContainerHeroStory

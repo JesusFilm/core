@@ -1,5 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 import { noop } from 'lodash'
+import { VideoProvider } from '../../../libs/videoContext'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../../libs/videoContext'
@@ -27,7 +28,7 @@ describe('ContainerHero', () => {
       </VideoProvider>
     )
 
-    expect(getByText('collection')).toBeInTheDocument()
+    expect(getByText('Collection')).toBeInTheDocument()
   })
 
   it('should render hero for a series', () => {
@@ -37,7 +38,7 @@ describe('ContainerHero', () => {
       </VideoProvider>
     )
 
-    expect(getByText('series')).toBeInTheDocument()
+    expect(getByText('Series')).toBeInTheDocument()
   })
 
   it('should call openDialog on click', () => {
