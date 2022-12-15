@@ -3,7 +3,9 @@ import { ReactElement, useEffect, useState } from 'react'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
+import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
+import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { useLanguage } from '../../libs/languageContext/LanguageContext'
 import { GetVideos } from '../../../__generated__/GetVideos'
 import { VideosFilter } from '../../../__generated__/globalTypes'
@@ -29,6 +31,18 @@ export const GET_VIDEOS = gql`
   }
 `
 
+export const GET_LANGUAGES = gql`
+  query GetLanguages($languageId: ID) {
+    languages(limit: 5000) {
+      id
+      name(languageId: $languageId, primary: true) {
+        value
+        primary
+      }
+    }
+  }
+`
+
 export const limit = 20
 export const defaultFilter: VideosFilter = {}
 
@@ -41,15 +55,28 @@ export function VideosPage(): ReactElement {
   const languageContext = useLanguage()
   const [isEnd, setIsEnd] = useState(false)
   const [previousCount, setPreviousCount] = useState(0)
-  const [filter] = useState<VideosFilter>(defaultFilter)
-  const { data, loading, fetchMore } = useQuery<GetVideos>(GET_VIDEOS, {
-    variables: {
-      where: filter,
-      offset: 0,
-      limit: limit,
-      languageId: languageContext?.id ?? '529'
-    }
+  const [languageFilter, setLanguageFilter] = useState<string[]>(['529'])
+  const [filter, setFilter] = useState<VideosFilter>({
+    ...defaultFilter,
+    availableVariantLanguageIds: languageFilter
   })
+
+  const { data, loading, fetchMore, refetch } = useQuery<GetVideos>(
+    GET_VIDEOS,
+    {
+      variables: {
+        where: filter,
+        offset: 0,
+        limit: limit,
+        languageId: languageContext?.id ?? '529'
+      }
+    }
+  )
+
+  const { data: languagesData, loading: languagesLoading } =
+    useQuery<GetLanguages>(GET_LANGUAGES, {
+      variables: { languageId: '529' }
+    })
 
   useEffect(() => {
     setIsEnd(isAtEnd(data?.videos.length ?? 0, limit, previousCount))
@@ -66,6 +93,33 @@ export function VideosPage(): ReactElement {
     })
   }
 
+  useEffect(() => {
+    void refetch({
+      where: filter,
+      offset: 0,
+      limit: limit,
+      languageId: languageContext?.id ?? '529'
+    })
+  }, [filter, refetch, languageContext])
+
+  // toggles languages to be filtered
+  function handleChangeLanguage(selectedLanguage: LanguageOption): void {
+    const activeLanguage = languageFilter.find(
+      (id) => id === selectedLanguage.id
+    )
+    if (activeLanguage != null) {
+      setLanguageFilter(
+        languageFilter.filter(
+          (languageId) => languageId !== selectedLanguage.id
+        )
+      )
+    } else {
+      setLanguageFilter([...languageFilter, selectedLanguage.id])
+    }
+
+    setFilter({ ...filter, availableVariantLanguageIds: languageFilter })
+  }
+
   return (
     <PageWrapper hero={<VideosHero />}>
       <Container maxWidth="xxl">
@@ -78,7 +132,11 @@ export function VideosPage(): ReactElement {
           direction={{ xs: 'column', md: 'column', lg: 'row' }}
           spacing={19}
         >
-          <LanguagesFilter />
+          <LanguagesFilter
+            onChange={handleChangeLanguage}
+            languages={languagesData?.languages}
+            loading={languagesLoading}
+          />
           <VideosGrid
             videos={data?.videos ?? []}
             onLoadMore={handleLoadMore}
