@@ -75,9 +75,8 @@ export function VideosPage(): ReactElement {
         <VideoGrid
           videos={data?.videos ?? []}
           onLoadMore={handleLoadMore}
-          showLoadMore
           loading={loading}
-          isEnd={isEnd}
+          hasNextPage={!isEnd}
         />
       </Container>
     </PageWrapper>
