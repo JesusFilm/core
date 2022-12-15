@@ -2,7 +2,10 @@ import { fireEvent, render } from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-import { VideoLabel } from '../../../__generated__/globalTypes'
+import {
+  VideoLabel,
+  VideoVariantDownloadQuality
+} from '../../../__generated__/globalTypes'
 import { videos } from '../../components/Videos/testData'
 import { VideoProvider, useVideo } from './VideoContext'
 
@@ -34,6 +37,20 @@ const chapter1: VideoContentFields = {
     id: '1_529-jf6101-0-0',
     duration: 488,
     hls: 'https://arc.gt/pm6g1',
+    downloads: [
+      {
+        __typename: 'VideoVariantDownload',
+        quality: VideoVariantDownloadQuality.low,
+        size: 13138402,
+        url: 'https://arc.gt/ist3s'
+      },
+      {
+        __typename: 'VideoVariantDownload',
+        quality: VideoVariantDownloadQuality.high,
+        size: 149736452,
+        url: 'https://arc.gt/zxqki'
+      }
+    ],
     language: {
       __typename: 'Language',
       id: '529',

@@ -1,24 +1,18 @@
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
 import { ReactElement, useRef, useEffect, useState } from 'react'
-import { secondsToMinutes } from '@core/shared/ui/timeFormat'
-import Container from '@mui/material/Container'
-import PlayArrow from '@mui/icons-material/PlayArrow'
-import AccessTime from '@mui/icons-material/AccessTime'
-import Circle from '@mui/icons-material/Circle'
 import videojs from 'video.js'
 import { useVideo } from '../../../libs/videoContext'
 import { VideoControls } from './VideoControls'
+import { VideoHeroOverlay } from './VideoHeroOverlay'
 
 export function VideoHero(): ReactElement {
-  const { id, image, variant, title } = useVideo()
+  const { id, variant } = useVideo()
   const [isPlaying, setIsPlaying] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
 
+  // TODO: custom buttons to be removed once fullscreen page is implemented
   const ControlButton = videojs.getComponent('Button')
 
   class AudioControl extends ControlButton {
@@ -85,7 +79,7 @@ export function VideoHero(): ReactElement {
         },
         responsive: true
       })
-      playerRef.current.on('play', playVideo)
+      playerRef.current.on('play', handlePlay)
     }
   }, [variant, playerRef, videoRef])
 
@@ -97,7 +91,7 @@ export function VideoHero(): ReactElement {
     setIsPlaying(false)
   }, [variant?.hls])
 
-  function playVideo(): void {
+  function handlePlay(): void {
     setIsPlaying(true)
     if (playerRef?.current != null) {
       playerRef?.current?.play()
@@ -108,13 +102,14 @@ export function VideoHero(): ReactElement {
     <Box
       data-testid={`video-${id}`}
       sx={{
-        backgroundImage: `url(${image as string})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        display: 'flex',
         width: '100%',
         height: { xs: 502, lg: 777 },
+        display: 'flex',
+        alignItems: 'center',
         position: 'relative',
+        '> .video-js .vjs-big-play-button': {
+          display: 'none'
+        },
         '> .video-js .vjs-control-bar': {
           display: fullscreen ? 'flex' : 'none'
         }
@@ -123,7 +118,6 @@ export function VideoHero(): ReactElement {
       {variant?.hls != null && (
         <video
           ref={videoRef}
-          id="vjs-jfp"
           className="vjs-jfp video-js vjs-fill"
           style={{
             alignSelf: 'center',
@@ -139,82 +133,7 @@ export function VideoHero(): ReactElement {
           setFullscreen={(value: boolean) => setFullscreen(value)}
         />
       )}
-      {!isPlaying && (
-        <>
-          <Container
-            maxWidth="xl"
-            style={{
-              position: 'absolute',
-              top: 350,
-              paddingLeft: 100,
-              margin: 0,
-              textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)'
-            }}
-          >
-            <Typography
-              variant="h2"
-              sx={{
-                maxWidth: '600px',
-                color: 'text.primary'
-              }}
-            >
-              {title[0]?.value}
-            </Typography>
-          </Container>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '520px'
-            }}
-            width="100%"
-            height="133px"
-          >
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              px="100px"
-              sx={{ color: 'text.primary' }}
-            >
-              <Stack direction="row" spacing="20px">
-                <Button
-                  size="large"
-                  variant="contained"
-                  sx={{ height: 71, fontSize: '24px' }}
-                  onClick={playVideo}
-                >
-                  <PlayArrow />
-                  &nbsp; Play Video
-                </Button>
-                {variant !== null && (
-                  <Stack height="71px" direction="row">
-                    <AccessTime sx={{ paddingTop: '23px' }} />
-                    <Typography
-                      variant="body2"
-                      sx={{ lineHeight: '71px', paddingLeft: '10px' }}
-                    >
-                      {secondsToMinutes(variant.duration)} min
-                    </Typography>
-                  </Stack>
-                )}
-                <Circle sx={{ fontSize: '10px', paddingTop: '30px' }} />
-              </Stack>
-            </Stack>
-          </Box>
-          <Box
-            sx={{
-              backgroundColor: 'rgba(18, 17, 17, 0.25)',
-              position: 'absolute',
-              top: '643px'
-            }}
-            width="100%"
-            height="133px"
-          >
-            <Stack pt="34px" mx="100px" width="100%" direction="row">
-              <Stack direction="row">&nbsp;</Stack>
-            </Stack>
-          </Box>
-        </>
-      )}
+      {!isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />}
     </Box>
   )
 }

@@ -28,12 +28,12 @@ export const websiteColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
       main: '#EF3340',
       contrastText: palette[0]
     },
-    // TODO: Check this
     text: {
       primary: '#252424',
       secondary: '#4D4D4D',
-      disabled: '#4D4D4D'
-    }
+      disabled: '#AAACBB'
+    },
+    action: { disabled: '#AAACBB', disabledBackground: '#EFEFEF' }
   }
 }
 
