@@ -3,17 +3,8 @@ import { videos } from '../Videos/testData'
 import { VideoGrid } from './VideoGrid'
 
 describe('VideoGrid', () => {
-  const onLoadMore = jest.fn()
-
-  xit('should display loading placeholders', async () => {
-    const { getByText, getAllByTestId } = render(
-      <VideoGrid videos={[]} loading onLoadMore={onLoadMore} />
-    )
-    expect(getAllByTestId('videos-grid-placeholder')).toHaveLength(8)
-    expect(getByText('Loading...')).toBeInTheDocument()
-  })
-
   it('should request more videos', async () => {
+    const onLoadMore = jest.fn()
     const { getByText } = render(
       <VideoGrid
         videos={videos}
@@ -27,9 +18,7 @@ describe('VideoGrid', () => {
   })
 
   it('should render correct number of videos', () => {
-    const { getAllByLabelText } = render(<VideoGrid videos={videos} />)
-    expect(getAllByLabelText('collection-page-video-card').length).toBe(
-      videos.length
-    )
+    const { getAllByTestId } = render(<VideoGrid videos={videos} />)
+    expect(getAllByTestId('VideoCard').length).toBe(videos.length)
   })
 })
