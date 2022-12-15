@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoLabel } from "./globalTypes";
+import { VideoLabel, VideoVariantDownloadQuality } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetVideoContent
@@ -34,6 +34,13 @@ export interface GetVideoContent_content_title {
   value: string;
 }
 
+export interface GetVideoContent_content_variant_downloads {
+  __typename: "VideoVariantDownload";
+  quality: VideoVariantDownloadQuality;
+  size: number;
+  url: string;
+}
+
 export interface GetVideoContent_content_variant_language_name {
   __typename: "Translation";
   value: string;
@@ -50,6 +57,7 @@ export interface GetVideoContent_content_variant {
   id: string;
   duration: number;
   hls: string | null;
+  downloads: GetVideoContent_content_variant_downloads[];
   language: GetVideoContent_content_variant_language;
   /**
    * slug is a permanent link to the video variant.

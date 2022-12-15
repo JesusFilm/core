@@ -8,19 +8,20 @@ import SaveAlt from '@mui/icons-material/SaveAlt'
 import Share from '@mui/icons-material/Share'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import 'video.js/dist/video-js.css'
 
 import { useVideo } from '../../libs/videoContext'
-import { VideoHero } from '../Hero'
 import { PageWrapper } from '../PageWrapper'
 import { VideosCarousel } from '../Videos/VideosCarousel/VideosCarousel'
 import { ShareDialog } from '../ShareDialog'
+import { DownloadDialog } from '../DownloadDialog'
+import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
   const { container, children, slug, variant } = useVideo()
   const [openShare, setOpenShare] = useState(false)
+  const [openDownload, setOpenDownload] = useState(false)
 
   return (
     <PageWrapper hero={<VideoHero />}>
@@ -64,17 +65,28 @@ export function VideoContentPage(): ReactElement {
             <VideoContent />
             <Box width="336px" sx={{ display: { xs: 'none', md: 'block' } }}>
               <Stack direction="row" spacing="20px" mb="40px">
-                <Button variant="outlined">
+                <Button
+                  variant="outlined"
+                  onClick={() => setOpenDownload(true)}
+                >
                   <SaveAlt />
-                  &nbsp; Download
+                  Download
                 </Button>
                 <Button variant="outlined" onClick={() => setOpenShare(true)}>
                   <Share />
-                  &nbsp; Share
+                  Share
                 </Button>
               </Stack>
             </Box>
           </Stack>
+          {variant != null && variant.downloads.length > 0 && (
+            <DownloadDialog
+              open={openDownload}
+              onClose={() => {
+                setOpenDownload(false)
+              }}
+            />
+          )}
           <ShareDialog
             open={openShare}
             routes={[]}
