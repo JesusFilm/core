@@ -3,7 +3,6 @@ import { noop } from 'lodash'
 import { VideoProvider } from '../../../libs/videoContext'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
-import { VideoProvider } from '../../../libs/videoContext'
 import { ContainerHero } from '.'
 
 describe('ContainerHero', () => {
