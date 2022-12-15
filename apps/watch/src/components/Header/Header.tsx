@@ -47,13 +47,15 @@ export function Header(): ReactElement {
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <NextLink href="/" passHref>
-            <Image
-              src={logo}
-              width="160"
-              height="40"
-              alt="Watch Logo"
-              style={{ cursor: 'pointer' }}
-            />
+            <a>
+              <Image
+                src={logo}
+                width="160"
+                height="40"
+                alt="Watch Logo"
+                style={{ cursor: 'pointer' }}
+              />
+            </a>
           </NextLink>
           <Stack spacing={0.5} direction="row">
             <IconButton

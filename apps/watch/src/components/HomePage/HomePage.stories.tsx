@@ -1,10 +1,9 @@
-import { ComponentProps } from 'react'
-import { Story, Meta } from '@storybook/react'
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/testData'
 import { HomePage } from '.'
 
-const VideoContainerPageStory = {
+const HomePageStory: ComponentMeta<typeof HomePage> = {
   ...watchConfig,
   component: HomePage,
   title: 'Watch/HomePage',
@@ -14,7 +13,7 @@ const VideoContainerPageStory = {
   }
 }
 
-const Template: Story<ComponentProps<typeof HomePage>> = ({ ...args }) => (
+const Template: ComponentStory<typeof HomePage> = ({ ...args }) => (
   <HomePage {...args} />
 )
 
@@ -23,4 +22,4 @@ Default.args = {
   videos
 }
 
-export default VideoContainerPageStory as Meta
+export default HomePageStory

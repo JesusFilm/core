@@ -8,12 +8,12 @@ import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
 import Check from '@mui/icons-material/Check'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
+import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { gql, useLazyQuery } from '@apollo/client'
 import { GetVideo } from '../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { VideoLanguage } from '../../VideoLanguage'
 import 'video.js/dist/video-js.css'
-import { LanguageSelectOption } from '../../../../LanguageSelect'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 
 export const GET_VIDEO = gql`
@@ -55,17 +55,16 @@ export function LocalDetails({
   const playerRef = useRef<videojs.Player>()
   const [playing, setPlaying] = useState(false)
   const [openLanguage, setOpenLanguage] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] =
-    useState<LanguageSelectOption>({
-      id: '529',
-      localName: undefined,
-      nativeName: 'English'
-    })
+  const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption>({
+    id: '529',
+    localName: undefined,
+    nativeName: 'English'
+  })
   const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
     variables: { id, languageId: '529' }
   })
 
-  const handleChange = (selectedLanguage: LanguageSelectOption): void => {
+  const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
   }
 

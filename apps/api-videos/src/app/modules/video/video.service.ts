@@ -4,6 +4,7 @@ import { aql } from 'arangojs'
 import { DocumentCollection } from 'arangojs/collection'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
+import { compact } from 'lodash'
 import { VideosFilter } from '../../__generated__/graphql'
 
 interface ExtendedVideosFilter extends VideosFilter {
@@ -35,27 +36,39 @@ export class VideoService extends BaseService {
 
   videosView = this.db.view('videosView')
 
-  public videoFilter(filter?: VideosFilter): AqlQuery {
+  public videoFilter(filter: VideosFilter = {}): AqlQuery {
     const {
       title,
-      availableVariantLanguageIds = [],
-      labels = null
-    } = filter ?? {}
+      availableVariantLanguageIds,
+      labels,
+      ids,
+      subtitleLanguageIds
+    } = filter
 
-    return aql.join(
-      [
-        (title != null || (availableVariantLanguageIds?.length ?? 0) > 0) &&
-          aql`SEARCH`,
-        title != null &&
-          aql`ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
-        title != null &&
-          (availableVariantLanguageIds?.length ?? 0) > 0 &&
-          aql`AND`,
-        (availableVariantLanguageIds?.length ?? 0) > 0 &&
-          aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
-        labels != null && aql`FILTER item.label IN ${labels}`
-      ].filter((x) => x !== false)
+    if (
+      title == null &&
+      availableVariantLanguageIds == null &&
+      labels == null &&
+      ids == null &&
+      subtitleLanguageIds == null
     )
+      return aql``
+
+    return aql`
+      SEARCH ${aql.join(
+        compact([
+          title != null &&
+            aql`ANALYZER(TOKENS(${title}, "text_en") ALL == item.title.value, "text_en")`,
+          availableVariantLanguageIds != null &&
+            aql`item.variants.languageId IN ${availableVariantLanguageIds}`,
+          labels != null && aql`item.label IN ${labels}`,
+          ids != null && aql`item._key IN ${ids}`,
+          subtitleLanguageIds != null &&
+            aql`item.variants.subtitle.languageId IN ${subtitleLanguageIds}`
+        ]),
+        ' AND '
+      )}
+    `
   }
 
   @KeyAsId()
@@ -63,7 +76,7 @@ export class VideoService extends BaseService {
     const { variantLanguageId, offset = 0, limit = 100 } = filter ?? {}
     const search = this.videoFilter(filter)
 
-    const res = await this.db.query(aql`
+    const query = aql`
     FOR item IN ${this.videosView}
       ${search}
       LIMIT ${offset}, ${limit}
@@ -76,7 +89,8 @@ export class VideoService extends BaseService {
           LIMIT 1 RETURN CURRENT
         ], 0)
       }
-    `)
+    `
+    const res = await this.db.query(query)
     return await res.all()
   }
 

@@ -5,6 +5,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { DocumentCollection } from 'arangojs/collection'
 import { ArrayCursor } from 'arangojs/cursor'
 import { AqlQuery, GeneratedAqlQuery } from 'arangojs/aql'
+import { VideoLabel } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
 
 const baseVideo: GeneratedAqlQuery[] = [
@@ -82,43 +83,82 @@ describe('VideoService', () => {
   })
 
   describe('videoFilter', () => {
-    it('should filter with title', async () => {
+    it('should search with title', () => {
       const filter = {
         title: 'abc'
       }
-      const response = await service.videoFilter(filter)
-      expect(response.query).toEqual(
+      const response = service.videoFilter(filter)
+      expect(response.query).toContain(
         'SEARCH ANALYZER(TOKENS(@value0, "text_en") ALL == item.title.value, "text_en")'
       )
       expect(response.bindVars).toEqual({ value0: filter.title })
     })
 
-    it('should filter with title and availableVariantLanguageIds', async () => {
-      const filter = {
-        title: 'abc',
-        availableVariantLanguageIds: ['en']
-      }
-      const response = await service.videoFilter(filter)
-      expect(response.query).toEqual(
-        'SEARCH ANALYZER(TOKENS(@value0, "text_en") ALL == item.title.value, "text_en") AND item.variants.languageId IN @value1'
-      )
-      expect(response.bindVars).toEqual({
-        value0: filter.title,
-        value1: filter.availableVariantLanguageIds
-      })
-    })
-
-    it('should filter with availableVariantLanguageIds', async () => {
+    it('should filter with availableVariantLanguageIds', () => {
       const filter = {
         availableVariantLanguageIds: ['en']
       }
-      const response = await service.videoFilter(filter)
-      expect(response.query).toEqual(
+      const response = service.videoFilter(filter)
+      expect(response.query).toContain(
         'SEARCH item.variants.languageId IN @value0'
       )
       expect(response.bindVars).toEqual({
         value0: filter.availableVariantLanguageIds
       })
+    })
+
+    it('should filter by label', () => {
+      const filter = {
+        labels: [VideoLabel.collection]
+      }
+      const response = service.videoFilter(filter)
+      expect(response.query).toContain('SEARCH item.label IN @value0')
+      expect(response.bindVars).toEqual({
+        value0: filter.labels
+      })
+    })
+
+    it('should filter by id', () => {
+      const filter = {
+        ids: ['videoId']
+      }
+      const response = service.videoFilter(filter)
+      expect(response.query).toContain('SEARCH item._key IN @value0')
+      expect(response.bindVars).toEqual({
+        value0: filter.ids
+      })
+    })
+
+    it('should filter and search by all', () => {
+      const filter = {
+        title: 'abc',
+        availableVariantLanguageIds: ['en'],
+        labels: [VideoLabel.collection],
+        ids: ['videoId']
+      }
+      const response = service.videoFilter(filter)
+      expect(response.query).toContain(
+        'SEARCH ANALYZER(TOKENS(@value0, "text_en") ALL == item.title.value, "text_en") AND item.variants.languageId IN @value1 AND item.label IN @value2 AND item._key IN @value3'
+      )
+      expect(response.bindVars).toEqual({
+        value0: filter.title,
+        value1: filter.availableVariantLanguageIds,
+        value2: filter.labels,
+        value3: filter.ids
+      })
+    })
+  })
+
+  it('should filter with subtitleLanguageIds', async () => {
+    const filter = {
+      subtitleLanguageIds: ['529']
+    }
+    const response = await service.videoFilter(filter)
+    expect(response.query).toContain(
+      'SEARCH item.variants.subtitle.languageId IN @value0'
+    )
+    expect(response.bindVars).toEqual({
+      value0: filter.subtitleLanguageIds
     })
   })
 
