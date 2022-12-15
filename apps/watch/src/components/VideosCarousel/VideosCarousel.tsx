@@ -34,20 +34,22 @@ export function VideosCarousel({
   const theme = useTheme()
   const [overflowSlides, setOverflowSlides] = useState(true)
 
+  // Check if all slides fit on screen
   const updateShowHideNav = (swiper: SwiperExtended): void => {
-    // Check if all slides fit on screen
-    if (swiper.slidesGrid.length <= (swiper.params.slidesPerGroup ?? 1)) {
-      setOverflowSlides(false)
-    } else {
+    const slidesPerGroup = swiper.params.slidesPerGroup ?? 1
+
+    if (swiper.slides.length > slidesPerGroup) {
       setOverflowSlides(true)
+    } else {
+      setOverflowSlides(false)
     }
   }
 
+  // Left align if all slides fit on screen
   const updateSlidesAlignment = (swiper: SwiperExtended): void => {
     if (swiper.params.centeredSlides === true) {
       const slidesPerGroup = swiper.params.slidesPerGroup ?? 1
 
-      // Left align if all slides fit on screen
       if (swiper.slidesGrid.length <= slidesPerGroup) {
         swiper.params.centeredSlides = false
         swiper.params.centeredSlidesBounds = false
@@ -57,35 +59,29 @@ export function VideosCarousel({
     }
   }
 
-  const updateEndSlideCutOff = (swiper: SwiperExtended): void => {
-    if (swiper.params.centeredSlides === true) {
-      const slidesPerGroup = swiper.params.slidesPerGroup ?? 1
+  const updateSnapGrid = (swiper: SwiperExtended): void => {
+    const snapGrid = swiper.snapGrid
+    const lastSnapTranslate =
+      swiper.slidesGrid[0] +
+      swiper.slidesGrid[swiper.slidesGrid.length - 1] +
+      minPageMargin
 
-      const middleSlidesLength = (swiper.snapGrid.length - 1) * slidesPerGroup
+    console.log('lastSnap', lastSnapTranslate)
 
-      const cutOff =
-        (swiper.slides.length - 1) / slidesPerGroup - swiper.snapGrid.length - 1
-
-      console.log(
-        swiper.slides.length,
-        middleSlidesLength,
-        swiper.realIndex,
-        cutOff * -1
-      )
-
-      // Left align if end slide is cut off
-      if (cutOff * -1 < 2) {
-        if (swiper.isEnd) {
-          console.log('end slide is cut off')
-          swiper.wrapperEl.style.transition = '0.2s all ease-out'
-          swiper.wrapperEl.style.transform = `translate3d(-${
-            swiper.slidesGrid[middleSlidesLength] +
-            swiper.slidesSizesGrid[0] / 2 +
-            (swiper.params.spaceBetween ?? 12) / 2
-          }px, 0px, 0px)`
-        }
-      }
+    // Slide less far
+    if (snapGrid[snapGrid.length - 1] > lastSnapTranslate) {
+      snapGrid[snapGrid.length - 1] = lastSnapTranslate
     }
+
+    // Slide further to end
+    if (lastSnapTranslate > snapGrid[snapGrid.length - 1]) {
+      console.log('group 3, slide 4')
+      snapGrid.push(lastSnapTranslate)
+    }
+
+    // swiper.snapGrid = snapGrid
+
+    // console.log('update snap', swiper.snapGrid)
   }
 
   // Smoothly show/hide left margin on carousel.
@@ -169,8 +165,6 @@ export function VideosCarousel({
         console.log('slide change', swiper)
         updateMarginLeftOffset(swiper)
         updateSlidesAlignment(swiper)
-        updateEndSlideCutOff(swiper)
-        updateShowHideNav(swiper)
       }}
       // On resize and init, update spacing and
       onResize={(swiper: SwiperExtended) => {
@@ -178,12 +172,14 @@ export function VideosCarousel({
         updateMarginLeftOffset(swiper)
         updateSlidesAlignment(swiper)
         updateShowHideNav(swiper)
+        updateSnapGrid(swiper)
       }}
       onSwiper={(swiper: SwiperExtended) => {
         console.log('onSwiper', swiper, swiper.snapGrid)
         updateMarginLeftOffset(swiper)
         updateSlidesAlignment(swiper)
         updateShowHideNav(swiper)
+        updateSnapGrid(swiper)
       }}
     >
       {/* Slides */}
