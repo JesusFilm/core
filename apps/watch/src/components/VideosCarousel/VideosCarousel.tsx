@@ -16,6 +16,14 @@ interface VideosCarouselProps {
 
 SwiperCore.use([Navigation, A11y])
 
+// Remove when we can update to latest swiper version
+type SwiperExtended = SwiperCore & {
+  snapGrid: number[]
+  slidesGrid: number[]
+  slidesSizesGrid: number[]
+  virtualSize: number
+}
+
 export function VideosCarousel({
   videos,
   renderItem
@@ -24,18 +32,27 @@ export function VideosCarousel({
 
   const theme = useTheme()
   const [overflowSlides, setOverflowSlides] = useState(true)
-  const [marginOffset, setMarginOffset] = useState(minPageMargin)
 
-  // Page margin
-  const getMarginOffset = (): number => {
-    const maxContentWidth = theme.breakpoints.values.xxl
-
-    if (window != null) {
-      return window.innerWidth <= maxContentWidth
-        ? minPageMargin
-        : (window.innerWidth - maxContentWidth) / 2 + minPageMargin
+  const updateShowHideNav = (swiper: SwiperExtended): void => {
+    // Check if all slides fit on screen
+    if (swiper.slidesGrid.length <= (swiper.params.slidesPerGroup ?? 1)) {
+      setOverflowSlides(false)
+    } else {
+      setOverflowSlides(true)
     }
-    return minPageMargin
+  }
+
+  const updateSlidesAlignment = (swiper: SwiperExtended): void => {
+    // Check if all slides fit on screen
+    if (
+      swiper.slidesGrid.length <= (swiper.params.slidesPerGroup ?? 1) &&
+      swiper.params.centeredSlides === true
+    ) {
+      swiper.params.centeredSlides = false
+      swiper.params.centeredSlidesBounds = false
+      swiper.params.centerInsufficientSlides = false
+      swiper.update()
+    }
   }
 
   // Smoothly show/hide left margin on carousel.
@@ -102,31 +119,23 @@ export function VideosCarousel({
       // Swiper disables navigation when few slides
       watchOverflow
       // Set spacing at carousel end.
-      slidesOffsetAfter={24}
+      slidesOffsetAfter={minPageMargin}
       // Set spacing at carousel start
-      onSlideChangeTransitionEnd={(swiper) => {
+      onSlideChangeTransitionEnd={(swiper: SwiperExtended) => {
         updateMarginLeftOffset(swiper)
       }}
-      onResize={(swiper) => {
+      // On resize and init, update spacing and
+      onResize={(swiper: SwiperExtended) => {
         console.log('resize', swiper)
         updateMarginLeftOffset(swiper)
+        updateSlidesAlignment(swiper)
+        updateShowHideNav(swiper)
       }}
-      onSwiper={(swiper) => {
-        console.log('onSwiper', swiper)
+      onSwiper={(swiper: SwiperExtended) => {
+        console.log('onSwiper', swiper, swiper.snapGrid)
         updateMarginLeftOffset(swiper)
-        // TODO: Fixes bug where end is not detected properly.
-
-        // If all slides fit on screen
-        if (swiper.isBeginning && swiper.isEnd) {
-          // Extract swiper navigation overflow state to hide custom nav
-          setOverflowSlides(false)
-          console.log('hide nav')
-          // Left align slides
-          swiper.params.centeredSlides = false
-          swiper.params.centeredSlidesBounds = false
-          swiper.params.centerInsufficientSlides = false
-          swiper.update()
-        }
+        updateSlidesAlignment(swiper)
+        updateShowHideNav(swiper)
       }}
     >
       {/* Slides */}
@@ -140,6 +149,7 @@ export function VideosCarousel({
         direction="row"
         sx={{
           display: { xs: 'none', xl: overflowSlides ? 'flex' : 'none' },
+          transition: '.55s all ease',
           position: 'absolute',
           zIndex: 1,
           top: 0,
