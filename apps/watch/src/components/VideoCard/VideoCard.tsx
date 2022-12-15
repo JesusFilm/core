@@ -10,8 +10,8 @@ import ButtonBase from '@mui/material/ButtonBase'
 import NextImage from 'next/image'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
-import { VideoLabel } from '../../../__generated__/globalTypes'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 
 interface VideoCardProps {
   video?: VideoChildFields
@@ -44,38 +44,7 @@ export function VideoCard({
   index,
   active
 }: VideoCardProps): ReactElement {
-  let label = 'Item'
-  let labelColor = '#FFF'
-  let childLabel = 'items'
-
-  switch (video?.label) {
-    case VideoLabel.collection:
-      label = 'Collection'
-      labelColor = '#FF9E00'
-      break
-    case VideoLabel.episode:
-      label = 'Episode'
-      labelColor = '#7283BE'
-      break
-    case VideoLabel.featureFilm:
-      label = 'Feature Film'
-      labelColor = '#FF9E00'
-      childLabel = 'chapters'
-      break
-    case VideoLabel.segment:
-      label = 'Chapter'
-      labelColor = '#7283BE'
-      break
-    case VideoLabel.series:
-      label = 'Series'
-      labelColor = '#3AA74A'
-      childLabel = 'episodes'
-      break
-    case VideoLabel.shortFilm:
-      label = 'Short Film'
-      labelColor = '#FF9E00'
-      break
-  }
+  const { label, color, childLabel } = getLabelDetails(video?.label)
 
   return (
     <NextLink
@@ -205,7 +174,7 @@ export function VideoCard({
                   {variant === 'contained' && (
                     <Typography
                       variant="overline2"
-                      color={labelColor}
+                      color={color}
                       sx={{
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
