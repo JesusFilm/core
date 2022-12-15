@@ -7,19 +7,17 @@ import { ReactElement } from 'react'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import IconButton from '@mui/material/IconButton'
 
-import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { HeroOverlay } from '../../HeroOverlay'
+import { useVideo } from '../../../libs/videoContext'
+import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
 
 interface Props {
-  video: VideoContentFields
   openDialog: () => void
 }
 
-export function ContainerHero({ video, openDialog }: Props): ReactElement {
-  const type = video.label === 'series' ? 'series' : 'collection'
-  const title = video.title[0].value
-  const length = video.children.length
-  const image = video.image
+export function ContainerHero({ openDialog }: Props): ReactElement {
+  const { label: videoLabel, title, children, image } = useVideo()
+  const { label, childLabel } = getLabelDetails(videoLabel)
 
   return (
     <Box
@@ -54,7 +52,7 @@ export function ContainerHero({ video, openDialog }: Props): ReactElement {
                 zIndex: 2
               }}
             >
-              {type}
+              {label}
             </Typography>
             <Typography
               variant="h1"
@@ -63,7 +61,7 @@ export function ContainerHero({ video, openDialog }: Props): ReactElement {
                 zIndex: 2
               }}
             >
-              {title}
+              {title[0].value}
             </Typography>
           </Stack>
 
@@ -85,7 +83,7 @@ export function ContainerHero({ video, openDialog }: Props): ReactElement {
                 opacity: 0.7
               }}
             >
-              {`${length} ${type === 'series' ? 'Episodes' : 'Chapters'}`}
+              {`${children.length} ${childLabel}`}
             </Typography>
             <IconButton
               sx={{

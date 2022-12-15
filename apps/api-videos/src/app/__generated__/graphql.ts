@@ -30,6 +30,8 @@ export class VideosFilter {
     availableVariantLanguageIds?: Nullable<string[]>;
     title?: Nullable<string>;
     labels?: Nullable<VideoLabel[]>;
+    ids?: Nullable<string[]>;
+    subtitleLanguageIds?: Nullable<string[]>;
 }
 
 export class Translation {

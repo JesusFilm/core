@@ -1,14 +1,18 @@
 variable "ecs_config" {
   type = object({
-    vpc_id           = string
-    is_public        = bool
-    subnets          = list(string)
-    image_tag        = string
-    alb_dns_name     = string
-    zone_id          = string
-    alb_listener_arn = string
-    zone_id          = string
-    alb_dns_name     = string
+    vpc_id       = string
+    is_public    = bool
+    subnets      = list(string)
+    alb_dns_name = string
+    zone_id      = string
+    zone_id      = string
+    alb_dns_name = string
+    alb_listener = object({
+      alb_arn         = string
+      port            = number
+      protocol        = string
+      certificate_arn = string
+    })
     alb_target_group = object({
       port              = number
       protocol          = string
