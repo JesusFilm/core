@@ -51,6 +51,7 @@ export default function WatchApp({
       <DefaultSeo
         titleTemplate="%s | Jesus Film Project"
         defaultTitle="Watch | Jesus Film Project"
+        description="Free Gospel Video Streaming Library. Watch, learn and share the gospel in over 2000 languages."
       />
       <Head>
         <meta
