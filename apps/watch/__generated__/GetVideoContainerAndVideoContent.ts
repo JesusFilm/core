@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoLabel } from "./globalTypes";
+import { VideoLabel, VideoVariantDownloadQuality } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetVideoContainerAndVideoContent
@@ -34,6 +34,13 @@ export interface GetVideoContainerAndVideoContent_container_title {
   value: string;
 }
 
+export interface GetVideoContainerAndVideoContent_container_variant_downloads {
+  __typename: "VideoVariantDownload";
+  quality: VideoVariantDownloadQuality;
+  size: number;
+  url: string;
+}
+
 export interface GetVideoContainerAndVideoContent_container_variant_language_name {
   __typename: "Translation";
   value: string;
@@ -50,6 +57,7 @@ export interface GetVideoContainerAndVideoContent_container_variant {
   id: string;
   duration: number;
   hls: string | null;
+  downloads: GetVideoContainerAndVideoContent_container_variant_downloads[];
   language: GetVideoContainerAndVideoContent_container_variant_language;
   /**
    * slug is a permanent link to the video variant.
@@ -147,6 +155,13 @@ export interface GetVideoContainerAndVideoContent_content_title {
   value: string;
 }
 
+export interface GetVideoContainerAndVideoContent_content_variant_downloads {
+  __typename: "VideoVariantDownload";
+  quality: VideoVariantDownloadQuality;
+  size: number;
+  url: string;
+}
+
 export interface GetVideoContainerAndVideoContent_content_variant_language_name {
   __typename: "Translation";
   value: string;
@@ -163,6 +178,7 @@ export interface GetVideoContainerAndVideoContent_content_variant {
   id: string;
   duration: number;
   hls: string | null;
+  downloads: GetVideoContainerAndVideoContent_content_variant_downloads[];
   language: GetVideoContainerAndVideoContent_content_variant_language;
   /**
    * slug is a permanent link to the video variant.

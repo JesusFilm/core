@@ -168,6 +168,11 @@ export enum VideoLabel {
   shortFilm = "shortFilm",
 }
 
+export enum VideoVariantDownloadQuality {
+  high = "high",
+  low = "low",
+}
+
 export interface ButtonClickEventCreateInput {
   blockId: string;
   id?: string | null;
