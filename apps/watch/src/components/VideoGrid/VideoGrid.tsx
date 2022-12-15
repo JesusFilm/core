@@ -34,7 +34,6 @@ export function VideoGrid({
         videos?.map((video, index) => (
           <Grid item key={index} xs={12} md={4} xl={3}>
             <VideoCard
-              index={index}
               video={video}
               containerSlug={containerSlug}
               variant={variant}

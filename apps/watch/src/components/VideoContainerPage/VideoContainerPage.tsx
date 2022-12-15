@@ -3,7 +3,8 @@ import Divider from '@mui/material/Divider'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import 'video.js/dist/video-js.css'
-
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
@@ -39,20 +40,28 @@ export function VideoContainerPage(): ReactElement {
     <PageWrapper hero={<ContainerHero openDialog={handleOpenDialog} />}>
       {snippet != null && (
         <Container maxWidth="xxl">
-          <ContainerDescription
-            value={snippet[0].value}
-            openDialog={handleOpenDialog}
-          />
-          <ShareDialog
-            open={shareDialog}
-            routes={routeArray}
-            onClose={handleCloseDialog}
-          />
-          <VideoGrid
-            containerSlug={video.slug}
-            videos={children}
-            variant="expanded"
-          />
+          <Stack
+            spacing={{ xs: 4, md: 11 }}
+            py={{ xs: 7, md: 17 }}
+            direction="column"
+          >
+            <ContainerDescription
+              value={snippet[0].value}
+              openDialog={handleOpenDialog}
+            />
+            <ShareDialog
+              open={shareDialog}
+              routes={routeArray}
+              onClose={handleCloseDialog}
+            />
+            <Box>
+              <VideoGrid
+                containerSlug={video.slug}
+                videos={children}
+                variant="expanded"
+              />
+            </Box>
+          </Stack>
         </Container>
       )}
       <Divider />
