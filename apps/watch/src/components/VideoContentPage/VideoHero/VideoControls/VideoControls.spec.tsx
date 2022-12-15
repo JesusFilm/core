@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render } from '@testing-library/react'
+import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import videojs from 'video.js'
 import { VideoControls } from './VideoControls'
 
@@ -28,6 +28,9 @@ describe('VideoControls', () => {
         }
       },
       responsive: true
+    })
+    act(() => {
+      player.duration(250)
     })
   })
   afterEach(() => {

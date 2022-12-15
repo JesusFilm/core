@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect, useCallback } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import Container from '@mui/material/Container'
 import videojs from 'video.js'
 import Stack from '@mui/material/Stack'
@@ -14,6 +14,7 @@ import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
 import LanguageRounded from '@mui/icons-material/LanguageRounded'
 import FullscreenOutlined from '@mui/icons-material/FullscreenOutlined'
+import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 interface VideoControlProps {
   player: videojs.Player
@@ -32,19 +33,7 @@ export function VideoControls({
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
 
-  const timeFormatToHHMMSS = useCallback((time: number): string => {
-    let durationFormat
-    const valid = !Number.isNaN(time)
-    if (valid) {
-      durationFormat =
-        time < 3600
-          ? new Date(time * 1000).toISOString().slice(14, 19)
-          : new Date(time * 1000).toISOString().slice(11, 19)
-    }
-    return durationFormat
-  }, [])
-
-  const duration = timeFormatToHHMMSS(player.duration())
+  const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
   const durationSeconds = Math.round(player.duration())
 
   useEffect(() => {
@@ -56,15 +45,20 @@ export function VideoControls({
       setPlay(false)
     })
     player.on('timeupdate', () => {
-      setCurrentTime(timeFormatToHHMMSS(player?.currentTime()))
+      setCurrentTime(
+        secondsToTimeFormat(player?.currentTime(), { trimZeroes: true })
+      )
       setProgress(Math.round(player.currentTime()))
     })
     player.on('fullscreenchange', () => {
       if (!player.isFullscreen()) {
         setFullscreen(false)
       }
+      if (player.isFullscreen()) {
+        setFullscreen(true)
+      }
     })
-  }, [player, setFullscreen, timeFormatToHHMMSS])
+  }, [player, setFullscreen])
 
   function handlePlay(): void {
     if (!play) {
@@ -131,7 +125,7 @@ export function VideoControls({
         max={durationSeconds}
         value={progress}
         valueLabelFormat={(value) => {
-          return timeFormatToHHMMSS(value)
+          return secondsToTimeFormat(value, { trimZeroes: true })
         }}
         valueLabelDisplay="auto"
         onChange={handleSeek}
@@ -141,6 +135,9 @@ export function VideoControls({
           '& .MuiSlider-thumb': {
             width: 13,
             height: 13
+          },
+          '& .MuiSlider-rail': {
+            backgroundColor: 'secondary.main'
           }
         }}
       />
@@ -166,7 +163,7 @@ export function VideoControls({
           max={durationSeconds}
           value={progress}
           valueLabelFormat={(value) => {
-            return timeFormatToHHMMSS(value)
+            return secondsToTimeFormat(value, { trimZeroes: true })
           }}
           valueLabelDisplay="auto"
           onChange={handleSeek}
@@ -176,6 +173,9 @@ export function VideoControls({
             '& .MuiSlider-thumb': {
               width: 13,
               height: 13
+            },
+            '& .MuiSlider-rail': {
+              backgroundColor: 'secondary.main'
             }
           }}
         />

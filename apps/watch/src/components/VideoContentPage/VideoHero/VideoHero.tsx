@@ -49,10 +49,16 @@ export function VideoHero(): ReactElement {
   videojs.registerComponent('subtitleControl', SubtitleControl)
 
   useEffect(() => {
-    if (videoRef.current != null) {
+    if (videoRef.current != null && variant?.hls != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: false,
         controls: true,
+        sources: [
+          {
+            src: variant?.hls,
+            type: 'application/x-mpegURL'
+          }
+        ],
         userActions: {
           hotkeys: true,
           doubleClick: true
@@ -124,9 +130,7 @@ export function VideoHero(): ReactElement {
             position: 'absolute'
           }}
           playsInline
-        >
-          <source src={variant.hls} type="application/x-mpegURL" />
-        </video>
+        />
       )}
       {playerRef.current != null && isPlaying && (
         <VideoControls

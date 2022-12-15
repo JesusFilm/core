@@ -1,35 +1,10 @@
-/* Control Bar */
-.vjs-jfp .vjs-control-bar {
-  background: transparent !important;
-  margin-bottom: 25px;
-  padding-right: 14%;
-  padding-left: 14%;
-}
-
-.vjs-jfp .vjs-big-play-button {
-  display: 'none';
-}
-
-/* Progress Bar */
-.vjs-jfp .vjs-progress-holder,
-.vjs-jfp .vjs-play-progress,
-.vjs-jfp .vjs-slider-horizontal {
-  line-height: 24px;
-  height: 8px;
-  border-radius: 10px;
-}
-
-.vjs-jfp .vjs-progress-holder .vjs-load-progress,
-.vjs-jfp .vjs-progress-holder .vjs-load-progress div {
-  border-radius: 10px;
-}
-.vjs-jfp .vjs-slider-horizontal {
-  background: #6d6f81 !important;
-}
-
 .vjs-jfp .vjs-slider-bar,
 .vjs-jfp .vjs-mouse-display {
   background: #ef3340 !important;
+}
+
+.vjs-jfp .slider-bar {
+  color: #ef3340 !important;
 }
 
 .vjs-jfp .vjs-slider-horizontal {
@@ -37,44 +12,22 @@
   font-size: 24px !important;
 }
 
-.vjs-jfp .vjs-play-progress:before {
-  display: none;
+.vjs-jfp .vjs-slider-horizontal {
+  background: #6d6f81 !important;
 }
 
-/* Icons */
-.vjs-jfp .vjs-button > .vjs-icon-placeholder:before {
-  font-size: 30px;
-  display: flex;
-  align-items: center;
+.vjs-jfp .vjs-control-bar {
+  background: transparent !important;
 }
 
-.vjs-icon-audio:before,
-.vjs-jfp .vjs-audio-button .vjs-icon-placeholder:before {
-  content: url('../icons/audio.svg');
-  padding-bottom: 10px;
+.vjs-jfp .vjs-progress-holder,
+.vjs-jfp .vjs-load-progress,
+.vjs-jfp .vjs-slider-horizontal {
+  line-height: 24px;
+  height: 9px !important;
+  border-radius: 10px;
 }
 
-.vjs-icon-subtitles:before,
-.vjs-jfp .vjs-subtitles-button .vjs-icon-placeholder:before {
-  content: url('../icons/subtitle.svg');
-  padding-bottom: 13px;
-}
-
-.vjs-jfp .vjs-volume-panel,
-.vjs-jfp .vjs-audio-button,
-.vjs-jfp .vjs-subtitles-button,
-.vjs-jfp .vjs-fullscreen-control {
-  display: flex;
-  align-items: center;
-  margin-left: 26px;
-}
-
-/* Remaining Time Display */
-.vjs-jfp .vjs-remaining-time-display {
-  font-size: 14px;
-}
-
-/* Big Play Button */
 .vjs-jfp.vjs-paused .vjs-big-play-button {
   display: none;
 }
