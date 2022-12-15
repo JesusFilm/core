@@ -46,15 +46,6 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'JESUS' }],
     variant: {
       __typename: 'VideoVariant',
-      id: '1_529-jf-0-0',
-      duration: 7674,
-      hls: 'https://arc.gt/j67rz',
-      language: {
-        __typename: 'Language',
-        id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
-      },
-      slug: 'jesus/english',
       subtitle: [
         {
           __typename: 'Translation',
@@ -78,7 +69,16 @@ export const videos: VideoContentFields[] = [
           value:
             'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
         }
-      ]
+      ],
+      id: '1_529-jf-0-0',
+      duration: 7674,
+      hls: 'https://arc.gt/j67rz',
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [{ __typename: 'Translation', value: 'English' }]
+      },
+      slug: 'jesus/english'
     },
     slug: 'jesus',
     children: [
@@ -101,6 +101,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6101-0-0',
           duration: 488,
           hls: 'https://arc.gt/pm6g1',
@@ -126,6 +150,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6102-0-0',
           duration: 223,
           hls: 'https://arc.gt/ijec5',
@@ -151,6 +199,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6103-0-0',
           duration: 135,
           hls: 'https://arc.gt/lfoti',
@@ -179,6 +251,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6104-0-0',
           duration: 227,
           hls: 'https://arc.gt/xgno5',
@@ -206,6 +302,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6105-0-0',
           duration: 142,
           hls: 'https://arc.gt/xf6lr',
@@ -241,6 +361,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6106-0-0',
           duration: 187,
           hls: 'https://arc.gt/7pqw3',
@@ -276,6 +420,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6107-0-0',
           duration: 62,
           hls: 'https://arc.gt/vvogt',
@@ -305,6 +473,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6108-0-0',
           duration: 122,
           hls: 'https://arc.gt/jqs1v',
@@ -340,6 +532,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6109-0-0',
           duration: 135,
           hls: 'https://arc.gt/e8v1c',
@@ -365,6 +581,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6110-0-0',
           duration: 191,
           hls: 'https://arc.gt/oalu7',
@@ -390,6 +630,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6111-0-0',
           duration: 63,
           hls: 'https://arc.gt/tpn0g',
@@ -415,6 +679,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6112-0-0',
           duration: 219,
           hls: 'https://arc.gt/kt848',
@@ -449,6 +737,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6113-0-0',
           duration: 19,
           hls: 'https://arc.gt/f7w9m',
@@ -476,6 +788,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6114-0-0',
           duration: 177,
           hls: 'https://arc.gt/mgqws',
@@ -501,6 +837,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6115-0-0',
           duration: 44,
           hls: 'https://arc.gt/fyiin',
@@ -530,6 +890,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6116-0-0',
           duration: 116,
           hls: 'https://arc.gt/nx4ad',
@@ -565,6 +949,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6117-0-0',
           duration: 138,
           hls: 'https://arc.gt/h8zqo',
@@ -590,6 +998,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6118-0-0',
           duration: 56,
           hls: 'https://arc.gt/p1xr0',
@@ -617,6 +1049,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6119-0-0',
           duration: 119,
           hls: 'https://arc.gt/69sos',
@@ -646,6 +1102,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6120-0-0',
           duration: 136,
           hls: 'https://arc.gt/2tm22',
@@ -671,6 +1151,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6121-0-0',
           duration: 150,
           hls: 'https://arc.gt/iyv6u',
@@ -706,6 +1210,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6122-0-0',
           duration: 84,
           hls: 'https://arc.gt/5484g',
@@ -731,6 +1259,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6123-0-0',
           duration: 106,
           hls: 'https://arc.gt/mgomf',
@@ -766,6 +1318,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6124-0-0',
           duration: 135,
           hls: 'https://arc.gt/6v831',
@@ -791,6 +1367,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6125-0-0',
           duration: 58,
           hls: 'https://arc.gt/wdq42',
@@ -826,6 +1426,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6126-0-0',
           duration: 144,
           hls: 'https://arc.gt/urach',
@@ -861,6 +1485,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6127-0-0',
           duration: 55,
           hls: 'https://arc.gt/25rgl',
@@ -896,6 +1544,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6128-0-0',
           duration: 28,
           hls: 'https://arc.gt/a2r0f',
@@ -925,6 +1597,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6129-0-0',
           duration: 30,
           hls: 'https://arc.gt/vflur',
@@ -952,6 +1648,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6130-0-0',
           duration: 117,
           hls: 'https://arc.gt/uvnby',
@@ -981,6 +1701,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6131-0-0',
           duration: 98,
           hls: 'https://arc.gt/pi7os',
@@ -1008,6 +1752,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6132-0-0',
           duration: 105,
           hls: 'https://arc.gt/0qak8',
@@ -1033,6 +1801,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6133-0-0',
           duration: 142,
           hls: 'https://arc.gt/pp99g',
@@ -1068,6 +1860,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6134-0-0',
           duration: 42,
           hls: 'https://arc.gt/yl9ba',
@@ -1097,6 +1913,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6135-0-0',
           duration: 71,
           hls: 'https://arc.gt/vxbwy',
@@ -1126,6 +1966,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6136-0-0',
           duration: 60,
           hls: 'https://arc.gt/4m1we',
@@ -1161,6 +2025,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6137-0-0',
           duration: 112,
           hls: 'https://arc.gt/dbd4i',
@@ -1186,6 +2074,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6138-0-0',
           duration: 46,
           hls: 'https://arc.gt/x2scs',
@@ -1221,6 +2133,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6139-0-0',
           duration: 60,
           hls: 'https://arc.gt/gf6v4',
@@ -1256,6 +2192,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6140-0-0',
           duration: 111,
           hls: 'https://arc.gt/f2d04',
@@ -1283,6 +2243,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6141-0-0',
           duration: 58,
           hls: 'https://arc.gt/z52cl',
@@ -1308,6 +2292,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6142-0-0',
           duration: 175,
           hls: 'https://arc.gt/bqnyb',
@@ -1333,6 +2341,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6143-0-0',
           duration: 149,
           hls: 'https://arc.gt/246zp',
@@ -1362,6 +2394,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6144-0-0',
           duration: 263,
           hls: 'https://arc.gt/r72em',
@@ -1387,6 +2443,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6145-0-0',
           duration: 144,
           hls: 'https://arc.gt/6q9wr',
@@ -1416,6 +2496,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6146-0-0',
           duration: 118,
           hls: 'https://arc.gt/tf1xx',
@@ -1445,6 +2549,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6147-0-0',
           duration: 104,
           hls: 'https://arc.gt/0ikgq',
@@ -1474,6 +2602,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6148-0-0',
           duration: 84,
           hls: 'https://arc.gt/u8gqt',
@@ -1499,6 +2651,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6149-0-0',
           duration: 177,
           hls: 'https://arc.gt/9acdz',
@@ -1528,6 +2704,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6150-0-0',
           duration: 214,
           hls: 'https://arc.gt/gyi4p',
@@ -1553,6 +2753,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6151-0-0',
           duration: 169,
           hls: 'https://arc.gt/yiih4',
@@ -1588,6 +2812,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6152-0-0',
           duration: 57,
           hls: 'https://arc.gt/c3hhs',
@@ -1613,6 +2861,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6153-0-0',
           duration: 67,
           hls: 'https://arc.gt/zpy7d',
@@ -1638,6 +2910,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6154-0-0',
           duration: 100,
           hls: 'https://arc.gt/g52vf',
@@ -1663,6 +2959,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6155-0-0',
           duration: 106,
           hls: 'https://arc.gt/de8sd',
@@ -1688,6 +3008,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6156-0-0',
           duration: 121,
           hls: 'https://arc.gt/fxam3',
@@ -1713,6 +3057,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6157-0-0',
           duration: 89,
           hls: 'https://arc.gt/wfipb',
@@ -1738,6 +3106,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6158-0-0',
           duration: 82,
           hls: 'https://arc.gt/z4cu3',
@@ -1767,6 +3159,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6159-0-0',
           duration: 116,
           hls: 'https://arc.gt/3accr',
@@ -1796,6 +3212,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6160-0-0',
           duration: 76,
           hls: 'https://arc.gt/ml18g',
@@ -1830,6 +3270,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-jf6161-0-0',
           duration: 341,
           hls: 'https://arc.gt/yz6nc',
@@ -1867,6 +3331,30 @@ export const videos: VideoContentFields[] = [
     ],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '2_529-GOJ-0-0',
       duration: 10994,
       hls: 'https://arc.gt/u3kd6',
@@ -1902,6 +3390,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4901-0-0',
           duration: 275,
           hls: 'https://arc.gt/xpzcg',
@@ -1931,6 +3443,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4902-0-0',
           duration: 196,
           hls: 'https://arc.gt/t5u00',
@@ -1960,6 +3496,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4903-0-0',
           duration: 306,
           hls: 'https://arc.gt/oze4y',
@@ -1985,6 +3545,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4904-0-0',
           duration: 213,
           hls: 'https://arc.gt/29cgr',
@@ -2010,6 +3594,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4905-0-0',
           duration: 222,
           hls: 'https://arc.gt/55e57',
@@ -2035,6 +3643,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4906-0-0',
           duration: 204,
           hls: 'https://arc.gt/ylrhk',
@@ -2064,6 +3696,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4907-0-0',
           duration: 120,
           hls: 'https://arc.gt/6mwan',
@@ -2089,6 +3745,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4908-0-0',
           duration: 223,
           hls: 'https://arc.gt/zmvbz',
@@ -2114,6 +3794,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4909-0-0',
           duration: 131,
           hls: 'https://arc.gt/irbhg',
@@ -2141,6 +3845,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4910-0-0',
           duration: 189,
           hls: 'https://arc.gt/bavab',
@@ -2166,6 +3894,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4911-0-0',
           duration: 236,
           hls: 'https://arc.gt/xmmk8',
@@ -2191,6 +3943,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4912-0-0',
           duration: 137,
           hls: 'https://arc.gt/8e7tc',
@@ -2216,6 +3992,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4913-0-0',
           duration: 142,
           hls: 'https://arc.gt/z8fhr',
@@ -2241,6 +4041,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4914-0-0',
           duration: 276,
           hls: 'https://arc.gt/yq1j4',
@@ -2266,6 +4090,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4915-0-0',
           duration: 154,
           hls: 'https://arc.gt/81twe',
@@ -2291,6 +4139,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4916-0-0',
           duration: 348,
           hls: 'https://arc.gt/2gb73',
@@ -2316,6 +4188,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4917-0-0',
           duration: 123,
           hls: 'https://arc.gt/l72b4',
@@ -2351,6 +4247,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4918-0-0',
           duration: 182,
           hls: 'https://arc.gt/ddgsm',
@@ -2380,6 +4300,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4919-0-0',
           duration: 279,
           hls: 'https://arc.gt/t0t8s',
@@ -2405,6 +4349,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4920-0-0',
           duration: 196,
           hls: 'https://arc.gt/zdjzd',
@@ -2430,6 +4398,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4921-0-0',
           duration: 181,
           hls: 'https://arc.gt/mlhyx',
@@ -2455,6 +4447,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4922-0-0',
           duration: 283,
           hls: 'https://arc.gt/948kr',
@@ -2480,6 +4496,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4923-0-0',
           duration: 218,
           hls: 'https://arc.gt/ytim7',
@@ -2515,6 +4555,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4924-0-0',
           duration: 280,
           hls: 'https://arc.gt/v7a2l',
@@ -2540,6 +4604,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4925-0-0',
           duration: 167,
           hls: 'https://arc.gt/k9qjw',
@@ -2565,6 +4653,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4926-0-0',
           duration: 213,
           hls: 'https://arc.gt/cuxbw',
@@ -2590,6 +4702,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4927-0-0',
           duration: 146,
           hls: 'https://arc.gt/hlw7d',
@@ -2617,6 +4753,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4928-0-0',
           duration: 212,
           hls: 'https://arc.gt/qsyj0',
@@ -2642,6 +4802,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4929-0-0',
           duration: 414,
           hls: 'https://arc.gt/rod6e',
@@ -2671,6 +4855,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4930-0-0',
           duration: 327,
           hls: 'https://arc.gt/dcorg',
@@ -2696,6 +4904,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4931-0-0',
           duration: 142,
           hls: 'https://arc.gt/p1bsp',
@@ -2721,6 +4953,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4932-0-0',
           duration: 265,
           hls: 'https://arc.gt/prd0d',
@@ -2750,6 +5006,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4933-0-0',
           duration: 290,
           hls: 'https://arc.gt/fenvo',
@@ -2779,6 +5059,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4934-0-0',
           duration: 141,
           hls: 'https://arc.gt/8risd',
@@ -2808,6 +5112,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4935-0-0',
           duration: 151,
           hls: 'https://arc.gt/yg0xw',
@@ -2837,6 +5165,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4936-0-0',
           duration: 167,
           hls: 'https://arc.gt/owvp9',
@@ -2862,6 +5214,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4937-0-0',
           duration: 87,
           hls: 'https://arc.gt/zbgr2',
@@ -2891,6 +5267,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4938-0-0',
           duration: 150,
           hls: 'https://arc.gt/inp78',
@@ -2919,6 +5319,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4939-0-0',
           duration: 190,
           hls: 'https://arc.gt/q074p',
@@ -2944,6 +5368,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4940-0-0',
           duration: 262,
           hls: 'https://arc.gt/y2mnc',
@@ -2979,6 +5427,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4941-0-0',
           duration: 346,
           hls: 'https://arc.gt/5zb64',
@@ -3014,6 +5486,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4942-0-0',
           duration: 206,
           hls: 'https://arc.gt/b8psu',
@@ -3049,6 +5545,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4943-0-0',
           duration: 328,
           hls: 'https://arc.gt/c46lf',
@@ -3078,6 +5598,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4944-0-0',
           duration: 449,
           hls: 'https://arc.gt/77lqv',
@@ -3103,6 +5647,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4945-0-0',
           duration: 287,
           hls: 'https://arc.gt/r9p76',
@@ -3128,6 +5696,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4946-0-0',
           duration: 126,
           hls: 'https://arc.gt/qnsip',
@@ -3153,6 +5745,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4947-0-0',
           duration: 181,
           hls: 'https://arc.gt/o2nme',
@@ -3178,6 +5794,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4948-0-0',
           duration: 201,
           hls: 'https://arc.gt/qq08o',
@@ -3206,6 +5846,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-GOJ4949-0-0',
           duration: 151,
           hls: 'https://arc.gt/kohxw',
@@ -3252,6 +5916,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'Jesus Calms the Storm' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '1_529-jf6119-0-0',
       duration: 119,
       hls: 'https://arc.gt/69sos',
@@ -3310,6 +5998,30 @@ export const videos: VideoContentFields[] = [
     ],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '1_529-wl604423-0-0',
       duration: 190,
       hls: 'https://arc.gt/0sgr2',
@@ -3348,6 +6060,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'Magdalena' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '1_529-wl60-0-0',
       duration: 3665,
       hls: 'https://arc.gt/d8p35',
@@ -3383,6 +6119,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl-0-0',
           duration: 4952,
           hls: 'https://arc.gt/z6lim',
@@ -3410,6 +6170,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604401-0-0',
           duration: 69,
           hls: 'https://arc.gt/27lap',
@@ -3445,6 +6229,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604402-0-0',
           duration: 76,
           hls: 'https://arc.gt/l55hy',
@@ -3470,6 +6278,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604403-0-0',
           duration: 149,
           hls: 'https://arc.gt/hu9ht',
@@ -3499,6 +6331,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604404-0-0',
           duration: 88,
           hls: 'https://arc.gt/rlust',
@@ -3524,6 +6380,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604405-0-0',
           duration: 133,
           hls: 'https://arc.gt/i1zzu',
@@ -3549,6 +6429,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604406-0-0',
           duration: 79,
           hls: 'https://arc.gt/73nzx',
@@ -3576,6 +6480,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604407-0-0',
           duration: 117,
           hls: 'https://arc.gt/0omcj',
@@ -3605,6 +6533,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604408-0-0',
           duration: 77,
           hls: 'https://arc.gt/v7i0o',
@@ -3630,6 +6582,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604409-0-0',
           duration: 79,
           hls: 'https://arc.gt/u8389',
@@ -3655,6 +6631,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604410-0-0',
           duration: 23,
           hls: 'https://arc.gt/ivfj3',
@@ -3680,6 +6680,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604411-0-0',
           duration: 64,
           hls: 'https://arc.gt/b7e1w',
@@ -3715,6 +6739,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604412-0-0',
           duration: 51,
           hls: 'https://arc.gt/rbk2a',
@@ -3744,6 +6792,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604413-0-0',
           duration: 91,
           hls: 'https://arc.gt/db9mo',
@@ -3779,6 +6851,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604414-0-0',
           duration: 96,
           hls: 'https://arc.gt/nhkh9',
@@ -3814,6 +6910,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604415-0-0',
           duration: 235,
           hls: 'https://arc.gt/r2n8c',
@@ -3849,6 +6969,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604416-0-0',
           duration: 76,
           hls: 'https://arc.gt/j7e42',
@@ -3884,6 +7028,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604417-0-0',
           duration: 53,
           hls: 'https://arc.gt/kyhu2',
@@ -3913,6 +7081,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604418-0-0',
           duration: 69,
           hls: 'https://arc.gt/cpr24',
@@ -3938,6 +7130,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604419-0-0',
           duration: 238,
           hls: 'https://arc.gt/4dv62',
@@ -3965,6 +7181,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604420-0-0',
           duration: 354,
           hls: 'https://arc.gt/i9pze',
@@ -4000,6 +7240,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604421-0-0',
           duration: 134,
           hls: 'https://arc.gt/qymxm',
@@ -4029,6 +7293,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604422-0-0',
           duration: 71,
           hls: 'https://arc.gt/16swn',
@@ -4064,6 +7352,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604423-0-0',
           duration: 190,
           hls: 'https://arc.gt/0sgr2',
@@ -4099,6 +7411,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604424-0-0',
           duration: 113,
           hls: 'https://arc.gt/im9jh',
@@ -4124,6 +7460,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604425-0-0',
           duration: 99,
           hls: 'https://arc.gt/9dmh6',
@@ -4153,6 +7513,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604426-0-0',
           duration: 99,
           hls: 'https://arc.gt/qvk27',
@@ -4180,6 +7564,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604427-0-0',
           duration: 118,
           hls: 'https://arc.gt/62wr3',
@@ -4215,6 +7623,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604428-0-0',
           duration: 53,
           hls: 'https://arc.gt/qf097',
@@ -4240,6 +7672,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604429-0-0',
           duration: 80,
           hls: 'https://arc.gt/eg2y4',
@@ -4269,6 +7725,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604430-0-0',
           duration: 179,
           hls: 'https://arc.gt/nf1a9',
@@ -4298,6 +7778,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604431-0-0',
           duration: 58,
           hls: 'https://arc.gt/wl9z6',
@@ -4327,6 +7831,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604432-0-0',
           duration: 120,
           hls: 'https://arc.gt/ks29s',
@@ -4352,6 +7880,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604433-0-0',
           duration: 270,
           hls: 'https://arc.gt/q5fl0',
@@ -4387,6 +7939,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604434-0-0',
           duration: 261,
           hls: 'https://arc.gt/oiqhl',
@@ -4416,6 +7992,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604435-0-0',
           duration: 48,
           hls: 'https://arc.gt/b62kj',
@@ -4445,6 +8045,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604436-0-0',
           duration: 59,
           hls: 'https://arc.gt/wmnbu',
@@ -4474,6 +8098,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604437-0-0',
           duration: 67,
           hls: 'https://arc.gt/pxwnj',
@@ -4499,6 +8147,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604438-0-0',
           duration: 141,
           hls: 'https://arc.gt/st6t0',
@@ -4528,6 +8200,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604439-0-0',
           duration: 83,
           hls: 'https://arc.gt/8s4d5',
@@ -4563,6 +8259,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604440-0-0',
           duration: 157,
           hls: 'https://arc.gt/h820i',
@@ -4598,6 +8318,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604441-0-0',
           duration: 139,
           hls: 'https://arc.gt/ibynj',
@@ -4625,6 +8369,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604442-0-0',
           duration: 115,
           hls: 'https://arc.gt/wzwqm',
@@ -4650,6 +8418,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604443-0-0',
           duration: 192,
           hls: 'https://arc.gt/scdlu',
@@ -4679,6 +8471,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl604444-0-0',
           duration: 99,
           hls: 'https://arc.gt/gyuus',
@@ -4704,6 +8520,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-0-ThisIsFreedom',
           duration: 255,
           hls: 'https://arc.gt/ff5b9',
@@ -4737,6 +8577,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'Reflections of Hope' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '1_529-wl7-0-0',
       duration: 0,
       hls: null,
@@ -4771,6 +8635,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl71-0-0',
           duration: 70,
           hls: 'https://arc.gt/420k6',
@@ -4806,6 +8694,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl72-0-0',
           duration: 176,
           hls: 'https://arc.gt/ez214',
@@ -4835,6 +8747,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl73-0-0',
           duration: 116,
           hls: 'https://arc.gt/ti0z9',
@@ -4870,6 +8806,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl74-0-0',
           duration: 230,
           hls: 'https://arc.gt/1j2w1',
@@ -4905,6 +8865,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl75-0-0',
           duration: 88,
           hls: 'https://arc.gt/gon3b',
@@ -4940,6 +8924,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl76-0-0',
           duration: 190,
           hls: 'https://arc.gt/lzbjp',
@@ -4969,6 +8977,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-wl77-0-0',
           duration: 354,
           hls: 'https://arc.gt/ikllg',
@@ -5013,6 +9045,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'Day 6: Jesus Died for Me' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '3_529-0-8DWJ-WIJ_06-0-0',
       duration: 488,
       hls: 'https://arc.gt/xqav7',
@@ -5057,6 +9113,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'Book of Acts' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '2_529-Acts-0-0',
       duration: 11530,
       hls: 'https://arc.gt/6x6ke',
@@ -5089,6 +9169,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7301-0-0',
           duration: 123,
           hls: 'https://arc.gt/l9eqj',
@@ -5118,6 +9222,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7302-0-0',
           duration: 144,
           hls: 'https://arc.gt/opsgn',
@@ -5153,6 +9281,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7303-0-0',
           duration: 170,
           hls: 'https://arc.gt/bzfme',
@@ -5188,6 +9340,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7304-0-0',
           duration: 162,
           hls: 'https://arc.gt/6fb9x',
@@ -5216,6 +9392,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7305-0-0',
           duration: 278,
           hls: 'https://arc.gt/d7e44',
@@ -5245,6 +9445,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7306-0-0',
           duration: 54,
           hls: 'https://arc.gt/un9bj',
@@ -5273,6 +9497,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7307-0-0',
           duration: 131,
           hls: 'https://arc.gt/k3vyl',
@@ -5302,6 +9550,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7308-0-0',
           duration: 159,
           hls: 'https://arc.gt/hjmdk',
@@ -5337,6 +9609,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7309-0-0',
           duration: 181,
           hls: 'https://arc.gt/6607l',
@@ -5361,6 +9657,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7310-0-0',
           duration: 88,
           hls: 'https://arc.gt/g2cxi',
@@ -5395,6 +9715,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7311-0-0',
           duration: 51,
           hls: 'https://arc.gt/z086z',
@@ -5418,6 +9762,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7312-0-0',
           duration: 110,
           hls: 'https://arc.gt/q2wij',
@@ -5444,6 +9812,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7313-0-0',
           duration: 68,
           hls: 'https://arc.gt/tjozl',
@@ -5473,6 +9865,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7314-0-0',
           duration: 359,
           hls: 'https://arc.gt/7pqk1',
@@ -5501,6 +9917,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7315-0-0',
           duration: 73,
           hls: 'https://arc.gt/uzmlb',
@@ -5525,6 +9965,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7316-0-0',
           duration: 98,
           hls: 'https://arc.gt/nnvqh',
@@ -5559,6 +10023,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7317-0-0',
           duration: 534,
           hls: 'https://arc.gt/xta3j',
@@ -5584,6 +10072,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7318-0-0',
           duration: 87,
           hls: 'https://arc.gt/2298i',
@@ -5618,6 +10130,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7319-0-0',
           duration: 32,
           hls: 'https://arc.gt/j6mnd',
@@ -5642,6 +10178,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7320-0-0',
           duration: 29,
           hls: 'https://arc.gt/ztzgv',
@@ -5667,6 +10227,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7321-0-0',
           duration: 188,
           hls: 'https://arc.gt/012hm',
@@ -5696,6 +10280,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7322-0-0',
           duration: 165,
           hls: 'https://arc.gt/28799',
@@ -5720,6 +10328,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7323-0-0',
           duration: 257,
           hls: 'https://arc.gt/eijqa',
@@ -5749,6 +10381,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7324-0-0',
           duration: 129,
           hls: 'https://arc.gt/ektp8',
@@ -5773,6 +10429,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7325-0-0',
           duration: 126,
           hls: 'https://arc.gt/62y7y',
@@ -5801,6 +10481,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7326-0-0',
           duration: 76,
           hls: 'https://arc.gt/1d3qg',
@@ -5825,6 +10529,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7327-0-0',
           duration: 115,
           hls: 'https://arc.gt/j03n6',
@@ -5853,6 +10581,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7328-0-0',
           duration: 235,
           hls: 'https://arc.gt/cfirx',
@@ -5881,6 +10633,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7329-0-0',
           duration: 175,
           hls: 'https://arc.gt/2mmoo',
@@ -5904,6 +10680,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7330-0-0',
           duration: 144,
           hls: 'https://arc.gt/b098m',
@@ -5938,6 +10738,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7331-0-0',
           duration: 298,
           hls: 'https://arc.gt/esnsq',
@@ -5959,6 +10783,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7332-0-0',
           duration: 64,
           hls: 'https://arc.gt/v4lzw',
@@ -5993,6 +10841,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7333-0-0',
           duration: 37,
           hls: 'https://arc.gt/1e8wv',
@@ -6017,6 +10889,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7334-0-0',
           duration: 90,
           hls: 'https://arc.gt/vopsp',
@@ -6051,6 +10947,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7335-0-0',
           duration: 417,
           hls: 'https://arc.gt/foae1',
@@ -6086,6 +11006,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7336-0-0',
           duration: 58,
           hls: 'https://arc.gt/1qp1j',
@@ -6114,6 +11058,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7337-0-0',
           duration: 314,
           hls: 'https://arc.gt/rbr42',
@@ -6142,6 +11110,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7338-0-0',
           duration: 80,
           hls: 'https://arc.gt/e2924',
@@ -6171,6 +11163,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7339-0-0',
           duration: 219,
           hls: 'https://arc.gt/pmpr7',
@@ -6205,6 +11221,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7340-0-0',
           duration: 116,
           hls: 'https://arc.gt/7do6v',
@@ -6239,6 +11279,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7341-0-0',
           duration: 48,
           hls: 'https://arc.gt/tpfpc',
@@ -6267,6 +11331,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7342-0-0',
           duration: 47,
           hls: 'https://arc.gt/0o1xk',
@@ -6301,6 +11389,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7343-0-0',
           duration: 79,
           hls: 'https://arc.gt/z03dv',
@@ -6329,6 +11441,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7344-0-0',
           duration: 62,
           hls: 'https://arc.gt/leumz',
@@ -6358,6 +11494,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7345-0-0',
           duration: 369,
           hls: 'https://arc.gt/cpywt',
@@ -6384,6 +11544,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7346-0-0',
           duration: 92,
           hls: 'https://arc.gt/ft6sb',
@@ -6405,6 +11589,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7347-0-0',
           duration: 67,
           hls: 'https://arc.gt/tybyf',
@@ -6429,6 +11637,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7348-0-0',
           duration: 232,
           hls: 'https://arc.gt/2kyn9',
@@ -6453,6 +11685,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7349-0-0',
           duration: 198,
           hls: 'https://arc.gt/jg5ml',
@@ -6478,6 +11734,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7350-0-0',
           duration: 110,
           hls: 'https://arc.gt/gtxno',
@@ -6499,6 +11779,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7351-0-0',
           duration: 191,
           hls: 'https://arc.gt/obzmd',
@@ -6523,6 +11827,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7352-0-0',
           duration: 242,
           hls: 'https://arc.gt/4ekht',
@@ -6548,6 +11876,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7353-0-0',
           duration: 142,
           hls: 'https://arc.gt/qmg4z',
@@ -6582,6 +11934,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7354-0-0',
           duration: 89,
           hls: 'https://arc.gt/h4dgq',
@@ -6616,6 +11992,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7355-0-0',
           duration: 314,
           hls: 'https://arc.gt/61481',
@@ -6640,6 +12040,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7356-0-0',
           duration: 149,
           hls: 'https://arc.gt/a6z0o',
@@ -6668,6 +12092,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7357-0-0',
           duration: 131,
           hls: 'https://arc.gt/0g5ds',
@@ -6692,6 +12140,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7358-0-0',
           duration: 118,
           hls: 'https://arc.gt/alky5',
@@ -6720,6 +12192,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7359-0-0',
           duration: 299,
           hls: 'https://arc.gt/rhbd1',
@@ -6743,6 +12239,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7360-0-0',
           duration: 102,
           hls: 'https://arc.gt/gmb52',
@@ -6771,6 +12291,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7361-0-0',
           duration: 150,
           hls: 'https://arc.gt/q3rdx',
@@ -6794,6 +12338,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7362-0-0',
           duration: 138,
           hls: 'https://arc.gt/rx19t',
@@ -6822,6 +12390,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7363-0-0',
           duration: 113,
           hls: 'https://arc.gt/669vk',
@@ -6847,6 +12439,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7364-0-0',
           duration: 277,
           hls: 'https://arc.gt/6x5a0',
@@ -6875,6 +12491,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7365-0-0',
           duration: 131,
           hls: 'https://arc.gt/bed5t',
@@ -6903,6 +12543,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7366-0-0',
           duration: 114,
           hls: 'https://arc.gt/9bry4',
@@ -6927,6 +12591,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7367-0-0',
           duration: 426,
           hls: 'https://arc.gt/6zdye',
@@ -6951,6 +12639,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7368-0-0',
           duration: 128,
           hls: 'https://arc.gt/9za77',
@@ -6970,6 +12682,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7369-0-0',
           duration: 133,
           hls: 'https://arc.gt/yr1x7',
@@ -6994,6 +12730,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7370-0-0',
           duration: 199,
           hls: 'https://arc.gt/qv694',
@@ -7017,6 +12777,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7371-0-0',
           duration: 124,
           hls: 'https://arc.gt/yflll',
@@ -7045,6 +12829,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7372-0-0',
           duration: 58,
           hls: 'https://arc.gt/qo40b',
@@ -7079,6 +12887,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '2_529-Acts7373-0-0',
           duration: 229,
           hls: 'https://arc.gt/e9esk',
@@ -7118,6 +12950,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'Wedding in Cana' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '2_529-GOJ4904-0-0',
       duration: 213,
       hls: 'https://arc.gt/29cgr',
@@ -7146,6 +13002,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'LUMO' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '529-LUMOCollection',
       duration: 0,
       hls: null,
@@ -7204,6 +13084,30 @@ export const videos: VideoContentFields[] = [
         ],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '529-GOJohnCollection',
           duration: 0,
           hls: null,
@@ -7260,6 +13164,30 @@ export const videos: VideoContentFields[] = [
         ],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '529-GOLukeCollection',
           duration: 0,
           hls: null,
@@ -7305,6 +13233,30 @@ export const videos: VideoContentFields[] = [
         ],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '529-GOMarkCollection',
           duration: 0,
           hls: null,
@@ -7360,6 +13312,30 @@ export const videos: VideoContentFields[] = [
         ],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '529-GOMattCollection',
           duration: 0,
           hls: null,
@@ -7420,6 +13396,30 @@ export const videos: VideoContentFields[] = [
     ],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '2_529-Acts7331-0-0',
       duration: 298,
       hls: 'https://arc.gt/esnsq',
@@ -7462,6 +13462,30 @@ export const videos: VideoContentFields[] = [
     ],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '3_529-0-8DWJ-WIJ',
       duration: 0,
       hls: null,
@@ -7497,6 +13521,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '3_529-0-8DWJ-WIJ_01-0-0',
           duration: 474,
           hls: 'https://arc.gt/t0ih0',
@@ -7526,6 +13574,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '3_529-0-8DWJ-WIJ_02-0-0',
           duration: 353,
           hls: 'https://arc.gt/kev1l',
@@ -7555,6 +13627,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '3_529-0-8DWJ-WIJ_03-0-0',
           duration: 460,
           hls: 'https://arc.gt/vqxsj',
@@ -7584,6 +13680,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '3_529-0-8DWJ-WIJ_04-0-0',
           duration: 300,
           hls: 'https://arc.gt/1dmvq',
@@ -7613,6 +13733,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '3_529-0-8DWJ-WIJ_05-0-0',
           duration: 568,
           hls: 'https://arc.gt/oawks',
@@ -7642,6 +13786,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '3_529-0-8DWJ-WIJ_06-0-0',
           duration: 488,
           hls: 'https://arc.gt/xqav7',
@@ -7677,6 +13845,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '3_529-0-8DWJ-WIJ_07-0-0',
           duration: 359,
           hls: 'https://arc.gt/abvki',
@@ -7702,6 +13894,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '3_529-0-8DWJ-WIJ_08-0-0',
           duration: 366,
           hls: 'https://arc.gt/oj8qd',
@@ -7755,6 +13971,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'Chosen Witness' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '2_529-ChosenWitness',
       duration: 566,
       hls: 'https://arc.gt/3mcdc',
@@ -7795,6 +14035,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'LUMO - The Gospel of Luke' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '529-GOLukeCollection',
       duration: 0,
       hls: null,
@@ -7826,6 +14090,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2601',
           duration: 589,
           hls: 'https://arc.gt/u32wu',
@@ -7853,6 +14141,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2602',
           duration: 569,
           hls: 'https://arc.gt/2b5gh',
@@ -7880,6 +14192,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2603',
           duration: 498,
           hls: 'https://arc.gt/au7dx',
@@ -7905,6 +14241,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2604',
           duration: 462,
           hls: 'https://arc.gt/fc93c',
@@ -7930,6 +14290,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2605',
           duration: 504,
           hls: 'https://arc.gt/z2vgh',
@@ -7955,6 +14339,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2606',
           duration: 557,
           hls: 'https://arc.gt/5maud',
@@ -7980,6 +14388,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2607',
           duration: 566,
           hls: 'https://arc.gt/p1hfg',
@@ -8005,6 +14437,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2608',
           duration: 512,
           hls: 'https://arc.gt/k82tz',
@@ -8032,6 +14488,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2609',
           duration: 392,
           hls: 'https://arc.gt/6ju4l',
@@ -8057,6 +14537,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2610',
           duration: 522,
           hls: 'https://arc.gt/8netz',
@@ -8082,6 +14586,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2611',
           duration: 471,
           hls: 'https://arc.gt/6ubai',
@@ -8107,6 +14635,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2612',
           duration: 571,
           hls: 'https://arc.gt/7vrkg',
@@ -8132,6 +14684,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2613',
           duration: 559,
           hls: 'https://arc.gt/aemhe',
@@ -8157,6 +14733,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2614',
           duration: 401,
           hls: 'https://arc.gt/dr554',
@@ -8184,6 +14784,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2615',
           duration: 456,
           hls: 'https://arc.gt/q1b8f',
@@ -8213,6 +14837,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2616',
           duration: 560,
           hls: 'https://arc.gt/ilq90',
@@ -8240,6 +14888,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2617',
           duration: 426,
           hls: 'https://arc.gt/pgarl',
@@ -8265,6 +14937,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2618',
           duration: 337,
           hls: 'https://arc.gt/uu5v0',
@@ -8290,6 +14986,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2619',
           duration: 368,
           hls: 'https://arc.gt/evb0i',
@@ -8319,6 +15039,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2620',
           duration: 500,
           hls: 'https://arc.gt/wde7d',
@@ -8344,6 +15088,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2621',
           duration: 345,
           hls: 'https://arc.gt/vezpq',
@@ -8373,6 +15141,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2622',
           duration: 381,
           hls: 'https://arc.gt/6r72l',
@@ -8402,6 +15194,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2623',
           duration: 552,
           hls: 'https://arc.gt/fu2n2',
@@ -8429,6 +15245,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2624',
           duration: 387,
           hls: 'https://arc.gt/7ntzj',
@@ -8454,6 +15294,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2625',
           duration: 530,
           hls: 'https://arc.gt/y5vu6',
@@ -8483,6 +15347,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '6_529-GOLuke2626',
           duration: 205,
           hls: 'https://arc.gt/0swho',
@@ -8549,6 +15437,30 @@ export const videos: VideoContentFields[] = [
     ],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '1_529-cl1309-0-0',
       duration: 124,
       hls: 'https://arc.gt/2174d',
@@ -8600,6 +15512,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'Birth of Jesus' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '1_529-jf6102-0-0',
       duration: 223,
       hls: 'https://arc.gt/ijec5',
@@ -8658,6 +15594,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: '#FallingPlates' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '2_529-0-FallingPlates',
       duration: 247,
       hls: 'https://arc.gt/zbrvj',
@@ -8712,6 +15672,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'Paul and Silas in Prison' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '2_529-Acts7345-0-0',
       duration: 369,
       hls: 'https://arc.gt/cpywt',
@@ -8764,6 +15748,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'My Last Day' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '1_529-mld-0-0',
       duration: 554,
       hls: 'https://arc.gt/1b10x',
@@ -8797,6 +15805,30 @@ export const videos: VideoContentFields[] = [
         children: [],
         variant: {
           __typename: 'VideoVariant',
+          subtitle: [
+            {
+              __typename: 'Translation',
+              language: {
+                __typename: 'Language',
+                bcp47: 'ar',
+                id: '22658',
+                name: [
+                  {
+                    __typename: 'Translation',
+                    value: ' اللغة العربية',
+                    primary: false
+                  },
+                  {
+                    __typename: 'Translation',
+                    value: 'Arabic, Modern Standard',
+                    primary: true
+                  }
+                ]
+              },
+              value:
+                'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+            }
+          ],
           id: '1_529-mld11-0-0',
           duration: 124,
           hls: 'https://arc.gt/qamjc',
@@ -8830,6 +15862,30 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'Translation', value: 'The Beginning' }],
     variant: {
       __typename: 'VideoVariant',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ],
       id: '1_529-jf6101-0-0',
       duration: 488,
       hls: 'https://arc.gt/pm6g1',
