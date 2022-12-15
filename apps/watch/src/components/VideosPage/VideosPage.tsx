@@ -11,7 +11,7 @@ import { GetVideos } from '../../../__generated__/GetVideos'
 import { VideosFilter } from '../../../__generated__/globalTypes'
 import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
 import { PageWrapper } from '../PageWrapper'
-import { VideosGrid } from '../VideosGrid/VideosGrid'
+import { VideoGrid } from '../VideoGrid/VideoGrid'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 import { LanguagesFilter } from './LanguagesFilter'
@@ -137,12 +137,11 @@ export function VideosPage(): ReactElement {
             languages={languagesData?.languages}
             loading={languagesLoading}
           />
-          <VideosGrid
+          <VideoGrid
             videos={data?.videos ?? []}
             onLoadMore={handleLoadMore}
-            showLoadMore
             loading={loading}
-            isEnd={isEnd}
+            hasNextPage={!isEnd}
           />
         </Stack>
       </Container>
