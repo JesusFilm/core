@@ -24,7 +24,7 @@ export function VideoGrid({
   variant
 }: VideoGridProps): ReactElement {
   return (
-    <Grid container spacing="14px" data-testid="videos-grid">
+    <Grid container spacing="14px" data-testid="videos-grid" sx={{ mb: 20 }}>
       {(videos?.length ?? 0) > 0 &&
         videos?.map((video, index) => (
           <Grid item key={index} xs={12} md={4} xl={3}>

@@ -90,6 +90,7 @@ export function VideoCard({
       >
         <ImageButton
           disabled={video == null}
+          aria-label="collection-page-video-card"
           sx={{
             overflow: 'hidden',
             height: {
