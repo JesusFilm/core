@@ -54,7 +54,31 @@ export const videos: VideoContentFields[] = [
         id: '529',
         name: [{ __typename: 'Translation', value: 'English' }]
       },
-      slug: 'jesus/english'
+      slug: 'jesus/english',
+      subtitle: [
+        {
+          __typename: 'Translation',
+          language: {
+            __typename: 'Language',
+            bcp47: 'ar',
+            id: '22658',
+            name: [
+              {
+                __typename: 'Translation',
+                value: ' اللغة العربية',
+                primary: false
+              },
+              {
+                __typename: 'Translation',
+                value: 'Arabic, Modern Standard',
+                primary: true
+              }
+            ]
+          },
+          value:
+            'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
+        }
+      ]
     },
     slug: 'jesus',
     children: [

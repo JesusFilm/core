@@ -24,21 +24,11 @@ export function SubtitleDialog({
     ({ language }) => language
   ) as unknown as Language[]
 
-  const [selected, setSelected] = useState<Language | undefined>(languages[0])
+  const [selected, setSelected] = useState<Language | undefined>(undefined)
 
-  const tracks = playerRef?.current?.textTracks() ?? []
-  for (let i = 0; i < tracks.length; i++) {
-    const track = tracks[i]
-    if (track.mode === 'showing') {
-      const selectedLanguage = languages.find(
-        (language) => language.id === track.id
-      )
-      setSelected(selectedLanguage)
-    }
-  }
-
-  const handleChange = ({ id }): void => {
-    updateSubtitle(id)
+  const handleChange = (result): void => {
+    setSelected(result)
+    updateSubtitle(result.id)
   }
 
   function updateSubtitle(id): void {
@@ -51,7 +41,10 @@ export function SubtitleDialog({
         id: id,
         src: selected?.value,
         kind: 'subtitles',
-        language: selected?.language.bcp47 == null && undefined,
+        language:
+          selected?.language.bcp47 === null
+            ? undefined
+            : selected?.language.bcp47,
         label: selected?.language.name.map((name) => name.value).join(', '),
         mode: 'showing',
         default: true
