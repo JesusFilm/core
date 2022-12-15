@@ -83,6 +83,14 @@ export function VideoHero(): ReactElement {
     }
   }, [variant, playerRef, videoRef])
 
+  useEffect(() => {
+    playerRef.current?.src({
+      src: variant?.hls ?? '',
+      type: 'application/x-mpegURL'
+    })
+    setIsPlaying(false)
+  }, [variant?.hls])
+
   function playVideo(): void {
     setIsPlaying(true)
     if (playerRef?.current != null) {
@@ -91,122 +99,118 @@ export function VideoHero(): ReactElement {
   }
 
   return (
-    <>
-      <>
-        <Box
-          data-testid={`video-${id}`}
-          sx={{
-            backgroundImage: `url(${image as string})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            display: 'flex',
-            width: '100%',
-            height: { xs: 502, lg: 777 },
-            position: 'relative',
-            '> .video-js .vjs-control-bar': {
-              display: fullscreen ? 'flex' : 'none'
-            }
+    <Box
+      data-testid={`video-${id}`}
+      sx={{
+        backgroundImage: `url(${image as string})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        display: 'flex',
+        width: '100%',
+        height: { xs: 502, lg: 777 },
+        position: 'relative',
+        '> .video-js .vjs-control-bar': {
+          display: fullscreen ? 'flex' : 'none'
+        }
+      }}
+    >
+      {variant?.hls != null && (
+        <video
+          ref={videoRef}
+          id="vjs-jfp"
+          className="vjs-jfp video-js vjs-fill"
+          style={{
+            alignSelf: 'center',
+            position: 'absolute'
           }}
+          playsInline
         >
-          {variant?.hls != null && (
-            <video
-              ref={videoRef}
-              id="vjs-jfp"
-              className="vjs-jfp video-js vjs-fill"
-              style={{
-                alignSelf: 'center',
-                position: 'absolute'
+          <source src={variant.hls} type="application/x-mpegURL" />
+        </video>
+      )}
+      {playerRef.current != null && isPlaying && (
+        <VideoControls
+          player={playerRef.current}
+          fullscreen={fullscreen}
+          setFullscreen={(value: boolean) => setFullscreen(value)}
+        />
+      )}
+      {!isPlaying && (
+        <>
+          <Container
+            maxWidth="xl"
+            style={{
+              position: 'absolute',
+              top: 350,
+              paddingLeft: 100,
+              margin: 0,
+              textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)'
+            }}
+          >
+            <Typography
+              variant="h2"
+              sx={{
+                maxWidth: '600px',
+                color: 'text.primary'
               }}
-              playsInline
             >
-              <source src={variant.hls} type="application/x-mpegURL" />
-            </video>
-          )}
-          {playerRef.current != null && isPlaying && (
-            <VideoControls
-              player={playerRef.current}
-              fullscreen={fullscreen}
-              setFullscreen={(value: boolean) => setFullscreen(value)}
-            />
-          )}
-          {!isPlaying && (
-            <>
-              <Container
-                maxWidth="xl"
-                style={{
-                  position: 'absolute',
-                  top: 350,
-                  paddingLeft: 100,
-                  margin: 0,
-                  textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)'
-                }}
-              >
-                <Typography
-                  variant="h2"
-                  sx={{
-                    maxWidth: '600px',
-                    color: 'text.primary'
-                  }}
+              {title[0]?.value}
+            </Typography>
+          </Container>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '520px'
+            }}
+            width="100%"
+            height="133px"
+          >
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              px="100px"
+              sx={{ color: 'text.primary' }}
+            >
+              <Stack direction="row" spacing="20px">
+                <Button
+                  size="large"
+                  variant="contained"
+                  sx={{ height: 71, fontSize: '24px' }}
+                  onClick={playVideo}
                 >
-                  {title[0]?.value}
-                </Typography>
-              </Container>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: '520px'
-                }}
-                width="100%"
-                height="133px"
-              >
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  px="100px"
-                  sx={{ color: 'text.primary' }}
-                >
-                  <Stack direction="row" spacing="20px">
-                    <Button
-                      size="large"
-                      variant="contained"
-                      sx={{ height: 71, fontSize: '24px' }}
-                      onClick={playVideo}
+                  <PlayArrow />
+                  &nbsp; Play Video
+                </Button>
+                {variant !== null && (
+                  <Stack height="71px" direction="row">
+                    <AccessTime sx={{ paddingTop: '23px' }} />
+                    <Typography
+                      variant="body2"
+                      sx={{ lineHeight: '71px', paddingLeft: '10px' }}
                     >
-                      <PlayArrow />
-                      &nbsp; Play Video
-                    </Button>
-                    {variant !== null && (
-                      <Stack height="71px" direction="row">
-                        <AccessTime sx={{ paddingTop: '23px' }} />
-                        <Typography
-                          variant="body2"
-                          sx={{ lineHeight: '71px', paddingLeft: '10px' }}
-                        >
-                          {secondsToMinutes(variant.duration)} min
-                        </Typography>
-                      </Stack>
-                    )}
-                    <Circle sx={{ fontSize: '10px', paddingTop: '30px' }} />
+                      {secondsToMinutes(variant.duration)} min
+                    </Typography>
                   </Stack>
-                </Stack>
-              </Box>
-              <Box
-                sx={{
-                  backgroundColor: 'rgba(18, 17, 17, 0.25)',
-                  position: 'absolute',
-                  top: '643px'
-                }}
-                width="100%"
-                height="133px"
-              >
-                <Stack pt="34px" mx="100px" width="100%" direction="row">
-                  <Stack direction="row">&nbsp;</Stack>
-                </Stack>
-              </Box>
-            </>
-          )}
-        </Box>
-      </>
-    </>
+                )}
+                <Circle sx={{ fontSize: '10px', paddingTop: '30px' }} />
+              </Stack>
+            </Stack>
+          </Box>
+          <Box
+            sx={{
+              backgroundColor: 'rgba(18, 17, 17, 0.25)',
+              position: 'absolute',
+              top: '643px'
+            }}
+            width="100%"
+            height="133px"
+          >
+            <Stack pt="34px" mx="100px" width="100%" direction="row">
+              <Stack direction="row">&nbsp;</Stack>
+            </Stack>
+          </Box>
+        </>
+      )}
+    </Box>
   )
 }
