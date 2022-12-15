@@ -61,22 +61,30 @@ export function VideosCarousel({
 
   const updateSnapGrid = (swiper: SwiperExtended): void => {
     const snapGrid = swiper.snapGrid
-    const lastSnapTranslate =
+    const translateToEnd =
       swiper.slidesGrid[0] +
       swiper.slidesGrid[swiper.slidesGrid.length - 1] +
       minPageMargin
 
-    console.log('lastSnap', lastSnapTranslate)
+    console.log('lastSnap', translateToEnd)
+    const slidesPerGroup = swiper.params.slidesPerGroup ?? 1
 
     // Slide less far
-    if (snapGrid[snapGrid.length - 1] > lastSnapTranslate) {
-      snapGrid[snapGrid.length - 1] = lastSnapTranslate
+    if (snapGrid[snapGrid.length - 1] > translateToEnd) {
+      snapGrid[snapGrid.length - 1] = translateToEnd
     }
 
     // Slide further to end
-    if (lastSnapTranslate > snapGrid[snapGrid.length - 1]) {
-      console.log('group 3, slide 4')
-      snapGrid.push(lastSnapTranslate)
+    if (translateToEnd > snapGrid[snapGrid.length - 1]) {
+      console.log('slide further', swiper.slides.length % slidesPerGroup)
+
+      snapGrid.push(translateToEnd)
+
+      // TODO: Perfectly align slides per group
+      // if (swiper.slides.length / slidesPerGroup === snapGrid.length) {
+      // TODO: Fix bug cannot go back
+      // snapGrid[snapGrid.length - 1] = translateToEnd
+      // }
     }
 
     // swiper.snapGrid = snapGrid
