@@ -26,7 +26,7 @@ export function getLabelDetails(videoLabel?: VideoLabel): LabelDetails {
       childLabel = 'chapters'
       break
     case VideoLabel.segment:
-      label = 'Clip'
+      label = 'Chapter'
       color = '#7283BE'
       break
     case VideoLabel.series:
