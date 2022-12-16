@@ -39,11 +39,7 @@ describe('VideoControls', () => {
     const playStub = jest.spyOn(player, 'play').mockImplementation(() => ({
       play: jest.fn()
     }))
-    const { getByTestId } = render(
-      <VideoControls
-        player={player}
-      />
-    )
+    const { getByTestId } = render(<VideoControls player={player} />)
     fireEvent.click(getByTestId('PlayArrowRoundedIcon'))
     expect(playStub).toHaveBeenCalled()
   })
@@ -52,11 +48,7 @@ describe('VideoControls', () => {
     const pauseStub = jest.spyOn(player, 'pause').mockImplementation(() => ({
       pause: jest.fn()
     }))
-    const { getByTestId } = render(
-      <VideoControls
-        player={player}
-      />
-    )
+    const { getByTestId } = render(<VideoControls player={player} />)
     fireEvent.click(getByTestId('PlayArrowRoundedIcon'))
     fireEvent.click(getByTestId('PauseRoundedIcon'))
     expect(pauseStub).toHaveBeenCalled()
@@ -66,11 +58,7 @@ describe('VideoControls', () => {
     const mutedStub = jest.spyOn(player, 'muted').mockImplementation(() => ({
       muted: jest.fn()
     }))
-    const { getByTestId } = render(
-      <VideoControls
-        player={player}
-      />
-    )
+    const { getByTestId } = render(<VideoControls player={player} />)
     fireEvent.click(getByTestId('VolumeUpOutlinedIcon'))
     expect(mutedStub).toHaveBeenCalled()
     expect(getByTestId('VolumeOffOutlinedIcon')).toBeInTheDocument()
@@ -82,11 +70,7 @@ describe('VideoControls', () => {
       .mockImplementation(() => ({
         requestFullscreen: jest.fn()
       }))
-    const { getByTestId } = render(
-      <VideoControls
-        player={player}
-      />
-    )
+    const { getByTestId } = render(<VideoControls player={player} />)
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
     expect(fullscreenStub).toHaveBeenCalled()
   })
