@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import { ReactElement, useEffect, useState } from 'react'
+import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
@@ -130,33 +131,57 @@ export function VideosPage(): ReactElement {
     <PageWrapper hero={<VideosHero />}>
       <Container maxWidth="xxl">
         <VideosSubHero />
-        <Divider
-          sx={{ height: 2, mb: 12, background: 'rgba(33, 33, 33, 0.08)' }}
-        />
+      </Container>
+
+      <Divider
+        sx={{ height: 2, mb: 12, background: 'rgba(33, 33, 33, 0.08)' }}
+      />
+
+      <Container maxWidth="xxl">
         <CurrentFilters
           languageFilters={languageFilter}
           onDelete={handleRemove}
         />
+
         <Stack
-          direction={{ xs: 'column', md: 'column', lg: 'row' }}
-          spacing={19}
+          direction={{ xs: 'column', xl: 'row' }}
+          spacing={{ xs: 4, xl: 8 }}
         >
-          <Stack direction="column" spacing={5} sx={{ minWidth: '278px' }}>
-            <Divider />
+          <Stack
+            direction="column"
+            spacing={{ xs: 0, xl: 5 }}
+            sx={{ minWidth: '278px', maxWidth: '335px' }}
+          >
+            <Divider
+              sx={{
+                display: { sm: 'none', xl: 'flex' },
+                height: 2,
+                background: 'rgba(33, 33, 33, 0.08)'
+              }}
+            />
             <LanguagesFilter
               onChange={handleChange}
               languages={languagesData?.languages}
               loading={languagesLoading}
             />
-            <Divider />
+            <Divider
+              sx={{
+                display: { sm: 'none', xl: 'flex' },
+                height: 2,
+                background: 'rgba(33, 33, 33, 0.08)'
+              }}
+            />
           </Stack>
 
-          <VideoGrid
-            videos={data?.videos ?? []}
-            onLoadMore={handleLoadMore}
-            loading={loading}
-            hasNextPage={!isEnd}
-          />
+          <Box>
+            <VideoGrid
+              videos={data?.videos ?? []}
+              onLoadMore={handleLoadMore}
+              loading={loading}
+              hasNextPage={!isEnd}
+              variant="expanded"
+            />
+          </Box>
         </Stack>
       </Container>
     </PageWrapper>

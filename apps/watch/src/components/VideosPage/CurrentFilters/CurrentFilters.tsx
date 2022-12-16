@@ -1,7 +1,9 @@
 import { ReactElement } from 'react'
 import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Chip from '@mui/material/Chip'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
@@ -15,15 +17,34 @@ export function CurrentFilters({
   onDelete
 }: Props): ReactElement {
   return (
-    <Stack direction="row" sx={{ alignItems: 'center' }}>
-      <Button startIcon={<FilterListRoundedIcon />}>Filters</Button>
-      {languageFilters.map((language) => (
-        <Chip
-          key={language.id}
-          label={language.nativeName}
-          onDelete={() => onDelete(language)}
-        />
-      ))}
+    <Stack direction="row" spacing={4} sx={{ alignItems: 'center', pb: 7 }}>
+      <Button
+        disabled
+        startIcon={<FilterListRoundedIcon />}
+        sx={{
+          '&.Mui-disabled': { color: '#EF3340' }
+        }}
+      >
+        Filters
+      </Button>
+
+      <Box sx={{ display: 'flex', overflow: 'scroll' }}>
+        {languageFilters.map((language) => (
+          // TODO: chip is inheriting a transparency from somewhere
+          <Chip
+            key={language.id}
+            variant="outlined"
+            color="primary"
+            label={language.nativeName}
+            deleteIcon={<CloseRoundedIcon fontSize="small" />}
+            onDelete={() => onDelete(language)}
+            sx={{
+              mr: 3,
+              border: '1px solid #DCDAD2'
+            }}
+          />
+        ))}
+      </Box>
     </Stack>
   )
 }
