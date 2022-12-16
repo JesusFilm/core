@@ -41,33 +41,29 @@ export function VideoControls({ player }: VideoControlProps): ReactElement {
     })
     player.on('timeupdate', () => {
       setCurrentTime(
-        secondsToTimeFormat(player?.currentTime(), { trimZeroes: true })
+        secondsToTimeFormat(player.currentTime(), { trimZeroes: true })
       )
       setProgress(Math.round(player.currentTime()))
     })
+    player.on('volumechange', () => {
+      setMute(player.muted())
+      setVolume(player.volume() * 100)
+    })
     player.on('fullscreenchange', () => {
-      if (!player.isFullscreen()) {
-        setFullscreen(false)
-      }
-      if (player.isFullscreen()) {
-        setFullscreen(true)
-      }
+      setFullscreen(player.isFullscreen())
     })
   }, [player, setFullscreen])
 
   function handlePlay(): void {
     if (!play) {
-      setPlay(true)
       void player.play()
     } else {
-      setPlay(false)
-      player.pause()
+      void player.pause()
     }
   }
 
   function handleFullscreen(): void {
     if (!fullscreen) {
-      setFullscreen(true)
       player.requestFullscreen()
     }
   }
@@ -80,8 +76,7 @@ export function VideoControls({ player }: VideoControlProps): ReactElement {
   }
 
   function handleMute(): void {
-    setMute(!mute)
-    player?.muted(!mute)
+    player.muted(!mute)
   }
 
   function handleVolume(_event: Event, value: number | number[]): void {
