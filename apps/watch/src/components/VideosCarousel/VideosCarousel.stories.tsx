@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography'
 import { Story, Meta } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { watchConfig } from '../../libs/storybook'
-import { CarouselItem } from '../Video/CarouselItem'
+import { VideoCard } from '../VideoCard'
 import { videos } from '../Videos/testData'
 import { VideosCarousel } from './VideosCarousel'
 
@@ -32,8 +32,8 @@ const Template: Story<ComponentProps<typeof VideosCarousel>> = ({
 export const Default = Template.bind({})
 Default.args = {
   videos,
-  renderItem: (props: Parameters<typeof CarouselItem>[0]) => {
-    return <CarouselItem {...props} />
+  renderItem: (props: Parameters<typeof VideoCard>[0]) => {
+    return <VideoCard {...props} />
   }
 }
 

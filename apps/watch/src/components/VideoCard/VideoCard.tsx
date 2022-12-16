@@ -89,6 +89,7 @@ export function VideoCard({
             <Layer
               className="MuiImageBackground-root"
               sx={{
+                // border: '1px solid rgba(255,255,255, 0.16)',
                 background: 'rgba(0,0,0,0.5)',
                 transition: (theme) => theme.transitions.create('transform')
               }}
@@ -247,7 +248,12 @@ export function VideoCard({
               {index != null && (
                 <Typography variant="overline2" sx={{ opacity: 0.5 }}>
                   {video != null ? (
-                    `${label} ${index + 1}`
+                    `${label} ${
+                      video.label === VideoLabel.episode ||
+                      video.label === VideoLabel.segment
+                        ? index + 1
+                        : ''
+                    }`.trim()
                   ) : (
                     <Skeleton
                       width="20%"

@@ -1,58 +1,33 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { ReactElement, useState } from 'react'
 import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
 import SaveAlt from '@mui/icons-material/SaveAlt'
 import Share from '@mui/icons-material/Share'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
+import 'video.js/dist/video-js.css'
 
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
-import { VideosCarousel } from '../VideosCarousel/VideosCarousel'
-import { CarouselItem } from '../Video/CarouselItem/CarouselItem'
 import { DownloadDialog } from '../DownloadDialog'
 import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
+import { VideoContentCarousel } from './VideoContentCarousel'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
-  const { variant, children } = useVideo()
+  const { variant, container } = useVideo()
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
+
+  console.log(container)
 
   return (
     <PageWrapper hero={<VideoHero />}>
       <>
-        <ThemeProvider
-          themeName={ThemeName.website}
-          themeMode={ThemeMode.dark}
-          nested
-        >
-          <Paper elevation={0} square sx={{ pt: '20px' }}>
-            {/* TODO: combine content and container children? */}
-            {children.length > 0 && (
-              <VideosCarousel
-                videos={children}
-                renderItem={(props: Parameters<typeof CarouselItem>[0]) => {
-                  return <CarouselItem {...props} />
-                }}
-              />
-            )}
-            {/* {container != null && container.children.length > 0 && (
-              <VideosCarousel
-                videos={container.children}
-                renderItem={(props: Parameters<typeof CarouselItem>[0]) => {
-                  return <CarouselItem {...props} />
-                }}
-              />
-            )} */}
-          </Paper>
-        </ThemeProvider>
+        <VideoContentCarousel />
         <Container maxWidth="xxl">
           <Stack
             direction="row"
@@ -95,7 +70,6 @@ export function VideoContentPage(): ReactElement {
             onClose={() => setOpenShare(false)}
           />
         </Container>
-        <Divider />
       </>
     </PageWrapper>
   )
