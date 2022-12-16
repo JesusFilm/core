@@ -184,7 +184,7 @@ export function VideosCarousel({
         {/* Slides */}
         {videos.map((video, index) => (
           <SwiperSlide key={index} style={{ transition: '.35s all ease' }}>
-            {renderItem({ video, index, active: activeVideo === video.id })}
+            {renderItem({ ...video })}
           </SwiperSlide>
         ))}
         {/* Navigation overlay */}
