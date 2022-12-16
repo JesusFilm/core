@@ -21,7 +21,6 @@ export default async function Handler(
 ): Promise<void> {
   const { videoId, languageId } = req.query
   const apolloClient = createApolloClient()
-  // call graphql for required video
   const { data } = await apolloClient.query<GetVideo>({
     query: GET_VIDEO,
     variables: {
@@ -29,10 +28,9 @@ export default async function Handler(
       languageId: (languageId as string).replace(/\.html?/, '')
     }
   })
-  // if video then redirect, else return 404
   if (data.video?.variant?.slug != null) {
     res.redirect(302, `/${data.video.variant.slug}`)
   } else {
-    res.status(404).json({ success: false })
+    res.redirect(302, '/404')
   }
 }
