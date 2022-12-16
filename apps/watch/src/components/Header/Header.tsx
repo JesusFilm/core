@@ -3,6 +3,7 @@ import Container from '@mui/material/Container'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
@@ -34,49 +35,45 @@ export function Header(): ReactElement {
     }
 
   return (
-    <Container
-      sx={{
-        position: 'absolute'
-      }}
-      maxWidth={false}
-      disableGutters
-    >
-      <AppBar
-        position="absolute"
-        sx={{ background: 'transparent', boxShadow: 'none', p: 4 }}
-      >
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <NextLink href="/" passHref>
-            <a>
-              <Image
-                src={logo}
-                width="160"
-                height="40"
-                alt="Watch Logo"
-                style={{ cursor: 'pointer' }}
-              />
-            </a>
-          </NextLink>
-          <Stack spacing={0.5} direction="row">
-            <IconButton
-              color="inherit"
-              aria-label="open header menu"
-              edge="start"
-              onClick={toggleDrawer('top', true)}
-            >
-              <MenuIcon />
-            </IconButton>
-          </Stack>
-        </Toolbar>
-      </AppBar>
-      <SwipeableDrawer
-        anchor="top"
-        open={state.top}
-        onClose={toggleDrawer('top', false)}
-        onOpen={toggleDrawer('top', true)}
-      >
-        <HeaderMenuPanel toggleDrawer={toggleDrawer} />
-      </SwipeableDrawer>
-    </Container>
+    <Box position="relative">
+      <Container maxWidth="xxl" disableGutters>
+        <AppBar
+          sx={{ background: 'transparent', boxShadow: 'none', p: 4 }}
+          position="static"
+        >
+          <Toolbar sx={{ justifyContent: 'space-between' }}>
+            <NextLink href="/" passHref>
+              <a>
+                <Image
+                  src={logo}
+                  width="160"
+                  height="40"
+                  alt="Watch Logo"
+                  style={{ cursor: 'pointer' }}
+                />
+              </a>
+            </NextLink>
+            <Stack spacing={0.5} direction="row">
+              <IconButton
+                color="inherit"
+                aria-label="open header menu"
+                edge="start"
+                onClick={toggleDrawer('top', true)}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Stack>
+          </Toolbar>
+        </AppBar>
+        <SwipeableDrawer
+          anchor="top"
+          open={state.top}
+          onClose={toggleDrawer('top', false)}
+          onOpen={toggleDrawer('top', true)}
+        >
+          <HeaderMenuPanel toggleDrawer={toggleDrawer} />
+        </SwipeableDrawer>
+      </Container>
+    </Box>
   )
 }

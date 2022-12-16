@@ -87,7 +87,7 @@ export function VideoContent(): ReactElement {
         <Typography
           variant="body1"
           color="text.secondary"
-          sx={{ whiteSpace: 'pre-wrap' }}
+          sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
         >
           {description[0]?.value}
         </Typography>
