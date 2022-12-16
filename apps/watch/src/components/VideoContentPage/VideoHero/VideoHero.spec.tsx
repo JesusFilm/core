@@ -1,6 +1,9 @@
 import { render } from '@testing-library/react'
 import { VideoProvider } from '../../../libs/videoContext'
-import { VideoLabel } from '../../../../__generated__/globalTypes'
+import {
+  VideoLabel,
+  VideoVariantDownloadQuality
+} from '../../../../__generated__/globalTypes'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { VideoHero } from './VideoHero'
 
@@ -33,6 +36,20 @@ describe('VideoHero', () => {
           }
         ]
       },
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 13138402,
+          url: 'https://arc.gt/ist3s'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 149736452,
+          url: 'https://arc.gt/zxqki'
+        }
+      ],
       duration: 3680,
       __typename: 'VideoVariant',
       hls: 'https://arc.gt/zbrvj',

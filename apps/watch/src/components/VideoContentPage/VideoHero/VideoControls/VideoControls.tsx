@@ -230,6 +230,9 @@ export function VideoControls({
                 '& .MuiSlider-thumb': {
                   width: 10,
                   height: 10
+                },
+                '& .MuiSlider-rail': {
+                  backgroundColor: 'secondary.main'
                 }
               }}
             />

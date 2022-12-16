@@ -9,6 +9,14 @@ describe('timeFormat', () => {
       expect(secondsToTimeFormat(3600)).toEqual('01:00:00')
       expect(secondsToTimeFormat(3661)).toEqual('01:01:01')
     })
+
+    it('should convert seconds to time format and trim it', () => {
+      expect(secondsToTimeFormat(0, { trimZeroes: true })).toEqual('0:00')
+      expect(secondsToTimeFormat(1, { trimZeroes: true })).toEqual('0:01')
+      expect(secondsToTimeFormat(60, { trimZeroes: true })).toEqual('1:00')
+      expect(secondsToTimeFormat(3600, { trimZeroes: true })).toEqual('1:00:00')
+      expect(secondsToTimeFormat(3661, { trimZeroes: true })).toEqual('1:01:01')
+    })
   })
   describe('timeFormatToSeconds', () => {
     it('should convert time format to seconds', () => {
@@ -18,13 +26,5 @@ describe('timeFormat', () => {
       expect(timeFormatToSeconds('01:00:00')).toEqual(3600)
       expect(timeFormatToSeconds('01:01:01')).toEqual(3661)
     })
-  })
-
-  it('should convert seconds to time format and trim it', () => {
-    expect(secondsToTimeFormat(0, { trimZeroes: true })).toEqual('0:00')
-    expect(secondsToTimeFormat(1, { trimZeroes: true })).toEqual('0:01')
-    expect(secondsToTimeFormat(60, { trimZeroes: true })).toEqual('1:00')
-    expect(secondsToTimeFormat(3600, { trimZeroes: true })).toEqual('1:00:00')
-    expect(secondsToTimeFormat(3661, { trimZeroes: true })).toEqual('1:01:01')
   })
 })
