@@ -3,21 +3,28 @@ import { noop } from 'lodash'
 import { ShareButton } from './ShareButton'
 
 describe('ShareButton', () => {
-  it('should render description text correctly', () => {
+  it('should render share button based on variant correctly', () => {
     const { getByText } = render(
-      <ShareButton value={sampleText} openDialog={noop} />
+      <ShareButton variant="button" openDialog={noop} />
     )
-    expect(getByText(sampleText)).toBeInTheDocument()
+    expect(getByText('Share')).toBeInTheDocument()
+  })
+
+  it('should render icon button based on variant correctly', () => {
+    const { getByLabelText } = render(
+      <ShareButton variant="icon" openDialog={noop} />
+    )
+    expect(getByLabelText('share-icon')).toBeInTheDocument()
   })
 
   it('should execute share button operation', () => {
     const setOpenShare = jest.fn()
 
     const { getByLabelText } = render(
-      <ShareButton value={sampleText} openDialog={setOpenShare} />
+      <ShareButton variant="button" openDialog={setOpenShare} />
     )
 
-    fireEvent.click(getByLabelText('collection-share-button'))
+    fireEvent.click(getByLabelText('share-button'))
     expect(setOpenShare).toHaveBeenCalled()
   })
 })

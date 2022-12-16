@@ -11,12 +11,13 @@ export function ShareButton({
   variant,
   openDialog
 }: ShareButtonProps): ReactElement {
-  return variant !== 'button' ? (
+  return variant === 'button' ? (
     <Button
       variant="outlined"
       startIcon={<ShareOutlinedIcon />}
       size="medium"
       color="secondary"
+      aria-label="share-button"
       onClick={() => openDialog()}
       sx={{
         minWidth: '200px'
@@ -25,7 +26,7 @@ export function ShareButton({
       Share
     </Button>
   ) : (
-    <Button onClick={() => openDialog()}>
+    <Button onClick={() => openDialog()} aria-label="share-icon">
       <ShareOutlinedIcon color="primary" />
     </Button>
   )
