@@ -18,17 +18,13 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { useVideo } from '../../libs/videoContext'
 
 interface ShareDialogProps
-  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
-  routes: string[]
-}
+  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
 
 export function ShareDialog({
-  routes,
   ...dialogProps
 }: ShareDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const { description, snippet, id, image, title, children, slug, container } =
-    useVideo()
+  const { description, snippet, id, image, title, children } = useVideo()
   const [value, setValue] = useState(0)
   const theme = useTheme()
   const router = useRouter()
@@ -45,11 +41,11 @@ export function ShareDialog({
       : ''
 
   const shareLink =
-    routes != null
+    router?.query != null
       ? `${
-          // process.env.NEXT_PUBLIC_WATCH_URL ??
+          process.env.NEXT_PUBLIC_WATCH_URL ??
           'https://watch-jesusfilm.vercel.app'
-        }/${Object.values(router.query).join('/')}`.trim()
+        }/${Object.values(router?.query).join('/')}`.trim()
       : ''
 
   const handleShareLinkClick = async (): Promise<void> => {
@@ -137,7 +133,6 @@ export function ShareDialog({
       divider
     >
       <>
-        {console.log(container, slug, router.query)}
         <Stack
           direction="row"
           spacing={4}
