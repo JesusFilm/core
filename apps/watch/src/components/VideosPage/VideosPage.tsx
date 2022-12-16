@@ -15,6 +15,7 @@ import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 import { LanguagesFilter } from './LanguagesFilter'
 import { CurrentFilters } from './CurrentFilters'
+import { SubtitleLanguagesFilter } from './SubtitleLanguagesFilter'
 
 export const GET_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}
@@ -55,6 +56,9 @@ export function VideosPage(): ReactElement {
   const [isEnd, setIsEnd] = useState(false)
   const [previousCount, setPreviousCount] = useState(0)
   const [languageFilter, setLanguageFilter] = useState<LanguageOption[]>([])
+  const [subtitleLanguageFilter, setSubtitleLanguageFilter] = useState<
+    LanguageOption[]
+  >([])
   const [filter, setFilter] = useState<VideosFilter>(defaultFilter)
 
   const { data, loading, fetchMore, refetch } = useQuery<GetVideos>(
@@ -112,6 +116,20 @@ export function VideosPage(): ReactElement {
     }
   }
 
+  function handleSubtitleChange(selectedLanguage: LanguageOption): void {
+    const activeLanguage = subtitleLanguageFilter.find(
+      (language) => language === selectedLanguage
+    )
+    if (activeLanguage == null) {
+      setSubtitleLanguageFilter([...subtitleLanguageFilter, selectedLanguage])
+      const languageIds = languageFilter.map((language) => language.id)
+      setFilter({
+        ...filter,
+        subtitleLanguageIds: languageIds
+      })
+    }
+  }
+
   function handleRemove(selectedLanguage: LanguageOption): void {
     setLanguageFilter(
       languageFilter.filter((language) => language.id !== selectedLanguage.id)
@@ -142,6 +160,12 @@ export function VideosPage(): ReactElement {
             <Divider />
             <LanguagesFilter
               onChange={handleChange}
+              languages={languagesData?.languages}
+              loading={languagesLoading}
+            />
+            <Divider />
+            <SubtitleLanguagesFilter
+              onChange={handleSubtitleChange}
               languages={languagesData?.languages}
               loading={languagesLoading}
             />
