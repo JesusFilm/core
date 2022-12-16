@@ -1,5 +1,8 @@
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-import { VideoLabel } from '../../../__generated__/globalTypes'
+import {
+  VideoLabel,
+  VideoVariantDownloadQuality
+} from '../../../__generated__/globalTypes'
 
 export const videos: VideoContentFields[] = [
   {
@@ -49,6 +52,20 @@ export const videos: VideoContentFields[] = [
       id: '1_529-jf-0-0',
       duration: 7674,
       hls: 'https://arc.gt/j67rz',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 207296233,
+          url: 'https://arc.gt/y1s23'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 2361587773,
+          url: 'https://arc.gt/7geui'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -1846,6 +1863,20 @@ export const videos: VideoContentFields[] = [
       id: '2_529-GOJ-0-0',
       duration: 10994,
       hls: 'https://arc.gt/u3kd6',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 297742490,
+          url: 'https://arc.gt/fz9kn'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 3384067193,
+          url: 'https://arc.gt/on94p'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -3231,6 +3262,20 @@ export const videos: VideoContentFields[] = [
       id: '1_529-jf6119-0-0',
       duration: 119,
       hls: 'https://arc.gt/69sos',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 3154895,
+          url: 'https://arc.gt/hdbpx'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 36145996,
+          url: 'https://arc.gt/pj47t'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -3289,6 +3334,20 @@ export const videos: VideoContentFields[] = [
       id: '1_529-wl604423-0-0',
       duration: 190,
       hls: 'https://arc.gt/0sgr2',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 297742490,
+          url: 'https://arc.gt/fz9kn'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 3384067193,
+          url: 'https://arc.gt/on94p'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -3327,6 +3386,20 @@ export const videos: VideoContentFields[] = [
       id: '1_529-wl60-0-0',
       duration: 3665,
       hls: 'https://arc.gt/d8p35',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 98929472,
+          url: 'https://arc.gt/v50a9'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 1127091509,
+          url: 'https://arc.gt/29xoy'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -4716,6 +4789,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-wl7-0-0',
       duration: 0,
       hls: null,
+      downloads: [],
       language: {
         __typename: 'Language',
         id: '529',
@@ -4992,6 +5066,20 @@ export const videos: VideoContentFields[] = [
       id: '3_529-0-8DWJ-WIJ_06-0-0',
       duration: 488,
       hls: 'https://arc.gt/xqav7',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 13079055,
+          url: 'https://arc.gt/yx9gl'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 149873025,
+          url: 'https://arc.gt/qr1ht'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -5036,6 +5124,20 @@ export const videos: VideoContentFields[] = [
       id: '2_529-Acts-0-0',
       duration: 11530,
       hls: 'https://arc.gt/6x6ke',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 312095090,
+          url: 'https://arc.gt/1xfta'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 3548570033,
+          url: 'https://arc.gt/8fsak'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -7097,6 +7199,20 @@ export const videos: VideoContentFields[] = [
       id: '2_529-GOJ4904-0-0',
       duration: 213,
       hls: 'https://arc.gt/29cgr',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 5741430,
+          url: 'https://arc.gt/5h7zk'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 65652285,
+          url: 'https://arc.gt/fcuyv'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -7125,6 +7241,7 @@ export const videos: VideoContentFields[] = [
       id: '529-LUMOCollection',
       duration: 0,
       hls: null,
+      downloads: [],
       language: {
         __typename: 'Language',
         id: '529',
@@ -7399,6 +7516,20 @@ export const videos: VideoContentFields[] = [
       id: '2_529-Acts7331-0-0',
       duration: 298,
       hls: 'https://arc.gt/esnsq',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 8038767,
+          url: 'https://arc.gt/91ujt'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 91521131,
+          url: 'https://arc.gt/2hh1p'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -7441,6 +7572,7 @@ export const videos: VideoContentFields[] = [
       id: '3_529-0-8DWJ-WIJ',
       duration: 0,
       hls: null,
+      downloads: [],
       language: {
         __typename: 'Language',
         id: '529',
@@ -7734,6 +7866,20 @@ export const videos: VideoContentFields[] = [
       id: '2_529-ChosenWitness',
       duration: 566,
       hls: 'https://arc.gt/3mcdc',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 15193611,
+          url: 'https://arc.gt/gkvqh'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 172701431,
+          url: 'https://arc.gt/6vvi2'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -7774,6 +7920,7 @@ export const videos: VideoContentFields[] = [
       id: '529-GOLukeCollection',
       duration: 0,
       hls: null,
+      downloads: [],
       language: {
         __typename: 'Language',
         id: '529',
@@ -8528,6 +8675,20 @@ export const videos: VideoContentFields[] = [
       id: '1_529-cl1309-0-0',
       duration: 124,
       hls: 'https://arc.gt/2174d',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 3306004,
+          url: 'https://arc.gt/v21pv'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 38139266,
+          url: 'https://arc.gt/fd0p5'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -8579,6 +8740,20 @@ export const videos: VideoContentFields[] = [
       id: '1_529-jf6102-0-0',
       duration: 223,
       hls: 'https://arc.gt/ijec5',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 5928704,
+          url: 'https://arc.gt/hgxom'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 68130346,
+          url: 'https://arc.gt/9lrr6'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -8637,6 +8812,7 @@ export const videos: VideoContentFields[] = [
       id: '2_529-0-FallingPlates',
       duration: 247,
       hls: 'https://arc.gt/zbrvj',
+      downloads: [],
       language: {
         __typename: 'Language',
         id: '529',
@@ -8691,6 +8867,20 @@ export const videos: VideoContentFields[] = [
       id: '2_529-Acts7345-0-0',
       duration: 369,
       hls: 'https://arc.gt/cpywt',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 9982369,
+          url: 'https://arc.gt/9uhpf'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 113616766,
+          url: 'https://arc.gt/6n6h0'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -8743,6 +8933,20 @@ export const videos: VideoContentFields[] = [
       id: '1_529-mld-0-0',
       duration: 554,
       hls: 'https://arc.gt/1b10x',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 14955855,
+          url: 'https://arc.gt/zquza'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 170469865,
+          url: 'https://arc.gt/xcf7k'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
@@ -8809,6 +9013,20 @@ export const videos: VideoContentFields[] = [
       id: '1_529-jf6101-0-0',
       duration: 488,
       hls: 'https://arc.gt/pm6g1',
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 13138402,
+          url: 'https://arc.gt/ist3s'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 149736452,
+          url: 'https://arc.gt/zxqki'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
