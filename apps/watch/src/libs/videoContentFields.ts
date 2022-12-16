@@ -26,6 +26,11 @@ export const VIDEO_CONTENT_FIELDS = gql`
       id
       duration
       hls
+      downloads {
+        quality
+        size
+        url
+      }
       language {
         id
         name(languageId: $languageId, primary: true) {

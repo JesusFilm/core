@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoLabel } from "./globalTypes";
+import { VideoLabel, VideoVariantDownloadQuality } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: VideoContentFields
@@ -32,6 +32,13 @@ export interface VideoContentFields_studyQuestions {
 export interface VideoContentFields_title {
   __typename: "Translation";
   value: string;
+}
+
+export interface VideoContentFields_variant_downloads {
+  __typename: "VideoVariantDownload";
+  quality: VideoVariantDownloadQuality;
+  size: number;
+  url: string;
 }
 
 export interface VideoContentFields_variant_language_name {
@@ -69,6 +76,7 @@ export interface VideoContentFields_variant {
   id: string;
   duration: number;
   hls: string | null;
+  downloads: VideoContentFields_variant_downloads[];
   language: VideoContentFields_variant_language;
   /**
    * slug is a permanent link to the video variant.

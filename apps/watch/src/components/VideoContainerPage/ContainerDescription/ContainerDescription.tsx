@@ -20,7 +20,11 @@ export function ContainerDescription({
       alignItems="flex-start"
       spacing={4}
     >
-      <Typography variant="subtitle1" color="text.primary">
+      <Typography
+        variant="subtitle1"
+        color="text.primary"
+        sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+      >
         {value}
       </Typography>
       <Button
