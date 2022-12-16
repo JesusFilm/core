@@ -49,11 +49,7 @@ export function VideoContainerPage(): ReactElement {
               value={snippet[0].value}
               openDialog={handleOpenDialog}
             />
-            <ShareDialog
-              open={shareDialog}
-              routes={routeArray}
-              onClose={handleCloseDialog}
-            />
+            <ShareDialog open={shareDialog} onClose={handleCloseDialog} />
             <Box>
               <VideoGrid
                 containerSlug={video.slug}
