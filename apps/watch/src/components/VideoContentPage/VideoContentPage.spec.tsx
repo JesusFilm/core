@@ -5,6 +5,7 @@ import {
   VideoContentFields,
   VideoContentFields_children
 } from '../../../__generated__/VideoContentFields'
+import { VideoVariantDownloadQuality } from '../../../__generated__/globalTypes'
 import { VideoProvider } from '../../libs/videoContext'
 import { VideoContentPage } from '.'
 
@@ -23,6 +24,20 @@ const video = {
   variant: {
     hls: '',
     duration: 100,
+    downloads: [
+      {
+        __typename: 'VideoVariantDownload',
+        quality: VideoVariantDownloadQuality.low,
+        size: 207296233,
+        url: 'https://arc.gt/y1s23'
+      },
+      {
+        __typename: 'VideoVariantDownload',
+        quality: VideoVariantDownloadQuality.high,
+        size: 2361587773,
+        url: 'https://arc.gt/7geui'
+      }
+    ],
     slug: '2_video-0-0/english'
   },
   children: [{ id: 'child.id' } as unknown as VideoContentFields_children]
