@@ -22,11 +22,7 @@ export function SeeAllVideos(): ReactElement {
         alignItems="flex-start"
         spacing={4}
       >
-        <Typography
-          sx={{ typography: { xs: 'h5', sm: 'h4', md: 'h3', lg: 'h2' } }}
-        >
-          +53 Short Evangelical Films
-        </Typography>
+        <Typography variant="h2">+53 Short Evangelical Films</Typography>
         <>
           <Link href="/videos" passHref>
             <Button
