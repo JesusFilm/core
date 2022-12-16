@@ -14,7 +14,7 @@ export function LanguagesFilter(
     <TextField
       {...params}
       label="Search Languages"
-      variant="filled"
+      variant="outlined"
       helperText="+2000 languages"
       InputProps={{
         ...params.InputProps,
