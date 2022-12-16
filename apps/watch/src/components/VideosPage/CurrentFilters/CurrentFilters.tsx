@@ -18,6 +18,7 @@ export function CurrentFilters({
 }: Props): ReactElement {
   return (
     <Stack direction="row" spacing={4} sx={{ alignItems: 'center', pb: 7 }}>
+      {/* Button will be functional when more filtering is added */}
       <Button
         disabled
         startIcon={<FilterListRoundedIcon />}
@@ -29,11 +30,12 @@ export function CurrentFilters({
       </Button>
 
       <Box sx={{ display: 'flex', overflow: 'scroll' }}>
+        {/* TODO: scroll bar not showing up  */}
         {languageFilters.map((language) => (
-          // TODO: chip is inheriting a transparency from somewhere
           <Chip
             key={language.id}
             variant="outlined"
+            // TODO: chip is inheriting a transparency from somewhere
             color="primary"
             label={language.nativeName}
             deleteIcon={<CloseRoundedIcon fontSize="small" />}
