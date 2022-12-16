@@ -15,7 +15,6 @@ import { firebaseClient } from '../src/libs/firebaseClient'
 import { useApolloClient } from '../src/libs/client'
 import '../public/fonts/fonts.css'
 import '../public/styles/carousel.css'
-import 'video.js/dist/video-js.css'
 import '../public/styles/video-js.css'
 
 const clientSideEmotionCache = createEmotionCache({})

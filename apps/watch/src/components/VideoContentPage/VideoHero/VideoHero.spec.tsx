@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import { VideoProvider } from '../../../libs/videoContext'
 import {
   VideoLabel,
@@ -64,12 +64,17 @@ describe('VideoHero', () => {
     slug: 'the-story-of-jesus-for-children'
   }
 
-  it('should render the video through variant hls', async () => {
-    const { getByTestId } = render(
+  it('should render the video hero', () => {
+    const { getByText, queryByText, getAllByRole, getByTestId } = render(
       <VideoProvider value={{ content: video }}>
         <VideoHero />
       </VideoProvider>
     )
-    getByTestId('video-1_cl-0-0').querySelector('.vjs-tech source')
+    expect(getByText('The Story of Jesus for Children')).toBeInTheDocument()
+    fireEvent.click(getAllByRole('button')[0])
+    expect(
+      queryByText('The Story of Jesus for Children')
+    ).not.toBeInTheDocument()
+    expect(getByTestId('vjs-jfp-custom-controls')).toBeInTheDocument()
   })
 })

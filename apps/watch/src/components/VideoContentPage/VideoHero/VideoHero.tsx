@@ -4,55 +4,20 @@ import videojs from 'video.js'
 import { useVideo } from '../../../libs/videoContext'
 import { VideoControls } from './VideoControls'
 import { VideoHeroOverlay } from './VideoHeroOverlay'
+import 'video.js/dist/video-js.css'
 
 export function VideoHero(): ReactElement {
-  const { id, variant } = useVideo()
+  const { variant } = useVideo()
   const [isPlaying, setIsPlaying] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
 
-  // TODO: custom buttons to be removed once fullscreen page is implemented
-  const ControlButton = videojs.getComponent('Button')
-
-  class AudioControl extends ControlButton {
-    constructor(player, options) {
-      super(player, options)
-      this.addClass('vjs-audio-button')
-      this.controlText(player.localize('Audio Language'))
-    }
-
-    handleClick(): void {
-      alert('open Audio Dialog')
-    }
-  }
-
-  class SubtitleControl extends ControlButton {
-    constructor(player, options) {
-      super(player, options)
-      this.addClass('vjs-subtitles-button')
-      this.controlText(player.localize('Subtitle'))
-    }
-
-    handleClick(): void {
-      alert('open Subtitle Dialog')
-    }
-  }
-
-  videojs.registerComponent('audioControl', AudioControl)
-  videojs.registerComponent('subtitleControl', SubtitleControl)
-
   useEffect(() => {
-    if (videoRef.current != null && variant?.hls != null) {
+    if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         autoplay: false,
         controls: true,
-        sources: [
-          {
-            src: variant?.hls,
-            type: 'application/x-mpegURL'
-          }
-        ],
         userActions: {
           hotkeys: true,
           doubleClick: true
@@ -66,16 +31,7 @@ export function VideoHero(): ReactElement {
           fullscreenToggle: true,
           volumePanel: {
             inline: false
-          },
-          children: [
-            'playToggle',
-            'progressControl',
-            'remainingTimeDisplay',
-            'volumePanel',
-            'audioControl',
-            'subtitleControl',
-            'fullscreenToggle'
-          ]
+          }
         },
         responsive: true
       })
@@ -100,7 +56,6 @@ export function VideoHero(): ReactElement {
 
   return (
     <Box
-      data-testid={`video-${id}`}
       sx={{
         width: '100%',
         height: { xs: 502, lg: 777 },
