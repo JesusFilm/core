@@ -75,8 +75,8 @@ describe('VideoContainerPage', () => {
         </VideoProvider>
       </SnackbarProvider>
     )
-    expect(getByLabelText('collection-share-button')).toBeInTheDocument()
-    fireEvent.click(getByLabelText('collection-share-button'))
+    expect(getByLabelText('share-button')).toBeInTheDocument()
+    fireEvent.click(getByLabelText('share-button'))
     expect(
       getByRole('dialog', { name: 'Share this video' })
     ).toBeInTheDocument()
