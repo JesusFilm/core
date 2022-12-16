@@ -4,6 +4,8 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import Image from 'next/image'
+import background from '../../../../public/images/videos-hero.png'
 
 export function VideosHero(): ReactElement {
   return (
@@ -14,23 +16,24 @@ export function VideosHero(): ReactElement {
     >
       <Box
         sx={{
-          backgroundImage: `url(/images/videos-hero.png)`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          height: 340,
-          mb: 12
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'flex-end',
+          height: 340
         }}
       >
-        <Container
-          maxWidth="xxl"
-          style={{
-            position: 'absolute',
-            top: 194,
-            margin: 0,
-            textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)'
-          }}
-        >
-          <Typography variant="h2" color="text.primary">
+        <Image
+          src={background}
+          layout="fill"
+          objectFit="cover"
+          alt="hero background"
+        />
+        <Container maxWidth="xxl" sx={{ pb: 11, zIndex: 1 }}>
+          <Typography
+            variant="h2"
+            color="text.primary"
+            sx={{ textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)' }}
+          >
             Our full collection
           </Typography>
         </Container>
