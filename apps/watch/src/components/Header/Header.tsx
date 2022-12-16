@@ -35,7 +35,7 @@ export function Header(): ReactElement {
     }
 
   return (
-    <Box position="relative">
+    <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 2 }}>
       <Container maxWidth="xxl" disableGutters>
         <AppBar
           sx={{ background: 'transparent', boxShadow: 'none', p: 4 }}
