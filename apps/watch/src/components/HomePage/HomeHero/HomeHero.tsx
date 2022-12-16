@@ -14,7 +14,8 @@ export function HomeHero(): ReactElement {
         width: '100%',
         display: 'flex',
         alignItems: 'center',
-        position: 'relative'
+        position: 'relative',
+        backgroundColor: 'background.default'
       }}
     >
       <Image
