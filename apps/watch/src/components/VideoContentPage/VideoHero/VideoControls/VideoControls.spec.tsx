@@ -3,8 +3,6 @@ import videojs from 'video.js'
 import { VideoControls } from './VideoControls'
 
 describe('VideoControls', () => {
-  const setFullscreen = jest.fn()
-
   let player
   beforeEach(() => {
     const video = document.createElement('video')
@@ -44,8 +42,6 @@ describe('VideoControls', () => {
     const { getByTestId } = render(
       <VideoControls
         player={player}
-        fullscreen={false}
-        setFullscreen={setFullscreen}
       />
     )
     fireEvent.click(getByTestId('PlayArrowRoundedIcon'))
@@ -59,8 +55,6 @@ describe('VideoControls', () => {
     const { getByTestId } = render(
       <VideoControls
         player={player}
-        fullscreen={false}
-        setFullscreen={setFullscreen}
       />
     )
     fireEvent.click(getByTestId('PlayArrowRoundedIcon'))
@@ -75,8 +69,6 @@ describe('VideoControls', () => {
     const { getByTestId } = render(
       <VideoControls
         player={player}
-        fullscreen={false}
-        setFullscreen={setFullscreen}
       />
     )
     fireEvent.click(getByTestId('VolumeUpOutlinedIcon'))
@@ -93,8 +85,6 @@ describe('VideoControls', () => {
     const { getByTestId } = render(
       <VideoControls
         player={player}
-        fullscreen={false}
-        setFullscreen={setFullscreen}
       />
     )
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))

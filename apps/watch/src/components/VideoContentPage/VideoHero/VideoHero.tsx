@@ -9,7 +9,6 @@ import 'video.js/dist/video-js.css'
 export function VideoHero(): ReactElement {
   const { variant } = useVideo()
   const [isPlaying, setIsPlaying] = useState(false)
-  const [fullscreen, setFullscreen] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
 
@@ -66,7 +65,10 @@ export function VideoHero(): ReactElement {
           display: 'none'
         },
         '> .video-js .vjs-control-bar': {
-          display: fullscreen ? 'flex' : 'none'
+          display: 'none'
+        },
+        '> .video-js.vjs-fullscreen .vjs-control-bar': {
+          display: 'flex'
         }
       }}
     >
@@ -82,11 +84,7 @@ export function VideoHero(): ReactElement {
         />
       )}
       {playerRef.current != null && isPlaying && (
-        <VideoControls
-          player={playerRef.current}
-          fullscreen={fullscreen}
-          setFullscreen={(value: boolean) => setFullscreen(value)}
-        />
+        <VideoControls player={playerRef.current} />
       )}
       {!isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />}
     </Box>

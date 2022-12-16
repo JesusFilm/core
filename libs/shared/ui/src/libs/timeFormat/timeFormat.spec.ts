@@ -15,9 +15,9 @@ describe('timeFormat', () => {
       expect(secondsToTimeFormat(0, { trimZeroes: true })).toEqual('0:00')
       expect(secondsToTimeFormat(1, { trimZeroes: true })).toEqual('0:01')
       expect(secondsToTimeFormat(60, { trimZeroes: true })).toEqual('1:00')
-      expect(secondsToTimeFormat(NaN, { trimZeroes: true })).toEqual('0:00')
       expect(secondsToTimeFormat(3600, { trimZeroes: true })).toEqual('1:00:00')
       expect(secondsToTimeFormat(3661, { trimZeroes: true })).toEqual('1:01:01')
+      expect(secondsToTimeFormat(NaN, { trimZeroes: true })).toEqual('0:00')
     })
   })
   describe('timeFormatToSeconds', () => {

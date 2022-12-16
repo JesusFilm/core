@@ -18,20 +18,15 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 interface VideoControlProps {
   player: videojs.Player
-  fullscreen: boolean
-  setFullscreen: (fullscreen: boolean) => void
 }
 
-export function VideoControls({
-  player,
-  fullscreen,
-  setFullscreen
-}: VideoControlProps): ReactElement {
+export function VideoControls({ player }: VideoControlProps): ReactElement {
   const [play, setPlay] = useState(false)
   const [currentTime, setCurrentTime] = useState<string>()
   const [progress, setProgress] = useState(0)
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
+  const [fullscreen, setFullscreen] = useState(false)
 
   const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
   const durationSeconds = Math.round(player.duration())
@@ -68,16 +63,6 @@ export function VideoControls({
       setPlay(false)
       player.pause()
     }
-  }
-
-  function handleLanguage(): void {
-    // call subtitle dialog
-    alert('language dialog')
-  }
-
-  function handleSubtitles(): void {
-    // call subtitle dialog
-    alert('subtitle dialog')
   }
 
   function handleFullscreen(): void {
@@ -237,10 +222,10 @@ export function VideoControls({
               }}
             />
           </Stack>
-          <IconButton onClick={handleLanguage}>
+          <IconButton>
             <LanguageRounded />
           </IconButton>
-          <IconButton onClick={handleSubtitles}>
+          <IconButton>
             <SubtitlesOutlined />
           </IconButton>
           <IconButton onClick={handleFullscreen}>
