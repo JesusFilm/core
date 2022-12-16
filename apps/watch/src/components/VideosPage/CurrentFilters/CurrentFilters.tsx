@@ -20,7 +20,7 @@ export function CurrentFilters({
       {languageFilters.map((language) => (
         <Chip
           key={language.id}
-          label={language.localName}
+          label={language.nativeName}
           onDelete={() => onDelete(language)}
         />
       ))}

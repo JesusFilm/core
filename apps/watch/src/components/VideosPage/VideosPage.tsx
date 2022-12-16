@@ -103,8 +103,9 @@ export function VideosPage(): ReactElement {
       (language) => language === selectedLanguage
     )
     if (activeLanguage == null) {
-      setLanguageFilter([...languageFilter, selectedLanguage])
-      const languageIds = languageFilter.map((language) => language.id)
+      const updatedFilters = [...languageFilter, selectedLanguage]
+      setLanguageFilter(updatedFilters)
+      const languageIds = updatedFilters.map((language) => language.id)
       setFilter({
         ...filter,
         availableVariantLanguageIds: languageIds
@@ -113,13 +114,15 @@ export function VideosPage(): ReactElement {
   }
 
   function handleRemove(selectedLanguage: LanguageOption): void {
-    setLanguageFilter(
-      languageFilter.filter((language) => language.id !== selectedLanguage.id)
+    const updatedFilters = languageFilter.filter(
+      (language) => language.id !== selectedLanguage.id
     )
-    const languageIds = languageFilter.map((language) => language.id)
+    setLanguageFilter(updatedFilters)
+    const languageIds = updatedFilters.map((language) => language.id)
     setFilter({
       ...filter,
-      availableVariantLanguageIds: languageIds
+      availableVariantLanguageIds:
+        languageIds.length === 0 ? undefined : languageIds
     })
   }
 
