@@ -84,7 +84,10 @@ export function VideoHero(): ReactElement {
         />
       )}
       {playerRef.current != null && isPlaying && (
-        <VideoControls player={playerRef.current} />
+        <VideoControls
+          player={playerRef.current}
+          subtitles={variant?.subtitle}
+        />
       )}
       {!isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />}
     </Box>

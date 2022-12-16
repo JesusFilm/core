@@ -1,4 +1,4 @@
-import { ReactElement, ComponentProps, MutableRefObject, useState } from 'react'
+import { ReactElement, ComponentProps, useState } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import TextField from '@mui/material/TextField'
 import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
@@ -7,24 +7,25 @@ import {
   LanguageAutocomplete
 } from '@core/shared/ui/LanguageAutocomplete'
 import { VideoJsPlayer } from 'video.js'
-import { useVideo } from '../../libs/videoContext'
+import { VideoContentFields_variant_subtitle } from '../../../__generated__/VideoContentFields'
 
 interface SubtitleDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
-  playerRef: MutableRefObject<VideoJsPlayer | undefined>
+  player: VideoJsPlayer
+  subtitles: VideoContentFields_variant_subtitle[] | undefined
 }
 
 export function SubtitleDialog({
   open,
   onClose,
-  playerRef
+  player,
+  subtitles
 }: SubtitleDialogProps): ReactElement {
-  const { variant } = useVideo()
-  const languages = variant?.subtitle?.map(
+  const [selected, setSelected] = useState<Language | undefined>(undefined)
+
+  const languages = subtitles?.map(
     ({ language }) => language
   ) as unknown as Language[]
-
-  const [selected, setSelected] = useState<Language | undefined>(undefined)
 
   const handleChange = (result): void => {
     setSelected(result)
@@ -32,11 +33,9 @@ export function SubtitleDialog({
   }
 
   function updateSubtitle(id): void {
-    const selected = variant?.subtitle?.find(
-      (subtitle) => subtitle.language.id === id
-    )
+    const selected = subtitles?.find((subtitle) => subtitle.language.id === id)
 
-    playerRef?.current?.addRemoteTextTrack(
+    player.addRemoteTextTrack(
       {
         id: id,
         src: selected?.value,
@@ -51,11 +50,10 @@ export function SubtitleDialog({
       },
       true
     )
-    const tracks = playerRef?.current?.textTracks() ?? []
+    const tracks = player.textTracks() ?? []
 
     for (let i = 0; i < tracks.length; i++) {
       const track = tracks[i]
-
       if (track.id === id) {
         track.mode = 'showing'
       } else {
@@ -72,7 +70,8 @@ export function SubtitleDialog({
       onClose={onClose}
       dialogTitle={{
         icon: <SubtitlesOutlined sx={{ mr: 3 }} />,
-        title: 'Subtitles'
+        title: 'Subtitles',
+        closeButton: true
       }}
       divider
     >

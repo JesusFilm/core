@@ -15,18 +15,25 @@ import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
 import LanguageRounded from '@mui/icons-material/LanguageRounded'
 import FullscreenOutlined from '@mui/icons-material/FullscreenOutlined'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+import { SubtitleDialog } from '../../../SubtitleDialog'
+import { VideoContentFields_variant_subtitle } from '../../../../../__generated__/VideoContentFields'
 
 interface VideoControlProps {
   player: videojs.Player
+  subtitles: VideoContentFields_variant_subtitle[] | undefined
 }
 
-export function VideoControls({ player }: VideoControlProps): ReactElement {
+export function VideoControls({
+  player,
+  subtitles
+}: VideoControlProps): ReactElement {
   const [play, setPlay] = useState(false)
   const [currentTime, setCurrentTime] = useState<string>()
   const [progress, setProgress] = useState(0)
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
+  const [openSubtitle, setOpenSubtitle] = useState(false)
 
   const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
   const durationSeconds = Math.round(player.duration())
@@ -220,7 +227,7 @@ export function VideoControls({ player }: VideoControlProps): ReactElement {
           <IconButton>
             <LanguageRounded />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={() => setOpenSubtitle(true)}>
             <SubtitlesOutlined />
           </IconButton>
           <IconButton onClick={handleFullscreen}>
@@ -228,6 +235,12 @@ export function VideoControls({ player }: VideoControlProps): ReactElement {
           </IconButton>
         </Stack>
       </Stack>
+      <SubtitleDialog
+        open={openSubtitle}
+        player={player}
+        subtitles={subtitles}
+        onClose={() => setOpenSubtitle(false)}
+      />
     </Container>
   )
 }

@@ -47,8 +47,16 @@ const video: VideoContentFields = {
           bcp47: 'ar',
           id: '22658',
           name: [
-            { __typename: 'Translation', value: ' اللغة العربية' },
-            { __typename: 'Translation', value: 'Arabic, Modern Standard' }
+            {
+              __typename: 'Translation',
+              value: ' اللغة العربية',
+              primary: true
+            },
+            {
+              __typename: 'Translation',
+              value: 'Arabic, Modern Standard',
+              primary: false
+            }
           ]
         },
         value:
