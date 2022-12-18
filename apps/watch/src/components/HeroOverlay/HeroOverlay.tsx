@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
-import GrainTexture from '../../../public/images/grain-texture.png'
+import GrainTexture from '../../../public/images/grain-texture.svg'
 
 export function HeroOverlay(): ReactElement {
   return (
@@ -21,7 +21,7 @@ export function HeroOverlay(): ReactElement {
           position: 'absolute',
           height: '100%',
           width: '100%',
-          backgroundImage: `url(${GrainTexture})`,
+          backgroundImage: `url(${GrainTexture.src as string})`,
           backgroundRepeat: 'repeat'
         }}
       />
