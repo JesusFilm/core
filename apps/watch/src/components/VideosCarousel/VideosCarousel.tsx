@@ -1,6 +1,7 @@
 import { ReactElement, ReactNode, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Navigation, A11y } from 'swiper'
+import Box from '@mui/system/Box'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 
@@ -11,6 +12,7 @@ type auto = 'auto'
 
 interface VideosCarouselProps {
   videos: VideoChildFields[]
+  activeVideo: string
   renderItem: (props: unknown) => ReactNode
 }
 
@@ -27,6 +29,7 @@ type SwiperExtended = SwiperCore & {
 
 export function VideosCarousel({
   videos,
+  activeVideo,
   renderItem
 }: VideosCarouselProps): ReactElement {
   const minPageMargin = 24
@@ -119,98 +122,101 @@ export function VideosCarousel({
   }
 
   return (
-    <Swiper
-      // TODO: Use wrapperClass after updating Swiper version. Currently not supported for swiper/react
-      className="jfp-watch"
-      data-testid="videos-carousel"
-      {...mobileSlideConfig}
-      breakpoints={{
-        1200: { ...laptopSlideConfig, spaceBetween: 20 },
-        1400: { ...desktopSlideConfig, spaceBetween: 12 },
-        // Need config at each breakpoint as resizing causes issues
-        // Hides gap between rightmost slide and right edge of screen
-        1552: { ...desktopSlideConfig, spaceBetween: 22 },
-        1600: {
-          ...desktopSlideConfig,
-          spaceBetween: 20
-        },
-        1800: { ...desktopSlideConfig, spaceBetween: 20 },
-        2000: {
-          ...desktopSlideConfig,
-          slidesPerGroup: 7,
-          spaceBetween: 20
-        },
-        2080: {
-          ...desktopSlideConfig,
-          slidesPerGroup: 7,
-          spaceBetween: 22
-        }
-        // TODO: fix gap issue on extra-wide screens
-      }}
-      // TODO: Dynamic speed based on number of slides transformed
-      speed={850}
-      // Set custom navigation
-      navigation={{
-        nextEl: '.jfp-button-next',
-        prevEl: '.jfp-button-prev'
-      }}
-      // Swiper disables navigation when few slides
-      watchOverflow
-      // Set spacing at carousel end.
-      slidesOffsetAfter={minPageMargin}
-      onSlideChangeTransitionEnd={(swiper: SwiperExtended) => {
-        updateMarginLeftOffset(swiper)
-        updateSlidesAlignment(swiper)
-      }}
-      // On resize and init, update spacing and nav features
-      onResize={(swiper: SwiperExtended) => {
-        updateMarginLeftOffset(swiper)
-        updateSlidesAlignment(swiper)
-        updateShowHideNav(swiper)
-        updateSnapGrid(swiper)
-      }}
-      onSwiper={(swiper: SwiperExtended) => {
-        updateMarginLeftOffset(swiper)
-        updateSlidesAlignment(swiper)
-        updateShowHideNav(swiper)
-        updateSnapGrid(swiper)
-      }}
-    >
-      {/* Slides */}
-      {videos.map((video, index) => (
-        <SwiperSlide key={index} style={{ transition: '.35s all ease' }}>
-          {renderItem({ ...video })}
-        </SwiperSlide>
-      ))}
-      {/* Navigation overlay */}
-      <Stack
-        direction="row"
-        sx={{
-          // transition: 'opacity 0.5s ease',
-          opacity: { xs: 0, xl: overflowSlides ? 1 : 0 },
-          position: 'absolute',
-          zIndex: 1,
-          top: 0,
-          width: '100%',
-          // Prefer fixed heights over using callbacks to retrieve dynamic carousel item image height.
-          height: {
-            xl: '152.5px',
-            xxl: '113.5px'
+    <Box data-testid="videos-carousel">
+      <Swiper
+        // TODO: Use wrapperClass after updating Swiper version. Currently not supported for swiper/react
+        className="jfp-watch"
+        {...mobileSlideConfig}
+        breakpoints={{
+          1200: { ...laptopSlideConfig, spaceBetween: 20 },
+          1400: { ...desktopSlideConfig, spaceBetween: 12 },
+          // Need config at each breakpoint as resizing causes issues
+          // Hides gap between rightmost slide and right edge of screen
+          1552: { ...desktopSlideConfig, spaceBetween: 22 },
+          1600: {
+            ...desktopSlideConfig,
+            spaceBetween: 20
           },
-          [theme.breakpoints.up(1600)]: {
-            height: '131.5px'
+          1800: { ...desktopSlideConfig, spaceBetween: 20 },
+          2000: {
+            ...desktopSlideConfig,
+            slidesPerGroup: 7,
+            spaceBetween: 20
           },
-          [theme.breakpoints.up(1800)]: {
-            height: '147.5px'
-          },
-          [theme.breakpoints.up(2000)]: {
-            height: '115px'
+          2080: {
+            ...desktopSlideConfig,
+            slidesPerGroup: 7,
+            spaceBetween: 22
           }
+          // TODO: fix gap issue on extra-wide screens
+        }}
+        // TODO: Dynamic speed based on number of slides transformed
+        speed={850}
+        // Set custom navigation
+        navigation={{
+          nextEl: '.jfp-button-next',
+          prevEl: '.jfp-button-prev'
+        }}
+        // Swiper disables navigation when few slides
+        watchOverflow
+        // Set spacing at carousel end.
+        slidesOffsetAfter={minPageMargin}
+        onSlideChangeTransitionEnd={(swiper: SwiperExtended) => {
+          console.log('slide change', swiper)
+          updateMarginLeftOffset(swiper)
+          updateSlidesAlignment(swiper)
+        }}
+        // On resize and init, update spacing and nav features
+        onResize={(swiper: SwiperExtended) => {
+          updateMarginLeftOffset(swiper)
+          updateSlidesAlignment(swiper)
+          updateShowHideNav(swiper)
+          updateSnapGrid(swiper)
+        }}
+        onSwiper={(swiper: SwiperExtended) => {
+          console.log('swiper', swiper)
+          updateMarginLeftOffset(swiper)
+          updateSlidesAlignment(swiper)
+          updateShowHideNav(swiper)
+          updateSnapGrid(swiper)
         }}
       >
-        <VideosCarouselNavButton variant="prev" />
-        <VideosCarouselNavButton variant="next" />
-      </Stack>
-    </Swiper>
+        {/* Slides */}
+        {videos.map((video, index) => (
+          <SwiperSlide key={index} style={{ transition: '.35s all ease' }}>
+            {renderItem({ ...video })}
+          </SwiperSlide>
+        ))}
+        {/* Navigation overlay */}
+        <Stack
+          direction="row"
+          sx={{
+            // transition: 'opacity 0.5s ease',
+            opacity: { xs: 0, xl: overflowSlides ? 1 : 0 },
+            position: 'absolute',
+            zIndex: 1,
+            top: 0,
+            width: '100%',
+            // Prefer fixed heights over using callbacks to retrieve dynamic carousel item image height.
+            height: {
+              xl: '152.5px',
+              xxl: '113.5px'
+            },
+            [theme.breakpoints.up(1600)]: {
+              height: '131.5px'
+            },
+            [theme.breakpoints.up(1800)]: {
+              height: '147.5px'
+            },
+            [theme.breakpoints.up(2000)]: {
+              height: '115px'
+            }
+          }}
+        >
+          <VideosCarouselNavButton variant="prev" />
+          <VideosCarouselNavButton variant="next" />
+        </Stack>
+      </Swiper>
+    </Box>
   )
 }
