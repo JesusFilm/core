@@ -45,7 +45,8 @@ export function VideosPage(): ReactElement {
       offset: 0,
       limit: limit,
       languageId: languageContext?.id ?? '529'
-    }
+    },
+    notifyOnNetworkStatusChange: true
   })
 
   useEffect(() => {

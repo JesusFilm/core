@@ -12,7 +12,7 @@ import { CacheProvider } from '@emotion/react'
 import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { firebaseClient } from '../src/libs/firebaseClient'
-import { useApolloClient } from '../src/libs/client'
+import { useApolloClient } from '../src/libs/apolloClient'
 import '../public/fonts/fonts.css'
 import '../public/styles/carousel.css'
 import '../public/styles/video-js.css'
@@ -51,6 +51,7 @@ export default function WatchApp({
       <DefaultSeo
         titleTemplate="%s | Jesus Film Project"
         defaultTitle="Watch | Jesus Film Project"
+        description="Free Gospel Video Streaming Library. Watch, learn and share the gospel in over 2000 languages."
       />
       <Head>
         <meta

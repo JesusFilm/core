@@ -1,16 +1,16 @@
-import { ReactElement, useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
+import { ReactElement, useRef, useEffect, useState } from 'react'
 import videojs from 'video.js'
-import 'video.js/dist/video-js.css'
-
 import { useVideo } from '../../../libs/videoContext'
+import { VideoControls } from './VideoControls'
 import { VideoHeroOverlay } from './VideoHeroOverlay'
+import 'video.js/dist/video-js.css'
 
 export function VideoHero(): ReactElement {
   const { variant } = useVideo()
+  const [isPlaying, setIsPlaying] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
-  const [isPlaying, setIsPlaying] = useState(false)
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -23,8 +23,6 @@ export function VideoHero(): ReactElement {
         },
         controlBar: {
           playToggle: true,
-          captionsButton: true,
-          subtitlesButton: true,
           remainingTimeDisplay: true,
           progressControl: {
             seekBar: true
@@ -38,11 +36,21 @@ export function VideoHero(): ReactElement {
       })
       playerRef.current.on('play', handlePlay)
     }
-  })
+  }, [variant, playerRef, videoRef])
+
+  useEffect(() => {
+    playerRef.current?.src({
+      src: variant?.hls ?? '',
+      type: 'application/x-mpegURL'
+    })
+    setIsPlaying(false)
+  }, [variant?.hls])
 
   function handlePlay(): void {
     setIsPlaying(true)
-    playerRef?.current?.play()
+    if (playerRef?.current != null) {
+      playerRef?.current?.play()
+    }
   }
 
   return (
@@ -55,6 +63,12 @@ export function VideoHero(): ReactElement {
         position: 'relative',
         '> .video-js .vjs-big-play-button': {
           display: 'none'
+        },
+        '> .video-js .vjs-control-bar': {
+          display: 'none'
+        },
+        '> .video-js.vjs-fullscreen .vjs-control-bar': {
+          display: 'flex'
         }
       }}
     >
@@ -67,9 +81,10 @@ export function VideoHero(): ReactElement {
             position: 'absolute'
           }}
           playsInline
-        >
-          <source src={variant.hls} type="application/x-mpegURL" />
-        </video>
+        />
+      )}
+      {playerRef.current != null && isPlaying && (
+        <VideoControls player={playerRef.current} />
       )}
       {!isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />}
     </Box>
