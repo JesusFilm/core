@@ -2,6 +2,8 @@ export const secondsToTimeFormat = (
   seconds: number,
   options?: { trimZeroes: boolean }
 ): string => {
+  if (Number.isNaN(seconds))
+    return options?.trimZeroes === true ? '0:00' : '00:00:00'
   const date = new Date(seconds * 1000)
   return options?.trimZeroes === true
     ? date.toISOString().substring(11, 19).replace(/^00:/, '').replace(/^0/, '')
