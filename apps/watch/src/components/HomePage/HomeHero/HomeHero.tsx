@@ -24,7 +24,6 @@ export function HomeHero(): ReactElement {
         layout="fill"
         objectFit="cover"
         placeholder="blur"
-        blurDataURL="L6B3c]Mw00*000?b.700_MMxMx-;"
         priority
       />
       <Box
@@ -60,6 +59,7 @@ export function HomeHero(): ReactElement {
           </Stack>
           <Typography
             variant="h5"
+            component="h2"
             color="secondary.contrastText"
             sx={{ opacity: 0.7, pt: 8 }}
           >
