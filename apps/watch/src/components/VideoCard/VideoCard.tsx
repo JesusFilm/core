@@ -149,6 +149,7 @@ export function VideoCard({
               {variant === 'contained' && (
                 <Typography
                   variant="h6"
+                  component="h3"
                   color="primary.contrastText"
                   sx={{
                     textAlign: 'left',
@@ -256,7 +257,7 @@ export function VideoCard({
                   )}
                 </Typography>
               )}
-              <Typography variant="h6">
+              <Typography variant="h6" component="h3">
                 {video != null ? (
                   video?.title[0].value
                 ) : (
