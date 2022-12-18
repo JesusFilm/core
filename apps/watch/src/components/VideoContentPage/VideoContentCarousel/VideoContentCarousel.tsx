@@ -18,17 +18,14 @@ export function VideoContentCarousel(): ReactElement {
   const { id, label, slug, children, container } = useVideo()
   const { query } = useRouter()
 
-  {
-    /* 
+  /* 
     TODO: 
-    - Add button for series and collection
     - Combine content and container children - see retelling-the-good-story
     - Add border based on themeMode
     - Fix height of card images
     - Fix nav overlay preventing nav
     - add tests & stories
     */
-  }
 
   const progressionLabel = useMemo(() => {
     if (container != null) {
@@ -50,6 +47,21 @@ export function VideoContentCarousel(): ReactElement {
     }
   }, [id, label, container])
 
+  const buttonLabel = useMemo(() => {
+    if (container != null) {
+      switch (container.label) {
+        case VideoLabel.featureFilm:
+          return 'Watch full film'
+        case VideoLabel.collection:
+          return 'Open the whole collection'
+        case VideoLabel.series:
+          return 'Open the series'
+        default:
+          return ''
+      }
+    }
+  }, [container])
+
   return (
     <ThemeProvider
       themeName={ThemeName.website}
@@ -65,26 +77,21 @@ export function VideoContentCarousel(): ReactElement {
           pb: 10
         }}
       >
-        <Container maxWidth="xxl">
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{ mb: 6 }}
-          >
-            {container != null && (
-              <>
-                <Typography variant="overline1" color="primary">
-                  {container.title[0].value}
-                  {'  '}
-                  <Typography variant="overline1" color="secondary">
-                    {progressionLabel}
-                  </Typography>
+        {container != null && (
+          <Container maxWidth="xxl">
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{ mb: 6 }}
+            >
+              <Typography variant="overline1" color="primary">
+                {container.title[0].value}
+                {'  '}
+                <Typography variant="overline1" color="secondary">
+                  {progressionLabel}
                 </Typography>
-              </>
-            )}
-
-            {label === VideoLabel.segment && (
+              </Typography>
               <NextLink
                 href={`/${
                   container?.slug != null
@@ -94,12 +101,12 @@ export function VideoContentCarousel(): ReactElement {
                 passHref
               >
                 <Button variant="outlined" size="small" color="secondary">
-                  Watch full film
+                  {buttonLabel}
                 </Button>
               </NextLink>
-            )}
-          </Stack>
-        </Container>
+            </Stack>
+          </Container>
+        )}
         {container != null && container.children.length > 0 ? (
           <VideosCarousel
             videos={container.children}
