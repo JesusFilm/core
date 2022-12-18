@@ -12,6 +12,7 @@ import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import Image from 'next/image'
 import { useVideo } from '../../../../libs/videoContext'
 import { HeroOverlay } from '../../../HeroOverlay'
+import { AudioLanguageButton } from '../../AudioLanguageButton'
 
 interface VideoHeroOverlayProps {
   handlePlay?: () => void
@@ -78,51 +79,58 @@ export function VideoHeroOverlay({
           >
             {title[0]?.value}
           </Typography>
-          <Stack
-            spacing={8}
-            direction={{ xs: 'column-reverse', md: 'row' }}
-            sx={{ color: 'text.primary', width: '100%', pt: { xs: 0, md: 15 } }}
-          >
-            <Button
-              size="large"
-              variant="contained"
-              onClick={handlePlay}
-              sx={{
-                display: { xs: 'none', md: 'flex' },
-                width: 220,
-                backgroundColor: 'primary.main'
-              }}
-            >
-              <PlayArrowRounded />
-              Play
-            </Button>
-            <Button
-              size="small"
-              variant="contained"
-              onClick={handlePlay}
-              sx={{
-                display: { xs: 'flex', md: 'none' },
-                backgroundColor: 'primary.main'
-              }}
-            >
-              <PlayArrowRounded />
-              Play Video
-            </Button>
+          <Stack direction="row" justifyContent="space-between">
             <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
+              spacing={8}
+              direction={{ xs: 'column-reverse', md: 'row' }}
               sx={{
-                opacity: 0.6
+                color: 'text.primary',
+                width: '100%',
+                pt: { xs: 0, md: 15 }
               }}
             >
-              <AccessTime sx={{ width: 17, height: 17 }} />
-              {variant !== null && (
-                <Typography variant="body1">
-                  {secondsToMinutes(variant.duration)} min
-                </Typography>
-              )}
+              <Button
+                size="large"
+                variant="contained"
+                onClick={handlePlay}
+                sx={{
+                  display: { xs: 'none', md: 'flex' },
+                  width: 220,
+                  backgroundColor: 'primary.main'
+                }}
+              >
+                <PlayArrowRounded />
+                Play
+              </Button>
+              <Button
+                size="small"
+                variant="contained"
+                onClick={handlePlay}
+                sx={{
+                  display: { xs: 'flex', md: 'none' },
+                  backgroundColor: 'primary.main'
+                }}
+              >
+                <PlayArrowRounded />
+                Play Video
+              </Button>
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                sx={{
+                  opacity: 0.6
+                }}
+              >
+                <AccessTime sx={{ width: 17, height: 17 }} />
+                {variant !== null && (
+                  <Typography variant="body1">
+                    {secondsToMinutes(variant.duration)} min
+                  </Typography>
+                )}
+              </Stack>
             </Stack>
+            <AudioLanguageButton componentVariant="button" />
           </Stack>
         </Stack>
       </Container>

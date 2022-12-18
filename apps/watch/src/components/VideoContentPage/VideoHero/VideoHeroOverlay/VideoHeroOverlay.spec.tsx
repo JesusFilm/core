@@ -1,4 +1,5 @@
 import { render, fireEvent } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
 import {
   VideoLabel,
@@ -66,9 +67,11 @@ describe('VideoHeroOverlay', () => {
 
   it('should render the Video Hero Overlay', () => {
     const { getByRole, getByText, getByTestId } = render(
-      <VideoProvider value={{ content: video }}>
-        <VideoHeroOverlay />
-      </VideoProvider>
+      <MockedProvider>
+        <VideoProvider value={{ content: video }}>
+          <VideoHeroOverlay />
+        </VideoProvider>
+      </MockedProvider>
     )
     expect(getByText('The Story of Jesus for Children')).toBeInTheDocument()
     expect(getByText('61 min')).toBeInTheDocument()
@@ -81,9 +84,11 @@ describe('VideoHeroOverlay', () => {
   it('should play video on the Play Video button click', () => {
     const handlePlay = jest.fn()
     const { getByRole } = render(
-      <VideoProvider value={{ content: video }}>
-        <VideoHeroOverlay handlePlay={handlePlay} />
-      </VideoProvider>
+      <MockedProvider>
+        <VideoProvider value={{ content: video }}>
+          <VideoHeroOverlay handlePlay={handlePlay} />
+        </VideoProvider>
+      </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Play Video' }))
     expect(handlePlay).toHaveBeenCalled()
@@ -92,9 +97,11 @@ describe('VideoHeroOverlay', () => {
   it('should play video on the Mute Icon click', () => {
     const handlePlay = jest.fn()
     const { getByTestId } = render(
-      <VideoProvider value={{ content: video }}>
-        <VideoHeroOverlay handlePlay={handlePlay} />
-      </VideoProvider>
+      <MockedProvider>
+        <VideoProvider value={{ content: video }}>
+          <VideoHeroOverlay handlePlay={handlePlay} />
+        </VideoProvider>
+      </MockedProvider>
     )
     fireEvent.click(getByTestId('VolumeOffOutlinedIcon'))
     expect(handlePlay).toHaveBeenCalled()

@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 
 import { SnackbarProvider } from 'notistack'
+import { MockedProvider } from '@apollo/client/testing'
 import {
   VideoContentFields,
   VideoContentFields_children
@@ -49,11 +50,13 @@ const video = {
 describe('VideoContentPage', () => {
   it('should render VideoHero', () => {
     const { getAllByRole } = render(
-      <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoContentPage />
-        </VideoProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: video }}>
+            <VideoContentPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
     expect(getAllByRole('button', { name: 'Play' })).toHaveLength(1)
@@ -61,22 +64,26 @@ describe('VideoContentPage', () => {
 
   it('should render description', () => {
     const { getByText } = render(
-      <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoContentPage />
-        </VideoProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: video }}>
+            <VideoContentPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(getByText('video description')).toBeInTheDocument()
   })
 
   it('should render related videos', () => {
     const { getByTestId } = render(
-      <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoContentPage />
-        </VideoProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: video }}>
+            <VideoContentPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
     expect(getByTestId('videos-carousel')).toBeInTheDocument()
@@ -84,11 +91,13 @@ describe('VideoContentPage', () => {
 
   it('should render share button', () => {
     const { getByRole } = render(
-      <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoContentPage />
-        </VideoProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: video }}>
+            <VideoContentPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(getByRole('button', { name: 'Share' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Share' }))

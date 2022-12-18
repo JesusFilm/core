@@ -2,6 +2,7 @@ import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
+import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../../libs/storybook'
 import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/testData'
@@ -17,9 +18,11 @@ const VideoHeroStory = {
 
 const Template: Story = () => (
   <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
-    <VideoProvider value={{ content: videos[0] }}>
-      <VideoHero />
-    </VideoProvider>
+    <MockedProvider>
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoHero />
+      </VideoProvider>
+    </MockedProvider>
   </ThemeProvider>
 )
 

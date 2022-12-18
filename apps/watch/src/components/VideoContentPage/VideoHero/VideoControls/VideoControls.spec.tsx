@@ -1,5 +1,8 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import videojs from 'video.js'
+import { VideoProvider } from '../../../../libs/videoContext'
+import { videos } from '../../../Videos/testData'
 import { VideoControls } from './VideoControls'
 
 describe('VideoControls', () => {
@@ -39,7 +42,13 @@ describe('VideoControls', () => {
     const playStub = jest.spyOn(player, 'play').mockImplementation(() => ({
       play: jest.fn()
     }))
-    const { getByTestId } = render(<VideoControls player={player} />)
+    const { getByTestId } = render(
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoControls player={player} />
+        </VideoProvider>
+      </MockedProvider>
+    )
     fireEvent.click(getByTestId('PlayArrowRoundedIcon'))
     expect(playStub).toHaveBeenCalled()
   })
@@ -51,7 +60,13 @@ describe('VideoControls', () => {
     const pauseStub = jest.spyOn(player, 'pause').mockImplementation(() => ({
       pause: jest.fn()
     }))
-    const { getByTestId } = render(<VideoControls player={player} />)
+    const { getByTestId } = render(
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoControls player={player} />
+        </VideoProvider>
+      </MockedProvider>
+    )
     fireEvent.click(getByTestId('PauseRoundedIcon'))
     expect(pauseStub).toHaveBeenCalled()
   })
@@ -60,7 +75,13 @@ describe('VideoControls', () => {
     const mutedStub = jest.spyOn(player, 'muted').mockImplementation(() => ({
       muted: jest.fn()
     }))
-    const { getByTestId } = render(<VideoControls player={player} />)
+    const { getByTestId } = render(
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoControls player={player} />
+        </VideoProvider>
+      </MockedProvider>
+    )
     fireEvent.click(getByTestId('VolumeUpOutlinedIcon'))
     expect(mutedStub).toHaveBeenCalled()
   })
@@ -71,7 +92,13 @@ describe('VideoControls', () => {
       .mockImplementation(() => ({
         requestFullscreen: jest.fn()
       }))
-    const { getByTestId } = render(<VideoControls player={player} />)
+    const { getByTestId } = render(
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoControls player={player} />
+        </VideoProvider>
+      </MockedProvider>
+    )
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
     expect(fullscreenStub).toHaveBeenCalled()
   })
