@@ -11,7 +11,7 @@ import { VideosCarouselNavButton } from './VideosCarouselNavButton/VideosCarouse
 type auto = 'auto'
 
 interface VideosCarouselProps {
-  videos: VideoChildFields[]
+  videos: Array<VideoChildFields[] | VideoChildFields>
   activeVideo: string
   renderItem: (props: unknown) => ReactNode
 }
@@ -182,11 +182,28 @@ export function VideosCarousel({
         }}
       >
         {/* Slides */}
-        {videos.map((video, index) => (
-          <SwiperSlide key={index} style={{ transition: '.35s all ease' }}>
-            {renderItem({ ...video })}
-          </SwiperSlide>
-        ))}
+        {videos.map((relatedVideo, index) => {
+          // Render children of related videos seperately to get correct index
+          return Array.isArray(relatedVideo) ? (
+            relatedVideo.map((video, i) => (
+              <SwiperSlide key={index} style={{ transition: '.35s all ease' }}>
+                {renderItem({
+                  video,
+                  index: i,
+                  active: video.id === activeVideo
+                })}
+              </SwiperSlide>
+            ))
+          ) : (
+            <SwiperSlide key={index} style={{ transition: '.35s all ease' }}>
+              {renderItem({
+                video: relatedVideo,
+                index,
+                active: relatedVideo.id === activeVideo
+              })}
+            </SwiperSlide>
+          )
+        })}
         {/* Navigation overlay */}
         <Stack
           direction="row"

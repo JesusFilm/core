@@ -20,7 +20,6 @@ export function VideoContentCarousel(): ReactElement {
 
   /* 
     TODO: 
-    - Combine content and container children - see retelling-the-good-story
     - Add border based on themeMode
     - Fix height of card images
     - Fix nav overlay preventing nav
@@ -61,6 +60,24 @@ export function VideoContentCarousel(): ReactElement {
       }
     }
   }, [container])
+
+  const siblings = useMemo(() => {
+    if (container != null) {
+      return (container?.children ?? []).filter((siblingVideo) => {
+        return (
+          children.findIndex(
+            (childVideo) => childVideo.id === siblingVideo.id
+          ) < 0
+        )
+      })
+    }
+    return []
+  }, [container, children])
+
+  const relatedVideos = useMemo(
+    () => [...siblings, [...children]],
+    [siblings, children]
+  )
 
   return (
     <ThemeProvider
@@ -109,7 +126,7 @@ export function VideoContentCarousel(): ReactElement {
         )}
         {container != null && container.children.length > 0 ? (
           <VideosCarousel
-            videos={container.children}
+            videos={relatedVideos}
             activeVideo={id}
             renderItem={(props: Parameters<typeof VideoCard>[0]) => {
               return <VideoCard {...props} containerSlug={container.slug} />
