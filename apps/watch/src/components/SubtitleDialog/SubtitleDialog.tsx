@@ -7,6 +7,8 @@ import {
   LanguageAutocomplete
 } from '@core/shared/ui/LanguageAutocomplete'
 import { VideoJsPlayer } from 'video.js'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { VideoContentFields_variant_subtitle } from '../../../__generated__/VideoContentFields'
 
 interface SubtitleDialogProps
@@ -65,36 +67,42 @@ export function SubtitleDialog({
   }
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      dialogTitle={{
-        icon: <SubtitlesOutlined sx={{ mr: 3 }} />,
-        title: 'Subtitles',
-        closeButton: true
-      }}
-      divider
+    <ThemeProvider
+      themeName={ThemeName.website}
+      themeMode={ThemeMode.light}
+      nested
     >
-      <LanguageAutocomplete
-        onChange={handleChange}
-        value={selected}
-        languages={languages}
-        loading={false}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            hiddenLabel
-            placeholder="Search Language"
-            label="Language"
-            helperText={`${languages?.length ?? 0} Languages Available`}
-            sx={{
-              '> .MuiOutlinedInput-root': {
-                borderRadius: 2
-              }
-            }}
-          />
-        )}
-      />
-    </Dialog>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        dialogTitle={{
+          icon: <SubtitlesOutlined sx={{ mr: 3 }} />,
+          title: 'Subtitles',
+          closeButton: true
+        }}
+        divider
+      >
+        <LanguageAutocomplete
+          onChange={handleChange}
+          value={selected}
+          languages={languages}
+          loading={false}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              hiddenLabel
+              placeholder="Search Language"
+              label="Language"
+              helperText={`${languages?.length ?? 0} Languages Available`}
+              sx={{
+                '> .MuiOutlinedInput-root': {
+                  borderRadius: 2
+                }
+              }}
+            />
+          )}
+        />
+      </Dialog>
+    </ThemeProvider>
   )
 }
