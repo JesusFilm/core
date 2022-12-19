@@ -146,7 +146,7 @@
     "@nrwl/storybook": "13.8.3",
     "@nrwl/tao": "13.2.2",
     "@nrwl/web": "13.2.2",
-    "@nrwl/workspace": "13.2.2",
+    "@nrwl/workspace": "13.10.6",
     "@nx-plus/docusaurus": "^13.0.2",
     "@storybook/addon-a11y": "^6.4.19",
     "@storybook/addon-essentials": "~6.4.19",
