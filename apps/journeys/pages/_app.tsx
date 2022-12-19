@@ -18,7 +18,7 @@ import { firebaseClient } from '../src/libs/firebaseClient'
 import i18nConfig from '../next-i18next.config'
 import { GetJourney_journey as Journey } from '../__generated__/GetJourney'
 
-type AppProps = NextJsAppProps<{ journey?: Journey }> & {
+type JourneysAppProps = NextJsAppProps<{ journey?: Journey }> & {
   pageProps: SSRConfig
   emotionCache?: EmotionCache
 }
@@ -29,7 +29,7 @@ function JourneysApp({
   emotionCache = createEmotionCache({
     rtl: getJourneyRTL(pageProps.journey).rtl
   })
-}: AppProps): ReactElement {
+}: JourneysAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys')
   useEffect(() => {
     if (
@@ -95,4 +95,4 @@ function JourneysApp({
   )
 }
 
-export default appWithTranslation<AppProps>(JourneysApp, i18nConfig)
+export default appWithTranslation(JourneysApp, i18nConfig)

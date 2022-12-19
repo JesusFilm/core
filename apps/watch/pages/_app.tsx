@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { AppProps } from 'next/app'
+import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
@@ -13,13 +13,15 @@ import '../public/styles/video-js.css'
 
 const clientSideEmotionCache = createEmotionCache({})
 
+type WatchAppProps = NextJsAppProps & {
+  emotionCache?: EmotionCache
+}
+
 export default function WatchApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
-}: AppProps & {
-  emotionCache?: EmotionCache
-}): ReactElement {
+}: WatchAppProps): ReactElement {
   return (
     <CacheProvider value={emotionCache}>
       <DefaultSeo

@@ -1,5 +1,5 @@
 import { useEffect, ReactElement } from 'react'
-import { AppProps } from 'next/app'
+import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import { ApolloProvider } from '@apollo/client'
 import { SnackbarProvider } from 'notistack'
@@ -14,13 +14,15 @@ import { initAuth } from '../src/libs/firebaseClient/initAuth'
 initAuth()
 const clientSideEmotionCache = createEmotionCache({})
 
+type WatchAdminAppProps = NextJsAppProps<{ AuthUserSerialized?: string }> & {
+  emotionCache?: EmotionCache
+}
+
 export default function WatchAdminApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
-}: AppProps<{ AuthUserSerialized?: string }> & {
-  emotionCache?: EmotionCache
-}): ReactElement {
+}: WatchAdminAppProps): ReactElement {
   const apolloClient = useApollo(
     pageProps.AuthUserSerialized != null
       ? JSON.parse(pageProps.AuthUserSerialized)._token
