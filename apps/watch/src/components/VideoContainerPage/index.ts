@@ -1,1 +1,4 @@
-export { VideoContainerPage } from './VideoContainerPage'
+import { VideoContainerPage } from './VideoContainerPage'
+
+export { VideoContainerPage }
+export default VideoContainerPage

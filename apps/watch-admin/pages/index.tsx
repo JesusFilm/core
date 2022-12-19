@@ -6,7 +6,6 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { addApolloState, initializeApollo } from '../src/libs/apolloClient'
 import { PageWrapper } from '../src/components/PageWrapper'
 
 function IndexPage(): ReactElement {
@@ -24,14 +23,10 @@ function IndexPage(): ReactElement {
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ AuthUser }) => {
-  const apolloClient = initializeApollo({
-    token: (await AuthUser.getIdToken()) ?? ''
-  })
-
-  return addApolloState(apolloClient, {
+})(async () => {
+  return {
     props: {}
-  })
+  }
 })
 
 export default withAuthUser({
