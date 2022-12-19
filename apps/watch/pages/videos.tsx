@@ -7,7 +7,7 @@ import {
   GET_VIDEOS,
   limit
 } from '../src/components/VideosPage/VideosPage'
-import { createApolloClient } from '../src/libs/client'
+import { createApolloClient } from '../src/libs/apolloClient'
 
 interface VideosPageProps {
   initialApolloState: NormalizedCacheObject
@@ -30,7 +30,8 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async () => {
   return {
     props: {
       initialApolloState: apolloClient.cache.extract()
-    }
+    },
+    revalidate: 60
   }
 }
 export default VideosPage
