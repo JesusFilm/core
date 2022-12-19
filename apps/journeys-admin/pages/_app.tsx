@@ -1,5 +1,5 @@
 import { useEffect, ReactElement } from 'react'
-import { AppProps } from 'next/app'
+import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import { ApolloProvider } from '@apollo/client'
 import { SnackbarProvider } from 'notistack'
@@ -10,7 +10,7 @@ import { CacheProvider } from '@emotion/react'
 import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { appWithTranslation } from 'next-i18next'
+import { appWithTranslation, SSRConfig } from 'next-i18next'
 import { useTranslation } from 'react-i18next'
 import { useApollo } from '../src/libs/apolloClient'
 import { ThemeProvider } from '../src/components/ThemeProvider'
@@ -21,11 +21,19 @@ import i18nConfig from '../next-i18next.config'
 initAuth()
 const clientSideEmotionCache = createEmotionCache({})
 
+type JourneysAdminAppProps = NextJsAppProps<{
+  AuthUserSerialized?: string
+  flags?: { [key: string]: boolean }
+}> & {
+  pageProps: SSRConfig
+  emotionCache?: EmotionCache
+}
+
 function JourneysAdminApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
-}: AppProps & { emotionCache?: EmotionCache }): ReactElement {
+}: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const token =
     (pageProps.AuthUserSerialized != null

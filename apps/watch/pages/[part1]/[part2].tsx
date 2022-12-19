@@ -1,11 +1,11 @@
 import { gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { ReactElement } from 'react'
+import dynamic from 'next/dynamic'
+import { SnackbarProvider } from 'notistack'
 import { VideoContentFields } from '../../__generated__/VideoContentFields'
 import { GetVideoContent } from '../../__generated__/GetVideoContent'
 import { createApolloClient } from '../../src/libs/apolloClient'
-import { VideoContentPage } from '../../src/components/VideoContentPage'
-import { VideoContainerPage } from '../../src/components/VideoContainerPage/VideoContainerPage'
 import { LanguageProvider } from '../../src/libs/languageContext/LanguageContext'
 import { VideoProvider } from '../../src/libs/videoContext'
 import { VIDEO_CONTENT_FIELDS } from '../../src/libs/videoContentFields'
@@ -23,17 +23,35 @@ interface Part2PageProps {
   content: VideoContentFields
 }
 
+const DynamicVideoContentPage = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "VideoContentPage" */
+      '../../src/components/VideoContentPage'
+    )
+)
+
+const DynamicVideoContainerPage = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "VideoContainerPage" */
+      '../../src/components/VideoContainerPage'
+    )
+)
+
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
   return (
-    <LanguageProvider>
-      <VideoProvider value={{ content }}>
-        {content.variant?.hls != null ? (
-          <VideoContentPage />
-        ) : (
-          <VideoContainerPage />
-        )}
-      </VideoProvider>
-    </LanguageProvider>
+    <SnackbarProvider>
+      <LanguageProvider>
+        <VideoProvider value={{ content }}>
+          {content.variant?.hls != null ? (
+            <DynamicVideoContentPage />
+          ) : (
+            <DynamicVideoContainerPage />
+          )}
+        </VideoProvider>
+      </LanguageProvider>
+    </SnackbarProvider>
   )
 }
 
