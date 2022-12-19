@@ -2,7 +2,6 @@ import { ReactElement, ReactNode, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Navigation, A11y } from 'swiper'
 import Box from '@mui/system/Box'
-import Stack from '@mui/material/Stack'
 
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideosCarouselNavButton } from './VideosCarouselNavButton/VideosCarouselNavButton'

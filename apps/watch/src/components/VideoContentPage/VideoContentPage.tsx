@@ -18,7 +18,7 @@ import { VideoContentCarousel } from './VideoContentCarousel'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
-  const { variant, container } = useVideo()
+  const { variant, children, container } = useVideo()
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
 
@@ -27,7 +27,10 @@ export function VideoContentPage(): ReactElement {
   return (
     <PageWrapper hero={<VideoHero />}>
       <>
-        <VideoContentCarousel />
+        {children.length > 0 ||
+          (container != null && container.children.length > 0 && (
+            <VideoContentCarousel />
+          ))}
         <Container maxWidth="xxl">
           <Stack
             direction="row"
