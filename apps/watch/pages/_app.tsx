@@ -7,11 +7,13 @@ import { DefaultSeo } from 'next-seo'
 import { CacheProvider } from '@emotion/react'
 import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
-import '../public/fonts/fonts.css'
-import '../public/styles/carousel.css'
-import '../public/styles/video-js.css'
 
-const clientSideEmotionCache = createEmotionCache({})
+import 'swiper/swiper.min.css'
+import '../public/fonts/fonts.css'
+import '../public/styles/video-js.css'
+import '../public/styles/swiper-js.css'
+
+const clientSideEmotionCache = createEmotionCache({ prepend: false })
 
 type WatchAppProps = NextJsAppProps & {
   emotionCache?: EmotionCache
