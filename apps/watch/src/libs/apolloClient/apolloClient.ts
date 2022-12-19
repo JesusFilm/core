@@ -32,7 +32,7 @@ export function createApolloClient(
 }
 
 export function useApolloClient(
-  token: string,
+  token?: string,
   initialState?: NormalizedCacheObject
 ): ApolloClient<NormalizedCacheObject> {
   return useMemo(
