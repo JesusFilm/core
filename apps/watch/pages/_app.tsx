@@ -2,7 +2,7 @@ import { ReactElement, useCallback, useEffect } from 'react'
 import { AppProps } from 'next/app'
 import Head from 'next/head'
 import { SnackbarProvider } from 'notistack'
-import { ApolloProvider } from '@apollo/client'
+import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -12,7 +12,7 @@ import { CacheProvider } from '@emotion/react'
 import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { firebaseClient } from '../src/libs/firebaseClient'
-import { useApolloClient } from '../src/libs/client'
+import { useApolloClient } from '../src/libs/apolloClient'
 import '../public/fonts/fonts.css'
 import '../public/styles/carousel.css'
 import '../public/styles/video-js.css'
@@ -23,7 +23,9 @@ export default function WatchApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
-}: AppProps & { emotionCache?: EmotionCache }): ReactElement {
+}: AppProps<{ initialApolloState?: NormalizedCacheObject }> & {
+  emotionCache?: EmotionCache
+}): ReactElement {
   const auth = getAuth(firebaseClient)
   const [user] = useAuthState(auth)
   const client = useApolloClient(

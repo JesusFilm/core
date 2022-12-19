@@ -37,7 +37,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
               }}
             >
               <Stack spacing={10}>
-                <Typography variant="h3" color="text.primary">
+                <Typography variant="h3" component="h2" color="text.primary">
                   About Our Project
                 </Typography>
                 <Stack direction="row" spacing={4}>
@@ -50,6 +50,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
                   />
                   <Typography
                     variant="subtitle2"
+                    component="h3"
                     sx={{ opacity: 0.85 }}
                     color="text.primary"
                   >
@@ -62,6 +63,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
                 </Stack>
                 <Typography
                   variant="subtitle1"
+                  component="h3"
                   sx={{ opacity: 0.8 }}
                   color="text.primary"
                 >
