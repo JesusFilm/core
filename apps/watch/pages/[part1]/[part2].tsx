@@ -2,6 +2,7 @@ import { gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
+import { SnackbarProvider } from 'notistack'
 import { VideoContentFields } from '../../__generated__/VideoContentFields'
 import { GetVideoContent } from '../../__generated__/GetVideoContent'
 import { createApolloClient } from '../../src/libs/apolloClient'
@@ -40,15 +41,17 @@ const DynamicVideoContainerPage = dynamic(
 
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
   return (
-    <LanguageProvider>
-      <VideoProvider value={{ content }}>
-        {content.variant?.hls != null ? (
-          <DynamicVideoContentPage />
-        ) : (
-          <DynamicVideoContainerPage />
-        )}
-      </VideoProvider>
-    </LanguageProvider>
+    <SnackbarProvider>
+      <LanguageProvider>
+        <VideoProvider value={{ content }}>
+          {content.variant?.hls != null ? (
+            <DynamicVideoContentPage />
+          ) : (
+            <DynamicVideoContainerPage />
+          )}
+        </VideoProvider>
+      </LanguageProvider>
+    </SnackbarProvider>
   )
 }
 
