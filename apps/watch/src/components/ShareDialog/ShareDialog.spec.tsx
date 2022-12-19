@@ -87,7 +87,6 @@ describe('ShareDialog', () => {
         </VideoProvider>
       </SnackbarProvider>
     )
-
     const link = `${
       process.env.NEXT_PUBLIC_WATCH_URL as string
     }/the-story-of-jesus-for-children`
