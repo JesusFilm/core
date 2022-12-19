@@ -22,6 +22,7 @@ export function ContainerDescription({
     >
       <Typography
         variant="subtitle1"
+        component="h2"
         color="text.primary"
         sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
       >
