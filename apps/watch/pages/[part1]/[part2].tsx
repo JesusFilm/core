@@ -1,11 +1,14 @@
-import { gql } from '@apollo/client'
+import { ApolloProvider, gql, NormalizedCacheObject } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
 import { SnackbarProvider } from 'notistack'
 import { VideoContentFields } from '../../__generated__/VideoContentFields'
 import { GetVideoContent } from '../../__generated__/GetVideoContent'
-import { createApolloClient } from '../../src/libs/apolloClient'
+import {
+  createApolloClient,
+  useApolloClient
+} from '../../src/libs/apolloClient'
 import { LanguageProvider } from '../../src/libs/languageContext/LanguageContext'
 import { VideoProvider } from '../../src/libs/videoContext'
 import { VIDEO_CONTENT_FIELDS } from '../../src/libs/videoContentFields'
@@ -20,6 +23,7 @@ export const GET_VIDEO_CONTENT = gql`
 `
 
 interface Part2PageProps {
+  initialApolloState: NormalizedCacheObject
   content: VideoContentFields
 }
 
@@ -39,19 +43,26 @@ const DynamicVideoContainerPage = dynamic(
     )
 )
 
-export default function Part2Page({ content }: Part2PageProps): ReactElement {
+export default function Part2Page({
+  content,
+  initialApolloState
+}: Part2PageProps): ReactElement {
+  const client = useApolloClient(undefined, initialApolloState)
+
   return (
-    <SnackbarProvider>
-      <LanguageProvider>
-        <VideoProvider value={{ content }}>
-          {content.variant?.hls != null ? (
-            <DynamicVideoContentPage />
-          ) : (
-            <DynamicVideoContainerPage />
-          )}
-        </VideoProvider>
-      </LanguageProvider>
-    </SnackbarProvider>
+    <ApolloProvider client={client}>
+      <SnackbarProvider>
+        <LanguageProvider>
+          <VideoProvider value={{ content }}>
+            {content.variant?.hls != null ? (
+              <DynamicVideoContentPage />
+            ) : (
+              <DynamicVideoContainerPage />
+            )}
+          </VideoProvider>
+        </LanguageProvider>
+      </SnackbarProvider>
+    </ApolloProvider>
   )
 }
 
@@ -74,6 +85,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
   }
   return {
     props: {
+      initialApolloState: client.cache.extract(),
       content: data.content
     }
   }
