@@ -70,7 +70,7 @@ describe('SubtitleDialog', () => {
     fireEvent.focus(getByRole('textbox'))
     fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
     expect(queryAllByRole('option')[0]).toHaveTextContent(
-      'اللغة العربيةArabic, Modern Standard'
+      'Arabic, Modern Standard اللغة العربية'
     )
   })
 
@@ -88,7 +88,7 @@ describe('SubtitleDialog', () => {
     fireEvent.focus(getByRole('textbox'))
     fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
     fireEvent.click(
-      getByRole('option', { name: 'اللغة العربية Arabic, Modern Standard' })
+      getByRole('option', { name: 'Arabic, Modern Standard اللغة العربية' })
     )
     const tracks = player.textTracks() ?? []
     const ArabicId = '22658'
