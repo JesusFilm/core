@@ -227,7 +227,10 @@ export function VideoControls({
           <IconButton>
             <LanguageRounded />
           </IconButton>
-          <IconButton onClick={() => setOpenSubtitle(true)}>
+          <IconButton
+            onClick={() => setOpenSubtitle(true)}
+            disabled={subtitles === undefined || subtitles.length < 1}
+          >
             <SubtitlesOutlined />
           </IconButton>
           <IconButton onClick={handleFullscreen}>
