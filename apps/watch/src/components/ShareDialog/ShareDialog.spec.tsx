@@ -46,11 +46,6 @@ const video: VideoContentFields = {
   children: []
 }
 
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: jest.fn()
-}))
-
 describe('ShareDialog', () => {
   jest.resetModules()
   beforeEach(() => {
