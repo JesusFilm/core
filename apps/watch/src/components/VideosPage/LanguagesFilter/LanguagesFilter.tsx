@@ -21,7 +21,7 @@ export function LanguagesFilter(
         sx: { paddingBottom: 2 },
         endAdornment: (
           <>
-            {props.loading === true ? (
+            {props.loading ? (
               <CircularProgress color="inherit" size={20} />
             ) : null}
             {params.InputProps.endAdornment}
