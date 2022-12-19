@@ -98,7 +98,6 @@
     "react-helmet": "^6.1.0",
     "react-i18next": "^11.16.9",
     "react-leaflet": "^3.2.5",
-    "react-multi-carousel": "^2.8.0",
     "react-router-dom": "5.3.0",
     "react-simple-timefield": "^3.2.5",
     "react-use-downloader": "^1.2.0",
