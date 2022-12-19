@@ -11,15 +11,16 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
-import { VideosCarousel } from '../Videos/VideosCarousel/VideosCarousel'
 import { ShareDialog } from '../ShareDialog'
+import { VideosCarousel } from '../VideosCarousel/VideosCarousel'
+import { CarouselItem } from '../Video/CarouselItem/CarouselItem'
 import { DownloadDialog } from '../DownloadDialog'
 import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
-  const { container, children, slug, variant } = useVideo()
+  const { variant, children } = useVideo()
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
 
@@ -32,23 +33,23 @@ export function VideoContentPage(): ReactElement {
           nested
         >
           <Paper elevation={0} square sx={{ pt: '20px' }}>
-            <Container maxWidth="xxl">
-              {/* TODO: combine content and container children? */}
-              {children.length > 0 && (
-                <VideosCarousel
-                  videos={children}
-                  routePrefix={slug}
-                  routeSuffix={variant?.slug.split('/')[1]}
-                />
-              )}
-              {container != null && container.children.length > 0 && (
-                <VideosCarousel
-                  videos={container.children}
-                  routePrefix={container.slug}
-                  routeSuffix={container.variant?.slug.split('/')[1]}
-                />
-              )}
-            </Container>
+            {/* TODO: combine content and container children? */}
+            {children.length > 0 && (
+              <VideosCarousel
+                videos={children}
+                renderItem={(props: Parameters<typeof CarouselItem>[0]) => {
+                  return <CarouselItem {...props} />
+                }}
+              />
+            )}
+            {/* {container != null && container.children.length > 0 && (
+              <VideosCarousel
+                videos={container.children}
+                renderItem={(props: Parameters<typeof CarouselItem>[0]) => {
+                  return <CarouselItem {...props} />
+                }}
+              />
+            )} */}
           </Paper>
         </ThemeProvider>
         <Container maxWidth="xxl">
