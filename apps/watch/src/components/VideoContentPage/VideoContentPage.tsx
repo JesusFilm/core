@@ -5,16 +5,15 @@ import Stack from '@mui/material/Stack'
 import { ReactElement, useState } from 'react'
 import Button from '@mui/material/Button'
 import SaveAlt from '@mui/icons-material/SaveAlt'
-import Share from '@mui/icons-material/Share'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { VideosCarousel } from '../VideosCarousel/VideosCarousel'
 import { CarouselItem } from '../Video/CarouselItem/CarouselItem'
 import { DownloadDialog } from '../DownloadDialog'
+import { ShareButton } from '../VideoContainerPage/ShareButton'
 import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
 
@@ -73,10 +72,10 @@ export function VideoContentPage(): ReactElement {
                   <SaveAlt />
                   Download
                 </Button>
-                <Button variant="outlined" onClick={() => setOpenShare(true)}>
-                  <Share />
-                  Share
-                </Button>
+                <ShareButton
+                  variant="button"
+                  openDialog={() => setOpenShare(true)}
+                />
               </Stack>
             </Box>
           </Stack>

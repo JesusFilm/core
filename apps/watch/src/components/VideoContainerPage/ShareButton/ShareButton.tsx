@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import Button from '@mui/material/Button'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
+import IconButton from '@mui/material/IconButton'
 
 export interface ShareButtonProps {
   variant: 'button' | 'icon'
@@ -20,14 +21,14 @@ export function ShareButton({
       aria-label="share-button"
       onClick={() => openDialog()}
       sx={{
-        minWidth: '200px'
+        display: { xs: 'none', sm: 'flex' }
       }}
     >
       Share
     </Button>
   ) : (
-    <Button onClick={() => openDialog()} aria-label="share-icon">
+    <IconButton onClick={() => openDialog()} aria-label="share-icon">
       <ShareOutlinedIcon color="primary" />
-    </Button>
+    </IconButton>
   )
 }
