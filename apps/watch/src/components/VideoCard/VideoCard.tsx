@@ -5,7 +5,7 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import NextLink from 'next/link'
 import Stack from '@mui/material/Stack'
 import Link from '@mui/material/Link'
-import { styled } from '@mui/material/styles'
+import { styled, SxProps } from '@mui/material/styles'
 import ButtonBase from '@mui/material/ButtonBase'
 import NextImage from 'next/image'
 import Box from '@mui/material/Box'
@@ -20,6 +20,7 @@ interface VideoCardProps {
   containerSlug?: string
   index?: number
   active?: boolean
+  imageSx?: SxProps
 }
 
 const ImageButton = styled(ButtonBase)(({ theme }) => ({
@@ -43,7 +44,8 @@ export function VideoCard({
   containerSlug,
   variant = 'expanded',
   index,
-  active
+  active,
+  imageSx
 }: VideoCardProps): ReactElement {
   const { label, color, childLabel } = getLabelDetails(video?.label)
 
@@ -83,7 +85,8 @@ export function VideoCard({
                 '& .MuiImageBackdrop-expanded-root': {
                   opacity: 0.5
                 }
-              }
+              },
+              ...imageSx
             }}
           >
             <Layer

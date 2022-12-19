@@ -20,10 +20,10 @@ export function VideoContentCarousel(): ReactElement {
 
   /* 
     TODO: 
-    - Add border based on themeMode
-    - Fix height of card images
     - Fix nav overlay preventing nav
+    - Fix height of card images
     - add tests & stories
+    - Add border based on themeMode
     */
 
   const progressionLabel = useMemo(() => {

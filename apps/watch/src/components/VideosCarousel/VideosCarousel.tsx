@@ -129,13 +129,13 @@ export function VideosCarousel({
         {...mobileSlideConfig}
         breakpoints={{
           1200: { ...laptopSlideConfig, spaceBetween: 20 },
-          1400: { ...desktopSlideConfig, spaceBetween: 12 },
+          1400: { ...desktopSlideConfig, spaceBetween: 14 },
           // Need config at each breakpoint as resizing causes issues
           // Hides gap between rightmost slide and right edge of screen
-          1552: { ...desktopSlideConfig, spaceBetween: 22 },
+          1552: { ...desktopSlideConfig, spaceBetween: 16 },
           1600: {
             ...desktopSlideConfig,
-            spaceBetween: 20
+            spaceBetween: 16
           },
           1800: { ...desktopSlideConfig, spaceBetween: 20 },
           2000: {
@@ -190,7 +190,8 @@ export function VideosCarousel({
                 {renderItem({
                   video,
                   index: i,
-                  active: video.id === activeVideo
+                  active: video.id === activeVideo,
+                  imageSx: { height: { xs: 110, xl: 146 } }
                 })}
               </SwiperSlide>
             ))
@@ -199,7 +200,8 @@ export function VideosCarousel({
               {renderItem({
                 video: relatedVideo,
                 index,
-                active: relatedVideo.id === activeVideo
+                active: relatedVideo.id === activeVideo,
+                imageSx: { height: { xs: 110, xl: 146 } }
               })}
             </SwiperSlide>
           )
@@ -215,19 +217,7 @@ export function VideosCarousel({
             top: 0,
             width: '100%',
             // Prefer fixed heights over using callbacks to retrieve dynamic carousel item image height.
-            height: {
-              xl: '152.5px',
-              xxl: '113.5px'
-            },
-            [theme.breakpoints.up(1600)]: {
-              height: '131.5px'
-            },
-            [theme.breakpoints.up(1800)]: {
-              height: '147.5px'
-            },
-            [theme.breakpoints.up(2000)]: {
-              height: '115px'
-            }
+            height: { xl: '146px' }
           }}
         >
           <VideosCarouselNavButton variant="prev" />
