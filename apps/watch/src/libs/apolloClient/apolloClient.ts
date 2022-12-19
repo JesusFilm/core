@@ -8,7 +8,8 @@ import { useMemo } from 'react'
 import { cache } from './cache'
 
 export function createApolloClient(
-  token: string
+  token?: string,
+  initialState?: NormalizedCacheObject
 ): ApolloClient<NormalizedCacheObject> {
   const httpLink = createHttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL
@@ -26,10 +27,16 @@ export function createApolloClient(
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: authLink.concat(httpLink),
-    cache: cache()
+    cache: cache().restore(initialState ?? {})
   })
 }
 
-export function useApollo(token: string): ApolloClient<NormalizedCacheObject> {
-  return useMemo(() => createApolloClient(token), [token])
+export function useApolloClient(
+  token?: string,
+  initialState?: NormalizedCacheObject
+): ApolloClient<NormalizedCacheObject> {
+  return useMemo(
+    () => createApolloClient(token, initialState),
+    [token, initialState]
+  )
 }
