@@ -89,13 +89,12 @@ describe('AudioLanguageDialog', () => {
     }
   ]
 
-  const slug = 'jesus/english'
   const mocks = [
     {
       request: {
         query: GET_VIDEO_LANGUAGES,
         variables: {
-          id: slug
+          id: 'jesus/english'
         }
       },
       result: {

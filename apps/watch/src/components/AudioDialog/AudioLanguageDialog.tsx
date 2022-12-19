@@ -40,6 +40,7 @@ export function AudioLanguageDialog({
     if (selectedLanguageSlug != null) {
       void router.push(`/${selectedLanguageSlug}`)
     }
+    onClose()
   }
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {

@@ -71,15 +71,28 @@ export function AudioLanguageButton({
       {variant != null && variantLanguagesWithSlug != null && (
         <>
           {componentVariant === 'button' ? (
-            <Button size="large" onClick={() => setOpenAudioLanguage(true)}>
-              <Typography>
-                <LanguageOutlined />
+            <Button
+              size="small"
+              onClick={() => setOpenAudioLanguage(true)}
+              sx={{
+                gap: 1,
+                display: 'flex',
+                alignItem: 'center',
+                color: 'background.paper',
+                '&:hover': {
+                  backgroundColor: 'transparent'
+                }
+              }}
+            >
+              <LanguageOutlined fontSize="small" />
+              <Typography variant="subtitle1">
                 {localName ?? nativeName}
-                <AddOutlined />
-                {variantLanguagesWithSlug.length - 1}
-                Languages
-                <KeyboardArrowDownOutlined />
               </Typography>
+              <AddOutlined fontSize="small" />
+              <Typography variant="subtitle1">
+                {variantLanguagesWithSlug.length - 1} Languages
+              </Typography>
+              <KeyboardArrowDownOutlined fontSize="small" />
             </Button>
           ) : (
             <IconButton onClick={() => setOpenAudioLanguage(true)}>

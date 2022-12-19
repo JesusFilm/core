@@ -71,7 +71,10 @@ export function VideoHeroOverlay({
         >
           <VolumeOffOutlined />
         </IconButton>
-        <Stack spacing={{ xs: 2, lg: 5 }} sx={{ pb: { xs: 15, lg: 33 } }}>
+        <Stack
+          spacing={{ xs: 2, lg: 5 }}
+          sx={{ pb: { xs: 15, lg: 33 }, width: '100%' }}
+        >
           <Typography
             variant="h1"
             color="text.primary"
@@ -79,16 +82,16 @@ export function VideoHeroOverlay({
           >
             {title[0]?.value}
           </Typography>
-          <Stack direction="row" justifyContent="space-between">
-            <Stack
-              spacing={8}
-              direction={{ xs: 'column-reverse', md: 'row' }}
-              sx={{
-                color: 'text.primary',
-                width: '100%',
-                pt: { xs: 0, md: 15 }
-              }}
-            >
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            sx={{
+              color: 'text.primary',
+              width: '100%',
+              pt: { xs: 0, md: 15 }
+            }}
+          >
+            <Stack spacing={8} direction={{ xs: 'column-reverse', md: 'row' }}>
               <Button
                 size="large"
                 variant="contained"

@@ -42,16 +42,12 @@ export function LanguageAutocomplete({
 }: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
     return (
-      languages?.map((value) => {
-        const localLanguageName = value?.name.find(
-          ({ primary }) => !primary
-        )?.value
-        const nativeLanguageName = value?.name.find(
-          ({ primary }) => primary
-        )?.value
+      languages?.map(({ id, name }) => {
+        const localLanguageName = name.find(({ primary }) => !primary)?.value
+        const nativeLanguageName = name.find(({ primary }) => primary)?.value
 
         return {
-          id: value?.id,
+          id: id,
           localName: localLanguageName,
           nativeName: nativeLanguageName
         }
