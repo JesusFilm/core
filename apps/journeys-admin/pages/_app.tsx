@@ -25,7 +25,9 @@ function JourneysAdminApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
-}: AppProps & { emotionCache?: EmotionCache }): ReactElement {
+}: AppProps<{ AuthUserSerialized?: string }> & {
+  emotionCache?: EmotionCache
+}): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const token =
     (pageProps.AuthUserSerialized != null

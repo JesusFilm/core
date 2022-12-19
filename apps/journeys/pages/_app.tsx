@@ -1,4 +1,4 @@
-import { AppProps } from 'next/app'
+import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import { ReactElement, useEffect } from 'react'
 import { ApolloProvider } from '@apollo/client'
@@ -10,12 +10,18 @@ import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { SnackbarProvider } from 'notistack'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { appWithTranslation } from 'next-i18next'
+import { appWithTranslation, SSRConfig } from 'next-i18next'
 import { useTranslation } from 'react-i18next'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { useApollo } from '../src/libs/apolloClient'
 import { firebaseClient } from '../src/libs/firebaseClient'
 import i18nConfig from '../next-i18next.config'
+import { GetJourney_journey as Journey } from '../__generated__/GetJourney'
+
+type AppProps = NextJsAppProps<{ journey?: Journey }> & {
+  pageProps: SSRConfig
+  emotionCache?: EmotionCache
+}
 
 function JourneysApp({
   Component,
@@ -23,7 +29,7 @@ function JourneysApp({
   emotionCache = createEmotionCache({
     rtl: getJourneyRTL(pageProps.journey).rtl
   })
-}: AppProps & { emotionCache?: EmotionCache }): ReactElement {
+}: AppProps): ReactElement {
   const { t } = useTranslation('apps-journeys')
   useEffect(() => {
     if (
@@ -89,4 +95,4 @@ function JourneysApp({
   )
 }
 
-export default appWithTranslation(JourneysApp, i18nConfig)
+export default appWithTranslation<AppProps>(JourneysApp, i18nConfig)

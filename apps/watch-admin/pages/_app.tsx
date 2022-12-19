@@ -18,7 +18,9 @@ export default function WatchAdminApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache
-}: AppProps & { emotionCache?: EmotionCache }): ReactElement {
+}: AppProps<{ AuthUserSerialized?: string }> & {
+  emotionCache?: EmotionCache
+}): ReactElement {
   const apolloClient = useApollo(
     pageProps.AuthUserSerialized != null
       ? JSON.parse(pageProps.AuthUserSerialized)._token
