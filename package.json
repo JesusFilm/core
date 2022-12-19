@@ -48,7 +48,7 @@
     "@mui/lab": "^5.0.0-alpha.71",
     "@mui/material": "^5.3.0",
     "@mui/styles": "^5.3.0",
-    "@mui/system": "^5.3.0",
+    "@mui/system": "^5.11.0",
     "@mui/x-data-grid": "^5.3.0",
     "@nestjs/apollo": "^10.0.4",
     "@nestjs/common": "^8.3.1",
