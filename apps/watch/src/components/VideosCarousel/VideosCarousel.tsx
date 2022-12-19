@@ -12,7 +12,6 @@ type auto = 'auto'
 
 interface VideosCarouselProps {
   videos: VideoChildFields[]
-  activeVideo: string
   renderItem: (props: unknown) => ReactNode
 }
 
@@ -29,7 +28,6 @@ type SwiperExtended = SwiperCore & {
 
 export function VideosCarousel({
   videos,
-  activeVideo,
   renderItem
 }: VideosCarouselProps): ReactElement {
   const minPageMargin = 24
