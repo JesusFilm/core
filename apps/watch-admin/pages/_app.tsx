@@ -26,8 +26,7 @@ export default function WatchAdminApp({
   const apolloClient = useApollo(
     pageProps.AuthUserSerialized != null
       ? JSON.parse(pageProps.AuthUserSerialized)._token
-      : '',
-    pageProps
+      : ''
   )
 
   useEffect(() => {
