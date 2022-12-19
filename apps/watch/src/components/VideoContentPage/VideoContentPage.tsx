@@ -4,7 +4,6 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { ReactElement, useState } from 'react'
 import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
 import SaveAlt from '@mui/icons-material/SaveAlt'
 import Share from '@mui/icons-material/Share'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -95,7 +94,6 @@ export function VideoContentPage(): ReactElement {
             onClose={() => setOpenShare(false)}
           />
         </Container>
-        <Divider />
       </>
     </PageWrapper>
   )
