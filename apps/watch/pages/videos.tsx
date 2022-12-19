@@ -1,4 +1,4 @@
-import { NormalizedCacheObject } from '@apollo/client'
+import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import { GetStaticProps } from 'next'
 import { ReactElement } from 'react'
 import { Videos } from '../src/components/VideosPage'
@@ -7,13 +7,19 @@ import {
   GET_VIDEOS,
   limit
 } from '../src/components/VideosPage/VideosPage'
-import { createApolloClient } from '../src/libs/client'
+import { createApolloClient, useApolloClient } from '../src/libs/apolloClient'
 
 interface VideosPageProps {
   initialApolloState: NormalizedCacheObject
 }
-function VideosPage(): ReactElement {
-  return <Videos />
+function VideosPage({ initialApolloState }: VideosPageProps): ReactElement {
+  const client = useApolloClient(undefined, initialApolloState)
+
+  return (
+    <ApolloProvider client={client}>
+      <Videos />
+    </ApolloProvider>
+  )
 }
 
 export const getStaticProps: GetStaticProps<VideosPageProps> = async () => {
@@ -30,7 +36,8 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async () => {
   return {
     props: {
       initialApolloState: apolloClient.cache.extract()
-    }
+    },
+    revalidate: 60
   }
 }
 export default VideosPage

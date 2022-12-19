@@ -9,6 +9,7 @@ import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
 import { HomeHero } from './HomeHero'
+import { SeeAllVideos } from './SeeAllVideos'
 
 interface HomePageProps {
   videos: VideoChildFields[]
@@ -25,6 +26,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
         <Box sx={{ backgroundColor: 'background.default' }}>
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
             <VideoGrid videos={videos} variant="contained" />
+            <SeeAllVideos />
             <Box
               sx={{
                 display: 'flex',
@@ -35,7 +37,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
               }}
             >
               <Stack spacing={10}>
-                <Typography variant="h3" color="text.primary">
+                <Typography variant="h3" component="h2" color="text.primary">
                   About Our Project
                 </Typography>
                 <Stack direction="row" spacing={4}>
@@ -48,6 +50,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
                   />
                   <Typography
                     variant="subtitle2"
+                    component="h3"
                     sx={{ opacity: 0.85 }}
                     color="text.primary"
                   >
@@ -60,6 +63,7 @@ export function HomePage({ videos }: HomePageProps): ReactElement {
                 </Stack>
                 <Typography
                   variant="subtitle1"
+                  component="h3"
                   sx={{ opacity: 0.8 }}
                   color="text.primary"
                 >
