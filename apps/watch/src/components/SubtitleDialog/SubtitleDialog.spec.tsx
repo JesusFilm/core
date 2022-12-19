@@ -5,11 +5,6 @@ import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { videos } from '../Videos/testData'
 import { SubtitleDialog } from './SubtitleDialog'
 
-jest.mock('react-use-downloader', () => ({
-  __esModule: true,
-  default: jest.fn()
-}))
-
 const onClose = jest.fn()
 const video: VideoContentFields = videos[0]
 

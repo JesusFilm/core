@@ -60,12 +60,12 @@ export const videos: VideoContentFields[] = [
               {
                 __typename: 'Translation',
                 value: ' اللغة العربية',
-                primary: false
+                primary: true
               },
               {
                 __typename: 'Translation',
                 value: 'Arabic, Modern Standard',
-                primary: true
+                primary: false
               }
             ]
           },
