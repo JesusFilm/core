@@ -3,7 +3,6 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Navigation, A11y } from 'swiper'
 import Box from '@mui/system/Box'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
 
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideosCarouselNavButton } from './VideosCarouselNavButton/VideosCarouselNavButton'
@@ -33,9 +32,14 @@ export function VideosCarousel({
   renderItem
 }: VideosCarouselProps): ReactElement {
   const minPageMargin = 24
-
-  const theme = useTheme()
   const [overflowSlides, setOverflowSlides] = useState(true)
+
+  const initialSlide = videos.findIndex((v) => {
+    if (Array.isArray(v)) {
+      return v.find((video) => video.id === activeVideo) != null
+    }
+    return v.id === activeVideo
+  })
 
   // Check if all slides fit on screen
   const updateShowHideNav = (swiper: SwiperExtended): void => {
@@ -150,6 +154,7 @@ export function VideosCarousel({
           }
           // TODO: fix gap issue on extra-wide screens
         }}
+        initialSlide={Math.max(initialSlide, 0)}
         // TODO: Dynamic speed based on number of slides transformed
         speed={850}
         // Set custom navigation
@@ -165,6 +170,7 @@ export function VideosCarousel({
           console.log('slide change', swiper)
           updateMarginLeftOffset(swiper)
           updateSlidesAlignment(swiper)
+          updateSnapGrid(swiper)
         }}
         // On resize and init, update spacing and nav features
         onResize={(swiper: SwiperExtended) => {
@@ -206,23 +212,9 @@ export function VideosCarousel({
             </SwiperSlide>
           )
         })}
-        {/* Navigation overlay */}
-        <Stack
-          direction="row"
-          sx={{
-            // transition: 'opacity 0.5s ease',
-            opacity: { xs: 0, xl: overflowSlides ? 1 : 0 },
-            position: 'absolute',
-            zIndex: 1,
-            top: 0,
-            width: '100%',
-            // Prefer fixed heights over using callbacks to retrieve dynamic carousel item image height.
-            height: { xl: '146px' }
-          }}
-        >
-          <VideosCarouselNavButton variant="prev" />
-          <VideosCarouselNavButton variant="next" />
-        </Stack>
+        {/* Navigation buttons */}
+        <VideosCarouselNavButton variant="prev" disabled={!overflowSlides} />
+        <VideosCarouselNavButton variant="next" disabled={!overflowSlides} />
       </Swiper>
     </Box>
   )

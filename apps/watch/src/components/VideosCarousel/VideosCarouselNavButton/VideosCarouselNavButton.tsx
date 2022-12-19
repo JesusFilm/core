@@ -5,6 +5,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
 
 interface VideosCarouselNavButtonProps {
   variant: 'prev' | 'next'
+  disabled: boolean
 }
 
 const navOverlayBackground = (deg: number): string =>
@@ -14,19 +15,26 @@ const navOverlayHover = (deg: number): string =>
   `linear-gradient(${deg}deg, rgba(3, 3, 3, 0.85) 0%, rgba(3, 3, 3, 0.4) 50%, rgba(3, 3, 3, 0.1) 80%, rgba(3, 3, 3, 0.04) 90%, rgba(3, 3, 3, 0.02) 95%, rgba(3, 3, 3, 0.01) 100%)`
 
 export function VideosCarouselNavButton({
-  variant
+  variant,
+  disabled
 }: VideosCarouselNavButtonProps): ReactElement {
   const navigationStyles = {
+    position: 'absolute',
+    top: 0,
+    zIndex: 1,
     width: 50,
-    height: '100%',
+    // Prefer fixed heights over using callbacks to retrieve dynamic carousel item image height.
+    height: { xl: '146px' },
     color: 'primary.contrastText',
     background: navOverlayBackground(90),
+    opacity: { xs: 0, xl: disabled ? 0 : 1 },
     '&.swiper-button-disabled': {
-      display: 'none'
+      opacity: 0
     },
     '&:hover': {
       background: navOverlayHover(90)
-    }
+    },
+    cursor: 'pointer'
   }
 
   return (
@@ -38,7 +46,7 @@ export function VideosCarouselNavButton({
       className={`jfp-button-${variant}`}
       sx={
         variant === 'prev'
-          ? navigationStyles
+          ? { ...navigationStyles, left: 0 }
           : {
               ...navigationStyles,
               background: navOverlayBackground(270),

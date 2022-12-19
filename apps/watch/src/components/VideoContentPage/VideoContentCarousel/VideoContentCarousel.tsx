@@ -20,10 +20,8 @@ export function VideoContentCarousel(): ReactElement {
 
   /* 
     TODO: 
-    - Fix nav overlay preventing nav
-    - Fix height of card images
+    - Scroll to active video
     - add tests & stories
-    - Add border based on themeMode
     */
 
   const progressionLabel = useMemo(() => {
@@ -75,7 +73,7 @@ export function VideoContentCarousel(): ReactElement {
   }, [container, children])
 
   const relatedVideos = useMemo(
-    () => [...siblings, [...children]],
+    () => children.concat(siblings),
     [siblings, children]
   )
 
@@ -129,7 +127,17 @@ export function VideoContentCarousel(): ReactElement {
             videos={relatedVideos}
             activeVideo={id}
             renderItem={(props: Parameters<typeof VideoCard>[0]) => {
-              return <VideoCard {...props} containerSlug={container.slug} />
+              return (
+                <VideoCard
+                  {...props}
+                  containerSlug={container.slug}
+                  imageSx={{
+                    ...props.imageSx,
+                    border: '1px solid rgba(255, 255, 255, .12)',
+                    borderRadius: '9px'
+                  }}
+                />
+              )
             }}
           />
         ) : (
