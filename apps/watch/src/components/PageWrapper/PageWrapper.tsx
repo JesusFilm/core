@@ -12,11 +12,13 @@ import { Footer } from '../Footer'
 interface PageWrapperProps {
   hero?: ReactNode
   children?: ReactNode
+  hideAbsoluteAppBar?: boolean
 }
 
 export function PageWrapper({
   hero,
-  children
+  children,
+  hideAbsoluteAppBar
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
@@ -24,7 +26,7 @@ export function PageWrapper({
         justifyContent="space-between"
         sx={{ width: '100%', height: '100%' }}
       >
-        <Header />
+        <Header hideAbsoluteAppBar={hideAbsoluteAppBar} />
 
         <Container maxWidth={false} disableGutters>
           <ThemeProvider

@@ -1,19 +1,32 @@
-import { ReactElement, useState, KeyboardEvent, MouseEvent } from 'react'
+import {
+  ReactElement,
+  useState,
+  KeyboardEvent,
+  MouseEvent,
+  forwardRef
+} from 'react'
+import Slide from '@mui/material/Slide'
 import Container from '@mui/material/Container'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import AppBar from '@mui/material/AppBar'
+import AppBar, { AppBarProps } from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Image from 'next/image'
 import NextLink from 'next/link'
-
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import useScrollTrigger from '@mui/material/useScrollTrigger'
 import logo from '../../../public/header-logo.svg'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 
-export function Header(): ReactElement {
+interface HeaderProps {
+  hideAbsoluteAppBar?: boolean
+}
+
+export function Header({ hideAbsoluteAppBar }: HeaderProps): ReactElement {
+  const trigger = useScrollTrigger()
   const [state, setState] = useState({
     top: false,
     left: false,
@@ -34,13 +47,20 @@ export function Header(): ReactElement {
       setState({ ...state, [anchor]: open })
     }
 
-  return (
-    <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 2 }}>
-      <Container maxWidth="xxl" disableGutters>
-        <AppBar
-          sx={{ background: 'transparent', boxShadow: 'none', p: 4 }}
-          position="static"
-        >
+  const LocalAppBar = forwardRef<HTMLDivElement, AppBarProps>((props, ref) => {
+    return (
+      <AppBar
+        position="absolute"
+        {...props}
+        sx={{
+          background: 'transparent',
+          boxShadow: 'none',
+          p: 4,
+          ...props.sx
+        }}
+        ref={ref}
+      >
+        <Container maxWidth="xxl" disableGutters>
           <Toolbar sx={{ justifyContent: 'space-between' }}>
             <NextLink href="/" passHref>
               <a>
@@ -64,16 +84,37 @@ export function Header(): ReactElement {
               </IconButton>
             </Stack>
           </Toolbar>
-        </AppBar>
-        <SwipeableDrawer
-          anchor="top"
-          open={state.top}
-          onClose={toggleDrawer('top', false)}
-          onOpen={toggleDrawer('top', true)}
-        >
-          <HeaderMenuPanel toggleDrawer={toggleDrawer} />
-        </SwipeableDrawer>
-      </Container>
-    </Box>
+        </Container>
+      </AppBar>
+    )
+  })
+  LocalAppBar.displayName = 'LocalAppBar'
+
+  return (
+    <>
+      <Slide in={hideAbsoluteAppBar !== true}>
+        <LocalAppBar />
+      </Slide>
+      <ThemeProvider
+        themeName={ThemeName.website}
+        themeMode={ThemeMode.dark}
+        nested
+      >
+        <Slide in={trigger}>
+          <LocalAppBar
+            sx={{ backgroundColor: 'background.default' }}
+            position="fixed"
+          />
+        </Slide>
+      </ThemeProvider>
+      <SwipeableDrawer
+        anchor="top"
+        open={state.top}
+        onClose={toggleDrawer('top', false)}
+        onOpen={toggleDrawer('top', true)}
+      >
+        <HeaderMenuPanel toggleDrawer={toggleDrawer} />
+      </SwipeableDrawer>
+    </>
   )
 }

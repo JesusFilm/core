@@ -10,7 +10,11 @@ import 'video.js/dist/video-js.css'
 
 const VIDEO_HERO_BOTTOM_SPACING = 150
 
-export function VideoHero(): ReactElement {
+interface VideoHeroProps {
+  onPlaying: (isPlaying: boolean) => void
+}
+
+export function VideoHero({ onPlaying }: VideoHeroProps): ReactElement {
   const { variant } = useVideo()
   const [isPlaying, setIsPlaying] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -52,6 +56,10 @@ export function VideoHero(): ReactElement {
     })
     setIsPlaying(false)
   }, [variant?.hls])
+
+  useEffect(() => {
+    onPlaying?.(isPlaying)
+  }, [isPlaying, onPlaying])
 
   function handlePlay(): void {
     setIsPlaying(true)
