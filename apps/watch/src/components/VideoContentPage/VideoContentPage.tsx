@@ -90,7 +90,7 @@ export function VideoContentPage(): ReactElement {
           <Container maxWidth="xxl">
             <Stack
               direction="row"
-              spacing="100px"
+              spacing="20px"
               sx={{
                 mx: 0,
                 mt: { xs: 5, md: 10 },
