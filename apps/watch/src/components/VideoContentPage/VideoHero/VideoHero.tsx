@@ -46,7 +46,7 @@ export function VideoHero({ onPlay }: VideoHeroProps): ReactElement {
       })
       playerRef.current.on('play', handlePlay)
     }
-  }, [variant, playerRef, videoRef])
+  }, [variant, playerRef, videoRef, handlePlay])
 
   useEffect(() => {
     playerRef.current?.src({

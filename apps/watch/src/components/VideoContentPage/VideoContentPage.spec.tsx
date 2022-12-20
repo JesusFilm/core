@@ -40,8 +40,6 @@ describe('VideoContentPage', () => {
     expect(getByTestId('videos-carousel')).toBeInTheDocument()
   })
 
-  // If no related videos render child videos
-
   it('should render share button', () => {
     const { getByRole } = render(
       <SnackbarProvider>
