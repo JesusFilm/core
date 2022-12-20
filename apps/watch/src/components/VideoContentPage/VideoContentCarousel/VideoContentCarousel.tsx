@@ -98,6 +98,7 @@ export function VideoContentCarousel({
     >
       <Stack
         sx={{
+          display: playing || relatedVideos.length > 0 ? 'inline-flex' : 'none',
           backgroundColor: 'background.default',
           color: 'text.primary',
           overflow: 'hidden',

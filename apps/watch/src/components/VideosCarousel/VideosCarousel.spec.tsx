@@ -18,7 +18,18 @@ describe('VideosCarousel', () => {
     )
     // Renders twice for some reason...
     expect(renderItem).toHaveBeenCalledTimes(videos.length * 2)
-    expect(renderItem).toHaveBeenNthCalledWith(1, videos[0])
+    expect(renderItem).toHaveBeenNthCalledWith(1, {
+      video: videos[0],
+      index: 0,
+      active: true,
+      imageSx: { height: { xs: 110, xl: 146 } }
+    })
+    expect(renderItem).toHaveBeenNthCalledWith(2, {
+      video: videos[1],
+      index: 1,
+      active: false,
+      imageSx: { height: { xs: 110, xl: 146 } }
+    })
   })
 
   // Swiper doesn't properly initialise in jest. E2E test.

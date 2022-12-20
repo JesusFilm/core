@@ -17,18 +17,24 @@ const variantProps: Pick<Variant, 'downloads' | 'language'> = {
 }
 
 const getChildVideos = (videoIndex: number): VideoContentFields[] => {
+  const firstChildProps = videos[videoIndex].children[0] as VideoContentFields
+  const childVariantProps =
+    firstChildProps != null
+      ? (firstChildProps.variant as Variant)
+      : (videos[videoIndex].variant as Variant)
+
   return [
     {
-      ...(videos[videoIndex].children[0] as VideoContentFields),
+      ...firstChildProps,
       description: [
         {
           __typename: 'Translation',
-          value: videos[videoIndex].children[0].snippet[0].value
+          value: ''
         }
       ],
       studyQuestions: [],
       variant: {
-        ...(videos[videoIndex].children[0].variant as Variant),
+        ...childVariantProps,
         ...variantProps
       }
     },
@@ -37,13 +43,13 @@ const getChildVideos = (videoIndex: number): VideoContentFields[] => {
 }
 
 const collection = {
-  ...videos[14],
-  children: getChildVideos(14)
+  ...videos[13],
+  children: getChildVideos(13)
 }
 
 const shortFilm: VideoContentFields = {
-  ...videos[19],
-  children: getChildVideos(19)
+  ...videos[18],
+  children: getChildVideos(18)
 }
 
 const series: VideoContentFields = { ...videos[5], children: getChildVideos(5) }
@@ -51,6 +57,19 @@ const series: VideoContentFields = { ...videos[5], children: getChildVideos(5) }
 const featureFilm: VideoContentFields = videos[0]
 
 describe('VideoContentCarousel', () => {
+  it('should display video title and icon buttons when playing', () => {
+    const { getByRole } = render(
+      <VideoProvider value={{ content: shortFilm }}>
+        <VideoContentCarousel playing />
+      </VideoProvider>
+    )
+
+    expect(getByRole('heading', { level: 5 })).toHaveTextContent(
+      shortFilm.title[0].value
+    )
+    // TODO: Add icon buttons
+  })
+
   describe('content without container', () => {
     it('should display all children videos if present', () => {
       // Children usually present on feature film
@@ -73,15 +92,7 @@ describe('VideoContentCarousel', () => {
       )
     })
 
-    xit('should display ? when no children', () => {
-      render(
-        // Standalone short films, segments, episodes
-        <VideoProvider value={{ content: shortFilm }}>
-          <VideoContentCarousel />
-        </VideoProvider>
-      )
-      // Show title?
-    })
+    xit('should hide carousel when no children', () => {})
   })
 
   describe('content in container', () => {
@@ -154,7 +165,7 @@ describe('VideoContentCarousel', () => {
 
     it('should display container labels and button for segment in feature film', () => {
       const { getByTestId, getByRole } = render(
-        <VideoProvider value={{ content: videos[20], container: featureFilm }}>
+        <VideoProvider value={{ content: videos[19], container: featureFilm }}>
           <VideoContentCarousel />
         </VideoProvider>
       )
@@ -216,17 +227,5 @@ describe('VideoContentCarousel', () => {
       expect(getByTestId('container-progress')).toHaveTextContent('1/26')
       expect(getByRole('link', { name: 'See all' })).toBeInTheDocument()
     })
-  })
-
-  it('should display video title when playing', () => {
-    const { getByRole } = render(
-      <VideoProvider value={{ content: shortFilm }}>
-        <VideoContentCarousel playing />
-      </VideoProvider>
-    )
-
-    expect(getByRole('heading', { level: 5 })).toHaveTextContent(
-      shortFilm.title[0].value
-    )
   })
 })
