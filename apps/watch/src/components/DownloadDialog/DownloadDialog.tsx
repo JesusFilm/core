@@ -213,7 +213,6 @@ export function DownloadDialog({
                 open={openTerms}
                 onClose={() => setOpenTerms(false)}
                 onSubmit={() => {
-                  console.log(values)
                   handleChange('terms')('true')
                 }}
               />
