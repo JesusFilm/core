@@ -29,13 +29,11 @@ export function CurrentFilters({
         Filters
       </Button>
 
-      <Box sx={{ display: 'flex', overflow: 'scroll' }}>
-        {/* TODO: scroll bar not showing up  */}
+      <Box sx={{ display: 'flex', overflowX: 'auto' }}>
         {languageFilters.map((language) => (
           <Chip
             key={language.id}
             variant="outlined"
-            // TODO: chip is inheriting a transparency from somewhere
             color="primary"
             label={language.nativeName}
             deleteIcon={<CloseRoundedIcon fontSize="small" />}
