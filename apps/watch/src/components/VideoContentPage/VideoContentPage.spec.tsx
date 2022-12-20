@@ -54,4 +54,17 @@ describe('VideoContentPage', () => {
       getByRole('dialog', { name: 'Share this video' })
     ).toBeInTheDocument()
   })
+
+  it('should render download button', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoContentPage />
+        </VideoProvider>
+      </SnackbarProvider>
+    )
+    expect(getByRole('button', { name: 'Download' })).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Download' }))
+    expect(getByRole('dialog', { name: 'Download Video' })).toBeInTheDocument()
+  })
 })

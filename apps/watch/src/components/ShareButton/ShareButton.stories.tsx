@@ -1,6 +1,6 @@
 import { ComponentMeta, Story } from '@storybook/react'
 import { noop } from 'lodash'
-import { watchConfig } from '../../../libs/storybook'
+import { watchConfig } from '../../libs/storybook'
 import { ShareButton } from '.'
 
 const ShareButtonStory: ComponentMeta<typeof ShareButton> = {
@@ -15,8 +15,8 @@ const ShareButtonStory: ComponentMeta<typeof ShareButton> = {
 
 const Template: Story<typeof ShareButton> = () => (
   <>
-    <ShareButton variant="icon" openDialog={noop} />
-    <ShareButton variant="button" openDialog={noop} />
+    <ShareButton variant="icon" onClick={noop} />
+    <ShareButton variant="button" onClick={noop} />
   </>
 )
 
