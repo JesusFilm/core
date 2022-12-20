@@ -93,4 +93,33 @@ describe('DownloadDialog', () => {
       )
     })
   })
+
+  it('opens terms of service dialog', async () => {
+    const { getByText } = render(
+      <VideoProvider value={{ content: video }}>
+        <DownloadDialog open onClose={onClose} />
+      </VideoProvider>
+    )
+
+    fireEvent.click(getByText('Terms of Use'))
+
+    await waitFor(() => {
+      expect(getByText('Accept')).toBeInTheDocument()
+    })
+  })
+
+  it('agrees to terms of use on accept', async () => {
+    const { getByText, getByLabelText } = render(
+      <VideoProvider value={{ content: video }}>
+        <DownloadDialog open onClose={onClose} />
+      </VideoProvider>
+    )
+
+    fireEvent.click(getByText('Terms of Use'))
+    fireEvent.click(getByText('Accept'))
+
+    await waitFor(() => {
+      expect(getByLabelText('I agree to the')).toBeChecked()
+    })
+  })
 })
