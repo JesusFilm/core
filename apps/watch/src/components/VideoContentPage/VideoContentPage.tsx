@@ -60,7 +60,7 @@ export function VideoContentPage(): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
-      <PageWrapper hero={<VideoHero />}>
+      <PageWrapper hideHeader hero={<VideoHero />}>
         <>
           <ThemeProvider
             themeName={ThemeName.website}

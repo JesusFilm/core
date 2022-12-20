@@ -1,4 +1,4 @@
-import { ReactElement, KeyboardEvent, MouseEvent } from 'react'
+import { ReactElement } from 'react'
 import Paper from '@mui/material/Paper'
 import Container from '@mui/material/Container'
 import Button from '@mui/material/Button'
@@ -16,14 +16,11 @@ import NextLink from 'next/link'
 import logo from '../../../../public/header-logo.svg'
 
 interface HeaderMenuPanelProps {
-  toggleDrawer: (
-    anchor: string,
-    open: boolean
-  ) => (event: KeyboardEvent | MouseEvent) => void
+  onClose: () => void
 }
 
 export function HeaderMenuPanel({
-  toggleDrawer
+  onClose
 }: HeaderMenuPanelProps): ReactElement {
   const theme = useTheme()
 
@@ -41,8 +38,7 @@ export function HeaderMenuPanel({
       rel="noopener"
       color="text.primary"
       variant="overline2"
-      onClick={toggleDrawer('top', false)}
-      onKeyDown={toggleDrawer('top', false)}
+      onClick={onClose}
     >
       {label}
       <Divider
@@ -75,7 +71,7 @@ export function HeaderMenuPanel({
             color="inherit"
             aria-label="open drawer"
             edge="start"
-            onClick={toggleDrawer('top', false)}
+            onClick={onClose}
           >
             <CloseIcon />
           </IconButton>

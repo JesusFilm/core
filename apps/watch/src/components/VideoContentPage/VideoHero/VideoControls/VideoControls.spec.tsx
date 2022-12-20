@@ -13,7 +13,8 @@ jest.mock('fscreen', () => ({
   __esModule: true,
   default: {
     requestFullscreen: jest.fn(),
-    exitFullscreen: jest.fn()
+    exitFullscreen: jest.fn(),
+    addEventListener: jest.fn()
   }
 }))
 
@@ -54,8 +55,8 @@ describe('VideoControls', () => {
     const playStub = jest.spyOn(player, 'play').mockImplementation(() => ({
       play: jest.fn()
     }))
-    const { getByTestId } = render(<VideoControls player={player} />)
-    fireEvent.click(getByTestId('PlayArrowRoundedIcon'))
+    const { getAllByTestId } = render(<VideoControls player={player} />)
+    fireEvent.click(getAllByTestId('PlayArrowRoundedIcon')[1])
     expect(playStub).toHaveBeenCalled()
   })
 
@@ -66,8 +67,8 @@ describe('VideoControls', () => {
     const pauseStub = jest.spyOn(player, 'pause').mockImplementation(() => ({
       pause: jest.fn()
     }))
-    const { getByTestId } = render(<VideoControls player={player} />)
-    fireEvent.click(getByTestId('PauseRoundedIcon'))
+    const { getAllByTestId } = render(<VideoControls player={player} />)
+    fireEvent.click(getAllByTestId('PauseRoundedIcon')[1])
     expect(pauseStub).toHaveBeenCalled()
   })
 
