@@ -61,7 +61,11 @@ export function VideoContentPage(): ReactElement {
       />
       <PageWrapper hero={<VideoHero onPlay={() => setHasPlayed(true)} />}>
         <>
-          <VideoContentCarousel playing={hasPlayed} />
+          <VideoContentCarousel
+            playing={hasPlayed}
+            onShareClick={() => setOpenShare(true)}
+            onDownloadClick={() => setOpenDownload(true)}
+          />
           <Container maxWidth="xxl">
             <Stack
               direction="row"

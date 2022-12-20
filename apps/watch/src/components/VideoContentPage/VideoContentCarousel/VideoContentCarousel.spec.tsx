@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import {
   VideoContentFields,
   VideoContentFields_variant as Variant
@@ -56,27 +56,44 @@ const series: VideoContentFields = { ...videos[5], children: getChildVideos(5) }
 
 const featureFilm: VideoContentFields = videos[0]
 
+const onIconClick = { onShareClick: jest.fn(), onDownloadClick: jest.fn() }
+
 describe('VideoContentCarousel', () => {
-  it('should display video title and icon buttons when playing', () => {
+  it('should display video title when playing on desktop', () => {
     const { getByRole } = render(
       <VideoProvider value={{ content: shortFilm }}>
-        <VideoContentCarousel playing />
+        <VideoContentCarousel playing {...onIconClick} />
       </VideoProvider>
     )
 
     expect(getByRole('heading', { level: 5 })).toHaveTextContent(
       shortFilm.title[0].value
     )
-    // TODO: Add icon buttons
   })
 
+  // TODO: unskip when we can configure breakpoints
+  xit('should display video title and icon buttons when playing on mobile', () => {
+    const { getByRole, getByTestId } = render(
+      <VideoProvider value={{ content: shortFilm }}>
+        <VideoContentCarousel playing {...onIconClick} />
+      </VideoProvider>
+    )
+
+    expect(getByRole('heading', { level: 5 })).toHaveTextContent(
+      shortFilm.title[0].value
+    )
+    fireEvent.click(getByTestId('share'))
+    expect(onIconClick.onShareClick).toHaveBeenCalled()
+    fireEvent.click(getByTestId('download'))
+    expect(onIconClick.onDownloadClick).toHaveBeenCalled()
+  })
   describe('content without container', () => {
     it('should display all children videos if present', () => {
       // Children usually present on feature film
       // Series and Collections which have children render on VideoContainerPage
       const { getAllByRole } = render(
         <VideoProvider value={{ content: featureFilm }}>
-          <VideoContentCarousel />
+          <VideoContentCarousel {...onIconClick} />
         </VideoProvider>
       )
 
@@ -96,7 +113,7 @@ describe('VideoContentCarousel', () => {
       // Magdalena - first child is featureFilm, others are segments, last child is short film
       const { getAllByRole } = render(
         <VideoProvider value={{ content: videos[4] }}>
-          <VideoContentCarousel />
+          <VideoContentCarousel {...onIconClick} />
         </VideoProvider>
       )
 
@@ -127,7 +144,7 @@ describe('VideoContentCarousel', () => {
             container: collection
           }}
         >
-          <VideoContentCarousel />
+          <VideoContentCarousel {...onIconClick} />
         </VideoProvider>
       )
 
@@ -156,7 +173,7 @@ describe('VideoContentCarousel', () => {
             container
           }}
         >
-          <VideoContentCarousel />
+          <VideoContentCarousel {...onIconClick} />
         </VideoProvider>
       )
 
@@ -189,7 +206,7 @@ describe('VideoContentCarousel', () => {
     it('should display container labels and button for segment in feature film', () => {
       const { getByTestId, getByRole } = render(
         <VideoProvider value={{ content: videos[19], container: featureFilm }}>
-          <VideoContentCarousel />
+          <VideoContentCarousel {...onIconClick} />
         </VideoProvider>
       )
 
@@ -221,7 +238,7 @@ describe('VideoContentCarousel', () => {
             container: series
           }}
         >
-          <VideoContentCarousel />
+          <VideoContentCarousel {...onIconClick} />
         </VideoProvider>
       )
 
@@ -240,7 +257,7 @@ describe('VideoContentCarousel', () => {
             container: collection
           }}
         >
-          <VideoContentCarousel />
+          <VideoContentCarousel {...onIconClick} />
         </VideoProvider>
       )
 

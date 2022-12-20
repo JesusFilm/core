@@ -15,6 +15,10 @@ const VideoContentCarouselStory = {
   parameters: {
     ...watchConfig.parameters,
     layout: 'fullscreen'
+  },
+  argTypes: {
+    onShareClick: { action: 'share clicked' },
+    onDownloadClick: { action: 'download clicked' }
   }
 }
 
@@ -23,9 +27,9 @@ const Template: Story<
     content: VideoContentFields
     container?: VideoContentFields
   }
-> = ({ ...args }) => (
-  <VideoProvider value={{ ...args }}>
-    <VideoContentCarousel playing={args.playing} />
+> = ({ content, container, ...args }) => (
+  <VideoProvider value={{ content, container }}>
+    <VideoContentCarousel {...args} />
   </VideoProvider>
 )
 
@@ -42,25 +46,28 @@ WithContainer.args = {
   container: videos[0]
 }
 
-const PlayingTemplate: Story<
-  ComponentProps<typeof VideoContentCarousel>
-> = () => (
+const PlayingTemplate: Story<ComponentProps<typeof VideoContentCarousel>> = ({
+  ...args
+}) => (
   // Standalone, video with children only, video with siblings
   <Stack>
     <VideoProvider value={{ content: { ...videos[0], children: [] } }}>
-      <VideoContentCarousel playing />
+      <VideoContentCarousel {...args} />
     </VideoProvider>
     <Divider />
     <VideoProvider value={{ content: videos[0] }}>
-      <VideoContentCarousel playing />
+      <VideoContentCarousel {...args} />
     </VideoProvider>
     <Divider />
     <VideoProvider value={{ content: videos[19], container: videos[0] }}>
-      <VideoContentCarousel playing />
+      <VideoContentCarousel {...args} />
     </VideoProvider>
   </Stack>
 )
 
 export const Playing = PlayingTemplate.bind({})
+Playing.args = {
+  playing: true
+}
 
 export default VideoContentCarouselStory as Meta

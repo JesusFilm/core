@@ -14,13 +14,19 @@ import { useVideo } from '../../../libs/videoContext'
 import { VideosCarousel } from '../../VideosCarousel'
 import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
 import { VideoCard } from '../../VideoCard'
+import { ShareButton } from '../../ShareButton'
+import { DownloadButton } from '../DownloadButton'
 
 interface VideoContentCarouselProps {
   playing?: boolean
+  onShareClick: () => void
+  onDownloadClick: () => void
 }
 
 export function VideoContentCarousel({
-  playing = false
+  playing = false,
+  onShareClick,
+  onDownloadClick
 }: VideoContentCarouselProps): ReactElement {
   const { title, id, slug, children, container } = useVideo()
   const router = useRouter()
@@ -138,14 +144,27 @@ export function VideoContentCarousel({
         }}
       >
         <Container maxWidth="xxl" sx={{ mb: relatedVideos.length > 0 ? 5 : 0 }}>
-          <Typography
-            variant="h5"
-            color="text.primary"
-            gutterBottom={container != null}
-            sx={{ display: playing ? 'inline-flex' : 'none' }}
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ display: playing ? 'inline-flex' : 'none', width: '100%' }}
           >
-            {title[0].value}
-          </Typography>
+            <Typography
+              variant="h5"
+              color="text.primary"
+              gutterBottom={container != null}
+            >
+              {title[0].value}
+            </Typography>
+            <Stack
+              direction="row"
+              sx={{ display: { xs: 'inline-flex', xl: 'none' } }}
+            >
+              <ShareButton variant="icon" onClick={onShareClick} />
+              <DownloadButton variant="icon" onClick={onDownloadClick} />
+            </Stack>
+          </Stack>
           {container != null && (
             <Stack
               direction="row"
