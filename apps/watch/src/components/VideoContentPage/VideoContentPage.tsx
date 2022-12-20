@@ -24,7 +24,6 @@ export function VideoContentPage(): ReactElement {
     useVideo()
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
-  const [hideAbsoluteAppBar, setHideAbsoluteAppBar] = useState(false)
 
   return (
     <>
@@ -62,14 +61,7 @@ export function VideoContentPage(): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
-      <PageWrapper
-        hideAbsoluteAppBar={hideAbsoluteAppBar}
-        hero={
-          <VideoHero
-            onPlaying={(isPlaying) => setHideAbsoluteAppBar(isPlaying)}
-          />
-        }
-      >
+      <PageWrapper hideHeader hero={<VideoHero />}>
         <>
           <ThemeProvider
             themeName={ThemeName.website}

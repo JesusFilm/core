@@ -22,6 +22,7 @@ import fscreen from 'fscreen'
 
 interface VideoControlProps {
   player: videojs.Player
+  onVisibleChanged?: (active: boolean) => void
 }
 
 function isMobile(): boolean {
@@ -35,7 +36,10 @@ function isMobile(): boolean {
   )
 }
 
-export function VideoControls({ player }: VideoControlProps): ReactElement {
+export function VideoControls({
+  player,
+  onVisibleChanged
+}: VideoControlProps): ReactElement {
   const [play, setPlay] = useState(false)
   const [active, setActive] = useState(true)
   const [currentTime, setCurrentTime] = useState<string>()
@@ -47,6 +51,10 @@ export function VideoControls({ player }: VideoControlProps): ReactElement {
   const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
   const durationSeconds = Math.round(player.duration())
   const visible = !play || active
+
+  useEffect(() => {
+    onVisibleChanged?.(!play || active)
+  }, [play, active, onVisibleChanged])
 
   useEffect(() => {
     setVolume(player.volume() * 100)

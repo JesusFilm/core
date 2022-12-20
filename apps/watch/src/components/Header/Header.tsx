@@ -1,10 +1,5 @@
-import {
-  ReactElement,
-  useState,
-  KeyboardEvent,
-  MouseEvent,
-  forwardRef
-} from 'react'
+import { ReactElement, useState, forwardRef, MouseEventHandler } from 'react'
+import Fade from '@mui/material/Fade'
 import Slide from '@mui/material/Slide'
 import Container from '@mui/material/Container'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
@@ -21,40 +16,17 @@ import useScrollTrigger from '@mui/material/useScrollTrigger'
 import logo from '../../../public/header-logo.svg'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 
-interface HeaderProps {
-  hideAbsoluteAppBar?: boolean
+interface LocalAppBarProps extends AppBarProps {
+  onMenuClick: MouseEventHandler<HTMLButtonElement>
 }
 
-export function Header({ hideAbsoluteAppBar }: HeaderProps): ReactElement {
-  const trigger = useScrollTrigger()
-  const [state, setState] = useState({
-    top: false,
-    left: false,
-    bottom: false,
-    right: false
-  })
-
-  const toggleDrawer =
-    (anchor: string, open: boolean) => (event: KeyboardEvent | MouseEvent) => {
-      if (
-        event.type === 'keydown' &&
-        ((event as KeyboardEvent).key === 'Tab' ||
-          (event as KeyboardEvent).key === 'Shift')
-      ) {
-        return
-      }
-
-      setState({ ...state, [anchor]: open })
-    }
-
-  const LocalAppBar = forwardRef<HTMLDivElement, AppBarProps>((props, ref) => {
+const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
+  ({ onMenuClick, ...props }, ref) => {
     return (
       <AppBar
         position="absolute"
         {...props}
         sx={{
-          background: 'transparent',
-          boxShadow: 'none',
           p: 4,
           ...props.sx
         }}
@@ -78,7 +50,7 @@ export function Header({ hideAbsoluteAppBar }: HeaderProps): ReactElement {
                 color="inherit"
                 aria-label="open header menu"
                 edge="start"
-                onClick={toggleDrawer('top', true)}
+                onClick={onMenuClick}
               >
                 <MenuIcon />
               </IconButton>
@@ -87,14 +59,36 @@ export function Header({ hideAbsoluteAppBar }: HeaderProps): ReactElement {
         </Container>
       </AppBar>
     )
-  })
-  LocalAppBar.displayName = 'LocalAppBar'
+  }
+)
+LocalAppBar.displayName = 'LocalAppBar'
+
+interface HeaderProps {
+  hideAbsoluteAppBar?: boolean
+}
+
+export function Header({ hideAbsoluteAppBar }: HeaderProps): ReactElement {
+  const trigger = useScrollTrigger()
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
     <>
-      <Slide in={hideAbsoluteAppBar !== true}>
-        <LocalAppBar />
-      </Slide>
+      <Fade
+        in={hideAbsoluteAppBar !== true}
+        style={{
+          transitionDelay: hideAbsoluteAppBar !== true ? undefined : '2s',
+          transitionDuration: '225ms'
+        }}
+        timeout={{ exit: 2225 }}
+      >
+        <LocalAppBar
+          sx={{
+            background: 'transparent',
+            boxShadow: 'none'
+          }}
+          onMenuClick={() => setDrawerOpen(true)}
+        />
+      </Fade>
       <ThemeProvider
         themeName={ThemeName.website}
         themeMode={ThemeMode.dark}
@@ -104,17 +98,24 @@ export function Header({ hideAbsoluteAppBar }: HeaderProps): ReactElement {
           <LocalAppBar
             sx={{ backgroundColor: 'background.default' }}
             position="fixed"
+            onMenuClick={() => setDrawerOpen(true)}
           />
         </Slide>
       </ThemeProvider>
-      <SwipeableDrawer
-        anchor="top"
-        open={state.top}
-        onClose={toggleDrawer('top', false)}
-        onOpen={toggleDrawer('top', true)}
+      <ThemeProvider
+        themeName={ThemeName.website}
+        themeMode={ThemeMode.light}
+        nested
       >
-        <HeaderMenuPanel toggleDrawer={toggleDrawer} />
-      </SwipeableDrawer>
+        <SwipeableDrawer
+          anchor="top"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          onOpen={() => setDrawerOpen(true)}
+        >
+          <HeaderMenuPanel onClose={() => setDrawerOpen(false)} />
+        </SwipeableDrawer>
+      </ThemeProvider>
     </>
   )
 }
