@@ -1,6 +1,7 @@
 import { ReactElement, useState, useEffect } from 'react'
 import Container from '@mui/material/Container'
 import videojs from 'video.js'
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
@@ -14,10 +15,23 @@ import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
 import LanguageRounded from '@mui/icons-material/LanguageRounded'
 import FullscreenOutlined from '@mui/icons-material/FullscreenOutlined'
+import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+import fscreen from 'fscreen'
 
 interface VideoControlProps {
   player: videojs.Player
+}
+
+function isMobile(): boolean {
+  const userAgent = navigator.userAgent
+
+  // Windows Phone must come first because its UA also contains "Android"
+  return (
+    /windows phone/i.test(userAgent) ||
+    /android/i.test(userAgent) ||
+    /iPad|iPhone|iPod/.test(userAgent)
+  )
 }
 
 export function VideoControls({ player }: VideoControlProps): ReactElement {
@@ -62,9 +76,17 @@ export function VideoControls({ player }: VideoControlProps): ReactElement {
     }
   }
 
-  function handleFullscreen(): void {
-    if (!fullscreen) {
-      player.requestFullscreen()
+  async function handleFullscreen(): Promise<void> {
+    if (fullscreen) {
+      fscreen.exitFullscreen()
+      setFullscreen(false)
+    } else {
+      if (isMobile()) {
+        player.requestFullscreen()
+      } else {
+        await fscreen.requestFullscreen(document.documentElement)
+        setFullscreen(true)
+      }
     }
   }
 
@@ -87,58 +109,26 @@ export function VideoControls({ player }: VideoControlProps): ReactElement {
   }
 
   return (
-    <Container
-      data-testid="vjs-jfp-custom-controls"
-      maxWidth="xxl"
+    <Box
       sx={{
-        position: 'relative',
-        alignSelf: 'end',
-        zIndex: 5,
-        pb: 4,
+        position: 'absolute',
+        right: 0,
+        bottom: 0,
+        left: 0,
         background:
           'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%)'
       }}
     >
-      <Slider
-        aria-label="mobile-progress-control"
-        min={0}
-        max={durationSeconds}
-        value={progress}
-        valueLabelFormat={(value) => {
-          return secondsToTimeFormat(value, { trimZeroes: true })
-        }}
-        valueLabelDisplay="auto"
-        onChange={handleSeek}
+      <Container
+        data-testid="vjs-jfp-custom-controls"
+        maxWidth="xxl"
         sx={{
-          height: 8.4,
-          display: { xs: 'flex', md: 'none' },
-          '& .MuiSlider-thumb': {
-            width: 13,
-            height: 13
-          },
-          '& .MuiSlider-rail': {
-            backgroundColor: 'secondary.main'
-          }
+          zIndex: 5,
+          pb: 4
         }}
-      />
-      <Stack
-        direction="row"
-        gap={5}
-        justifyContent={{ xs: 'space-between', md: 'none' }}
-        alignItems="center"
       >
-        <IconButton
-          onClick={handlePlay}
-          sx={{ display: { xs: 'none', md: 'flex' } }}
-        >
-          {!play ? (
-            <PlayArrowRounded fontSize="large" />
-          ) : (
-            <PauseRounded fontSize="large" />
-          )}
-        </IconButton>
         <Slider
-          aria-label="desktop-progress-control"
+          aria-label="mobile-progress-control"
           min={0}
           max={durationSeconds}
           value={progress}
@@ -149,7 +139,7 @@ export function VideoControls({ player }: VideoControlProps): ReactElement {
           onChange={handleSeek}
           sx={{
             height: 8.4,
-            display: { xs: 'none', md: 'flex' },
+            display: { xs: 'flex', md: 'none' },
             '& .MuiSlider-thumb': {
               width: 13,
               height: 13
@@ -159,75 +149,114 @@ export function VideoControls({ player }: VideoControlProps): ReactElement {
             }
           }}
         />
-        {player != null && (
-          <Typography variant="body2" color="secondary.contrastText">
-            {currentTime}/{duration}
-          </Typography>
-        )}
-        <Stack direction="row" spacing={2}>
-          <Stack
-            alignItems="center"
-            spacing={2}
-            direction="row"
+        <Stack
+          direction="row"
+          gap={5}
+          justifyContent={{ xs: 'space-between', md: 'none' }}
+          alignItems="center"
+        >
+          <IconButton
+            onClick={handlePlay}
+            sx={{ display: { xs: 'none', md: 'flex' } }}
+          >
+            {!play ? (
+              <PlayArrowRounded fontSize="large" />
+            ) : (
+              <PauseRounded fontSize="large" />
+            )}
+          </IconButton>
+          <Slider
+            aria-label="desktop-progress-control"
+            min={0}
+            max={durationSeconds}
+            value={progress}
+            valueLabelFormat={(value) => {
+              return secondsToTimeFormat(value, { trimZeroes: true })
+            }}
+            valueLabelDisplay="auto"
+            onChange={handleSeek}
             sx={{
+              height: 8.4,
               display: { xs: 'none', md: 'flex' },
-              '> .MuiSlider-root': {
-                width: 0,
-                opacity: 0,
-                transition: 'all 0.2s ease-out'
+              '& .MuiSlider-thumb': {
+                width: 13,
+                height: 13
               },
-              '&:hover': {
-                '> .MuiSlider-root': {
-                  width: 70,
-                  opacity: 1
-                }
+              '& .MuiSlider-rail': {
+                backgroundColor: 'secondary.main'
               }
             }}
-          >
-            <IconButton onClick={handleMute}>
-              {mute || volume === 0 ? (
-                <VolumeOffOutlined />
-              ) : volume > 60 ? (
-                <VolumeUpOutlined />
-              ) : volume > 30 ? (
-                <VolumeDownOutlined />
-              ) : (
-                <VolumeMuteOutlined />
-              )}
-            </IconButton>
-            <Slider
-              aria-label="volume-control"
-              min={0}
-              max={100}
-              value={mute ? 0 : volume}
-              valueLabelFormat={(value) => {
-                return `${value}%`
-              }}
-              valueLabelDisplay="auto"
-              onChange={handleVolume}
+          />
+          {player != null && (
+            <Typography variant="body2" color="secondary.contrastText">
+              {currentTime}/{duration}
+            </Typography>
+          )}
+          <Stack direction="row" spacing={2}>
+            <Stack
+              alignItems="center"
+              spacing={2}
+              direction="row"
               sx={{
-                width: 70,
-                '& .MuiSlider-thumb': {
-                  width: 10,
-                  height: 10
+                display: { xs: 'none', md: 'flex' },
+                '> .MuiSlider-root': {
+                  width: 0,
+                  opacity: 0,
+                  transition: 'all 0.2s ease-out'
                 },
-                '& .MuiSlider-rail': {
-                  backgroundColor: 'secondary.main'
+                '&:hover': {
+                  '> .MuiSlider-root': {
+                    width: 70,
+                    opacity: 1
+                  }
                 }
               }}
-            />
+            >
+              <IconButton onClick={handleMute}>
+                {mute || volume === 0 ? (
+                  <VolumeOffOutlined />
+                ) : volume > 60 ? (
+                  <VolumeUpOutlined />
+                ) : volume > 30 ? (
+                  <VolumeDownOutlined />
+                ) : (
+                  <VolumeMuteOutlined />
+                )}
+              </IconButton>
+              <Slider
+                aria-label="volume-control"
+                min={0}
+                max={100}
+                value={mute ? 0 : volume}
+                valueLabelFormat={(value) => {
+                  return `${value}%`
+                }}
+                valueLabelDisplay="auto"
+                onChange={handleVolume}
+                sx={{
+                  width: 70,
+                  '& .MuiSlider-thumb': {
+                    width: 10,
+                    height: 10
+                  },
+                  '& .MuiSlider-rail': {
+                    backgroundColor: 'secondary.main'
+                  }
+                }}
+              />
+            </Stack>
+            <IconButton>
+              <LanguageRounded />
+            </IconButton>
+            <IconButton>
+              <SubtitlesOutlined />
+            </IconButton>
+            <IconButton onClick={handleFullscreen}>
+              {fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+            </IconButton>
           </Stack>
-          <IconButton>
-            <LanguageRounded />
-          </IconButton>
-          <IconButton>
-            <SubtitlesOutlined />
-          </IconButton>
-          <IconButton onClick={handleFullscreen}>
-            <FullscreenOutlined />
-          </IconButton>
         </Stack>
-      </Stack>
-    </Container>
+      </Container>
+    </Box>
   )
 }
