@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { ReactElement, useRef, useEffect, useState } from 'react'
+import { ReactElement, useRef, useEffect, useState, useCallback } from 'react'
 import videojs from 'video.js'
 import fscreen from 'fscreen'
 import Div100vh from 'react-div-100vh'
@@ -31,6 +31,16 @@ export function VideoHero({ onPlay }: VideoHeroProps): ReactElement {
       fscreen.removeEventListener('fullscreenchange', fullscreenchange)
   }, [setIsFullscreen])
 
+  const handlePlay = useCallback((): void => {
+    setIsPlaying(true)
+    if (onPlay != null) {
+      onPlay()
+    }
+    if (playerRef?.current != null) {
+      playerRef?.current?.play()
+    }
+  }, [onPlay])
+
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
@@ -55,16 +65,6 @@ export function VideoHero({ onPlay }: VideoHeroProps): ReactElement {
     })
     setIsPlaying(false)
   }, [variant?.hls])
-
-  function handlePlay(): void {
-    setIsPlaying(true)
-    if (onPlay != null) {
-      onPlay()
-    }
-    if (playerRef?.current != null) {
-      playerRef?.current?.play()
-    }
-  }
 
   return (
     <Div100vh
