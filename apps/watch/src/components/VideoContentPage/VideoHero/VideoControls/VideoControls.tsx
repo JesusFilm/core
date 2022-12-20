@@ -17,9 +17,9 @@ import LanguageRounded from '@mui/icons-material/LanguageRounded'
 import FullscreenOutlined from '@mui/icons-material/FullscreenOutlined'
 import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+import fscreen from 'fscreen'
 import { SubtitleDialog } from '../../../SubtitleDialog'
 import { VideoContentFields_variant_subtitle } from '../../../../../__generated__/VideoContentFields'
-import fscreen from 'fscreen'
 
 interface VideoControlProps {
   player: videojs.Player

@@ -102,7 +102,9 @@ describe('VideoControls', () => {
 
   it('fullscreens the video player on fullscreen icon click when desktop', async () => {
     ;(global.navigator.userAgent as unknown as string) = 'Mac'
-    const { getByTestId } = render(<VideoControls player={player} />)
+    const { getByTestId } = render(
+      <VideoControls player={player} subtitles={undefined} />
+    )
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
     expect(fscreen.requestFullscreen).toHaveBeenCalled()
     await waitFor(() =>
