@@ -3,21 +3,21 @@ import { noop } from 'lodash'
 import { ShareButton } from './ShareButton'
 
 describe('ShareButton', () => {
-  it('should render share button based on variant correctly', () => {
+  it('should render button variant as button', () => {
     const { getByRole } = render(
       <ShareButton variant="button" onClick={noop} />
     )
     expect(getByRole('button', { name: 'Share' })).toBeInTheDocument()
   })
 
-  it('should render icon button based on variant correctly', () => {
+  it('should render icon variant as icon', () => {
     const { getByTestId } = render(
       <ShareButton variant="icon" onClick={noop} />
     )
     expect(getByTestId('ShareOutlinedIcon')).toBeInTheDocument()
   })
 
-  it('should execute share button operation', () => {
+  it('should call onClick when button is clicked', () => {
     const setOpenShare = jest.fn()
 
     const { getByRole } = render(
