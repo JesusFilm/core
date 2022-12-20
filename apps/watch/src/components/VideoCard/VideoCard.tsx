@@ -52,7 +52,9 @@ export function VideoCard({
   return (
     <NextLink
       href={`/${
-        containerSlug != null && video?.label !== VideoLabel.collection
+        containerSlug != null &&
+        video?.label != null &&
+        ![VideoLabel.collection, VideoLabel.series].includes(video.label)
           ? `${containerSlug}/`
           : ''
       }${video?.variant?.slug ?? ''}`}

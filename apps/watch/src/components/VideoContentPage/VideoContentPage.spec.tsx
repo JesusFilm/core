@@ -1,18 +1,14 @@
 import { fireEvent, render } from '@testing-library/react'
-
 import { SnackbarProvider } from 'notistack'
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/testData'
+import { VideoProvider } from '../../libs/videoContext'
 import { VideoContentPage } from '.'
-
-const video: VideoContentFields = { ...videos[0] }
 
 describe('VideoContentPage', () => {
   it('should render VideoHero', () => {
     const { getAllByRole } = render(
       <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
+        <VideoProvider value={{ content: videos[0] }}>
           <VideoContentPage />
         </VideoProvider>
       </SnackbarProvider>
@@ -24,7 +20,7 @@ describe('VideoContentPage', () => {
   it('should render description', () => {
     const { getByRole } = render(
       <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
+        <VideoProvider value={{ content: videos[0] }}>
           <VideoContentPage />
         </VideoProvider>
       </SnackbarProvider>
@@ -35,7 +31,7 @@ describe('VideoContentPage', () => {
   it('should render related videos', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
+        <VideoProvider value={{ content: videos[0] }}>
           <VideoContentPage />
         </VideoProvider>
       </SnackbarProvider>
@@ -49,7 +45,7 @@ describe('VideoContentPage', () => {
   it('should render share button', () => {
     const { getByRole } = render(
       <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
+        <VideoProvider value={{ content: videos[0] }}>
           <VideoContentPage />
         </VideoProvider>
       </SnackbarProvider>
