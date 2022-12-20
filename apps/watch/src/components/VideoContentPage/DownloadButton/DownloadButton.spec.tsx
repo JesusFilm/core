@@ -26,4 +26,15 @@ describe('DownloadButton', () => {
     fireEvent.click(getByRole('button'))
     expect(setOpenDownload).toHaveBeenCalled()
   })
+
+  it('should call onClick when icon is clicked', () => {
+    const setOpenShare = jest.fn()
+
+    const { getByTestId } = render(
+      <DownloadButton variant="icon" onClick={setOpenShare} />
+    )
+
+    fireEvent.click(getByTestId('FileDownloadOutlinedIcon'))
+    expect(setOpenShare).toHaveBeenCalled()
+  })
 })

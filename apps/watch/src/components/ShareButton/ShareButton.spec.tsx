@@ -27,4 +27,15 @@ describe('ShareButton', () => {
     fireEvent.click(getByRole('button'))
     expect(setOpenShare).toHaveBeenCalled()
   })
+
+  it('should call onClick when icon is clicked', () => {
+    const setOpenShare = jest.fn()
+
+    const { getByTestId } = render(
+      <ShareButton variant="icon" onClick={setOpenShare} />
+    )
+
+    fireEvent.click(getByTestId('ShareOutlinedIcon'))
+    expect(setOpenShare).toHaveBeenCalled()
+  })
 })
