@@ -7,7 +7,7 @@ describe('ShareButton', () => {
     const { getByRole } = render(
       <ShareButton variant="button" openDialog={noop} />
     )
-    expect(getByRole('button')).toHaveTextContent('Share')
+    expect(getByRole('button', { name: 'Share' })).toBeInTheDocument()
   })
 
   it('should render icon button based on variant correctly', () => {
