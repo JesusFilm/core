@@ -11,7 +11,15 @@ import { ShareDialog } from './ShareDialog'
 
 const onClose = jest.fn()
 const originalEnv = process.env
-const routes = ['the-story-of-jesus-for-children']
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter() {
+    return {
+      query: { part1: 'the-story-of-jesus-for-children' }
+    }
+  }
+}))
 
 const video: VideoContentFields = {
   ...videos[0],
@@ -55,7 +63,7 @@ describe('ShareDialog', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: video }}>
-          <ShareDialog open routes={routes} onClose={onClose} />
+          <ShareDialog open onClose={onClose} />
         </VideoProvider>
       </SnackbarProvider>
     )
@@ -76,11 +84,10 @@ describe('ShareDialog', () => {
             }
           }}
         >
-          <ShareDialog routes={routes} open onClose={onClose} />
+          <ShareDialog open onClose={onClose} />
         </VideoProvider>
       </SnackbarProvider>
     )
-
     const link = `${
       process.env.NEXT_PUBLIC_WATCH_URL as string
     }/the-story-of-jesus-for-children`
@@ -109,7 +116,7 @@ describe('ShareDialog', () => {
       const { getByRole } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
-            <ShareDialog routes={routes} open onClose={onClose} />
+            <ShareDialog open onClose={onClose} />
           </VideoProvider>
         </SnackbarProvider>
       )
@@ -132,7 +139,7 @@ describe('ShareDialog', () => {
       const { getByRole } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
-            <ShareDialog routes={routes} open onClose={onClose} />
+            <ShareDialog open onClose={onClose} />
           </VideoProvider>
         </SnackbarProvider>
       )
@@ -166,7 +173,7 @@ describe('ShareDialog', () => {
       const { getByRole } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
-            <ShareDialog routes={routes} open onClose={onClose} />
+            <ShareDialog open onClose={onClose} />
           </VideoProvider>
         </SnackbarProvider>
       )
@@ -187,7 +194,7 @@ describe('ShareDialog', () => {
       const { getByRole } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
-            <ShareDialog routes={routes} open onClose={onClose} />
+            <ShareDialog open onClose={onClose} />
           </VideoProvider>
         </SnackbarProvider>
       )
@@ -231,7 +238,7 @@ describe('ShareDialog', () => {
       const { getByRole, getByText } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
-            <ShareDialog routes={routes} open onClose={onClose} />
+            <ShareDialog open onClose={onClose} />
           </VideoProvider>
         </SnackbarProvider>
       )
@@ -251,7 +258,7 @@ describe('ShareDialog', () => {
       const { getByRole, getByText } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
-            <ShareDialog routes={routes} open onClose={onClose} />
+            <ShareDialog open onClose={onClose} />
           </VideoProvider>
         </SnackbarProvider>
       )
