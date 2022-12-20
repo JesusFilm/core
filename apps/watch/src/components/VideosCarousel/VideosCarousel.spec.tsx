@@ -9,7 +9,13 @@ describe('VideosCarousel', () => {
   it('should display video items', async () => {
     const renderItem = jest.fn()
 
-    render(<VideosCarousel videos={videos} renderItem={renderItem} />)
+    render(
+      <VideosCarousel
+        activeVideo={videos[0].id}
+        videos={videos}
+        renderItem={renderItem}
+      />
+    )
     // Renders twice for some reason...
     expect(renderItem).toHaveBeenCalledTimes(videos.length * 2)
     expect(renderItem).toHaveBeenNthCalledWith(1, videos[0])
@@ -21,6 +27,7 @@ describe('VideosCarousel', () => {
       const { getByRole } = render(
         <VideosCarousel
           videos={[videos[0]]}
+          activeVideo={videos[0].id}
           renderItem={() => <div data-testid="video-carousel-item" />}
         />
       )
@@ -35,6 +42,7 @@ describe('VideosCarousel', () => {
       const { getByRole } = render(
         <VideosCarousel
           videos={videos}
+          activeVideo={videos[0].id}
           renderItem={() => <div data-testid="video-carousel-item" />}
         />
       )
@@ -53,6 +61,7 @@ describe('VideosCarousel', () => {
       const { getByRole } = render(
         <VideosCarousel
           videos={videos}
+          activeVideo={videos[0].id}
           renderItem={() => <div data-testid="video-carousel-item" />}
         />
       )

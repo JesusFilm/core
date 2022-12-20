@@ -23,8 +23,6 @@ export function VideoContentPage(): ReactElement {
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
 
-  console.log(container)
-
   return (
     <PageWrapper hero={<VideoHero onPlay={() => setHasPlayed(true)} />}>
       <>

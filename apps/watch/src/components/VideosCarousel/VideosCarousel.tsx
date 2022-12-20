@@ -166,7 +166,6 @@ export function VideosCarousel({
         // Set spacing at carousel end.
         slidesOffsetAfter={minPageMargin}
         onSlideChangeTransitionEnd={(swiper: SwiperExtended) => {
-          console.log('slide change', swiper)
           updateMarginLeftOffset(swiper)
           updateSlidesAlignment(swiper)
           updateSnapGrid(swiper)
@@ -179,7 +178,6 @@ export function VideosCarousel({
           updateSnapGrid(swiper)
         }}
         onSwiper={(swiper: SwiperExtended) => {
-          console.log('swiper', swiper)
           updateMarginLeftOffset(swiper)
           updateSlidesAlignment(swiper)
           updateShowHideNav(swiper)

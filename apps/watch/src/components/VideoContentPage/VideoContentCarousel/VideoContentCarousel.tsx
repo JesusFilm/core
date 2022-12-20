@@ -13,7 +13,6 @@ import { useVideo } from '../../../libs/videoContext'
 import { VideosCarousel } from '../../VideosCarousel'
 import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
 import { VideoCard } from '../../VideoCard'
-import { videos } from '../../Videos/testData'
 
 interface VideoContentCarouselProps {
   playing?: boolean
@@ -22,7 +21,7 @@ interface VideoContentCarouselProps {
 export function VideoContentCarousel({
   playing = false
 }: VideoContentCarouselProps): ReactElement {
-  const { title, id, label, slug, children, container } = useVideo()
+  const { title, id, slug, children, container } = useVideo()
   const router = useRouter()
 
   const activeVideoIndex = useMemo(() => {
@@ -34,26 +33,25 @@ export function VideoContentCarousel({
   /* 
     TODO: 
     - Scroll to active video fix
-    - add tests & stories
+    - add tests
     */
 
   const progressionLabel = useMemo(() => {
     if (container != null) {
-      switch (label) {
-        case VideoLabel.featureFilm:
-        case VideoLabel.shortFilm:
+      switch (container.label) {
+        case VideoLabel.collection:
           return `•  ${container.children.length} ${
             getLabelDetails(container.label).childLabel
           }`
-        case VideoLabel.segment:
-        case VideoLabel.episode:
-          return `•  ${getLabelDetails(label).label} 
+        case VideoLabel.featureFilm:
+        case VideoLabel.series:
+          return `•  ${getLabelDetails(container.label).childLabel} 
     ${activeVideoIndex} of ${container.children.length}`
         default:
           return ''
       }
     }
-  }, [label, container, activeVideoIndex])
+  }, [container, activeVideoIndex])
 
   const buttonLink =
     container != null && router != null
@@ -66,9 +64,8 @@ export function VideoContentCarousel({
         case VideoLabel.featureFilm:
           return 'Watch full film'
         case VideoLabel.collection:
-          return 'Open the whole collection'
         case VideoLabel.series:
-          return 'Open the series'
+          return 'See all'
         default:
           return ''
       }
@@ -87,8 +84,6 @@ export function VideoContentCarousel({
     }
     return []
   }, [container, children])
-
-  console.log('siblings', siblings, videos.length, children)
 
   const relatedVideos = useMemo(
     () => (children.length > 0 ? children.concat(siblings) : siblings),
@@ -114,6 +109,7 @@ export function VideoContentCarousel({
           <Typography
             variant="h5"
             color="text.primary"
+            gutterBottom={container != null}
             sx={{ display: playing ? 'inline-flex' : 'none' }}
           >
             {title[0].value}
@@ -124,7 +120,11 @@ export function VideoContentCarousel({
               justifyContent="space-between"
               alignItems="center"
             >
-              <Typography variant="overline1" color="primary">
+              <Typography
+                data-testid="container-title"
+                variant="overline1"
+                color="primary"
+              >
                 {container.title[0].value}
                 {'  '}
                 <Typography
@@ -147,6 +147,7 @@ export function VideoContentCarousel({
                 </Button>
               </NextLink>
               <Typography
+                data-testid="container-progress"
                 variant="overline1"
                 color="secondary"
                 sx={{ display: { xs: 'inline-flex', xl: 'none' } }}

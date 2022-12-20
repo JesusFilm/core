@@ -7,7 +7,7 @@ import { VideoHeroOverlay } from './VideoHeroOverlay'
 import 'video.js/dist/video-js.css'
 
 interface VideoHeroProps {
-  onPlay: () => void
+  onPlay?: () => void
 }
 
 export function VideoHero({ onPlay }: VideoHeroProps): ReactElement {
@@ -52,7 +52,9 @@ export function VideoHero({ onPlay }: VideoHeroProps): ReactElement {
 
   function handlePlay(): void {
     setIsPlaying(true)
-    onPlay()
+    if (onPlay != null) {
+      onPlay()
+    }
     if (playerRef?.current != null) {
       playerRef?.current?.play()
     }

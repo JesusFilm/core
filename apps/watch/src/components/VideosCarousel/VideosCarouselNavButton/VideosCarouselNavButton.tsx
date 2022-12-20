@@ -5,7 +5,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
 
 interface VideosCarouselNavButtonProps {
   variant: 'prev' | 'next'
-  disabled: boolean
+  disabled?: boolean
 }
 
 const navOverlayBackground = (deg: number): string =>
@@ -16,7 +16,7 @@ const navOverlayHover = (deg: number): string =>
 
 export function VideosCarouselNavButton({
   variant,
-  disabled
+  disabled = false
 }: VideosCarouselNavButtonProps): ReactElement {
   const navigationStyles = {
     position: 'absolute',
