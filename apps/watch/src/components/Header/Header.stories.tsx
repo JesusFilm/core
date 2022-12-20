@@ -27,7 +27,7 @@ export const Default = Template.bind({})
 
 export const OpenPanel = Template.bind({})
 OpenPanel.play = () => {
-  const menuButton = screen.getByTestId('MenuIcon')
+  const menuButton = screen.getAllByTestId('MenuIcon')[0]
   userEvent.click(menuButton)
 }
 
