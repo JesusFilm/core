@@ -21,7 +21,6 @@ export function ShareButton({
       onClick={onClick}
       data-testid="share"
       sx={{
-        display: { xs: 'none', sm: 'flex' },
         minWidth: '200px'
       }}
     >

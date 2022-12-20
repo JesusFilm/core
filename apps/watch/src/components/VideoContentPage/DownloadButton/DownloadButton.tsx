@@ -21,7 +21,6 @@ export function DownloadButton({
       onClick={onClick}
       data-testid="download"
       sx={{
-        display: { xs: 'none', sm: 'flex' },
         minWidth: '200px'
       }}
     >

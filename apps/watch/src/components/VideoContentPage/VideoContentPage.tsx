@@ -99,7 +99,7 @@ export function VideoContentPage(): ReactElement {
               }}
             >
               <VideoContent />
-              <Box sx={{ display: { sm: 'none', md: 'block' } }}>
+              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
                 <Stack
                   spacing={5}
                   mb={8}

@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
 import { ShareButton } from '../../ShareButton'
 
 export interface Props {
@@ -27,7 +28,9 @@ export function ContainerDescription({
       >
         {value}
       </Typography>
-      <ShareButton onClick={openDialog} variant="button" />
+      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+        <ShareButton onClick={openDialog} variant="button" />
+      </Box>
     </Stack>
   )
 }
