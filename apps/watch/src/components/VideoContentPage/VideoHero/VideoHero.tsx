@@ -34,6 +34,7 @@ export function VideoHero(): ReactElement {
         autoplay: false,
         controls: false,
         controlBar: false,
+        bigPlayButton: false,
         userActions: {
           hotkeys: true,
           doubleClick: true
