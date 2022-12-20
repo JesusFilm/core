@@ -91,8 +91,6 @@ describe('VideoContentCarousel', () => {
         'The Beginning 8:08'
       )
     })
-
-    xit('should hide carousel when no children', () => {})
   })
 
   describe('content in container', () => {

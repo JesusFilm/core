@@ -29,6 +29,8 @@ const Template: Story<
   </VideoProvider>
 )
 
+// Standalone videos don't show VideoContentCarousel
+
 export const Default = Template.bind({})
 Default.args = {
   content: videos[0]
@@ -43,6 +45,7 @@ WithContainer.args = {
 const PlayingTemplate: Story<
   ComponentProps<typeof VideoContentCarousel>
 > = () => (
+  // Standalone, video with children only, video with siblings
   <Stack>
     <VideoProvider value={{ content: { ...videos[0], children: [] } }}>
       <VideoContentCarousel playing />
