@@ -27,7 +27,7 @@ export function ContainerDescription({
       >
         {value}
       </Typography>
-      <ShareButton openDialog={openDialog} variant="button" />
+      <ShareButton onClick={openDialog} variant="button" />
     </Stack>
   )
 }

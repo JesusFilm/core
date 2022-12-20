@@ -15,8 +15,8 @@ const DownloadButtonStory: ComponentMeta<typeof DownloadButton> = {
 
 const Template: Story<typeof DownloadButton> = () => (
   <>
-    <DownloadButton variant="icon" openDialog={noop} />
-    <DownloadButton variant="button" openDialog={noop} />
+    <DownloadButton variant="icon" onClick={noop} />
+    <DownloadButton variant="button" onClick={noop} />
   </>
 )
 

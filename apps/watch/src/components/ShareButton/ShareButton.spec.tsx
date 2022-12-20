@@ -5,14 +5,14 @@ import { ShareButton } from './ShareButton'
 describe('ShareButton', () => {
   it('should render share button based on variant correctly', () => {
     const { getByRole } = render(
-      <ShareButton variant="button" openDialog={noop} />
+      <ShareButton variant="button" onClick={noop} />
     )
     expect(getByRole('button', { name: 'Share' })).toBeInTheDocument()
   })
 
   it('should render icon button based on variant correctly', () => {
     const { getByTestId } = render(
-      <ShareButton variant="icon" openDialog={noop} />
+      <ShareButton variant="icon" onClick={noop} />
     )
     expect(getByTestId('ShareOutlinedIcon')).toBeInTheDocument()
   })
@@ -21,7 +21,7 @@ describe('ShareButton', () => {
     const setOpenShare = jest.fn()
 
     const { getByRole } = render(
-      <ShareButton variant="button" openDialog={setOpenShare} />
+      <ShareButton variant="button" onClick={setOpenShare} />
     )
 
     fireEvent.click(getByRole('button'))

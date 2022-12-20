@@ -15,8 +15,8 @@ const ShareButtonStory: ComponentMeta<typeof ShareButton> = {
 
 const Template: Story<typeof ShareButton> = () => (
   <>
-    <ShareButton variant="icon" openDialog={noop} />
-    <ShareButton variant="button" openDialog={noop} />
+    <ShareButton variant="icon" onClick={noop} />
+    <ShareButton variant="button" onClick={noop} />
   </>
 )
 

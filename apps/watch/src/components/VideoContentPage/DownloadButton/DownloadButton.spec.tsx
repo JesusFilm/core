@@ -5,14 +5,14 @@ import { DownloadButton } from './DownloadButton'
 describe('DownloadButton', () => {
   it('should render download button based on variant correctly', () => {
     const { getByRole } = render(
-      <DownloadButton variant="button" openDialog={noop} />
+      <DownloadButton variant="button" onClick={noop} />
     )
     expect(getByRole('button', { name: 'Download' })).toBeInTheDocument()
   })
 
   it('should render icon button based on variant correctly', () => {
     const { getByTestId } = render(
-      <DownloadButton variant="icon" openDialog={noop} />
+      <DownloadButton variant="icon" onClick={noop} />
     )
     expect(getByTestId('FileDownloadOutlinedIcon')).toBeInTheDocument()
   })
@@ -21,7 +21,7 @@ describe('DownloadButton', () => {
     const setOpenDownload = jest.fn()
 
     const { getByRole } = render(
-      <DownloadButton variant="button" openDialog={setOpenDownload} />
+      <DownloadButton variant="button" onClick={setOpenDownload} />
     )
 
     fireEvent.click(getByRole('button'))

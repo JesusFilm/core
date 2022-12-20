@@ -5,12 +5,12 @@ import IconButton from '@mui/material/IconButton'
 
 export interface ShareButtonProps {
   variant: 'button' | 'icon'
-  openDialog: () => void
+  onClick: () => void
 }
 
 export function ShareButton({
   variant,
-  openDialog
+  onClick
 }: ShareButtonProps): ReactElement {
   return variant === 'button' ? (
     <Button
@@ -18,7 +18,7 @@ export function ShareButton({
       startIcon={<ShareOutlinedIcon />}
       size="medium"
       color="secondary"
-      onClick={openDialog}
+      onClick={onClick}
       sx={{
         display: { xs: 'none', sm: 'flex' },
         minWidth: '200px'
@@ -27,7 +27,7 @@ export function ShareButton({
       Share
     </Button>
   ) : (
-    <IconButton onClick={openDialog}>
+    <IconButton onClick={onClick}>
       <ShareOutlinedIcon color="primary" />
     </IconButton>
   )

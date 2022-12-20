@@ -107,11 +107,11 @@ export function VideoContentPage(): ReactElement {
                 >
                   <DownloadButton
                     variant="button"
-                    openDialog={() => setOpenDownload(true)}
+                    onClick={() => setOpenDownload(true)}
                   />
                   <ShareButton
                     variant="button"
-                    openDialog={() => setOpenShare(true)}
+                    onClick={() => setOpenShare(true)}
                   />
                 </Stack>
               </Box>
