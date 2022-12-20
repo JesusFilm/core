@@ -3,8 +3,6 @@ import Container from '@mui/material/Container'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { ReactElement, useState } from 'react'
-import Button from '@mui/material/Button'
-import SaveAlt from '@mui/icons-material/SaveAlt'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { NextSeo } from 'next-seo'
@@ -15,6 +13,7 @@ import { VideosCarousel } from '../VideosCarousel/VideosCarousel'
 import { CarouselItem } from '../Video/CarouselItem/CarouselItem'
 import { DownloadDialog } from '../DownloadDialog'
 import { ShareButton } from '../VideoContainerPage/ShareButton'
+import { DownloadButton } from '../VideoContainerPage/DownloadButton'
 import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
 
@@ -102,13 +101,10 @@ export function VideoContentPage(): ReactElement {
               <VideoContent />
               <Box width="336px" sx={{ display: { xs: 'none', md: 'block' } }}>
                 <Stack direction="row" spacing="20px" mb="40px">
-                  <Button
-                    variant="outlined"
-                    onClick={() => setOpenDownload(true)}
-                  >
-                    <SaveAlt />
-                    Download
-                  </Button>
+                  <DownloadButton
+                    variant="button"
+                    openDialog={() => setOpenDownload(true)}
+                  />
                   <ShareButton
                     variant="button"
                     openDialog={() => setOpenShare(true)}
