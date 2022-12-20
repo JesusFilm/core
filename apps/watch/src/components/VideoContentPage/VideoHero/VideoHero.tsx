@@ -33,6 +33,7 @@ export function VideoHero(): ReactElement {
       playerRef.current = videojs(videoRef.current, {
         autoplay: false,
         controls: false,
+        controlBar: false,
         userActions: {
           hotkeys: true,
           doubleClick: true
