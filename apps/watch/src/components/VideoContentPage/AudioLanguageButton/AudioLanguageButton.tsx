@@ -7,38 +7,9 @@ import KeyboardArrowDownOutlined from '@mui/icons-material/KeyboardArrowDownOutl
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
-import { useQuery, gql } from '@apollo/client'
 import LanguageRounded from '@mui/icons-material/LanguageRounded'
-import { GetVideoLanguages } from '../../../../__generated__/GetVideoLanguages'
 import { useVideo } from '../../../libs/videoContext'
 import { AudioLanguageDialog } from '../../AudioDialog'
-
-export const GET_VIDEO_LANGUAGES = gql`
-  query GetVideoLanguages($id: ID!) {
-    video(id: $id, idType: slug) {
-      id
-      variant {
-        id
-        language {
-          name {
-            value
-            primary
-          }
-        }
-      }
-      variantLanguagesWithSlug {
-        slug
-        language {
-          id
-          name {
-            value
-            primary
-          }
-        }
-      }
-    }
-  }
-`
 
 interface AudioLanguageButtonProps {
   componentVariant: 'button' | 'icon'
@@ -47,17 +18,8 @@ interface AudioLanguageButtonProps {
 export function AudioLanguageButton({
   componentVariant
 }: AudioLanguageButtonProps): ReactElement {
-  const { variant: videoVariant } = useVideo()
+  const { variant, variantLanguagesWithSlug } = useVideo()
   const [openAudioLanguage, setOpenAudioLanguage] = useState(false)
-
-  const { data, loading } = useQuery<GetVideoLanguages>(GET_VIDEO_LANGUAGES, {
-    variables: {
-      id: videoVariant?.slug
-    }
-  })
-
-  const variant = data?.video?.variant
-  const variantLanguagesWithSlug = data?.video?.variantLanguagesWithSlug
 
   const nativeName = variant?.language?.name.find(
     ({ primary }) => !primary
@@ -68,46 +30,37 @@ export function AudioLanguageButton({
 
   return (
     <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.light}>
-      {variant != null && variantLanguagesWithSlug != null && (
-        <>
-          {componentVariant === 'button' ? (
-            <Button
-              size="small"
-              onClick={() => setOpenAudioLanguage(true)}
-              sx={{
-                gap: 1,
-                display: 'flex',
-                alignItem: 'center',
-                color: 'background.paper',
-                '&:hover': {
-                  backgroundColor: 'transparent'
-                }
-              }}
-            >
-              <LanguageOutlined fontSize="small" />
-              <Typography variant="subtitle1">
-                {localName ?? nativeName}
-              </Typography>
-              <AddOutlined fontSize="small" />
-              <Typography variant="subtitle1">
-                {variantLanguagesWithSlug.length - 1} Languages
-              </Typography>
-              <KeyboardArrowDownOutlined fontSize="small" />
-            </Button>
-          ) : (
-            <IconButton onClick={() => setOpenAudioLanguage(true)}>
-              <LanguageRounded sx={{ color: '#ffffff' }} />
-            </IconButton>
-          )}
-          <AudioLanguageDialog
-            variant={variant}
-            variantLanguagesWithSlug={variantLanguagesWithSlug}
-            loading={loading}
-            open={openAudioLanguage}
-            onClose={() => setOpenAudioLanguage(false)}
-          />
-        </>
+      {componentVariant === 'button' ? (
+        <Button
+          size="small"
+          onClick={() => setOpenAudioLanguage(true)}
+          sx={{
+            gap: 1,
+            display: 'flex',
+            alignItem: 'center',
+            color: 'background.paper',
+            '&:hover': {
+              backgroundColor: 'transparent'
+            }
+          }}
+        >
+          <LanguageOutlined fontSize="small" />
+          <Typography variant="subtitle1">{localName ?? nativeName}</Typography>
+          <AddOutlined fontSize="small" />
+          <Typography variant="subtitle1">
+            {variantLanguagesWithSlug.length - 1} Languages
+          </Typography>
+          <KeyboardArrowDownOutlined fontSize="small" />
+        </Button>
+      ) : (
+        <IconButton onClick={() => setOpenAudioLanguage(true)}>
+          <LanguageRounded sx={{ color: '#ffffff' }} />
+        </IconButton>
       )}
+      <AudioLanguageDialog
+        open={openAudioLanguage}
+        onClose={() => setOpenAudioLanguage(false)}
+      />
     </ThemeProvider>
   )
 }

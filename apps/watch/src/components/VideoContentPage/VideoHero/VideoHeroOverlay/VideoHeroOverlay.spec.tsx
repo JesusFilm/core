@@ -1,5 +1,4 @@
 import { render, fireEvent } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
 import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
 import {
   VideoLabel,
@@ -33,7 +32,8 @@ describe('VideoHeroOverlay', () => {
         name: [
           {
             __typename: 'Translation',
-            value: 'English'
+            value: 'English',
+            primary: true
           }
         ]
       },
@@ -56,10 +56,33 @@ describe('VideoHeroOverlay', () => {
       hls: 'https://arc.gt/zbrvj',
       slug: 'the-story-of-jesus-for-children/english'
     },
+
     title: [
       {
         value: 'The Story of Jesus for Children',
         __typename: 'Translation'
+      }
+    ],
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'the-story-of-jesus-for-children/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
       }
     ],
     slug: 'the-story-of-jesus-for-children'
@@ -67,11 +90,9 @@ describe('VideoHeroOverlay', () => {
 
   it('should render the Video Hero Overlay', () => {
     const { getByRole, getByText, getByTestId } = render(
-      <MockedProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoHeroOverlay />
-        </VideoProvider>
-      </MockedProvider>
+      <VideoProvider value={{ content: video }}>
+        <VideoHeroOverlay />
+      </VideoProvider>
     )
     expect(getByText('The Story of Jesus for Children')).toBeInTheDocument()
     expect(getByText('61 min')).toBeInTheDocument()
@@ -84,11 +105,9 @@ describe('VideoHeroOverlay', () => {
   it('should play video on the Play Video button click', () => {
     const handlePlay = jest.fn()
     const { getByRole } = render(
-      <MockedProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoHeroOverlay handlePlay={handlePlay} />
-        </VideoProvider>
-      </MockedProvider>
+      <VideoProvider value={{ content: video }}>
+        <VideoHeroOverlay handlePlay={handlePlay} />
+      </VideoProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Play Video' }))
     expect(handlePlay).toHaveBeenCalled()
@@ -97,11 +116,9 @@ describe('VideoHeroOverlay', () => {
   it('should play video on the Mute Icon click', () => {
     const handlePlay = jest.fn()
     const { getByTestId } = render(
-      <MockedProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoHeroOverlay handlePlay={handlePlay} />
-        </VideoProvider>
-      </MockedProvider>
+      <VideoProvider value={{ content: video }}>
+        <VideoHeroOverlay handlePlay={handlePlay} />
+      </VideoProvider>
     )
     fireEvent.click(getByTestId('VolumeOffOutlinedIcon'))
     expect(handlePlay).toHaveBeenCalled()

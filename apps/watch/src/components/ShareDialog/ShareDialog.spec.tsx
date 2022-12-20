@@ -26,7 +26,8 @@ const video: VideoContentFields = {
       name: [
         {
           __typename: 'Translation',
-          value: 'en'
+          value: 'en',
+          primary: true
         }
       ]
     },

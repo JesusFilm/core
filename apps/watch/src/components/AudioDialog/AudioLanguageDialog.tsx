@@ -8,25 +8,16 @@ import { Formik, Form, FormikValues } from 'formik'
 import TextField from '@mui/material/TextField'
 import LanguageIcon from '@mui/icons-material/Language'
 import { useRouter } from 'next/router'
-import {
-  GetVideoLanguages_video_variant as Variant,
-  GetVideoLanguages_video_variantLanguagesWithSlug as VariantLanguagesWithSlug
-} from '../../../__generated__/GetVideoLanguages'
+import { useVideo } from '../../libs/videoContext'
 
 interface AudioLanguageDialogProps
-  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
-  variant: Variant
-  variantLanguagesWithSlug: VariantLanguagesWithSlug[]
-  loading: boolean
-}
+  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
 
 export function AudioLanguageDialog({
   open,
-  onClose,
-  loading,
-  variant,
-  variantLanguagesWithSlug
+  onClose
 }: AudioLanguageDialogProps): ReactElement {
+  const { variant, variantLanguagesWithSlug } = useVideo()
   const router = useRouter()
 
   const languages = variantLanguagesWithSlug?.map(
@@ -99,31 +90,29 @@ export function AudioLanguageDialog({
           divider
         >
           <Form>
-            {languages != null && (
-              <LanguageAutocomplete
-                onChange={(value) => {
-                  setFieldValue('language', value)
-                  if (value != null) handleSubmit(value)
-                }}
-                value={values.language}
-                languages={languages}
-                loading={loading}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    hiddenLabel
-                    placeholder="Search Language"
-                    label="Language"
-                    helperText={`${languages?.length ?? 0} Languages Available`}
-                    sx={{
-                      '> .MuiOutlinedInput-root': {
-                        borderRadius: 2
-                      }
-                    }}
-                  />
-                )}
-              />
-            )}
+            <LanguageAutocomplete
+              onChange={(value) => {
+                setFieldValue('language', value)
+                if (value != null) handleSubmit(value)
+              }}
+              value={values.language}
+              languages={languages}
+              loading={languages == null}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  hiddenLabel
+                  placeholder="Search Language"
+                  label="Language"
+                  helperText={`${languages?.length ?? 0} Languages Available`}
+                  sx={{
+                    '> .MuiOutlinedInput-root': {
+                      borderRadius: 2
+                    }
+                  }}
+                />
+              )}
+            />
           </Form>
         </Dialog>
       )}

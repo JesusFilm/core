@@ -1,4 +1,3 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import videojs from 'video.js'
 import { VideoProvider } from '../../../../libs/videoContext'
@@ -43,11 +42,9 @@ describe('VideoControls', () => {
       play: jest.fn()
     }))
     const { getByTestId } = render(
-      <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <VideoControls player={player} />
-        </VideoProvider>
-      </MockedProvider>
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoControls player={player} />
+      </VideoProvider>
     )
     fireEvent.click(getByTestId('PlayArrowRoundedIcon'))
     expect(playStub).toHaveBeenCalled()
@@ -61,11 +58,9 @@ describe('VideoControls', () => {
       pause: jest.fn()
     }))
     const { getByTestId } = render(
-      <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <VideoControls player={player} />
-        </VideoProvider>
-      </MockedProvider>
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoControls player={player} />
+      </VideoProvider>
     )
     fireEvent.click(getByTestId('PauseRoundedIcon'))
     expect(pauseStub).toHaveBeenCalled()
@@ -76,11 +71,9 @@ describe('VideoControls', () => {
       muted: jest.fn()
     }))
     const { getByTestId } = render(
-      <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <VideoControls player={player} />
-        </VideoProvider>
-      </MockedProvider>
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoControls player={player} />
+      </VideoProvider>
     )
     fireEvent.click(getByTestId('VolumeUpOutlinedIcon'))
     expect(mutedStub).toHaveBeenCalled()
@@ -93,11 +86,9 @@ describe('VideoControls', () => {
         requestFullscreen: jest.fn()
       }))
     const { getByTestId } = render(
-      <MockedProvider>
-        <VideoProvider value={{ content: videos[0] }}>
-          <VideoControls player={player} />
-        </VideoProvider>
-      </MockedProvider>
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoControls player={player} />
+      </VideoProvider>
     )
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
     expect(fullscreenStub).toHaveBeenCalled()

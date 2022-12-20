@@ -69,10 +69,67 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'jesus/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/english',
+        language: {
+          id: '529',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'English',
+              primary: true,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      },
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      },
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/Deutsch',
+        language: {
+          id: '1106',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Deutsch',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'German, Standard',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'jesus',
     children: [
       {
@@ -1880,10 +1937,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'life-of-jesus-gospel-of-john/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'life-of-jesus-gospel-of-john',
     children: [
       {
@@ -3279,10 +3358,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'jesus-calms-the-storm/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'jesus-calms-the-storm',
     children: []
   },
@@ -3351,10 +3452,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'the-woman-with-the-issue-of-blood/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'the-woman-with-the-issue-of-blood',
     children: []
   },
@@ -3403,10 +3526,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'magdalena/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'magdalena',
     children: [
       {
@@ -4793,10 +4938,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'reflections-of-hope/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'reflections-of-hope',
     children: [
       {
@@ -5083,10 +5250,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'day-6-jesus-died-for-me/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'day-6-jesus-died-for-me',
     children: []
   },
@@ -5141,10 +5330,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'book-of-acts/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'book-of-acts',
     children: [
       {
@@ -7216,10 +7427,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'wedding-in-cana/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'wedding-in-cana',
     children: []
   },
@@ -7245,10 +7478,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'lumo/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'lumo',
     children: [
       {
@@ -7533,10 +7788,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'peter-miraculous-escape-from-prison/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'peter-miraculous-escape-from-prison',
     children: []
   },
@@ -7576,10 +7853,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: '8-days-with-jesus-who-is-jesus/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: '8-days-with-jesus-who-is-jesus',
     children: [
       {
@@ -7883,10 +8182,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'chosen-witness/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'chosen-witness',
     children: []
   },
@@ -7924,10 +8245,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'lumo-the-gospel-of-luke/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'lumo-the-gospel-of-luke',
     children: [
       {
@@ -8692,10 +9035,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'storyclubs-jesus-and-zacchaeus/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'storyclubs-jesus-and-zacchaeus',
     children: []
   },
@@ -8757,10 +9122,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'birth-of-jesus/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'birth-of-jesus',
     children: []
   },
@@ -8816,10 +9203,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'fallingplates/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'fallingplates',
     children: []
   },
@@ -8884,10 +9293,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'paul-and-silas-in-prison/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'paul-and-silas-in-prison',
     children: []
   },
@@ -8950,10 +9381,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'my-last-day/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'my-last-day',
     children: [
       {
@@ -9030,10 +9483,32 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English' }]
+        name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'the-beginning/english'
     },
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
+      }
+    ],
     slug: 'the-beginning',
     children: []
   }
