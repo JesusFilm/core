@@ -21,7 +21,7 @@ export function DownloadButton({
       onClick={openDialog}
       sx={{
         display: { xs: 'none', sm: 'flex' },
-        px: 12
+        minWidth: '200px'
       }}
     >
       Download
