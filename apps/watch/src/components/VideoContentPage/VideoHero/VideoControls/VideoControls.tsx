@@ -19,11 +19,10 @@ import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import fscreen from 'fscreen'
 import { SubtitleDialog } from '../../../SubtitleDialog'
-import { VideoContentFields_variant_subtitle } from '../../../../../__generated__/VideoContentFields'
+import { useVideo } from '../../../../libs/videoContext'
 
 interface VideoControlProps {
   player: videojs.Player
-  subtitles: VideoContentFields_variant_subtitle[] | undefined
 }
 
 function isMobile(): boolean {
@@ -37,10 +36,7 @@ function isMobile(): boolean {
   )
 }
 
-export function VideoControls({
-  player,
-  subtitles
-}: VideoControlProps): ReactElement {
+export function VideoControls({ player }: VideoControlProps): ReactElement {
   const [play, setPlay] = useState(false)
   const [currentTime, setCurrentTime] = useState<string>()
   const [progress, setProgress] = useState(0)
@@ -51,6 +47,7 @@ export function VideoControls({
 
   const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
   const durationSeconds = Math.round(player.duration())
+  const { variant } = useVideo()
 
   useEffect(() => {
     setVolume(player.volume() * 100)
@@ -290,7 +287,10 @@ export function VideoControls({
               </IconButton>
               <IconButton
                 onClick={() => setOpenSubtitle(true)}
-                disabled={subtitles === undefined || subtitles.length < 1}
+                disabled={
+                  variant?.subtitle === undefined ||
+                  variant?.subtitle.length < 1
+                }
               >
                 <SubtitlesOutlined />
               </IconButton>
@@ -306,7 +306,7 @@ export function VideoControls({
           <SubtitleDialog
             open={openSubtitle}
             player={player}
-            subtitles={subtitles}
+            subtitles={variant?.subtitle}
             onClose={() => setOpenSubtitle(false)}
           />
         </Container>

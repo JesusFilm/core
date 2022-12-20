@@ -72,10 +72,7 @@ export function VideoHero(): ReactElement {
           <video className="video-js vjs-fill" ref={videoRef} playsInline />
         )}
         {playerRef.current != null && isPlaying && (
-          <VideoControls
-            player={playerRef.current}
-            subtitles={variant?.subtitle}
-          />
+          <VideoControls player={playerRef.current} />
         )}
         {!isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />}
       </Box>

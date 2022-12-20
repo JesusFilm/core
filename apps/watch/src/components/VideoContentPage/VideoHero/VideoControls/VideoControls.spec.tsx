@@ -7,7 +7,12 @@ import {
 } from '@testing-library/react'
 import videojs from 'video.js'
 import fscreen from 'fscreen'
+import { VideoProvider } from '../../../../libs/videoContext'
+import { videos } from '../../../Videos/testData'
+import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
 import { VideoControls } from './VideoControls'
+
+const video: VideoContentFields = videos[0]
 
 jest.mock('fscreen', () => ({
   __esModule: true,
@@ -55,7 +60,9 @@ describe('VideoControls', () => {
       play: jest.fn()
     }))
     const { getByTestId } = render(
-      <VideoControls player={player} subtitles={undefined} />
+      <VideoProvider value={{ content: video }}>
+        <VideoControls player={player} />
+      </VideoProvider>
     )
     fireEvent.click(getByTestId('PlayArrowRoundedIcon'))
     expect(playStub).toHaveBeenCalled()
@@ -69,7 +76,9 @@ describe('VideoControls', () => {
       pause: jest.fn()
     }))
     const { getByTestId } = render(
-      <VideoControls player={player} subtitles={undefined} />
+      <VideoProvider value={{ content: video }}>
+        <VideoControls player={player} />
+      </VideoProvider>
     )
     fireEvent.click(getByTestId('PauseRoundedIcon'))
     expect(pauseStub).toHaveBeenCalled()
@@ -80,7 +89,9 @@ describe('VideoControls', () => {
       muted: jest.fn()
     }))
     const { getByTestId } = render(
-      <VideoControls player={player} subtitles={undefined} />
+      <VideoProvider value={{ content: video }}>
+        <VideoControls player={player} />
+      </VideoProvider>
     )
     fireEvent.click(getByTestId('VolumeUpOutlinedIcon'))
     expect(mutedStub).toHaveBeenCalled()
@@ -94,7 +105,9 @@ describe('VideoControls', () => {
         requestFullscreen: jest.fn()
       }))
     const { getByTestId } = render(
-      <VideoControls player={player} subtitles={undefined} />
+      <VideoProvider value={{ content: video }}>
+        <VideoControls player={player} />
+      </VideoProvider>
     )
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
     expect(fullscreenStub).toHaveBeenCalled()
@@ -103,7 +116,9 @@ describe('VideoControls', () => {
   it('fullscreens the video player on fullscreen icon click when desktop', async () => {
     ;(global.navigator.userAgent as unknown as string) = 'Mac'
     const { getByTestId } = render(
-      <VideoControls player={player} subtitles={undefined} />
+      <VideoProvider value={{ content: video }}>
+        <VideoControls player={player} />
+      </VideoProvider>
     )
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
     expect(fscreen.requestFullscreen).toHaveBeenCalled()
