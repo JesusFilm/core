@@ -1,6 +1,21 @@
-import { act, cleanup, fireEvent, render } from '@testing-library/react'
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  waitFor
+} from '@testing-library/react'
 import videojs from 'video.js'
+import fscreen from 'fscreen'
 import { VideoControls } from './VideoControls'
+
+jest.mock('fscreen', () => ({
+  __esModule: true,
+  default: {
+    requestFullscreen: jest.fn(),
+    exitFullscreen: jest.fn()
+  }
+}))
 
 describe('VideoControls', () => {
   let player
@@ -65,7 +80,8 @@ describe('VideoControls', () => {
     expect(mutedStub).toHaveBeenCalled()
   })
 
-  it('fullscreens the video on fullscreen icon click', () => {
+  it('fullscreens the video player on fullscreen icon click when mobile', () => {
+    ;(global.navigator.userAgent as unknown as string) = 'iPhone'
     const fullscreenStub = jest
       .spyOn(player, 'requestFullscreen')
       .mockImplementation(() => ({
@@ -74,6 +90,21 @@ describe('VideoControls', () => {
     const { getByTestId } = render(<VideoControls player={player} />)
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
     expect(fullscreenStub).toHaveBeenCalled()
+  })
+
+  it('fullscreens the video player on fullscreen icon click when desktop', async () => {
+    ;(global.navigator.userAgent as unknown as string) = 'Mac'
+    const { getByTestId } = render(<VideoControls player={player} />)
+    fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
+    expect(fscreen.requestFullscreen).toHaveBeenCalled()
+    await waitFor(() =>
+      expect(getByTestId('FullscreenExitOutlinedIcon')).toBeInTheDocument()
+    )
+    fireEvent.click(getByTestId('FullscreenExitOutlinedIcon'))
+    expect(fscreen.exitFullscreen).toHaveBeenCalled()
+    await waitFor(() =>
+      expect(getByTestId('FullscreenOutlinedIcon')).toBeInTheDocument()
+    )
   })
 
   // TODO: add test on Language and Subtitle Dialog click

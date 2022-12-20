@@ -7,8 +7,6 @@ import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/testData'
 import { VideoHero } from './VideoHero'
 
-import '../../../../public/styles/video-js.css'
-
 const VideoHeroStory = {
   ...watchConfig,
   component: VideoHero,
