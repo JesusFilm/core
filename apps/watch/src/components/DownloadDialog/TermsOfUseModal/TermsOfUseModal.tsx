@@ -23,7 +23,10 @@ export function TermsOfUseModal({
         closeButton: true
       }}
       dialogAction={{
-        onSubmit: () => onSubmit(),
+        onSubmit: () => {
+          onSubmit()
+          onClose()
+        },
         submitLabel: 'Accept',
         closeLabel: 'Cancel'
       }}

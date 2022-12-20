@@ -164,8 +164,9 @@ export function DownloadDialog({
                 gap={3}
                 sx={{ mt: 6 }}
               >
-                <FormGroup>
+                <FormGroup sx={{ flexDirection: 'row' }}>
                   <FormControlLabel
+                    sx={{ marginRight: '4px' }}
                     control={
                       <Checkbox
                         name="terms"
@@ -174,8 +175,18 @@ export function DownloadDialog({
                         onChange={handleChange}
                       />
                     }
-                    label="I agree to the Terms of Use"
+                    label="I agree to the"
                   />
+                  <Typography
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    color="primary.main"
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => setOpenTerms(true)}
+                  >
+                    Terms of Use
+                  </Typography>
                 </FormGroup>
                 <LoadingButton
                   type="submit"
@@ -201,7 +212,10 @@ export function DownloadDialog({
               <TermsOfUseModal
                 open={openTerms}
                 onClose={() => setOpenTerms(false)}
-                onSubmit={() => handleChange}
+                onSubmit={() => {
+                  console.log(values)
+                  handleChange('terms')('true')
+                }}
               />
             </Form>
           )}
