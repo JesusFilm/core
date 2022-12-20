@@ -68,15 +68,15 @@ describe('VideoContainerPage', () => {
   })
 
   it('should render share button', () => {
-    const { getByRole, getByLabelText } = render(
+    const { getByRole, getByTestId } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: video }}>
           <VideoContainerPage />
         </VideoProvider>
       </SnackbarProvider>
     )
-    expect(getByLabelText('share-button')).toBeInTheDocument()
-    fireEvent.click(getByLabelText('share-button'))
+    expect(getByTestId('share-button')).toBeInTheDocument()
+    fireEvent.click(getByTestId('share-button'))
     expect(
       getByRole('dialog', { name: 'Share this video' })
     ).toBeInTheDocument()

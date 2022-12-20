@@ -18,16 +18,17 @@ export function ShareButton({
       startIcon={<ShareOutlinedIcon />}
       size="medium"
       color="secondary"
-      aria-label="share-button"
-      onClick={() => openDialog()}
+      data-testid="share-button"
+      onClick={openDialog}
       sx={{
-        display: { xs: 'none', sm: 'flex' }
+        display: { xs: 'none', sm: 'flex' },
+        px: 12
       }}
     >
       Share
     </Button>
   ) : (
-    <IconButton onClick={() => openDialog()} aria-label="share-icon">
+    <IconButton onClick={openDialog} data-testid="share-icon">
       <ShareOutlinedIcon color="primary" />
     </IconButton>
   )

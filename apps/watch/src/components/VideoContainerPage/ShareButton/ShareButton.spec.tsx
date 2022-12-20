@@ -11,20 +11,20 @@ describe('ShareButton', () => {
   })
 
   it('should render icon button based on variant correctly', () => {
-    const { getByLabelText } = render(
+    const { getByTestId } = render(
       <ShareButton variant="icon" openDialog={noop} />
     )
-    expect(getByLabelText('share-icon')).toBeInTheDocument()
+    expect(getByTestId('share-icon')).toBeInTheDocument()
   })
 
   it('should execute share button operation', () => {
     const setOpenShare = jest.fn()
 
-    const { getByLabelText } = render(
+    const { getByTestId } = render(
       <ShareButton variant="button" openDialog={setOpenShare} />
     )
 
-    fireEvent.click(getByLabelText('share-button'))
+    fireEvent.click(getByTestId('share-button'))
     expect(setOpenShare).toHaveBeenCalled()
   })
 })
