@@ -1,5 +1,7 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
+import Stack from '@mui/material/Stack'
+import Divider from '@mui/material/Divider'
 import { watchConfig } from '../../../libs/storybook'
 import { VideoProvider } from '../../../libs/videoContext'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
@@ -23,7 +25,7 @@ const Template: Story<
   }
 > = ({ ...args }) => (
   <VideoProvider value={{ ...args }}>
-    <VideoContentCarousel />
+    <VideoContentCarousel playing={args.playing} />
   </VideoProvider>
 )
 
@@ -38,9 +40,20 @@ WithContainer.args = {
   container: videos[0]
 }
 
-export const Playing = Template.bind({})
-Playing.args = {
-  ...WithContainer.args
-}
+const PlayingTemplate: Story<
+  ComponentProps<typeof VideoContentCarousel>
+> = () => (
+  <Stack>
+    <VideoProvider value={{ content: videos[0] }}>
+      <VideoContentCarousel playing />
+    </VideoProvider>
+    <Divider />
+    <VideoProvider value={{ content: videos[19], container: videos[0] }}>
+      <VideoContentCarousel playing />
+    </VideoProvider>
+  </Stack>
+)
+
+export const Playing = PlayingTemplate.bind({})
 
 export default VideoContentCarouselStory as Meta

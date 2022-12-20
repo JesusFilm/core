@@ -15,8 +15,14 @@ import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDet
 import { VideoCard } from '../../VideoCard'
 import { videos } from '../../Videos/testData'
 
-export function VideoContentCarousel(): ReactElement {
-  const { id, label, slug, children, container } = useVideo()
+interface VideoContentCarouselProps {
+  playing?: boolean
+}
+
+export function VideoContentCarousel({
+  playing = false
+}: VideoContentCarouselProps): ReactElement {
+  const { title, id, label, slug, children, container } = useVideo()
   const router = useRouter()
 
   const activeVideoIndex = useMemo(() => {
@@ -104,13 +110,19 @@ export function VideoContentCarousel(): ReactElement {
           pb: 10
         }}
       >
-        {container != null && (
-          <Container maxWidth="xxl">
+        <Container maxWidth="xxl" sx={{ mb: 5 }}>
+          <Typography
+            variant="h5"
+            color="text.primary"
+            sx={{ display: playing ? 'inline-flex' : 'none' }}
+          >
+            {title[0].value}
+          </Typography>
+          {container != null && (
             <Stack
               direction="row"
               justifyContent="space-between"
               alignItems="center"
-              sx={{ mb: 6 }}
             >
               <Typography variant="overline1" color="primary">
                 {container.title[0].value}
@@ -147,8 +159,8 @@ export function VideoContentCarousel(): ReactElement {
                   : 0}
               </Typography>
             </Stack>
-          </Container>
-        )}
+          )}
+        </Container>
         <VideosCarousel
           videos={relatedVideos}
           activeVideo={id}

@@ -6,7 +6,11 @@ import { VideoControls } from './VideoControls'
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 import 'video.js/dist/video-js.css'
 
-export function VideoHero(): ReactElement {
+interface VideoHeroProps {
+  onPlay: () => void
+}
+
+export function VideoHero({ onPlay }: VideoHeroProps): ReactElement {
   const { variant } = useVideo()
   const [isPlaying, setIsPlaying] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -48,6 +52,7 @@ export function VideoHero(): ReactElement {
 
   function handlePlay(): void {
     setIsPlaying(true)
+    onPlay()
     if (playerRef?.current != null) {
       playerRef?.current?.play()
     }

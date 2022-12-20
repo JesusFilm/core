@@ -19,17 +19,18 @@ import { VideoContentCarousel } from './VideoContentCarousel'
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
   const { variant, children, container } = useVideo()
+  const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
 
   console.log(container)
 
   return (
-    <PageWrapper hero={<VideoHero />}>
+    <PageWrapper hero={<VideoHero onPlay={() => setHasPlayed(true)} />}>
       <>
         {children.length > 0 ||
           (container != null && container.children.length > 0 && (
-            <VideoContentCarousel />
+            <VideoContentCarousel playing={hasPlayed} />
           ))}
         <Container maxWidth="xxl">
           <Stack
