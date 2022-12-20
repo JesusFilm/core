@@ -18,7 +18,6 @@ export function ShareButton({
       startIcon={<ShareOutlinedIcon />}
       size="medium"
       color="secondary"
-      data-testid="share-button"
       onClick={openDialog}
       sx={{
         display: { xs: 'none', sm: 'flex' },
@@ -28,7 +27,7 @@ export function ShareButton({
       Share
     </Button>
   ) : (
-    <IconButton onClick={openDialog} data-testid="share-icon">
+    <IconButton onClick={openDialog}>
       <ShareOutlinedIcon color="primary" />
     </IconButton>
   )
