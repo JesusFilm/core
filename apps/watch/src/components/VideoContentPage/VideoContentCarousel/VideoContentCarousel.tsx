@@ -99,14 +99,15 @@ export function VideoContentCarousel({
       <Stack
         sx={{
           display: playing || relatedVideos.length > 0 ? 'inline-flex' : 'none',
+          width: '100%',
+          overflow: 'hidden',
           backgroundColor: 'background.default',
           color: 'text.primary',
-          overflow: 'hidden',
           pt: 6,
           pb: 10
         }}
       >
-        <Container maxWidth="xxl" sx={{ mb: 5 }}>
+        <Container maxWidth="xxl" sx={{ mb: relatedVideos.length > 0 ? 5 : 0 }}>
           <Typography
             variant="h5"
             color="text.primary"

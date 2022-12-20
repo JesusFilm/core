@@ -44,6 +44,10 @@ const PlayingTemplate: Story<
   ComponentProps<typeof VideoContentCarousel>
 > = () => (
   <Stack>
+    <VideoProvider value={{ content: { ...videos[0], children: [] } }}>
+      <VideoContentCarousel playing />
+    </VideoProvider>
+    <Divider />
     <VideoProvider value={{ content: videos[0] }}>
       <VideoContentCarousel playing />
     </VideoProvider>
