@@ -1,6 +1,6 @@
 import { ComponentMeta, Story } from '@storybook/react'
 import { noop } from 'lodash'
-import { watchConfig } from '../../../libs/storybook'
+import { watchConfig } from '../../libs/storybook'
 import { ShareButton } from '.'
 
 const ShareButtonStory: ComponentMeta<typeof ShareButton> = {

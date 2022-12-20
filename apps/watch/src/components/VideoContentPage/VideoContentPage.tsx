@@ -12,8 +12,8 @@ import { ShareDialog } from '../ShareDialog'
 import { VideosCarousel } from '../VideosCarousel/VideosCarousel'
 import { CarouselItem } from '../Video/CarouselItem/CarouselItem'
 import { DownloadDialog } from '../DownloadDialog'
-import { ShareButton } from '../VideoContainerPage/ShareButton'
-import { DownloadButton } from '../VideoContainerPage/DownloadButton'
+import { ShareButton } from '../ShareButton'
+import { DownloadButton } from './DownloadButton'
 import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
 
@@ -99,8 +99,12 @@ export function VideoContentPage(): ReactElement {
               }}
             >
               <VideoContent />
-              <Box width="336px" sx={{ display: { xs: 'none', md: 'block' } }}>
-                <Stack direction="row" spacing="20px" mb="40px">
+              <Box sx={{ display: { sm: 'none', md: 'block' } }}>
+                <Stack
+                  spacing={5}
+                  mb={8}
+                  direction={{ md: 'column', lg: 'row' }}
+                >
                   <DownloadButton
                     variant="button"
                     openDialog={() => setOpenDownload(true)}
