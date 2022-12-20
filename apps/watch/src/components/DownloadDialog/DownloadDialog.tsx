@@ -1,4 +1,4 @@
-import { ComponentProps, ReactElement, useEffect } from 'react'
+import { ComponentProps, ReactElement, useEffect, useState } from 'react'
 import useDownloader from 'react-use-downloader'
 import { Formik, Form } from 'formik'
 import Image from 'next/image'
@@ -21,6 +21,7 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { useVideo } from '../../libs/videoContext'
+import { TermsOfUseModal } from './TermsOfUseModal/TermsOfUseModal'
 
 interface DownloadDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
@@ -44,6 +45,7 @@ export function DownloadDialog({
   const theme = useTheme()
   const { title, image, imageAlt, variant } = useVideo()
   const { percentage, download, cancel, isInProgress } = useDownloader()
+  const [openTerms, setOpenTerms] = useState<boolean>(false)
 
   const downloads = variant?.downloads ?? []
   const language = variant?.language ?? {
@@ -162,8 +164,9 @@ export function DownloadDialog({
                 gap={3}
                 sx={{ mt: 6 }}
               >
-                <FormGroup>
+                <FormGroup sx={{ flexDirection: 'row' }}>
                   <FormControlLabel
+                    sx={{ marginRight: '4px' }}
                     control={
                       <Checkbox
                         name="terms"
@@ -172,8 +175,18 @@ export function DownloadDialog({
                         onChange={handleChange}
                       />
                     }
-                    label="I agree to the Terms of Use"
+                    label="I agree to the"
                   />
+                  <Typography
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    color="primary.main"
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => setOpenTerms(true)}
+                  >
+                    Terms of Use
+                  </Typography>
                 </FormGroup>
                 <LoadingButton
                   type="submit"
@@ -196,6 +209,13 @@ export function DownloadDialog({
                   Download
                 </LoadingButton>
               </Stack>
+              <TermsOfUseModal
+                open={openTerms}
+                onClose={() => setOpenTerms(false)}
+                onSubmit={() => {
+                  handleChange('terms')('true')
+                }}
+              />
             </Form>
           )}
         </Formik>
