@@ -8,6 +8,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { ReactElement, useMemo } from 'react'
 
+import { VideoContentFields_children as VideoChildren } from '../../../../__generated__/VideoContentFields'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { useVideo } from '../../../libs/videoContext'
 import { VideosCarousel } from '../../VideosCarousel'
@@ -85,9 +86,38 @@ export function VideoContentCarousel({
     return []
   }, [container, children])
 
+  const sortedChildren = useMemo(() => {
+    const sorted: Array<VideoChildren | VideoChildren[]> = []
+    const episodes: VideoChildren[] = []
+    const segments: VideoChildren[] = []
+
+    children.forEach((video) => {
+      switch (video.label) {
+        case VideoLabel.episode:
+          if (episodes.length === 0) {
+            sorted.push(episodes)
+          }
+          episodes.push(video)
+          break
+        case VideoLabel.segment:
+          if (segments.length === 0) {
+            sorted.push(segments)
+          }
+          segments.push(video)
+          break
+        default:
+          sorted.push(video)
+          break
+      }
+    })
+
+    return sorted
+  }, [children])
+
   const relatedVideos = useMemo(
-    () => (children.length > 0 ? children.concat(siblings) : siblings),
-    [siblings, children]
+    () =>
+      sortedChildren.length > 0 ? sortedChildren.concat(siblings) : siblings,
+    [siblings, sortedChildren]
   )
 
   return (

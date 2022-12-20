@@ -91,6 +91,31 @@ describe('VideoContentCarousel', () => {
         'The Beginning 8:08'
       )
     })
+
+    it('should sort children videos with count from those without', () => {
+      // Magdalena - first child is featureFilm, others are segments, last child is short film
+      const { getAllByRole } = render(
+        <VideoProvider value={{ content: videos[4] }}>
+          <VideoContentCarousel />
+        </VideoProvider>
+      )
+
+      const relatedVideos = getAllByRole('link')
+
+      expect(relatedVideos).toHaveLength(videos[4].children.length)
+      expect(relatedVideos[0]).toHaveAccessibleName(
+        "Magdalena - Director's Cut 1:22:32 Feature Film Magdalena - Director's Cut"
+      )
+      expect(relatedVideos[1]).toHaveAccessibleName(
+        'Title and Introduction 1:09 Chapter 1 Title and Introduction'
+      )
+      expect(relatedVideos[44]).toHaveAccessibleName(
+        'Living the Christian Life 1:39 Chapter 44 Living the Christian Life'
+      )
+      expect(relatedVideos[45]).toHaveAccessibleName(
+        'This Is Freedom 4:15 Short Film This Is Freedom'
+      )
+    })
   })
 
   describe('content in container', () => {

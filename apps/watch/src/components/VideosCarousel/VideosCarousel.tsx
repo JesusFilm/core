@@ -189,7 +189,10 @@ export function VideosCarousel({
           // Render children of related videos seperately to get correct index
           return Array.isArray(relatedVideo) ? (
             relatedVideo.map((video, i) => (
-              <SwiperSlide key={index} style={{ transition: '.35s all ease' }}>
+              <SwiperSlide
+                key={video.id}
+                style={{ transition: '.35s all ease' }}
+              >
                 {renderItem({
                   video,
                   index: i,
@@ -199,7 +202,10 @@ export function VideosCarousel({
               </SwiperSlide>
             ))
           ) : (
-            <SwiperSlide key={index} style={{ transition: '.35s all ease' }}>
+            <SwiperSlide
+              key={relatedVideo.id}
+              style={{ transition: '.35s all ease' }}
+            >
               {renderItem({
                 video: relatedVideo,
                 index,
