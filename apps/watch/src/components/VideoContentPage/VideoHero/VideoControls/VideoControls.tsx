@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState, useEffect, MouseEventHandler } from 'react'
 import Container from '@mui/material/Container'
 import videojs from 'video.js'
 import Box from '@mui/material/Box'
@@ -108,65 +108,60 @@ export function VideoControls({ player }: VideoControlProps): ReactElement {
     }
   }
 
+  function getClickHandler(
+    onClick: MouseEventHandler,
+    onDblClick: MouseEventHandler,
+    delay = 250
+  ): MouseEventHandler {
+    let timeoutID: NodeJS.Timeout | undefined
+    return function (event) {
+      if (timeoutID == null) {
+        timeoutID = setTimeout(function () {
+          onClick(event)
+          timeoutID = undefined
+        }, delay)
+      } else {
+        clearTimeout(timeoutID)
+        timeoutID = undefined
+        onDblClick(event)
+      }
+    }
+  }
+
   return (
     <Box
       sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'flex-end',
         position: 'absolute',
+        top: 0,
         right: 0,
         bottom: 0,
-        left: 0,
-        background:
-          'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%)'
+        left: 0
       }}
+      onClick={getClickHandler(handlePlay, () => {
+        void handleFullscreen()
+      })}
     >
-      <Container
-        data-testid="vjs-jfp-custom-controls"
-        maxWidth="xxl"
+      <Box
         sx={{
-          zIndex: 5,
-          pb: 4
+          width: '100%',
+          background:
+            'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%)'
         }}
+        onClick={(event) => event.stopPropagation()}
       >
-        <Slider
-          aria-label="mobile-progress-control"
-          min={0}
-          max={durationSeconds}
-          value={progress}
-          valueLabelFormat={(value) => {
-            return secondsToTimeFormat(value, { trimZeroes: true })
-          }}
-          valueLabelDisplay="auto"
-          onChange={handleSeek}
+        <Container
+          data-testid="vjs-jfp-custom-controls"
+          maxWidth="xxl"
           sx={{
-            height: 8.4,
-            display: { xs: 'flex', md: 'none' },
-            '& .MuiSlider-thumb': {
-              width: 13,
-              height: 13
-            },
-            '& .MuiSlider-rail': {
-              backgroundColor: 'secondary.main'
-            }
+            zIndex: 5,
+            pb: 4
           }}
-        />
-        <Stack
-          direction="row"
-          gap={5}
-          justifyContent={{ xs: 'space-between', md: 'none' }}
-          alignItems="center"
         >
-          <IconButton
-            onClick={handlePlay}
-            sx={{ display: { xs: 'none', md: 'flex' } }}
-          >
-            {!play ? (
-              <PlayArrowRounded fontSize="large" />
-            ) : (
-              <PauseRounded fontSize="large" />
-            )}
-          </IconButton>
           <Slider
-            aria-label="desktop-progress-control"
+            aria-label="mobile-progress-control"
             min={0}
             max={durationSeconds}
             value={progress}
@@ -177,7 +172,7 @@ export function VideoControls({ player }: VideoControlProps): ReactElement {
             onChange={handleSeek}
             sx={{
               height: 8.4,
-              display: { xs: 'none', md: 'flex' },
+              display: { xs: 'flex', md: 'none' },
               '& .MuiSlider-thumb': {
                 width: 13,
                 height: 13
@@ -187,76 +182,119 @@ export function VideoControls({ player }: VideoControlProps): ReactElement {
               }
             }}
           />
-          {player != null && (
-            <Typography variant="body2" color="secondary.contrastText">
-              {currentTime}/{duration}
-            </Typography>
-          )}
-          <Stack direction="row" spacing={2}>
-            <Stack
-              alignItems="center"
-              spacing={2}
-              direction="row"
+          <Stack
+            direction="row"
+            gap={5}
+            justifyContent={{ xs: 'space-between', md: 'none' }}
+            alignItems="center"
+          >
+            <IconButton
+              onClick={handlePlay}
+              sx={{ display: { xs: 'none', md: 'flex' } }}
+            >
+              {!play ? (
+                <PlayArrowRounded fontSize="large" />
+              ) : (
+                <PauseRounded fontSize="large" />
+              )}
+            </IconButton>
+            <Slider
+              aria-label="desktop-progress-control"
+              min={0}
+              max={durationSeconds}
+              value={progress}
+              valueLabelFormat={(value) => {
+                return secondsToTimeFormat(value, { trimZeroes: true })
+              }}
+              valueLabelDisplay="auto"
+              onChange={handleSeek}
               sx={{
+                height: 8.4,
                 display: { xs: 'none', md: 'flex' },
-                '> .MuiSlider-root': {
-                  width: 0,
-                  opacity: 0,
-                  transition: 'all 0.2s ease-out'
+                '& .MuiSlider-thumb': {
+                  width: 13,
+                  height: 13
                 },
-                '&:hover': {
-                  '> .MuiSlider-root': {
-                    width: 70,
-                    opacity: 1
-                  }
+                '& .MuiSlider-rail': {
+                  backgroundColor: 'secondary.main'
                 }
               }}
-            >
-              <IconButton onClick={handleMute}>
-                {mute || volume === 0 ? (
-                  <VolumeOffOutlined />
-                ) : volume > 60 ? (
-                  <VolumeUpOutlined />
-                ) : volume > 30 ? (
-                  <VolumeDownOutlined />
-                ) : (
-                  <VolumeMuteOutlined />
-                )}
-              </IconButton>
-              <Slider
-                aria-label="volume-control"
-                min={0}
-                max={100}
-                value={mute ? 0 : volume}
-                valueLabelFormat={(value) => {
-                  return `${value}%`
-                }}
-                valueLabelDisplay="auto"
-                onChange={handleVolume}
+            />
+            {player != null && (
+              <Typography variant="body2" color="secondary.contrastText">
+                {currentTime}/{duration}
+              </Typography>
+            )}
+            <Stack direction="row" spacing={2}>
+              <Stack
+                alignItems="center"
+                spacing={2}
+                direction="row"
                 sx={{
-                  width: 70,
-                  '& .MuiSlider-thumb': {
-                    width: 10,
-                    height: 10
+                  display: { xs: 'none', md: 'flex' },
+                  '> .MuiSlider-root': {
+                    width: 0,
+                    opacity: 0,
+                    transition: 'all 0.2s ease-out'
                   },
-                  '& .MuiSlider-rail': {
-                    backgroundColor: 'secondary.main'
+                  '&:hover': {
+                    '> .MuiSlider-root': {
+                      width: 70,
+                      opacity: 1
+                    }
                   }
                 }}
-              />
+              >
+                <IconButton onClick={handleMute}>
+                  {mute || volume === 0 ? (
+                    <VolumeOffOutlined />
+                  ) : volume > 60 ? (
+                    <VolumeUpOutlined />
+                  ) : volume > 30 ? (
+                    <VolumeDownOutlined />
+                  ) : (
+                    <VolumeMuteOutlined />
+                  )}
+                </IconButton>
+                <Slider
+                  aria-label="volume-control"
+                  min={0}
+                  max={100}
+                  value={mute ? 0 : volume}
+                  valueLabelFormat={(value) => {
+                    return `${value}%`
+                  }}
+                  valueLabelDisplay="auto"
+                  onChange={handleVolume}
+                  sx={{
+                    width: 70,
+                    '& .MuiSlider-thumb': {
+                      width: 10,
+                      height: 10
+                    },
+                    '& .MuiSlider-rail': {
+                      backgroundColor: 'secondary.main'
+                    }
+                  }}
+                />
+              </Stack>
+              <IconButton>
+                <LanguageRounded />
+              </IconButton>
+              <IconButton>
+                <SubtitlesOutlined />
+              </IconButton>
+              <IconButton onClick={handleFullscreen}>
+                {fullscreen ? (
+                  <FullscreenExitOutlined />
+                ) : (
+                  <FullscreenOutlined />
+                )}
+              </IconButton>
             </Stack>
-            <IconButton>
-              <LanguageRounded />
-            </IconButton>
-            <IconButton>
-              <SubtitlesOutlined />
-            </IconButton>
-            <IconButton onClick={handleFullscreen}>
-              {fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
-            </IconButton>
           </Stack>
-        </Stack>
-      </Container>
+        </Container>
+      </Box>
     </Box>
   )
 }
