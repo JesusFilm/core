@@ -29,7 +29,7 @@ export function SubtitleDialog({
     ({ language }) => language
   ) as unknown as Language[]
 
-  const handleChange = (result): void => {
+  function handleChange(result): void {
     setSelected(result)
     updateSubtitle(result.id)
   }
