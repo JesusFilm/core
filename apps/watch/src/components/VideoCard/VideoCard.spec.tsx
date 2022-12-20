@@ -51,6 +51,20 @@ describe('VideoCard', () => {
       )
     })
 
+    it('sets link to video url without container slug when series', () => {
+      const { getByRole } = render(
+        <VideoCard
+          video={videos[5]}
+          variant="contained"
+          containerSlug="jesus"
+        />
+      )
+      expect(getByRole('link')).toHaveAttribute(
+        'href',
+        `/${videos[5].variant?.slug as string}`
+      )
+    })
+
     it('displays feature film', () => {
       const { getByText } = render(
         <VideoCard video={videos[0]} variant="contained" />
