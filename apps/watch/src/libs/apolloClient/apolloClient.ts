@@ -1,16 +1,24 @@
 import {
   ApolloClient,
   createHttpLink,
-  NormalizedCacheObject
+  NormalizedCacheObject,
+  from
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import { useMemo } from 'react'
+import { RetryLink } from '@apollo/client/link/retry'
+import { compact } from 'lodash'
 import { cache } from './cache'
 
-export function createApolloClient(
-  token?: string,
+interface CreateApolloClientParams {
+  token?: string
   initialState?: NormalizedCacheObject
-): ApolloClient<NormalizedCacheObject> {
+}
+
+export function createApolloClient({
+  token,
+  initialState
+}: CreateApolloClientParams = {}): ApolloClient<NormalizedCacheObject> {
   const httpLink = createHttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL
   })
@@ -24,19 +32,30 @@ export function createApolloClient(
     }
   })
 
+  const retryLink = new RetryLink({
+    delay: {
+      initial: 500,
+      max: Infinity,
+      jitter: true
+    },
+    attempts: {
+      max: 5
+    }
+  })
+
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: authLink.concat(httpLink),
+    link: from(compact([retryLink, authLink, httpLink])),
     cache: cache().restore(initialState ?? {})
   })
 }
 
-export function useApolloClient(
-  token?: string,
-  initialState?: NormalizedCacheObject
-): ApolloClient<NormalizedCacheObject> {
+export function useApolloClient({
+  token,
+  initialState
+}: CreateApolloClientParams = {}): ApolloClient<NormalizedCacheObject> {
   return useMemo(
-    () => createApolloClient(token, initialState),
+    () => createApolloClient({ token, initialState }),
     [token, initialState]
   )
 }

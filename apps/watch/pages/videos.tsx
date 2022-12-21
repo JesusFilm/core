@@ -13,7 +13,7 @@ interface VideosPageProps {
   initialApolloState: NormalizedCacheObject
 }
 function VideosPage({ initialApolloState }: VideosPageProps): ReactElement {
-  const client = useApolloClient(undefined, initialApolloState)
+  const client = useApolloClient({ initialState: initialApolloState })
 
   return (
     <ApolloProvider client={client}>
