@@ -34,10 +34,10 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async () => {
     }
   })
   return {
+    revalidate: 3600,
     props: {
       initialApolloState: apolloClient.cache.extract()
-    },
-    revalidate: 60
+    }
   }
 }
 export default VideosPage
