@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { secondsToMinutes } from '@core/shared/ui/timeFormat'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -13,6 +13,10 @@ import Image from 'next/image'
 import { useVideo } from '../../../../libs/videoContext'
 import { HeroOverlay } from '../../../HeroOverlay'
 import { AudioLanguageButton } from '../../AudioLanguageButton'
+import { ShareButton } from '../../../ShareButton'
+import { DownloadButton } from '../../DownloadButton'
+import { DownloadDialog } from '../../../DownloadDialog'
+import { ShareDialog } from '../../../ShareDialog'
 
 interface VideoHeroOverlayProps {
   handlePlay?: () => void
@@ -22,6 +26,8 @@ export function VideoHeroOverlay({
   handlePlay
 }: VideoHeroOverlayProps): ReactElement {
   const { image, imageAlt, title, variant } = useVideo()
+  const [openShare, setOpenShare] = useState(false)
+  const [openDownload, setOpenDownload] = useState(false)
 
   return (
     <Box
@@ -98,6 +104,24 @@ export function VideoHeroOverlay({
                 width: '100%'
               }}
             >
+              <Box
+                sx={{
+                  display: { xs: 'flex', md: 'none' },
+                  justifyContent: 'space-between'
+                }}
+              >
+                <AudioLanguageButton componentVariant="icon" />
+                <Stack direction="row" spacing={5}>
+                  <ShareButton
+                    variant="icon"
+                    onClick={() => setOpenShare(true)}
+                  />
+                  <DownloadButton
+                    variant="icon"
+                    onClick={() => setOpenDownload(true)}
+                  />
+                </Stack>
+              </Box>
               <Button
                 size="large"
                 variant="contained"
@@ -152,6 +176,15 @@ export function VideoHeroOverlay({
             </Box>
           </Stack>
         </Stack>
+        {variant != null && variant.downloads.length > 0 && (
+          <DownloadDialog
+            open={openDownload}
+            onClose={() => {
+              setOpenDownload(false)
+            }}
+          />
+        )}
+        <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
       </Container>
     </Box>
   )

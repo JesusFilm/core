@@ -82,9 +82,9 @@ export function VideoContentPage(): ReactElement {
                   videos={container.children}
                   renderItem={(props: Parameters<typeof CarouselItem>[0]) => {
                     return <CarouselItem {...props} />
-                }}
+                  }}
                 />
-              )}   */}
+              )} */}
             </Paper>
           </ThemeProvider>
           <Container maxWidth="xxl">
