@@ -1,3 +1,4 @@
+import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import Typography from '@mui/material/Typography'
 import { MockedProvider } from '@apollo/client/testing'
@@ -19,7 +20,7 @@ const ButtonDemo = {
 }
 
 const Template: Story<
-  Parameters<typeof Button>[0] & { variants: ButtonVariant[] }
+  ComponentProps<typeof Button> & { variants: ButtonVariant[] }
 > = ({ ...args }) => (
   <MockedProvider>
     <StoryCard>
@@ -43,7 +44,7 @@ Variant.args = {
 }
 
 const ColorTemplate: Story<
-  Parameters<typeof Button>[0] & { variants: ButtonColor[] }
+  ComponentProps<typeof Button> & { variants: ButtonColor[] }
 > = ({ ...args }) => (
   <MockedProvider>
     <StoryCard>
@@ -67,7 +68,7 @@ Color.args = {
 }
 
 const SizeTemplate: Story<
-  Parameters<typeof Button>[0] & { variants: ButtonSize[] }
+  ComponentProps<typeof Button> & { variants: ButtonSize[] }
 > = ({ ...args }) => (
   <MockedProvider>
     <StoryCard>
@@ -97,7 +98,7 @@ Size.args = {
 }
 
 const IconTemplate: Story<
-  Parameters<typeof Button>[0] & { variants: Array<'Start' | 'End'> }
+  ComponentProps<typeof Button> & { variants: Array<'Start' | 'End'> }
 > = ({ ...args }) => {
   return (
     <MockedProvider>

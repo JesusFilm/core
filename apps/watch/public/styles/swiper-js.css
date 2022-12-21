@@ -1,0 +1,64 @@
+/* 
+- Swiper slides don't have sx. Cannot use breakpoints.
+- Custom swiper slides not registered by swiper/react. Cannot use styled.
+- Flakey result and clutters code when applying styles by js onEvent trigger.
+- Add styles here as last resort
+*/
+
+.jfp-watch .swiper-slide {
+  width: 232px;
+  min-width: 232px;
+}
+
+.jfp-watch .swiper-wrapper {
+  transition: 'transform 0.25s ease, padding 0.1s ease-out';
+}
+
+@media (min-width: 345px) {
+  .jfp-watch .swiper-slide {
+    max-width: 232px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .jfp-watch .swiper-wrapper {
+    transition: 'transform 0.75s ease-out 0.15s, padding 0.15s ease-out';
+  }
+  .jfp-watch .swiper-slide {
+    width: 325px;
+    min-width: 325px;
+    max-width: 325px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .jfp-watch .swiper-slide {
+    width: 247px;
+    min-width: 247px;
+    max-width: 247px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .jfp-watch .swiper-slide {
+    width: 280px;
+    min-width: 280px;
+    max-width: 280px;
+  }
+}
+
+@media (min-width: 1800px) {
+  .jfp-watch .swiper-slide {
+    width: 314px;
+    min-width: 314px;
+    max-width: 314px;
+  }
+}
+
+@media (min-width: 2000px) {
+  .jfp-watch .swiper-slide {
+    width: 245px;
+    min-width: 245px;
+    max-width: 245px;
+  }
+}

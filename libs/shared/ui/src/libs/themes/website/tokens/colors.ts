@@ -28,19 +28,19 @@ export const websiteColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
       main: '#EF3340',
       contrastText: palette[0]
     },
-    // TODO: Check this
     text: {
       primary: '#252424',
       secondary: '#4D4D4D',
-      disabled: '#4D4D4D'
-    }
+      disabled: '#AAACBB'
+    },
+    action: { disabled: '#AAACBB', disabledBackground: '#EFEFEF' }
   }
 }
 
 export const websiteColorsDark: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
     mode: 'dark',
-    background: { default: '#252424', paper: '#303030' },
+    background: { default: '#131111', paper: '#303030' },
     primary: websiteColorsLight.palette.primary,
     secondary: {
       main: '#BBBCBC',

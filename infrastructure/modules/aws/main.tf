@@ -69,6 +69,6 @@ module "vpn" {
   vpc_cidr_block  = var.cidr
   cidr_block      = "10.0.0.0/16"
   subnets         = module.vpc.public_subnets
-  certificate_arn = var.certificate_arn
+  certificate_arn = var.vpn_certificate_arn
   dns_server      = var.env == "prod" ? "10.10.0.2" : "10.11.0.2"
 }

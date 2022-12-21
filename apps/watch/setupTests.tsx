@@ -10,3 +10,16 @@ jest.mock('next/image', () => ({
     <img src={src} alt={alt} />
   )
 }))
+
+Object.defineProperty(
+  window.navigator,
+  'userAgent',
+  ((value) => ({
+    get() {
+      return value
+    },
+    set(v) {
+      value = v
+    }
+  }))(window.navigator.userAgent)
+)

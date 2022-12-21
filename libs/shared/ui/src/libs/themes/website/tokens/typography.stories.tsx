@@ -1,3 +1,4 @@
+import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import Container from '@mui/material/Container'
 import MuiTypography, { TypographyTypeMap } from '@mui/material/Typography'
@@ -17,7 +18,7 @@ const TypographyDemo = {
 }
 
 const Template: Story<
-  Parameters<typeof MuiTypography>[0] & {
+  ComponentProps<typeof MuiTypography> & {
     variants: Array<TypographyTypeMap['props']['variant']>
   }
 > = (args) => (

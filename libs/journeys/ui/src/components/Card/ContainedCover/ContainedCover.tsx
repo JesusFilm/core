@@ -1,10 +1,20 @@
-import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
+import {
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+  CSSProperties
+} from 'react'
 import videojs from 'video.js'
 import { NextImage } from '@core/shared/ui/NextImage'
 import { useTheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import type { TreeBlock } from '../../../libs/block'
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import {
+  VideoBlockObjectFit,
+  VideoBlockSource
+} from '../../../../__generated__/globalTypes'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { ContentOverlay } from './ContentOverlay'
@@ -83,6 +93,25 @@ export function ContainedCover({
       ? videoBlock?.video?.image
       : videoBlock?.image
 
+  let videoFit: CSSProperties['objectFit']
+  if (videoBlock?.source === VideoBlockSource.youTube) {
+    videoFit = 'contain'
+  } else {
+    switch (videoBlock?.objectFit) {
+      case VideoBlockObjectFit.fill:
+        videoFit = 'cover'
+        break
+      case VideoBlockObjectFit.fit:
+        videoFit = 'contain'
+        break
+      case VideoBlockObjectFit.zoomed:
+        videoFit = 'contain'
+        break
+      default:
+        videoFit = 'cover'
+        break
+    }
+  }
   return (
     <>
       <Box
@@ -96,7 +125,11 @@ export function ContainedCover({
             width: '100%',
             height: '100%',
             '> .vjs-tech': {
-              objectFit: 'cover'
+              objectFit: videoFit,
+              transform:
+                videoBlock?.objectFit === VideoBlockObjectFit.zoomed
+                  ? 'scale(1.33)'
+                  : undefined
             },
             '> .vjs-loading-spinner': {
               zIndex: 1,
