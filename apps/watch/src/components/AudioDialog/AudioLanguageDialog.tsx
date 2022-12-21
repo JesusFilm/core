@@ -1,13 +1,11 @@
 import { ComponentProps, ReactElement } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
-import {
-  Language,
-  LanguageAutocomplete
-} from '@core/shared/ui/LanguageAutocomplete'
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import { Formik, Form, FormikValues } from 'formik'
 import TextField from '@mui/material/TextField'
 import LanguageIcon from '@mui/icons-material/Language'
 import { useRouter } from 'next/router'
+import { compact } from 'lodash'
 import { useVideo } from '../../libs/videoContext'
 
 interface AudioLanguageDialogProps
@@ -20,9 +18,9 @@ export function AudioLanguageDialog({
   const { variant, variantLanguagesWithSlug } = useVideo()
   const router = useRouter()
 
-  const languages = variantLanguagesWithSlug?.map(
-    ({ language }) => language
-  ) as unknown as Language[]
+  const languages = compact(
+    variantLanguagesWithSlug?.map(({ language }) => language)
+  )
 
   function handleSubmit(value: FormikValues): void {
     const selectedLanguageSlug = variantLanguagesWithSlug?.find(
