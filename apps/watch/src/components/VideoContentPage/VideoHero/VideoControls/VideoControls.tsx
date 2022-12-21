@@ -18,6 +18,8 @@ import FullscreenOutlined from '@mui/icons-material/FullscreenOutlined'
 import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import fscreen from 'fscreen'
+import { SubtitleDialog } from '../../../SubtitleDialog'
+import { useVideo } from '../../../../libs/videoContext'
 import { AudioLanguageButton } from '../../AudioLanguageButton'
 
 interface VideoControlProps {
@@ -47,9 +49,11 @@ export function VideoControls({
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
+  const [openSubtitle, setOpenSubtitle] = useState(false)
 
   const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
   const durationSeconds = Math.round(player.duration())
+  const { variant } = useVideo()
   const visible = !play || active
 
   useEffect(() => {
@@ -327,7 +331,13 @@ export function VideoControls({
                     />
                   </Stack>
                   <AudioLanguageButton componentVariant="icon" />
-                  <IconButton>
+                  <IconButton
+                    onClick={() => setOpenSubtitle(true)}
+                    disabled={
+                      variant?.subtitle === undefined ||
+                      variant?.subtitle.length < 1
+                    }
+                  >
                     <SubtitlesOutlined />
                   </IconButton>
                   <IconButton onClick={handleFullscreen}>
@@ -339,6 +349,12 @@ export function VideoControls({
                   </IconButton>
                 </Stack>
               </Stack>
+              <SubtitleDialog
+                open={openSubtitle}
+                player={player}
+                subtitles={variant?.subtitle}
+                onClose={() => setOpenSubtitle(false)}
+              />
             </Container>
           </Box>
         </Box>

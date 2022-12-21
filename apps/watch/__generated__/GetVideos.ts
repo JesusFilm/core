@@ -29,6 +29,25 @@ export interface GetVideos_videos_children {
   id: string;
 }
 
+export interface GetVideos_videos_variant_subtitle_language_name {
+  __typename: "Translation";
+  value: string;
+  primary: boolean;
+}
+
+export interface GetVideos_videos_variant_subtitle_language {
+  __typename: "Language";
+  name: GetVideos_videos_variant_subtitle_language_name[];
+  bcp47: string | null;
+  id: string;
+}
+
+export interface GetVideos_videos_variant_subtitle {
+  __typename: "Translation";
+  language: GetVideos_videos_variant_subtitle_language;
+  value: string;
+}
+
 export interface GetVideos_videos_variant {
   __typename: "VideoVariant";
   id: string;
@@ -38,6 +57,7 @@ export interface GetVideos_videos_variant {
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: GetVideos_videos_variant_subtitle[];
 }
 
 export interface GetVideos_videos {
