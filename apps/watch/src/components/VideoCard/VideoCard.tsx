@@ -47,7 +47,10 @@ export function VideoCard({
   active,
   imageSx
 }: VideoCardProps): ReactElement {
-  const { label, color, childLabel } = getLabelDetails(video?.label)
+  const { label, color, childCountLabel } = getLabelDetails(
+    video?.label,
+    video?.children.length ?? 0
+  )
 
   return (
     <NextLink
@@ -238,9 +241,7 @@ export function VideoCard({
                         </>
                       )}
                       {(video?.children.length ?? 0) > 0 && (
-                        <Typography>
-                          {video?.children.length} {childLabel}
-                        </Typography>
+                        <Typography>{childCountLabel}</Typography>
                       )}
                     </>
                   )}
