@@ -54,7 +54,7 @@ const chapter1: VideoContentFields = {
     language: {
       __typename: 'Language',
       id: '529',
-      name: [{ __typename: 'Translation', value: 'English' }]
+      name: [{ __typename: 'Translation', value: 'English', primary: true }]
     },
     slug: 'the-beginning/english',
     subtitle: [
@@ -82,6 +82,28 @@ const chapter1: VideoContentFields = {
       }
     ]
   },
+  variantLanguagesWithSlug: [
+    {
+      __typename: 'LanguageWithSlug',
+      slug: 'the-beginning/french',
+      language: {
+        id: '496',
+        __typename: 'Language',
+        name: [
+          {
+            value: 'Français',
+            primary: true,
+            __typename: 'Translation'
+          },
+          {
+            value: 'French',
+            primary: false,
+            __typename: 'Translation'
+          }
+        ]
+      }
+    }
+  ],
   slug: 'the-beginning',
   children: []
 }

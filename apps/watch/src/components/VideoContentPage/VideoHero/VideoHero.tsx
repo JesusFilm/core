@@ -4,6 +4,7 @@ import videojs from 'video.js'
 import fscreen from 'fscreen'
 import Div100vh from 'react-div-100vh'
 import { useVideo } from '../../../libs/videoContext'
+import { Header } from '../../Header'
 import { VideoControls } from './VideoControls'
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 import 'video.js/dist/video-js.css'
@@ -14,6 +15,7 @@ export function VideoHero(): ReactElement {
   const { variant } = useVideo()
   const [isPlaying, setIsPlaying] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [controlsVisible, setControlsVisible] = useState(true)
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<videojs.Player>()
 
@@ -61,21 +63,29 @@ export function VideoHero(): ReactElement {
   }
 
   return (
-    <Div100vh
-      css={{
-        marginBottom: isFullscreen ? 0 : -VIDEO_HERO_BOTTOM_SPACING,
-        paddingBottom: isFullscreen ? 0 : VIDEO_HERO_BOTTOM_SPACING
-      }}
-    >
-      <Box sx={{ position: 'relative', height: '100%', width: '100%' }}>
-        {variant?.hls != null && (
-          <video className="video-js vjs-fill" ref={videoRef} playsInline />
-        )}
-        {playerRef.current != null && isPlaying && (
-          <VideoControls player={playerRef.current} />
-        )}
-        {!isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />}
-      </Box>
-    </Div100vh>
+    <>
+      <Header hideAbsoluteAppBar={!controlsVisible} />
+      <Div100vh
+        css={{
+          marginBottom: isFullscreen ? 0 : -VIDEO_HERO_BOTTOM_SPACING,
+          paddingBottom: isFullscreen ? 0 : VIDEO_HERO_BOTTOM_SPACING
+        }}
+      >
+        <Box sx={{ position: 'relative', height: '100%', width: '100%' }}>
+          {variant?.hls != null && (
+            <video className="video-js vjs-fill" ref={videoRef} playsInline />
+          )}
+          {playerRef.current != null && isPlaying && (
+            <VideoControls
+              player={playerRef.current}
+              onVisibleChanged={(controlsVisible) =>
+                setControlsVisible(controlsVisible)
+              }
+            />
+          )}
+          {!isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />}
+        </Box>
+      </Div100vh>
+    </>
   )
 }

@@ -9,16 +9,14 @@ import videojs from 'video.js'
 import fscreen from 'fscreen'
 import { VideoProvider } from '../../../../libs/videoContext'
 import { videos } from '../../../Videos/testData'
-import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
 import { VideoControls } from './VideoControls'
-
-const video: VideoContentFields = videos[0]
 
 jest.mock('fscreen', () => ({
   __esModule: true,
   default: {
     requestFullscreen: jest.fn(),
-    exitFullscreen: jest.fn()
+    exitFullscreen: jest.fn(),
+    addEventListener: jest.fn()
   }
 }))
 
@@ -59,12 +57,12 @@ describe('VideoControls', () => {
     const playStub = jest.spyOn(player, 'play').mockImplementation(() => ({
       play: jest.fn()
     }))
-    const { getByTestId } = render(
-      <VideoProvider value={{ content: video }}>
+    const { getAllByTestId } = render(
+      <VideoProvider value={{ content: videos[0] }}>
         <VideoControls player={player} />
       </VideoProvider>
     )
-    fireEvent.click(getByTestId('PlayArrowRoundedIcon'))
+    fireEvent.click(getAllByTestId('PlayArrowRoundedIcon')[1])
     expect(playStub).toHaveBeenCalled()
   })
 
@@ -75,12 +73,12 @@ describe('VideoControls', () => {
     const pauseStub = jest.spyOn(player, 'pause').mockImplementation(() => ({
       pause: jest.fn()
     }))
-    const { getByTestId } = render(
-      <VideoProvider value={{ content: video }}>
+    const { getAllByTestId } = render(
+      <VideoProvider value={{ content: videos[0] }}>
         <VideoControls player={player} />
       </VideoProvider>
     )
-    fireEvent.click(getByTestId('PauseRoundedIcon'))
+    fireEvent.click(getAllByTestId('PauseRoundedIcon')[1])
     expect(pauseStub).toHaveBeenCalled()
   })
 
@@ -89,12 +87,22 @@ describe('VideoControls', () => {
       muted: jest.fn()
     }))
     const { getByTestId } = render(
-      <VideoProvider value={{ content: video }}>
+      <VideoProvider value={{ content: videos[0] }}>
         <VideoControls player={player} />
       </VideoProvider>
     )
     fireEvent.click(getByTestId('VolumeUpOutlinedIcon'))
     expect(mutedStub).toHaveBeenCalled()
+  })
+
+  it('opens audio language dialog on language button click', () => {
+    const { getByRole, getByTestId } = render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoControls player={player} />
+      </VideoProvider>
+    )
+    fireEvent.click(getByTestId('LanguageRoundedIcon'))
+    expect(getByRole('textbox')).toHaveValue('English')
   })
 
   it('fullscreens the video player on fullscreen icon click when mobile', () => {
@@ -105,7 +113,7 @@ describe('VideoControls', () => {
         requestFullscreen: jest.fn()
       }))
     const { getByTestId } = render(
-      <VideoProvider value={{ content: video }}>
+      <VideoProvider value={{ content: videos[0] }}>
         <VideoControls player={player} />
       </VideoProvider>
     )
@@ -116,7 +124,7 @@ describe('VideoControls', () => {
   it('fullscreens the video player on fullscreen icon click when desktop', async () => {
     ;(global.navigator.userAgent as unknown as string) = 'Mac'
     const { getByTestId } = render(
-      <VideoProvider value={{ content: video }}>
+      <VideoProvider value={{ content: videos[0] }}>
         <VideoControls player={player} />
       </VideoProvider>
     )
@@ -132,5 +140,5 @@ describe('VideoControls', () => {
     )
   })
 
-  // TODO: add test on Language and Subtitle Dialog click
+  // TODO: Subtitle Dialog click
 })

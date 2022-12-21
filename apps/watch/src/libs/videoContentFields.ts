@@ -33,8 +33,9 @@ export const VIDEO_CONTENT_FIELDS = gql`
       }
       language {
         id
-        name(languageId: $languageId, primary: true) {
+        name {
           value
+          primary
         }
       }
       slug
@@ -48,6 +49,16 @@ export const VIDEO_CONTENT_FIELDS = gql`
           id
         }
         value
+      }
+    }
+    variantLanguagesWithSlug {
+      slug
+      language {
+        id
+        name {
+          value
+          primary
+        }
       }
     }
     slug
