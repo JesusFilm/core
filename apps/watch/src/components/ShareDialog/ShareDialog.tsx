@@ -13,36 +13,39 @@ import TextField from '@mui/material/TextField'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { createSvgIcon } from '@mui/material/utils'
 import { useTheme } from '@mui/material/styles'
+import { useRouter } from 'next/router'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
-
-import { GetVideo_video } from '../../../__generated__/GetVideo'
-import { VideoType } from '../../../__generated__/globalTypes'
+import { useVideo } from '../../libs/videoContext'
 
 interface ShareDialogProps
-  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
-  video: GetVideo_video
-  routes: string[]
-}
+  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
 
 export function ShareDialog({
-  video,
-  routes,
   ...dialogProps
 }: ShareDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
+  const { description, snippet, id, image, title, children } = useVideo()
   const [value, setValue] = useState(0)
   const theme = useTheme()
+  const router = useRouter()
 
   const handleChange = (e: SyntheticEvent, newValue: number): void => {
     setValue(newValue)
   }
 
+  const shareDescription =
+    description != null && description.length > 0
+      ? description[0].value
+      : snippet != null && snippet.length > 0
+      ? snippet[0].value
+      : ''
+
   const shareLink =
-    routes != null
+    router?.query != null
       ? `${
           process.env.NEXT_PUBLIC_WATCH_URL ??
           'https://watch-jesusfilm.vercel.app'
-        }/${routes?.join('/')}`.trim()
+        }/${Object.values(router?.query).join('/')}`.trim()
       : ''
 
   const handleShareLinkClick = async (): Promise<void> => {
@@ -54,9 +57,7 @@ export function ShareDialog({
   }
 
   const getRefId = (): string =>
-    video.id.split('_').length === 1
-      ? `529-${video.id}`
-      : video.id.replace('_', '_529-')
+    id.split('_').length === 1 ? `529-${id}` : id.replace('_', '_529-')
 
   const getEmbedCode = (): string =>
     `<div class="arc-cont"><iframe src="https://api.arclight.org/videoPlayerUrl?refId=${getRefId()}&playerStyle=default" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe><style>.arc-cont{position:relative;display:block;margin:10px auto;width:100%}.arc-cont:after{padding-top:59%;display:block;content:""}.arc-cont>iframe{position:absolute;top:0;bottom:0;right:0;left:0;width:98%;height:98%;border:0}</style></div>`
@@ -138,11 +139,11 @@ export function ShareDialog({
           alignItems="flex-start"
           sx={{ mb: 4 }}
         >
-          {video.image != null && (
+          {image != null && (
             <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
               <Image
-                src={video.image}
-                alt={video.title[0].value}
+                src={image}
+                alt={title[0].value}
                 width={240}
                 height={115}
                 objectFit="cover"
@@ -152,13 +153,10 @@ export function ShareDialog({
           )}
           <Stack sx={{ maxWidth: { sm: '272px' } }}>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              {video.title[0].value}
+              {title[0].value}
             </Typography>
             <Typography>
-              {`${video.description[0].value
-                .split(' ')
-                .slice(0, 18)
-                .join(' ')}...`}
+              {`${shareDescription.split(' ').slice(0, 18).join(' ')}...`}
             </Typography>
           </Stack>
         </Stack>
@@ -181,7 +179,7 @@ export function ShareDialog({
               <TwitterIcon sx={{ fontSize: 46 }} />
             </IconButton>
           </Stack>
-          {video.type === VideoType.playlist ? (
+          {children.length > 0 ? (
             <ShareLink />
           ) : (
             <>

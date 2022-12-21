@@ -11,6 +11,11 @@ import MenuItem from '@mui/material/MenuItem'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 
+import { noop } from 'lodash'
+import {
+  LanguageAutocomplete,
+  Language
+} from '../../../../components/LanguageAutocomplete'
 import { TabPanel, tabA11yProps } from '../../../../components/TabPanel'
 import { simpleComponentConfig } from '../../../simpleComponentConfig'
 import { ThemeName } from '../..'
@@ -32,6 +37,44 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
   const handleChange = (e: SyntheticEvent, newValue: number): void => {
     setValue(newValue)
   }
+
+  const languages: Language[] = [
+    {
+      id: '529',
+      name: [
+        {
+          value: 'English',
+          primary: true
+        }
+      ]
+    },
+    {
+      id: '496',
+      name: [
+        {
+          value: 'Français',
+          primary: true
+        },
+        {
+          value: 'French',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '1106',
+      name: [
+        {
+          value: 'Deutsch',
+          primary: true
+        },
+        {
+          value: 'German, Standard',
+          primary: false
+        }
+      ]
+    }
+  ]
 
   return (
     <Stack spacing={8} alignItems="flex-start">
@@ -60,6 +103,14 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
         >
           Small Contained button
         </Button>
+        <Button
+          startIcon={<AddIcon fontSize="small" />}
+          size="small"
+          variant="contained"
+          disabled
+        >
+          Disabled Contained button
+        </Button>
       </Stack>
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
         <Button
@@ -82,6 +133,14 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
           variant="outlined"
         >
           Small Outlined button
+        </Button>
+        <Button
+          startIcon={<AddIcon fontSize="small" />}
+          size="small"
+          variant="outlined"
+          disabled
+        >
+          Disabled Outlined button
         </Button>
       </Stack>
       <Button
@@ -116,6 +175,13 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
         <MenuItem value="high">High (59.83 MB)</MenuItem>
         <MenuItem value="low">Low (12 MB)</MenuItem>
       </TextField>
+      {/* LANGUAGE AUTOCOMPLETE */}
+      <LanguageAutocomplete
+        onChange={noop}
+        value={languages[0]}
+        languages={languages}
+        loading={false}
+      />
       {/* TABS */}
       <Tabs value={value} onChange={handleChange} aria-label="tabs example">
         <Tab label="Description" {...tabA11yProps('description', 0)} />
@@ -127,21 +193,6 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => {
       <TabPanel name="discussion" value={value} index={1}>
         Discussion
       </TabPanel>
-      {/* DIALOG */}
-      {/* TODO: Move Dialog to shared-ui */}
-      {/* <FormControl>
-        <InputLabel htmlFor="search">Keyword, Country or Language</InputLabel>
-        <FilledInput
-          id="search"
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton>
-                <SearchIcon />
-              </IconButton>
-            </InputAdornment>
-          }
-        />
-      </FormControl> */}
     </Stack>
   )
 }

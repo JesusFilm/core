@@ -1,12 +1,45 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
+import useScrollTrigger from '@mui/material/useScrollTrigger'
 import { Header } from './Header'
 
+jest.mock('@mui/material/useScrollTrigger', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
+const useScrollTriggerMock = useScrollTrigger as jest.Mock
+
 describe('Header', () => {
-  it('should open navigation panel on menu icon click', () => {
-    const { getByText, getByRole } = render(<Header />)
+  beforeEach(() => {
+    useScrollTriggerMock.mockReset()
+  })
+
+  it('should open navigation panel on menu icon click', async () => {
+    const { getByText, getByRole, queryByText } = render(<Header />)
 
     fireEvent.click(getByRole('button', { name: 'open header menu' }))
+    fireEvent.click(getByText('About'))
+    await waitFor(() => expect(queryByText('About')).not.toBeInTheDocument())
+  })
 
-    expect(getByText('About')).toBeInTheDocument()
+  it('should show fixed app bar', async () => {
+    useScrollTriggerMock.mockReturnValue(true)
+    const { getAllByRole, getByText, queryByText } = render(<Header />)
+
+    expect(getAllByRole('button', { name: 'open header menu' }).length).toEqual(
+      2
+    )
+
+    fireEvent.click(getAllByRole('button', { name: 'open header menu' })[1])
+    fireEvent.click(getByText('About'))
+    await waitFor(() => expect(queryByText('About')).not.toBeInTheDocument())
+  })
+
+  it('should hide absolute app bar', () => {
+    const { queryByRole } = render(<Header hideAbsoluteAppBar />)
+
+    expect(
+      queryByRole('button', { name: 'open header menu' })
+    ).not.toBeInTheDocument()
   })
 })

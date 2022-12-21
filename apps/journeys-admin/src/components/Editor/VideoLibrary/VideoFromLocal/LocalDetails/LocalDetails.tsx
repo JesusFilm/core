@@ -8,12 +8,12 @@ import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
 import Check from '@mui/icons-material/Check'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
+import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { gql, useLazyQuery } from '@apollo/client'
 import { GetVideo } from '../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { VideoLanguage } from '../../VideoLanguage'
 import 'video.js/dist/video-js.css'
-import { LanguageSelectOption } from '../../../../LanguageSelect'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 
 export const GET_VIDEO = gql`
@@ -55,17 +55,16 @@ export function LocalDetails({
   const playerRef = useRef<videojs.Player>()
   const [playing, setPlaying] = useState(false)
   const [openLanguage, setOpenLanguage] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] =
-    useState<LanguageSelectOption>({
-      id: '529',
-      localName: undefined,
-      nativeName: 'English'
-    })
+  const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption>({
+    id: '529',
+    localName: undefined,
+    nativeName: 'English'
+  })
   const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
     variables: { id, languageId: '529' }
   })
 
-  const handleChange = (selectedLanguage: LanguageSelectOption): void => {
+  const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
   }
 
@@ -79,7 +78,7 @@ export function LocalDetails({
     })
   }
 
-  const time = data?.video.variant?.duration ?? 0
+  const time = data?.video?.variant?.duration ?? 0
   const duration =
     time < 3600
       ? new Date(time * 1000).toISOString().substring(14, 19)
@@ -90,7 +89,7 @@ export function LocalDetails({
       playerRef.current = videojs(videoRef.current, {
         fluid: true,
         controls: true,
-        poster: data.video.image ?? undefined
+        poster: data.video?.image ?? undefined
       })
       playerRef.current.on('playing', () => {
         setPlaying(true)
@@ -137,7 +136,7 @@ export function LocalDetails({
               playsInline
             >
               <source
-                src={data?.video.variant?.hls ?? ''}
+                src={data?.video?.variant?.hls ?? ''}
                 type="application/x-mpegURL"
               />
             </video>
@@ -196,7 +195,7 @@ export function LocalDetails({
         onClose={() => setOpenLanguage(false)}
         onChange={handleChange}
         language={selectedLanguage}
-        languages={data?.video.variantLanguages}
+        languages={data?.video?.variantLanguages}
         loading={loading}
       />
     </Stack>
