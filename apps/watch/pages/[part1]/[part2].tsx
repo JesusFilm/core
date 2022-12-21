@@ -73,6 +73,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     }
   }
   return {
+    revalidate: 3600,
     props: {
       content: data.content
     }
@@ -80,5 +81,33 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
 }
 
 export const getStaticPaths: GetStaticPaths = () => {
-  return { paths: [], fallback: 'blocking' }
+  return {
+    paths: [
+      { params: { part1: 'jesus', part2: 'english' } },
+      { params: { part1: 'life-of-jesus-gospel-of-john', part2: 'english' } },
+      { params: { part1: 'jesus-calms-the-storm', part2: 'english' } },
+      { params: { part1: 'magdalena', part2: 'english' } },
+      { params: { part1: 'reflections-of-hope', part2: 'english' } },
+      { params: { part1: 'day-6-jesus-died-for-me', part2: 'english' } },
+      { params: { part1: 'book-of-acts', part2: 'english' } },
+      { params: { part1: 'wedding-in-cana', part2: 'english' } },
+      { params: { part1: 'lumo', part2: 'english' } },
+      {
+        params: {
+          part1: 'peter-miraculous-escape-from-prison',
+          part2: 'english'
+        }
+      },
+      { params: { part1: '8-days-with-jesus-who-is-jesus', part2: 'english' } },
+      { params: { part1: 'chosen-witness', part2: 'english' } },
+      { params: { part1: 'lumo-the-gospel-of-luke', part2: 'english' } },
+      { params: { part1: 'storyclubs-jesus-and-zacchaeus', part2: 'english' } },
+      { params: { part1: 'birth-of-jesus', part2: 'english' } },
+      { params: { part1: 'fallingplates', part2: 'english' } },
+      { params: { part1: 'paul-and-silas-in-prison', part2: 'english' } },
+      { params: { part1: 'my-last-day', part2: 'english' } },
+      { params: { part1: 'the-beginning', part2: 'english' } }
+    ],
+    fallback: 'blocking'
+  }
 }
