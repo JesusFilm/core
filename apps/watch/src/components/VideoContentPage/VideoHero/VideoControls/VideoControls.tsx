@@ -16,6 +16,7 @@ import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
 import FullscreenOutlined from '@mui/icons-material/FullscreenOutlined'
 import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
+import CircularProgress from '@mui/material/CircularProgress'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import fscreen from 'fscreen'
 import { SubtitleDialog } from '../../../SubtitleDialog'
@@ -29,13 +30,7 @@ interface VideoControlProps {
 
 function isMobile(): boolean {
   const userAgent = navigator.userAgent
-
-  // Windows Phone must come first because its UA also contains "Android"
-  return (
-    /windows phone/i.test(userAgent) ||
-    /android/i.test(userAgent) ||
-    /iPad|iPhone|iPod/.test(userAgent)
-  )
+  return /windows phone/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent)
 }
 
 export function VideoControls({
@@ -50,15 +45,16 @@ export function VideoControls({
   const [mute, setMute] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
   const [openSubtitle, setOpenSubtitle] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
   const durationSeconds = Math.round(player.duration())
   const { variant } = useVideo()
-  const visible = !play || active
+  const visible = !play || active || loading
 
   useEffect(() => {
-    onVisibleChanged?.(!play || active)
-  }, [play, active, onVisibleChanged])
+    onVisibleChanged?.(!play || active || loading)
+  }, [play, active, loading, onVisibleChanged])
 
   useEffect(() => {
     setVolume(player.volume() * 100)
@@ -83,10 +79,15 @@ export function VideoControls({
     })
     player.on('useractive', () => setActive(true))
     player.on('userinactive', () => setActive(false))
+    player.on('waiting', () => setLoading(true))
+    player.on('playing', () => setLoading(false))
+    player.on('ended', () => setLoading(false))
+    player.on('canplay', () => setLoading(false))
+    player.on('canplaythrough', () => setLoading(false))
     fscreen.addEventListener('fullscreenchange', () =>
       setFullscreen(fscreen.fullscreenElement != null)
     )
-  }, [player, setFullscreen])
+  }, [player, setFullscreen, loading])
 
   function handlePlay(): void {
     if (!play) {
@@ -181,21 +182,31 @@ export function VideoControls({
         >
           <Box
             sx={{
-              display: { xs: 'flex', md: 'none' },
+              display: 'flex',
               flexGrow: 1,
               alignItems: 'center',
               justifyContent: 'center',
               paddingTop: '104px'
             }}
           >
-            <IconButton sx={{ fontSize: 100 }}>
-              {play ? (
-                <PauseRounded fontSize="inherit" />
-              ) : (
-                <PlayArrowRounded fontSize="inherit" />
-              )}
-            </IconButton>
+            {!loading ? (
+              <IconButton
+                sx={{
+                  fontSize: 100,
+                  display: { xs: 'flex', md: 'none' }
+                }}
+              >
+                {play ? (
+                  <PauseRounded fontSize="inherit" />
+                ) : (
+                  <PlayArrowRounded fontSize="inherit" />
+                )}
+              </IconButton>
+            ) : (
+              <CircularProgress size={65} />
+            )}
           </Box>
+
           <Box
             sx={{
               background:

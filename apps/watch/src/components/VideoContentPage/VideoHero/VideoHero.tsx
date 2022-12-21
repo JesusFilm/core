@@ -7,7 +7,6 @@ import { useVideo } from '../../../libs/videoContext'
 import { Header } from '../../Header'
 import { VideoControls } from './VideoControls'
 import { VideoHeroOverlay } from './VideoHeroOverlay'
-import 'video.js/dist/video-js.css'
 
 const VIDEO_HERO_BOTTOM_SPACING = 150
 interface VideoHeroProps {
@@ -77,9 +76,22 @@ export function VideoHero({ onPlay }: VideoHeroProps): ReactElement {
           paddingBottom: isFullscreen ? 0 : VIDEO_HERO_BOTTOM_SPACING
         }}
       >
-        <Box sx={{ position: 'relative', height: '100%', width: '100%' }}>
+        <Box
+          sx={{
+            background: 'black',
+            position: 'relative',
+            height: '100%',
+            width: '100%',
+            '.vjs-hidden': { display: 'none' },
+            '.vjs-loading-spinner': { display: 'none' },
+            '.vjs, .vjs-tech': {
+              height: '100%',
+              width: '100%'
+            }
+          }}
+        >
           {variant?.hls != null && (
-            <video className="video-js vjs-fill" ref={videoRef} playsInline />
+            <video className="vjs" ref={videoRef} playsInline />
           )}
           {playerRef.current != null && isPlaying && (
             <VideoControls
