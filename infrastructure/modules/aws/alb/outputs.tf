@@ -12,3 +12,7 @@ output "zone_id" {
 output "alb_listener" {
   value = aws_alb_listener.alb_listener
 }
+
+output "arn" {
+  value = aws_alb.alb.arn
+}

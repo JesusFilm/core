@@ -1,6 +1,1 @@
-export {
-  createApolloClient,
-  initializeApollo,
-  addApolloState,
-  useApollo
-} from './apolloClient'
+export { createApolloClient, useApollo } from './apolloClient'

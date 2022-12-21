@@ -1,4 +1,5 @@
-import { ComponentStory, Meta } from '@storybook/react'
+import { ComponentProps } from 'react'
+import { Story, Meta } from '@storybook/react'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { StoryCard } from '../StoryCard'
 import { RadioOption } from '.'
@@ -9,7 +10,7 @@ const Demo = {
   title: 'Journeys-Ui/RadioQuestion/RadioOption'
 }
 
-const Template: ComponentStory<typeof RadioOption> = ({ ...args }) => (
+const Template: Story<ComponentProps<typeof RadioOption>> = ({ ...args }) => (
   <StoryCard>
     <RadioOption {...args} />
   </StoryCard>

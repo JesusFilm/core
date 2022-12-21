@@ -16,3 +16,7 @@ variable "internal_url_name" {
 variable "certificate_arn" {
   type = string
 }
+
+variable "vpn_certificate_arn" {
+  type = string
+}

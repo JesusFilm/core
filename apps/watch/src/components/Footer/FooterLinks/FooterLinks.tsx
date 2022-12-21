@@ -7,7 +7,11 @@ export function FooterLinks(): ReactElement {
   return (
     <Stack direction="row" width="100%" spacing={20}>
       <Stack direction="column" spacing={4}>
-        <Typography variant="h6" sx={{ textTransform: 'uppercase' }}>
+        <Typography
+          variant="h6"
+          component="h2"
+          sx={{ textTransform: 'uppercase' }}
+        >
           About
         </Typography>
         <FooterLink label="About Us" url="https://www.jesusfilm.org/about/" />
@@ -18,7 +22,11 @@ export function FooterLinks(): ReactElement {
         />
       </Stack>
       <Stack direction="column" spacing={3}>
-        <Typography variant="h6" sx={{ textTransform: 'uppercase' }}>
+        <Typography
+          variant="h6"
+          component="h2"
+          sx={{ textTransform: 'uppercase' }}
+        >
           Sections
         </Typography>
         <FooterLink
@@ -32,7 +40,11 @@ export function FooterLinks(): ReactElement {
         />
       </Stack>
       <Stack direction="column" spacing={3}>
-        <Typography variant="h6" sx={{ textTransform: 'uppercase' }}>
+        <Typography
+          variant="h6"
+          component="h2"
+          sx={{ textTransform: 'uppercase' }}
+        >
           Apps
         </Typography>
         <FooterLink
