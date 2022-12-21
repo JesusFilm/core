@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import { ReactElement, useEffect, useState } from 'react'
+import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
@@ -69,7 +70,8 @@ export function VideosPage(): ReactElement {
         offset: 0,
         limit: limit,
         languageId: languageContext?.id ?? '529'
-      }
+      },
+      notifyOnNetworkStatusChange: true
     }
   )
 
@@ -107,8 +109,9 @@ export function VideosPage(): ReactElement {
       (language) => language === selectedLanguage
     )
     if (activeLanguage == null) {
-      setLanguageFilter([...languageFilter, selectedLanguage])
-      const languageIds = languageFilter.map((language) => language.id)
+      const updatedFilters = [...languageFilter, selectedLanguage]
+      setLanguageFilter(updatedFilters)
+      const languageIds = updatedFilters.map((language) => language.id)
       setFilter({
         ...filter,
         availableVariantLanguageIds: languageIds
@@ -130,14 +133,30 @@ export function VideosPage(): ReactElement {
     }
   }
 
-  function handleRemove(selectedLanguage: LanguageOption): void {
-    setLanguageFilter(
-      languageFilter.filter((language) => language.id !== selectedLanguage.id)
+  function handleSubtitleChange(selectedLanguage: LanguageOption): void {
+    const activeLanguage = subtitleLanguageFilter.find(
+      (language) => language === selectedLanguage
     )
-    const languageIds = languageFilter.map((language) => language.id)
+    if (activeLanguage == null) {
+      setSubtitleLanguageFilter([...subtitleLanguageFilter, selectedLanguage])
+      const languageIds = languageFilter.map((language) => language.id)
+      setFilter({
+        ...filter,
+        subtitleLanguageIds: languageIds
+      })
+    }
+  }
+
+  function handleRemove(selectedLanguage: LanguageOption): void {
+    const updatedFilters = languageFilter.filter(
+      (language) => language.id !== selectedLanguage.id
+    )
+    setLanguageFilter(updatedFilters)
+    const languageIds = updatedFilters.map((language) => language.id)
     setFilter({
       ...filter,
-      availableVariantLanguageIds: languageIds
+      availableVariantLanguageIds:
+        languageIds.length === 0 ? undefined : languageIds
     })
   }
 
@@ -145,39 +164,71 @@ export function VideosPage(): ReactElement {
     <PageWrapper hero={<VideosHero />}>
       <Container maxWidth="xxl">
         <VideosSubHero />
-        <Divider
-          sx={{ height: 2, mb: 12, background: 'rgba(33, 33, 33, 0.08)' }}
-        />
+      </Container>
+
+      <Divider
+        sx={{ height: 2, mb: 12, background: 'rgba(33, 33, 33, 0.08)' }}
+      />
+
+      <Container maxWidth="xxl">
         <CurrentFilters
           languageFilters={languageFilter}
           onDelete={handleRemove}
         />
+
         <Stack
-          direction={{ xs: 'column', md: 'column', lg: 'row' }}
-          spacing={19}
+          direction={{ xs: 'column', xl: 'row' }}
+          spacing={{ xs: 4, xl: 8 }}
         >
-          <Stack direction="column" spacing={5} sx={{ minWidth: '278px' }}>
-            <Divider />
+          <Stack
+            direction="column"
+            spacing={{ xs: 0, xl: 5 }}
+            sx={{ minWidth: '278px', maxWidth: '335px' }}
+          >
+            <Divider
+              sx={{
+                display: { sm: 'none', xl: 'flex' },
+                height: 2,
+                background: 'rgba(33, 33, 33, 0.08)'
+              }}
+            />
             <LanguagesFilter
               onChange={handleChange}
               languages={languagesData?.languages}
               loading={languagesLoading}
             />
-            <Divider />
+
+            <Divider
+              sx={{
+                display: { sm: 'none', xl: 'flex' },
+                height: 2,
+                background: 'rgba(33, 33, 33, 0.08)'
+              }}
+            />
             <SubtitleLanguagesFilter
               onChange={handleSubtitleChange}
               languages={languagesData?.languages}
               loading={languagesLoading}
             />
-            <Divider />
+
+            <Divider
+              sx={{
+                display: { sm: 'none', xl: 'flex' },
+                height: 2,
+                background: 'rgba(33, 33, 33, 0.08)'
+              }}
+            />
           </Stack>
 
-          <VideoGrid
-            videos={data?.videos ?? []}
-            onLoadMore={handleLoadMore}
-            loading={loading}
-            hasNextPage={!isEnd}
-          />
+          <Box>
+            <VideoGrid
+              videos={data?.videos ?? []}
+              onLoadMore={handleLoadMore}
+              loading={loading}
+              hasNextPage={!isEnd}
+              variant="expanded"
+            />
+          </Box>
         </Stack>
       </Container>
     </PageWrapper>

@@ -6,7 +6,6 @@ import { ReactElement, ReactNode } from 'react'
 import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 
 export function LanguagesFilter(
   props: LanguageAutocompleteProps
@@ -15,7 +14,7 @@ export function LanguagesFilter(
     <TextField
       {...params}
       label="Search Languages"
-      variant="filled"
+      variant="outlined"
       helperText="+2000 languages"
       InputProps={{
         ...params.InputProps,
@@ -32,10 +31,5 @@ export function LanguagesFilter(
     />
   )
 
-  return (
-    <>
-      <Typography>Languages</Typography>
-      <LanguageAutocomplete {...props} renderInput={renderInput} />
-    </>
-  )
+  return <LanguageAutocomplete {...props} renderInput={renderInput} />
 }

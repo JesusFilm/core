@@ -4,8 +4,7 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-
-import JesusHeader from '../../../../public/images/jesus-header.svg'
+import JesusHeader from '../../../../public/images/jesus-header.jpg'
 
 export function HomeHero(): ReactElement {
   return (
@@ -20,9 +19,12 @@ export function HomeHero(): ReactElement {
     >
       <Image
         src={JesusHeader}
-        alt="Home Hero"
+        alt="Jesus Film Project"
         layout="fill"
         objectFit="cover"
+        placeholder="blur"
+        blurDataURL="L6B3c]Mw00*000?b.700_MMxMx-;"
+        priority
       />
       <Box
         sx={{

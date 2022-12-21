@@ -89,6 +89,7 @@ export function VideoCard({
             <Layer
               className="MuiImageBackground-root"
               sx={{
+                background: 'rgba(0,0,0,0.5)',
                 transition: (theme) => theme.transitions.create('transform')
               }}
             >
@@ -169,30 +170,24 @@ export function VideoCard({
                 sx={{ minWidth: 0 }}
                 spacing={2}
               >
-                <Box
+                <Typography
+                  variant="overline2"
+                  color={color}
                   sx={{
-                    textAlign: 'left'
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    lineHeight: '29px'
                   }}
                 >
-                  {variant === 'contained' && (
-                    <Typography
-                      variant="overline2"
-                      color={color}
-                      sx={{
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        lineHeight: '29px'
-                      }}
-                    >
-                      {video != null ? (
-                        label
-                      ) : (
-                        <Skeleton width={50} data-testid="VideoLabelSkeleton" />
-                      )}
-                    </Typography>
-                  )}
-                </Box>
+                  {variant === 'contained' &&
+                    (video != null ? (
+                      label
+                    ) : (
+                      <Skeleton width={50} data-testid="VideoLabelSkeleton" />
+                    ))}
+                </Typography>
+
                 <Stack
                   direction="row"
                   alignItems="center"
