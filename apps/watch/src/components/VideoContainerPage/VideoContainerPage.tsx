@@ -1,7 +1,6 @@
 import Container from '@mui/material/Container'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
-import 'video.js/dist/video-js.css'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { PageWrapper } from '../PageWrapper'

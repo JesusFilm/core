@@ -3,12 +3,8 @@ import Container from '@mui/material/Container'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { ReactElement, useState } from 'react'
-import Button from '@mui/material/Button'
-import SaveAlt from '@mui/icons-material/SaveAlt'
-import Share from '@mui/icons-material/Share'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-
 import { NextSeo } from 'next-seo'
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
@@ -16,6 +12,8 @@ import { ShareDialog } from '../ShareDialog'
 import { VideosCarousel } from '../VideosCarousel/VideosCarousel'
 import { CarouselItem } from '../Video/CarouselItem/CarouselItem'
 import { DownloadDialog } from '../DownloadDialog'
+import { ShareButton } from '../ShareButton'
+import { DownloadButton } from './DownloadButton'
 import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
 
@@ -62,7 +60,7 @@ export function VideoContentPage(): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
-      <PageWrapper hero={<VideoHero />}>
+      <PageWrapper hideHeader hero={<VideoHero />}>
         <>
           <ThemeProvider
             themeName={ThemeName.website}
@@ -92,7 +90,7 @@ export function VideoContentPage(): ReactElement {
           <Container maxWidth="xxl">
             <Stack
               direction="row"
-              spacing="100px"
+              spacing="20px"
               sx={{
                 mx: 0,
                 mt: { xs: 5, md: 10 },
@@ -101,19 +99,20 @@ export function VideoContentPage(): ReactElement {
               }}
             >
               <VideoContent />
-              <Box width="336px" sx={{ display: { xs: 'none', md: 'block' } }}>
-                <Stack direction="row" spacing="20px" mb="40px">
-                  <Button
-                    variant="outlined"
+              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                <Stack
+                  spacing={5}
+                  mb={8}
+                  direction={{ md: 'column', lg: 'row' }}
+                >
+                  <DownloadButton
+                    variant="button"
                     onClick={() => setOpenDownload(true)}
-                  >
-                    <SaveAlt />
-                    Download
-                  </Button>
-                  <Button variant="outlined" onClick={() => setOpenShare(true)}>
-                    <Share />
-                    Share
-                  </Button>
+                  />
+                  <ShareButton
+                    variant="button"
+                    onClick={() => setOpenShare(true)}
+                  />
                 </Stack>
               </Box>
             </Stack>

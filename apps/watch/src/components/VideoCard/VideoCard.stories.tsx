@@ -32,7 +32,7 @@ const Template: ComponentStory<typeof VideoCard> = (args) => {
         <VideoCard video={videos[12]} index={2} {...args} />
       </Grid>
       <Grid item xs={12} md={4} xl={3}>
-        <VideoCard index={4} {...args} />
+        <VideoCard video={videos[2]} index={3} {...args} />
       </Grid>
       <Grid item xs={12} md={4} xl={3}>
         <VideoCard {...args} />
@@ -43,7 +43,6 @@ const Template: ComponentStory<typeof VideoCard> = (args) => {
     </Grid>
   )
 }
-
 export const Expanded = Template.bind({})
 
 export const Contained = Template.bind({})

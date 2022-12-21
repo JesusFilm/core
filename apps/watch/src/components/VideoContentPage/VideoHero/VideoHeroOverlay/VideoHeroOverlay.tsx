@@ -12,6 +12,7 @@ import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import Image from 'next/image'
 import { useVideo } from '../../../../libs/videoContext'
 import { HeroOverlay } from '../../../HeroOverlay'
+import { AudioLanguageButton } from '../../AudioLanguageButton'
 
 interface VideoHeroOverlayProps {
   handlePlay?: () => void
@@ -26,8 +27,10 @@ export function VideoHeroOverlay({
     <Box
       sx={{
         position: 'absolute',
-        height: '100%',
-        width: '100%',
+        top: 0,
+        right: 0,
+        left: 0,
+        bottom: 0,
         zIndex: 1
       }}
     >
@@ -70,7 +73,10 @@ export function VideoHeroOverlay({
         >
           <VolumeOffOutlined />
         </IconButton>
-        <Stack spacing={{ xs: 2, lg: 5 }} sx={{ pb: { xs: 15, lg: 33 } }}>
+        <Stack
+          spacing={{ xs: 2, lg: 5 }}
+          sx={{ pb: { xs: 15, lg: 33 }, width: '100%' }}
+        >
           <Typography
             variant="h1"
             color="text.primary"
@@ -79,50 +85,71 @@ export function VideoHeroOverlay({
             {title[0]?.value}
           </Typography>
           <Stack
-            spacing={8}
-            direction={{ xs: 'column-reverse', md: 'row' }}
-            sx={{ color: 'text.primary', width: '100%', pt: { xs: 0, md: 15 } }}
+            direction="row"
+            justifyContent="space-between"
+            sx={{
+              pt: { xs: 0, md: 15 }
+            }}
           >
-            <Button
-              size="large"
-              variant="contained"
-              onClick={handlePlay}
+            <Stack
+              spacing={8}
+              direction={{ xs: 'column-reverse', md: 'row' }}
+              sx={{
+                width: '100%'
+              }}
+            >
+              <Button
+                size="large"
+                variant="contained"
+                onClick={handlePlay}
+                sx={{
+                  display: { xs: 'none', md: 'flex' },
+                  width: 220,
+                  backgroundColor: 'primary.main'
+                }}
+              >
+                <PlayArrowRounded />
+                Play
+              </Button>
+              <Button
+                size="small"
+                variant="contained"
+                onClick={handlePlay}
+                sx={{
+                  display: { xs: 'flex', md: 'none' },
+                  backgroundColor: 'primary.main'
+                }}
+              >
+                <PlayArrowRounded />
+                Play Video
+              </Button>
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                sx={{
+                  color: 'text.primary',
+                  opacity: 0.6
+                }}
+              >
+                <AccessTime sx={{ width: 17, height: 17 }} />
+                {variant !== null && (
+                  <Typography variant="body1">
+                    {secondsToMinutes(variant.duration)} min
+                  </Typography>
+                )}
+              </Stack>
+            </Stack>
+            <Box
               sx={{
                 display: { xs: 'none', md: 'flex' },
-                width: 220,
-                backgroundColor: 'primary.main'
+                width: '100%',
+                justifyContent: 'end',
+                alignItems: 'center'
               }}
             >
-              <PlayArrowRounded />
-              Play
-            </Button>
-            <Button
-              size="small"
-              variant="contained"
-              onClick={handlePlay}
-              sx={{
-                display: { xs: 'flex', md: 'none' },
-                backgroundColor: 'primary.main'
-              }}
-            >
-              <PlayArrowRounded />
-              Play Video
-            </Button>
-            <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
-              sx={{
-                opacity: 0.6
-              }}
-            >
-              <AccessTime sx={{ width: 17, height: 17 }} />
-              {variant !== null && (
-                <Typography variant="body1">
-                  {secondsToMinutes(variant.duration)} min
-                </Typography>
-              )}
-            </Stack>
+              <AudioLanguageButton componentVariant="button" />
+            </Box>
           </Stack>
         </Stack>
       </Container>

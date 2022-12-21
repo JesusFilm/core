@@ -32,7 +32,8 @@ describe('VideoHeroOverlay', () => {
         name: [
           {
             __typename: 'Translation',
-            value: 'English'
+            value: 'English',
+            primary: true
           }
         ]
       },
@@ -55,10 +56,33 @@ describe('VideoHeroOverlay', () => {
       hls: 'https://arc.gt/zbrvj',
       slug: 'the-story-of-jesus-for-children/english'
     },
+
     title: [
       {
         value: 'The Story of Jesus for Children',
         __typename: 'Translation'
+      }
+    ],
+    variantLanguagesWithSlug: [
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'the-story-of-jesus-for-children/french',
+        language: {
+          id: '496',
+          __typename: 'Language',
+          name: [
+            {
+              value: 'Français',
+              primary: true,
+              __typename: 'Translation'
+            },
+            {
+              value: 'French',
+              primary: false,
+              __typename: 'Translation'
+            }
+          ]
+        }
       }
     ],
     slug: 'the-story-of-jesus-for-children'
