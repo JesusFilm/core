@@ -89,50 +89,16 @@ describe('VideoContentCarousel', () => {
     expect(onIconClick.onDownloadClick).toHaveBeenCalled()
   })
   describe('content without container', () => {
-    it('should display all children videos if present', () => {
+    it('should hide all children videos if present', () => {
       // Children usually present on feature film
       // Series and Collections which have children render on VideoContainerPage
-      const { getAllByRole } = render(
+      const { queryByTestId } = render(
         <VideoProvider value={{ content: featureFilm }}>
           <VideoContentCarousel {...onIconClick} />
         </VideoProvider>
       )
 
-      const relatedVideos = getAllByRole('link')
-
-      expect(relatedVideos).toHaveLength(featureFilm.children.length)
-      expect(relatedVideos[0]).toHaveAttribute(
-        'href',
-        `/jesus/the-beginning/english`
-      )
-      expect(getAllByRole('button')[0]).toHaveAccessibleName(
-        'The Beginning 8:08'
-      )
-    })
-
-    it('should sort children videos with count from those without', () => {
-      // Magdalena - first child is featureFilm, others are segments, last child is short film
-      const { getAllByRole } = render(
-        <VideoProvider value={{ content: videos[4] }}>
-          <VideoContentCarousel {...onIconClick} />
-        </VideoProvider>
-      )
-
-      const relatedVideos = getAllByRole('link')
-
-      expect(relatedVideos).toHaveLength(videos[4].children.length)
-      expect(relatedVideos[0]).toHaveAccessibleName(
-        "Magdalena - Director's Cut 1:22:32 Feature Film Magdalena - Director's Cut"
-      )
-      expect(relatedVideos[1]).toHaveAccessibleName(
-        'Title and Introduction 1:09 Chapter 1 Title and Introduction'
-      )
-      expect(relatedVideos[44]).toHaveAccessibleName(
-        'Living the Christian Life 1:39 Chapter 44 Living the Christian Life'
-      )
-      expect(relatedVideos[45]).toHaveAccessibleName(
-        'This Is Freedom 4:15 Short Film This Is Freedom'
-      )
+      expect(queryByTestId('videos-carousel')).not.toBeInTheDocument()
     })
   })
 

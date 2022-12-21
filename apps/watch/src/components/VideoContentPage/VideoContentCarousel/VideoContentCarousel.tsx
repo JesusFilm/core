@@ -37,12 +37,6 @@ export function VideoContentCarousel({
       : -1
   }, [container, id])
 
-  /* 
-    TODO: 
-    - Scroll to active video fix
-    - add tests
-    */
-
   const progressionLabel = useMemo(() => {
     if (container != null) {
       switch (container.label) {
@@ -135,7 +129,10 @@ export function VideoContentCarousel({
     >
       <Stack
         sx={{
-          display: playing || relatedVideos.length > 0 ? 'inline-flex' : 'none',
+          display:
+            playing || (container != null && relatedVideos.length > 0)
+              ? 'inline-flex'
+              : 'none',
           width: '100%',
           overflow: 'hidden',
           backgroundColor: 'background.default',
@@ -218,23 +215,25 @@ export function VideoContentCarousel({
             </Stack>
           )}
         </Container>
-        <VideosCarousel
-          videos={relatedVideos}
-          activeVideo={id}
-          renderItem={(props: Parameters<typeof VideoCard>[0]) => {
-            return (
-              <VideoCard
-                {...props}
-                containerSlug={container != null ? container.slug : slug}
-                imageSx={{
-                  ...props.imageSx,
-                  border: '1px solid rgba(255, 255, 255, .12)',
-                  borderRadius: '9px'
-                }}
-              />
-            )
-          }}
-        />
+        {container != null && (
+          <VideosCarousel
+            videos={relatedVideos}
+            activeVideo={id}
+            renderItem={(props: Parameters<typeof VideoCard>[0]) => {
+              return (
+                <VideoCard
+                  {...props}
+                  containerSlug={container != null ? container.slug : slug}
+                  imageSx={{
+                    ...props.imageSx,
+                    border: '1px solid rgba(255, 255, 255, .12)',
+                    borderRadius: '9px'
+                  }}
+                />
+              )
+            }}
+          />
+        )}
       </Stack>
     </ThemeProvider>
   )
