@@ -7,6 +7,8 @@ import {
 } from '@testing-library/react'
 import videojs from 'video.js'
 import fscreen from 'fscreen'
+import { VideoProvider } from '../../../../libs/videoContext'
+import { videos } from '../../../Videos/testData'
 import { VideoControls } from './VideoControls'
 
 jest.mock('fscreen', () => ({
@@ -55,7 +57,11 @@ describe('VideoControls', () => {
     const playStub = jest.spyOn(player, 'play').mockImplementation(() => ({
       play: jest.fn()
     }))
-    const { getAllByTestId } = render(<VideoControls player={player} />)
+    const { getAllByTestId } = render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoControls player={player} />
+      </VideoProvider>
+    )
     fireEvent.click(getAllByTestId('PlayArrowRoundedIcon')[1])
     expect(playStub).toHaveBeenCalled()
   })
@@ -67,7 +73,11 @@ describe('VideoControls', () => {
     const pauseStub = jest.spyOn(player, 'pause').mockImplementation(() => ({
       pause: jest.fn()
     }))
-    const { getAllByTestId } = render(<VideoControls player={player} />)
+    const { getAllByTestId } = render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoControls player={player} />
+      </VideoProvider>
+    )
     fireEvent.click(getAllByTestId('PauseRoundedIcon')[1])
     expect(pauseStub).toHaveBeenCalled()
   })
@@ -76,9 +86,23 @@ describe('VideoControls', () => {
     const mutedStub = jest.spyOn(player, 'muted').mockImplementation(() => ({
       muted: jest.fn()
     }))
-    const { getByTestId } = render(<VideoControls player={player} />)
+    const { getByTestId } = render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoControls player={player} />
+      </VideoProvider>
+    )
     fireEvent.click(getByTestId('VolumeUpOutlinedIcon'))
     expect(mutedStub).toHaveBeenCalled()
+  })
+
+  it('opens audio language dialog on language button click', () => {
+    const { getByRole, getByTestId } = render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoControls player={player} />
+      </VideoProvider>
+    )
+    fireEvent.click(getByTestId('LanguageRoundedIcon'))
+    expect(getByRole('textbox')).toHaveValue('English')
   })
 
   it('fullscreens the video player on fullscreen icon click when mobile', () => {
@@ -88,14 +112,22 @@ describe('VideoControls', () => {
       .mockImplementation(() => ({
         requestFullscreen: jest.fn()
       }))
-    const { getByTestId } = render(<VideoControls player={player} />)
+    const { getByTestId } = render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoControls player={player} />
+      </VideoProvider>
+    )
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
     expect(fullscreenStub).toHaveBeenCalled()
   })
 
   it('fullscreens the video player on fullscreen icon click when desktop', async () => {
     ;(global.navigator.userAgent as unknown as string) = 'Mac'
-    const { getByTestId } = render(<VideoControls player={player} />)
+    const { getByTestId } = render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoControls player={player} />
+      </VideoProvider>
+    )
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
     expect(fscreen.requestFullscreen).toHaveBeenCalled()
     await waitFor(() =>
@@ -108,5 +140,5 @@ describe('VideoControls', () => {
     )
   })
 
-  // TODO: add test on Language and Subtitle Dialog click
+  // TODO: Subtitle Dialog click
 })
