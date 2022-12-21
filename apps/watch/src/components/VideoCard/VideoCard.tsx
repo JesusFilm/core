@@ -241,7 +241,7 @@ export function VideoCard({
                         </>
                       )}
                       {(video?.children.length ?? 0) > 0 && (
-                        <Typography>{childCountLabel}</Typography>
+                        <Typography>{childCountLabel.toLowerCase()}</Typography>
                       )}
                     </>
                   )}

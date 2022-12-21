@@ -86,7 +86,7 @@ export function ContainerHero({ openDialog }: Props): ReactElement {
                 opacity: 0.7
               }}
             >
-              {childCountLabel}
+              {childCountLabel.toLowerCase()}
             </Typography>
             <IconButton
               sx={{

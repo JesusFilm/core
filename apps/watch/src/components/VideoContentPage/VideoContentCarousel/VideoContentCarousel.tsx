@@ -47,9 +47,10 @@ export function VideoContentCarousel({
     if (container != null) {
       switch (container.label) {
         case VideoLabel.collection:
-          return `•  ${container.children.length} ${
-            getLabelDetails(container.label).childLabel
-          }`
+          return `•  ${getLabelDetails(
+            container.label,
+            container.children.length
+          ).childCountLabel.toLowerCase()}`
         case VideoLabel.featureFilm:
         case VideoLabel.series:
           return `•  ${getLabelDetails(container.label).childLabel} 
