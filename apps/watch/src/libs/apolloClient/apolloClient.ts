@@ -7,7 +7,6 @@ import {
 import { setContext } from '@apollo/client/link/context'
 import { useMemo } from 'react'
 import { RetryLink } from '@apollo/client/link/retry'
-import { compact } from 'lodash'
 import { cache } from './cache'
 
 interface CreateApolloClientParams {
@@ -45,7 +44,7 @@ export function createApolloClient({
 
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: from(compact([retryLink, authLink, httpLink])),
+    link: from([retryLink, authLink, httpLink]),
     cache: cache().restore(initialState ?? {})
   })
 }
