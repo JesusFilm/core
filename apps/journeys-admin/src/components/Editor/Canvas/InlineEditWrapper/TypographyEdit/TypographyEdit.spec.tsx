@@ -19,6 +19,7 @@ describe('TypographyEdit', () => {
     align: null,
     color: null,
     children: [],
+    visibleCaret: true,
     deleteSelf: onDelete
   }
   it('selects the input on click', () => {
