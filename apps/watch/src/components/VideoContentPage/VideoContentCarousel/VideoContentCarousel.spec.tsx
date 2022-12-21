@@ -11,8 +11,9 @@ const variantProps: Pick<Variant, 'downloads' | 'language'> = {
   downloads: [],
   language: {
     __typename: 'Language',
+
     id: '529',
-    name: [{ __typename: 'Translation', value: 'English' }]
+    name: [{ __typename: 'Translation', value: 'English', primary: true }]
   }
 }
 
