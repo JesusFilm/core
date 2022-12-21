@@ -1,10 +1,13 @@
 import { gql, useQuery } from '@apollo/client'
 import { ReactElement, useEffect, useState } from 'react'
+import { useQueryState } from 'use-location-state'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+import Typography from '@mui/material/Typography'
+import { union } from 'lodash'
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { useLanguage } from '../../libs/languageContext/LanguageContext'
 import { GetVideos } from '../../../__generated__/GetVideos'
@@ -16,7 +19,6 @@ import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 import { LanguagesFilter } from './LanguagesFilter'
 import { CurrentFilters } from './CurrentFilters'
-import { SubtitleLanguagesFilter } from './SubtitleLanguagesFilter'
 
 export const GET_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}
@@ -45,7 +47,6 @@ export const GET_LANGUAGES = gql`
 `
 
 export const limit = 20
-export const defaultFilter: VideosFilter = {}
 
 function isAtEnd(count: number, limit: number, previousCount: number): boolean {
   if (count === previousCount) return true
@@ -55,12 +56,17 @@ function isAtEnd(count: number, limit: number, previousCount: number): boolean {
 export function VideosPage(): ReactElement {
   const languageContext = useLanguage()
   const [isEnd, setIsEnd] = useState(false)
-  const [previousCount, setPreviousCount] = useState(0)
-  const [languageFilter, setLanguageFilter] = useState<LanguageOption[]>([])
-  const [subtitleLanguageFilter, setSubtitleLanguageFilter] = useState<
-    LanguageOption[]
-  >([])
-  const [filter, setFilter] = useState<VideosFilter>(defaultFilter)
+  const [previousCount, setPreviousCount] = useQueryState('count', 0)
+  const [languageFilter, setLanguageFilter] = useQueryState<string[]>('al', [])
+  const [subtitleLanguageFilter, setSubtitleLanguageFilter] = useQueryState<
+    string[]
+  >('sl', [])
+  const [filter, setFilter] = useState<VideosFilter>({
+    availableVariantLanguageIds:
+      languageFilter.length > 0 ? languageFilter : undefined,
+    subtitleLanguageIds:
+      subtitleLanguageFilter.length > 0 ? subtitleLanguageFilter : undefined
+  })
 
   const { data, loading, fetchMore, refetch } = useQuery<GetVideos>(
     GET_VIDEOS,
@@ -104,60 +110,48 @@ export function VideosPage(): ReactElement {
     })
   }, [filter, refetch, languageContext])
 
-  function handleChange(selectedLanguage: LanguageOption): void {
-    const activeLanguage = languageFilter.find(
-      (language) => language === selectedLanguage
-    )
-    if (activeLanguage == null) {
-      const updatedFilters = [...languageFilter, selectedLanguage]
-      setLanguageFilter(updatedFilters)
-      const languageIds = updatedFilters.map((language) => language.id)
-      setFilter({
-        ...filter,
-        availableVariantLanguageIds: languageIds
-      })
-    }
-  }
-
-  function handleSubtitleChange(selectedLanguage: LanguageOption): void {
-    const activeLanguage = subtitleLanguageFilter.find(
-      (language) => language === selectedLanguage
-    )
-    if (activeLanguage == null) {
-      setSubtitleLanguageFilter([...subtitleLanguageFilter, selectedLanguage])
-      const languageIds = languageFilter.map((language) => language.id)
-      setFilter({
-        ...filter,
-        subtitleLanguageIds: languageIds
-      })
-    }
-  }
-
-  function handleSubtitleChange(selectedLanguage: LanguageOption): void {
-    const activeLanguage = subtitleLanguageFilter.find(
-      (language) => language === selectedLanguage
-    )
-    if (activeLanguage == null) {
-      setSubtitleLanguageFilter([...subtitleLanguageFilter, selectedLanguage])
-      const languageIds = languageFilter.map((language) => language.id)
-      setFilter({
-        ...filter,
-        subtitleLanguageIds: languageIds
-      })
-    }
-  }
-
-  function handleRemove(selectedLanguage: LanguageOption): void {
-    const updatedFilters = languageFilter.filter(
-      (language) => language.id !== selectedLanguage.id
-    )
-    setLanguageFilter(updatedFilters)
-    const languageIds = updatedFilters.map((language) => language.id)
+  function handleChange(
+    selectedLanguage: string,
+    selectedFilter: string[],
+    field: string,
+    setStateFunction: (value: string[]) => void
+  ): void {
+    const updatedFilters = union(selectedFilter, [selectedLanguage])
+    setStateFunction(updatedFilters)
     setFilter({
       ...filter,
-      availableVariantLanguageIds:
-        languageIds.length === 0 ? undefined : languageIds
+      [field]: updatedFilters
     })
+  }
+
+  function handleRemove(
+    selectedFilter: string,
+    selectedLanguage: string
+  ): void {
+    let updatedFilters: string[]
+    switch (selectedFilter) {
+      case 'al':
+        updatedFilters = languageFilter.filter(
+          (language) => language !== selectedLanguage
+        )
+        setLanguageFilter(updatedFilters)
+        setFilter({
+          ...filter,
+          availableVariantLanguageIds:
+            updatedFilters?.length === 0 ? undefined : updatedFilters
+        })
+        break
+      case 'sl':
+        updatedFilters = subtitleLanguageFilter.filter(
+          (language) => language !== selectedLanguage
+        )
+        setSubtitleLanguageFilter(updatedFilters)
+        setFilter({
+          ...filter,
+          subtitleLanguageIds:
+            updatedFilters?.length === 0 ? undefined : updatedFilters
+        })
+    }
   }
 
   return (
@@ -172,7 +166,8 @@ export function VideosPage(): ReactElement {
 
       <Container maxWidth="xxl">
         <CurrentFilters
-          languageFilters={languageFilter}
+          languages={languagesData?.languages ?? []}
+          filter={filter}
           onDelete={handleRemove}
         />
 
@@ -192,12 +187,19 @@ export function VideosPage(): ReactElement {
                 background: 'rgba(33, 33, 33, 0.08)'
               }}
             />
+            <Typography>Audio Languages</Typography>
             <LanguagesFilter
-              onChange={handleChange}
+              onChange={(language: LanguageOption) =>
+                handleChange(
+                  language.id,
+                  languageFilter,
+                  'availableVariantLanguageIds',
+                  setLanguageFilter
+                )
+              }
               languages={languagesData?.languages}
               loading={languagesLoading}
             />
-
             <Divider
               sx={{
                 display: { sm: 'none', xl: 'flex' },
@@ -205,12 +207,19 @@ export function VideosPage(): ReactElement {
                 background: 'rgba(33, 33, 33, 0.08)'
               }}
             />
-            <SubtitleLanguagesFilter
-              onChange={handleSubtitleChange}
+            <Typography>Subtitle Languages</Typography>
+            <LanguagesFilter
+              onChange={(language: LanguageOption) =>
+                handleChange(
+                  language.id,
+                  subtitleLanguageFilter,
+                  'subtitleLanguageIds',
+                  setSubtitleLanguageFilter
+                )
+              }
               languages={languagesData?.languages}
               loading={languagesLoading}
             />
-
             <Divider
               sx={{
                 display: { sm: 'none', xl: 'flex' },
@@ -219,7 +228,6 @@ export function VideosPage(): ReactElement {
               }}
             />
           </Stack>
-
           <Box>
             <VideoGrid
               videos={data?.videos ?? []}

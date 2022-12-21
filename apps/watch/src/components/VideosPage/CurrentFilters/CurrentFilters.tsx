@@ -5,15 +5,18 @@ import Button from '@mui/material/Button'
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Chip from '@mui/material/Chip'
-import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+import { GetLanguages_languages } from '../../../../__generated__/GetLanguages'
+import { VideosFilter } from '../../../../__generated__/globalTypes'
 
 interface Props {
-  languageFilters: LanguageOption[]
-  onDelete: (selectedLanguage: LanguageOption) => void
+  languages?: GetLanguages_languages[]
+  filter: VideosFilter
+  onDelete: (filterType: string, id: string) => void
 }
 
 export function CurrentFilters({
-  languageFilters,
+  languages,
+  filter,
   onDelete
 }: Props): ReactElement {
   return (
@@ -29,23 +32,50 @@ export function CurrentFilters({
         Filters
       </Button>
 
-      <Box sx={{ display: 'flex', overflow: 'scroll' }}>
+      <Box sx={{ display: 'flex', overflowX: 'auto' }}>
         {/* TODO: scroll bar not showing up  */}
-        {languageFilters.map((language) => (
-          <Chip
-            key={language.id}
-            variant="outlined"
-            // TODO: chip is inheriting a transparency from somewhere
-            color="primary"
-            label={language.nativeName}
-            deleteIcon={<CloseRoundedIcon fontSize="small" />}
-            onDelete={() => onDelete(language)}
-            sx={{
-              mr: 3,
-              border: '1px solid #DCDAD2'
-            }}
-          />
-        ))}
+        {languages
+          ?.filter((language) =>
+            filter.availableVariantLanguageIds?.includes(language.id)
+          )
+          .map((language) => (
+            <Chip
+              key={language.id}
+              variant="outlined"
+              // TODO: chip is inheriting a transparency from somewhere
+              color="primary"
+              label={`audio: ${
+                language.name[1].value ?? language.name[0]?.value
+              }`}
+              deleteIcon={<CloseRoundedIcon fontSize="small" />}
+              onDelete={() => onDelete('al', language.id)}
+              sx={{
+                mr: 3,
+                border: '1px solid #DCDAD2'
+              }}
+            />
+          ))}
+        {languages
+          ?.filter((language) =>
+            filter.subtitleLanguageIds?.includes(language.id)
+          )
+          .map((language) => (
+            <Chip
+              key={language.id}
+              variant="outlined"
+              // TODO: chip is inheriting a transparency from somewhere
+              color="primary"
+              label={`sub: ${
+                language.name[1]?.value ?? language.name[0]?.value
+              }`}
+              deleteIcon={<CloseRoundedIcon fontSize="small" />}
+              onDelete={() => onDelete('sl', language.id)}
+              sx={{
+                mr: 3,
+                border: '1px solid #DCDAD2'
+              }}
+            />
+          ))}
       </Box>
     </Stack>
   )

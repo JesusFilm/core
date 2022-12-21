@@ -19,6 +19,7 @@ export interface Translation {
 
 export interface LanguageOption {
   id: string
+  bcp47: string
   localName?: string
   nativeName?: string
 }
