@@ -33,11 +33,33 @@ export const VIDEO_CONTENT_FIELDS = gql`
       }
       language {
         id
-        name(languageId: $languageId, primary: true) {
+        name {
           value
+          primary
         }
       }
       slug
+      subtitle {
+        language {
+          name {
+            value
+            primary
+          }
+          bcp47
+          id
+        }
+        value
+      }
+    }
+    variantLanguagesWithSlug {
+      slug
+      language {
+        id
+        name {
+          value
+          primary
+        }
+      }
     }
     slug
     children {

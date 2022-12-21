@@ -59,7 +59,10 @@ export function VideoContentPage(): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
-      <PageWrapper hero={<VideoHero onPlay={() => setHasPlayed(true)} />}>
+      <PageWrapper
+        hideHeader={hasPlayed}
+        hero={<VideoHero onPlay={() => setHasPlayed(true)} />}
+      >
         <>
           <VideoContentCarousel
             playing={hasPlayed}
