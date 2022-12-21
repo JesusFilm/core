@@ -81,8 +81,9 @@ export function TrashJourneyDialog({
       }}
     >
       <Typography>
-        Journey will be moved to trash. You can find this journey under the
-        Trash tab for 40 days, until it is premanently deleted.
+        By selecting “delete”, this journey will be moved to the trash. It will
+        remain there for 40 days, before being automatically and permanently
+        deleted.
       </Typography>
     </Dialog>
   )

@@ -115,12 +115,7 @@ jobs:
   visual-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Fetch other branches
-        if: ${{ github.event_name == 'pull_request' }}
-        run: git fetch --no-tags --prune --depth=300 origin $GITHUB_BASE_REF
+      - uses: actions/checkout@v1
       - name: Check branch up to date with base
         run: ./tools/scripts/check-git-diff.sh
       - uses: actions/setup-node@v2
@@ -155,9 +150,6 @@ jobs:
           exitOnceUploaded: 'true'
           autoAcceptChanges: 'main'
           onlyChanged: 'true'
-          forceRebuild: 'main'
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
-          untraced: |
-            - '**/package*.json'
-            - '**/.storybook/**'
+          untraced: '@(package*.json|.storybook/**)'
           traceChanged: 'expanded'
