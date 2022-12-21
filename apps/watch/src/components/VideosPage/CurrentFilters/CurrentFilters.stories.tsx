@@ -1,6 +1,7 @@
 import { Meta, Story } from '@storybook/react'
 import { noop } from 'lodash'
 import { watchConfig } from '../../../libs/storybook'
+import { bigFilter, filter, languages } from '../testData'
 import { CurrentFilters } from '.'
 
 const CurrentFiltersStory = {
@@ -10,75 +11,25 @@ const CurrentFiltersStory = {
 }
 
 const Template: Story = ({ ...args }) => {
-  return <CurrentFilters onDelete={noop} languageFilters={args.languages} />
+  return (
+    <CurrentFilters
+      onDelete={noop}
+      languages={args.languages}
+      filter={filter}
+    />
+  )
 }
 
 export const Default = Template.bind({})
 Default.args = {
-  languages: [
-    {
-      id: '1',
-      nativeName: 'English'
-    },
-    {
-      id: '2',
-      nativeName: 'French'
-    },
-    {
-      id: '3',
-      nativeName: 'Chinese'
-    }
-  ]
+  languages,
+  filter
 }
 
 export const Excess = Template.bind({})
 Excess.args = {
-  languages: [
-    {
-      id: '1',
-      nativeName: 'English'
-    },
-    {
-      id: '2',
-      nativeName: 'French'
-    },
-    {
-      id: '3',
-      nativeName: 'Chinese'
-    },
-    {
-      id: '4',
-      nativeName: 'Arabic'
-    },
-    {
-      id: '5',
-      nativeName: 'German'
-    },
-    {
-      id: '6',
-      nativeName: 'Hindi'
-    },
-    {
-      id: '7',
-      nativeName: 'Zulu'
-    },
-    {
-      id: '8',
-      nativeName: 'Sara'
-    },
-    {
-      id: '9',
-      nativeName: 'Ngulu'
-    },
-    {
-      id: '10',
-      nativeName: 'Vietnamese'
-    },
-    {
-      id: '11',
-      nativeName: 'Greek'
-    }
-  ]
+  filter: bigFilter,
+  languages
 }
 
 export default CurrentFiltersStory as Meta

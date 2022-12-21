@@ -20,7 +20,11 @@ export function CurrentFilters({
   onDelete
 }: Props): ReactElement {
   return (
-    <Stack direction="row" spacing={4} sx={{ alignItems: 'center', pb: 7 }}>
+    <Stack
+      direction="row"
+      spacing={4}
+      sx={{ alignItems: 'center', pb: 7, overflow: 'hidden' }}
+    >
       {/* Button will be functional when more filtering is added */}
       <Button
         disabled
@@ -45,7 +49,7 @@ export function CurrentFilters({
               // TODO: chip is inheriting a transparency from somewhere
               color="primary"
               label={`audio: ${
-                language.name[1].value ?? language.name[0]?.value
+                language.name[1]?.value ?? language.name[0]?.value
               }`}
               deleteIcon={<CloseRoundedIcon fontSize="small" />}
               onDelete={() => onDelete('al', language.id)}
