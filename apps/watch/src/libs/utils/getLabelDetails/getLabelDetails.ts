@@ -4,12 +4,16 @@ interface LabelDetails {
   label: string
   color: string
   childLabel: string
+  childCountLabel: string
 }
 
-export function getLabelDetails(videoLabel?: VideoLabel): LabelDetails {
+export function getLabelDetails(
+  videoLabel?: VideoLabel,
+  count?: number
+): LabelDetails {
   let label = 'Item'
   let color = '#FFF'
-  let childLabel = 'items'
+  let childLabel = 'Item'
 
   switch (videoLabel) {
     case VideoLabel.collection:
@@ -23,7 +27,7 @@ export function getLabelDetails(videoLabel?: VideoLabel): LabelDetails {
     case VideoLabel.featureFilm:
       label = 'Feature Film'
       color = '#FF9E00'
-      childLabel = 'chapters'
+      childLabel = 'Chapter'
       break
     case VideoLabel.segment:
       label = 'Chapter'
@@ -32,7 +36,7 @@ export function getLabelDetails(videoLabel?: VideoLabel): LabelDetails {
     case VideoLabel.series:
       label = 'Series'
       color = '#3AA74A'
-      childLabel = 'episodes'
+      childLabel = 'Episode'
       break
     case VideoLabel.shortFilm:
       label = 'Short Film'
@@ -40,5 +44,8 @@ export function getLabelDetails(videoLabel?: VideoLabel): LabelDetails {
       break
   }
 
-  return { label, color, childLabel }
+  const childCountLabel =
+    count === 1 ? `${count} ${childLabel}` : `${count ?? 0} ${childLabel}s`
+
+  return { label, color, childLabel, childCountLabel }
 }

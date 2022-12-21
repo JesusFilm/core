@@ -212,7 +212,7 @@ describe('VideoContentCarousel', () => {
       )
 
       expect(getByTestId('container-title')).toHaveTextContent(
-        'JESUS • chapters 1 of 61'
+        'JESUS • Chapter 1 of 61'
       )
       expect(getByTestId('container-progress')).toHaveTextContent('1/61')
       expect(getByRole('link', { name: 'Watch full film' })).toBeInTheDocument()
@@ -244,7 +244,7 @@ describe('VideoContentCarousel', () => {
       )
 
       expect(getByTestId('container-title')).toHaveTextContent(
-        'Reflections of Hope • episodes 2 of 7'
+        'Reflections of Hope • Episode 2 of 7'
       )
       expect(getByTestId('container-progress')).toHaveTextContent('2/7')
       expect(getByRole('link', { name: 'See all' })).toBeInTheDocument()
