@@ -43,7 +43,6 @@ const Template: ComponentStory<typeof VideoCard> = (args) => {
     </Grid>
   )
 }
-
 export const Expanded = Template.bind({})
 
 export const Contained = Template.bind({})
