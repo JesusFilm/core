@@ -60,7 +60,7 @@ export function VideoContentPage(): ReactElement {
         }}
       />
       <PageWrapper
-        hideHeader={hasPlayed}
+        hideHeader
         hero={<VideoHero onPlay={() => setHasPlayed(true)} />}
       >
         <>
