@@ -14,7 +14,8 @@ export function HomeHero(): ReactElement {
         width: '100%',
         display: 'flex',
         alignItems: 'center',
-        position: 'relative'
+        position: 'relative',
+        backgroundColor: 'background.default'
       }}
     >
       <Image
@@ -23,7 +24,6 @@ export function HomeHero(): ReactElement {
         layout="fill"
         objectFit="cover"
         placeholder="blur"
-        blurDataURL="L6B3c]Mw00*000?b.700_MMxMx-;"
         priority
       />
       <Box
@@ -59,6 +59,7 @@ export function HomeHero(): ReactElement {
           </Stack>
           <Typography
             variant="h5"
+            component="h2"
             color="secondary.contrastText"
             sx={{ opacity: 0.7, pt: 8 }}
           >

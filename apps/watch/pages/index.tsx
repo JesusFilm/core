@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { GetStaticProps } from 'next'
 import { gql } from '@apollo/client'
-import { createApolloClient } from '../src/libs/client'
+import { createApolloClient } from '../src/libs/apolloClient'
 import {
   GetHomeVideos,
   GetHomeVideos_videos as Video

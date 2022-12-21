@@ -1,8 +1,8 @@
 import { ReactElement } from 'react'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
+import { ShareButton } from '../../ShareButton'
 
 export interface Props {
   value: string
@@ -20,23 +20,17 @@ export function ContainerDescription({
       alignItems="flex-start"
       spacing={4}
     >
-      <Typography variant="subtitle1" color="text.primary">
+      <Typography
+        variant="subtitle1"
+        component="h2"
+        color="text.primary"
+        sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+      >
         {value}
       </Typography>
-      <Button
-        startIcon={<ShareOutlinedIcon />}
-        size="medium"
-        variant="outlined"
-        color="secondary"
-        aria-label="collection-share-button"
-        onClick={() => openDialog()}
-        sx={{
-          display: { xs: 'none', sm: 'flex' },
-          minWidth: 220
-        }}
-      >
-        Share
-      </Button>
+      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+        <ShareButton onClick={openDialog} variant="button" />
+      </Box>
     </Stack>
   )
 }

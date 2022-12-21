@@ -50,7 +50,9 @@ export function VideoCard({
   return (
     <NextLink
       href={`/${
-        containerSlug != null && video?.label !== VideoLabel.collection
+        containerSlug != null &&
+        video?.label != null &&
+        ![VideoLabel.collection, VideoLabel.series].includes(video.label)
           ? `${containerSlug}/`
           : ''
       }${video?.variant?.slug ?? ''}`}
@@ -149,6 +151,7 @@ export function VideoCard({
               {variant === 'contained' && (
                 <Typography
                   variant="h6"
+                  component="h3"
                   color="primary.contrastText"
                   sx={{
                     textAlign: 'left',
@@ -256,7 +259,7 @@ export function VideoCard({
                   )}
                 </Typography>
               )}
-              <Typography variant="h6">
+              <Typography variant="h6" component="h3">
                 {video != null ? (
                   video?.title[0].value
                 ) : (

@@ -12,11 +12,13 @@ import { Footer } from '../Footer'
 interface PageWrapperProps {
   hero?: ReactNode
   children?: ReactNode
+  hideHeader?: boolean
 }
 
 export function PageWrapper({
   hero,
-  children
+  children,
+  hideHeader
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
@@ -24,8 +26,7 @@ export function PageWrapper({
         justifyContent="space-between"
         sx={{ width: '100%', height: '100%' }}
       >
-        <Header />
-
+        {hideHeader !== true && <Header />}
         <Container maxWidth={false} disableGutters>
           <ThemeProvider
             nested
@@ -35,9 +36,7 @@ export function PageWrapper({
             {hero}
           </ThemeProvider>
         </Container>
-
         <Box sx={{ flexGrow: 1 }}>{children}</Box>
-
         <Footer />
       </Stack>
     </Div100vh>
