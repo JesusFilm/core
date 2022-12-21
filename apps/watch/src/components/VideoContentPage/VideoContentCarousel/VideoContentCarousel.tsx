@@ -149,7 +149,11 @@ export function VideoContentCarousel({
             direction="row"
             justifyContent="space-between"
             alignItems="center"
-            sx={{ display: playing ? 'inline-flex' : 'none', width: '100%' }}
+            sx={{
+              display: playing ? 'inline-flex' : 'none',
+              width: '100%',
+              mb: 4
+            }}
           >
             <Typography
               variant="h5"
@@ -160,7 +164,7 @@ export function VideoContentCarousel({
             </Typography>
             <Stack
               direction="row"
-              sx={{ display: { xs: 'inline-flex', xl: 'none' } }}
+              sx={{ display: { xs: 'inline-flex', xl: 'none' }, ml: 4 }}
             >
               <ShareButton variant="icon" onClick={onShareClick} />
               <DownloadButton variant="icon" onClick={onDownloadClick} />
