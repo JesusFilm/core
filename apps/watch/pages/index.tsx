@@ -67,10 +67,10 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
   })
 
   return {
+    revalidate: 3600,
     props: {
       videos
-    },
-    revalidate: 60
+    }
   }
 }
 export default HomePage
