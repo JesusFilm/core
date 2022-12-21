@@ -33,14 +33,14 @@
 
 @media (min-width: 1400px) {
   .jfp-watch .swiper-slide {
-    width: 242px;
-    min-width: 242px;
-    max-width: 242px;
+    width: 247px;
+    min-width: 247px;
+    max-width: 247px;
   }
 }
 
 @media (min-width: 1600px) {
-  .jfp-watch.swiper-slide {
+  .jfp-watch .swiper-slide {
     width: 280px;
     min-width: 280px;
     max-width: 280px;

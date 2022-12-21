@@ -1,26 +1,25 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { ReactElement, useState } from 'react'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { NextSeo } from 'next-seo'
+
+import 'video.js/dist/video-js.css'
+
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
-import { VideosCarousel } from '../VideosCarousel/VideosCarousel'
-import { CarouselItem } from '../Video/CarouselItem/CarouselItem'
 import { DownloadDialog } from '../DownloadDialog'
 import { ShareButton } from '../ShareButton'
 import { DownloadButton } from './DownloadButton'
 import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
+import { VideoContentCarousel } from './VideoContentCarousel'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
-  const { title, snippet, image, imageAlt, children, slug, variant } =
-    useVideo()
+  const { title, snippet, image, imageAlt, slug, variant } = useVideo()
+  const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
 
@@ -60,33 +59,16 @@ export function VideoContentPage(): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
-      <PageWrapper hideHeader hero={<VideoHero />}>
+      <PageWrapper
+        hideHeader
+        hero={<VideoHero onPlay={() => setHasPlayed(true)} />}
+      >
         <>
-          <ThemeProvider
-            themeName={ThemeName.website}
-            themeMode={ThemeMode.dark}
-            nested
-          >
-            <Paper elevation={0} square sx={{ pt: '20px' }}>
-              {/* TODO: combine content and container children? */}
-              {children.length > 0 && (
-                <VideosCarousel
-                  videos={children}
-                  renderItem={(props: Parameters<typeof CarouselItem>[0]) => {
-                    return <CarouselItem {...props} />
-                  }}
-                />
-              )}
-              {/* {container != null && container.children.length > 0 && (
-                <VideosCarousel
-                  videos={container.children}
-                  renderItem={(props: Parameters<typeof CarouselItem>[0]) => {
-                    return <CarouselItem {...props} />
-                }}
-                />
-              )}   */}
-            </Paper>
-          </ThemeProvider>
+          <VideoContentCarousel
+            playing={hasPlayed}
+            onShareClick={() => setOpenShare(true)}
+            onDownloadClick={() => setOpenDownload(true)}
+          />
           <Container maxWidth="xxl">
             <Stack
               direction="row"

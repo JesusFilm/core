@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { ReactElement, useRef, useEffect, useState } from 'react'
+import { ReactElement, useRef, useEffect, useState, useCallback } from 'react'
 import videojs from 'video.js'
 import fscreen from 'fscreen'
 import Div100vh from 'react-div-100vh'
@@ -10,8 +10,11 @@ import { VideoHeroOverlay } from './VideoHeroOverlay'
 import 'video.js/dist/video-js.css'
 
 const VIDEO_HERO_BOTTOM_SPACING = 150
+interface VideoHeroProps {
+  onPlay?: () => void
+}
 
-export function VideoHero(): ReactElement {
+export function VideoHero({ onPlay }: VideoHeroProps): ReactElement {
   const { variant } = useVideo()
   const [isPlaying, setIsPlaying] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -30,6 +33,16 @@ export function VideoHero(): ReactElement {
       fscreen.removeEventListener('fullscreenchange', fullscreenchange)
   }, [setIsFullscreen])
 
+  const handlePlay = useCallback((): void => {
+    setIsPlaying(true)
+    if (onPlay != null) {
+      onPlay()
+    }
+    if (playerRef?.current != null) {
+      playerRef?.current?.play()
+    }
+  }, [onPlay])
+
   useEffect(() => {
     if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
@@ -45,7 +58,7 @@ export function VideoHero(): ReactElement {
       })
       playerRef.current.on('play', handlePlay)
     }
-  }, [variant, playerRef, videoRef])
+  }, [variant, playerRef, videoRef, handlePlay])
 
   useEffect(() => {
     playerRef.current?.src({
@@ -54,13 +67,6 @@ export function VideoHero(): ReactElement {
     })
     setIsPlaying(false)
   }, [variant?.hls])
-
-  function handlePlay(): void {
-    setIsPlaying(true)
-    if (playerRef?.current != null) {
-      playerRef?.current?.play()
-    }
-  }
 
   return (
     <>
