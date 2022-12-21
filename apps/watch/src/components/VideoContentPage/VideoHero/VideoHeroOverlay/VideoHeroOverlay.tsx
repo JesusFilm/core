@@ -94,14 +94,16 @@ export function VideoHeroOverlay({
             direction="row"
             justifyContent="space-between"
             sx={{
-              pt: { xs: 0, md: 15 }
+              pt: { xs: 0, md: 15 },
+              width: '100%'
             }}
           >
             <Stack
-              spacing={8}
               direction={{ xs: 'column-reverse', md: 'row' }}
+              aria-label="fejfiejfieifji"
               sx={{
-                width: '100%'
+                width: '100%',
+                gap: 8
               }}
             >
               <Box
@@ -110,7 +112,7 @@ export function VideoHeroOverlay({
                   justifyContent: 'space-between'
                 }}
               >
-                <AudioLanguageButton componentVariant="icon" />
+                <AudioLanguageButton componentVariant="button" />
                 <Stack direction="row" spacing={5}>
                   <ShareButton
                     variant="icon"
@@ -158,7 +160,7 @@ export function VideoHeroOverlay({
               >
                 <AccessTime sx={{ width: 17, height: 17 }} />
                 {variant !== null && (
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={{ whiteSpace: 'nowrap' }}>
                     {secondsToMinutes(variant.duration)} min
                   </Typography>
                 )}
@@ -166,10 +168,7 @@ export function VideoHeroOverlay({
             </Stack>
             <Box
               sx={{
-                display: { xs: 'none', md: 'flex' },
-                width: '100%',
-                justifyContent: 'end',
-                alignItems: 'center'
+                display: { xs: 'none', md: 'flex' }
               }}
             >
               <AudioLanguageButton componentVariant="button" />
