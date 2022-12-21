@@ -8,6 +8,7 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import LanguageRounded from '@mui/icons-material/LanguageRounded'
+import { compact } from 'lodash'
 import { useVideo } from '../../../libs/videoContext'
 import { AudioLanguageDialog } from '../../AudioDialog'
 
@@ -20,6 +21,10 @@ export function AudioLanguageButton({
 }: AudioLanguageButtonProps): ReactElement {
   const { variant, variantLanguagesWithSlug } = useVideo()
   const [openAudioLanguage, setOpenAudioLanguage] = useState(false)
+
+  const languages = compact(
+    variantLanguagesWithSlug?.map(({ language }) => language)
+  )
 
   const nativeName = variant?.language?.name.find(
     ({ primary }) => !primary
@@ -48,7 +53,7 @@ export function AudioLanguageButton({
           <Typography variant="subtitle1">{localName ?? nativeName}</Typography>
           <AddOutlined fontSize="small" />
           <Typography variant="subtitle1">
-            {variantLanguagesWithSlug.length - 1} Languages
+            {languages.length - 1} Languages
           </Typography>
           <KeyboardArrowDownOutlined fontSize="small" />
         </Button>
