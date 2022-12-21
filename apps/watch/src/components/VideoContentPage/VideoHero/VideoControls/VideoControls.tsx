@@ -14,11 +14,11 @@ import VolumeDownOutlined from '@mui/icons-material/VolumeDownOutlined'
 import VolumeMuteOutlined from '@mui/icons-material/VolumeMuteOutlined'
 import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
 import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
-import LanguageRounded from '@mui/icons-material/LanguageRounded'
 import FullscreenOutlined from '@mui/icons-material/FullscreenOutlined'
 import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import fscreen from 'fscreen'
+import { AudioLanguageButton } from '../../AudioLanguageButton'
 
 interface VideoControlProps {
   player: videojs.Player
@@ -326,9 +326,7 @@ export function VideoControls({
                       }}
                     />
                   </Stack>
-                  <IconButton>
-                    <LanguageRounded />
-                  </IconButton>
+                  <AudioLanguageButton componentVariant="icon" />
                   <IconButton>
                     <SubtitlesOutlined />
                   </IconButton>
