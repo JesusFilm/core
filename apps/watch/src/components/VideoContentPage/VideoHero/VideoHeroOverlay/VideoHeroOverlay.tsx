@@ -108,7 +108,7 @@ export function VideoHeroOverlay({
                   justifyContent: 'space-between'
                 }}
               >
-                <AudioLanguageButton />
+                <AudioLanguageButton componentVariant="button" />
                 <Stack direction="row" spacing={5}>
                   <ShareButton
                     variant="icon"
@@ -170,7 +170,7 @@ export function VideoHeroOverlay({
                 ml: 10
               }}
             >
-              <AudioLanguageButton />
+              <AudioLanguageButton componentVariant="button" />
             </Box>
           </Stack>
         </Stack>

@@ -8,10 +8,17 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { compact } from 'lodash'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import { useVideo } from '../../../libs/videoContext'
 import { AudioLanguageDialog } from '../../AudioDialog'
 
-export function AudioLanguageButton(): ReactElement {
+interface AudioLanguageButtonProps {
+  componentVariant: 'button' | 'icon'
+}
+
+export function AudioLanguageButton({
+  componentVariant
+}: AudioLanguageButtonProps): ReactElement {
   const { variant, variantLanguagesWithSlug } = useVideo()
   const [openAudioLanguage, setOpenAudioLanguage] = useState(false)
 
@@ -28,7 +35,7 @@ export function AudioLanguageButton(): ReactElement {
 
   return (
     <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.light}>
-      <>
+      {componentVariant === 'button' ? (
         <Button
           size="small"
           onClick={() => setOpenAudioLanguage(true)}
@@ -69,11 +76,19 @@ export function AudioLanguageButton(): ReactElement {
           </Box>
           <KeyboardArrowDownOutlined fontSize="small" />
         </Button>
-        <AudioLanguageDialog
-          open={openAudioLanguage}
-          onClose={() => setOpenAudioLanguage(false)}
-        />
-      </>
+      ) : (
+        <IconButton onClick={() => setOpenAudioLanguage(true)}>
+          <LanguageOutlined sx={{ color: '#ffffff' }} />
+        </IconButton>
+      )}
+      <AudioLanguageDialog
+        open={openAudioLanguage}
+        onClose={() => setOpenAudioLanguage(false)}
+      />
+      <AudioLanguageDialog
+        open={openAudioLanguage}
+        onClose={() => setOpenAudioLanguage(false)}
+      />
     </ThemeProvider>
   )
 }
