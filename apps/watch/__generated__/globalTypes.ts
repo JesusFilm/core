@@ -168,10 +168,9 @@ export enum VideoLabel {
   shortFilm = "shortFilm",
 }
 
-export enum VideoType {
-  episode = "episode",
-  playlist = "playlist",
-  standalone = "standalone",
+export enum VideoVariantDownloadQuality {
+  high = "high",
+  low = "low",
 }
 
 export interface ButtonClickEventCreateInput {
@@ -286,10 +285,10 @@ export interface VideoStartEventCreateInput {
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
+  ids?: string[] | null;
   labels?: VideoLabel[] | null;
-  tagId?: string | null;
+  subtitleLanguageIds?: string[] | null;
   title?: string | null;
-  types?: VideoType[] | null;
 }
 
 //==============================================================

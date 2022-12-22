@@ -7,12 +7,6 @@ enum IdType {
   slug
 }
 
-enum VideoType {
-  episode
-  standalone
-  playlist
-}
-
 enum VideoLabel {
   collection
   episode
@@ -22,9 +16,13 @@ enum VideoLabel {
   shortFilm
 }
 
+type LanguageWithSlug {
+  language: Language
+  slug: String
+}
+
 type Video @key(fields: "id primaryLanguageId") {
   id: ID!
-  type: VideoType!
   label: VideoLabel!
   primaryLanguageId: ID!
   title(languageId: ID, primary: Boolean): [Translation!]!
@@ -36,33 +34,23 @@ type Video @key(fields: "id primaryLanguageId") {
   imageAlt(languageId: ID, primary: Boolean): [Translation!]!
   variantLanguages: [Language!]!
   """
-  slug is a permanent link to the video. It should only be appended, not edited or deleted
+  slug is a permanent link to the video.
   """
-  slug(languageId: ID, primary: Boolean): [Translation!]!
+  slug: String!
   noIndex: Boolean
-  """
-  Episodes are child videos, currently only found in a playlist type
-  """
-  episodeIds: [ID!]!
-  episodes: [Video!]!
+  children: [Video!]!
+  variantLanguagesWithSlug: [LanguageWithSlug!]!
 }
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
-  tagId: String
-  types: [VideoType!]
   labels: [VideoLabel!]
+  ids: [ID!]
+  subtitleLanguageIds: [ID!]
 }
 
 extend type Query {
-  episodes(
-    playlistId: ID!
-    idType: IdType
-    where: VideosFilter
-    offset: Int
-    limit: Int
-  ): [Video!]!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  video(id: ID!, idType: IdType): Video!
+  video(id: ID!, idType: IdType): Video
 }

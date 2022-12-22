@@ -12,12 +12,6 @@ export enum IdType {
     slug = "slug"
 }
 
-export enum VideoType {
-    episode = "episode",
-    standalone = "standalone",
-    playlist = "playlist"
-}
-
 export enum VideoLabel {
     collection = "collection",
     episode = "episode",
@@ -35,15 +29,9 @@ export enum VideoVariantDownloadQuality {
 export class VideosFilter {
     availableVariantLanguageIds?: Nullable<string[]>;
     title?: Nullable<string>;
-    tagId?: Nullable<string>;
-    types?: Nullable<VideoType[]>;
     labels?: Nullable<VideoLabel[]>;
-}
-
-export class VideoTag {
-    __typename?: 'VideoTag';
-    id: string;
-    title: Translation[];
+    ids?: Nullable<string[]>;
+    subtitleLanguageIds?: Nullable<string[]>;
 }
 
 export class Translation {
@@ -53,10 +41,15 @@ export class Translation {
     primary: boolean;
 }
 
+export class LanguageWithSlug {
+    __typename?: 'LanguageWithSlug';
+    language?: Nullable<Language>;
+    slug?: Nullable<string>;
+}
+
 export class Video {
     __typename?: 'Video';
     id: string;
-    type: VideoType;
     label: VideoLabel;
     primaryLanguageId: string;
     title: Translation[];
@@ -67,10 +60,10 @@ export class Video {
     image?: Nullable<string>;
     imageAlt: Translation[];
     variantLanguages: Language[];
-    slug: Translation[];
+    slug: string;
     noIndex?: Nullable<boolean>;
-    episodeIds: string[];
-    episodes: Video[];
+    children: Video[];
+    variantLanguagesWithSlug: LanguageWithSlug[];
     variant?: Nullable<VideoVariant>;
 }
 
@@ -89,22 +82,17 @@ export class VideoVariant {
     duration: number;
     language: Language;
     subtitle: Translation[];
-}
-
-export abstract class IQuery {
-    abstract videoTags(): Nullable<VideoTag[]> | Promise<Nullable<VideoTag[]>>;
-
-    abstract videoTag(id: string): Nullable<VideoTag> | Promise<Nullable<VideoTag>>;
-
-    abstract episodes(playlistId: string, idType?: Nullable<IdType>, where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
-
-    abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
-
-    abstract video(id: string, idType?: Nullable<IdType>): Video | Promise<Video>;
+    slug: string;
 }
 
 export class Language {
     id: string;
+}
+
+export abstract class IQuery {
+    abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
+
+    abstract video(id: string, idType?: Nullable<IdType>): Nullable<Video> | Promise<Nullable<Video>>;
 }
 
 type Nullable<T> = T | null;

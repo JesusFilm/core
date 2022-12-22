@@ -55,7 +55,13 @@ export function VideoLibrary({
 
   const onSelect = (block: VideoBlockUpdateInput): void => {
     if (handleSelect != null) handleSelect(block)
-    if (onClose != null) onClose()
+    setOpenVideoDetails(false)
+    onClose?.()
+  }
+
+  const handleVideoDetailsClose = (closeParent?: boolean): void => {
+    setOpenVideoDetails(false)
+    if (closeParent === true) onClose?.()
   }
 
   return (
@@ -147,10 +153,9 @@ export function VideoLibrary({
           id={selectedBlock?.videoId}
           open={openVideoDetails}
           source={selectedBlock.source}
-          onClose={setOpenVideoDetails}
-          onLibraryClose={onClose}
+          onClose={handleVideoDetailsClose}
           onSelect={onSelect}
-          showChangeVideo
+          activeVideo
         />
       )}
     </>

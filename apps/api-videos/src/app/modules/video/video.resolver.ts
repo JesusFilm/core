@@ -16,33 +16,6 @@ import { VideoService } from './video.service'
 export class VideoResolver {
   constructor(private readonly videoService: VideoService) {}
 
-  @Query('episodes')
-  async episodesQuery(
-    @Info() info,
-    @Args('playlistId') playlistId: string,
-    @Args('idType') idType: IdType = IdType.databaseId,
-    @Args('where') where?: VideosFilter,
-    @Args('offset') offset?: number,
-    @Args('limit') limit?: number
-  ): Promise<Video[]> {
-    const variantLanguageId = info.fieldNodes[0].selectionSet.selections
-      .find(({ name }) => name.value === 'variant')
-      ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
-    return await this.videoService.filterEpisodes({
-      playlistId,
-      idType,
-      title: where?.title ?? undefined,
-      tagId: where?.tagId ?? undefined,
-      availableVariantLanguageIds:
-        where?.availableVariantLanguageIds ?? undefined,
-      variantLanguageId,
-      types: where?.types ?? undefined,
-      labels: where?.labels ?? undefined,
-      offset,
-      limit
-    })
-  }
-
   @Query()
   async videos(
     @Info() info,
@@ -56,12 +29,12 @@ export class VideoResolver {
 
     return await this.videoService.filterAll({
       title: where?.title ?? undefined,
-      tagId: where?.tagId ?? undefined,
       availableVariantLanguageIds:
         where?.availableVariantLanguageIds ?? undefined,
+      ids: where?.ids ?? undefined,
       variantLanguageId,
-      types: where?.types ?? undefined,
       labels: where?.labels ?? undefined,
+      subtitleLanguageIds: where?.subtitleLanguageIds ?? undefined,
       offset,
       limit
     })
@@ -76,9 +49,13 @@ export class VideoResolver {
     const variantLanguageId = info.fieldNodes[0].selectionSet.selections
       .find(({ name }) => name.value === 'variant')
       ?.arguments.find(({ name }) => name.value === 'languageId')?.value?.value
-    return idType === IdType.databaseId
-      ? await this.videoService.getVideo(id, variantLanguageId)
-      : await this.videoService.getVideoBySlug(id, variantLanguageId)
+
+    switch (idType) {
+      case IdType.databaseId:
+        return await this.videoService.getVideo(id, variantLanguageId)
+      case IdType.slug:
+        return await this.videoService.getVideoBySlug(id)
+    }
   }
 
   @ResolveReference()
@@ -94,9 +71,11 @@ export class VideoResolver {
   }
 
   @ResolveField()
-  async episodes(@Parent() video: Video): Promise<Video[] | null> {
-    return video.episodeIds != null
-      ? await this.videoService.getVideosByIds(video.episodeIds)
+  async children(
+    @Parent() video: Video & { childIds: string[] }
+  ): Promise<Video[] | null> {
+    return video.childIds != null
+      ? await this.videoService.getVideosByIds(video.childIds)
       : null
   }
 
@@ -147,12 +126,13 @@ export class VideoResolver {
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
   ): void {}
+}
 
-  @ResolveField()
-  @TranslationField('slug')
-  slug(
-    @Parent() language,
-    @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean
-  ): void {}
+@Resolver('LanguageWithSlug')
+export class LanguageWithSlugResolver {
+  @ResolveField('language')
+  language(@Parent() languageWithSlug): { __typename: 'Language'; id: string } {
+    // 529 (english) is default if not set
+    return { __typename: 'Language', id: languageWithSlug.languageId ?? '529' }
+  }
 }

@@ -8,8 +8,10 @@ import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
 import Close from '@mui/icons-material/Close'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded'
 import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
@@ -22,21 +24,19 @@ export const DRAWER_WIDTH = 328
 export interface VideoDetailsProps {
   open: boolean
   id: string
-  onClose: (closeParent: boolean) => void
+  onClose: (closeParent?: boolean) => void
   onSelect: (block: VideoBlockUpdateInput) => void
-  onLibraryClose?: () => void
   source: VideoBlockSource
-  showChangeVideo?: boolean
+  activeVideo?: boolean
 }
 
 export function VideoDetails({
   open,
   id,
-  onLibraryClose,
   onClose,
   onSelect,
   source,
-  showChangeVideo
+  activeVideo
 }: VideoDetailsProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
@@ -53,11 +53,17 @@ export function VideoDetails({
       break
   }
 
-  function handleSelect(block: VideoBlockUpdateInput): void {
+  const handleSelect = (block: VideoBlockUpdateInput): void => {
     onSelect(block)
-    onClose(false)
   }
 
+  const handleClearVideo = (): void => {
+    onSelect({
+      videoId: null,
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.internal
+    })
+  }
   return (
     <>
       <Drawer
@@ -89,10 +95,7 @@ export function VideoDetails({
               Video Details
             </Typography>
             <IconButton
-              onClick={() => {
-                onClose(false)
-                if (onLibraryClose != null) onLibraryClose()
-              }}
+              onClick={() => onClose(false)}
               sx={{ display: 'inline-flex' }}
               edge="end"
               aria-label="Close"
@@ -101,19 +104,43 @@ export function VideoDetails({
             </IconButton>
           </Toolbar>
         </AppBar>
-        <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
-          {showChangeVideo === true && (
-            <Button
-              startIcon={<SubscriptionsRoundedIcon />}
-              size="small"
-              onClick={() => onClose(false)}
-              sx={{ mx: 6, mt: 6, px: 3 }}
+        <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
+          {activeVideo === true && (
+            <Stack
+              direction="row"
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                px: 6,
+                pt: 4
+              }}
             >
-              Change Video
-            </Button>
+              <Button
+                startIcon={<SubscriptionsRoundedIcon />}
+                size="small"
+                onClick={() => onClose(false)}
+              >
+                Change Video
+              </Button>
+              <IconButton
+                onClick={handleClearVideo}
+                size="small"
+                aria-label="clear-video"
+              >
+                <DeleteOutlineIcon />
+              </IconButton>
+            </Stack>
           )}
-          <Details id={id} open={open} onSelect={handleSelect} />
-        </Box>
+          <Box
+            sx={{
+              flexGrow: 1,
+              overflow: 'auto',
+              mt: activeVideo === true ? -6 : 0
+            }}
+          >
+            <Details id={id} open={open} onSelect={handleSelect} />
+          </Box>
+        </Stack>
       </Drawer>
     </>
   )

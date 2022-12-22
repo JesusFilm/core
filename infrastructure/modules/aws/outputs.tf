@@ -15,6 +15,7 @@ output "ecs_cluster" {
 
 output "public_alb" {
   value = {
+    arn              = module.public_alb.arn
     aws_alb_listener = module.public_alb.alb_listener
     dns_name         = module.public_alb.dns_name
   }
@@ -22,6 +23,7 @@ output "public_alb" {
 
 output "internal_alb" {
   value = {
+    arn              = module.internal_alb.arn
     aws_alb_listener = module.internal_alb.alb_listener
     dns_name         = module.internal_alb.dns_name
   }
