@@ -29,7 +29,7 @@ export function VideoContentCarousel({
   onShareClick,
   onDownloadClick
 }: VideoContentCarouselProps): ReactElement {
-  const { title, id, slug, children, container } = useVideo()
+  const { title, id, children, container } = useVideo()
   const router = useRouter()
   const theme = useTheme()
 
