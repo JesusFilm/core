@@ -2,5 +2,6 @@ export { LanguageAutocomplete } from './LanguageAutocomplete'
 export type {
   LanguageOption,
   Language,
-  Translation
+  Translation,
+  LanguageAutocompleteProps
 } from './LanguageAutocomplete'

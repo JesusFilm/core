@@ -23,7 +23,7 @@ export interface LanguageOption {
   nativeName?: string
 }
 
-interface LanguageAutocompleteProps {
+export interface LanguageAutocompleteProps {
   onChange: (value?: LanguageOption) => void
   value?: LanguageOption
   languages?: Language[]
