@@ -85,10 +85,6 @@ export function AudioLanguageButton({
         open={openAudioLanguage}
         onClose={() => setOpenAudioLanguage(false)}
       />
-      <AudioLanguageDialog
-        open={openAudioLanguage}
-        onClose={() => setOpenAudioLanguage(false)}
-      />
     </ThemeProvider>
   )
 }
