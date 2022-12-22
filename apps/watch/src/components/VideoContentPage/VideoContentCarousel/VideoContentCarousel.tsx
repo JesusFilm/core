@@ -180,7 +180,7 @@ export function VideoContentCarousel({
                   <Button
                     variant="text"
                     color="primary"
-                    sx={{ ...theme.typography.overline1 }}
+                    sx={{ ...theme.typography.overline1, px: 1, py: 0 }}
                   >
                     {container.title[0].value}
                   </Button>
@@ -188,7 +188,7 @@ export function VideoContentCarousel({
                 <Typography
                   variant="overline1"
                   color="secondary"
-                  sx={{ display: { xs: 'none', xl: 'inline-flex' } }}
+                  sx={{ display: { xs: 'none', xl: 'inline-flex' }, ml: 5 }}
                 >
                   •
                   <Typography
@@ -235,7 +235,7 @@ export function VideoContentCarousel({
               return (
                 <VideoCard
                   {...props}
-                  containerSlug={container != null ? container.slug : slug}
+                  containerSlug={container.slug}
                   imageSx={{
                     ...props.imageSx,
                     border: '1px solid rgba(255, 255, 255, .12)',

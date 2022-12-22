@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 import { NextSeo } from 'next-seo'
 
@@ -11,6 +12,8 @@ import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { DownloadDialog } from '../DownloadDialog'
 import { ShareButton } from '../ShareButton'
+import { VideoCard } from '../VideoCard'
+import { VideosCarousel } from '../VideosCarousel'
 import { DownloadButton } from './DownloadButton'
 import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
@@ -18,7 +21,17 @@ import { VideoContentCarousel } from './VideoContentCarousel'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
-  const { title, snippet, image, imageAlt, slug, variant } = useVideo()
+  const {
+    id,
+    title,
+    snippet,
+    image,
+    imageAlt,
+    slug,
+    variant,
+    children,
+    container
+  } = useVideo()
   const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
@@ -69,10 +82,10 @@ export function VideoContentPage(): ReactElement {
             onShareClick={() => setOpenShare(true)}
             onDownloadClick={() => setOpenDownload(true)}
           />
-          <Container maxWidth="xxl">
+          <Container maxWidth="xxl" sx={{ mb: 24 }}>
             <Stack
               direction="row"
-              spacing="20px"
+              spacing="40px"
               sx={{
                 mx: 0,
                 mt: { xs: 5, md: 10 },
@@ -108,6 +121,33 @@ export function VideoContentPage(): ReactElement {
             )}
             <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
           </Container>
+          {/* TODO: Replace with proper related video components */}
+          {container == null && (
+            <Stack sx={{ mb: 14 }}>
+              <Container maxWidth="xxl">
+                <Typography variant="h4" gutterBottom sx={{ mb: 6 }}>
+                  {title[0].value} Scenes
+                </Typography>
+              </Container>
+              <VideosCarousel
+                videos={children}
+                activeVideo={id}
+                renderItem={(props: Parameters<typeof VideoCard>[0]) => {
+                  return (
+                    <VideoCard
+                      {...props}
+                      containerSlug={slug}
+                      imageSx={{
+                        ...props.imageSx,
+                        border: '1px solid rgba(255, 255, 255, .12)',
+                        borderRadius: '9px'
+                      }}
+                    />
+                  )
+                }}
+              />
+            </Stack>
+          )}
         </>
       </PageWrapper>
     </>
