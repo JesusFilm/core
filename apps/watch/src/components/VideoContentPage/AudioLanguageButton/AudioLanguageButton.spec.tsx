@@ -7,20 +7,11 @@ describe('AudioLanguageButton', () => {
   it('renders audio language as a button', async () => {
     const { getByRole, getByText } = render(
       <VideoProvider value={{ content: videos[0] }}>
-        <AudioLanguageButton componentVariant="button" />
+        <AudioLanguageButton />
       </VideoProvider>
     )
     await waitFor(() => fireEvent.click(getByRole('button')))
-    expect(getByText('3 Languages Available')).toBeInTheDocument()
-  })
 
-  it('renders audio language as an icon', async () => {
-    const { getByTestId, getByText } = render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <AudioLanguageButton componentVariant="icon" />
-      </VideoProvider>
-    )
-    await waitFor(() => fireEvent.click(getByTestId('LanguageRoundedIcon')))
     expect(getByText('3 Languages Available')).toBeInTheDocument()
   })
 })

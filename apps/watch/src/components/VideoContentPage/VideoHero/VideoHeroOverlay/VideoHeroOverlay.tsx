@@ -100,11 +100,7 @@ export function VideoHeroOverlay({
           >
             <Stack
               direction={{ xs: 'column-reverse', md: 'row' }}
-              aria-label="fejfiejfieifji"
-              sx={{
-                width: '100%',
-                gap: 8
-              }}
+              sx={{ width: { xs: '100%', md: 'unset' }, gap: 8 }}
             >
               <Box
                 sx={{
@@ -112,7 +108,7 @@ export function VideoHeroOverlay({
                   justifyContent: 'space-between'
                 }}
               >
-                <AudioLanguageButton componentVariant="button" />
+                <AudioLanguageButton />
                 <Stack direction="row" spacing={5}>
                   <ShareButton
                     variant="icon"
@@ -141,6 +137,7 @@ export function VideoHeroOverlay({
                 size="small"
                 variant="contained"
                 onClick={handlePlay}
+                fullWidth
                 sx={{
                   display: { xs: 'flex', md: 'none' },
                   backgroundColor: 'primary.main'
@@ -168,10 +165,12 @@ export function VideoHeroOverlay({
             </Stack>
             <Box
               sx={{
-                display: { xs: 'none', md: 'flex' }
+                display: { xs: 'none', md: 'flex' },
+                overflow: 'hidden',
+                ml: 10
               }}
             >
-              <AudioLanguageButton componentVariant="button" />
+              <AudioLanguageButton />
             </Box>
           </Stack>
         </Stack>

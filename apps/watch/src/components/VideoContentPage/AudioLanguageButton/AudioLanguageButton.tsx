@@ -6,20 +6,12 @@ import AddOutlined from '@mui/icons-material/AddOutlined'
 import KeyboardArrowDownOutlined from '@mui/icons-material/KeyboardArrowDownOutlined'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-import LanguageRounded from '@mui/icons-material/LanguageRounded'
 import { compact } from 'lodash'
 import Box from '@mui/material/Box'
 import { useVideo } from '../../../libs/videoContext'
 import { AudioLanguageDialog } from '../../AudioDialog'
 
-interface AudioLanguageButtonProps {
-  componentVariant: 'button' | 'icon'
-}
-
-export function AudioLanguageButton({
-  componentVariant
-}: AudioLanguageButtonProps): ReactElement {
+export function AudioLanguageButton(): ReactElement {
   const { variant, variantLanguagesWithSlug } = useVideo()
   const [openAudioLanguage, setOpenAudioLanguage] = useState(false)
 
@@ -36,7 +28,7 @@ export function AudioLanguageButton({
 
   return (
     <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.light}>
-      {componentVariant === 'button' ? (
+      <>
         <Button
           size="small"
           onClick={() => setOpenAudioLanguage(true)}
@@ -45,6 +37,7 @@ export function AudioLanguageButton({
             display: 'flex',
             alignItem: 'center',
             justifyContent: 'flex-end',
+            width: 'inherit',
             color: 'background.paper',
             '&:hover': {
               backgroundColor: 'transparent'
@@ -76,15 +69,11 @@ export function AudioLanguageButton({
           </Box>
           <KeyboardArrowDownOutlined fontSize="small" />
         </Button>
-      ) : (
-        <IconButton onClick={() => setOpenAudioLanguage(true)}>
-          <LanguageRounded sx={{ color: '#ffffff' }} />
-        </IconButton>
-      )}
-      <AudioLanguageDialog
-        open={openAudioLanguage}
-        onClose={() => setOpenAudioLanguage(false)}
-      />
+        <AudioLanguageDialog
+          open={openAudioLanguage}
+          onClose={() => setOpenAudioLanguage(false)}
+        />
+      </>
     </ThemeProvider>
   )
 }
