@@ -1,4 +1,5 @@
 import { ThemeOptions } from '@mui/material/styles'
+import { baseBreakpoints } from '../../base/tokens/breakpoints'
 
 // https://mui.com/material-ui/customization/typography/#adding-amp-disabling-variants
 declare module '@mui/material/styles' {
@@ -35,62 +36,98 @@ export const typography = {
   fontFamily: ['"Apercu", "Arial", sans-serif'].join(','),
   h1: {
     fontWeight: 700,
-    fontSize: 80,
-    lineHeight: pxToRem(86, 80),
-    letterSpacing: -1
+    fontSize: 36,
+    lineHeight: pxToRem(40, 36),
+    [baseBreakpoints.breakpoints.up('md')]: {
+      fontSize: 80,
+      lineHeight: pxToRem(86, 80),
+      letterSpacing: -3
+    }
   },
+
   h2: {
     fontWeight: 700,
-    fontSize: 64,
-    lineHeight: pxToRem(67, 64),
-    letterSpacing: -1
+    fontSize: 27,
+    lineHeight: pxToRem(33, 36),
+    [baseBreakpoints.breakpoints.up('md')]: {
+      lineHeight: pxToRem(67, 64),
+      fontSize: 64,
+      letterSpacing: -1
+    }
   },
   h3: {
     fontWeight: 700,
-    fontSize: 48,
-    lineHeight: pxToRem(48, 48)
+    fontSize: 27,
+    lineHeight: pxToRem(33, 36),
+    [baseBreakpoints.breakpoints.up('md')]: {
+      lineHeight: pxToRem(48, 48),
+      fontSize: 48
+    }
   },
   h4: {
     fontWeight: 700,
-    fontSize: 36,
-    lineHeight: pxToRem(40, 36)
+    fontSize: 21,
+    lineHeight: pxToRem(29, 21),
+    [baseBreakpoints.breakpoints.up('md')]: {
+      lineHeight: pxToRem(40, 36),
+      fontSize: 36
+    }
   },
   h5: {
     fontWeight: 700,
-    fontSize: 27,
-    lineHeight: pxToRem(33, 27)
+    fontSize: 18,
+    lineHeight: pxToRem(21, 18),
+    [baseBreakpoints.breakpoints.up('md')]: {
+      lineHeight: pxToRem(33, 27),
+      fontSize: 33
+    }
   },
+  // TODO: H6 on Figma?
   h6: {
     fontWeight: 700,
     fontSize: 21,
     lineHeight: pxToRem(27, 21)
   },
   subtitle1: {
-    fontWeight: 400,
-    fontSize: 20,
-    lineHeight: pxToRem(27, 20)
+    fontWeight: 500,
+    fontSize: 16,
+    lineHeight: pxToRem(21, 16),
+    [baseBreakpoints.breakpoints.up('md')]: {
+      lineHeight: pxToRem(27, 20),
+      fontSize: 20
+    }
   },
   subtitle2: {
-    fontWeight: 700,
-    fontSize: 18,
-    lineHeight: pxToRem(21, 18)
+    fontWeight: 500,
+    fontSize: 14,
+    lineHeight: pxToRem(20, 14),
+    [baseBreakpoints.breakpoints.up('md')]: {
+      fontWeight: 700,
+      lineHeight: pxToRem(21, 18),
+      fontSize: 18
+    }
   },
   body1: {
     fontSize: 16,
-    fontWeight: 400,
+    fontWeight: 500,
     lineHeight: pxToRem(21, 16)
   },
   body2: {
     fontSize: 14,
-    fontWeight: 400,
+    fontWeight: 500,
     lineHeight: pxToRem(20, 14)
   },
+  // TODO: use same mobile overline styles for both
   overline1: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 700,
-    lineHeight: pxToRem(28, 18),
+    lineHeight: pxToRem(14, 14),
     letterSpacing: '0.12em',
-    textTransform: 'uppercase'
+    textTransform: 'uppercase',
+    [baseBreakpoints.breakpoints.up('md')]: {
+      lineHeight: pxToRem(28, 18),
+      fontSize: 18
+    }
   },
   overline2: {
     fontSize: 14,
