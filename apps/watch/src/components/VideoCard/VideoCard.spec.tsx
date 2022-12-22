@@ -128,11 +128,18 @@ describe('VideoCard', () => {
   })
 
   describe('video expanded', () => {
-    it('shows label with count', () => {
+    it('shows episode with count', () => {
       const { getByText } = render(
-        <VideoCard video={videos[0]} variant="expanded" index={0} />
+        <VideoCard video={videos[6]} variant="expanded" index={0} />
       )
-      expect(getByText('Feature Film 1')).toBeInTheDocument()
+      expect(getByText('Episode 1')).toBeInTheDocument()
+    })
+
+    it('shows segment with count', () => {
+      const { getByText } = render(
+        <VideoCard video={videos[2]} variant="expanded" index={0} />
+      )
+      expect(getByText('Chapter 1')).toBeInTheDocument()
     })
 
     it('shows title', () => {

@@ -31,7 +31,7 @@ describe('VideoContentPage', () => {
   it('should render related videos', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
-        <VideoProvider value={{ content: videos[0] }}>
+        <VideoProvider value={{ content: videos[2], container: videos[0] }}>
           <VideoContentPage />
         </VideoProvider>
       </SnackbarProvider>

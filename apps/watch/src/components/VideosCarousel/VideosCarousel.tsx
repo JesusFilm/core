@@ -2,8 +2,6 @@ import { ReactElement, ReactNode, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Navigation, A11y } from 'swiper'
 import Box from '@mui/system/Box'
-import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
 
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideosCarouselNavButton } from './VideosCarouselNavButton/VideosCarouselNavButton'
@@ -11,7 +9,8 @@ import { VideosCarouselNavButton } from './VideosCarouselNavButton/VideosCarouse
 type auto = 'auto'
 
 interface VideosCarouselProps {
-  videos: VideoChildFields[]
+  videos: Array<VideoChildFields[] | VideoChildFields>
+  activeVideo: string
   renderItem: (props: unknown) => ReactNode
 }
 
@@ -28,12 +27,18 @@ type SwiperExtended = SwiperCore & {
 
 export function VideosCarousel({
   videos,
+  activeVideo,
   renderItem
 }: VideosCarouselProps): ReactElement {
   const minPageMargin = 24
-
-  const theme = useTheme()
   const [overflowSlides, setOverflowSlides] = useState(true)
+
+  const initialSlide = videos.findIndex((v) => {
+    if (Array.isArray(v)) {
+      return v.find((video) => video.id === activeVideo) != null
+    }
+    return v.id === activeVideo
+  })
 
   // Check if all slides fit on screen
   const updateShowHideNav = (swiper: SwiperExtended): void => {
@@ -127,27 +132,25 @@ export function VideosCarousel({
         {...mobileSlideConfig}
         breakpoints={{
           1200: { ...laptopSlideConfig, spaceBetween: 20 },
-          1400: { ...desktopSlideConfig, spaceBetween: 12 },
-          // Need config at each breakpoint as resizing causes issues
-          // Hides gap between rightmost slide and right edge of screen
-          1552: { ...desktopSlideConfig, spaceBetween: 22 },
-          1600: {
-            ...desktopSlideConfig,
-            spaceBetween: 20
-          },
+          1500: { ...desktopSlideConfig, spaceBetween: 12 },
           1800: { ...desktopSlideConfig, spaceBetween: 20 },
-          2000: {
+          2100: {
             ...desktopSlideConfig,
             slidesPerGroup: 7,
-            spaceBetween: 20
+            spaceBetween: 18
           },
-          2080: {
+          2400: {
             ...desktopSlideConfig,
             slidesPerGroup: 7,
-            spaceBetween: 22
+            spaceBetween: 24
+          },
+          3000: {
+            ...desktopSlideConfig,
+            slidesPerGroup: 9,
+            spaceBetween: 20
           }
-          // TODO: fix gap issue on extra-wide screens
         }}
+        initialSlide={Math.max(initialSlide, 0)}
         // TODO: Dynamic speed based on number of slides transformed
         speed={850}
         // Set custom navigation
@@ -160,9 +163,9 @@ export function VideosCarousel({
         // Set spacing at carousel end.
         slidesOffsetAfter={minPageMargin}
         onSlideChangeTransitionEnd={(swiper: SwiperExtended) => {
-          console.log('slide change', swiper)
           updateMarginLeftOffset(swiper)
           updateSlidesAlignment(swiper)
+          updateSnapGrid(swiper)
         }}
         // On resize and init, update spacing and nav features
         onResize={(swiper: SwiperExtended) => {
@@ -172,7 +175,6 @@ export function VideosCarousel({
           updateSnapGrid(swiper)
         }}
         onSwiper={(swiper: SwiperExtended) => {
-          console.log('swiper', swiper)
           updateMarginLeftOffset(swiper)
           updateSlidesAlignment(swiper)
           updateShowHideNav(swiper)
@@ -180,40 +182,39 @@ export function VideosCarousel({
         }}
       >
         {/* Slides */}
-        {videos.map((video, index) => (
-          <SwiperSlide key={index} style={{ transition: '.35s all ease' }}>
-            {renderItem({ ...video })}
-          </SwiperSlide>
-        ))}
-        {/* Navigation overlay */}
-        <Stack
-          direction="row"
-          sx={{
-            // transition: 'opacity 0.5s ease',
-            opacity: { xs: 0, xl: overflowSlides ? 1 : 0 },
-            position: 'absolute',
-            zIndex: 1,
-            top: 0,
-            width: '100%',
-            // Prefer fixed heights over using callbacks to retrieve dynamic carousel item image height.
-            height: {
-              xl: '152.5px',
-              xxl: '113.5px'
-            },
-            [theme.breakpoints.up(1600)]: {
-              height: '131.5px'
-            },
-            [theme.breakpoints.up(1800)]: {
-              height: '147.5px'
-            },
-            [theme.breakpoints.up(2000)]: {
-              height: '115px'
-            }
-          }}
-        >
-          <VideosCarouselNavButton variant="prev" />
-          <VideosCarouselNavButton variant="next" />
-        </Stack>
+        {videos.map((relatedVideo, index) => {
+          // Render children of related videos seperately to get correct index
+          return Array.isArray(relatedVideo) ? (
+            relatedVideo.map((video, i) => (
+              <SwiperSlide
+                key={video.id}
+                style={{ transition: '.35s all ease' }}
+              >
+                {renderItem({
+                  video,
+                  index: i,
+                  active: video.id === activeVideo,
+                  imageSx: { height: { xs: 110, xl: 146 } }
+                })}
+              </SwiperSlide>
+            ))
+          ) : (
+            <SwiperSlide
+              key={relatedVideo.id}
+              style={{ transition: '.35s all ease' }}
+            >
+              {renderItem({
+                video: relatedVideo,
+                index,
+                active: relatedVideo.id === activeVideo,
+                imageSx: { height: { xs: 110, xl: 146 } }
+              })}
+            </SwiperSlide>
+          )
+        })}
+        {/* Navigation buttons */}
+        <VideosCarouselNavButton variant="prev" disabled={!overflowSlides} />
+        <VideosCarouselNavButton variant="next" disabled={!overflowSlides} />
       </Swiper>
     </Box>
   )

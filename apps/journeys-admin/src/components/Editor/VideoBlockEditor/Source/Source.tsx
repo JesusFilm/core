@@ -22,11 +22,10 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    // opens the video library if videoId is null
     if (selectedBlock?.videoId == null) {
       setOpen(true)
     }
-  }, [selectedBlock])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   let SourceContent
 
