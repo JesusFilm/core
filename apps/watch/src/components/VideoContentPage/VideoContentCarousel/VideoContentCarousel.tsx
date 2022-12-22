@@ -1,12 +1,13 @@
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
+import { ReactElement, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import { ReactElement, useMemo } from 'react'
+import { useTheme } from '@mui/material/styles'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 
 import { VideoContentFields_children as VideoChildren } from '../../../../__generated__/VideoContentFields'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
@@ -28,8 +29,9 @@ export function VideoContentCarousel({
   onShareClick,
   onDownloadClick
 }: VideoContentCarouselProps): ReactElement {
-  const { title, id, slug, children, container } = useVideo()
+  const { title, id, children, container } = useVideo()
   const router = useRouter()
+  const theme = useTheme()
 
   const activeVideoIndex = useMemo(() => {
     return container != null
@@ -37,23 +39,17 @@ export function VideoContentCarousel({
       : -1
   }, [container, id])
 
-  /* 
-    TODO: 
-    - Scroll to active video fix
-    - add tests
-    */
-
   const progressionLabel = useMemo(() => {
     if (container != null) {
       switch (container.label) {
         case VideoLabel.collection:
-          return `•  ${getLabelDetails(
+          return `${getLabelDetails(
             container.label,
             container.children.length
           ).childCountLabel.toLowerCase()}`
         case VideoLabel.featureFilm:
         case VideoLabel.series:
-          return `•  ${getLabelDetails(container.label).childLabel} 
+          return `${getLabelDetails(container.label).childLabel} 
     ${activeVideoIndex} of ${container.children.length}`
         default:
           return ''
@@ -135,7 +131,10 @@ export function VideoContentCarousel({
     >
       <Stack
         sx={{
-          display: playing || relatedVideos.length > 0 ? 'inline-flex' : 'none',
+          display:
+            playing || (container != null && relatedVideos.length > 0)
+              ? 'inline-flex'
+              : 'none',
           width: '100%',
           overflow: 'hidden',
           backgroundColor: 'background.default',
@@ -176,22 +175,32 @@ export function VideoContentCarousel({
               justifyContent="space-between"
               alignItems="center"
             >
-              <Typography
-                data-testid="container-title"
-                variant="overline1"
-                color="primary"
-              >
-                {container.title[0].value}
-                {'  '}
+              <Stack direction="row" alignItems="center">
+                <NextLink href={buttonLink} passHref>
+                  <Button
+                    variant="text"
+                    color="primary"
+                    sx={{ ...theme.typography.overline1, px: 1, py: 0 }}
+                  >
+                    {container.title[0].value}
+                  </Button>
+                </NextLink>
                 <Typography
                   variant="overline1"
                   color="secondary"
-                  sx={{ display: { xs: 'none', xl: 'inline-flex' } }}
+                  sx={{ display: { xs: 'none', xl: 'inline-flex' }, ml: 5 }}
                 >
-                  {progressionLabel}
+                  •
+                  <Typography
+                    data-testid="container-progress"
+                    variant="overline1"
+                    color="secondary"
+                    sx={{ ml: 6 }}
+                  >
+                    {progressionLabel}
+                  </Typography>
                 </Typography>
-              </Typography>
-
+              </Stack>
               <NextLink href={buttonLink} passHref>
                 <Button
                   variant="outlined"
@@ -203,7 +212,7 @@ export function VideoContentCarousel({
                 </Button>
               </NextLink>
               <Typography
-                data-testid="container-progress"
+                data-testid="container-progress-short"
                 variant="overline1"
                 color="secondary"
                 sx={{ display: { xs: 'inline-flex', xl: 'none' } }}
@@ -218,23 +227,25 @@ export function VideoContentCarousel({
             </Stack>
           )}
         </Container>
-        <VideosCarousel
-          videos={relatedVideos}
-          activeVideo={id}
-          renderItem={(props: Parameters<typeof VideoCard>[0]) => {
-            return (
-              <VideoCard
-                {...props}
-                containerSlug={container != null ? container.slug : slug}
-                imageSx={{
-                  ...props.imageSx,
-                  border: '1px solid rgba(255, 255, 255, .12)',
-                  borderRadius: '9px'
-                }}
-              />
-            )
-          }}
-        />
+        {container != null && (
+          <VideosCarousel
+            videos={relatedVideos}
+            activeVideo={id}
+            renderItem={(props: Parameters<typeof VideoCard>[0]) => {
+              return (
+                <VideoCard
+                  {...props}
+                  containerSlug={container.slug}
+                  imageSx={{
+                    ...props.imageSx,
+                    border: '1px solid rgba(255, 255, 255, .12)',
+                    borderRadius: '9px'
+                  }}
+                />
+              )
+            }}
+          />
+        )}
       </Stack>
     </ThemeProvider>
   )

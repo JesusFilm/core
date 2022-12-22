@@ -132,26 +132,23 @@ export function VideosCarousel({
         {...mobileSlideConfig}
         breakpoints={{
           1200: { ...laptopSlideConfig, spaceBetween: 20 },
-          1400: { ...desktopSlideConfig, spaceBetween: 14 },
-          // Need config at each breakpoint as resizing causes issues
-          // Hides gap between rightmost slide and right edge of screen
-          1552: { ...desktopSlideConfig, spaceBetween: 16 },
-          1600: {
-            ...desktopSlideConfig,
-            spaceBetween: 16
-          },
+          1500: { ...desktopSlideConfig, spaceBetween: 12 },
           1800: { ...desktopSlideConfig, spaceBetween: 20 },
-          2000: {
+          2100: {
             ...desktopSlideConfig,
             slidesPerGroup: 7,
-            spaceBetween: 20
+            spaceBetween: 18
           },
-          2080: {
+          2400: {
             ...desktopSlideConfig,
             slidesPerGroup: 7,
-            spaceBetween: 22
+            spaceBetween: 24
+          },
+          3000: {
+            ...desktopSlideConfig,
+            slidesPerGroup: 9,
+            spaceBetween: 20
           }
-          // TODO: fix gap issue on extra-wide screens
         }}
         initialSlide={Math.max(initialSlide, 0)}
         // TODO: Dynamic speed based on number of slides transformed
