@@ -3,8 +3,11 @@ import { GetLanguages_languages } from '../../../__generated__/GetLanguages'
 export const languages: GetLanguages_languages[] = [
   {
     __typename: 'Language',
-    id: '1',
-    name: [{ __typename: 'Translation', value: 'English', primary: true }]
+    id: '529',
+    name: [
+      { __typename: 'Translation', value: 'English', primary: true },
+      { __typename: 'Translation', value: 'English', primary: false }
+    ]
   },
   {
     __typename: 'Language',
