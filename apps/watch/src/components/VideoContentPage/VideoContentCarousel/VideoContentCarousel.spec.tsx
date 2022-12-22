@@ -7,6 +7,13 @@ import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/testData'
 import { VideoContentCarousel } from '.'
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: () => {
+    return { query: { part3: 'english' } }
+  }
+}))
+
 const variantProps: Pick<Variant, 'downloads' | 'language'> = {
   downloads: [],
   language: {
@@ -89,50 +96,16 @@ describe('VideoContentCarousel', () => {
     expect(onIconClick.onDownloadClick).toHaveBeenCalled()
   })
   describe('content without container', () => {
-    it('should display all children videos if present', () => {
+    it('should hide all children videos if present', () => {
       // Children usually present on feature film
       // Series and Collections which have children render on VideoContainerPage
-      const { getAllByRole } = render(
+      const { queryByTestId } = render(
         <VideoProvider value={{ content: featureFilm }}>
           <VideoContentCarousel {...onIconClick} />
         </VideoProvider>
       )
 
-      const relatedVideos = getAllByRole('link')
-
-      expect(relatedVideos).toHaveLength(featureFilm.children.length)
-      expect(relatedVideos[0]).toHaveAttribute(
-        'href',
-        `/jesus/the-beginning/english`
-      )
-      expect(getAllByRole('button')[0]).toHaveAccessibleName(
-        'The Beginning 8:08'
-      )
-    })
-
-    it('should sort children videos with count from those without', () => {
-      // Magdalena - first child is featureFilm, others are segments, last child is short film
-      const { getAllByRole } = render(
-        <VideoProvider value={{ content: videos[4] }}>
-          <VideoContentCarousel {...onIconClick} />
-        </VideoProvider>
-      )
-
-      const relatedVideos = getAllByRole('link')
-
-      expect(relatedVideos).toHaveLength(videos[4].children.length)
-      expect(relatedVideos[0]).toHaveAccessibleName(
-        "Magdalena - Director's Cut 1:22:32 Feature Film Magdalena - Director's Cut"
-      )
-      expect(relatedVideos[1]).toHaveAccessibleName(
-        'Title and Introduction 1:09 Chapter 1 Title and Introduction'
-      )
-      expect(relatedVideos[44]).toHaveAccessibleName(
-        'Living the Christian Life 1:39 Chapter 44 Living the Christian Life'
-      )
-      expect(relatedVideos[45]).toHaveAccessibleName(
-        'This Is Freedom 4:15 Short Film This Is Freedom'
-      )
+      expect(queryByTestId('videos-carousel')).not.toBeInTheDocument()
     })
   })
 
@@ -211,11 +184,18 @@ describe('VideoContentCarousel', () => {
         </VideoProvider>
       )
 
-      expect(getByTestId('container-title')).toHaveTextContent(
-        'JESUS • Chapter 1 of 61'
+      expect(getByRole('link', { name: 'JESUS' })).toHaveAttribute(
+        'href',
+        `/jesus/english`
       )
-      expect(getByTestId('container-progress')).toHaveTextContent('1/61')
-      expect(getByRole('link', { name: 'Watch full film' })).toBeInTheDocument()
+      expect(getByTestId('container-progress')).toHaveTextContent(
+        'Chapter 1 of 61'
+      )
+      expect(getByTestId('container-progress-short')).toHaveTextContent('1/61')
+      expect(getByRole('link', { name: 'Watch full film' })).toHaveAttribute(
+        'href',
+        `/jesus/english`
+      )
     })
 
     it('should display container labels and button for episode in series', () => {
@@ -243,11 +223,17 @@ describe('VideoContentCarousel', () => {
         </VideoProvider>
       )
 
-      expect(getByTestId('container-title')).toHaveTextContent(
-        'Reflections of Hope • Episode 2 of 7'
+      expect(
+        getByRole('link', { name: 'Reflections of Hope' })
+      ).toHaveAttribute('href', `/reflections-of-hope/english`)
+      expect(getByTestId('container-progress')).toHaveTextContent(
+        'Episode 2 of 7'
       )
-      expect(getByTestId('container-progress')).toHaveTextContent('2/7')
-      expect(getByRole('link', { name: 'See all' })).toBeInTheDocument()
+      expect(getByTestId('container-progress-short')).toHaveTextContent('2/7')
+      expect(getByRole('link', { name: 'See all' })).toHaveAttribute(
+        'href',
+        `/reflections-of-hope/english`
+      )
     })
 
     it('should display container labels and button for item in collection', () => {
@@ -262,11 +248,15 @@ describe('VideoContentCarousel', () => {
         </VideoProvider>
       )
 
-      expect(getByTestId('container-title')).toHaveTextContent(
-        'LUMO - The Gospel of Luke • 26 items'
+      expect(
+        getByRole('link', { name: 'LUMO - The Gospel of Luke' })
+      ).toHaveAttribute('href', `/lumo-the-gospel-of-luke/english`)
+      expect(getByTestId('container-progress')).toHaveTextContent('26 items')
+      expect(getByTestId('container-progress-short')).toHaveTextContent('1/26')
+      expect(getByRole('link', { name: 'See all' })).toHaveAttribute(
+        'href',
+        `/lumo-the-gospel-of-luke/english`
       )
-      expect(getByTestId('container-progress')).toHaveTextContent('1/26')
-      expect(getByRole('link', { name: 'See all' })).toBeInTheDocument()
     })
   })
 })

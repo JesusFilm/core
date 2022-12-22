@@ -31,34 +31,98 @@
   }
 }
 
-@media (min-width: 1400px) {
+@media (min-width: 1500px) {
   .jfp-watch .swiper-slide {
-    width: 247px;
-    min-width: 247px;
-    max-width: 247px;
-  }
-}
-
-@media (min-width: 1600px) {
-  .jfp-watch .swiper-slide {
-    width: 280px;
-    min-width: 280px;
-    max-width: 280px;
+    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
   }
 }
 
 @media (min-width: 1800px) {
   .jfp-watch .swiper-slide {
-    width: 314px;
-    min-width: 314px;
-    max-width: 314px;
+    width: 310px;
+    min-width: 310px;
+    max-width: 310px;
   }
 }
 
 @media (min-width: 2000px) {
   .jfp-watch .swiper-slide {
-    width: 245px;
-    min-width: 245px;
-    max-width: 245px;
+    width: 330px;
+    min-width: 330px;
+    max-width: 330px;
+  }
+}
+
+@media (min-width: 2100px) {
+  .jfp-watch .swiper-slide {
+    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
+  }
+}
+
+@media (min-width: 2200px) {
+  .jfp-watch .swiper-slide {
+    width: 274px;
+    min-width: 274px;
+    max-width: 274px;
+  }
+}
+
+@media (min-width: 2300px) {
+  .jfp-watch .swiper-slide {
+    width: 290px;
+    min-width: 290px;
+    max-width: 290px;
+  }
+}
+
+@media (min-width: 2400px) {
+  .jfp-watch .swiper-slide {
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
+  }
+}
+
+@media (min-width: 2580px) {
+  .jfp-watch .swiper-slide {
+    width: 326px;
+    min-width: 326px;
+    max-width: 326px;
+  }
+}
+
+@media (min-width: 2800px) {
+  .jfp-watch .swiper-slide {
+    width: 352px;
+    min-width: 352px;
+    max-width: 352px;
+  }
+}
+
+@media (min-width: 3000px) {
+  .jfp-watch .swiper-slide {
+    width: 298px;
+    min-width: 298px;
+    max-width: 298px;
+  }
+}
+
+@media (min-width: 3200px) {
+  .jfp-watch .swiper-slide {
+    width: 318px;
+    min-width: 318px;
+    max-width: 318px;
+  }
+}
+
+@media (min-width: 3400px) {
+  .jfp-watch .swiper-slide {
+    width: 338px;
+    min-width: 338px;
+    max-width: 338px;
   }
 }
