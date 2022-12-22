@@ -1,4 +1,5 @@
 import { render, fireEvent } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/testData'
 import { VideoHero } from './VideoHero'
@@ -6,9 +7,11 @@ import { VideoHero } from './VideoHero'
 describe('VideoHero', () => {
   it('should render the video hero', () => {
     const { getByText, queryByText, getByRole, getByTestId } = render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <VideoHero />
-      </VideoProvider>
+      <SnackbarProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoHero />
+        </VideoProvider>
+      </SnackbarProvider>
     )
     expect(getByText('JESUS')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Play Video' }))
