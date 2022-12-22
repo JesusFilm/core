@@ -4,6 +4,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { videos } from '../Videos/testData'
+import { languages } from './testData'
 import { VideosPage, GET_VIDEOS, limit, GET_LANGUAGES } from './VideosPage'
 
 describe('VideosPage', () => {
@@ -49,23 +50,23 @@ describe('VideosPage', () => {
   })
 
   describe('filters', () => {
-    const languages = [
-      {
-        id: '1',
-        __typename: 'Language',
-        name: [
-          {
-            __typename: 'Translation',
-            value: 'English',
-            primary: true
-          }
-        ]
-      }
-    ]
+    // const languages = [
+    //   {
+    //     id: '1',
+    //     __typename: 'Language',
+    //     name: [
+    //       {
+    //         __typename: 'Translation',
+    //         value: 'English',
+    //         primary: true
+    //       }
+    //     ]
+    //   }
+    // ]
 
     it('should add language filter', async () => {
       const result = jest.fn()
-      const { getByRole } = render(
+      const { getAllByRole } = render(
         <MockedProvider
           mocks={[
             {
@@ -93,7 +94,7 @@ describe('VideosPage', () => {
               },
               result: {
                 data: {
-                  languages: languages
+                  languages
                 }
               }
             },
@@ -101,10 +102,9 @@ describe('VideosPage', () => {
               request: {
                 query: GET_VIDEOS,
                 variables: {
-                  where: { availableVariantLanguageIds: '529' },
+                  where: { availableVariantLanguageIds: ['529'] },
                   offset: 0,
-                  limit: limit,
-                  languageId: '529'
+                  limit: limit
                 }
               },
               result
@@ -115,9 +115,9 @@ describe('VideosPage', () => {
         </MockedProvider>
       )
 
-      await waitFor(() => fireEvent.focus(getByRole('textbox')))
-      fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
-      fireEvent.click(getByRole('option', { name: 'English' }))
+      await waitFor(() => fireEvent.focus(getAllByRole('textbox')[0]))
+      fireEvent.keyDown(getAllByRole('textbox')[0], { key: 'ArrowDown' })
+      fireEvent.click(getAllByRole('option', { name: 'English' })[0])
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
   })
