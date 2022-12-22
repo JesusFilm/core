@@ -101,7 +101,7 @@ describe('VideoControls', () => {
         <VideoControls player={player} />
       </VideoProvider>
     )
-    fireEvent.click(getByTestId('LanguageRoundedIcon'))
+    fireEvent.click(getByTestId('LanguageOutlinedIcon'))
     expect(getByRole('textbox')).toHaveValue('English')
   })
 

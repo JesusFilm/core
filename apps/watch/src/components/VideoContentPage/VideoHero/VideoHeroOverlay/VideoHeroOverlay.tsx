@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { secondsToMinutes } from '@core/shared/ui/timeFormat'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -13,6 +13,10 @@ import Image from 'next/image'
 import { useVideo } from '../../../../libs/videoContext'
 import { HeroOverlay } from '../../../HeroOverlay'
 import { AudioLanguageButton } from '../../AudioLanguageButton'
+import { ShareButton } from '../../../ShareButton'
+import { DownloadButton } from '../../DownloadButton'
+import { DownloadDialog } from '../../../DownloadDialog'
+import { ShareDialog } from '../../../ShareDialog'
 
 interface VideoHeroOverlayProps {
   handlePlay?: () => void
@@ -22,6 +26,8 @@ export function VideoHeroOverlay({
   handlePlay
 }: VideoHeroOverlayProps): ReactElement {
   const { image, imageAlt, title, variant } = useVideo()
+  const [openShare, setOpenShare] = useState(false)
+  const [openDownload, setOpenDownload] = useState(false)
 
   return (
     <Box
@@ -88,16 +94,32 @@ export function VideoHeroOverlay({
             direction="row"
             justifyContent="space-between"
             sx={{
-              pt: { xs: 0, md: 15 }
+              pt: { xs: 0, md: 15 },
+              width: '100%'
             }}
           >
             <Stack
-              spacing={8}
               direction={{ xs: 'column-reverse', md: 'row' }}
-              sx={{
-                width: '100%'
-              }}
+              sx={{ width: { xs: '100%', md: 'unset' }, gap: 8 }}
             >
+              <Box
+                sx={{
+                  display: { xs: 'flex', md: 'none' },
+                  justifyContent: 'space-between'
+                }}
+              >
+                <AudioLanguageButton componentVariant="button" />
+                <Stack direction="row" spacing={5}>
+                  <ShareButton
+                    variant="icon"
+                    onClick={() => setOpenShare(true)}
+                  />
+                  <DownloadButton
+                    variant="icon"
+                    onClick={() => setOpenDownload(true)}
+                  />
+                </Stack>
+              </Box>
               <Button
                 size="large"
                 variant="contained"
@@ -115,6 +137,7 @@ export function VideoHeroOverlay({
                 size="small"
                 variant="contained"
                 onClick={handlePlay}
+                fullWidth
                 sx={{
                   display: { xs: 'flex', md: 'none' },
                   backgroundColor: 'primary.main'
@@ -134,7 +157,7 @@ export function VideoHeroOverlay({
               >
                 <AccessTime sx={{ width: 17, height: 17 }} />
                 {variant !== null && (
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={{ whiteSpace: 'nowrap' }}>
                     {secondsToMinutes(variant.duration)} min
                   </Typography>
                 )}
@@ -143,15 +166,23 @@ export function VideoHeroOverlay({
             <Box
               sx={{
                 display: { xs: 'none', md: 'flex' },
-                width: '100%',
-                justifyContent: 'end',
-                alignItems: 'center'
+                overflow: 'hidden',
+                ml: 10
               }}
             >
               <AudioLanguageButton componentVariant="button" />
             </Box>
           </Stack>
         </Stack>
+        {variant != null && variant.downloads.length > 0 && (
+          <DownloadDialog
+            open={openDownload}
+            onClose={() => {
+              setOpenDownload(false)
+            }}
+          />
+        )}
+        <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
       </Container>
     </Box>
   )
