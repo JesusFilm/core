@@ -6,9 +6,9 @@ import AddOutlined from '@mui/icons-material/AddOutlined'
 import KeyboardArrowDownOutlined from '@mui/icons-material/KeyboardArrowDownOutlined'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-import LanguageRounded from '@mui/icons-material/LanguageRounded'
 import { compact } from 'lodash'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import { useVideo } from '../../../libs/videoContext'
 import { AudioLanguageDialog } from '../../AudioDialog'
 
@@ -43,6 +43,8 @@ export function AudioLanguageButton({
             gap: 1,
             display: 'flex',
             alignItem: 'center',
+            justifyContent: 'flex-end',
+            width: 'inherit',
             color: 'background.paper',
             '&:hover': {
               backgroundColor: 'transparent'
@@ -50,16 +52,33 @@ export function AudioLanguageButton({
           }}
         >
           <LanguageOutlined fontSize="small" />
-          <Typography variant="subtitle1">{localName ?? nativeName}</Typography>
-          <AddOutlined fontSize="small" />
-          <Typography variant="subtitle1">
-            {languages.length - 1} Languages
+          <Typography
+            variant="subtitle1"
+            sx={{
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden'
+            }}
+          >
+            {localName ?? nativeName}
           </Typography>
+          <Box
+            sx={{
+              display: { xs: 'none', lg: 'flex' },
+              alignItems: 'center',
+              gap: 1
+            }}
+          >
+            <AddOutlined fontSize="small" />
+            <Typography variant="subtitle1" sx={{ whiteSpace: 'nowrap' }}>
+              {languages.length - 1} Languages
+            </Typography>
+          </Box>
           <KeyboardArrowDownOutlined fontSize="small" />
         </Button>
       ) : (
         <IconButton onClick={() => setOpenAudioLanguage(true)}>
-          <LanguageRounded sx={{ color: '#ffffff' }} />
+          <LanguageOutlined sx={{ color: '#ffffff' }} />
         </IconButton>
       )}
       <AudioLanguageDialog
