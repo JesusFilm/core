@@ -1,5 +1,5 @@
 import { deepmerge } from '@mui/utils'
-import { createTheme, responsiveFontSizes } from '@mui/material/styles'
+import { createTheme } from '@mui/material/styles'
 import { baseBreakpoints } from '../base/tokens/breakpoints'
 import { baseSpacing } from '../base/tokens/spacing'
 import { websiteTypography } from './tokens/typography'
