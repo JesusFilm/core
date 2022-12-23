@@ -89,7 +89,7 @@ jobs:
 
       - name: Build ${{ inputs.name }}
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        uses: mansagroup/nrwl-nx-action@v2
+        uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: build
           projects: ${{ inputs.name }}
@@ -142,7 +142,7 @@ jobs:
 
       - name: Seed Database
         if: contains(steps.affected-dbs.outputs.dbs, inputs.name)
-        uses: mansagroup/nrwl-nx-action@v2
+        uses: mansagroup/nrwl-nx-action@v3
         env:
           DATABASE_DB: ${{ env.ENV_SUFFIX }}
           ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
