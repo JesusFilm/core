@@ -1,5 +1,5 @@
 data "aws_acm_certificate" "acm_central_jesusfilm_org" {
-  domain = "*.central.jesusfilm.org"
+  domain = "*.stage.central.jesusfilm.org"
 }
 
 data "aws_route53_zone" "route53_central_jesusfilm_org" {
