@@ -1,6 +1,11 @@
+import http from 'http'
 import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway'
-import { ApolloServer } from 'apollo-server'
+import { ApolloServer } from '@apollo/server'
+import { expressMiddleware } from '@apollo/server/express4'
 import { initializeApp, credential, auth } from 'firebase-admin'
+import express from 'express'
+import { json } from 'body-parser'
+import cors from 'cors'
 import { apolloWinstonLoggingPlugin } from '@core/apollo/logging/apolloWinstonLoggingPlugin'
 import { config } from './environments/environment'
 
@@ -12,6 +17,9 @@ if (
     credential: credential.cert(JSON.parse(process.env.GOOGLE_APPLICATION_JSON))
   })
 }
+
+const app = express()
+const httpServer = http.createServer(app)
 
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
   willSendRequest({ request, context }): void {
@@ -36,38 +44,58 @@ export const gateway = new ApolloGateway({
   }
 })
 
-const server = new ApolloServer({
+interface CoreContext {
+  ipAddress?: string | string[]
+  userAgent?: string
+  userId?: string
+}
+
+const server = new ApolloServer<CoreContext>({
   gateway,
   plugins: [apolloWinstonLoggingPlugin({ level: process.env.LOGGING_LEVEL })],
-  csrfPrevention: true,
-  cors: config.cors,
-  context: async ({ req }) => {
-    const context = {
-      ipAddress: req.headers['X-Forwared-For'] ?? req.socket.remoteAddress,
-      userAgent: req.headers['user-agent']
-    }
-
-    const token = req.headers.authorization
-    if (
-      process.env.GOOGLE_APPLICATION_JSON == null ||
-      process.env.GOOGLE_APPLICATION_JSON === '' ||
-      token == null ||
-      token === ''
-    )
-      return { ...context }
-    try {
-      const { uid } = await auth().verifyIdToken(token)
-      return { ...context, userId: uid }
-    } catch (err) {
-      console.log(err)
-      return { ...context }
-    }
-  }
+  csrfPrevention: true
 })
 
+const apolloContext = async ({ req }): Promise<CoreContext> => {
+  const context = {
+    ipAddress: req.headers['X-Forwared-For'] ?? req.socket.remoteAddress,
+    userAgent: req.headers['user-agent']
+  }
+
+  const token = req.headers.authorization
+  if (
+    process.env.GOOGLE_APPLICATION_JSON == null ||
+    process.env.GOOGLE_APPLICATION_JSON === '' ||
+    token == null ||
+    token === ''
+  )
+    return { ...context }
+  try {
+    const { uid } = await auth().verifyIdToken(token)
+    return { ...context, userId: uid }
+  } catch (err) {
+    console.log(err)
+    return { ...context }
+  }
+}
+
 server
-  .listen(config.listenOptions)
-  .then(({ url }) => {
-    console.log(`🚀 Server ready at ${url}graphql`)
+  .start()
+  .then(() => {
+    app.use(
+      '/graphql',
+      cors<cors.CorsRequest>(config.cors),
+      json(),
+      expressMiddleware<CoreContext>(server, {
+        context: apolloContext
+      })
+    )
+    httpServer.listen(config.listenOptions, () =>
+      console.log(
+        `🚀 Server ready at ${
+          httpServer.address()?.toString() ?? 'http:localhost:4000/'
+        }graphql`
+      )
+    )
   })
   .catch((err) => console.error(err))

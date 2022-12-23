@@ -3,8 +3,9 @@
 import { v4 as uuidv4 } from 'uuid'
 import {
   ApolloServerPlugin,
+  BaseContext,
   GraphQLRequestListener
-} from 'apollo-server-plugin-base'
+} from '@apollo/server'
 import winston from 'winston'
 import WinstonCloudWatch from 'winston-cloudwatch'
 import AWS from 'aws-sdk'
@@ -89,7 +90,7 @@ export const apolloWinstonLoggingPlugin = (
           })
         )
       }
-      const handlers: GraphQLRequestListener = {
+      const handlers: GraphQLRequestListener<BaseContext> = {
         async didEncounterErrors({ errors }) {
           if (didEncounterErrors) {
             winstonInstance.log(
@@ -106,7 +107,7 @@ export const apolloWinstonLoggingPlugin = (
               stringify({
                 id,
                 event: 'response',
-                response: response.data
+                response: response.body
               })
             )
           }
