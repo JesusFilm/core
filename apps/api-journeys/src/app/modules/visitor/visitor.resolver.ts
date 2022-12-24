@@ -7,7 +7,7 @@ import {
   Parent,
   Mutation
 } from '@nestjs/graphql'
-import { ForbiddenError, UserInputError } from 'apollo-server'
+import { GraphQLError } from 'graphql'
 import { IResult, UAParser } from 'ua-parser-js'
 import { Event, Visitor, VisitorsConnection } from '../../__generated__/graphql'
 import { EventService } from '../event/event.service'
@@ -35,7 +35,9 @@ export class VisitorResolver {
     )
 
     if (memberResult == null)
-      throw new ForbiddenError('User is not a member of the team.')
+      throw new GraphQLError('User is not a member of the team.', {
+        extensions: { code: 'FORBIDDEN' }
+      })
 
     return await this.visitorService.getList({
       filter: { teamId },
@@ -54,7 +56,9 @@ export class VisitorResolver {
     >(id)
 
     if (visitor == null)
-      throw new UserInputError(`Visitor with ID "${id}" does not exist`)
+      throw new GraphQLError(`Visitor with ID "${id}" does not exist`, {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
 
     const memberResult = await this.memberService.getMemberByTeamId(
       userId,
@@ -62,8 +66,11 @@ export class VisitorResolver {
     )
 
     if (memberResult == null)
-      throw new ForbiddenError(
-        'User is not a member of the team the visitor belongs to'
+      throw new GraphQLError(
+        'User is not a member of the team the visitor belongs to',
+        {
+          extensions: { code: 'FORBIDDEN' }
+        }
       )
 
     return visitor
@@ -80,7 +87,9 @@ export class VisitorResolver {
     >(id)
 
     if (visitor == null)
-      throw new UserInputError(`Visitor with ID "${id}" does not exist`)
+      throw new GraphQLError(`Visitor with ID "${id}" does not exist`, {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
 
     const memberResult = await this.memberService.getMemberByTeamId(
       userId,
@@ -88,8 +97,11 @@ export class VisitorResolver {
     )
 
     if (memberResult == null)
-      throw new ForbiddenError(
-        'User is not a member of the team the visitor belongs to'
+      throw new GraphQLError(
+        'User is not a member of the team the visitor belongs to',
+        {
+          extensions: { code: 'FORBIDDEN' }
+        }
       )
 
     return await this.visitorService.update(id, input)

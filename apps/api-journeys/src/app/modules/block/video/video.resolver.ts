@@ -2,7 +2,7 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { object, string } from 'yup'
 import fetch from 'node-fetch'
-import { UserInputError } from 'apollo-server'
+import { GraphQLError } from 'graphql'
 import { BlockService } from '../block.service'
 import {
   Action,
@@ -227,8 +227,10 @@ export class VideoBlockResolver {
       await fetch(`https://www.googleapis.com/youtube/v3/videos?${query}`)
     ).json()
     if (videosData.items[0] == null) {
-      throw new UserInputError('videoId cannot be found on YouTube', {
-        videoId: ['videoId cannot be found on YouTube']
+      throw new GraphQLError('videoId cannot be found on YouTube', {
+        extensions: {
+          code: 'BAD_USER_INPUT '
+        }
       })
     }
     return {

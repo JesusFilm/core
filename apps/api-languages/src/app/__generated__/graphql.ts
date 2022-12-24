@@ -31,6 +31,18 @@ export class Country {
     image?: Nullable<string>;
 }
 
+export abstract class IQuery {
+    __typename?: 'IQuery';
+
+    abstract countries(): Country[] | Promise<Country[]>;
+
+    abstract country(id: string, idType?: Nullable<IdType>): Country | Promise<Country>;
+
+    abstract languages(offset?: Nullable<number>, limit?: Nullable<number>): Language[] | Promise<Language[]>;
+
+    abstract language(id: string, idType?: Nullable<LanguageIdType>): Nullable<Language> | Promise<Nullable<Language>>;
+}
+
 export class Language {
     __typename?: 'Language';
     id: string;
@@ -44,16 +56,6 @@ export class Translation {
     value: string;
     language: Language;
     primary: boolean;
-}
-
-export abstract class IQuery {
-    abstract countries(): Country[] | Promise<Country[]>;
-
-    abstract country(id: string, idType?: Nullable<IdType>): Country | Promise<Country>;
-
-    abstract languages(offset?: Nullable<number>, limit?: Nullable<number>): Language[] | Promise<Language[]>;
-
-    abstract language(id: string, idType?: Nullable<LanguageIdType>): Nullable<Language> | Promise<Nullable<Language>>;
 }
 
 type Nullable<T> = T | null;

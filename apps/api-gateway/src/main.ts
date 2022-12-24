@@ -2,7 +2,8 @@ import http from 'http'
 import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway'
 import { ApolloServer } from '@apollo/server'
 import { expressMiddleware } from '@apollo/server/express4'
-import { initializeApp, credential, auth } from 'firebase-admin'
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer'
+import firebase from 'firebase-admin'
 import express from 'express'
 import { json } from 'body-parser'
 import cors from 'cors'
@@ -13,8 +14,10 @@ if (
   process.env.GOOGLE_APPLICATION_JSON != null &&
   process.env.GOOGLE_APPLICATION_JSON !== ''
 ) {
-  initializeApp({
-    credential: credential.cert(JSON.parse(process.env.GOOGLE_APPLICATION_JSON))
+  firebase.initializeApp({
+    credential: firebase.credential.cert(
+      JSON.parse(process.env.GOOGLE_APPLICATION_JSON)
+    )
   })
 }
 
@@ -52,7 +55,10 @@ interface CoreContext {
 
 const server = new ApolloServer<CoreContext>({
   gateway,
-  plugins: [apolloWinstonLoggingPlugin({ level: process.env.LOGGING_LEVEL })],
+  plugins: [
+    apolloWinstonLoggingPlugin({ level: process.env.LOGGING_LEVEL }),
+    ApolloServerPluginDrainHttpServer({ httpServer })
+  ],
   csrfPrevention: true
 })
 
@@ -71,7 +77,7 @@ const apolloContext = async ({ req }): Promise<CoreContext> => {
   )
     return { ...context }
   try {
-    const { uid } = await auth().verifyIdToken(token)
+    const { uid } = await firebase.auth().verifyIdToken(token)
     return { ...context, userId: uid }
   } catch (err) {
     console.log(err)
@@ -79,23 +85,21 @@ const apolloContext = async ({ req }): Promise<CoreContext> => {
   }
 }
 
-server
-  .start()
-  .then(() => {
-    app.use(
-      '/graphql',
-      cors<cors.CorsRequest>(config.cors),
-      json(),
-      expressMiddleware<CoreContext>(server, {
-        context: apolloContext
-      })
-    )
-    httpServer.listen(config.listenOptions, () =>
-      console.log(
-        `🚀 Server ready at ${
-          httpServer.address()?.toString() ?? 'http:localhost:4000/'
-        }graphql`
-      )
-    )
-  })
-  .catch((err) => console.error(err))
+server.start().then(async () => {
+  app.use(
+    ['/', '/graphql'],
+    cors<cors.CorsRequest>(config.cors),
+    json(),
+    expressMiddleware<CoreContext>(server, {
+      context: apolloContext
+    })
+  )
+  await new Promise<void>((resolve) =>
+    httpServer.listen(config.listenOptions, resolve)
+  )
+  console.log(
+    `🚀 Server ready at http://${config.listenOptions?.host ?? '0.0.0.0'}:${
+      config.listenOptions?.port ?? '4000'
+    }/graphql`
+  )
+})

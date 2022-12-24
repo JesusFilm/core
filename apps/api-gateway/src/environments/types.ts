@@ -1,5 +1,5 @@
 import { GatewayConfig } from '@apollo/gateway'
-import { CorsOptions } from 'apollo-server'
+import { CorsOptions } from 'cors'
 
 export interface EnvironmentConfig {
   production: boolean
@@ -14,5 +14,5 @@ export interface EnvironmentConfig {
     writableAll?: boolean
     ipv6Only?: boolean
   }
-  cors?: CorsOptions | boolean
+  cors?: CorsOptions
 }

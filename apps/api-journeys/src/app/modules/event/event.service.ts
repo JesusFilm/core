@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common'
 import { BaseService } from '@core/nest/database/BaseService'
 import { DocumentCollection } from 'arangojs/collection'
-import { UserInputError } from 'apollo-server'
+import { GraphQLError } from 'graphql'
 import { aql } from 'arangojs'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { BlockService } from '../block/block.service'
@@ -30,7 +30,9 @@ export class EventService extends BaseService {
       await this.blockService.get(blockId)
 
     if (block == null) {
-      throw new UserInputError('Block does not exist')
+      throw new GraphQLError('Block does not exist', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     }
     const journeyId = block.journeyId
 
@@ -46,10 +48,13 @@ export class EventService extends BaseService {
     )
 
     if (!validStep) {
-      throw new UserInputError(
+      throw new GraphQLError(
         `Step ID ${
           stepId as string
-        } does not exist on Journey with ID ${journeyId}`
+        } does not exist on Journey with ID ${journeyId}`,
+        {
+          extensions: { code: 'BAD_USER_INPUT' }
+        }
       )
     }
 
