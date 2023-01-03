@@ -16,7 +16,7 @@ npm install -g nx
 npm install -g @nestjs/cli@^8.1.5
 
 # install Rover CLI tool
-./tools/scripts/install-rover.sh
+npm install -g @apollo/rover@0.10.0
 
 # install all dependencies
 npm i
