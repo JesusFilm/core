@@ -1,7 +1,7 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { includes } from 'lodash'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 
 import {
@@ -47,7 +47,9 @@ export class LinkActionResolver {
         block.__typename
       )
     ) {
-      throw new UserInputError('This block does not support link actions')
+      throw new GraphQLError('This block does not support link actions', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     }
 
     const updatedBlock: { action: Action } = await this.blockService.update(

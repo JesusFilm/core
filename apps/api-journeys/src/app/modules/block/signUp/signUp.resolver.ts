@@ -1,4 +1,4 @@
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver, ResolveField, Parent } from '@nestjs/graphql'
 
@@ -68,7 +68,9 @@ export class SignUpBlockResolver {
         id
       )
       if (!submitIcon) {
-        throw new UserInputError('Submit icon does not exist')
+        throw new GraphQLError('Submit icon does not exist', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
       }
     }
 

@@ -13,11 +13,7 @@ import {
   getPowerBiEmbed,
   PowerBiEmbed
 } from '@core/nest/powerBi/getPowerBiEmbed'
-import {
-  ApolloError,
-  ForbiddenError,
-  UserInputError
-} from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -85,7 +81,7 @@ export class JourneyResolver {
       process.env.POWER_BI_WORKSPACE_ID == null ||
       reportId == null
     ) {
-      throw new ApolloError('server environment variables missing')
+      throw new GraphQLError('server environment variables missing')
     }
 
     const config = {
@@ -98,7 +94,7 @@ export class JourneyResolver {
     try {
       return await getPowerBiEmbed(config, reportId, userId)
     } catch (err) {
-      throw new ApolloError(err.message)
+      throw new GraphQLError(err.message)
     }
   }
 
@@ -129,18 +125,22 @@ export class JourneyResolver {
         userId
       )
       if (ujResult == null)
-        throw new ForbiddenError(
-          'User has not received an invitation to edit this journey.'
+        throw new GraphQLError(
+          'User has not received an invitation to edit this journey.',
+          { extensions: { code: 'FORBIDDEN' } }
         )
       if (ujResult.role === UserJourneyRole.inviteRequested)
-        throw new ForbiddenError('User invitation pending.')
+        throw new GraphQLError('User invitation pending.', {
+          extensions: { code: 'FORBIDDEN' }
+        })
     } else {
       if (result.status !== JourneyStatus.published) {
         const urResult = await this.userRoleService.getUserRoleById(userId)
         const isPublisher = urResult.roles?.includes(Role.publisher)
         if (isPublisher !== true)
-          throw new ForbiddenError(
-            'You do not have access to unpublished templates'
+          throw new GraphQLError(
+            'You do not have access to unpublished templates',
+            { extensions: { code: 'FORBIDDEN' } }
           )
       }
     }
@@ -352,7 +352,9 @@ export class JourneyResolver {
       return await this.journeyService.update(id, input)
     } catch (err) {
       if (err.errorNum === ERROR_ARANGO_UNIQUE_CONSTRAINT_VIOLATED) {
-        throw new UserInputError('Slug is not unique')
+        throw new GraphQLError('Slug is not unique', {
+          extensions: { code: 'BAD_USER_INPUT' }
+        })
       } else {
         throw err
       }

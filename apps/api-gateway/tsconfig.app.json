@@ -2,12 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "module": "ESNext",
-    "types": ["node", "express"],
-    "esModuleInterop": true,
-    "lib": ["ES2020"],
-    "target": "ES2020",
-    "moduleResolution": "node"
+    "module": "commonjs",
+    "types": ["node"],
+    "esModuleInterop": true
   },
   "exclude": ["**/*.spec.ts", "setupTests.ts"],
   "include": ["**/*.ts"]

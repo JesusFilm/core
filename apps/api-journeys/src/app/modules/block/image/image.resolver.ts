@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { encode } from 'blurhash'
 import axios from 'axios'
 // eslint-disable-next-line import/no-namespace
@@ -45,8 +45,8 @@ async function handleImage(
       4
     )
   } catch (ex) {
-    throw new UserInputError(ex.message, {
-      argumentName: 'src'
+    throw new GraphQLError(ex.message, {
+      extensions: { code: 'BAD_USER_INPUT', argumentName: 'src' }
     })
   }
 

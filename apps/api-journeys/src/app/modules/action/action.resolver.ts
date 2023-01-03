@@ -1,7 +1,7 @@
 import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { get, includes } from 'lodash'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import {
   Action,
@@ -51,7 +51,9 @@ export class ActionResolver {
         block.__typename
       )
     ) {
-      throw new UserInputError('This block does not support actions')
+      throw new GraphQLError('This block does not support actions', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     }
 
     return await this.blockService.update(id, {

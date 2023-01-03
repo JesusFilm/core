@@ -9,7 +9,7 @@ import {
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { AuthenticationError, UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 import {
   IdType,
   Journey,
@@ -47,7 +47,10 @@ export class UserJourneyResolver {
         ? await this.journeyService.getBySlug(journeyId)
         : await this.journeyService.get(journeyId)
 
-    if (journey == null) throw new UserInputError('journey does not exist')
+    if (journey == null)
+      throw new GraphQLError('journey does not exist', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
 
     return await this.userJourneyService.save({
       userId,
@@ -64,8 +67,9 @@ export class UserJourneyResolver {
     )
 
     if (actor?.role !== UserJourneyRole.owner)
-      throw new AuthenticationError(
-        'You do not own this journey, so you cannot make changes to it'
+      throw new GraphQLError(
+        'You do not own this journey, so you cannot make changes to it',
+        { extensions: { code: 'UNAUTHENTICATED' } }
       )
 
     return actor
@@ -73,7 +77,10 @@ export class UserJourneyResolver {
 
   async getUserJourney(id: string): Promise<UserJourney> {
     const userJourney: UserJourney = await this.userJourneyService.get(id)
-    if (userJourney === null) throw new UserInputError('User journey not found')
+    if (userJourney === null)
+      throw new GraphQLError('User journey not found', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     return userJourney
   }
 

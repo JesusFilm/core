@@ -1,7 +1,7 @@
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { includes } from 'lodash'
-import { UserInputError } from 'apollo-server-errors'
+import { GraphQLError } from 'graphql'
 
 import { RoleGuard } from '../../../lib/roleGuard/roleGuard'
 import {
@@ -60,8 +60,9 @@ export class NavigateToJourneyActionResolver {
         block.__typename
       )
     ) {
-      throw new UserInputError(
-        'This block does not support navigate to journey actions'
+      throw new GraphQLError(
+        'This block does not support navigate to journey actions',
+        { extensions: { code: 'BAD_USER_INPUT' } }
       )
     }
     const updatedBlock: { action: Action } = await this.blockService.update(
