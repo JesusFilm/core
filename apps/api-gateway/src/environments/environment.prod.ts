@@ -27,6 +27,8 @@ export const config: EnvironmentConfig = {
       'https://your-stage.nextstep.is',
       // watch
       'https://watch-jesusfilm.vercel.app',
+      'https://watch-one.vercel.app',
+      'https://watch.jesusfilm.org',
       // localhost
       /http:\/\/localhost:*/
     ]
