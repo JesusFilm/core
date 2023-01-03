@@ -2,7 +2,11 @@ import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import { GetStaticProps } from 'next'
 import { ReactElement } from 'react'
 import { Videos } from '../src/components/VideosPage'
-import { GET_VIDEOS, limit } from '../src/components/VideosPage/VideosPage'
+import {
+  GET_LANGUAGES,
+  GET_VIDEOS,
+  limit
+} from '../src/components/VideosPage/VideosPage'
 import { createApolloClient, useApolloClient } from '../src/libs/apolloClient'
 
 interface VideosPageProps {
@@ -26,6 +30,12 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async () => {
       where: {},
       offset: 0,
       limit,
+      languageId: '529'
+    }
+  })
+  await apolloClient.query({
+    query: GET_LANGUAGES,
+    variables: {
       languageId: '529'
     }
   })
