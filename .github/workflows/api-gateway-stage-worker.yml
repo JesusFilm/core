@@ -55,7 +55,7 @@ jobs:
         run: npm install -g nx --silent
 
       - name: rover Install
-        run: npm install -g @apollo/rover@0.2.1
+        run: npm install -g @apollo/rover@0.10.0
 
       - name: Build api-gateway
         uses: mansagroup/nrwl-nx-action@v3
