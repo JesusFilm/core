@@ -31,18 +31,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '16'
           cache: 'npm'
 
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
@@ -55,10 +55,10 @@ jobs:
         run: npm install -g nx --silent
 
       - name: rover Install
-        run: npm install -g @apollo/rover@0.2.1
+        run: npm install -g @apollo/rover@0.10.0
 
       - name: Build api-gateway
-        uses: mansagroup/nrwl-nx-action@v2
+        uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: build
           projects: api-gateway
