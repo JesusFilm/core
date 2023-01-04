@@ -146,7 +146,7 @@
     "@nrwl/nx-cloud": "12.5.4",
     "@nrwl/react": "13.2.4",
     "@nrwl/storybook": "13.2.4",
-    "@nrwl/tao": "13.2.3",
+    "@nrwl/tao": "13.2.2",
     "@nrwl/web": "13.2.4",
     "@nrwl/workspace": "13.2.4",
     "@nx-plus/docusaurus": "^13.0.2",
