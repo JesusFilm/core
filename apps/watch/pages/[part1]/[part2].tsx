@@ -1,20 +1,35 @@
-import { gql } from '@apollo/client'
+import path from 'path'
+import { promises as fs } from 'fs'
+import { ApolloClient, gql, NormalizedCacheObject } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
 import { SnackbarProvider } from 'notistack'
 import { VideoContentFields } from '../../__generated__/VideoContentFields'
 import { GetVideoContent } from '../../__generated__/GetVideoContent'
+import {
+  GetVideoVariant,
+  GetVideoVariant_variant
+} from '../../__generated__/GetVideoVariant'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { LanguageProvider } from '../../src/libs/languageContext/LanguageContext'
 import { VideoProvider } from '../../src/libs/videoContext'
 import { VIDEO_CONTENT_FIELDS } from '../../src/libs/videoContentFields'
+import { VIDEO_VARIANT_FIELDS } from '../../src/libs/videoVariantFields'
 
 export const GET_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}
   query GetVideoContent($id: ID!, $languageId: ID) {
     content: video(id: $id, idType: slug) {
       ...VideoContentFields
+    }
+  }
+`
+export const GET_VIDEO_VARIANT = gql`
+  ${VIDEO_VARIANT_FIELDS}
+  query GetVideoVariant($id: ID!) {
+    variant: video(id: $id) {
+      ...VideoVariantFields
     }
   }
 `
@@ -72,10 +87,57 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
       notFound: true
     }
   }
+
+  async function upsertFile(name: string): Promise<Buffer> {
+    try {
+      return await fs.readFile(name)
+    } catch (error) {
+      await fs.writeFile(name, '[]')
+      return await fs.readFile(name)
+    }
+  }
+
+  const cache = {
+    get: async (): Promise<GetVideoVariant_variant[]> => {
+      const data = await upsertFile(path.join(process.cwd(), 'variants.db'))
+      const variants: GetVideoVariant_variant[] = JSON.parse(
+        data as unknown as string
+      )
+      return variants
+    },
+    set: async (variants: GetVideoVariant_variant[]) => {
+      return await fs.writeFile(
+        path.join(process.cwd(), 'variants.db'),
+        JSON.stringify(variants)
+      )
+    }
+  }
+
+  const variantCache = await cache.get()
+
+  let cachedVariant = variantCache.find(
+    (variant) => variant.id === data.content?.id
+  )
+
+  if (cachedVariant === undefined) {
+    const {
+      data: { variant }
+    } = await client.query<GetVideoVariant>({
+      query: GET_VIDEO_VARIANT,
+      variables: {
+        id: data.content?.id
+      }
+    })
+    if (variant !== null) {
+      cachedVariant = variant
+      void cache.set([...variantCache, variant])
+    }
+  }
+
   return {
     revalidate: 3600,
     props: {
-      content: data.content
+      content: { ...data.content, ...cachedVariant }
     }
   }
 }

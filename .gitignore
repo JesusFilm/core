@@ -57,3 +57,6 @@ migrations.json
 .terraform
 terraform.tfstate
 terraform.tfstate.backup
+
+# static props cache
+variants.db

@@ -86,24 +86,6 @@ export interface GetVideoContent_content_variant {
   subtitle: GetVideoContent_content_variant_subtitle[];
 }
 
-export interface GetVideoContent_content_variantLanguagesWithSlug_language_name {
-  __typename: "Translation";
-  value: string;
-  primary: boolean;
-}
-
-export interface GetVideoContent_content_variantLanguagesWithSlug_language {
-  __typename: "Language";
-  id: string;
-  name: GetVideoContent_content_variantLanguagesWithSlug_language_name[];
-}
-
-export interface GetVideoContent_content_variantLanguagesWithSlug {
-  __typename: "LanguageWithSlug";
-  slug: string | null;
-  language: GetVideoContent_content_variantLanguagesWithSlug_language | null;
-}
-
 export interface GetVideoContent_content_children_title {
   __typename: "Translation";
   value: string;
@@ -182,7 +164,6 @@ export interface GetVideoContent_content {
   studyQuestions: GetVideoContent_content_studyQuestions[];
   title: GetVideoContent_content_title[];
   variant: GetVideoContent_content_variant | null;
-  variantLanguagesWithSlug: GetVideoContent_content_variantLanguagesWithSlug[];
   /**
    * slug is a permanent link to the video.
    */

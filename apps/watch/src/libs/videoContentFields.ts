@@ -51,16 +51,6 @@ export const VIDEO_CONTENT_FIELDS = gql`
         value
       }
     }
-    variantLanguagesWithSlug {
-      slug
-      language {
-        id
-        name {
-          value
-          primary
-        }
-      }
-    }
     slug
     children {
       ...VideoChildFields
