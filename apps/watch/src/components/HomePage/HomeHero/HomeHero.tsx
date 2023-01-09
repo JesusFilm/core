@@ -28,14 +28,6 @@ export function HomeHero(): ReactElement {
         priority
       />
       <HeroOverlay />
-      <Box
-        sx={{
-          zIndex: 1,
-          position: 'absolute',
-          height: '100%',
-          width: '100%'
-        }}
-      />
       <Container
         maxWidth="xxl"
         sx={{ display: 'flex', justifyContent: 'center', pt: 30 }}
