@@ -171,13 +171,6 @@ jobs:
           docker push -a $ECR_REGISTRY/jfp-api-gateway-prod
           echo "image=$ECR_REGISTRY/jfp-api-gateway-prod:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Download task definition
+      - name: Restart task definition
         run: |
-          aws ecs describe-task-definition --task-definition jfp-api-gateway-prod --query taskDefinition > task-definition.json
-      - name: Redeploy ECS service
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          service: api-gateway-prod-service
-          cluster: jfp-ecs-cluster-prod
-          wait-for-service-stability: true
+          aws ecs update-service --force-new-deployment --service api-gateway-service --cluster jfp-ecs-cluster-prod
