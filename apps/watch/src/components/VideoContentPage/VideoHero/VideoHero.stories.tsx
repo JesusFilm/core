@@ -29,7 +29,7 @@ export const Default = Template.bind({})
 
 export const VideoPlayer = Template.bind({})
 VideoPlayer.play = async () => {
-  const CustomPlayButton = screen.getByRole('button', { name: 'Play' })
+  const CustomPlayButton = screen.getAllByRole('button')[1]
   userEvent.click(CustomPlayButton)
 }
 
