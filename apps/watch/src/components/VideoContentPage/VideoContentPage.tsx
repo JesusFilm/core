@@ -127,12 +127,7 @@ export function VideoContentPage(): ReactElement {
           {container == null && label === VideoLabel.featureFilm && (
             <Stack sx={{ mb: 14 }}>
               <Container maxWidth="xxl">
-                <Typography
-                  variant="h4"
-                  gutterBottom
-                  sx={{ mb: 6 }}
-                  data-testid="title"
-                >
+                <Typography variant="h4" gutterBottom sx={{ mb: 6 }}>
                   {title[0].value} Scenes
                 </Typography>
               </Container>

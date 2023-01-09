@@ -41,7 +41,7 @@ describe('VideoContentPage', () => {
   })
 
   it('should render title on feature films', () => {
-    const { getByTestId } = render(
+    const { getAllByRole } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: videos[0] }}>
           <VideoContentPage />
@@ -49,19 +49,7 @@ describe('VideoContentPage', () => {
       </SnackbarProvider>
     )
 
-    expect(getByTestId('title')).toBeInTheDocument()
-  })
-
-  it('should not render title if item is not a feature film', () => {
-    const { queryByTestId } = render(
-      <SnackbarProvider>
-        <VideoProvider value={{ content: videos[2] }}>
-          <VideoContentPage />
-        </VideoProvider>
-      </SnackbarProvider>
-    )
-
-    expect(queryByTestId('title')).toBeNull()
+    expect(getAllByRole('heading', { name: 'JESUS Scenes' })).toHaveLength(1)
   })
 
   it('should render share button', () => {
