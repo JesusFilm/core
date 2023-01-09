@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, getByTestId, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { videos } from '../Videos/testData'
 import { VideoProvider } from '../../libs/videoContext'
@@ -38,6 +38,30 @@ describe('VideoContentPage', () => {
     )
 
     expect(getByTestId('videos-carousel')).toBeInTheDocument()
+  })
+
+  it('should render title on feature films', () => {
+    const { getByTestId } = render(
+      <SnackbarProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoContentPage />
+        </VideoProvider>
+      </SnackbarProvider>
+    )
+
+    expect(getByTestId('title')).toBeInTheDocument()
+  })
+
+  it('should not render title if item is not a feature film', () => {
+    const { queryByTestId } = render(
+      <SnackbarProvider>
+        <VideoProvider value={{ content: videos[2] }}>
+          <VideoContentPage />
+        </VideoProvider>
+      </SnackbarProvider>
+    )
+
+    expect(queryByTestId('title')).toBeNull()
   })
 
   it('should render share button', () => {
