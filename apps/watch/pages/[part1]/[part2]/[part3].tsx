@@ -7,8 +7,7 @@ import { SnackbarProvider } from 'notistack'
 import {
   GetVideoVariant,
   GetVideoVariant_variant
-} from 'apps/watch/__generated__/GetVideoVariant'
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
+} from '../../../__generated__/GetVideoVariant'
 import { VideoContentPage } from '../../../src/components/VideoContentPage'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { GetVideoContainerAndVideoContent } from '../../../__generated__/GetVideoContainerAndVideoContent'
@@ -16,6 +15,7 @@ import { LanguageProvider } from '../../../src/libs/languageContext/LanguageCont
 import { VideoProvider } from '../../../src/libs/videoContext'
 import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
 import { GET_VIDEO_VARIANT } from '../[part2]'
+import { Context } from '../../../src/libs/videoContext/VideoContext'
 
 export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}
@@ -34,8 +34,8 @@ export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
 `
 
 interface Part3PageProps {
-  container: VideoContentFields
-  content: VideoContentFields
+  container: Context
+  content: Context
 }
 
 export default function Part3Page({

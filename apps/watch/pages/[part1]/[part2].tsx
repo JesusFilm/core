@@ -1,12 +1,13 @@
 import path from 'path'
 import { promises as fs } from 'fs'
-import { ApolloClient, gql, NormalizedCacheObject } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
 import { SnackbarProvider } from 'notistack'
-import { VideoContentFields } from '../../__generated__/VideoContentFields'
 import { GetVideoContent } from '../../__generated__/GetVideoContent'
+import { Context } from '../../src/libs/videoContext/VideoContext'
+
 import {
   GetVideoVariant,
   GetVideoVariant_variant
@@ -35,7 +36,7 @@ export const GET_VIDEO_VARIANT = gql`
 `
 
 interface Part2PageProps {
-  content: VideoContentFields
+  content: Context
 }
 
 const DynamicVideoContentPage = dynamic(

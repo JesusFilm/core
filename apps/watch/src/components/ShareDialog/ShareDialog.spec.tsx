@@ -4,6 +4,7 @@ import {
   VideoContentFields,
   VideoContentFields_children
 } from '../../../__generated__/VideoContentFields'
+import { VideoVariantFields } from '../../../__generated__/VideoVariantFields'
 import { VideoProvider } from '../../libs/videoContext'
 
 import { videos } from '../Videos/testData'
@@ -21,7 +22,7 @@ jest.mock('next/router', () => ({
   }
 }))
 
-const video: VideoContentFields = {
+const video: VideoContentFields & VideoVariantFields = {
   ...videos[0],
   variant: {
     __typename: 'VideoVariant',

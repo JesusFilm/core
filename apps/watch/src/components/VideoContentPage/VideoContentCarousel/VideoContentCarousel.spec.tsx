@@ -1,10 +1,8 @@
 import { fireEvent, render } from '@testing-library/react'
-import {
-  VideoContentFields,
-  VideoContentFields_variant as Variant
-} from '../../../../__generated__/VideoContentFields'
+import { VideoContentFields_variant as Variant } from '../../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/testData'
+import { Context } from '../../../libs/videoContext/VideoContext'
 import { VideoContentCarousel } from '.'
 
 jest.mock('next/router', () => ({
@@ -24,11 +22,11 @@ const variantProps: Pick<Variant, 'downloads' | 'language'> = {
   }
 }
 
-const getChildVideos = (videoIndex: number): VideoContentFields[] => {
-  const firstChildProps = videos[videoIndex].children[0] as VideoContentFields
+const getChildVideos = (videoIndex: number): Context[] => {
+  const firstChildProps = videos[videoIndex].children[0] as Context
   const childVariantProps =
     firstChildProps != null
-      ? (firstChildProps.variant as Variant)
+      ? firstChildProps.variant
       : (videos[videoIndex].variant as Variant)
 
   return [
@@ -46,7 +44,7 @@ const getChildVideos = (videoIndex: number): VideoContentFields[] => {
         ...variantProps
       }
     },
-    ...(videos[videoIndex].children.slice(1) as VideoContentFields[])
+    ...(videos[videoIndex].children.slice(1) as Context[])
   ]
 }
 
@@ -55,14 +53,14 @@ const collection = {
   children: getChildVideos(13)
 }
 
-const shortFilm: VideoContentFields = {
+const shortFilm: Context = {
   ...videos[18],
   children: getChildVideos(18)
 }
 
-const series: VideoContentFields = { ...videos[5], children: getChildVideos(5) }
+const series: Context = { ...videos[5], children: getChildVideos(5) }
 
-const featureFilm: VideoContentFields = videos[0]
+const featureFilm: Context = videos[0]
 
 const onIconClick = { onShareClick: jest.fn(), onDownloadClick: jest.fn() }
 
@@ -203,7 +201,7 @@ describe('VideoContentCarousel', () => {
         <VideoProvider
           value={{
             content: {
-              ...(series.children[1] as VideoContentFields),
+              ...(series.children[1] as Context),
               description: [
                 {
                   __typename: 'Translation',

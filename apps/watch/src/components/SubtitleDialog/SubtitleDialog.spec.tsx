@@ -1,12 +1,12 @@
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import videojs from 'video.js'
 import { VideoProvider } from '../../libs/videoContext'
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
+import { Context } from '../../libs/videoContext/VideoContext'
 import { videos } from '../Videos/testData'
 import { SubtitleDialog } from './SubtitleDialog'
 
 const onClose = jest.fn()
-const video: VideoContentFields = videos[0]
+const video: Context = videos[0]
 
 describe('SubtitleDialog', () => {
   let player

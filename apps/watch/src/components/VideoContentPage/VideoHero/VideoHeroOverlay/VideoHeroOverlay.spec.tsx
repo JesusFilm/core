@@ -1,6 +1,7 @@
 import { render, fireEvent } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
+import { VideoVariantFields } from '../../../../../__generated__/VideoVariantFields'
 import {
   VideoLabel,
   VideoVariantDownloadQuality
@@ -9,7 +10,7 @@ import { VideoProvider } from '../../../../libs/videoContext'
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 
 describe('VideoHeroOverlay', () => {
-  const video: VideoContentFields = {
+  const video: VideoContentFields & VideoVariantFields = {
     id: '1_cl-0-0',
     __typename: 'Video',
     label: VideoLabel.featureFilm,

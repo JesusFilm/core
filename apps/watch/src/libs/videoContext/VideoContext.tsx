@@ -1,12 +1,15 @@
 import { createContext, ReactElement, ReactNode, useContext } from 'react'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
+import { VideoVariantFields } from '../../../__generated__/VideoVariantFields'
 
 interface VideoPageProps {
-  content: VideoContentFields
+  content: VideoContentFields & VideoVariantFields
   container?: VideoContentFields
 }
 
-interface Context extends Omit<VideoContentFields, '__typename'> {
+export interface Context
+  extends Omit<VideoContentFields, '__typename'>,
+    VideoVariantFields {
   container?: VideoContentFields
 }
 

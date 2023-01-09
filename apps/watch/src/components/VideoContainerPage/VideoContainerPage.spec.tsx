@@ -2,11 +2,10 @@ import { fireEvent, render } from '@testing-library/react'
 
 import { SnackbarProvider } from 'notistack'
 
-import {
-  VideoContentFields,
-  VideoContentFields_children
-} from '../../../__generated__/VideoContentFields'
+import { VideoContentFields_children } from '../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../libs/videoContext'
+import { Context } from '../../libs/videoContext/VideoContext'
+
 import { VideoContainerPage } from '.'
 
 jest.mock('next/router', () => ({
@@ -42,7 +41,7 @@ const video = {
     } as unknown as VideoContentFields_children
   ],
   slug: 'video-slug'
-} as unknown as VideoContentFields
+} as unknown as Context
 
 describe('VideoContainerPage', () => {
   it('should render ContainerHero', () => {
