@@ -1,4 +1,4 @@
-import { fireEvent, getByTestId, render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { videos } from '../Videos/testData'
 import { VideoProvider } from '../../libs/videoContext'
