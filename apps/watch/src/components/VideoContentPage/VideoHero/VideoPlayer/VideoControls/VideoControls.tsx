@@ -19,9 +19,9 @@ import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
 import CircularProgress from '@mui/material/CircularProgress'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import fscreen from 'fscreen'
-import { SubtitleDialog } from '../../../SubtitleDialog'
-import { useVideo } from '../../../../libs/videoContext'
-import { AudioLanguageButton } from '../../AudioLanguageButton'
+import { SubtitleDialog } from '../../../../SubtitleDialog'
+import { useVideo } from '../../../../../libs/videoContext'
+import { AudioLanguageButton } from '../../../AudioLanguageButton'
 
 interface VideoControlProps {
   player: videojs.Player
