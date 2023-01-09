@@ -1,5 +1,5 @@
 import { ReactElement, useRef, useEffect, useState } from 'react'
-import videojs from 'video.js'
+import videojs, { VideoJsPlayer } from 'video.js'
 import { useVideo } from '../../../../libs/videoContext'
 import { VideoControls } from './VideoControls'
 
@@ -12,7 +12,7 @@ export function VideoPlayer({
 }: VideoPlayerProps): ReactElement {
   const { variant } = useVideo()
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [player, setPlayer] = useState<videojs.Player>()
+  const [player, setPlayer] = useState<VideoJsPlayer>()
 
   useEffect(() => {
     if (videoRef.current != null) {

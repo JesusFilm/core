@@ -1,6 +1,6 @@
 import { ReactElement, useState, useEffect, MouseEventHandler } from 'react'
 import Container from '@mui/material/Container'
-import videojs from 'video.js'
+import { VideoJsPlayer } from 'video.js'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
@@ -24,7 +24,7 @@ import { useVideo } from '../../../../../libs/videoContext'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 
 interface VideoControlProps {
-  player: videojs.Player
+  player: VideoJsPlayer
   onVisibleChanged?: (active: boolean) => void
 }
 

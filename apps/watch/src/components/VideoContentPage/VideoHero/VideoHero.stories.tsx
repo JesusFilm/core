@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -13,19 +14,22 @@ const VideoHeroStory = {
   title: 'Watch/VideoContentPage/VideoHero'
 }
 
-const Template: Story = () => (
-  <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
-    <VideoProvider value={{ content: videos[0] }}>
-      <VideoHero />
-    </VideoProvider>
-  </ThemeProvider>
-)
+const Template: Story = () => {
+  const [hasPlayed, setHasPlayed] = useState(false)
+  return (
+    <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
+      <VideoProvider value={{ content: videos[0] }}>
+        <VideoHero onPlay={() => setHasPlayed(true)} hasPlayed={hasPlayed} />
+      </VideoProvider>
+    </ThemeProvider>
+  )
+}
 
 export const Default = Template.bind({})
 
 export const VideoPlayer = Template.bind({})
 VideoPlayer.play = async () => {
-  const CustomPlayButton = screen.getAllByRole('button')[0]
+  const CustomPlayButton = screen.getByRole('button', { name: 'Play' })
   userEvent.click(CustomPlayButton)
 }
 
