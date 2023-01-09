@@ -1,6 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
 import { ReactElement, useEffect, useState } from 'react'
-// import { useQueryState } from 'use-location-state'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
