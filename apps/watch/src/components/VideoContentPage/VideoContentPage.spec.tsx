@@ -41,7 +41,7 @@ describe('VideoContentPage', () => {
   })
 
   it('should render title on feature films', () => {
-    const { getAllByRole } = render(
+    const { getByRole } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: videos[0] }}>
           <VideoContentPage />
@@ -49,7 +49,7 @@ describe('VideoContentPage', () => {
       </SnackbarProvider>
     )
 
-    expect(getAllByRole('heading', { name: 'JESUS Scenes' })).toHaveLength(1)
+    expect(getByRole('heading', { name: 'JESUS Scenes' })).toBeInTheDocument()
   })
 
   it('should render share button', () => {
