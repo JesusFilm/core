@@ -1,6 +1,6 @@
 import { ReactElement, useState, useEffect, MouseEventHandler } from 'react'
 import Container from '@mui/material/Container'
-import videojs from 'video.js'
+import { VideoJsPlayer } from 'video.js'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
@@ -19,12 +19,12 @@ import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
 import CircularProgress from '@mui/material/CircularProgress'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import fscreen from 'fscreen'
-import { SubtitleDialog } from '../../../SubtitleDialog'
-import { useVideo } from '../../../../libs/videoContext'
-import { AudioLanguageButton } from '../../AudioLanguageButton'
+import { SubtitleDialog } from '../../../../SubtitleDialog'
+import { useVideo } from '../../../../../libs/videoContext'
+import { AudioLanguageButton } from '../../../AudioLanguageButton'
 
 interface VideoControlProps {
-  player: videojs.Player
+  player: VideoJsPlayer
   onVisibleChanged?: (active: boolean) => void
 }
 
