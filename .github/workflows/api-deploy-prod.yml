@@ -14,6 +14,7 @@ jobs:
       ecs_service: api-journeys-prod-service
       endpoint_url: http://api-journeys.service.internal:4001/graphql
     secrets:
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
       ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
       ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
@@ -37,6 +38,7 @@ jobs:
       ecs_service: api-users-prod-service
       endpoint_url: http://api-users.service.internal:4002/graphql
     secrets:
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
       ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
       ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
@@ -60,6 +62,7 @@ jobs:
       ecs_service: api-languages-prod-service
       endpoint_url: http://api-languages.service.internal:4003/graphql
     secrets:
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
       ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
       ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
@@ -83,6 +86,7 @@ jobs:
       ecs_service: api-videos-prod-service
       endpoint_url: http://api-videos.service.internal:4004/graphql
     secrets:
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
       ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
       ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}

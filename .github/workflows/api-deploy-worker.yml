@@ -22,6 +22,8 @@ on:
         required: true
         type: string
     secrets:
+      APOLLO_KEY:
+        required: true
       ARANGODB_URL:
         required: true
       ARANGODB_USER:
@@ -53,6 +55,7 @@ jobs:
   build-and-deploy:
     environment: Production
     env:
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       ENV_SUFFIX: ${{ inputs.branch }}
       ECR_REPOSITORY: ${{ inputs.repository }}
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
