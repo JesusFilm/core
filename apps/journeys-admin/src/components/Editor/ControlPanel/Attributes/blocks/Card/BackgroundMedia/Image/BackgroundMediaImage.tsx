@@ -8,7 +8,6 @@ import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/GetJourney'
-import { CardBlockBackgroundImageUpdate } from '../../../../../../../../../__generated__/CardBlockBackgroundImageUpdate'
 import { CardBlockImageBlockCreate } from '../../../../../../../../../__generated__/CardBlockImageBlockCreate'
 import { CardBlockImageBlockUpdate } from '../../../../../../../../../__generated__/CardBlockImageBlockUpdate'
 import { BlockDeleteForBackgroundImage } from '../../../../../../../../../__generated__/BlockDeleteForBackgroundImage'
@@ -87,9 +86,6 @@ export function BackgroundMediaImage({
 
   const imageCover = coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
 
-  const [cardBlockUpdate] = useMutation<CardBlockBackgroundImageUpdate>(
-    CARD_BLOCK_COVER_IMAGE_UPDATE
-  )
   const [imageBlockCreate, { loading: createLoading }] =
     useMutation<CardBlockImageBlockCreate>(CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE)
   const [imageBlockUpdate, { loading: updateLoading }] =
@@ -126,23 +122,6 @@ export function BackgroundMediaImage({
       },
       update(cache, { data }) {
         blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journey.id)
-      }
-    })
-
-    await cardBlockUpdate({
-      variables: {
-        id: cardBlock.id,
-        journeyId: journey.id,
-        input: {
-          coverBlockId: null
-        }
-      },
-      optimisticResponse: {
-        cardBlockUpdate: {
-          id: cardBlock.id,
-          coverBlockId: null,
-          __typename: 'CardBlock'
-        }
       }
     })
   }
