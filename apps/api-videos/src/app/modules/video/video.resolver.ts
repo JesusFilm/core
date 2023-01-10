@@ -8,6 +8,7 @@ import {
   ResolveField,
   Parent
 } from '@nestjs/graphql'
+import { compact } from 'lodash'
 
 import { IdType, Video, VideosFilter } from '../../__generated__/graphql'
 import { VideoService } from './video.service'
@@ -126,6 +127,11 @@ export class VideoResolver {
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
   ): void {}
+
+  @ResolveField('variantLanguagesCount')
+  variantLanguagesCount(@Parent() video): number {
+    return compact(video.variantLanguages).length
+  }
 }
 
 @Resolver('LanguageWithSlug')
