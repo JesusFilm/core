@@ -7,6 +7,7 @@ import { NextSeo } from 'next-seo'
 
 import 'video.js/dist/video-js.css'
 
+import { VideoLabel } from '../../../__generated__/globalTypes'
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
@@ -30,7 +31,8 @@ export function VideoContentPage(): ReactElement {
     slug,
     variant,
     children,
-    container
+    container,
+    label
   } = useVideo()
   const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
@@ -124,7 +126,7 @@ export function VideoContentPage(): ReactElement {
             <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
           </Container>
           {/* TODO: Replace with proper related video components */}
-          {container == null && (
+          {container == null && label === VideoLabel.featureFilm && (
             <Stack sx={{ mb: 14 }}>
               <Container maxWidth="xxl">
                 <Typography variant="h4" gutterBottom sx={{ mb: 6 }}>
