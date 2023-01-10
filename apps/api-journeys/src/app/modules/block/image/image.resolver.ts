@@ -96,6 +96,7 @@ export class ImageBlockResolver {
             parentBlock.journeyId
           )
         } catch (error) {
+          // ignore error thrown if old coverBlock was already deleted
           if (
             error.isArangoError !== true ||
             error.response.body.errorMessage !== 'document not found'
