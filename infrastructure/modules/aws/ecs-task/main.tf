@@ -89,6 +89,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       environment = []
       mountPoints = []
       volumesFrom = []
+      user        = "0"
     },
     module.ecs_datadog_agent.container_definition
   ])
