@@ -69,7 +69,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         {
           containerPort = var.service_config.container_port
           hostPort      = var.service_config.host_port
-          protocol      = "TCP"
+          protocol      = "tcp"
         }
       ]
       secrets = [
