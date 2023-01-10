@@ -19,7 +19,7 @@ on:
         required: true
         type: string
       endpoint_url:
-        require: true
+        required: true
         type: string
     secrets:
       ARANGODB_URL:
