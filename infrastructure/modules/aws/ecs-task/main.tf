@@ -68,7 +68,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       portMappings = [
         {
           containerPort = var.service_config.container_port
-          hostPort : var.service_config.host_port
+          hostPort      = var.service_config.host_port
+          protocol      = "TCP"
         }
       ]
       secrets = [
@@ -85,9 +86,13 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           awslogs-stream-prefix = "core"
         }
       }
+      environment = []
+      mountPoints = []
+      volumesFrom = []
     },
     module.ecs_datadog_agent.container_definition
   ])
+  tags = {}
 }
 
 resource "aws_alb_listener" "alb_listener" {
