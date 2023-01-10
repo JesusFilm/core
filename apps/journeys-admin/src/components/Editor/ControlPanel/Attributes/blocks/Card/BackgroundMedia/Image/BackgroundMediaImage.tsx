@@ -27,19 +27,6 @@ export const BLOCK_DELETE_FOR_BACKGROUND_IMAGE = gql`
   }
 `
 
-export const CARD_BLOCK_COVER_IMAGE_UPDATE = gql`
-  mutation CardBlockBackgroundImageUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: CardBlockUpdateInput!
-  ) {
-    cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
-      id
-      coverBlockId
-    }
-  }
-`
-
 export const CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE = gql`
   mutation CardBlockImageBlockCreate($input: ImageBlockCreateInput!) {
     imageBlockCreate(input: $input) {
