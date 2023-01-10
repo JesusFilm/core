@@ -15,7 +15,8 @@ export function AudioLanguageDialog({
   open,
   onClose
 }: AudioLanguageDialogProps): ReactElement {
-  const { variant, variantLanguagesWithSlug } = useVideo()
+  const { variant, variantLanguagesWithSlug, variantLanguagesCount } =
+    useVideo()
   const router = useRouter()
 
   const languages = compact(
@@ -102,7 +103,9 @@ export function AudioLanguageDialog({
                   hiddenLabel
                   placeholder="Search Language"
                   label="Language"
-                  helperText={`${languages?.length ?? 0} Languages Available`}
+                  helperText={`${String(
+                    variantLanguagesCount
+                  )} Languages Available`}
                   sx={{
                     '> .MuiOutlinedInput-root': {
                       borderRadius: 2

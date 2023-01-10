@@ -88,6 +88,7 @@ describe('VideoHeroOverlay', () => {
         __typename: 'Translation'
       }
     ],
+    variantLanguagesCount: 1,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',

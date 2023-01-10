@@ -82,6 +82,7 @@ const chapter1: VideoContentFields = {
       }
     ]
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',

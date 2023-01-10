@@ -6,7 +6,6 @@ import AddOutlined from '@mui/icons-material/AddOutlined'
 import KeyboardArrowDownOutlined from '@mui/icons-material/KeyboardArrowDownOutlined'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import { compact } from 'lodash'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { useVideo } from '../../../libs/videoContext'
@@ -19,12 +18,8 @@ interface AudioLanguageButtonProps {
 export function AudioLanguageButton({
   componentVariant
 }: AudioLanguageButtonProps): ReactElement {
-  const { variant, variantLanguagesWithSlug } = useVideo()
+  const { variant, variantLanguagesCount } = useVideo()
   const [openAudioLanguage, setOpenAudioLanguage] = useState(false)
-
-  const languages = compact(
-    variantLanguagesWithSlug?.map(({ language }) => language)
-  )
 
   const nativeName = variant?.language?.name.find(
     ({ primary }) => !primary
@@ -71,7 +66,7 @@ export function AudioLanguageButton({
           >
             <AddOutlined fontSize="small" />
             <Typography variant="subtitle1" sx={{ whiteSpace: 'nowrap' }}>
-              {languages.length - 1} Languages
+              {variantLanguagesCount - 1} Languages
             </Typography>
           </Box>
           <KeyboardArrowDownOutlined fontSize="small" />

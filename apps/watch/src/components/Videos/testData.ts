@@ -96,6 +96,7 @@ const jesusFeatureFilm: VideoContentFields = {
     },
     slug: 'jesus/english'
   },
+  variantLanguagesCount: 3,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -3437,6 +3438,7 @@ const lifeOfJesus: VideoContentFields = {
     },
     slug: 'life-of-jesus-gospel-of-john/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -6046,6 +6048,7 @@ const jesusCalmsTheStorm: VideoContentFields = {
     },
     slug: 'jesus-calms-the-storm/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -6165,6 +6168,7 @@ const womanWithBlood: VideoContentFields = {
     },
     slug: 'the-woman-with-the-issue-of-blood/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -6264,6 +6268,7 @@ const magdalena: VideoContentFields = {
     },
     slug: 'magdalena/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -8799,6 +8804,7 @@ const reflectionsOfHope: VideoContentFields = {
     },
     slug: 'reflections-of-hope/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -9302,6 +9308,7 @@ const jesusDiedForMe: VideoContentFields = {
     },
     slug: 'day-6-jesus-died-for-me/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -9407,6 +9414,7 @@ const bookOfActs: VideoContentFields = {
     },
     slug: 'book-of-acts/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -13252,6 +13260,7 @@ const weddingInCana: VideoContentFields = {
     },
     slug: 'wedding-in-cana/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -13328,6 +13337,7 @@ const lumo: VideoContentFields = {
     },
     slug: 'lumo/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -13759,6 +13769,7 @@ const peterEscape: VideoContentFields = {
     },
     slug: 'peter-miraculous-escape-from-prison/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -13849,6 +13860,7 @@ const whoIsJesus: VideoContentFields = {
     },
     slug: '8-days-with-jesus-who-is-jesus/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -14393,6 +14405,7 @@ const chosenWitness: VideoContentFields = {
     },
     slug: 'chosen-witness/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -14479,6 +14492,7 @@ const gospelOfLuke: VideoContentFields = {
     },
     slug: 'lumo-the-gospel-of-luke/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -15898,6 +15912,7 @@ const jesusAndZacchaeus: VideoContentFields = {
     },
     slug: 'storyclubs-jesus-and-zacchaeus/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -16010,6 +16025,7 @@ const birthOfJesus: VideoContentFields = {
     },
     slug: 'birth-of-jesus/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -16116,6 +16132,7 @@ const fallingPlates: VideoContentFields = {
     },
     slug: 'fallingplates/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -16229,6 +16246,7 @@ const paulAndSilas: VideoContentFields = {
     },
     slug: 'paul-and-silas-in-prison/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -16341,6 +16359,7 @@ const myLastDay: VideoContentFields = {
     },
     slug: 'my-last-day/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',
@@ -16490,6 +16509,7 @@ const theBegining: VideoContentFields = {
     },
     slug: 'the-beginning/english'
   },
+  variantLanguagesCount: 1,
   variantLanguagesWithSlug: [
     {
       __typename: 'LanguageWithSlug',

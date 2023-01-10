@@ -182,6 +182,7 @@ export interface GetVideoContent_content {
   studyQuestions: GetVideoContent_content_studyQuestions[];
   title: GetVideoContent_content_title[];
   variant: GetVideoContent_content_variant | null;
+  variantLanguagesCount: number;
   variantLanguagesWithSlug: GetVideoContent_content_variantLanguagesWithSlug[];
   /**
    * slug is a permanent link to the video.

@@ -182,6 +182,7 @@ export interface VideoContentFields {
   studyQuestions: VideoContentFields_studyQuestions[];
   title: VideoContentFields_title[];
   variant: VideoContentFields_variant | null;
+  variantLanguagesCount: number;
   variantLanguagesWithSlug: VideoContentFields_variantLanguagesWithSlug[];
   /**
    * slug is a permanent link to the video.
