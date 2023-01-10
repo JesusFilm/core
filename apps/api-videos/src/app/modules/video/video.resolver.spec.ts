@@ -168,6 +168,12 @@ describe('VideoResolver', () => {
       ).toEqual(video)
       expect(service.getVideo).toHaveBeenCalledWith('20615', undefined)
     })
+
+    it('returns children count', async () => {
+      expect(
+        resolver.childrenCount({ childIds: [{ id: 1 }, { id: 2 }] })
+      ).toEqual(2)
+    })
   })
 })
 
