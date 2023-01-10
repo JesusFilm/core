@@ -42,11 +42,30 @@ export function VideoGrid({
         ))}
       {loading === true && (
         <>
-          {[0, 1, 2, 3].map((item) => (
-            <Grid item key={item} xs={12} md={4} xl={3}>
-              <VideoCard variant={variant} imageSx={{ minWidth: '200px' }} />
-            </Grid>
-          ))}
+          <Grid item xs={12} md={4} xl={3}>
+            <VideoCard variant={variant} />
+          </Grid>
+          <Grid item xs={12} md={4} xl={3}>
+            <VideoCard variant={variant} />
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={4}
+            xl={3}
+            sx={{ display: { xs: 'none', md: 'block' } }}
+          >
+            <VideoCard variant={variant} />
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={4}
+            xl={3}
+            sx={{ display: { xs: 'none', xl: 'block' } }}
+          >
+            <VideoCard variant={variant} />
+          </Grid>
         </>
       )}
       {onLoadMore != null && (

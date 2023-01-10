@@ -112,10 +112,12 @@ export function VideoCard({
               ) : (
                 <Skeleton
                   sx={{
-                    height: '100%',
-                    width: '100%'
+                    xs: 166,
+                    md: 136,
+                    xl: 146
                   }}
                   variant="rectangular"
+                  animation={false}
                   data-testid="VideoImageSkeleton"
                 />
               )}
