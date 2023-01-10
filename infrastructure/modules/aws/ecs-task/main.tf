@@ -186,7 +186,7 @@ resource "aws_ecs_service" "ecs_service" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.alb_target_group.arn
-    container_name   = local.ecs_task_definition_family
+    container_name   = "${local.ecs_task_definition_family}-app"
     container_port   = var.service_config.container_port
   }
 
