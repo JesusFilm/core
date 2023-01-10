@@ -1,3 +1,3 @@
-data "aws_ssm_parameter" "dd_api_key" {
-  name = "/terraform/prd/DD_API_KEY"
+data "aws_ssm_parameter" "datadog_api_key" {
+  name = "/terraform/prd/DATADOG_API_KEY"
 }
