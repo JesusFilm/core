@@ -60,6 +60,7 @@ export class Video {
     image?: Nullable<string>;
     imageAlt: Translation[];
     variantLanguages: Language[];
+    variantLanguagesCount: number;
     slug: string;
     noIndex?: Nullable<boolean>;
     children: Video[];
