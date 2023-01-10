@@ -88,7 +88,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           TLS         = "on",
           dd_service  = "my-httpd-service",
           dd_source   = "httpd",
-          dd_tags     = "project:example",
+          dd_tags     = "env:${var.env} app:${var.service_config.name}",
           provider    = "ecs",
           retry_limit = "2",
         },
