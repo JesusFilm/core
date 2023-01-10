@@ -76,7 +76,9 @@ export function VideoContentPage(): ReactElement {
       />
       <PageWrapper
         hideHeader
-        hero={<VideoHero onPlay={() => setHasPlayed(true)} />}
+        hero={
+          <VideoHero onPlay={() => setHasPlayed(true)} hasPlayed={hasPlayed} />
+        }
       >
         <>
           <VideoContentCarousel
