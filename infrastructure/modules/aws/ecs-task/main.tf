@@ -1,9 +1,12 @@
+locals {
+  name = "jfp-${locals.name}"
+}
 resource "aws_cloudwatch_log_group" "ecs_cw_log_group" {
-  name = "${var.service_config.name}-${var.env}-logs"
+  name = "${locals.name}-logs"
 }
 
 resource "aws_ecr_repository" "ecr_repository" {
-  name = "jfp-${var.service_config.name}-${var.env}"
+  name = "jfp-${locals.name}"
 }
 
 resource "aws_ecr_lifecycle_policy" "ecr_policy" {
@@ -43,15 +46,16 @@ module "ecs_datadog_agent" {
   source               = "hazelops/ecs-datadog-agent/aws"
   version              = "3.2.0"
   app_name             = var.service_config.name
-  cloudwatch_log_group = "${var.service_config.name}-${var.env}-logs"
+  cloudwatch_log_group = "${locals.name}-logs"
   ecs_launch_type      = "FARGATE"
   env                  = var.env
+  name                 = "${locals.name}-datadog-agent"
 }
 
 
 #Create task definitions for app services
 resource "aws_ecs_task_definition" "ecs_task_definition" {
-  family                   = "jfp-${var.service_config.name}-${var.env}"
+  family                   = locals.name
   execution_role_arn       = var.ecs_config.task_execution_role_arn
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -60,7 +64,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
   container_definitions = jsonencode([
     {
-      name      = "jfp-${var.service_config.name}-${var.env}"
+      name      = "${locals.name}-app"
       image     = "${aws_ecr_repository.ecr_repository.repository_url}:latest"
       cpu       = var.service_config.cpu
       memory    = var.service_config.memory
@@ -79,18 +83,46 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       ]
       logConfiguration = {
-        logDriver = "awslogs"
+        logDriver = "awsfirelens",
         options = {
-          awslogs-group         = "${var.service_config.name}-${var.env}-logs"
-          awslogs-region        = data.aws_region.current.name
-          awslogs-stream-prefix = "core"
-        }
-      }
+          Name        = "datadog",
+          Host        = "http-intake.logs.datadoghq.com",
+          TLS         = "on",
+          dd_service  = "my-httpd-service",
+          dd_source   = "httpd",
+          dd_tags     = "project:example",
+          provider    = "ecs",
+          retry_limit = "2",
+        },
+        secretOptions = [{
+          name      = "apikey",
+          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${var.env}/global/DD_API_KEY"
+        }]
+      },
       environment = []
       mountPoints = []
       volumesFrom = []
     },
-    module.ecs_datadog_agent.container_definition
+    module.ecs_datadog_agent.container_definition,
+    {
+      essential = true
+      image     = "amazon/aws-for-fluent-bit:stable"
+      name      = "${locals.name}-log-router"
+      firelensConfiguration = {
+        type = "fluentbit"
+        options = {
+          enable-ecs-log-metadata = "true"
+        }
+      }
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "${locals.name}-logs"
+          awslogs-region        = data.aws_region.current.name
+          awslogs-stream-prefix = "core"
+        }
+      }
+    }
   ])
   tags = {}
 }
@@ -112,7 +144,7 @@ resource "aws_alb_listener" "alb_listener" {
 }
 
 resource "aws_alb_target_group" "alb_target_group" {
-  name        = "${var.service_config.name}-${var.env}-tg"
+  name        = "${locals.name}-tg"
   port        = var.service_config.alb_target_group.port
   protocol    = var.service_config.alb_target_group.protocol
   target_type = "ip"
@@ -142,7 +174,7 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
 
 #Create services for app services
 resource "aws_ecs_service" "ecs_service" {
-  name            = "${var.service_config.name}-${var.env}-service"
+  name            = "${locals.name}-service"
   cluster         = var.ecs_config.cluster.id
   task_definition = aws_ecs_task_definition.ecs_task_definition.arn
   launch_type     = "FARGATE"
@@ -156,7 +188,7 @@ resource "aws_ecs_service" "ecs_service" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.alb_target_group.arn
-    container_name   = "jfp-${var.service_config.name}-${var.env}"
+    container_name   = "jfp-${locals.name}"
     container_port   = var.service_config.container_port
   }
 
