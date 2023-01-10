@@ -1,4 +1,5 @@
 import { Resolver, ResolveField, Parent } from '@nestjs/graphql'
+import { compact } from 'lodash'
 
 @Resolver('VideoVariant')
 export class VideoVariantResolver {
@@ -11,6 +12,6 @@ export class VideoVariantResolver {
 
   @ResolveField('subtitleCount')
   subtitleCount(@Parent() videoVariant): number {
-    return videoVariant.subtitle.length
+    return compact(videoVariant.subtitle).length
   }
 }
