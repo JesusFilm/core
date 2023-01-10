@@ -4,7 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { VideoContentFields_children } from '../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../libs/videoContext'
-import { Context } from '../../libs/videoContext/VideoContext'
+import { VideoFields } from '../../libs/videoContext/VideoContext'
 
 import { VideoContainerPage } from '.'
 
@@ -41,7 +41,7 @@ const video = {
     } as unknown as VideoContentFields_children
   ],
   slug: 'video-slug'
-} as unknown as Context
+} as unknown as VideoFields
 
 describe('VideoContainerPage', () => {
   it('should render ContainerHero', () => {

@@ -2,12 +2,10 @@ import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { noop } from 'lodash'
-import {
-  VideoContentFields,
-  VideoContentFields_children
-} from '../../../__generated__/VideoContentFields'
+import { VideoContentFields_children } from '../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
+import { VideoFields } from '../../libs/videoContext/VideoContext'
 import { videos } from '../Videos/testData'
 import { ShareDialog } from './ShareDialog'
 
@@ -20,7 +18,7 @@ const ShareDialogStory = {
   }
 }
 
-const video: VideoContentFields = {
+const video: VideoFields = {
   ...videos[0],
   variant: {
     id: 'videoVariantId',
@@ -73,7 +71,7 @@ const video: VideoContentFields = {
 const routes = ['the-story-of-jesus-for-children']
 
 const Template: Story<
-  ComponentProps<typeof ShareDialog> & { video: VideoContentFields }
+  ComponentProps<typeof ShareDialog> & { video: VideoFields }
 > = ({ ...args }) => {
   return (
     <VideoProvider value={{ content: args.video }}>

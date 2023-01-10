@@ -2,9 +2,9 @@ import {
   VideoLabel,
   VideoVariantDownloadQuality
 } from '../../../__generated__/globalTypes'
-import { Context } from '../../libs/videoContext/VideoContext'
+import { VideoFields } from '../../libs/videoContext/VideoContext'
 
-const jesusFeatureFilm: Context = {
+const jesusFeatureFilm: VideoFields = {
   __typename: 'Video',
   id: '1_jf-0-0',
   label: VideoLabel.featureFilm,
@@ -3360,7 +3360,7 @@ const jesusFeatureFilm: Context = {
   ]
 }
 
-const lifeOfJesus: Context = {
+const lifeOfJesus: VideoFields = {
   __typename: 'Video',
   id: '2_GOJ-0-0',
   label: VideoLabel.featureFilm,
@@ -5960,7 +5960,7 @@ const lifeOfJesus: Context = {
   ]
 }
 
-const jesusCalmsTheStorm: Context = {
+const jesusCalmsTheStorm: VideoFields = {
   __typename: 'Video',
   id: '1_jf6119-0-0',
   label: VideoLabel.segment,
@@ -6072,7 +6072,7 @@ const jesusCalmsTheStorm: Context = {
   children: []
 }
 
-const womanWithBlood: Context = {
+const womanWithBlood: VideoFields = {
   __typename: 'Video',
   id: '1_wl604423-0-0',
   label: VideoLabel.segment,
@@ -6191,7 +6191,7 @@ const womanWithBlood: Context = {
   children: []
 }
 
-const magdalena: Context = {
+const magdalena: VideoFields = {
   __typename: 'Video',
   id: 'MAG1',
   label: VideoLabel.featureFilm,
@@ -8739,7 +8739,7 @@ const magdalena: Context = {
   ]
 }
 
-const reflectionsOfHope: Context = {
+const reflectionsOfHope: VideoFields = {
   __typename: 'Video',
   id: '1_wl7-0-0',
   label: VideoLabel.series,
@@ -9220,7 +9220,7 @@ const reflectionsOfHope: Context = {
   ]
 }
 
-const jesusDiedForMe: Context = {
+const jesusDiedForMe: VideoFields = {
   __typename: 'Video',
   id: '3_0-8DWJ-WIJ_06-0-0',
   label: VideoLabel.episode,
@@ -9328,7 +9328,7 @@ const jesusDiedForMe: Context = {
   children: []
 }
 
-const bookOfActs: Context = {
+const bookOfActs: VideoFields = {
   __typename: 'Video',
   id: '2_Acts-0-0',
   label: VideoLabel.featureFilm,
@@ -13173,7 +13173,7 @@ const bookOfActs: Context = {
   ]
 }
 
-const weddingInCana: Context = {
+const weddingInCana: VideoFields = {
   __typename: 'Video',
   id: '2_GOJ4904-0-0',
   label: VideoLabel.segment,
@@ -13278,7 +13278,7 @@ const weddingInCana: Context = {
   children: []
 }
 
-const lumo: Context = {
+const lumo: VideoFields = {
   __typename: 'Video',
   id: 'LUMOCollection',
   label: VideoLabel.collection,
@@ -13659,7 +13659,7 @@ const lumo: Context = {
   ]
 }
 
-const peterEscape: Context = {
+const peterEscape: VideoFields = {
   __typename: 'Video',
   id: '2_Acts7331-0-0',
   label: VideoLabel.segment,
@@ -13785,7 +13785,7 @@ const peterEscape: Context = {
   children: []
 }
 
-const whoIsJesus: Context = {
+const whoIsJesus: VideoFields = {
   __typename: 'Video',
   id: '3_0-8DWJ-WIJ',
   label: VideoLabel.series,
@@ -14300,7 +14300,7 @@ const whoIsJesus: Context = {
   ]
 }
 
-const chosenWitness: Context = {
+const chosenWitness: VideoFields = {
   __typename: 'Video',
   id: '2_ChosenWitness',
   label: VideoLabel.shortFilm,
@@ -14419,7 +14419,7 @@ const chosenWitness: Context = {
   children: []
 }
 
-const gospelOfLuke: Context = {
+const gospelOfLuke: VideoFields = {
   __typename: 'Video',
   id: 'GOLukeCollection',
   label: VideoLabel.collection,
@@ -15792,7 +15792,7 @@ const gospelOfLuke: Context = {
   ]
 }
 
-const jesusAndZacchaeus: Context = {
+const jesusAndZacchaeus: VideoFields = {
   __typename: 'Video',
   id: '1_cl1309-0-0',
   label: VideoLabel.episode,
@@ -15924,7 +15924,7 @@ const jesusAndZacchaeus: Context = {
   children: []
 }
 
-const birthOfJesus: Context = {
+const birthOfJesus: VideoFields = {
   __typename: 'Video',
   id: '1_jf6102-0-0',
   label: VideoLabel.segment,
@@ -16036,7 +16036,7 @@ const birthOfJesus: Context = {
   children: []
 }
 
-const fallingPlates: Context = {
+const fallingPlates: VideoFields = {
   __typename: 'Video',
   id: '2_0-FallingPlates',
   label: VideoLabel.shortFilm,
@@ -16142,7 +16142,7 @@ const fallingPlates: Context = {
   children: []
 }
 
-const paulAndSilas: Context = {
+const paulAndSilas: VideoFields = {
   __typename: 'Video',
   id: '2_Acts7345-0-0',
   label: VideoLabel.segment,
@@ -16255,7 +16255,7 @@ const paulAndSilas: Context = {
   children: []
 }
 
-const myLastDay: Context = {
+const myLastDay: VideoFields = {
   __typename: 'Video',
   id: '1_mld-0-0',
   label: VideoLabel.shortFilm,
@@ -16417,7 +16417,7 @@ const myLastDay: Context = {
   ]
 }
 
-const theBegining: Context = {
+const theBegining: VideoFields = {
   __typename: 'Video',
   id: '1_jf6101-0-0',
   label: VideoLabel.segment,
@@ -16516,7 +16516,7 @@ const theBegining: Context = {
   children: []
 }
 
-export const videos: Context[] = [
+export const videos: VideoFields[] = [
   jesusFeatureFilm,
   lifeOfJesus,
   jesusCalmsTheStorm,

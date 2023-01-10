@@ -3,11 +3,11 @@ import { Story, Meta } from '@storybook/react'
 import { noop } from 'lodash'
 import { VideoProvider } from '../../libs/videoContext'
 import { watchConfig } from '../../libs/storybook'
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
+import { VideoFields } from '../../libs/videoContext/VideoContext'
 import { videos } from '../Videos/testData'
 import { SubtitleDialog } from './SubtitleDialog'
 
-const video: VideoContentFields = videos[0]
+const video: VideoFields = videos[0]
 
 const SubtitleDialogStory = {
   ...watchConfig,
@@ -19,7 +19,7 @@ const SubtitleDialogStory = {
 }
 
 const Template: Story<
-  ComponentProps<typeof SubtitleDialog> & { video: VideoContentFields }
+  ComponentProps<typeof SubtitleDialog> & { video: VideoFields }
 > = ({ ...args }) => {
   return (
     <VideoProvider value={{ content: args.video }}>

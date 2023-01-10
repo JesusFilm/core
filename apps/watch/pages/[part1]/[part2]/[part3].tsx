@@ -15,7 +15,7 @@ import { LanguageProvider } from '../../../src/libs/languageContext/LanguageCont
 import { VideoProvider } from '../../../src/libs/videoContext'
 import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
 import { GET_VIDEO_VARIANT } from '../[part2]'
-import { Context } from '../../../src/libs/videoContext/VideoContext'
+import { VideoFields } from '../../../src/libs/videoContext/VideoContext'
 
 export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}
@@ -34,8 +34,8 @@ export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
 `
 
 interface Part3PageProps {
-  container: Context
-  content: Context
+  container: VideoFields
+  content: VideoFields
 }
 
 export default function Part3Page({
@@ -99,6 +99,8 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
     }
   }
 
+  // set/get functions to get variant slugs from cache.
+  // Must be defined in getStaticProps for fs to work.
   async function upsertFile(name: string): Promise<Buffer> {
     try {
       return await fs.readFile(name)
@@ -124,32 +126,65 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
     }
   }
 
+  async function attemptToGetVariantSetCache(
+    maybeVariant: GetVideoVariant_variant | undefined,
+    id: string
+  ): Promise<GetVideoVariant_variant | undefined> {
+    if (maybeVariant === undefined) {
+      const {
+        data: { variant }
+      } = await client.query<GetVideoVariant>({
+        query: GET_VIDEO_VARIANT,
+        variables: {
+          id: id
+        }
+      })
+      if (variant !== null) {
+        maybeVariant = variant
+        void cache.set([...variantCache, variant])
+      }
+    }
+    return maybeVariant
+  }
+  // end set/get functions to get variant slugs from cache.
+
+  // attempt getting variants
   const variantCache = await cache.get()
 
-  let cachedVariant = variantCache.find(
+  let contentVariant = variantCache.find(
     (variant) => variant.id === data.content?.id
   )
 
-  if (cachedVariant === undefined) {
-    const {
-      data: { variant }
-    } = await client.query<GetVideoVariant>({
-      query: GET_VIDEO_VARIANT,
-      variables: {
-        id: data.content?.id
-      }
-    })
-    if (variant !== null) {
-      cachedVariant = variant
-      void cache.set([...variantCache, variant])
-    }
-  }
+  contentVariant = await attemptToGetVariantSetCache(
+    contentVariant,
+    data.content?.id
+  )
+
+  let containerVariant = variantCache.find(
+    (variant) => variant.id === data.container?.id
+  )
+
+  containerVariant = await attemptToGetVariantSetCache(
+    containerVariant,
+    data.container?.id
+  )
+  // end attempt getting variants
 
   return {
     revalidate: 3600,
     props: {
-      container: data.container,
-      content: { ...data.content }
+      container: {
+        ...data.container,
+        variantLanguagesWithSlug:
+          containerVariant != null
+            ? containerVariant.variantLanguagesWithSlug
+            : []
+      },
+      content: {
+        ...data.content,
+        variantLanguagesWithSlug:
+          contentVariant != null ? contentVariant.variantLanguagesWithSlug : []
+      }
     }
   }
 }

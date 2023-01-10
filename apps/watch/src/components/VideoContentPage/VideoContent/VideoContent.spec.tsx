@@ -1,10 +1,10 @@
 import { fireEvent, render } from '@testing-library/react'
 import { videos } from '../../Videos/testData'
 import { VideoProvider } from '../../../libs/videoContext'
-import { Context } from '../../../libs/videoContext/VideoContext'
+import { VideoFields } from '../../../libs/videoContext/VideoContext'
 import { VideoContent } from './VideoContent'
 
-const video: Context = videos[0]
+const video: VideoFields = videos[0]
 
 describe('VideoContent', () => {
   it('should switch tabs', () => {

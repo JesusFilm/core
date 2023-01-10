@@ -1,16 +1,13 @@
 import { fireEvent, render } from '@testing-library/react'
 import { ReactElement } from 'react'
-
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-import { VideoVariantFields } from '../../../__generated__/VideoVariantFields'
 import {
   VideoLabel,
   VideoVariantDownloadQuality
 } from '../../../__generated__/globalTypes'
 import { videos } from '../../components/Videos/testData'
-import { VideoProvider, useVideo } from './VideoContext'
+import { VideoFields, VideoProvider, useVideo } from './VideoContext'
 
-const chapter1: VideoContentFields & VideoVariantFields = {
+const chapter1: VideoFields = {
   __typename: 'Video',
   id: '1_jf6101-0-0',
   label: VideoLabel.segment,

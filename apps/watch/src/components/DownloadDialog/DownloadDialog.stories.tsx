@@ -2,7 +2,7 @@ import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { userEvent, screen } from '@storybook/testing-library'
 import { noop } from 'lodash'
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
+import { VideoFields } from '../../libs/videoContext/VideoContext'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/testData'
@@ -20,7 +20,7 @@ const DownloadDialogStory = {
 const routes = ['the-story-of-jesus-for-children']
 
 const Template: Story<
-  ComponentProps<typeof DownloadDialog> & { video: VideoContentFields }
+  ComponentProps<typeof DownloadDialog> & { video: VideoFields }
 > = ({ ...args }) => {
   return (
     <VideoProvider value={{ content: args.video }}>

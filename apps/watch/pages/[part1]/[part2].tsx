@@ -6,7 +6,7 @@ import { ReactElement } from 'react'
 import dynamic from 'next/dynamic'
 import { SnackbarProvider } from 'notistack'
 import { GetVideoContent } from '../../__generated__/GetVideoContent'
-import { Context } from '../../src/libs/videoContext/VideoContext'
+import { VideoFields } from '../../src/libs/videoContext/VideoContext'
 
 import {
   GetVideoVariant,
@@ -36,7 +36,7 @@ export const GET_VIDEO_VARIANT = gql`
 `
 
 interface Part2PageProps {
-  content: Context
+  content: VideoFields
 }
 
 const DynamicVideoContentPage = dynamic(
@@ -83,12 +83,14 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
       }`
     }
   })
+
   if (data.content == null) {
     return {
       notFound: true
     }
   }
 
+  // attempt to get and cache language variants
   async function upsertFile(name: string): Promise<Buffer> {
     try {
       return await fs.readFile(name)
@@ -134,11 +136,16 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
       void cache.set([...variantCache, variant])
     }
   }
+  // end  attempt to get and cache language variants
 
   return {
     revalidate: 3600,
     props: {
-      content: { ...data.content, ...cachedVariant }
+      content: {
+        ...data.content,
+        variantLanguagesWithSlug:
+          cachedVariant != null ? cachedVariant.variantLanguagesWithSlug : []
+      }
     }
   }
 }

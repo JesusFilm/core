@@ -1,7 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import useDownloader from 'react-use-downloader'
 
-import { Context } from '../../libs/videoContext/VideoContext'
+import { VideoFields } from '../../libs/videoContext/VideoContext'
 
 import { VideoProvider } from '../../libs/videoContext'
 
@@ -16,7 +16,7 @@ jest.mock('react-use-downloader', () => ({
 const onClose = jest.fn()
 const onDownload = jest.fn()
 const onCancel = jest.fn()
-const video: Context = videos[0]
+const video: VideoFields = videos[0]
 
 beforeEach(() => {
   const useDownloaderMock = useDownloader as jest.Mock
