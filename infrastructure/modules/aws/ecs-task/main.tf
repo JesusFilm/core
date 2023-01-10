@@ -38,6 +38,17 @@ resource "aws_ssm_parameter" "parameters" {
   }
 }
 
+
+module "ecs_datadog_agent" {
+  source               = "hazelops/ecs-datadog-agent/aws"
+  version              = "3.2.0"
+  app_name             = var.service_config.name
+  cloudwatch_log_group = resource.ecs_cw_log_group.arn
+  ecs_launch_type      = "FARGATE"
+  env                  = var.env
+}
+
+
 #Create task definitions for app services
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   family                   = "jfp-${var.service_config.name}-${var.env}"
@@ -74,7 +85,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           awslogs-stream-prefix = "core"
         }
       }
-    }
+    },
+    module.ecs_datadog_agent.container_definition
   ])
 }
 
