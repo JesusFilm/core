@@ -63,6 +63,7 @@ export class Video {
     slug: string;
     noIndex?: Nullable<boolean>;
     children: Video[];
+    childrenCount: number;
     variantLanguagesWithSlug: LanguageWithSlug[];
     variant?: Nullable<VideoVariant>;
 }
