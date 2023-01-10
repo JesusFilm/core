@@ -18,6 +18,9 @@ on:
       ecs_service:
         required: true
         type: string
+      endpoint_url:
+        require: true
+        type: string
     secrets:
       ARANGODB_URL:
         required: true
@@ -57,6 +60,7 @@ jobs:
       DATABASE_URL: ${{ secrets.ARANGODB_URL }}
       DATABASE_USER: ${{ secrets.ARANGODB_USER }}
       DATABASE_PASS: ${{ secrets.ARANGODB_PASS }}
+      ENDPOINT_URL: ${{ inputs.endpoint_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
@@ -82,6 +86,9 @@ jobs:
 
       - name: nx Install
         run: npm install -g nx --silent
+
+      - name: rover Install
+        run: npm install -g @apollo/rover@0.10.0
 
       - name: Get affected apps
         run: echo "apps=$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)" >> $GITHUB_OUTPUT
@@ -151,29 +158,6 @@ jobs:
           projects: ${{ inputs.name }}
 
       # ECS Deployment
-      - name: Install Open VPN
-        run: sudo apt-get install openvpn
-
-      - name: Setup VPN CONFIG
-        run: |
-          echo "${{ secrets.CA_CRT }}" > ca.crt
-          echo "${{ secrets.USER_CRT }}" > user.crt
-          echo "${{ secrets.USER_KEY }}" > user.key
-
-      - name: Connect VPN
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        run: sudo openvpn --config ".github/vpn/${{ inputs.branch }}.ovpn" --daemon
-
-      - name: Wait for a VPN connection
-        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'main')
-        timeout-minutes: 1
-        run: until dig api-journeys.service.internal A +time=1; do sleep 2; done
-
-      - name: Wait for a VPN connection
-        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'stage')
-        timeout-minutes: 1
-        run: until dig api-journeys.stage.internal A +time=1; do sleep 2; done
-
       - name: Configure ECS AWS credentials
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: aws-actions/configure-aws-credentials@v1
@@ -212,3 +196,13 @@ jobs:
           service: ${{ inputs.ecs_service }}
           cluster: ${{ inputs.ecs_cluster }}
           wait-for-service-stability: true
+
+      - name: Update stage Apollo managed subgraph
+        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'stage')
+        run: |
+          rover subgraph publish API-GATEWAY-0zuda@stage --name ${{ inputs.name }} --routing-url $ENDPOINT_URL --schema apps/${{ inputs.name }}/schema.graphql
+
+      - name: Update prod Apollo managed subgraph
+        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'main')
+        run: |
+          rover subgraph publish API-GATEWAY-0zuda@current --name ${{ inputs.name }} --routing-url $ENDPOINT_URL --schema apps/${{ inputs.name }}/schema.graphql

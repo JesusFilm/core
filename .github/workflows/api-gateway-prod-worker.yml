@@ -64,21 +64,6 @@ jobs:
           projects: api-gateway
           args: --configuration="production"
 
-      - name: Build api-journeys-main schema
-        run: rover subgraph introspect https://api-journeys.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
-
-      - name: Build api-users-main schema
-        run: rover subgraph introspect https://api-users.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-users-schema.graphql
-
-      - name: Build api-languages-main schema
-        run: rover subgraph introspect https://api-languages.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-languages-schema.graphql
-
-      - name: Build api-videos-main schema
-        run: rover subgraph introspect https://api-videos.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-videos-schema.graphql
-
-      - name: Build api-gateway schema
-        run: rover supergraph compose --config apps/api-gateway/supergraph-main.yml > dist/apps/api-gateway/schema.graphql
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -117,38 +102,6 @@ jobs:
           args: rollout status deploy api-gateway-main
 
       #ECS Deployment
-      - name: Install Open VPN
-        run: sudo apt-get install openvpn
-
-      - name: Setup VPN CONFIG
-        run: |
-          echo "${{ secrets.CA_CRT }}" > ca.crt
-          echo "${{ secrets.USER_CRT }}" > user.crt
-          echo "${{ secrets.USER_KEY }}" > user.key
-
-      - name: Connect VPN
-        run: sudo openvpn --config ".github/vpn/main.ovpn" --daemon
-
-      - name: Wait for a VPN connection
-        timeout-minutes: 1
-        run: until dig api-journeys.service.internal A +time=1; do sleep 2; done
-
-      # TODO: Used once we have moved to ECS
-      # - name: Build api-journeys-main schema
-      #   run: rover subgraph introspect http://api-journeys.service.internal:4001/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
-
-      # - name: Build api-users-main schema
-      #   run: rover subgraph introspect http://api-users.service.internal:4002/graphql > dist/apps/api-gateway/api-users-schema.graphql
-
-      # - name: Build api-languages-main schema
-      #   run: rover subgraph introspect http://api-languages.service.internal:4003/graphql > dist/apps/api-gateway/api-languages-schema.graphql
-
-      # - name: Build api-videos-main schema
-      #   run: rover subgraph introspect https://api-videos.service.internal:4004/graphql > dist/apps/api-gateway/api-videos-schema.graphql
-
-      - name: Build api-gateway schema
-        run: rover supergraph compose --config apps/api-gateway/supergraph-main-ecs.yml > dist/apps/api-gateway/schema.graphql
-
       - name: Configure ECS AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
