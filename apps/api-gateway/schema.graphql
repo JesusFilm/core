@@ -1,20 +1,20 @@
 schema
-  @core(feature: "https://specs.apollo.dev/core/v0.2"),
-  @core(feature: "https://specs.apollo.dev/join/v0.1", for: EXECUTION)
+  @core(feature: "https://specs.apollo.dev/core/v0.1"),
+  @core(feature: "https://specs.apollo.dev/join/v0.1")
 {
   query: Query
   mutation: Mutation
 }
 
-directive @core(as: String, feature: String!, for: core__Purpose) repeatable on SCHEMA
+directive @core(feature: String!) repeatable on SCHEMA
 
-directive @join__field(graph: join__Graph, provides: join__FieldSet, requires: join__FieldSet) on FIELD_DEFINITION
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet) on FIELD_DEFINITION
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet) repeatable on OBJECT | INTERFACE
+
+directive @join__owner(graph: join__Graph!) on OBJECT | INTERFACE
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
-
-directive @join__owner(graph: join__Graph!) on INTERFACE | OBJECT
-
-directive @join__type(graph: join__Graph!, key: join__FieldSet) repeatable on INTERFACE | OBJECT
 
 interface Action {
   gtmEventName: String
@@ -405,6 +405,15 @@ input ImageBlockUpdateInput {
   src: String
 }
 
+scalar join__FieldSet
+
+enum join__Graph {
+  JOURNEYS @join__graph(name: "journeys" url: "http://127.0.0.1:4001/graphql")
+  LANGUAGES @join__graph(name: "languages" url: "http://127.0.0.1:4003/graphql")
+  USERS @join__graph(name: "users" url: "http://127.0.0.1:4002/graphql")
+  VIDEOS @join__graph(name: "videos" url: "http://127.0.0.1:4004/graphql")
+}
+
 type Journey
   @join__owner(graph: JOURNEYS)
   @join__type(graph: JOURNEYS, key: "id")
@@ -452,6 +461,18 @@ input JourneyCreateInput {
   themeMode: ThemeMode
   themeName: ThemeName
   title: String!
+}
+
+input JourneysFilter {
+  featured: Boolean
+  template: Boolean
+}
+
+enum JourneysReportType {
+  multipleFull
+  multipleSummary
+  singleFull
+  singleSummary
 }
 
 enum JourneyStatus {
@@ -510,18 +531,6 @@ input JourneyViewEventCreateInput {
 
   """languageId of the journey being viewed"""
   value: ID
-}
-
-input JourneysFilter {
-  featured: Boolean
-  template: Boolean
-}
-
-enum JourneysReportType {
-  multipleFull
-  multipleSummary
-  singleFull
-  singleSummary
 }
 
 type Language
@@ -1677,6 +1686,14 @@ input VideoProgressEventCreateInput {
   value: VideoBlockSource
 }
 
+input VideosFilter {
+  availableVariantLanguageIds: [ID!]
+  ids: [ID!]
+  labels: [VideoLabel!]
+  subtitleLanguageIds: [ID!]
+  title: String
+}
+
 type VideoStartEvent implements Event {
   """time event was created"""
   createdAt: DateTime!
@@ -1747,6 +1764,7 @@ type VideoVariant {
   """slug is a permanent link to the video variant."""
   slug: String!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!
+  subtitleCount: Int!
 }
 
 type VideoVariantDownload {
@@ -1758,14 +1776,6 @@ type VideoVariantDownload {
 enum VideoVariantDownloadQuality {
   high
   low
-}
-
-input VideosFilter {
-  availableVariantLanguageIds: [ID!]
-  ids: [ID!]
-  labels: [VideoLabel!]
-  subtitleLanguageIds: [ID!]
-  title: String
 }
 
 """A visitor with attributes connected to a team."""
@@ -1845,6 +1855,15 @@ type VisitorEdge {
   node: Visitor!
 }
 
+"""A list of visitors connected with a team."""
+type VisitorsConnection {
+  """A list of edges."""
+  edges: [VisitorEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
 """
 The status of a visitor according to team members interacting with the
 visitor admin interface. This enum should map to an emoji when displayed
@@ -1900,34 +1919,4 @@ input VisitorUpdateInput {
 
   """Status of the visitor."""
   status: VisitorStatus
-}
-
-"""A list of visitors connected with a team."""
-type VisitorsConnection {
-  """A list of edges."""
-  edges: [VisitorEdge!]!
-
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-}
-
-enum core__Purpose {
-  """
-  `EXECUTION` features provide metadata necessary to for operation execution.
-  """
-  EXECUTION
-
-  """
-  `SECURITY` features provide metadata necessary to securely resolve fields.
-  """
-  SECURITY
-}
-
-scalar join__FieldSet
-
-enum join__Graph {
-  JOURNEYS @join__graph(name: "journeys" url: "http://127.0.0.1:4001/graphql")
-  LANGUAGES @join__graph(name: "languages" url: "http://127.0.0.1:4003/graphql")
-  USERS @join__graph(name: "users" url: "http://127.0.0.1:4002/graphql")
-  VIDEOS @join__graph(name: "videos" url: "http://127.0.0.1:4004/graphql")
 }

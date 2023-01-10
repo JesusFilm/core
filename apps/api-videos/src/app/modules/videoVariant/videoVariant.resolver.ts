@@ -8,4 +8,9 @@ export class VideoVariantResolver {
   ): Promise<{ __typename: string; id: string }> {
     return { __typename: 'Language', id: videoVariant.languageId }
   }
+
+  @ResolveField('subtitleCount')
+  subtitleCount(@Parent() videoVariant): number {
+    return videoVariant.subtitle.length
+  }
 }
