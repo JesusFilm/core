@@ -53,31 +53,6 @@ export default function Part3Page({
   )
 }
 
-async function upsertFile(name: string): Promise<Buffer> {
-  try {
-    return await fs.readFile(name)
-  } catch (error) {
-    await fs.writeFile(name, '[]')
-    return await fs.readFile(name)
-  }
-}
-
-export const cache = {
-  get: async (): Promise<GetVideoVariant_variant[]> => {
-    const data = await upsertFile(path.join(process.cwd(), 'variants.db'))
-    const variants: GetVideoVariant_variant[] = JSON.parse(
-      data as unknown as string
-    )
-    return variants
-  },
-  set: async (variants: GetVideoVariant_variant[]) => {
-    return await fs.writeFile(
-      path.join(process.cwd(), 'variants.db'),
-      JSON.stringify(variants)
-    )
-  }
-}
-
 export const getStaticProps: GetStaticProps<Part3PageProps> = async (
   context
 ) => {
