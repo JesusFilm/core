@@ -43,7 +43,7 @@ module "ecs_datadog_agent" {
   source               = "hazelops/ecs-datadog-agent/aws"
   version              = "3.2.0"
   app_name             = var.service_config.name
-  cloudwatch_log_group = resource.aws_cloudwatch_log_group.ecs_cw_log_group.arn
+  cloudwatch_log_group = "${var.service_config.name}-${var.env}-logs"
   ecs_launch_type      = "FARGATE"
   env                  = var.env
 }
