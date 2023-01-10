@@ -44,6 +44,6 @@ resource "aws_security_group" "public_security_group" {
 resource "aws_ssm_parameter" "dd_api_key" {
   name      = "/${var.env}/global/DD_API_KEY"
   type      = "SecureString"
-  value     = data.aws_ssm_parameter.datadog_api_key
+  value     = data.aws_ssm_parameter.datadog_api_key.value
   overwrite = true
 }
