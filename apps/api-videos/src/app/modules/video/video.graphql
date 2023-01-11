@@ -40,6 +40,10 @@ type Video @key(fields: "id primaryLanguageId") {
   slug: String!
   noIndex: Boolean
   children: [Video!]!
+  """
+  the number value of the amount of children on a video
+  """
+  childrenCount: Int!
   variantLanguagesWithSlug: [LanguageWithSlug!]!
 }
 
