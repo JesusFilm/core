@@ -90,11 +90,10 @@ export class ImageBlockResolver {
       })
       // Delete old coverBlock
       if (parentBlock.coverBlockId != null) {
-        const coverBlockExists = await this.blockService.validateBlock(
-          parentBlock.coverBlockId,
-          parentBlock.id
+        const coverBlockToDelete = await this.blockService.get(
+          parentBlock.coverBlockId
         )
-        if (coverBlockExists) {
+        if (coverBlockToDelete !== null) {
           await this.blockService.removeBlockAndChildren(
             parentBlock.coverBlockId,
             parentBlock.journeyId
