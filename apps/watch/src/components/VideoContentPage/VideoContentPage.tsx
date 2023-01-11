@@ -4,21 +4,36 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 import { NextSeo } from 'next-seo'
+import { gql, useQuery } from '@apollo/client'
+import dynamic from 'next/dynamic'
 
 import 'video.js/dist/video-js.css'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
+import { GetVideoChildren } from '../../../__generated__/GetVideoChildren'
 import { useVideo } from '../../libs/videoContext'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { DownloadDialog } from '../DownloadDialog'
 import { ShareButton } from '../ShareButton'
 import { VideoCard } from '../VideoCard'
-import { VideosCarousel } from '../VideosCarousel'
+import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
+import { VideosCarouselProps } from '../VideosCarousel'
 import { DownloadButton } from './DownloadButton'
 import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
 import { VideoContentCarousel } from './VideoContentCarousel'
+
+export const GET_VIDEO_CHILDREN = gql`
+  ${VIDEO_CHILD_FIELDS}
+  query GetVideoChildren($id: ID!, $languageId: ID) {
+    children: video(id: $id, idType: slug) {
+      children {
+        ...VideoChildFields
+      }
+    }
+  }
+`
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
@@ -30,10 +45,24 @@ export function VideoContentPage(): ReactElement {
     imageAlt,
     slug,
     variant,
-    children,
     container,
     label
   } = useVideo()
+
+  const { data, loading } = useQuery<GetVideoChildren>(GET_VIDEO_CHILDREN, {
+    variables: {
+      id: variant?.slug
+    }
+  })
+
+  const VideosCarousel = dynamic<VideosCarouselProps>(
+    async () =>
+      await import(
+        /* webpackChunkName: "VideosCarousel" */
+        '../VideosCarousel'
+      ).then(({ VideosCarousel }) => VideosCarousel),
+    { ssr: false }
+  )
   const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
@@ -133,23 +162,25 @@ export function VideoContentPage(): ReactElement {
                   {title[0].value} Scenes
                 </Typography>
               </Container>
-              <VideosCarousel
-                videos={children}
-                activeVideo={id}
-                renderItem={(props: Parameters<typeof VideoCard>[0]) => {
-                  return (
-                    <VideoCard
-                      {...props}
-                      containerSlug={slug}
-                      imageSx={{
-                        ...props.imageSx,
-                        border: '1px solid rgba(255, 255, 255, .12)',
-                        borderRadius: '9px'
-                      }}
-                    />
-                  )
-                }}
-              />
+              {!loading && data?.children != null && (
+                <VideosCarousel
+                  videos={data.children.children}
+                  activeVideo={id}
+                  renderItem={(props: Parameters<typeof VideoCard>[0]) => {
+                    return (
+                      <VideoCard
+                        {...props}
+                        containerSlug={slug}
+                        imageSx={{
+                          ...props.imageSx,
+                          border: '1px solid rgba(255, 255, 255, .12)',
+                          borderRadius: '9px'
+                        }}
+                      />
+                    )
+                  }}
+                />
+              )}
             </Stack>
           )}
         </>
