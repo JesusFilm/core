@@ -171,7 +171,9 @@ describe('VideoResolver', () => {
 
     it('returns children count', async () => {
       expect(
-        resolver.childrenCount({ childIds: [{ id: 1 }, { id: 2 }] })
+        resolver.childrenCount({
+          childIds: [{ id: '1' }, { id: '2' }, 0, '', undefined, null, NaN]
+        })
       ).toEqual(2)
     })
   })
