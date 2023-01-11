@@ -93,7 +93,7 @@ export class ImageBlockResolver {
         const coverBlockToDelete = await this.blockService.get(
           parentBlock.coverBlockId
         )
-        if (coverBlockToDelete !== null) {
+        if (coverBlockToDelete != null) {
           await this.blockService.removeBlockAndChildren(
             parentBlock.coverBlockId,
             parentBlock.journeyId

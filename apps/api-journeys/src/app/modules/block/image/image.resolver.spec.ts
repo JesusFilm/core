@@ -119,7 +119,7 @@ describe('ImageBlockResolver', () => {
             return parentBlockWithDeletedCover
           }
           default: {
-            return null
+            return undefined
           }
         }
       }),
@@ -192,7 +192,7 @@ describe('ImageBlockResolver', () => {
       })
     })
 
-    it('creates a new ImageBlock after deleting the old one', async () => {
+    it('checks of cover image block needs to be deleted before creating new coverImage block', async () => {
       await resolver.imageBlockCreate({
         ...blockCreateForDeletedCover,
         isCover: true
