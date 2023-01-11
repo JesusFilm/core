@@ -60,9 +60,11 @@ export class Video {
     image?: Nullable<string>;
     imageAlt: Translation[];
     variantLanguages: Language[];
+    variantLanguagesCount: number;
     slug: string;
     noIndex?: Nullable<boolean>;
     children: Video[];
+    childrenCount: number;
     variantLanguagesWithSlug: LanguageWithSlug[];
     variant?: Nullable<VideoVariant>;
 }
@@ -82,6 +84,7 @@ export class VideoVariant {
     duration: number;
     language: Language;
     subtitle: Translation[];
+    subtitleCount: number;
     slug: string;
 }
 

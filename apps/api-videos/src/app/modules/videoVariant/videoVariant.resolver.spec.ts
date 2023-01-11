@@ -19,4 +19,36 @@ describe('VideoVariantResolver', () => {
       })
     })
   })
+
+  it('returns subtitle count', async () => {
+    expect(
+      resolver.subtitleCount({
+        subtitle: [
+          {
+            id: '1'
+          },
+          {
+            id: '2'
+          }
+        ]
+      })
+    ).toEqual(2)
+  })
+
+  it('does not include falsey values into the count', async () => {
+    expect(
+      await resolver.subtitleCount({
+        subtitle: [
+          0,
+          '',
+          undefined,
+          null,
+          NaN,
+          {
+            id: 1
+          }
+        ]
+      })
+    ).toEqual(1)
+  })
 })

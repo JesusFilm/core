@@ -20,7 +20,6 @@ import {
   BackgroundMediaImage,
   CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
   CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE,
-  CARD_BLOCK_COVER_IMAGE_UPDATE,
   BLOCK_DELETE_FOR_BACKGROUND_IMAGE
 } from './BackgroundMediaImage'
 
@@ -368,15 +367,6 @@ describe('BackgroundMediaImage', () => {
         },
         ['ImageBlock:' + image.id]: { ...image }
       })
-      const cardBlockResult = jest.fn(() => ({
-        data: {
-          cardBlockUpdate: {
-            id: card.id,
-            coverBlockId: null,
-            __typename: 'CardBlock'
-          }
-        }
-      }))
       const blockDeleteResult = jest.fn(() => ({
         data: {
           blockDelete: []
@@ -396,19 +386,6 @@ describe('BackgroundMediaImage', () => {
                 }
               },
               result: blockDeleteResult
-            },
-            {
-              request: {
-                query: CARD_BLOCK_COVER_IMAGE_UPDATE,
-                variables: {
-                  id: card.id,
-                  journeyId: journey.id,
-                  input: {
-                    coverBlockId: null
-                  }
-                }
-              },
-              result: cardBlockResult
             }
           ]}
         >
@@ -421,8 +398,7 @@ describe('BackgroundMediaImage', () => {
       )
       const button = await getByTestId('imageBlockHeaderDelete')
       fireEvent.click(button)
-      await waitFor(() => expect(cardBlockResult).toHaveBeenCalled())
-      expect(blockDeleteResult).toHaveBeenCalled()
+      await waitFor(() => expect(blockDeleteResult).toHaveBeenCalled())
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
         { __ref: `CardBlock:${card.id}` }
       ])
