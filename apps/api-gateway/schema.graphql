@@ -1765,6 +1765,7 @@ type VideoVariant {
   """slug is a permanent link to the video variant."""
   slug: String!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!
+  subtitleCount: Int!
 }
 
 type VideoVariantDownload {
