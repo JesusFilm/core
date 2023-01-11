@@ -75,6 +75,22 @@ describe('ImageBlockResolver', () => {
     fullscreen: true
   }
 
+  const blockCreateForDeletedCover: ImageBlockCreateInput = {
+    ...blockCreate,
+    parentBlockId: 'parentBlockWithDeletedCoverId'
+  }
+
+  const createdBlockForDeletedCover: ImageBlock = {
+    ...createdBlock,
+    parentBlockId: 'parentBlockWithDeletedCoverId'
+  }
+
+  const parentBlockWithDeletedCover: CardBlock = {
+    ...parentBlock,
+    id: 'parentBlockWithDeletedCoverId',
+    coverBlockId: 'nonExistentBlock'
+  }
+
   const blockUpdate: ImageBlockUpdateInput = {
     src: 'https://unsplash.it/640/425?image=42',
     alt: 'placeholder image from unsplash'
@@ -91,9 +107,22 @@ describe('ImageBlockResolver', () => {
   const blockService = {
     provide: BlockService,
     useFactory: () => ({
-      get: jest.fn((id) =>
-        id === blockCreate.id ? createdBlock : parentBlock
-      ),
+      get: jest.fn((id) => {
+        switch (id) {
+          case blockCreate.id: {
+            return createdBlock
+          }
+          case parentBlock.id: {
+            return parentBlock
+          }
+          case parentBlockWithDeletedCover.id: {
+            return parentBlockWithDeletedCover
+          }
+          default: {
+            return null
+          }
+        }
+      }),
       getAll: jest.fn(() => [createdBlock, createdBlock]),
       getSiblings: jest.fn(() => [createdBlock, createdBlock]),
       removeBlockAndChildren: jest.fn((input) => input),
@@ -119,6 +148,12 @@ describe('ImageBlockResolver', () => {
     blockResolver = module.get<BlockResolver>(BlockResolver)
     resolver = module.get<ImageBlockResolver>(ImageBlockResolver)
     service = await module.resolve(BlockService)
+
+    mockedAxios.get.mockResolvedValue({
+      data: {
+        mockData: 'mockData' // this kinda doesnt matter since sharp returns the data we need, but still need to mock so it doesnt run the API
+      }
+    })
   })
 
   describe('ImageBlock', () => {
@@ -130,12 +165,6 @@ describe('ImageBlockResolver', () => {
 
   describe('imageBlockCreate', () => {
     it('creates an ImageBlock', async () => {
-      mockedAxios.get.mockResolvedValue({
-        data: {
-          mockData: 'mockData' // this kinda doesnt matter since sharp returns the data we need, but still need to mock so it doesnt run the API
-        }
-      })
-
       await resolver.imageBlockCreate(blockCreate)
 
       expect(service.getSiblings).toHaveBeenCalledWith(
@@ -161,6 +190,26 @@ describe('ImageBlockResolver', () => {
       expect(service.update).toHaveBeenCalledWith(parentBlock.id, {
         coverBlockId: createdBlock.id
       })
+    })
+
+    it('creates a new ImageBlock after deleting the old one', async () => {
+      await resolver.imageBlockCreate({
+        ...blockCreateForDeletedCover,
+        isCover: true
+      })
+
+      expect(service.save).toHaveBeenCalledWith({
+        ...createdBlockForDeletedCover,
+        isCover: true,
+        parentOrder: null
+      })
+      expect(service.removeBlockAndChildren).not.toHaveBeenCalled()
+      expect(service.update).toHaveBeenCalledWith(
+        parentBlockWithDeletedCover.id,
+        {
+          coverBlockId: createdBlockForDeletedCover.id
+        }
+      )
     })
   })
 
