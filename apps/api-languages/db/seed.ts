@@ -227,7 +227,7 @@ function digestTranslatedCountries(
     name: [
       {
         value: isEmpty(country.name) ? '' : country.name,
-        languageId: languageId,
+        languageId,
         primary: false
       }
     ],
@@ -235,7 +235,7 @@ function digestTranslatedCountries(
     continent: [
       {
         value: isEmpty(country.continentName) ? '' : country.continentName,
-        languageId: languageId,
+        languageId,
         primary: false
       }
     ],
@@ -244,7 +244,7 @@ function digestTranslatedCountries(
         value: isEmpty(country.name)
           ? ''
           : getSeoSlug(country.name, usedTitles),
-        languageId: languageId,
+        languageId,
         primary: false
       }
     ],
