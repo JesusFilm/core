@@ -169,6 +169,10 @@ export interface GetVideoContent_content_children {
   slug: string;
   children: GetVideoContent_content_children_children[];
   variant: GetVideoContent_content_children_variant | null;
+  /**
+   * the number value of the amount of children on a video
+   */
+  childrenCount: number;
 }
 
 export interface GetVideoContent_content {

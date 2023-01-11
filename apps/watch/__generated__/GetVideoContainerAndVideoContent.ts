@@ -169,6 +169,10 @@ export interface GetVideoContainerAndVideoContent_container_children {
   slug: string;
   children: GetVideoContainerAndVideoContent_container_children_children[];
   variant: GetVideoContainerAndVideoContent_container_children_variant | null;
+  /**
+   * the number value of the amount of children on a video
+   */
+  childrenCount: number;
 }
 
 export interface GetVideoContainerAndVideoContent_container {
@@ -354,6 +358,10 @@ export interface GetVideoContainerAndVideoContent_content_children {
   slug: string;
   children: GetVideoContainerAndVideoContent_content_children_children[];
   variant: GetVideoContainerAndVideoContent_content_children_variant | null;
+  /**
+   * the number value of the amount of children on a video
+   */
+  childrenCount: number;
 }
 
 export interface GetVideoContainerAndVideoContent_content {
