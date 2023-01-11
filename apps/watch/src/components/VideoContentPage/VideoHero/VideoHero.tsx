@@ -1,25 +1,39 @@
 import Box from '@mui/material/Box'
-import { ReactElement, useRef, useEffect, useState, useCallback } from 'react'
-import videojs from 'video.js'
+import {
+  ReactElement,
+  useEffect,
+  useState,
+  useCallback,
+  Dispatch,
+  SetStateAction
+} from 'react'
 import fscreen from 'fscreen'
 import Div100vh from 'react-div-100vh'
-import { useVideo } from '../../../libs/videoContext'
+import dynamic from 'next/dynamic'
 import { Header } from '../../Header'
-import { VideoControls } from './VideoControls'
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 
 const VIDEO_HERO_BOTTOM_SPACING = 150
+
+const DynamicVideoPlayer = dynamic<{
+  setControlsVisible: Dispatch<SetStateAction<boolean>>
+}>(
+  async () =>
+    await import(
+      /* webpackChunkName: "VideoPlayer" */
+      './VideoPlayer'
+    ).then((mod) => mod.VideoPlayer)
+)
+
 interface VideoHeroProps {
   onPlay?: () => void
+  hasPlayed?: boolean
 }
 
-export function VideoHero({ onPlay }: VideoHeroProps): ReactElement {
-  const { variant } = useVideo()
+export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [controlsVisible, setControlsVisible] = useState(true)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<videojs.Player>()
 
   useEffect(() => {
     function fullscreenchange(): void {
@@ -37,35 +51,7 @@ export function VideoHero({ onPlay }: VideoHeroProps): ReactElement {
     if (onPlay != null) {
       onPlay()
     }
-    if (playerRef?.current != null) {
-      playerRef?.current?.play()
-    }
   }, [onPlay])
-
-  useEffect(() => {
-    if (videoRef.current != null) {
-      playerRef.current = videojs(videoRef.current, {
-        autoplay: false,
-        controls: false,
-        controlBar: false,
-        bigPlayButton: false,
-        userActions: {
-          hotkeys: true,
-          doubleClick: true
-        },
-        responsive: true
-      })
-      playerRef.current.on('play', handlePlay)
-    }
-  }, [variant, playerRef, videoRef, handlePlay])
-
-  useEffect(() => {
-    playerRef.current?.src({
-      src: variant?.hls ?? '',
-      type: 'application/x-mpegURL'
-    })
-    setIsPlaying(false)
-  }, [variant?.hls])
 
   return (
     <>
@@ -90,18 +76,11 @@ export function VideoHero({ onPlay }: VideoHeroProps): ReactElement {
             }
           }}
         >
-          {variant?.hls != null && (
-            <video className="vjs" ref={videoRef} playsInline />
+          {hasPlayed === true ? (
+            <DynamicVideoPlayer setControlsVisible={setControlsVisible} />
+          ) : (
+            !isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />
           )}
-          {playerRef.current != null && isPlaying && (
-            <VideoControls
-              player={playerRef.current}
-              onVisibleChanged={(controlsVisible) =>
-                setControlsVisible(controlsVisible)
-              }
-            />
-          )}
-          {!isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />}
         </Box>
       </Div100vh>
     </>

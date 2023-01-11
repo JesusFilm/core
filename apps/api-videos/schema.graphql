@@ -35,6 +35,7 @@ type Video @key(fields: "id primaryLanguageId") {
   image: String
   imageAlt(languageId: ID, primary: Boolean): [Translation!]!
   variantLanguages: [Language!]!
+  variantLanguagesCount: Int!
 
   """slug is a permanent link to the video."""
   slug: String!
@@ -70,6 +71,7 @@ type VideoVariant {
   duration: Int!
   language: Language!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!
+  subtitleCount: Int!
 
   """slug is a permanent link to the video variant."""
   slug: String!
