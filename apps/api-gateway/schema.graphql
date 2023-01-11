@@ -1207,6 +1207,7 @@ type Video
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
+  variantLanguagesCount: Int! @join__field(graph: VIDEOS)
   variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: VIDEOS)
 }
 
@@ -1767,6 +1768,7 @@ type VideoVariant {
   """slug is a permanent link to the video variant."""
   slug: String!
   subtitle(languageId: ID, primary: Boolean): [Translation!]!
+  subtitleCount: Int!
 }
 
 type VideoVariantDownload {

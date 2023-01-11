@@ -227,7 +227,7 @@ export function VideosPage(): ReactElement {
               }}
             />
           </Stack>
-          <Box>
+          <Box sx={{ width: '100%' }}>
             <VideoGrid
               videos={data?.videos ?? []}
               onLoadMore={handleLoadMore}

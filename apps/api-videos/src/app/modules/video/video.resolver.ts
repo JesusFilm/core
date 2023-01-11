@@ -132,6 +132,11 @@ export class VideoResolver {
   childrenCount(@Parent() video): number {
     return compact(video.childIds).length
   }
+
+  @ResolveField('variantLanguagesCount')
+  variantLanguagesCount(@Parent() video): number {
+    return compact(video.variantLanguages).length
+  }
 }
 
 @Resolver('LanguageWithSlug')

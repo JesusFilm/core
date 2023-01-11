@@ -171,8 +171,44 @@ describe('VideoResolver', () => {
 
     it('returns children count', async () => {
       expect(
-        resolver.childrenCount({ childIds: [{ id: 1 }, { id: 2 }] })
+        resolver.childrenCount({
+          childIds: [{ id: '1' }, { id: '2' }, 0, '', undefined, null, NaN]
+        })
       ).toEqual(2)
+    })
+  })
+
+  describe('variantLanguagesCount', () => {
+    it('returns variant languages count', async () => {
+      expect(
+        await resolver.variantLanguagesCount({
+          variantLanguages: [
+            {
+              id: '1'
+            },
+            {
+              id: '2'
+            }
+          ]
+        })
+      ).toEqual(2)
+    })
+
+    it('does not include falsey values into the count', async () => {
+      expect(
+        await resolver.variantLanguagesCount({
+          variantLanguages: [
+            0,
+            '',
+            undefined,
+            null,
+            NaN,
+            {
+              id: '1'
+            }
+          ]
+        })
+      ).toEqual(1)
     })
   })
 })
