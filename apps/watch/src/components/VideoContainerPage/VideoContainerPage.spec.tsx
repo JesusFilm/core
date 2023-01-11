@@ -1,12 +1,14 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { SnackbarProvider } from 'notistack'
 
+import { MockedProvider } from '@apollo/client/testing'
 import {
   VideoContentFields,
   VideoContentFields_children
 } from '../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../libs/videoContext'
+import { GET_VIDEO_CHILDREN } from './VideoContainerPage'
 import { VideoContainerPage } from '.'
 
 jest.mock('next/router', () => ({
@@ -45,35 +47,62 @@ const video = {
 } as unknown as VideoContentFields
 
 describe('VideoContainerPage', () => {
+  const result = jest.fn(() => ({
+    data: {
+      video: [
+        {
+          children: { ...video }
+        }
+      ]
+    }
+  }))
+  const mocks = [
+    {
+      request: {
+        query: GET_VIDEO_CHILDREN,
+        variables: {
+          id: video.id
+        }
+      },
+      result
+    }
+  ]
+
   it('should render ContainerHero', () => {
     const { getByText } = render(
-      <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoContainerPage />
-        </VideoProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: video }}>
+            <VideoContainerPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(getByText(video.title[0].value)).toBeInTheDocument()
   })
 
-  it('should render snippet', () => {
+  it('should render snippet', async () => {
     const { getByText } = render(
-      <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoContainerPage />
-        </VideoProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: video }}>
+            <VideoContainerPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(getByText(video.snippet[0].value)).toBeInTheDocument()
   })
 
   it('should render share button', () => {
     const { getByRole } = render(
-      <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoContainerPage />
-        </VideoProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: video }}>
+            <VideoContainerPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(getByRole('button', { name: 'Share' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Share' }))
@@ -82,14 +111,16 @@ describe('VideoContainerPage', () => {
     ).toBeInTheDocument()
   })
 
-  xit('should render videos', () => {
-    const { getByTestId } = render(
-      <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoContainerPage />
-        </VideoProvider>
-      </SnackbarProvider>
+  it('should get videos', async () => {
+    render(
+      <MockedProvider mocks={mocks}>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: video }}>
+            <VideoContainerPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
-    expect(getByTestId('videos-grid')).toBeInTheDocument()
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

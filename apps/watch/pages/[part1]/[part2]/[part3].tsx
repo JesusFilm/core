@@ -1,10 +1,13 @@
-import { gql } from '@apollo/client'
+import { ApolloProvider, gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { ReactElement } from 'react'
 import { SnackbarProvider } from 'notistack'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { VideoContentPage } from '../../../src/components/VideoContentPage'
-import { createApolloClient } from '../../../src/libs/apolloClient'
+import {
+  createApolloClient,
+  useApolloClient
+} from '../../../src/libs/apolloClient'
 import { GetVideoContainerAndVideoContent } from '../../../__generated__/GetVideoContainerAndVideoContent'
 import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
 import { VideoProvider } from '../../../src/libs/videoContext'
@@ -35,14 +38,17 @@ export default function Part3Page({
   container,
   content
 }: Part3PageProps): ReactElement {
+  const client = useApolloClient()
   return (
-    <SnackbarProvider>
-      <LanguageProvider>
-        <VideoProvider value={{ content, container }}>
-          <VideoContentPage />
-        </VideoProvider>
-      </LanguageProvider>
-    </SnackbarProvider>
+    <ApolloProvider client={client}>
+      <SnackbarProvider>
+        <LanguageProvider>
+          <VideoProvider value={{ content, container }}>
+            <VideoContentPage />
+          </VideoProvider>
+        </LanguageProvider>
+      </SnackbarProvider>
+    </ApolloProvider>
   )
 }
 
