@@ -93,11 +93,10 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     },
     # datadog agent container
     {
-      name      = "${local.ecs_task_definition_family}-datadog-agent"
-      image     = "public.ecr.aws/datadog/agent:latest"
-      essential = true
-      cpu       = 100
-      memory    = 256
+      name              = "${local.ecs_task_definition_family}-datadog-agent"
+      image             = "public.ecr.aws/datadog/agent:latest"
+      essential         = true
+      memoryReservation = 256
       environment = [
         {
           name  = "DD_APM_ENABLED",
@@ -174,16 +173,15 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     },
     # log router container
     {
-      name         = "${local.ecs_task_definition_family}-log-router"
-      image        = "amazon/aws-for-fluent-bit:stable"
-      essential    = true
-      cpu          = 100
-      memory       = 100
-      environment  = []
-      mountPoints  = []
-      portMappings = []
-      user         = "0"
-      volumesFrom  = []
+      name              = "${local.ecs_task_definition_family}-log-router"
+      image             = "amazon/aws-for-fluent-bit:stable"
+      essential         = true
+      memoryReservation = 100
+      environment       = []
+      mountPoints       = []
+      portMappings      = []
+      user              = "0"
+      volumesFrom       = []
       firelensConfiguration = {
         type = "fluentbit"
         options = {
