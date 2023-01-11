@@ -86,8 +86,9 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           Name        = "datadog",
           Host        = "http-intake.logs.datadoghq.com",
           TLS         = "on",
-          dd_service  = "my-httpd-service",
-          dd_source   = "httpd",
+          dd_service  = "${local.ecs_task_definition_family}-app"
+          dd_host     = local.ecs_task_definition_family,
+          dd_source   = "ecs",
           dd_tags     = "env:${var.env} app:${var.service_config.name}",
           provider    = "ecs",
           retry_limit = "2",
