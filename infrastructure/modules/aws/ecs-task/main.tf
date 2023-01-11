@@ -98,19 +98,54 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       essential = true
       cpu       = 100
       memory    = 256
-      environment = [{
-        DD_APM_ENABLED                                  = "true"
-        DD_DOGSTATSD_NON_LOCAL_TRAFFIC                  = "true"
-        DD_APM_NON_LOCAL_TRAFFIC                        = "true"
-        DD_PROCESS_AGENT_ENABLED                        = "true"
-        DD_TAGS                                         = "env:${var.env} app:${var.service_config.name}"
-        DD_TRACE_ANALYTICS_ENABLED                      = "true"
-        DD_RUNTIME_METRICS_ENABLED                      = "true"
-        DD_PROFILING_ENABLED                            = "true"
-        DD_LOGS_INJECTION                               = "true"
-        DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT = "0.0.0.0:4317"
-        DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT = "0.0.0.0:4318"
-        ECS_FARGATE                                     = "true"
+      environment = [
+        {
+          name  = "DD_APM_ENABLED",
+          value = "true"
+        },
+        {
+          name  = "DD_DOGSTATSD_NON_LOCAL_TRAFFIC",
+          value = "true"
+        },
+        {
+          name  = "DD_APM_NON_LOCAL_TRAFFIC",
+          value = "true"
+        },
+        {
+          name  = "DD_PROCESS_AGENT_ENABLED",
+          value = "true"
+        },
+        {
+          name  = "DD_TAGS",
+          value = "env:${var.env} app:${var.service_config.name}"
+        },
+        {
+          name  = "DD_TRACE_ANALYTICS_ENABLED",
+          value = "true"
+        },
+        {
+          name  = "DD_RUNTIME_METRICS_ENABLED",
+          value = "true"
+        },
+        {
+          name  = "DD_PROFILING_ENABLED",
+          value = "true"
+        },
+        {
+          name  = "DD_LOGS_INJECTION",
+          value = "true"
+        },
+        {
+          name  = "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT",
+          value = "0.0.0.0:4317"
+        },
+        {
+          name  = "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT",
+          value = "0.0.0.0:4318"
+        },
+        {
+          name  = "ECS_FARGATE",
+          value = "true"
         }
       ]
       secrets = [
