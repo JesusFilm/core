@@ -68,12 +68,12 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           name      = param.tags.name
           valueFrom = param.arn
         }
-        ], [[
-          {
-            name      = "DD_API_KEY"
-            valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
-          }
-      ]])
+        ], [
+        {
+          name      = "DD_API_KEY"
+          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+        }
+      ])
       logConfiguration = {
         logDriver = "awsfirelens"
         options = {
