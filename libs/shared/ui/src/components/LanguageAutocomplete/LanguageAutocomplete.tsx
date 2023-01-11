@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useMemo, HTMLAttributes } from 'react'
+import { ReactElement, ReactNode, useMemo, HTMLAttributes, Ref } from 'react'
 import Autocomplete, {
   AutocompleteRenderInputParams
 } from '@mui/material/Autocomplete'
@@ -24,6 +24,7 @@ export interface LanguageOption {
 }
 
 export interface LanguageAutocompleteProps {
+  ref?: Ref<unknown>
   onChange: (value?: LanguageOption) => void
   value?: LanguageOption
   languages?: Language[]
@@ -33,6 +34,7 @@ export interface LanguageAutocompleteProps {
 }
 
 export function LanguageAutocomplete({
+  ref,
   onChange: handleChange,
   value,
   languages,
@@ -107,6 +109,7 @@ export function LanguageAutocomplete({
 
   return (
     <Autocomplete
+      ref={ref}
       disableClearable
       value={value}
       isOptionEqualToValue={(option, value) => option.id === value.id}
