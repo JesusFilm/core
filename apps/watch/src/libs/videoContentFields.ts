@@ -50,6 +50,7 @@ export const VIDEO_CONTENT_FIELDS = gql`
         }
         value
       }
+      subtitleCount
     }
     variantLanguagesWithSlug {
       slug

@@ -84,6 +84,7 @@ export interface VideoContentFields_variant {
    */
   slug: string;
   subtitle: VideoContentFields_variant_subtitle[];
+  subtitleCount: number;
 }
 
 export interface VideoContentFields_variantLanguagesWithSlug_language_name {

@@ -84,6 +84,7 @@ export interface GetVideoContainerAndVideoContent_container_variant {
    */
   slug: string;
   subtitle: GetVideoContainerAndVideoContent_container_variant_subtitle[];
+  subtitleCount: number;
 }
 
 export interface GetVideoContainerAndVideoContent_container_variantLanguagesWithSlug_language_name {
@@ -265,6 +266,7 @@ export interface GetVideoContainerAndVideoContent_content_variant {
    */
   slug: string;
   subtitle: GetVideoContainerAndVideoContent_content_variant_subtitle[];
+  subtitleCount: number;
 }
 
 export interface GetVideoContainerAndVideoContent_content_variantLanguagesWithSlug_language_name {
