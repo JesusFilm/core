@@ -112,7 +112,11 @@ export function VideoCard({
               ) : (
                 <Skeleton
                   sx={{
-                    height: { xs: 166, md: 136, xl: 146 }
+                    height: {
+                      xs: 166,
+                      md: 136,
+                      xl: 146
+                    }
                   }}
                   variant="rectangular"
                   animation={false}
@@ -120,7 +124,6 @@ export function VideoCard({
                 />
               )}
             </Layer>
-
             {variant === 'contained' && (
               <Layer
                 sx={{
@@ -132,7 +135,6 @@ export function VideoCard({
                 className="MuiImageBackdrop-contained-root"
               />
             )}
-
             {variant === 'expanded' && (
               <Layer
                 sx={{
@@ -144,7 +146,6 @@ export function VideoCard({
                 className="MuiImageBackdrop-expanded-root"
               />
             )}
-
             <Layer
               sx={{
                 display: 'flex',
@@ -196,7 +197,6 @@ export function VideoCard({
                       <Skeleton width={50} data-testid="VideoLabelSkeleton" />
                     ))}
                 </Typography>
-
                 <Stack
                   direction="row"
                   alignItems="center"
@@ -249,7 +249,6 @@ export function VideoCard({
               </Stack>
             </Layer>
           </ImageButton>
-
           {variant === 'expanded' && (
             <>
               {index != null && (
