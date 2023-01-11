@@ -81,23 +81,23 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       ]
       logConfiguration = {
-        logDriver = "awsfirelens",
+        logDriver = "awsfirelens"
         options = {
-          Name        = "datadog",
-          Host        = "http-intake.logs.datadoghq.com",
-          TLS         = "on",
-          dd_service  = "${local.ecs_task_definition_family}-app"
-          dd_host     = local.ecs_task_definition_family,
-          dd_source   = "ecs",
-          dd_tags     = "env:${var.env} app:${var.service_config.name}",
-          provider    = "ecs",
-          retry_limit = "2",
-        },
+          Name        = "datadog"
+          Host        = "http-intake.logs.datadoghq.com"
+          TLS         = "on"
+          dd_service  = "ecs"
+          dd_host     = "${local.ecs_task_definition_family}-app"
+          dd_source   = "aws"
+          dd_tags     = "env:${var.env} app:${var.service_config.name}"
+          provider    = "ecs"
+          retry_limit = "2"
+        }
         secretOptions = [{
-          name      = "apikey",
+          name      = "apikey"
           valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${var.env}/global/DD_API_KEY"
         }]
-      },
+      }
       environment = []
       mountPoints = []
       volumesFrom = []
