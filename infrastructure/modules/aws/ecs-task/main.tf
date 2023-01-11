@@ -86,6 +86,12 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           provider    = "ecs"
           retry_limit = "2"
         }
+        secretOptions = [
+          {
+            name      = "apikey"
+            valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+          }
+        ]
       }
       environment = []
       mountPoints = []
@@ -96,7 +102,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       name              = "${local.ecs_task_definition_family}-datadog-agent"
       image             = "public.ecr.aws/datadog/agent:latest"
       essential         = true
-      memoryReservation = 256
+      cpu               = 0
+      memoryReservation = 128
       environment = [
         {
           name  = "DD_APM_ENABLED",
@@ -176,6 +183,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       name              = "${local.ecs_task_definition_family}-log-router"
       image             = "amazon/aws-for-fluent-bit:stable"
       essential         = true
+      cpu               = 0
       memoryReservation = 100
       environment       = []
       mountPoints       = []
