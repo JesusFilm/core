@@ -33,7 +33,7 @@ export function HomeHero(): ReactElement {
         sx={{ display: 'flex', justifyContent: 'center', pt: 30 }}
       >
         <Stack
-          direction={{ xs: 'column', lg: 'row' }}
+          direction={{ lg: 'column', xl: 'row' }}
           alignContent="center"
           sx={{ zIndex: 2 }}
         >
