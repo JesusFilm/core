@@ -188,4 +188,8 @@ export interface VideoContentFields {
    */
   slug: string;
   children: VideoContentFields_children[];
+  /**
+   * the number value of the amount of children on a video
+   */
+  childrenCount: number;
 }

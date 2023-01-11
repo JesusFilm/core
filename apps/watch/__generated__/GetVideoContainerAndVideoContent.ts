@@ -188,6 +188,10 @@ export interface GetVideoContainerAndVideoContent_container {
    */
   slug: string;
   children: GetVideoContainerAndVideoContent_container_children[];
+  /**
+   * the number value of the amount of children on a video
+   */
+  childrenCount: number;
 }
 
 export interface GetVideoContainerAndVideoContent_content_imageAlt {
@@ -369,6 +373,10 @@ export interface GetVideoContainerAndVideoContent_content {
    */
   slug: string;
   children: GetVideoContainerAndVideoContent_content_children[];
+  /**
+   * the number value of the amount of children on a video
+   */
+  childrenCount: number;
 }
 
 export interface GetVideoContainerAndVideoContent {

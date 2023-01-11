@@ -188,6 +188,10 @@ export interface GetVideoContent_content {
    */
   slug: string;
   children: GetVideoContent_content_children[];
+  /**
+   * the number value of the amount of children on a video
+   */
+  childrenCount: number;
 }
 
 export interface GetVideoContent {
