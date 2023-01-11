@@ -172,7 +172,6 @@ export function VideoCard({
                   )}
                 </Typography>
               )}
-
               <Stack
                 direction="row"
                 justifyContent="space-between"
@@ -197,6 +196,7 @@ export function VideoCard({
                       <Skeleton width={50} data-testid="VideoLabelSkeleton" />
                     ))}
                 </Typography>
+
                 <Stack
                   direction="row"
                   alignItems="center"
