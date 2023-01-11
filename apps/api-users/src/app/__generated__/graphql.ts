@@ -7,6 +7,7 @@
 
 /* tslint:disable */
 /* eslint-disable */
+
 export class User {
     __typename?: 'User';
     id: string;
