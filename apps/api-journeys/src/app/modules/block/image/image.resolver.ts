@@ -90,19 +90,15 @@ export class ImageBlockResolver {
       })
       // Delete old coverBlock
       if (parentBlock.coverBlockId != null) {
-        try {
+        const coverBlockExists = await this.blockService.validateBlock(
+          parentBlock.coverBlockId,
+          parentBlock.id
+        )
+        if (coverBlockExists) {
           await this.blockService.removeBlockAndChildren(
             parentBlock.coverBlockId,
             parentBlock.journeyId
           )
-        } catch (error) {
-          // ignore error thrown if old coverBlock was already deleted
-          if (
-            error.isArangoError !== true ||
-            error.response.body.errorMessage !== 'document not found'
-          ) {
-            throw new Error(error)
-          }
         }
       }
 
