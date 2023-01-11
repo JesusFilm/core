@@ -128,6 +128,11 @@ export class VideoResolver {
     @Args('primary') primary?: boolean
   ): void {}
 
+  @ResolveField()
+  childrenCount(@Parent() video): number {
+    return compact(video.childIds).length
+  }
+
   @ResolveField('variantLanguagesCount')
   variantLanguagesCount(@Parent() video): number {
     return compact(video.variantLanguages).length
