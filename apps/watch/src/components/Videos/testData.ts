@@ -202,7 +202,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 488,
         hls: 'https://arc.gt/pm6g1',
         slug: 'the-beginning/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -251,7 +252,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 223,
         hls: 'https://arc.gt/ijec5',
         slug: 'birth-of-jesus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -300,7 +302,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 135,
         hls: 'https://arc.gt/lfoti',
         slug: 'childhood-of-jesus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -350,7 +353,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 227,
         hls: 'https://arc.gt/xgno5',
         slug: 'baptism-of-jesus-by-john/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -401,7 +405,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 142,
         hls: 'https://arc.gt/xf6lr',
         slug: 'the-devil-tempts-jesus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -460,7 +465,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 187,
         hls: 'https://arc.gt/7pqw3',
         slug: 'jesus-proclaims-fulfillment-of-the-scriptures/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -519,7 +525,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 62,
         hls: 'https://arc.gt/vvogt',
         slug: 'parable-of-the-pharisee-and-tax-collector/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -570,7 +577,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 122,
         hls: 'https://arc.gt/jqs1v',
         slug: 'miraculous-catch-of-fish/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -629,7 +637,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 135,
         hls: 'https://arc.gt/e8v1c',
         slug: 'jairus-daughter-brought-back-to-life/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -678,7 +687,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 191,
         hls: 'https://arc.gt/oalu7',
         slug: 'disciples-chosen/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -727,7 +737,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 63,
         hls: 'https://arc.gt/tpn0g',
         slug: 'beatitudes/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -776,7 +787,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 219,
         hls: 'https://arc.gt/kt848',
         slug: 'sermon-on-the-mount/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -834,7 +846,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 19,
         hls: 'https://arc.gt/f7w9m',
         slug: 'blessed-are-those-who-hear-and-obey/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -883,7 +896,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 177,
         hls: 'https://arc.gt/mgqws',
         slug: 'sinful-woman-forgiven/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -932,7 +946,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 44,
         hls: 'https://arc.gt/fyiin',
         slug: 'women-disciples/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -985,7 +1000,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 116,
         hls: 'https://arc.gt/nx4ad',
         slug: 'john-the-baptist-in-prison/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1044,7 +1060,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 138,
         hls: 'https://arc.gt/h8zqo',
         slug: 'parable-of-the-sower-and-the-seed/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1093,7 +1110,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 56,
         hls: 'https://arc.gt/p1xr0',
         slug: 'parable-of-the-lamp/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1142,7 +1160,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 119,
         hls: 'https://arc.gt/69sos',
         slug: 'jesus-calms-the-storm/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1193,7 +1212,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 136,
         hls: 'https://arc.gt/2tm22',
         slug: 'healing-of-the-demoniac/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1242,7 +1262,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 150,
         hls: 'https://arc.gt/iyv6u',
         slug: 'jesus-feeds-5000/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1301,7 +1322,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 84,
         hls: 'https://arc.gt/5484g',
         slug: 'peter-declares-jesus-to-be-the-christ/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1350,7 +1372,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 106,
         hls: 'https://arc.gt/mgomf',
         slug: 'the-transfiguration/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1409,7 +1432,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 135,
         hls: 'https://arc.gt/6v831',
         slug: 'jesus-heals-boy-from-evil-spirit/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1458,7 +1482,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 58,
         hls: 'https://arc.gt/wdq42',
         slug: 'the-lord-prayer/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1517,7 +1542,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 144,
         hls: 'https://arc.gt/urach',
         slug: 'teaching-about-prayer-and-faith/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1576,7 +1602,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 55,
         hls: 'https://arc.gt/25rgl',
         slug: 'woe-to-those-who-cause-others-to-sin/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1635,7 +1662,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 28,
         hls: 'https://arc.gt/a2r0f',
         slug: 'the-kingdom-of-god-as-a-mustard-seed/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1688,7 +1716,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 30,
         hls: 'https://arc.gt/vflur',
         slug: 'jesus-spends-time-with-sinners/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1739,7 +1768,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 117,
         hls: 'https://arc.gt/uvnby',
         slug: 'healing-on-the-sabbath/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1792,7 +1822,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 98,
         hls: 'https://arc.gt/pi7os',
         slug: 'parable-of-the-good-samaritan/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1841,7 +1872,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 105,
         hls: 'https://arc.gt/0qak8',
         slug: 'healing-of-bartimaeus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1890,7 +1922,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 142,
         hls: 'https://arc.gt/pp99g',
         slug: 'jesus-and-zaccheus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -1949,7 +1982,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 42,
         hls: 'https://arc.gt/yl9ba',
         slug: 'jesus-predicts-his-death-and-resurrection/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2000,7 +2034,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 71,
         hls: 'https://arc.gt/vxbwy',
         slug: 'jesus-triumphal-entry/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2053,7 +2088,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 60,
         hls: 'https://arc.gt/4m1we',
         slug: 'jesus-weeps-over-jerusalem/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2112,7 +2148,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 112,
         hls: 'https://arc.gt/dbd4i',
         slug: 'jesus-drives-out-money-changers/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2161,7 +2198,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 46,
         hls: 'https://arc.gt/x2scs',
         slug: 'widow-offering/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2220,7 +2258,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 60,
         hls: 'https://arc.gt/gf6v4',
         slug: 'annas-questions-jesus-authority/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2279,7 +2318,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 111,
         hls: 'https://arc.gt/f2d04',
         slug: 'parable-of-the-vineyard-and-tenants/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2330,7 +2370,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 58,
         hls: 'https://arc.gt/z52cl',
         slug: 'paying-taxes-to-caesar/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2379,7 +2420,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 175,
         hls: 'https://arc.gt/bqnyb',
         slug: 'the-last-supper/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2428,7 +2470,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 149,
         hls: 'https://arc.gt/246zp',
         slug: 'upper-room-teaching/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2481,7 +2524,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 263,
         hls: 'https://arc.gt/r72em',
         slug: 'jesus-is-betrayed-and-arrested/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2530,7 +2574,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 144,
         hls: 'https://arc.gt/6q9wr',
         slug: 'peter-disowns-jesus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2583,7 +2628,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 118,
         hls: 'https://arc.gt/tf1xx',
         slug: 'jesus-is-mocked-and-questioned/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2636,7 +2682,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 104,
         hls: 'https://arc.gt/0ikgq',
         slug: 'jesus-is-brought-to-pilate/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2689,7 +2736,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 84,
         hls: 'https://arc.gt/u8gqt',
         slug: 'jesus-is-brought-to-herod/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2738,7 +2786,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 177,
         hls: 'https://arc.gt/9acdz',
         slug: 'jesus-is-sentenced/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2789,7 +2838,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 214,
         hls: 'https://arc.gt/gyi4p',
         slug: 'jesus-carries-his-cross/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2838,7 +2888,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 169,
         hls: 'https://arc.gt/yiih4',
         slug: 'jesus-is-crucified/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2897,7 +2948,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 57,
         hls: 'https://arc.gt/c3hhs',
         slug: 'soldiers-gamble-for-jesus-clothes/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2946,7 +2998,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 67,
         hls: 'https://arc.gt/zpy7d',
         slug: 'sign-on-the-cross/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -2995,7 +3048,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 100,
         hls: 'https://arc.gt/g52vf',
         slug: 'crucified-convicts/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3044,7 +3098,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 106,
         hls: 'https://arc.gt/de8sd',
         slug: 'death-of-jesus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3093,7 +3148,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 121,
         hls: 'https://arc.gt/fxam3',
         slug: 'burial-of-jesus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3142,7 +3198,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 89,
         hls: 'https://arc.gt/wfipb',
         slug: 'angels-at-the-tomb/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3191,7 +3248,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 82,
         hls: 'https://arc.gt/z4cu3',
         slug: 'the-tomb-is-empty/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3244,7 +3302,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 116,
         hls: 'https://arc.gt/3accr',
         slug: 'resurrected-jesus-appears/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3297,7 +3356,8 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 76,
         hls: 'https://arc.gt/ml18g',
         slug: 'great-commission-and-ascension/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3355,9 +3415,11 @@ const jesusFeatureFilm: VideoContentFields = {
         duration: 341,
         hls: 'https://arc.gt/yz6nc',
         slug: 'invitation-to-know-jesus-personally/english'
-      }
+      },
+      childrenCount: 0
     }
-  ]
+  ],
+  childrenCount: 61
 }
 
 const lifeOfJesus: VideoContentFields = {
@@ -3510,7 +3572,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 275,
         hls: 'https://arc.gt/xpzcg',
         slug: 'god-word-becomes-flesh/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3563,7 +3626,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 196,
         hls: 'https://arc.gt/t5u00',
         slug: 'testimony-of-john-the-baptist/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3614,7 +3678,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 306,
         hls: 'https://arc.gt/oze4y',
         slug: 'jesus-gathers-disciples/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3663,7 +3728,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 213,
         hls: 'https://arc.gt/29cgr',
         slug: 'wedding-in-cana/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3712,7 +3778,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 222,
         hls: 'https://arc.gt/55e57',
         slug: 'cleaning-the-temple/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3761,7 +3828,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 204,
         hls: 'https://arc.gt/ylrhk',
         slug: 'talk-with-nicodemus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3814,7 +3882,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 120,
         hls: 'https://arc.gt/6mwan',
         slug: 'the-baptist-confirmation/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3863,7 +3932,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 223,
         hls: 'https://arc.gt/zmvbz',
         slug: 'samaritan-woman/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3912,7 +3982,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 131,
         hls: 'https://arc.gt/irbhg',
         slug: 'samaritan-village/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -3961,7 +4032,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 189,
         hls: 'https://arc.gt/bavab',
         slug: 'official-son-healed/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4010,7 +4082,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 236,
         hls: 'https://arc.gt/xmmk8',
         slug: 'a-paralytic-healed/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4059,7 +4132,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 137,
         hls: 'https://arc.gt/8e7tc',
         slug: 'claim-to-be-the-son/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4108,7 +4182,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 142,
         hls: 'https://arc.gt/z8fhr',
         slug: 'witness-to-the-son/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4157,7 +4232,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 276,
         hls: 'https://arc.gt/yq1j4',
         slug: 'feeding-5000/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4206,7 +4282,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 154,
         hls: 'https://arc.gt/81twe',
         slug: 'sea-walking/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4255,7 +4332,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 348,
         hls: 'https://arc.gt/2gb73',
         slug: 'bread-of-life/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4304,7 +4382,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 123,
         hls: 'https://arc.gt/l72b4',
         slug: 'falling-away/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4363,7 +4442,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 182,
         hls: 'https://arc.gt/ddgsm',
         slug: 'confronting-hypocritical-leaders/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4416,7 +4496,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 279,
         hls: 'https://arc.gt/t0t8s',
         slug: 'disagreement-who-is-jesus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4465,7 +4546,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 196,
         hls: 'https://arc.gt/zdjzd',
         slug: 'adulterous-woman/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4514,7 +4596,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 181,
         hls: 'https://arc.gt/mlhyx',
         slug: 'who-are-you/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4563,7 +4646,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 283,
         hls: 'https://arc.gt/948kr',
         slug: 'great-confrontation/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4612,7 +4696,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 218,
         hls: 'https://arc.gt/ytim7',
         slug: 'blind-man-healed/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4671,7 +4756,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 280,
         hls: 'https://arc.gt/v7a2l',
         slug: 'pharisees-interrogate-the-blind-man/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4720,7 +4806,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 167,
         hls: 'https://arc.gt/k9qjw',
         slug: 'the-good-shepherd/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4769,7 +4856,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 213,
         hls: 'https://arc.gt/cuxbw',
         slug: 'are-you-messiah/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4818,7 +4906,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 146,
         hls: 'https://arc.gt/hlw7d',
         slug: 'lazarus-dies/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4867,7 +4956,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 212,
         hls: 'https://arc.gt/qsyj0',
         slug: 'mary-and-martha-mourn/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4916,7 +5006,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 414,
         hls: 'https://arc.gt/rod6e',
         slug: 'lazarus-rises/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -4969,7 +5060,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 327,
         hls: 'https://arc.gt/dcorg',
         slug: 'triumphal-entry-and-results/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5018,7 +5110,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 142,
         hls: 'https://arc.gt/p1bsp',
         slug: 'divided-opinions/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5067,7 +5160,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 265,
         hls: 'https://arc.gt/prd0d',
         slug: 'last-supper/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5120,7 +5214,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 290,
         hls: 'https://arc.gt/fenvo',
         slug: 'betrayal-and-denial-foretold/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5173,7 +5268,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 141,
         hls: 'https://arc.gt/8risd',
         slug: 'jesus-comforts-his-disciples/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5226,7 +5322,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 151,
         hls: 'https://arc.gt/yg0xw',
         slug: 'jesus-promises-the-holy-spirit/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5279,7 +5376,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 167,
         hls: 'https://arc.gt/owvp9',
         slug: 'the-vine-and-the-branches/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5328,7 +5426,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 87,
         hls: 'https://arc.gt/zbgr2',
         slug: 'the-world-hatred/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5381,7 +5480,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 150,
         hls: 'https://arc.gt/inp78',
         slug: 'the-work-of-the-holy-spirit/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5431,7 +5531,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 190,
         hls: 'https://arc.gt/q074p',
         slug: 'grief-will-turn-to-joy/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5480,7 +5581,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 262,
         hls: 'https://arc.gt/y2mnc',
         slug: 'jesus-prays-to-be-glorified/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5539,7 +5641,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 346,
         hls: 'https://arc.gt/5zb64',
         slug: 'the-arrest-of-jesus-and-peter-denial/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5598,7 +5701,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 206,
         hls: 'https://arc.gt/b8psu',
         slug: 'my-kingdom-is-not-of-this-world/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5657,7 +5761,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 328,
         hls: 'https://arc.gt/c46lf',
         slug: 'jesus-sentenced-to-be-crucified/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5708,7 +5813,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 449,
         hls: 'https://arc.gt/77lqv',
         slug: 'the-crucifixion-of-jesus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5757,7 +5863,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 287,
         hls: 'https://arc.gt/r9p76',
         slug: 'jesus-is-alive/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5806,7 +5913,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 126,
         hls: 'https://arc.gt/qnsip',
         slug: 'doubting-thomas/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5854,7 +5962,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 181,
         hls: 'https://arc.gt/o2nme',
         slug: 'miraculous-catch/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5903,7 +6012,8 @@ const lifeOfJesus: VideoContentFields = {
         duration: 201,
         hls: 'https://arc.gt/qq08o',
         slug: 'do-you-love-me/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -5955,9 +6065,11 @@ const lifeOfJesus: VideoContentFields = {
         duration: 151,
         hls: 'https://arc.gt/kohxw',
         slug: 'how-to-know-jesus-personally/english'
-      }
+      },
+      childrenCount: 0
     }
-  ]
+  ],
+  childrenCount: 49
 }
 
 const jesusCalmsTheStorm: VideoContentFields = {
@@ -6069,7 +6181,8 @@ const jesusCalmsTheStorm: VideoContentFields = {
     }
   ],
   slug: 'jesus-calms-the-storm',
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const womanWithBlood: VideoContentFields = {
@@ -6188,7 +6301,8 @@ const womanWithBlood: VideoContentFields = {
     }
   ],
   slug: 'the-woman-with-the-issue-of-blood',
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const magdalena: VideoContentFields = {
@@ -6339,7 +6453,8 @@ const magdalena: VideoContentFields = {
         duration: 4952,
         hls: 'https://arc.gt/z6lim',
         slug: 'magdalena-director-cut/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -6390,7 +6505,8 @@ const magdalena: VideoContentFields = {
         duration: 69,
         hls: 'https://arc.gt/27lap',
         slug: 'title-and-introduction/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -6449,7 +6565,8 @@ const magdalena: VideoContentFields = {
         duration: 76,
         hls: 'https://arc.gt/l55hy',
         slug: 'mary-magdalene-goes-to-rivka-house/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -6498,7 +6615,8 @@ const magdalena: VideoContentFields = {
         duration: 149,
         hls: 'https://arc.gt/hu9ht',
         slug: 'creation/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -6551,7 +6669,8 @@ const magdalena: VideoContentFields = {
         duration: 88,
         hls: 'https://arc.gt/rlust',
         slug: 'temptation-and-fall-of-mankind/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -6600,7 +6719,8 @@ const magdalena: VideoContentFields = {
         duration: 133,
         hls: 'https://arc.gt/i1zzu',
         slug: 'abraham/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -6649,7 +6769,8 @@ const magdalena: VideoContentFields = {
         duration: 79,
         hls: 'https://arc.gt/73nzx',
         slug: 'isaiah/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -6698,7 +6819,8 @@ const magdalena: VideoContentFields = {
         duration: 117,
         hls: 'https://arc.gt/0omcj',
         slug: 'announcement-to-mary/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -6751,7 +6873,8 @@ const magdalena: VideoContentFields = {
         duration: 77,
         hls: 'https://arc.gt/v7i0o',
         slug: 'mary-visit-to-elizabeth/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -6800,7 +6923,8 @@ const magdalena: VideoContentFields = {
         duration: 79,
         hls: 'https://arc.gt/u8389',
         slug: 'joseph-response/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -6849,7 +6973,8 @@ const magdalena: VideoContentFields = {
         duration: 23,
         hls: 'https://arc.gt/ivfj3',
         slug: 'birth-of-jesus-2/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -6898,7 +7023,8 @@ const magdalena: VideoContentFields = {
         duration: 64,
         hls: 'https://arc.gt/b7e1w',
         slug: 'simeon-prophecy/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -6957,7 +7083,8 @@ const magdalena: VideoContentFields = {
         duration: 51,
         hls: 'https://arc.gt/rbk2a',
         slug: 'explanation-of-miraculous-birth/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7008,7 +7135,8 @@ const magdalena: VideoContentFields = {
         duration: 91,
         hls: 'https://arc.gt/db9mo',
         slug: 'baptism-of-jesus-by-john-2/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7067,7 +7195,8 @@ const magdalena: VideoContentFields = {
         duration: 96,
         hls: 'https://arc.gt/nhkh9',
         slug: 'jesus-proclaims-fulfillment-of-the-scriptures-2/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7126,7 +7255,8 @@ const magdalena: VideoContentFields = {
         duration: 235,
         hls: 'https://arc.gt/r2n8c',
         slug: 'mary-magdalene-freed-from-demons/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7185,7 +7315,8 @@ const magdalena: VideoContentFields = {
         duration: 76,
         hls: 'https://arc.gt/j7e42',
         slug: 'rivka-home-disciples-chosen-and-women-followers/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7244,7 +7375,8 @@ const magdalena: VideoContentFields = {
         duration: 53,
         hls: 'https://arc.gt/kyhu2',
         slug: 'rome-took-everything-but-jesus-offered-hope/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7297,7 +7429,8 @@ const magdalena: VideoContentFields = {
         duration: 69,
         hls: 'https://arc.gt/cpr24',
         slug: 'jesus-raises-the-widow-son/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7346,7 +7479,8 @@ const magdalena: VideoContentFields = {
         duration: 238,
         hls: 'https://arc.gt/4dv62',
         slug: 'sermon-on-the-mount-2/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7395,7 +7529,8 @@ const magdalena: VideoContentFields = {
         duration: 354,
         hls: 'https://arc.gt/i9pze',
         slug: 'the-woman-at-the-well/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7454,7 +7589,8 @@ const magdalena: VideoContentFields = {
         duration: 134,
         hls: 'https://arc.gt/qymxm',
         slug: 'teaching-about-prayer-and-faith-2/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7507,7 +7643,8 @@ const magdalena: VideoContentFields = {
         duration: 71,
         hls: 'https://arc.gt/16swn',
         slug: 'jesus-spends-time-with-sinners-2/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7566,7 +7703,8 @@ const magdalena: VideoContentFields = {
         duration: 190,
         hls: 'https://arc.gt/0sgr2',
         slug: 'the-woman-with-the-issue-of-blood/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7625,7 +7763,8 @@ const magdalena: VideoContentFields = {
         duration: 113,
         hls: 'https://arc.gt/im9jh',
         slug: 'jairus-daughter-brought-back-to-life-2/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7674,7 +7813,8 @@ const magdalena: VideoContentFields = {
         duration: 99,
         hls: 'https://arc.gt/9dmh6',
         slug: 'jesus-feeds-5000-2/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7727,7 +7867,8 @@ const magdalena: VideoContentFields = {
         duration: 99,
         hls: 'https://arc.gt/qvk27',
         slug: 'teaching-about-following-him/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7778,7 +7919,8 @@ const magdalena: VideoContentFields = {
         duration: 118,
         hls: 'https://arc.gt/62wr3',
         slug: 'healing-on-the-sabbath-2/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7837,7 +7979,8 @@ const magdalena: VideoContentFields = {
         duration: 53,
         hls: 'https://arc.gt/qf097',
         slug: 'roman-and-religious-leaders-upset-with-jesus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7886,7 +8029,8 @@ const magdalena: VideoContentFields = {
         duration: 80,
         hls: 'https://arc.gt/eg2y4',
         slug: 'widow-offering-2/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7939,7 +8083,8 @@ const magdalena: VideoContentFields = {
         duration: 179,
         hls: 'https://arc.gt/nf1a9',
         slug: 'the-adulterous-woman-forgiven/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -7992,7 +8137,8 @@ const magdalena: VideoContentFields = {
         duration: 58,
         hls: 'https://arc.gt/wl9z6',
         slug: 'judas-agrees-to-betray-jesus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8045,7 +8191,8 @@ const magdalena: VideoContentFields = {
         duration: 120,
         hls: 'https://arc.gt/ks29s',
         slug: 'jesus-is-betrayed-arrested/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8094,7 +8241,8 @@ const magdalena: VideoContentFields = {
         duration: 270,
         hls: 'https://arc.gt/q5fl0',
         slug: 'jesus-on-trial/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8153,7 +8301,8 @@ const magdalena: VideoContentFields = {
         duration: 261,
         hls: 'https://arc.gt/oiqhl',
         slug: 'jesus-carries-his-cross-and-is-crucified/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8206,7 +8355,8 @@ const magdalena: VideoContentFields = {
         duration: 48,
         hls: 'https://arc.gt/b62kj',
         slug: 'mary-recalls-simeon-words/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8259,7 +8409,8 @@ const magdalena: VideoContentFields = {
         duration: 59,
         hls: 'https://arc.gt/wmnbu',
         slug: 'the-thief-promised-paradise/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8312,7 +8463,8 @@ const magdalena: VideoContentFields = {
         duration: 67,
         hls: 'https://arc.gt/pxwnj',
         slug: 'darkness-and-jesus-death/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8361,7 +8513,8 @@ const magdalena: VideoContentFields = {
         duration: 141,
         hls: 'https://arc.gt/st6t0',
         slug: 'burial-of-jesus-2/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8414,7 +8567,8 @@ const magdalena: VideoContentFields = {
         duration: 83,
         hls: 'https://arc.gt/8s4d5',
         slug: 'women-at-the-tomb-body-gone/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8473,7 +8627,8 @@ const magdalena: VideoContentFields = {
         duration: 157,
         hls: 'https://arc.gt/h820i',
         slug: 'magdalena-sees-the-resurrected-jesus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8532,7 +8687,8 @@ const magdalena: VideoContentFields = {
         duration: 139,
         hls: 'https://arc.gt/ibynj',
         slug: 'magdalena-explains-jesus-death-and-resurrection/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8583,7 +8739,8 @@ const magdalena: VideoContentFields = {
         duration: 115,
         hls: 'https://arc.gt/wzwqm',
         slug: 'knowing-god-personally/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8632,7 +8789,8 @@ const magdalena: VideoContentFields = {
         duration: 192,
         hls: 'https://arc.gt/scdlu',
         slug: 'rivka-believes/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8685,7 +8843,8 @@ const magdalena: VideoContentFields = {
         duration: 99,
         hls: 'https://arc.gt/gyuus',
         slug: 'living-the-christian-life/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8734,9 +8893,11 @@ const magdalena: VideoContentFields = {
         duration: 255,
         hls: 'https://arc.gt/ff5b9',
         slug: 'this-is-freedom/english'
-      }
+      },
+      childrenCount: 0
     }
-  ]
+  ],
+  childrenCount: 46
 }
 
 const reflectionsOfHope: VideoContentFields = {
@@ -8873,7 +9034,8 @@ const reflectionsOfHope: VideoContentFields = {
         duration: 70,
         hls: 'https://arc.gt/420k6',
         slug: '1-jesus-our-loving-pursuer/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8932,7 +9094,8 @@ const reflectionsOfHope: VideoContentFields = {
         duration: 176,
         hls: 'https://arc.gt/ez214',
         slug: '2-jesus-our-gracious-forgiver/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -8985,7 +9148,8 @@ const reflectionsOfHope: VideoContentFields = {
         duration: 116,
         hls: 'https://arc.gt/ti0z9',
         slug: '3-jesus-our-power-for-living/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -9044,7 +9208,8 @@ const reflectionsOfHope: VideoContentFields = {
         duration: 230,
         hls: 'https://arc.gt/1j2w1',
         slug: '4-jesus-our-powerful-deliverer/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -9103,7 +9268,8 @@ const reflectionsOfHope: VideoContentFields = {
         duration: 88,
         hls: 'https://arc.gt/gon3b',
         slug: '5-jesus-our-compassionate-provider/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -9162,7 +9328,8 @@ const reflectionsOfHope: VideoContentFields = {
         duration: 190,
         hls: 'https://arc.gt/lzbjp',
         slug: '6-jesus-our-complete-restorer/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -9215,9 +9382,11 @@ const reflectionsOfHope: VideoContentFields = {
         duration: 354,
         hls: 'https://arc.gt/ikllg',
         slug: '7-jesus-our-living-water/english'
-      }
+      },
+      childrenCount: 0
     }
-  ]
+  ],
+  childrenCount: 7
 }
 
 const jesusDiedForMe: VideoContentFields = {
@@ -9325,7 +9494,8 @@ const jesusDiedForMe: VideoContentFields = {
     }
   ],
   slug: 'day-6-jesus-died-for-me',
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const bookOfActs: VideoContentFields = {
@@ -9477,7 +9647,8 @@ const bookOfActs: VideoContentFields = {
         duration: 123,
         hls: 'https://arc.gt/l9eqj',
         slug: 'introduction-of-luke/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -9529,7 +9700,8 @@ const bookOfActs: VideoContentFields = {
         duration: 144,
         hls: 'https://arc.gt/opsgn',
         slug: 'jesus-taken-up-into-heaven/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -9588,7 +9760,8 @@ const bookOfActs: VideoContentFields = {
         duration: 170,
         hls: 'https://arc.gt/bzfme',
         slug: 'matthias-chosen-to-replace-judas/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -9647,7 +9820,8 @@ const bookOfActs: VideoContentFields = {
         duration: 162,
         hls: 'https://arc.gt/6fb9x',
         slug: 'the-holy-spirit-comes-at-pentecost/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -9699,7 +9873,8 @@ const bookOfActs: VideoContentFields = {
         duration: 278,
         hls: 'https://arc.gt/d7e44',
         slug: 'peter-addresses-the-crowd/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -9752,7 +9927,8 @@ const bookOfActs: VideoContentFields = {
         duration: 54,
         hls: 'https://arc.gt/un9bj',
         slug: 'the-fellowship-of-the-believers/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -9804,7 +9980,8 @@ const bookOfActs: VideoContentFields = {
         duration: 131,
         hls: 'https://arc.gt/k3vyl',
         slug: 'peter-heals-a-lame-beggar/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -9857,7 +10034,8 @@ const bookOfActs: VideoContentFields = {
         duration: 159,
         hls: 'https://arc.gt/hjmdk',
         slug: 'peter-speaks-to-the-onlookers/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -9916,7 +10094,8 @@ const bookOfActs: VideoContentFields = {
         duration: 181,
         hls: 'https://arc.gt/6607l',
         slug: 'peter-and-john-before-the-sanhedrin/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -9964,7 +10143,8 @@ const bookOfActs: VideoContentFields = {
         duration: 88,
         hls: 'https://arc.gt/g2cxi',
         slug: 'the-believers-pray/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10022,7 +10202,8 @@ const bookOfActs: VideoContentFields = {
         duration: 51,
         hls: 'https://arc.gt/z086z',
         slug: 'the-believers-share-their-possessions/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10065,7 +10246,8 @@ const bookOfActs: VideoContentFields = {
         duration: 110,
         hls: 'https://arc.gt/q2wij',
         slug: 'ananias-and-sapphira/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10115,7 +10297,8 @@ const bookOfActs: VideoContentFields = {
         duration: 68,
         hls: 'https://arc.gt/tjozl',
         slug: 'the-apostles-heal-many/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10166,7 +10349,8 @@ const bookOfActs: VideoContentFields = {
         duration: 359,
         hls: 'https://arc.gt/7pqk1',
         slug: 'the-apostles-persecuted/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10218,7 +10402,8 @@ const bookOfActs: VideoContentFields = {
         duration: 73,
         hls: 'https://arc.gt/uzmlb',
         slug: 'the-choosing-of-the-seven/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10266,7 +10451,8 @@ const bookOfActs: VideoContentFields = {
         duration: 98,
         hls: 'https://arc.gt/nnvqh',
         slug: 'stephen-seized/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10324,7 +10510,8 @@ const bookOfActs: VideoContentFields = {
         duration: 534,
         hls: 'https://arc.gt/xta3j',
         slug: 'stephen-speech-to-the-sanhedrin/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10372,7 +10559,8 @@ const bookOfActs: VideoContentFields = {
         duration: 87,
         hls: 'https://arc.gt/2298i',
         slug: 'stoning-of-stephen/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10430,7 +10618,8 @@ const bookOfActs: VideoContentFields = {
         duration: 32,
         hls: 'https://arc.gt/j6mnd',
         slug: 'the-church-persecuted-and-scattered/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10478,7 +10667,8 @@ const bookOfActs: VideoContentFields = {
         duration: 29,
         hls: 'https://arc.gt/ztzgv',
         slug: 'philip-in-samaria/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10527,7 +10717,8 @@ const bookOfActs: VideoContentFields = {
         duration: 188,
         hls: 'https://arc.gt/012hm',
         slug: 'simon-the-sorcerer/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10578,7 +10769,8 @@ const bookOfActs: VideoContentFields = {
         duration: 165,
         hls: 'https://arc.gt/28799',
         slug: 'philip-and-the-ethiopian/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10626,7 +10818,8 @@ const bookOfActs: VideoContentFields = {
         duration: 257,
         hls: 'https://arc.gt/eijqa',
         slug: 'saul-conversion/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10679,7 +10872,8 @@ const bookOfActs: VideoContentFields = {
         duration: 129,
         hls: 'https://arc.gt/ektp8',
         slug: 'saul-in-damascus-and-jerusalem/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10727,7 +10921,8 @@ const bookOfActs: VideoContentFields = {
         duration: 126,
         hls: 'https://arc.gt/62y7y',
         slug: 'aeneas-and-dorcas/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10777,7 +10972,8 @@ const bookOfActs: VideoContentFields = {
         duration: 76,
         hls: 'https://arc.gt/1d3qg',
         slug: 'cornelius-sees-an-angel/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10825,7 +11021,8 @@ const bookOfActs: VideoContentFields = {
         duration: 115,
         hls: 'https://arc.gt/j03n6',
         slug: 'peter-vision/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10877,7 +11074,8 @@ const bookOfActs: VideoContentFields = {
         duration: 235,
         hls: 'https://arc.gt/cfirx',
         slug: 'peter-at-cornelius-house/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10929,7 +11127,8 @@ const bookOfActs: VideoContentFields = {
         duration: 175,
         hls: 'https://arc.gt/2mmoo',
         slug: 'peter-explains-his-actions/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -10974,7 +11173,8 @@ const bookOfActs: VideoContentFields = {
         duration: 144,
         hls: 'https://arc.gt/b098m',
         slug: 'the-church-in-antioch/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11032,7 +11232,8 @@ const bookOfActs: VideoContentFields = {
         duration: 298,
         hls: 'https://arc.gt/esnsq',
         slug: 'peter-miraculous-escape-from-prison/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11077,7 +11278,8 @@ const bookOfActs: VideoContentFields = {
         duration: 64,
         hls: 'https://arc.gt/v4lzw',
         slug: 'herod-death/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11135,7 +11337,8 @@ const bookOfActs: VideoContentFields = {
         duration: 37,
         hls: 'https://arc.gt/1e8wv',
         slug: 'the-sending-of-barnabas-and-saul/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11183,7 +11386,8 @@ const bookOfActs: VideoContentFields = {
         duration: 90,
         hls: 'https://arc.gt/vopsp',
         slug: 'ministry-on-cyprus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11241,7 +11445,8 @@ const bookOfActs: VideoContentFields = {
         duration: 417,
         hls: 'https://arc.gt/foae1',
         slug: 'paul-s-ministry-in-pisidian-antioch/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11300,7 +11505,8 @@ const bookOfActs: VideoContentFields = {
         duration: 58,
         hls: 'https://arc.gt/1qp1j',
         slug: 'paul-barnabas-preach-in-iconium/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11352,7 +11558,8 @@ const bookOfActs: VideoContentFields = {
         duration: 314,
         hls: 'https://arc.gt/rbr42',
         slug: 'mistaken-identity-in-lystra/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11404,7 +11611,8 @@ const bookOfActs: VideoContentFields = {
         duration: 80,
         hls: 'https://arc.gt/e2924',
         slug: 'the-return-to-antioch-in-syria/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11455,7 +11663,8 @@ const bookOfActs: VideoContentFields = {
         duration: 219,
         hls: 'https://arc.gt/pmpr7',
         slug: 'the-council-at-jerusalem/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11513,7 +11722,8 @@ const bookOfActs: VideoContentFields = {
         duration: 116,
         hls: 'https://arc.gt/7do6v',
         slug: 'the-council-letter-to-gentile-believers/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11571,7 +11781,8 @@ const bookOfActs: VideoContentFields = {
         duration: 48,
         hls: 'https://arc.gt/tpfpc',
         slug: 'disagreement-between-paul-and-barnabas/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11623,7 +11834,8 @@ const bookOfActs: VideoContentFields = {
         duration: 47,
         hls: 'https://arc.gt/0o1xk',
         slug: 'timothy-joins-paul-and-silas/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11681,7 +11893,8 @@ const bookOfActs: VideoContentFields = {
         duration: 79,
         hls: 'https://arc.gt/z03dv',
         slug: 'paul-vision-of-the-man-of-macedonia/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11733,7 +11946,8 @@ const bookOfActs: VideoContentFields = {
         duration: 62,
         hls: 'https://arc.gt/leumz',
         slug: 'lydia-conversion-in-philippi/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11783,7 +11997,8 @@ const bookOfActs: VideoContentFields = {
         duration: 369,
         hls: 'https://arc.gt/cpywt',
         slug: 'paul-and-silas-in-prison/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11831,7 +12046,8 @@ const bookOfActs: VideoContentFields = {
         duration: 92,
         hls: 'https://arc.gt/ft6sb',
         slug: 'riots-in-thessalonica/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11876,7 +12092,8 @@ const bookOfActs: VideoContentFields = {
         duration: 67,
         hls: 'https://arc.gt/tybyf',
         slug: 'the-noble-bereans/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11924,7 +12141,8 @@ const bookOfActs: VideoContentFields = {
         duration: 232,
         hls: 'https://arc.gt/2kyn9',
         slug: 'idols-in-athens/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -11972,7 +12190,8 @@ const bookOfActs: VideoContentFields = {
         duration: 198,
         hls: 'https://arc.gt/jg5ml',
         slug: 'division-in-corinth/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12021,7 +12240,8 @@ const bookOfActs: VideoContentFields = {
         duration: 110,
         hls: 'https://arc.gt/gtxno',
         slug: 'priscilla-aquila-and-apollos/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12066,7 +12286,8 @@ const bookOfActs: VideoContentFields = {
         duration: 191,
         hls: 'https://arc.gt/obzmd',
         slug: 'paul-in-ephesus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12114,7 +12335,8 @@ const bookOfActs: VideoContentFields = {
         duration: 242,
         hls: 'https://arc.gt/4ekht',
         slug: 'the-riot-in-ephesus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12163,7 +12385,8 @@ const bookOfActs: VideoContentFields = {
         duration: 142,
         hls: 'https://arc.gt/qmg4z',
         slug: 'through-macedonia-and-greece/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12221,7 +12444,8 @@ const bookOfActs: VideoContentFields = {
         duration: 89,
         hls: 'https://arc.gt/h4dgq',
         slug: 'eutychus-raised-from-the-dead-at-troas/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12279,7 +12503,8 @@ const bookOfActs: VideoContentFields = {
         duration: 314,
         hls: 'https://arc.gt/61481',
         slug: 'paul-farewell-to-the-ephesian-elders/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12327,7 +12552,8 @@ const bookOfActs: VideoContentFields = {
         duration: 149,
         hls: 'https://arc.gt/a6z0o',
         slug: 'on-to-jerusalem/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12379,7 +12605,8 @@ const bookOfActs: VideoContentFields = {
         duration: 131,
         hls: 'https://arc.gt/0g5ds',
         slug: 'paul-arrival-at-jerusalem/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12427,7 +12654,8 @@ const bookOfActs: VideoContentFields = {
         duration: 118,
         hls: 'https://arc.gt/alky5',
         slug: 'paul-arrested/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12477,7 +12705,8 @@ const bookOfActs: VideoContentFields = {
         duration: 299,
         hls: 'https://arc.gt/rhbd1',
         slug: 'paul-speaks-to-the-crowd/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12524,7 +12753,8 @@ const bookOfActs: VideoContentFields = {
         duration: 102,
         hls: 'https://arc.gt/gmb52',
         slug: 'paul-the-roman-citizen/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12576,7 +12806,8 @@ const bookOfActs: VideoContentFields = {
         duration: 150,
         hls: 'https://arc.gt/q3rdx',
         slug: 'paul-before-the-sanhedrin/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12621,7 +12852,8 @@ const bookOfActs: VideoContentFields = {
         duration: 138,
         hls: 'https://arc.gt/rx19t',
         slug: 'the-plot-to-kill-paul/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12673,7 +12905,8 @@ const bookOfActs: VideoContentFields = {
         duration: 113,
         hls: 'https://arc.gt/669vk',
         slug: 'paul-transferred-to-caesarea/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12722,7 +12955,8 @@ const bookOfActs: VideoContentFields = {
         duration: 277,
         hls: 'https://arc.gt/6x5a0',
         slug: 'paul-trial-before-felix/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12774,7 +13008,8 @@ const bookOfActs: VideoContentFields = {
         duration: 131,
         hls: 'https://arc.gt/bed5t',
         slug: 'paul-trial-before-festus/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12826,7 +13061,8 @@ const bookOfActs: VideoContentFields = {
         duration: 114,
         hls: 'https://arc.gt/9bry4',
         slug: 'festus-consults-king-agrippa/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12874,7 +13110,8 @@ const bookOfActs: VideoContentFields = {
         duration: 426,
         hls: 'https://arc.gt/6zdye',
         slug: 'paul-before-agrippa/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12922,7 +13159,8 @@ const bookOfActs: VideoContentFields = {
         duration: 128,
         hls: 'https://arc.gt/9za77',
         slug: 'paul-sails-for-rome/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -12965,7 +13203,8 @@ const bookOfActs: VideoContentFields = {
         duration: 133,
         hls: 'https://arc.gt/yr1x7',
         slug: 'the-storm/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -13013,7 +13252,8 @@ const bookOfActs: VideoContentFields = {
         duration: 199,
         hls: 'https://arc.gt/qv694',
         slug: 'the-shipwreck/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -13058,7 +13298,8 @@ const bookOfActs: VideoContentFields = {
         duration: 124,
         hls: 'https://arc.gt/yflll',
         slug: 'paul-ashore-on-malta/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -13110,7 +13351,8 @@ const bookOfActs: VideoContentFields = {
         duration: 58,
         hls: 'https://arc.gt/qo40b',
         slug: 'paul-finally-reaches-rome/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -13168,9 +13410,11 @@ const bookOfActs: VideoContentFields = {
         duration: 229,
         hls: 'https://arc.gt/e9esk',
         slug: 'paul-preaches-in-rome-under-guard/english'
-      }
+      },
+      childrenCount: 0
     }
-  ]
+  ],
+  childrenCount: 73
 }
 
 const weddingInCana: VideoContentFields = {
@@ -13275,7 +13519,8 @@ const weddingInCana: VideoContentFields = {
     }
   ],
   slug: 'wedding-in-cana',
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const lumo: VideoContentFields = {
@@ -13426,7 +13671,8 @@ const lumo: VideoContentFields = {
         duration: 0,
         hls: null,
         slug: 'lumo-the-gospel-of-john/english'
-      }
+      },
+      childrenCount: 22
     },
     {
       __typename: 'Video',
@@ -13506,7 +13752,8 @@ const lumo: VideoContentFields = {
         duration: 0,
         hls: null,
         slug: 'lumo-the-gospel-of-luke/english'
-      }
+      },
+      childrenCount: 26
     },
     {
       __typename: 'Video',
@@ -13575,7 +13822,8 @@ const lumo: VideoContentFields = {
         duration: 0,
         hls: null,
         slug: 'lumo-the-gospel-of-mark/english'
-      }
+      },
+      childrenCount: 15
     },
     {
       __typename: 'Video',
@@ -13654,9 +13902,11 @@ const lumo: VideoContentFields = {
         duration: 0,
         hls: null,
         slug: 'lumo-the-gospel-of-matthew/english'
-      }
+      },
+      childrenCount: 25
     }
-  ]
+  ],
+  childrenCount: 4
 }
 
 const peterEscape: VideoContentFields = {
@@ -13782,7 +14032,8 @@ const peterEscape: VideoContentFields = {
     }
   ],
   slug: 'peter-miraculous-escape-from-prison',
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const whoIsJesus: VideoContentFields = {
@@ -13924,7 +14175,8 @@ const whoIsJesus: VideoContentFields = {
         duration: 474,
         hls: 'https://arc.gt/t0ih0',
         slug: 'day-1-jesus-is-god-among-us/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -13977,7 +14229,8 @@ const whoIsJesus: VideoContentFields = {
         duration: 353,
         hls: 'https://arc.gt/kev1l',
         slug: 'day-2-jesus-taught-god-ways/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14030,7 +14283,8 @@ const whoIsJesus: VideoContentFields = {
         duration: 460,
         hls: 'https://arc.gt/vqxsj',
         slug: 'day-3-jesus-has-all-power/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14083,7 +14337,8 @@ const whoIsJesus: VideoContentFields = {
         duration: 300,
         hls: 'https://arc.gt/1dmvq',
         slug: 'day-4-jesus-is-god-son/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14136,7 +14391,8 @@ const whoIsJesus: VideoContentFields = {
         duration: 568,
         hls: 'https://arc.gt/oawks',
         slug: 'day-5-jesus-suffered-for-me/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14187,7 +14443,8 @@ const whoIsJesus: VideoContentFields = {
         duration: 488,
         hls: 'https://arc.gt/xqav7',
         slug: 'day-6-jesus-died-for-me/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14246,7 +14503,8 @@ const whoIsJesus: VideoContentFields = {
         duration: 359,
         hls: 'https://arc.gt/abvki',
         slug: 'day-7-jesus-rose-from-the-dead/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14295,9 +14553,11 @@ const whoIsJesus: VideoContentFields = {
         duration: 366,
         hls: 'https://arc.gt/oj8qd',
         slug: 'day-8-invitation/english'
-      }
+      },
+      childrenCount: 0
     }
-  ]
+  ],
+  childrenCount: 8
 }
 
 const chosenWitness: VideoContentFields = {
@@ -14416,7 +14676,8 @@ const chosenWitness: VideoContentFields = {
     }
   ],
   slug: 'chosen-witness',
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const gospelOfLuke: VideoContentFields = {
@@ -14550,7 +14811,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 589,
         hls: 'https://arc.gt/u32wu',
         slug: 'lumo-luke-1-1-56/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14599,7 +14861,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 569,
         hls: 'https://arc.gt/2b5gh',
         slug: 'lumo-luke-1-57-2-40/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14648,7 +14911,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 498,
         hls: 'https://arc.gt/au7dx',
         slug: 'lumo-luke-2-41-3-38/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14697,7 +14961,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 462,
         hls: 'https://arc.gt/fc93c',
         slug: 'lumo-luke-4-1-44/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14746,7 +15011,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 504,
         hls: 'https://arc.gt/z2vgh',
         slug: 'lumo-luke-5-1-39/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14795,7 +15061,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 557,
         hls: 'https://arc.gt/5maud',
         slug: 'lumo-luke-6-1-49/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14844,7 +15111,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 566,
         hls: 'https://arc.gt/p1hfg',
         slug: 'lumo-luke-7-1-50/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14893,7 +15161,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 512,
         hls: 'https://arc.gt/k82tz',
         slug: 'lumo-luke-8-1-39/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14942,7 +15211,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 392,
         hls: 'https://arc.gt/6ju4l',
         slug: 'lumo-luke-8-40-9-17/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -14991,7 +15261,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 522,
         hls: 'https://arc.gt/8netz',
         slug: 'lumo-luke-9-18-62/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15040,7 +15311,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 471,
         hls: 'https://arc.gt/6ubai',
         slug: 'lumo-luke-10-1-42/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15089,7 +15361,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 571,
         hls: 'https://arc.gt/7vrkg',
         slug: 'lumo-luke-11-1-54/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15138,7 +15411,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 559,
         hls: 'https://arc.gt/aemhe',
         slug: 'lumo-luke-12-1-59/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15187,7 +15461,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 401,
         hls: 'https://arc.gt/dr554',
         slug: 'lumo-luke-13-1-35/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15238,7 +15513,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 456,
         hls: 'https://arc.gt/q1b8f',
         slug: 'lumo-luke-14-1-15-10/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15289,7 +15565,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 560,
         hls: 'https://arc.gt/ilq90',
         slug: 'lumo-luke-15-11-16-31/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15338,7 +15615,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 426,
         hls: 'https://arc.gt/pgarl',
         slug: 'lumo-luke-17-1-18-8/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15387,7 +15665,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 337,
         hls: 'https://arc.gt/uu5v0',
         slug: 'lumo-luke-18-9-43/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15436,7 +15715,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 368,
         hls: 'https://arc.gt/evb0i',
         slug: 'lumo-luke-19-1-44/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15487,7 +15767,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 500,
         hls: 'https://arc.gt/wde7d',
         slug: 'lumo-luke-19-45-20-47/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15536,7 +15817,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 345,
         hls: 'https://arc.gt/vezpq',
         slug: 'lumo-luke-21-1-36/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15587,7 +15869,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 381,
         hls: 'https://arc.gt/6r72l',
         slug: 'lumo-luke-21-37-22-38/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15638,7 +15921,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 552,
         hls: 'https://arc.gt/fu2n2',
         slug: 'lumo-luke-22-39-23-25/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15687,7 +15971,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 387,
         hls: 'https://arc.gt/7ntzj',
         slug: 'lumo-luke-23-26-56/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15736,7 +16021,8 @@ const gospelOfLuke: VideoContentFields = {
         duration: 530,
         hls: 'https://arc.gt/y5vu6',
         slug: 'lumo-luke-24-1-53/english'
-      }
+      },
+      childrenCount: 0
     },
     {
       __typename: 'Video',
@@ -15787,9 +16073,11 @@ const gospelOfLuke: VideoContentFields = {
         duration: 205,
         hls: 'https://arc.gt/0swho',
         slug: 'lumo-luke-end-credits/english'
-      }
+      },
+      childrenCount: 0
     }
-  ]
+  ],
+  childrenCount: 26
 }
 
 const jesusAndZacchaeus: VideoContentFields = {
@@ -15921,7 +16209,8 @@ const jesusAndZacchaeus: VideoContentFields = {
     }
   ],
   slug: 'storyclubs-jesus-and-zacchaeus',
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const birthOfJesus: VideoContentFields = {
@@ -16033,7 +16322,8 @@ const birthOfJesus: VideoContentFields = {
     }
   ],
   slug: 'birth-of-jesus',
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const fallingPlates: VideoContentFields = {
@@ -16139,7 +16429,8 @@ const fallingPlates: VideoContentFields = {
     }
   ],
   slug: 'fallingplates',
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const paulAndSilas: VideoContentFields = {
@@ -16252,7 +16543,8 @@ const paulAndSilas: VideoContentFields = {
     }
   ],
   slug: 'paul-and-silas-in-prison',
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const myLastDay: VideoContentFields = {
@@ -16412,9 +16704,11 @@ const myLastDay: VideoContentFields = {
         duration: 124,
         hls: 'https://arc.gt/qamjc',
         slug: 'my-last-day-trailer/english'
-      }
+      },
+      childrenCount: 0
     }
-  ]
+  ],
+  childrenCount: 1
 }
 
 const theBegining: VideoContentFields = {
@@ -16513,7 +16807,8 @@ const theBegining: VideoContentFields = {
     }
   ],
   slug: 'the-beginning',
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 export const videos: VideoContentFields[] = [
