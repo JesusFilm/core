@@ -40,6 +40,18 @@ describe('VideoContentPage', () => {
     expect(getByTestId('videos-carousel')).toBeInTheDocument()
   })
 
+  it('should render title on feature films', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoContentPage />
+        </VideoProvider>
+      </SnackbarProvider>
+    )
+
+    expect(getByRole('heading', { name: 'JESUS Scenes' })).toBeInTheDocument()
+  })
+
   it('should render share button', () => {
     const { getByRole } = render(
       <SnackbarProvider>
