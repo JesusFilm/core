@@ -194,6 +194,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         type = "fluentbit"
         options = {
           enable-ecs-log-metadata = "true"
+          config-file-type        = "file"
+          config-file-value       = "/fluent-bit/configs/parse-json.conf"
         }
       }
       logConfiguration = {
