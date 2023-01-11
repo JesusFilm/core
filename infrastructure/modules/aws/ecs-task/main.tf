@@ -86,6 +86,12 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           provider    = "ecs"
           retry_limit = "2"
         }
+        secretOptions = [
+          {
+            name      = "apikey"
+            valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+          }
+        ]
       }
       environment = []
       mountPoints = []
@@ -169,12 +175,6 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           awslogs-region        = data.aws_region.current.name
           awslogs-stream-prefix = "core"
         }
-        secretOptions = [
-          {
-            name      = "apikey"
-            valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
-          }
-        ]
       }
       volumesFrom = []
     },
