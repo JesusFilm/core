@@ -3,13 +3,13 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Navigation, A11y } from 'swiper'
 import Box from '@mui/system/Box'
 
-import { GetVideoChildren_children_children_children } from '../../../__generated__/GetVideoChildren'
+import { GetVideoChildren_video_children } from '../../../__generated__/GetVideoChildren'
 import { VideosCarouselNavButton } from './VideosCarouselNavButton/VideosCarouselNavButton'
 
 type auto = 'auto'
 
 export interface VideosCarouselProps {
-  videos: GetVideoChildren_children_children_children[]
+  videos: GetVideoChildren_video_children[]
   activeVideo: string
   renderItem: (props: unknown) => ReactNode
 }

@@ -27,7 +27,7 @@ import { VideoContentCarousel } from './VideoContentCarousel'
 export const GET_VIDEO_CHILDREN = gql`
   ${VIDEO_CHILD_FIELDS}
   query GetVideoChildren($id: ID!, $languageId: ID) {
-    children: video(id: $id, idType: slug) {
+    video(id: $id) {
       children {
         ...VideoChildFields
       }
@@ -51,7 +51,7 @@ export function VideoContentPage(): ReactElement {
 
   const { data, loading } = useQuery<GetVideoChildren>(GET_VIDEO_CHILDREN, {
     variables: {
-      id: variant?.slug
+      id: id
     }
   })
 
@@ -162,9 +162,9 @@ export function VideoContentPage(): ReactElement {
                   {title[0].value} Scenes
                 </Typography>
               </Container>
-              {!loading && data?.children != null && (
+              {!loading && data?.video?.children != null && (
                 <VideosCarousel
-                  videos={data.children.children}
+                  videos={data.video.children}
                   activeVideo={id}
                   renderItem={(props: Parameters<typeof VideoCard>[0]) => {
                     return (
