@@ -158,6 +158,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       portMappings = [
         {
           protocol      = "udp"
+          hostPort      = 8125
           containerPort = 8125
         }
       ]
@@ -169,14 +170,20 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           awslogs-stream-prefix = "core"
         }
       }
+      volumesFrom = []
     },
     # log router container
     {
-      name      = "${local.ecs_task_definition_family}-log-router"
-      image     = "amazon/aws-for-fluent-bit:stable"
-      essential = true
-      cpu       = 100
-      memory    = 100
+      name         = "${local.ecs_task_definition_family}-log-router"
+      image        = "amazon/aws-for-fluent-bit:stable"
+      essential    = true
+      cpu          = 100
+      memory       = 100
+      environment  = []
+      mountPoints  = []
+      portMappings = []
+      user         = "0"
+      volumesFrom  = []
       firelensConfiguration = {
         type = "fluentbit"
         options = {
