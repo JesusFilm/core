@@ -5,6 +5,8 @@ import {
   ApolloFederationDriver,
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
+import { LoggerModule } from 'nestjs-pino'
+import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { JourneyModule } from './modules/journey/journey.module'
@@ -34,7 +36,13 @@ import { TeamModule } from './modules/team/team.module'
       ],
       cors: true,
       context: ({ req }) => ({ headers: req.headers })
-    })
+    }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: process.env.ENV !== 'prod' ? 'trace' : 'info'
+      }
+    }),
+    DatadogTraceModule.forRoot()
   ]
 })
 export class AppModule {}
