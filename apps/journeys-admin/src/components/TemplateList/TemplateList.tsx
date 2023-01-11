@@ -33,9 +33,9 @@ export function TemplateList({
 
   const journeyListProps = {
     onLoad: activeTabOnLoad,
-    sortOrder: sortOrder,
+    sortOrder,
     event: activeEvent,
-    authUser: authUser
+    authUser
   }
 
   return (
