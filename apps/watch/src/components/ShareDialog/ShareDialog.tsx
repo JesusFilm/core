@@ -24,7 +24,7 @@ export function ShareDialog({
   ...dialogProps
 }: ShareDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const { description, snippet, id, image, title, children } = useVideo()
+  const { description, snippet, id, image, title, childrenCount } = useVideo()
   const [value, setValue] = useState(0)
   const theme = useTheme()
   const router = useRouter()
@@ -179,7 +179,7 @@ export function ShareDialog({
               <TwitterIcon sx={{ fontSize: 46 }} />
             </IconButton>
           </Stack>
-          {children.length > 0 ? (
+          {childrenCount > 0 ? (
             <ShareLink />
           ) : (
             <>

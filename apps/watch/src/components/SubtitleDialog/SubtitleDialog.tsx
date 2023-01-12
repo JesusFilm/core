@@ -39,7 +39,7 @@ export function SubtitleDialog({
 
     player.addRemoteTextTrack(
       {
-        id: id,
+        id,
         src: selected?.value,
         kind: 'subtitles',
         language:

@@ -35,7 +35,7 @@ export function ImageBlockEditor({
 
     const block = {
       ...selectedBlock,
-      src: src,
+      src,
       alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
     await onChange(block as ImageBlock)

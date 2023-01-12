@@ -14,7 +14,7 @@ export function createEmotionCache({
 }: EmotionCacheProps): EmotionCache {
   return createCache({
     key: 'css',
-    prepend: prepend,
+    prepend,
     stylisPlugins: rtl === true ? [prefixer, rtlPlugin] : []
   })
 }

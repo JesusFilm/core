@@ -7,7 +7,7 @@ import { globalTypes } from '../../../../../../.storybook/preview'
 import { getTheme, ThemeMode, ThemeName } from '../../libs/themes'
 
 const storybookMode = globalTypes.theme.toolbar.items
-type StorybookThemeMode = typeof storybookMode[number]
+type StorybookThemeMode = (typeof storybookMode)[number]
 
 interface ThemeDecoratorProps extends Pick<Parameters, 'layout'> {
   name?: ThemeName
