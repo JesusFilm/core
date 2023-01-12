@@ -3,6 +3,7 @@ import {
   VideoContentFields,
   VideoContentFields_variant as Variant
 } from '../../../../__generated__/VideoContentFields'
+import { GetVideoChildren_video_children as VideoSibling } from '../../../../__generated__/GetVideoChildren'
 import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/testData'
 import { VideoContentCarousel } from '.'
@@ -68,9 +69,15 @@ const onIconClick = { onShareClick: jest.fn(), onDownloadClick: jest.fn() }
 
 describe('VideoContentCarousel', () => {
   it('should display video title when playing on desktop', () => {
+    const videoChildren: VideoSibling[] = []
+
     const { getByRole } = render(
       <VideoProvider value={{ content: shortFilm }}>
-        <VideoContentCarousel playing {...onIconClick} />
+        <VideoContentCarousel
+          videoChildren={videoChildren}
+          playing
+          {...onIconClick}
+        />
       </VideoProvider>
     )
 
@@ -81,9 +88,15 @@ describe('VideoContentCarousel', () => {
 
   // TODO: unskip when we can configure breakpoints
   xit('should display video title and icon buttons when playing on mobile', () => {
+    const videoChildren: VideoSibling[] = []
+
     const { getByRole, getByTestId } = render(
       <VideoProvider value={{ content: shortFilm }}>
-        <VideoContentCarousel playing {...onIconClick} />
+        <VideoContentCarousel
+          videoChildren={videoChildren}
+          playing
+          {...onIconClick}
+        />
       </VideoProvider>
     )
 
@@ -99,9 +112,16 @@ describe('VideoContentCarousel', () => {
     it('should hide all children videos if present', () => {
       // Children usually present on feature film
       // Series and Collections which have children render on VideoContainerPage
+      const videoChildren: VideoSibling[] = [
+        { id: '1' } as unknown as VideoSibling
+      ]
+
       const { queryByTestId } = render(
         <VideoProvider value={{ content: featureFilm }}>
-          <VideoContentCarousel {...onIconClick} />
+          <VideoContentCarousel
+            videoChildren={videoChildren}
+            {...onIconClick}
+          />
         </VideoProvider>
       )
 
@@ -111,6 +131,21 @@ describe('VideoContentCarousel', () => {
 
   describe('content in container', () => {
     it('should display all sibling videos if content video has no children', () => {
+      const videoChildren: VideoSibling[] = collection.children.map((video) => {
+        return {
+          __typename: video.__typename,
+          id: video.id,
+          label: video.label,
+          title: video.title,
+          image: video.image,
+          imageAlt: video.imageAlt,
+          snippet: video.snippet,
+          slug: video.slug,
+          children: video.children,
+          variant: video.variant
+        }
+      })
+
       const { getAllByRole, getAllByTestId } = render(
         <VideoProvider
           value={{
@@ -118,7 +153,10 @@ describe('VideoContentCarousel', () => {
             container: collection
           }}
         >
-          <VideoContentCarousel {...onIconClick} />
+          <VideoContentCarousel
+            videoChildren={videoChildren}
+            {...onIconClick}
+          />
         </VideoProvider>
       )
 
@@ -140,6 +178,21 @@ describe('VideoContentCarousel', () => {
         children: [...series.children, shortFilm, shortFilm.children[0]]
       }
 
+      const videoChildren: VideoSibling[] = shortFilm.children.map((video) => {
+        return {
+          __typename: video.__typename,
+          id: video.id,
+          label: video.label,
+          title: video.title,
+          image: video.image,
+          imageAlt: video.imageAlt,
+          snippet: video.snippet,
+          slug: video.slug,
+          children: video.children,
+          variant: video.variant
+        }
+      })
+
       const { getAllByRole, getAllByTestId } = render(
         <VideoProvider
           value={{
@@ -147,13 +200,18 @@ describe('VideoContentCarousel', () => {
             container
           }}
         >
-          <VideoContentCarousel {...onIconClick} />
+          <VideoContentCarousel
+            videoChildren={videoChildren}
+            {...onIconClick}
+          />
         </VideoProvider>
       )
 
       const relatedVideos = getAllByTestId('VideoCard')
 
-      expect(relatedVideos).toHaveLength(series.children.length + 1 + 1)
+      console.log(relatedVideos)
+
+      expect(relatedVideos).toHaveLength(shortFilm.children.length)
 
       expect(relatedVideos[0]).toHaveAttribute(
         'href',

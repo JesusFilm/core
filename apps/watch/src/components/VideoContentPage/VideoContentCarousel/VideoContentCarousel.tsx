@@ -10,7 +10,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { flatten } from 'lodash'
 
-import { GetVideoChildren_video_children as VideoSiblings } from '../../../../__generated__/GetVideoChildren'
+import { GetVideoChildren_video_children as VideoSibling } from '../../../../__generated__/GetVideoChildren'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { useVideo } from '../../../libs/videoContext'
 import { VideosCarousel } from '../../VideosCarousel'
@@ -21,7 +21,7 @@ import { DownloadButton } from '../DownloadButton'
 
 interface VideoContentCarouselProps {
   playing?: boolean
-  videoChildren: VideoSiblings[]
+  videoChildren: VideoSibling[]
   onShareClick: () => void
   onDownloadClick: () => void
 }
@@ -35,8 +35,6 @@ export function VideoContentCarousel({
   const { title, id, container } = useVideo()
   const router = useRouter()
   const theme = useTheme()
-
-  // console.log(videoChildren)
 
   const activeVideoIndex = useMemo(() => {
     return container != null
@@ -95,9 +93,9 @@ export function VideoContentCarousel({
   }, [container, videoChildren])
 
   const sortedChildren = useMemo(() => {
-    const sorted: Array<VideoSiblings | VideoSiblings[]> = []
-    const episodes: VideoSiblings[] = []
-    const segments: VideoSiblings[] = []
+    const sorted: Array<VideoSibling | VideoSibling[]> = []
+    const episodes: VideoSibling[] = []
+    const segments: VideoSibling[] = []
 
     videoChildren.forEach((video) => {
       switch (video.label) {
@@ -127,8 +125,6 @@ export function VideoContentCarousel({
       sortedChildren.length > 0 ? sortedChildren.concat(siblings) : siblings,
     [siblings, sortedChildren]
   )
-
-  // console.log(videoChildren)
 
   return (
     <ThemeProvider
