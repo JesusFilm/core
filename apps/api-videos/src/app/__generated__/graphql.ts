@@ -7,6 +7,7 @@
 
 /* tslint:disable */
 /* eslint-disable */
+
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"

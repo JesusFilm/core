@@ -65,7 +65,7 @@ export function ContainedCover({
         playerRef.current?.currentTime(videoBlock?.startAt ?? 0)
         // plays youTube videos at the start time
         if (videoBlock?.source === VideoBlockSource.youTube)
-          playerRef.current?.play()
+          void playerRef.current?.play()
       })
       // Video jumps to new time and finishes loading
       playerRef.current.on('seeked', () => {

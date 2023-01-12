@@ -44,9 +44,9 @@ export function JourneyList({
 
   const journeyListProps = {
     onLoad: activeTabOnLoad,
-    sortOrder: sortOrder,
+    sortOrder,
     event: activeEvent,
-    authUser: authUser
+    authUser
   }
 
   return (

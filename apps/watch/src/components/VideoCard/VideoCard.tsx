@@ -49,7 +49,7 @@ export function VideoCard({
 }: VideoCardProps): ReactElement {
   const { label, color, childCountLabel } = getLabelDetails(
     video?.label,
-    video?.children.length ?? 0
+    video?.childrenCount ?? 0
   )
 
   return (
@@ -227,7 +227,7 @@ export function VideoCard({
                           />
                         </>
                       )}
-                      {video?.children.length === 0 && (
+                      {video?.childrenCount === 0 && (
                         <>
                           <PlayArrow sx={{ fontSize: '1rem' }} />
                           <Typography>
@@ -240,7 +240,7 @@ export function VideoCard({
                           </Typography>
                         </>
                       )}
-                      {(video?.children.length ?? 0) > 0 && (
+                      {(video?.childrenCount ?? 0) > 0 && (
                         <Typography>{childCountLabel.toLowerCase()}</Typography>
                       )}
                     </>
