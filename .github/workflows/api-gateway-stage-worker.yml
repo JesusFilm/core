@@ -64,58 +64,6 @@ jobs:
           projects: api-gateway
           args: --configuration="production"
 
-      - name: Build api-journeys-stage schema
-        run: rover subgraph introspect https://api-journeys-stage.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
-
-      - name: Build api-users-stage schema
-        run: rover subgraph introspect https://api-users-stage.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-users-schema.graphql
-
-      - name: Build api-languages-stage schema
-        run: rover subgraph introspect https://api-languages-stage.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-languages-schema.graphql
-
-      - name: Build api-videos-stage schema
-        run: rover subgraph introspect https://api-videos-stage.core.jesusfilm.org/graphql > dist/apps/api-gateway/api-videos-schema.graphql
-
-      - name: Build api-gateway schema
-        run: rover supergraph compose --config apps/api-gateway/supergraph-stage.yml > dist/apps/api-gateway/schema.graphql
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build, tag, and push the image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG -t $ECR_REGISTRY/jfp-api-gateway-stage:latest .  -f apps/api-gateway/Dockerfile
-          echo "Pushing image to ECR..."
-          docker push -a $ECR_REGISTRY/jfp-api-gateway-stage
-          echo "image=$ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-      - name: Deploy to Kubernetes cluster
-        uses: kodermax/kubectl-aws-eks@master
-        env:
-          KUBECTL_VERSION: 'v1.21.12'
-          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/jfp-api-gateway-stage:${{ env.IMAGE_TAG }}
-        with:
-          args: set image deployment/api-gateway-stage jfp-api-gateway-stage=${{ env.RELEASE_IMAGE }}
-
-      - name: Verify Kubernetes deployment
-        uses: kodermax/kubectl-aws-eks@master
-        env:
-          KUBECTL_VERSION: 'v1.21.12'
-        with:
-          args: rollout status deploy api-gateway-stage
-
       #ECS Deployment
       - name: Install Open VPN
         run: sudo apt-get install openvpn
@@ -133,18 +81,17 @@ jobs:
         timeout-minutes: 1
         run: until dig api-journeys.stage.internal A +time=1; do sleep 2; done
 
-      # TODO: Used once we have moved to ECS
-      # - name: Build api-journeys-stage schema
-      #   run: rover subgraph introspect http://api-journeys.stage.internal:4001/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
+      - name: Build api-journeys-stage schema
+        run: rover subgraph introspect http://api-journeys.stage.internal:4001/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
 
-      # - name: Build api-users-stage schema
-      #   run: rover subgraph introspect http://api-users.stage.internal:4002/graphql > dist/apps/api-gateway/api-users-schema.graphql
+      - name: Build api-users-stage schema
+        run: rover subgraph introspect http://api-users.stage.internal:4002/graphql > dist/apps/api-gateway/api-users-schema.graphql
 
-      # - name: Build api-languages-stage schema
-      #   run: rover subgraph introspect http://api-languages.stage.internal:4003/graphql > dist/apps/api-gateway/api-languages-schema.graphql
+      - name: Build api-languages-stage schema
+        run: rover subgraph introspect http://api-languages.stage.internal:4003/graphql > dist/apps/api-gateway/api-languages-schema.graphql
 
-      # - name: Build api-videos-stage schema
-      #   run: rover subgraph introspect https://api-videos.stage.internal:4004/graphql > dist/apps/api-gateway/api-videos-schema.graphql
+      - name: Build api-videos-stage schema
+        run: rover subgraph introspect https://api-videos.stage.internal:4004/graphql > dist/apps/api-gateway/api-videos-schema.graphql
 
       - name: Build api-gateway schema
         run: rover supergraph compose --config apps/api-gateway/supergraph-stage-ecs.yml > dist/apps/api-gateway/schema.graphql
@@ -171,13 +118,6 @@ jobs:
           docker push -a $ECR_REGISTRY/jfp-api-gateway-stage
           echo "image=$ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Download task definition
+      - name: Restart task definition
         run: |
-          aws ecs describe-task-definition --task-definition jfp-api-gateway-stage --query taskDefinition > task-definition.json
-      - name: Redeploy ECS service
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          service: api-gateway-stage-service
-          cluster: jfp-ecs-cluster-stage
-          wait-for-service-stability: true
+          aws ecs update-service --force-new-deployment --service api-gateway-stage-service --cluster jfp-ecs-cluster-stage
