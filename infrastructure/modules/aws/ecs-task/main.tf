@@ -82,7 +82,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           TLS         = "on"
           dd_service  = "ecs"
           dd_source   = "aws"
-          dd_tags     = "env:${var.env} app:${var.service_config.name} host:${local.ecs_task_definition_family}-app"
+          dd_tags     = "env:${var.env},app:${var.service_config.name},host:${local.ecs_task_definition_family}-app"
           provider    = "ecs"
           retry_limit = "2"
         }
@@ -194,6 +194,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         type = "fluentbit"
         options = {
           enable-ecs-log-metadata = "true"
+          config-file-type        = "file"
+          config-file-value       = "/fluent-bit/configs/parse-json.conf"
         }
       }
       logConfiguration = {
