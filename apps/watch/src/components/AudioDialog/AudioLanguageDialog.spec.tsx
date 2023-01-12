@@ -3,7 +3,7 @@ import { NextRouter, useRouter } from 'next/router'
 import { MockedProvider } from '@apollo/client/testing'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/testData'
-import { GET_LANGUAGES_SLUG } from './AudioLanguageDialog'
+import { getLanguagesSlugMock } from './testData'
 import { AudioLanguageDialog } from '.'
 
 jest.mock('next/router', () => ({
@@ -14,83 +14,9 @@ jest.mock('next/router', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('AudioLanguageDialog', () => {
-  const mocks = [
-    {
-      request: {
-        query: GET_LANGUAGES_SLUG,
-        variables: {
-          id: videos[0].variant?.slug
-        }
-      },
-      result: {
-        data: {
-          video: {
-            variantLanguagesWithSlug: [
-              {
-                __typename: 'LanguageWithSlug',
-                slug: 'jesus/english',
-                language: {
-                  id: '529',
-                  __typename: 'Language',
-                  name: [
-                    {
-                      value: 'English',
-                      primary: true,
-                      __typename: 'Translation'
-                    }
-                  ]
-                }
-              },
-              {
-                __typename: 'LanguageWithSlug',
-                slug: 'jesus/french',
-                language: {
-                  id: '496',
-                  __typename: 'Language',
-                  name: [
-                    {
-                      value: 'Français',
-                      primary: true,
-                      __typename: 'Translation'
-                    },
-                    {
-                      value: 'French',
-                      primary: false,
-                      __typename: 'Translation'
-                    }
-                  ]
-                }
-              },
-              {
-                __typename: 'LanguageWithSlug',
-                slug: 'jesus/Deutsch',
-                language: {
-                  id: '1106',
-                  __typename: 'Language',
-                  name: [
-                    {
-                      value: 'Deutsch',
-                      primary: true,
-                      __typename: 'Translation'
-                    },
-                    {
-                      value: 'German, Standard',
-                      primary: false,
-                      __typename: 'Translation'
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        }
-      }
-    }
-  ]
-
   it('should sort langauge options alphabetically', async () => {
     const { getByRole, queryAllByRole } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[getLanguagesSlugMock]}>
         <VideoProvider value={{ content: videos[0] }}>
           <AudioLanguageDialog open onClose={jest.fn()} />
         </VideoProvider>
@@ -120,7 +46,7 @@ describe('AudioLanguageDialog', () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
     const { getByRole, queryAllByRole } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[getLanguagesSlugMock]}>
         <VideoProvider value={{ content: videos[0] }}>
           <AudioLanguageDialog open onClose={jest.fn()} />
         </VideoProvider>

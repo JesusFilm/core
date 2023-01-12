@@ -4,6 +4,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/testData'
+import { getLanguagesSlugMock } from '../AudioDialog/testData'
 import { VideoContentPage } from '.'
 
 const VideoContentPageStory = {
@@ -19,7 +20,7 @@ const VideoContentPageStory = {
 const Template: Story<ComponentProps<typeof VideoContentPage>> = ({
   ...args
 }) => (
-  <MockedProvider>
+  <MockedProvider mocks={[getLanguagesSlugMock]}>
     <VideoProvider value={{ content: videos[0] }}>
       <VideoContentPage {...args} />
     </VideoProvider>

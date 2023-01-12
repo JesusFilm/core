@@ -4,6 +4,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/testData'
+import { getLanguagesSlugMock } from './testData'
 import { AudioLanguageDialog } from '.'
 
 const AudioLanguageDialogStory = {
@@ -15,7 +16,7 @@ const AudioLanguageDialogStory = {
 const Template: Story = () => {
   const [open, setOpen] = useState(true)
   return (
-    <MockedProvider>
+    <MockedProvider mocks={[getLanguagesSlugMock]}>
       <VideoProvider value={{ content: videos[0] }}>
         <AudioLanguageDialog open={open} onClose={() => setOpen(false)} />
       </VideoProvider>

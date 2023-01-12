@@ -7,6 +7,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../../libs/storybook'
 import { VideoProvider } from '../../../libs/videoContext'
 import { videos } from '../../Videos/testData'
+import { getLanguagesSlugMock } from '../../AudioDialog/testData'
 import { VideoHero } from './VideoHero'
 
 const VideoHeroStory = {
@@ -18,7 +19,7 @@ const VideoHeroStory = {
 const Template: Story = () => {
   const [hasPlayed, setHasPlayed] = useState(false)
   return (
-    <MockedProvider>
+    <MockedProvider mocks={[getLanguagesSlugMock]}>
       <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
         <VideoProvider value={{ content: videos[0] }}>
           <VideoHero onPlay={() => setHasPlayed(true)} hasPlayed={hasPlayed} />
