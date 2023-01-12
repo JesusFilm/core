@@ -236,9 +236,29 @@ describe('VideoContentCarousel', () => {
     })
 
     it('should display container labels and button for segment in feature film', () => {
+      const videoChildren: VideoSibling[] = featureFilm.children.map(
+        (video) => {
+          return {
+            __typename: video.__typename,
+            id: video.id,
+            label: video.label,
+            title: video.title,
+            image: video.image,
+            imageAlt: video.imageAlt,
+            snippet: video.snippet,
+            slug: video.slug,
+            children: video.children,
+            variant: video.variant
+          }
+        }
+      )
+
       const { getByTestId, getByRole } = render(
         <VideoProvider value={{ content: videos[19], container: featureFilm }}>
-          <VideoContentCarousel {...onIconClick} />
+          <VideoContentCarousel
+            videoChildren={videoChildren}
+            {...onIconClick}
+          />
         </VideoProvider>
       )
 
