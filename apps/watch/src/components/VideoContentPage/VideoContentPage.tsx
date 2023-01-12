@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 import { NextSeo } from 'next-seo'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import dynamic from 'next/dynamic'
 
 import 'video.js/dist/video-js.css'
@@ -17,23 +17,12 @@ import { ShareDialog } from '../ShareDialog'
 import { DownloadDialog } from '../DownloadDialog'
 import { ShareButton } from '../ShareButton'
 import { VideoCard } from '../VideoCard'
-import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
+import { GET_VIDEO_CHILDREN } from '../VideoContainerPage/VideoContainerPage'
 import { VideosCarouselProps } from '../VideosCarousel'
 import { DownloadButton } from './DownloadButton'
 import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
 import { VideoContentCarousel } from './VideoContentCarousel'
-
-export const GET_VIDEO_CHILDREN = gql`
-  ${VIDEO_CHILD_FIELDS}
-  query GetVideoChildren($id: ID!, $languageId: ID) {
-    video(id: $id) {
-      children {
-        ...VideoChildFields
-      }
-    }
-  }
-`
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
