@@ -28,7 +28,7 @@ export const GET_VIDEO_CHILDREN = gql`
 export function VideoContainerPage(): ReactElement {
   const { snippet, id, slug } = useVideo()
   const { data } = useQuery<GetVideoChildren>(GET_VIDEO_CHILDREN, {
-    variables: { id: id }
+    variables: { id }
   })
   const router = useRouter()
   const [shareDialog, setShareDialog] = useState<boolean>(false)
