@@ -1,4 +1,5 @@
-import './tracing'
+import '@core/nest/common/tracer'
+
 import { Logger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { Logger as PinoLogger } from 'nestjs-pino'

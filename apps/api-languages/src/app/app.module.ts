@@ -7,6 +7,7 @@ import {
 } from '@nestjs/apollo'
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
+import { ApolloServerPluginInlineTraceDisabled } from 'apollo-server-core'
 import { LanguageModule } from './modules/language/language.module'
 import { TranslationModule } from './modules/translation/translation.module'
 import { CountryModule } from './modules/country/country.module'
@@ -23,7 +24,11 @@ import { CountryModule } from './modules/country/country.module'
         join(process.cwd(), 'assets/**/*.graphql')
       ],
       cors: true,
-      context: ({ req }) => ({ headers: req.headers })
+      context: ({ req }) => ({ headers: req.headers }),
+      plugins:
+        process.env.NODE_ENV !== 'production'
+          ? [ApolloServerPluginInlineTraceDisabled]
+          : undefined
     }),
     LoggerModule.forRoot({
       pinoHttp: {
@@ -32,7 +37,9 @@ import { CountryModule } from './modules/country/country.module'
             ? {
                 target: 'pino-pretty',
                 options: {
-                  singleLine: true
+                  singleLine: true,
+                  colorize: true,
+                  timestampKey: ''
                 }
               }
             : undefined,
