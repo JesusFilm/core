@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Meta, Story } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/testData'
@@ -14,9 +15,11 @@ const AudioLanguageDialogStory = {
 const Template: Story = () => {
   const [open, setOpen] = useState(true)
   return (
-    <VideoProvider value={{ content: videos[0] }}>
-      <AudioLanguageDialog open={open} onClose={() => setOpen(false)} />
-    </VideoProvider>
+    <MockedProvider>
+      <VideoProvider value={{ content: videos[0] }}>
+        <AudioLanguageDialog open={open} onClose={() => setOpen(false)} />
+      </VideoProvider>
+    </MockedProvider>
   )
 }
 

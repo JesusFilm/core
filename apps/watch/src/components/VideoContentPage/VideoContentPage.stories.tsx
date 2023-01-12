@@ -1,5 +1,6 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/testData'
@@ -18,9 +19,11 @@ const VideoContentPageStory = {
 const Template: Story<ComponentProps<typeof VideoContentPage>> = ({
   ...args
 }) => (
-  <VideoProvider value={{ content: videos[0] }}>
-    <VideoContentPage {...args} />
-  </VideoProvider>
+  <MockedProvider>
+    <VideoProvider value={{ content: videos[0] }}>
+      <VideoContentPage {...args} />
+    </VideoProvider>
+  </MockedProvider>
 )
 
 export const Default = Template.bind({})
