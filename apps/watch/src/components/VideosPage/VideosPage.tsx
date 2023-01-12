@@ -1,6 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
 import { ReactElement, useEffect, useState } from 'react'
-import { useQueryState } from 'use-location-state'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
@@ -56,11 +55,11 @@ function isAtEnd(count: number, limit: number, previousCount: number): boolean {
 export function VideosPage(): ReactElement {
   const languageContext = useLanguage()
   const [isEnd, setIsEnd] = useState(false)
-  const [previousCount, setPreviousCount] = useQueryState('count', 0)
-  const [languageFilter, setLanguageFilter] = useQueryState<string[]>('al', [])
-  const [subtitleLanguageFilter, setSubtitleLanguageFilter] = useQueryState<
+  const [previousCount, setPreviousCount] = useState(0)
+  const [languageFilter, setLanguageFilter] = useState<string[]>([])
+  const [subtitleLanguageFilter, setSubtitleLanguageFilter] = useState<
     string[]
-  >('sl', [])
+  >([])
   const [filter, setFilter] = useState<VideosFilter>({
     availableVariantLanguageIds:
       languageFilter.length > 0 ? languageFilter : undefined,
@@ -74,7 +73,7 @@ export function VideosPage(): ReactElement {
       variables: {
         where: filter,
         offset: 0,
-        limit: limit,
+        limit,
         languageId: languageContext?.id ?? '529'
       },
       notifyOnNetworkStatusChange: true
@@ -105,7 +104,7 @@ export function VideosPage(): ReactElement {
     void refetch({
       where: filter,
       offset: 0,
-      limit: limit,
+      limit,
       languageId: languageContext?.id ?? '529'
     })
   }, [filter, refetch, languageContext])
@@ -228,7 +227,7 @@ export function VideosPage(): ReactElement {
               }}
             />
           </Stack>
-          <Box>
+          <Box sx={{ width: '100%' }}>
             <VideoGrid
               videos={data?.videos ?? []}
               onLoadMore={handleLoadMore}

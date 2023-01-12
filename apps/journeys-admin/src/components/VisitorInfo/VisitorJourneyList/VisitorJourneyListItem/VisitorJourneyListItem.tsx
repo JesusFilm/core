@@ -28,7 +28,7 @@ export function VisitorJourneyListItem({
   function handleClick(): void {
     dispatch({
       type: 'SetJourneyAction',
-      journey: journey
+      journey
     })
   }
 

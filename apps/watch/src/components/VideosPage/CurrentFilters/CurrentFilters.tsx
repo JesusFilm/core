@@ -46,7 +46,6 @@ export function CurrentFilters({
             <Chip
               key={language.id}
               variant="outlined"
-              // TODO: chip is inheriting a transparency from somewhere
               color="primary"
               label={`audio: ${
                 language.name[1]?.value ?? language.name[0]?.value
@@ -67,7 +66,6 @@ export function CurrentFilters({
             <Chip
               key={language.id}
               variant="outlined"
-              // TODO: chip is inheriting a transparency from somewhere
               color="primary"
               label={`sub: ${
                 language.name[1]?.value ?? language.name[0]?.value

@@ -30,6 +30,7 @@ const nextConfig = {
     defaultLocale: 'en',
     localeDetection: false
   },
-  trailingSlash: true
+  trailingSlash: true,
+  productionBrowserSourceMaps: true
 }
 module.exports = withPlugins([[withBundleAnalyzer], [withNx]], nextConfig)
