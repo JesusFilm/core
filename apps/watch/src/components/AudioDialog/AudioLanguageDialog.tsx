@@ -12,7 +12,7 @@ import { useVideo } from '../../libs/videoContext'
 
 export const GET_LANGUAGES_SLUG = gql`
   query GetLanguagesSlug($id: ID!) {
-    video(id: $id, idType: slug) {
+    video(id: $id, idType: databaseId) {
       variantLanguagesWithSlug {
         slug
         language {
@@ -28,18 +28,18 @@ export const GET_LANGUAGES_SLUG = gql`
 `
 
 interface AudioLanguageDialogProps
-  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
+  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> { }
 
 export function AudioLanguageDialog({
   open,
   onClose
 }: AudioLanguageDialogProps): ReactElement {
-  const { variant, variantLanguagesCount } = useVideo()
+  const { id, variant, variantLanguagesCount } = useVideo()
   const router = useRouter()
 
   const { data } = useQuery<GetLanguagesSlug>(GET_LANGUAGES_SLUG, {
     variables: {
-      id: variant?.slug
+      id
     }
   })
 
@@ -68,14 +68,14 @@ export function AudioLanguageDialog({
               language:
                 variant != null
                   ? {
-                      id: variant?.id,
-                      localName: variant?.language.name.find(
-                        ({ primary }) => !primary
-                      )?.value,
-                      nativeName: variant?.language.name.find(
-                        ({ primary }) => primary
-                      )?.value
-                    }
+                    id: variant?.id,
+                    localName: variant?.language.name.find(
+                      ({ primary }) => !primary
+                    )?.value,
+                    nativeName: variant?.language.name.find(
+                      ({ primary }) => primary
+                    )?.value
+                  }
                   : undefined
             }
           }),
@@ -92,14 +92,14 @@ export function AudioLanguageDialog({
             language:
               variant != null
                 ? {
-                    id: variant?.id,
-                    localName: variant?.language?.name.find(
-                      ({ primary }) => !primary
-                    )?.value,
-                    nativeName: variant?.language?.name.find(
-                      ({ primary }) => primary
-                    )?.value
-                  }
+                  id: variant?.id,
+                  localName: variant?.language?.name.find(
+                    ({ primary }) => !primary
+                  )?.value,
+                  nativeName: variant?.language?.name.find(
+                    ({ primary }) => primary
+                  )?.value
+                }
                 : undefined
           }}
           onSubmit={handleSubmit}
