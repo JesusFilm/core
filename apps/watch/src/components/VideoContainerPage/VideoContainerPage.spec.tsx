@@ -47,27 +47,6 @@ const video = {
 } as unknown as VideoContentFields
 
 describe('VideoContainerPage', () => {
-  const result = jest.fn(() => ({
-    data: {
-      video: [
-        {
-          children: { ...video }
-        }
-      ]
-    }
-  }))
-  const mocks = [
-    {
-      request: {
-        query: GET_VIDEO_CHILDREN,
-        variables: {
-          id: video.id
-        }
-      },
-      result
-    }
-  ]
-
   it('should render ContainerHero', () => {
     const { getByText } = render(
       <MockedProvider>
@@ -112,8 +91,28 @@ describe('VideoContainerPage', () => {
   })
 
   it('should get videos', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        video: {
+          children: [{ ...video }]
+        }
+      }
+    }))
+
     render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_VIDEO_CHILDREN,
+              variables: {
+                id: video.id
+              }
+            },
+            result
+          }
+        ]}
+      >
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>
             <VideoContainerPage />
