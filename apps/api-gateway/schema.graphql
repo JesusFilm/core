@@ -1188,6 +1188,9 @@ type Video
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
 {
   children: [Video!]! @join__field(graph: VIDEOS)
+
+  """the number value of the amount of children on a video"""
+  childrenCount: Int! @join__field(graph: VIDEOS)
   description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   id: ID! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
