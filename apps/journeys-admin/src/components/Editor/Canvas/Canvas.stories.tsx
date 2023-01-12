@@ -600,7 +600,7 @@ const Template: Story = ({ ...args }) => {
           admin: true
         }}
       >
-        <EditorProvider initialState={{ steps: steps }}>
+        <EditorProvider initialState={{ steps }}>
           <Canvas />
         </EditorProvider>
       </JourneyProvider>
