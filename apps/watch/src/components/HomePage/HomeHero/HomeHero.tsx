@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import JesusHeader from '../../../../public/images/jesus-header.jpg'
+import { HeroOverlay } from '../../HeroOverlay'
 
 export function HomeHero(): ReactElement {
   return (
@@ -26,22 +27,13 @@ export function HomeHero(): ReactElement {
         placeholder="blur"
         priority
       />
-      <Box
-        sx={{
-          zIndex: 1,
-          position: 'absolute',
-          height: '100%',
-          width: '100%',
-          background:
-            'linear-gradient(180deg, rgba(50, 50, 51, 0) 64%, rgba(38, 38, 38, 0.3) 76%, rgba(27, 27, 28, 0.46) 86%, #000000 100%), linear-gradient(90deg, #141414 16%, rgba(10, 10, 10, 0.5) 24%, rgba(4, 4, 4, 0.2) 31%, rgba(0, 0, 0, 0) 40%)'
-        }}
-      />
+      <HeroOverlay />
       <Container
         maxWidth="xxl"
         sx={{ display: 'flex', justifyContent: 'center', pt: 30 }}
       >
         <Stack
-          direction={{ xs: 'column', lg: 'row' }}
+          direction={{ lg: 'column', xl: 'row' }}
           alignContent="center"
           sx={{ zIndex: 2 }}
         >

@@ -34,7 +34,7 @@ export function VideosHero(): ReactElement {
             color="text.primary"
             sx={{ textShadow: '0px 3px 4px rgba(0, 0, 0, 0.25)' }}
           >
-            Our full collection
+            Jesus Film Collection
           </Typography>
         </Container>
       </Box>
