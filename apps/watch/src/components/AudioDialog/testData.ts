@@ -5,7 +5,7 @@ export const getLanguagesSlugMock = {
   request: {
     query: GET_LANGUAGES_SLUG,
     variables: {
-      id: videos[0].variant?.slug
+      id: videos[0].id
     }
   },
   result: {
