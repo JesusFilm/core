@@ -8,7 +8,9 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "rules": {}
+      "parserOptions": {
+        "project": ["libs/nest/common/tsconfig.*?.json"]
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
