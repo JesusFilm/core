@@ -13,6 +13,7 @@ interface FooterLinkProps {
   src?: string
   width?: string
   height?: string
+  noFollow?: boolean
 }
 
 export function FooterLink({
@@ -22,14 +23,15 @@ export function FooterLink({
   underline = 'none',
   src,
   width,
-  height
+  height,
+  noFollow = false
 }: FooterLinkProps): ReactElement {
   return (
     <MuiLink
       href={url}
       underline={underline}
       target="_blank"
-      rel="noopener"
+      rel={noFollow ? 'nofollow' : 'noopener'}
       color="text.primary"
     >
       {src == null ? (
