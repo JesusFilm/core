@@ -151,7 +151,7 @@ export function VideoBlockEditorSettingsPosterDialog({
       variables: {
         input: {
           journeyId: journey.id,
-          parentBlockId: parentBlockId,
+          parentBlockId,
           src: block.src,
           alt: block.alt
         }
