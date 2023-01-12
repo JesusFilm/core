@@ -95,7 +95,7 @@ export function Video({
         playerRef.current?.currentTime(startAt ?? 0)
         // plays youTube videos at the start time
         if (source === VideoBlockSource.youTube && autoplay === true)
-          playerRef.current?.play()
+          void playerRef.current?.play()
       })
 
       if (selectedBlock === undefined) {

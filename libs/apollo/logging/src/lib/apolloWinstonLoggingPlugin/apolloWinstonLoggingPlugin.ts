@@ -43,7 +43,7 @@ export const apolloWinstonLoggingPlugin = (
 ): ApolloServerPlugin => {
   const logger = winston.createLogger({
     level: opts.level ?? 'error',
-    transports: transports
+    transports
   })
   if (process.env.AWS_ACCESS_KEY_ID != null) {
     AWS.config.update({
