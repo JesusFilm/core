@@ -143,7 +143,7 @@ describe('updatedSelected', () => {
       siblings: [step1, step2],
       type: 'StepBlock',
       steps,
-      selectedStep: selectedStep
+      selectedStep
     }
     const expected: SetSelectedStepAction = {
       type: 'SetSelectedStepAction',

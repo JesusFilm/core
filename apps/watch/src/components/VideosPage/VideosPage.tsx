@@ -73,7 +73,7 @@ export function VideosPage(): ReactElement {
       variables: {
         where: filter,
         offset: 0,
-        limit: limit,
+        limit,
         languageId: languageContext?.id ?? '529'
       },
       notifyOnNetworkStatusChange: true
@@ -104,7 +104,7 @@ export function VideosPage(): ReactElement {
     void refetch({
       where: filter,
       offset: 0,
-      limit: limit,
+      limit,
       languageId: languageContext?.id ?? '529'
     })
   }, [filter, refetch, languageContext])
