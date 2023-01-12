@@ -143,19 +143,10 @@ jobs:
           docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Download task definition
+      - name: Restart task definition
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: |
-          aws ecs describe-task-definition --task-definition ${{ inputs.repository }} --query taskDefinition > task-definition.json
-
-      - name: Redeploy ECS service
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          service: ${{ inputs.ecs_service }}
-          cluster: ${{ inputs.ecs_cluster }}
-          wait-for-service-stability: true
+          aws ecs update-service --force-new-deployment --service ${{ inputs.ecs_service }} --cluster $${{ inputs.ecs_cluster }}
 
       - name: Get affected app seed
         run: echo "dbs=$(git diff --name-only HEAD~1 HEAD | grep 'apps/${{ inputs.name }}/db/seed.ts')" >> $GITHUB_OUTPUT

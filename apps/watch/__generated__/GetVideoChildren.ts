@@ -74,6 +74,10 @@ export interface GetVideoChildren_video_children {
   slug: string;
   children: GetVideoChildren_video_children_children[];
   variant: GetVideoChildren_video_children_variant | null;
+  /**
+   * the number value of the amount of children on a video
+   */
+  childrenCount: number;
 }
 
 export interface GetVideoChildren_video {
