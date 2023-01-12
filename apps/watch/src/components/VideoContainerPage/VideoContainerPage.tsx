@@ -26,8 +26,7 @@ export const GET_VIDEO_CHILDREN = gql`
 
 // Usually Series or Collection Videos
 export function VideoContainerPage(): ReactElement {
-  const video = useVideo()
-  const { snippet, id } = video
+  const { snippet, id, slug } = useVideo()
   const { data } = useQuery<GetVideoChildren>(GET_VIDEO_CHILDREN, {
     variables: { id: id }
   })
@@ -67,7 +66,7 @@ export function VideoContainerPage(): ReactElement {
           <Box>
             {data?.video?.children != null && (
               <VideoGrid
-                containerSlug={video.slug}
+                containerSlug={slug}
                 videos={data.video.children}
                 variant="expanded"
               />
