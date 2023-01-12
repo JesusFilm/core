@@ -8,8 +8,19 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import dynamic from 'next/dynamic'
 import { useVideo } from '../../../libs/videoContext'
-import { AudioLanguageDialog } from '../../AudioDialog'
+
+const DynamicAudioLanguageDialog = dynamic<{
+  open: boolean,
+  onClose: () => void
+}>(
+  async () =>
+    await import(
+      /* webpackChunkName: "AudioLanguageDialog" */
+      '../../AudioDialog'
+    ).then((mod) => mod.AudioLanguageDialog)
+)
 
 interface AudioLanguageButtonProps {
   componentVariant: 'button' | 'icon'
@@ -76,10 +87,12 @@ export function AudioLanguageButton({
           <LanguageOutlined sx={{ color: '#ffffff' }} />
         </IconButton>
       )}
-      <AudioLanguageDialog
-        open={openAudioLanguage}
-        onClose={() => setOpenAudioLanguage(false)}
-      />
+      {openAudioLanguage && (
+        <DynamicAudioLanguageDialog
+          open={openAudioLanguage}
+          onClose={() => setOpenAudioLanguage(false)}
+        />
+      )}
     </ThemeProvider>
   )
 }

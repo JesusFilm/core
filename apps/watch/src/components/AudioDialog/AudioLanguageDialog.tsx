@@ -28,7 +28,7 @@ export const GET_LANGUAGES_SLUG = gql`
 `
 
 interface AudioLanguageDialogProps
-  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
+  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> { }
 
 export function AudioLanguageDialog({
   open,
@@ -68,14 +68,14 @@ export function AudioLanguageDialog({
               language:
                 variant != null
                   ? {
-                      id: variant?.id,
-                      localName: variant?.language.name.find(
-                        ({ primary }) => !primary
-                      )?.value,
-                      nativeName: variant?.language.name.find(
-                        ({ primary }) => primary
-                      )?.value
-                    }
+                    id: variant?.id,
+                    localName: variant?.language.name.find(
+                      ({ primary }) => !primary
+                    )?.value,
+                    nativeName: variant?.language.name.find(
+                      ({ primary }) => primary
+                    )?.value
+                  }
                   : undefined
             }
           }),
@@ -85,62 +85,66 @@ export function AudioLanguageDialog({
   }
 
   return (
-    <Formik
-      initialValues={{
-        language:
-          variant != null
-            ? {
-                id: variant?.id,
-                localName: variant?.language?.name.find(
-                  ({ primary }) => !primary
-                )?.value,
-                nativeName: variant?.language?.name.find(
-                  ({ primary }) => primary
-                )?.value
-              }
-            : undefined
-      }}
-      onSubmit={handleSubmit}
-    >
-      {({ values, setFieldValue, resetForm }) => (
-        <Dialog
-          open={open}
-          onClose={handleClose(resetForm)}
-          dialogTitle={{
-            icon: <LanguageIcon sx={{ mr: 3 }} />,
-            title: 'Language'
+    <>
+      {languages != null && (
+        <Formik
+          initialValues={{
+            language:
+              variant != null
+                ? {
+                  id: variant?.id,
+                  localName: variant?.language?.name.find(
+                    ({ primary }) => !primary
+                  )?.value,
+                  nativeName: variant?.language?.name.find(
+                    ({ primary }) => primary
+                  )?.value
+                }
+                : undefined
           }}
-          divider
+          onSubmit={handleSubmit}
         >
-          <Form>
-            <LanguageAutocomplete
-              onChange={(value) => {
-                setFieldValue('language', value)
-                if (value != null) handleSubmit(value)
+          {({ values, setFieldValue, resetForm }) => (
+            <Dialog
+              open={open}
+              onClose={handleClose(resetForm)}
+              dialogTitle={{
+                icon: <LanguageIcon sx={{ mr: 3 }} />,
+                title: 'Language'
               }}
-              value={values.language}
-              languages={languages}
-              loading={languages == null}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  hiddenLabel
-                  placeholder="Search Language"
-                  label="Language"
-                  helperText={`${String(
-                    variantLanguagesCount
-                  )} Languages Available`}
-                  sx={{
-                    '> .MuiOutlinedInput-root': {
-                      borderRadius: 2
-                    }
+              divider
+            >
+              <Form>
+                <LanguageAutocomplete
+                  onChange={(value) => {
+                    setFieldValue('language', value)
+                    if (value != null) handleSubmit(value)
                   }}
+                  value={values.language}
+                  languages={languages}
+                  loading={languages == null}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      hiddenLabel
+                      placeholder="Search Language"
+                      label="Language"
+                      helperText={`${String(
+                        variantLanguagesCount
+                      )} Languages Available`}
+                      sx={{
+                        '> .MuiOutlinedInput-root': {
+                          borderRadius: 2
+                        }
+                      }}
+                    />
+                  )}
                 />
-              )}
-            />
-          </Form>
-        </Dialog>
+              </Form>
+            </Dialog>
+          )}
+        </Formik>
       )}
-    </Formik>
+    </>
   )
 }
