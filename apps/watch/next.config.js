@@ -33,7 +33,7 @@ const nextConfig = {
   productionBrowserSourceMaps: true
 }
 module.exports = (_phase, { defaultConfig }) => {
-  const plugins = [withBundleAnalyzer]
+  const plugins = [withBundleAnalyzer, withNx]
   return plugins.reduce((acc, plugin) => plugin(acc), {
     ...defaultConfig,
     ...nextConfig
