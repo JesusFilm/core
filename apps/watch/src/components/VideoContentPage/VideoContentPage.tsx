@@ -38,11 +38,19 @@ export function VideoContentPage(): ReactElement {
     label
   } = useVideo()
 
-  const { data, loading } = useQuery<GetVideoChildren>(GET_VIDEO_CHILDREN, {
-    variables: {
-      id: id
+  const { data: videoData, loading } = useQuery<GetVideoChildren>(
+    GET_VIDEO_CHILDREN,
+    {
+      variables: { id }
     }
-  })
+  )
+
+  const { data: containerVideoData } = useQuery<GetVideoChildren>(
+    GET_VIDEO_CHILDREN,
+    {
+      variables: { id: container?.id ?? '' }
+    }
+  )
 
   const VideosCarousel = dynamic<VideosCarouselProps>(
     async () =>
@@ -99,11 +107,14 @@ export function VideoContentPage(): ReactElement {
         }
       >
         <>
-          <VideoContentCarousel
-            playing={hasPlayed}
-            onShareClick={() => setOpenShare(true)}
-            onDownloadClick={() => setOpenDownload(true)}
-          />
+          {containerVideoData?.video?.children != null && (
+            <VideoContentCarousel
+              playing={hasPlayed}
+              videoChildren={containerVideoData.video.children}
+              onShareClick={() => setOpenShare(true)}
+              onDownloadClick={() => setOpenDownload(true)}
+            />
+          )}
           <Container maxWidth="xxl" sx={{ mb: 24 }}>
             <Stack
               direction="row"
@@ -151,9 +162,9 @@ export function VideoContentPage(): ReactElement {
                   {title[0].value} Scenes
                 </Typography>
               </Container>
-              {!loading && data?.video?.children != null && (
+              {!loading && videoData?.video?.children != null && (
                 <VideosCarousel
-                  videos={data.video.children}
+                  videos={videoData.video.children}
                   activeVideo={id}
                   renderItem={(props: Parameters<typeof VideoCard>[0]) => {
                     return (

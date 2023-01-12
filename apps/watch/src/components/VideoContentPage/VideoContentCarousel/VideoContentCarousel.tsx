@@ -8,8 +8,9 @@ import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
+import { flatten } from 'lodash'
 
-import { VideoContentFields_children as VideoChildren } from '../../../../__generated__/VideoContentFields'
+import { GetVideoChildren_video_children as VideoSiblings } from '../../../../__generated__/GetVideoChildren'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { useVideo } from '../../../libs/videoContext'
 import { VideosCarousel } from '../../VideosCarousel'
@@ -20,24 +21,28 @@ import { DownloadButton } from '../DownloadButton'
 
 interface VideoContentCarouselProps {
   playing?: boolean
+  videoChildren: VideoSiblings[]
   onShareClick: () => void
   onDownloadClick: () => void
 }
 
 export function VideoContentCarousel({
   playing = false,
+  videoChildren,
   onShareClick,
   onDownloadClick
 }: VideoContentCarouselProps): ReactElement {
-  const { title, id, children, container } = useVideo()
+  const { title, id, container } = useVideo()
   const router = useRouter()
   const theme = useTheme()
 
+  // console.log(videoChildren)
+
   const activeVideoIndex = useMemo(() => {
     return container != null
-      ? container.children.findIndex((child) => child.id === id) + 1
+      ? videoChildren.findIndex((child) => child.id === id) + 1
       : -1
-  }, [container, id])
+  }, [videoChildren, container, id])
 
   const progressionLabel = useMemo(() => {
     if (container != null) {
@@ -45,17 +50,17 @@ export function VideoContentCarousel({
         case VideoLabel.collection:
           return `${getLabelDetails(
             container.label,
-            container.children.length
+            videoChildren.length
           ).childCountLabel.toLowerCase()}`
         case VideoLabel.featureFilm:
         case VideoLabel.series:
           return `${getLabelDetails(container.label).childLabel} 
-    ${activeVideoIndex} of ${container.children.length}`
+    ${activeVideoIndex} of ${videoChildren.length}`
         default:
           return ''
       }
     }
-  }, [container, activeVideoIndex])
+  }, [container, activeVideoIndex, videoChildren])
 
   const buttonLink =
     container != null && router != null
@@ -78,23 +83,23 @@ export function VideoContentCarousel({
 
   const siblings = useMemo(() => {
     if (container != null) {
-      return (container?.children ?? []).filter((siblingVideo) => {
+      return videoChildren.filter((siblingVideo) => {
         return (
-          children.findIndex(
+          videoChildren.findIndex(
             (childVideo) => childVideo.id === siblingVideo.id
           ) < 0
         )
       })
     }
     return []
-  }, [container, children])
+  }, [container, videoChildren])
 
   const sortedChildren = useMemo(() => {
-    const sorted: Array<VideoChildren | VideoChildren[]> = []
-    const episodes: VideoChildren[] = []
-    const segments: VideoChildren[] = []
+    const sorted: Array<VideoSiblings | VideoSiblings[]> = []
+    const episodes: VideoSiblings[] = []
+    const segments: VideoSiblings[] = []
 
-    children.forEach((video) => {
+    videoChildren.forEach((video) => {
       switch (video.label) {
         case VideoLabel.episode:
           if (episodes.length === 0) {
@@ -115,13 +120,15 @@ export function VideoContentCarousel({
     })
 
     return sorted
-  }, [children])
+  }, [videoChildren])
 
   const relatedVideos = useMemo(
     () =>
       sortedChildren.length > 0 ? sortedChildren.concat(siblings) : siblings,
     [siblings, sortedChildren]
   )
+
+  // console.log(videoChildren)
 
   return (
     <ThemeProvider
@@ -220,8 +227,8 @@ export function VideoContentCarousel({
                 {activeVideoIndex}/
                 {container != null && relatedVideos.length > 0
                   ? relatedVideos.length
-                  : children.length > 0
-                  ? children.length
+                  : videoChildren.length > 0
+                  ? videoChildren.length
                   : 0}
               </Typography>
             </Stack>
@@ -229,7 +236,7 @@ export function VideoContentCarousel({
         </Container>
         {container != null && (
           <VideosCarousel
-            videos={relatedVideos}
+            videos={flatten(relatedVideos)}
             activeVideo={id}
             renderItem={(props: Parameters<typeof VideoCard>[0]) => {
               return (
