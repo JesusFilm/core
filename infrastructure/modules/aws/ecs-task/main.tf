@@ -39,19 +39,7 @@ resource "aws_ssm_parameter" "parameters" {
   }
 }
 
-
-module "ecs_datadog_agent" {
-  source               = "hazelops/ecs-datadog-agent/aws"
-  version              = "3.2.0"
-  app_name             = var.service_config.name
-  cloudwatch_log_group = resource.aws_cloudwatch_log_group.ecs_cw_log_group.name
-  ecs_launch_type      = "FARGATE"
-  env                  = var.env
-  name                 = "${local.ecs_task_definition_family}-datadog-agent"
-}
-
-
-#Create task definitions for app services
+# Create task definitions for app services
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   family                   = local.ecs_task_definition_family
   execution_role_arn       = var.ecs_config.task_execution_role_arn
@@ -61,12 +49,13 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   cpu                      = var.service_config.cpu
 
   container_definitions = jsonencode([
+    # app container
     {
       name      = "${local.ecs_task_definition_family}-app"
       image     = "${aws_ecr_repository.ecr_repository.repository_url}:latest"
+      essential = true
       cpu       = var.service_config.cpu
       memory    = var.service_config.memory
-      essential = true
       portMappings = [
         {
           containerPort = var.service_config.container_port
@@ -74,42 +63,139 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           protocol      = "tcp"
         }
       ]
-      secrets = [
+      secrets = concat([
         for param in aws_ssm_parameter.parameters : {
           name      = param.tags.name
           valueFrom = param.arn
         }
-      ]
+        ], [
+        {
+          name      = "DD_API_KEY"
+          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+        }
+      ])
       logConfiguration = {
-        logDriver = "awsfirelens",
+        logDriver = "awsfirelens"
         options = {
-          Name        = "datadog",
-          Host        = "http-intake.logs.datadoghq.com",
-          TLS         = "on",
-          dd_service  = "my-httpd-service",
-          dd_source   = "httpd",
-          dd_tags     = "env:${var.env} app:${var.service_config.name}",
-          provider    = "ecs",
-          retry_limit = "2",
-        },
-        secretOptions = [{
-          name      = "apikey",
-          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${var.env}/global/DD_API_KEY"
-        }]
-      },
+          Name        = "datadog"
+          Host        = "http-intake.logs.datadoghq.com"
+          TLS         = "on"
+          dd_service  = "ecs"
+          dd_source   = "aws"
+          dd_tags     = "env:${var.env},app:${var.service_config.name},host:${local.ecs_task_definition_family}-app"
+          provider    = "ecs"
+          retry_limit = "2"
+        }
+        secretOptions = [
+          {
+            name      = "apikey"
+            valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+          }
+        ]
+      }
       environment = []
       mountPoints = []
       volumesFrom = []
     },
-    module.ecs_datadog_agent.container_definition,
+    # datadog agent container
     {
-      essential = true
-      image     = "amazon/aws-for-fluent-bit:stable"
-      name      = "${local.ecs_task_definition_family}-log-router"
+      name              = "${local.ecs_task_definition_family}-datadog-agent"
+      image             = "public.ecr.aws/datadog/agent:latest"
+      essential         = true
+      cpu               = 0
+      memoryReservation = 128
+      environment = [
+        {
+          name  = "DD_APM_ENABLED",
+          value = "true"
+        },
+        {
+          name  = "DD_DOGSTATSD_NON_LOCAL_TRAFFIC",
+          value = "true"
+        },
+        {
+          name  = "DD_APM_NON_LOCAL_TRAFFIC",
+          value = "true"
+        },
+        {
+          name  = "DD_PROCESS_AGENT_ENABLED",
+          value = "true"
+        },
+        {
+          name  = "DD_TAGS",
+          value = "env:${var.env} app:${var.service_config.name}"
+        },
+        {
+          name  = "DD_TRACE_ANALYTICS_ENABLED",
+          value = "true"
+        },
+        {
+          name  = "DD_RUNTIME_METRICS_ENABLED",
+          value = "true"
+        },
+        {
+          name  = "DD_PROFILING_ENABLED",
+          value = "true"
+        },
+        {
+          name  = "DD_LOGS_INJECTION",
+          value = "true"
+        },
+        {
+          name  = "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT",
+          value = "0.0.0.0:4317"
+        },
+        {
+          name  = "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT",
+          value = "0.0.0.0:4318"
+        },
+        {
+          name  = "ECS_FARGATE",
+          value = "true"
+        }
+      ]
+      secrets = [
+        {
+          name      = "DD_API_KEY"
+          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+        }
+      ]
+      mountPoints = []
+      portMappings = [
+        {
+          protocol      = "udp"
+          hostPort      = 8125
+          containerPort = 8125
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = resource.aws_cloudwatch_log_group.ecs_cw_log_group.name
+          awslogs-region        = data.aws_region.current.name
+          awslogs-stream-prefix = "core"
+        }
+      }
+      volumesFrom = []
+    },
+    # log router container
+    {
+      name              = "${local.ecs_task_definition_family}-log-router"
+      image             = "amazon/aws-for-fluent-bit:stable"
+      essential         = true
+      cpu               = 0
+      memoryReservation = 100
+      environment       = []
+      mountPoints       = []
+      portMappings      = []
+      user              = "0"
+      volumesFrom       = []
       firelensConfiguration = {
         type = "fluentbit"
         options = {
           enable-ecs-log-metadata = "true"
+          config-file-type        = "file"
+          config-file-value       = "/fluent-bit/configs/parse-json.conf"
         }
       }
       logConfiguration = {

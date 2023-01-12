@@ -14,21 +14,25 @@ export function FooterSocials(): ReactElement {
         url="https://www.facebook.com/jesusfilm"
         label="Facebook"
         src={Facebook}
+        noFollow
       />
       <FooterLink
         url="https://twitter.com/jesusfilm"
         label="Twitter"
         src={Twitter}
+        noFollow
       />
       <FooterLink
         url="https://www.youtube.com/user/jesusfilm"
         label="Youtube"
         src={Youtube}
+        noFollow
       />
       <FooterLink
         url="https://www.instagram.com/jesusfilm"
         label="Instagram"
         src={Instagram}
+        noFollow
       />
     </Stack>
   )
