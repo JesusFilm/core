@@ -28,7 +28,7 @@ export const GET_LANGUAGES_SLUG = gql`
 `
 
 interface AudioLanguageDialogProps
-  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> { }
+  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
 
 export function AudioLanguageDialog({
   open,
@@ -68,14 +68,14 @@ export function AudioLanguageDialog({
               language:
                 variant != null
                   ? {
-                    id: variant?.id,
-                    localName: variant?.language.name.find(
-                      ({ primary }) => !primary
-                    )?.value,
-                    nativeName: variant?.language.name.find(
-                      ({ primary }) => primary
-                    )?.value
-                  }
+                      id: variant?.id,
+                      localName: variant?.language.name.find(
+                        ({ primary }) => !primary
+                      )?.value,
+                      nativeName: variant?.language.name.find(
+                        ({ primary }) => primary
+                      )?.value
+                    }
                   : undefined
             }
           }),
@@ -92,14 +92,14 @@ export function AudioLanguageDialog({
             language:
               variant != null
                 ? {
-                  id: variant?.id,
-                  localName: variant?.language?.name.find(
-                    ({ primary }) => !primary
-                  )?.value,
-                  nativeName: variant?.language?.name.find(
-                    ({ primary }) => primary
-                  )?.value
-                }
+                    id: variant?.id,
+                    localName: variant?.language?.name.find(
+                      ({ primary }) => !primary
+                    )?.value,
+                    nativeName: variant?.language?.name.find(
+                      ({ primary }) => primary
+                    )?.value
+                  }
                 : undefined
           }}
           onSubmit={handleSubmit}
