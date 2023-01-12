@@ -12,7 +12,7 @@ import dynamic from 'next/dynamic'
 import { useVideo } from '../../../libs/videoContext'
 
 const DynamicAudioLanguageDialog = dynamic<{
-  open: boolean,
+  open: boolean
   onClose: () => void
 }>(
   async () =>

@@ -67,7 +67,8 @@ const video: VideoContentFields = {
   },
   description: videos[0].snippet,
   studyQuestions: [],
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const routes = ['the-story-of-jesus-for-children']

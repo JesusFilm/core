@@ -89,7 +89,8 @@ describe('VideoHeroOverlay', () => {
       }
     ],
     variantLanguagesCount: 1,
-    slug: 'the-story-of-jesus-for-children'
+    slug: 'the-story-of-jesus-for-children',
+    childrenCount: 0
   }
 
   it('should render the Video Hero Overlay', () => {

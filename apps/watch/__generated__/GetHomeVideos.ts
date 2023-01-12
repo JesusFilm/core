@@ -74,6 +74,10 @@ export interface GetHomeVideos_videos {
   slug: string;
   children: GetHomeVideos_videos_children[];
   variant: GetHomeVideos_videos_variant | null;
+  /**
+   * the number value of the amount of children on a video
+   */
+  childrenCount: number;
 }
 
 export interface GetHomeVideos {

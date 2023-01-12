@@ -35,5 +35,6 @@ export const VIDEO_CHILD_FIELDS = gql`
         value
       }
     }
+    childrenCount
   }
 `

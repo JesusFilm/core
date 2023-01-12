@@ -115,7 +115,7 @@ describe('VideoControls', () => {
   })
 
   it('fullscreens the video player on fullscreen icon click when mobile', () => {
-    ; (global.navigator.userAgent as unknown as string) = 'iPhone'
+    ;(global.navigator.userAgent as unknown as string) = 'iPhone'
     const fullscreenStub = jest
       .spyOn(player, 'requestFullscreen')
       .mockImplementation(() => ({
@@ -133,7 +133,7 @@ describe('VideoControls', () => {
   })
 
   it('fullscreens the video player on fullscreen icon click when desktop', async () => {
-    ; (global.navigator.userAgent as unknown as string) = 'Mac'
+    ;(global.navigator.userAgent as unknown as string) = 'Mac'
     const { getByTestId } = render(
       <MockedProvider>
         <VideoProvider value={{ content: videos[0] }}>

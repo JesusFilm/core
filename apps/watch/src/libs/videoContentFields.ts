@@ -56,5 +56,6 @@ export const VIDEO_CONTENT_FIELDS = gql`
     children {
       ...VideoChildFields
     }
+    childrenCount
   }
 `

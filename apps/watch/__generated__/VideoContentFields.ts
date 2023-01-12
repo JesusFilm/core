@@ -151,6 +151,10 @@ export interface VideoContentFields_children {
   slug: string;
   children: VideoContentFields_children_children[];
   variant: VideoContentFields_children_variant | null;
+  /**
+   * the number value of the amount of children on a video
+   */
+  childrenCount: number;
 }
 
 export interface VideoContentFields {
@@ -170,4 +174,8 @@ export interface VideoContentFields {
    */
   slug: string;
   children: VideoContentFields_children[];
+  /**
+   * the number value of the amount of children on a video
+   */
+  childrenCount: number;
 }
