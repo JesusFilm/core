@@ -31,7 +31,7 @@ export function FooterLink({
       href={url}
       underline={underline}
       target="_blank"
-      rel={noFollow ? 'nofollow' : 'noopener'}
+      rel={noFollow ? 'nofollow noopener' : 'noopener'}
       color="text.primary"
     >
       {src == null ? (
