@@ -38,3 +38,7 @@ module "prod" {
 module "stage" {
   source = "./environments/stage"
 }
+
+module "datadog" {
+  source = "./modules/aws/datadog"
+}
