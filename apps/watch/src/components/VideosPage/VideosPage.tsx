@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
@@ -64,8 +64,6 @@ export function VideosPage(): ReactElement {
     availableVariantLanguageIds: undefined,
     subtitleLanguageIds: undefined
   })
-  const audioRef = useRef()
-  const subtitleRef = useRef()
 
   const { data, loading, fetchMore, refetch } = useQuery<GetVideos>(
     GET_VIDEOS,
@@ -120,7 +118,10 @@ export function VideosPage(): ReactElement {
     const ids = selectedOptions.map((option) => option.id)
 
     setFilter(labels)
-    setAppliedFilters({ ...appliedFilters, [field]: ids })
+    setAppliedFilters({
+      ...appliedFilters,
+      [field]: ids.length === 0 ? undefined : ids
+    })
   }
 
   return (
@@ -171,7 +172,6 @@ export function VideosPage(): ReactElement {
             />
             <Typography>Audio Languages</Typography>
             <LanguagesFilter
-              ref={audioRef}
               onChange={(option: LanguageOption) =>
                 handleChange({
                   field: 'availableVariantLanguageIds',
@@ -191,7 +191,6 @@ export function VideosPage(): ReactElement {
             />
             <Typography>Subtitle Languages</Typography>
             <LanguagesFilter
-              ref={subtitleRef}
               onChange={(option: LanguageOption) =>
                 handleChange({
                   field: 'subtitleLanguageIds',
