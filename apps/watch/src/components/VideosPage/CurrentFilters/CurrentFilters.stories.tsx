@@ -1,7 +1,6 @@
 import { Meta, Story } from '@storybook/react'
 import { noop } from 'lodash'
 import { watchConfig } from '../../../libs/storybook'
-import { bigFilter, filter, languages } from '../testData'
 import { CurrentFilters } from '.'
 
 const CurrentFiltersStory = {
@@ -13,23 +12,22 @@ const CurrentFiltersStory = {
 const Template: Story = ({ ...args }) => {
   return (
     <CurrentFilters
-      onDelete={noop}
-      languages={args.languages}
-      filter={filter}
+      audioLanguages={{
+        value: ['Language1', 'Language2'],
+        onDelete: noop
+      }}
+      subtitleLanguages={{ value: ['Subtitle1'], onDelete: noop }}
     />
   )
 }
 
 export const Default = Template.bind({})
 Default.args = {
-  languages,
-  filter
-}
-
-export const Excess = Template.bind({})
-Excess.args = {
-  filter: bigFilter,
-  languages
+  audioLanguages: {
+    value: ['Language1'],
+    onDelete: noop
+  },
+  subtitleLanguages: { value: ['Subtitle1'], onDelete: noop }
 }
 
 export default CurrentFiltersStory as Meta

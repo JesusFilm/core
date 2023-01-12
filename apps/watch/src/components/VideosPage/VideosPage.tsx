@@ -6,7 +6,6 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import Typography from '@mui/material/Typography'
-import { union } from 'lodash'
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { useLanguage } from '../../libs/languageContext/LanguageContext'
 import { GetVideos } from '../../../__generated__/GetVideos'
@@ -18,6 +17,7 @@ import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 import { LanguagesFilter } from './LanguagesFilter'
 import { CurrentFilters } from './CurrentFilters'
+import type { ChangeFilterProps } from './CurrentFilters'
 
 export const GET_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}
@@ -60,11 +60,9 @@ export function VideosPage(): ReactElement {
   const [subtitleLanguageFilter, setSubtitleLanguageFilter] = useState<
     string[]
   >([])
-  const [appliedFilters, setFilter] = useState<VideosFilter>({
-    availableVariantLanguageIds:
-      audioLanguageFilter.length > 0 ? audioLanguageFilter : undefined,
-    subtitleLanguageIds:
-      subtitleLanguageFilter.length > 0 ? subtitleLanguageFilter : undefined
+  const [appliedFilters, setAppliedFilters] = useState<VideosFilter>({
+    availableVariantLanguageIds: undefined,
+    subtitleLanguageIds: undefined
   })
   const audioRef = useRef()
   const subtitleRef = useRef()
@@ -111,48 +109,18 @@ export function VideosPage(): ReactElement {
     })
   }, [appliedFilters, refetch, languageContext])
 
-  function handleChange(
-    selectedLanguage: string,
-    selectedFilter: string[],
-    field: string,
-    setStateFunction: (value: string[]) => void
-  ): void {
-    const updatedFilters = union(selectedFilter, [selectedLanguage])
-    setStateFunction(updatedFilters)
-    setFilter({
-      ...appliedFilters,
-      [field]: updatedFilters
-    })
-  }
+  function handleChange({
+    field,
+    setFilter,
+    selectedOptions = []
+  }: ChangeFilterProps): void {
+    const labels = selectedOptions.map(
+      (option) => option.localName ?? option.nativeName ?? ''
+    )
+    const ids = selectedOptions.map((option) => option.id)
 
-  function handleRemove(
-    selectedFilter: string,
-    selectedLanguage: string
-  ): void {
-    let updatedFilters: string[]
-    switch (selectedFilter) {
-      case 'al':
-        updatedFilters = audioLanguageFilter.filter(
-          (language) => language !== selectedLanguage
-        )
-        setAudioLanguageFilter(updatedFilters)
-        setFilter({
-          ...appliedFilters,
-          availableVariantLanguageIds:
-            updatedFilters?.length === 0 ? undefined : updatedFilters
-        })
-        break
-      case 'sl':
-        updatedFilters = subtitleLanguageFilter.filter(
-          (language) => language !== selectedLanguage
-        )
-        setSubtitleLanguageFilter(updatedFilters)
-        setFilter({
-          ...appliedFilters,
-          subtitleLanguageIds:
-            updatedFilters?.length === 0 ? undefined : updatedFilters
-        })
-    }
+    setFilter(labels)
+    setAppliedFilters({ ...appliedFilters, [field]: ids })
   }
 
   return (
@@ -167,9 +135,22 @@ export function VideosPage(): ReactElement {
 
       <Container maxWidth="xxl">
         <CurrentFilters
-          languages={languagesData?.languages ?? []}
-          filter={appliedFilters}
-          onDelete={handleRemove}
+          audioLanguages={{
+            value: audioLanguageFilter,
+            onDelete: () =>
+              handleChange({
+                field: 'availableVariantLanguageIds',
+                setFilter: setAudioLanguageFilter
+              })
+          }}
+          subtitleLanguages={{
+            value: subtitleLanguageFilter,
+            onDelete: () =>
+              handleChange({
+                field: 'subtitleLanguageIds',
+                setFilter: setSubtitleLanguageFilter
+              })
+          }}
         />
 
         <Stack
@@ -191,13 +172,12 @@ export function VideosPage(): ReactElement {
             <Typography>Audio Languages</Typography>
             <LanguagesFilter
               ref={audioRef}
-              onChange={(language: LanguageOption) =>
-                handleChange(
-                  language.id,
-                  audioLanguageFilter,
-                  'availableVariantLanguageIds',
-                  setAudioLanguageFilter
-                )
+              onChange={(option: LanguageOption) =>
+                handleChange({
+                  field: 'availableVariantLanguageIds',
+                  setFilter: setAudioLanguageFilter,
+                  selectedOptions: [option]
+                })
               }
               languages={languagesData?.languages}
               loading={languagesLoading}
@@ -212,13 +192,12 @@ export function VideosPage(): ReactElement {
             <Typography>Subtitle Languages</Typography>
             <LanguagesFilter
               ref={subtitleRef}
-              onChange={(language: LanguageOption) =>
-                handleChange(
-                  language.id,
-                  subtitleLanguageFilter,
-                  'subtitleLanguageIds',
-                  setSubtitleLanguageFilter
-                )
+              onChange={(option: LanguageOption) =>
+                handleChange({
+                  field: 'subtitleLanguageIds',
+                  setFilter: setSubtitleLanguageFilter,
+                  selectedOptions: [option]
+                })
               }
               languages={languagesData?.languages}
               loading={languagesLoading}

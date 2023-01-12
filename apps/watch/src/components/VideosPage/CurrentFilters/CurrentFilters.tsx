@@ -5,20 +5,28 @@ import Button from '@mui/material/Button'
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Chip from '@mui/material/Chip'
-import { GetLanguages_languages } from '../../../../__generated__/GetLanguages'
-import { VideosFilter } from '../../../../__generated__/globalTypes'
+import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
-interface Props {
-  languages?: GetLanguages_languages[]
-  filter: VideosFilter
-  onDelete: (filterType: string, id: string) => void
+export interface ChangeFilterProps {
+  field: string
+  setFilter: (value: string[]) => void
+  selectedOptions?: LanguageOption[]
+}
+
+interface AppliedFilterProps {
+  value: string[]
+  onDelete: (props: ChangeFilterProps) => void
+}
+
+interface CurrentFilterProps {
+  audioLanguages: AppliedFilterProps
+  subtitleLanguages: AppliedFilterProps
 }
 
 export function CurrentFilters({
-  languages,
-  filter,
-  onDelete
-}: Props): ReactElement {
+  audioLanguages,
+  subtitleLanguages
+}: CurrentFilterProps): ReactElement {
   return (
     <Stack
       direction="row"
@@ -38,46 +46,44 @@ export function CurrentFilters({
 
       <Box sx={{ display: 'flex', overflowX: 'auto' }}>
         {/* TODO: scroll bar not showing up  */}
-        {languages
-          ?.filter((language) =>
-            filter.availableVariantLanguageIds?.includes(language.id)
-          )
-          .map((language) => (
-            <Chip
-              key={language.id}
-              variant="outlined"
-              color="primary"
-              label={`audio: ${
-                language.name[1]?.value ?? language.name[0]?.value
-              }`}
-              deleteIcon={<CloseRoundedIcon fontSize="small" />}
-              onDelete={() => onDelete('al', language.id)}
-              sx={{
-                mr: 3,
-                border: '1px solid #DCDAD2'
-              }}
-            />
-          ))}
-        {languages
-          ?.filter((language) =>
-            filter.subtitleLanguageIds?.includes(language.id)
-          )
-          .map((language) => (
-            <Chip
-              key={language.id}
-              variant="outlined"
-              color="primary"
-              label={`sub: ${
-                language.name[1]?.value ?? language.name[0]?.value
-              }`}
-              deleteIcon={<CloseRoundedIcon fontSize="small" />}
-              onDelete={() => onDelete('sl', language.id)}
-              sx={{
-                mr: 3,
-                border: '1px solid #DCDAD2'
-              }}
-            />
-          ))}
+        {audioLanguages.value.map((language) => (
+          <Chip
+            key={`audio: ${language}`}
+            variant="outlined"
+            color="primary"
+            label={`audio: ${language}`}
+            deleteIcon={
+              <CloseRoundedIcon
+                data-testid={`delete audio ${language} filter`}
+                fontSize="small"
+              />
+            }
+            onDelete={audioLanguages.onDelete}
+            sx={{
+              mr: 3,
+              border: '1px solid #DCDAD2'
+            }}
+          />
+        ))}
+        {subtitleLanguages.value.map((language) => (
+          <Chip
+            key={`sub: ${language}`}
+            variant="outlined"
+            color="primary"
+            label={`sub: ${language}`}
+            deleteIcon={
+              <CloseRoundedIcon
+                data-testid={`delete subtitle ${language} filter`}
+                fontSize="small"
+              />
+            }
+            onDelete={subtitleLanguages.onDelete}
+            sx={{
+              mr: 3,
+              border: '1px solid #DCDAD2'
+            }}
+          />
+        ))}
       </Box>
     </Stack>
   )

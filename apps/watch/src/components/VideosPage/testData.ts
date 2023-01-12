@@ -63,14 +63,3 @@ export const languages: GetLanguages_languages[] = [
     name: [{ __typename: 'Translation', value: 'Greek', primary: true }]
   }
 ]
-export const filter = {
-  availableVariantLanguageIds: [
-    languages[0].id,
-    languages[1].id,
-    languages[2].id
-  ]
-}
-
-export const bigFilter = {
-  availableVariantLanguageIds: languages.map(({ id }) => id)
-}
