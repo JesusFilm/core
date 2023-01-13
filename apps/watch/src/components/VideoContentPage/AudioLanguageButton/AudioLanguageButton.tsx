@@ -18,7 +18,7 @@ const DynamicAudioLanguageDialog = dynamic<{
   async () =>
     await import(
       /* webpackChunkName: "AudioLanguageDialog" */
-      '../../AudioDialog'
+      '../../AudioLanguageDialog'
     ).then((mod) => mod.AudioLanguageDialog)
 )
 
@@ -30,7 +30,8 @@ export function AudioLanguageButton({
   componentVariant
 }: AudioLanguageButtonProps): ReactElement {
   const { variant, variantLanguagesCount } = useVideo()
-  const [openAudioLanguage, setOpenAudioLanguage] = useState(false)
+  const [openAudioLanguageDialog, setOpenAudioLanguageDialog] = useState(false)
+  const [loadAudioLanguageDialog, setLoadAudioLanguageDialog] = useState(false)
 
   const nativeName = variant?.language?.name.find(
     ({ primary }) => !primary
@@ -39,12 +40,17 @@ export function AudioLanguageButton({
     ({ primary }) => primary
   )?.value
 
+  function handleClick(): void {
+    setOpenAudioLanguageDialog(true)
+    setLoadAudioLanguageDialog(true)
+  }
+
   return (
     <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.light}>
       {componentVariant === 'button' ? (
         <Button
           size="small"
-          onClick={() => setOpenAudioLanguage(true)}
+          onClick={handleClick}
           sx={{
             gap: 1,
             display: 'flex',
@@ -83,14 +89,14 @@ export function AudioLanguageButton({
           <KeyboardArrowDownOutlined fontSize="small" />
         </Button>
       ) : (
-        <IconButton onClick={() => setOpenAudioLanguage(true)}>
+        <IconButton onClick={handleClick}>
           <LanguageOutlined sx={{ color: '#ffffff' }} />
         </IconButton>
       )}
-      {openAudioLanguage && (
+      {loadAudioLanguageDialog && (
         <DynamicAudioLanguageDialog
-          open={openAudioLanguage}
-          onClose={() => setOpenAudioLanguage(false)}
+          open={openAudioLanguageDialog}
+          onClose={() => setOpenAudioLanguageDialog(false)}
         />
       )}
     </ThemeProvider>

@@ -3,7 +3,7 @@ import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
-import { getLanguagesSlugMock } from '../AudioDialog/testData'
+import { getLanguagesSlugMock } from '../AudioLanguageDialog/testData'
 import { videos } from '../Videos/__generated__/testData'
 import { VideoContentPage } from '.'
 
