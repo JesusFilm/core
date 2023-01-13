@@ -23,17 +23,6 @@ export const VIDEO_CHILD_FIELDS = gql`
       duration
       hls
       slug
-      subtitle {
-        language {
-          name {
-            value
-            primary
-          }
-          bcp47
-          id
-        }
-        value
-      }
     }
     childrenCount
   }

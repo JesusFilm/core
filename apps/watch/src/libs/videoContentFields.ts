@@ -41,16 +41,7 @@ export const VIDEO_CONTENT_FIELDS = gql`
       slug
       subtitleCount
     }
-    variantLanguagesWithSlug {
-      slug
-      language {
-        id
-        name {
-          value
-          primary
-        }
-      }
-    }
+    variantLanguagesCount
     slug
     children {
       ...VideoChildFields

@@ -1,4 +1,4 @@
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { GET_SUBTITLES } from './SubtitleDialog'
 
 export const getSubtitleMock = {

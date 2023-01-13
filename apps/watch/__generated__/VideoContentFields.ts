@@ -67,24 +67,6 @@ export interface VideoContentFields_variant {
   subtitleCount: number;
 }
 
-export interface VideoContentFields_variantLanguagesWithSlug_language_name {
-  __typename: "Translation";
-  value: string;
-  primary: boolean;
-}
-
-export interface VideoContentFields_variantLanguagesWithSlug_language {
-  __typename: "Language";
-  id: string;
-  name: VideoContentFields_variantLanguagesWithSlug_language_name[];
-}
-
-export interface VideoContentFields_variantLanguagesWithSlug {
-  __typename: "LanguageWithSlug";
-  slug: string | null;
-  language: VideoContentFields_variantLanguagesWithSlug_language | null;
-}
-
 export interface VideoContentFields_children_title {
   __typename: "Translation";
   value: string;
@@ -105,25 +87,6 @@ export interface VideoContentFields_children_children {
   id: string;
 }
 
-export interface VideoContentFields_children_variant_subtitle_language_name {
-  __typename: "Translation";
-  value: string;
-  primary: boolean;
-}
-
-export interface VideoContentFields_children_variant_subtitle_language {
-  __typename: "Language";
-  name: VideoContentFields_children_variant_subtitle_language_name[];
-  bcp47: string | null;
-  id: string;
-}
-
-export interface VideoContentFields_children_variant_subtitle {
-  __typename: "Translation";
-  language: VideoContentFields_children_variant_subtitle_language;
-  value: string;
-}
-
 export interface VideoContentFields_children_variant {
   __typename: "VideoVariant";
   id: string;
@@ -133,7 +96,6 @@ export interface VideoContentFields_children_variant {
    * slug is a permanent link to the video variant.
    */
   slug: string;
-  subtitle: VideoContentFields_children_variant_subtitle[];
 }
 
 export interface VideoContentFields_children {
@@ -167,7 +129,7 @@ export interface VideoContentFields {
   studyQuestions: VideoContentFields_studyQuestions[];
   title: VideoContentFields_title[];
   variant: VideoContentFields_variant | null;
-  variantLanguagesWithSlug: VideoContentFields_variantLanguagesWithSlug[];
+  variantLanguagesCount: number;
   /**
    * slug is a permanent link to the video.
    */

@@ -7,6 +7,7 @@ import {
 import { setContext } from '@apollo/client/link/context'
 import { useMemo } from 'react'
 import { RetryLink } from '@apollo/client/link/retry'
+import fetch from 'cross-fetch'
 import { cache } from './cache'
 
 interface CreateApolloClientParams {
@@ -19,7 +20,8 @@ export function createApolloClient({
   initialState
 }: CreateApolloClientParams = {}): ApolloClient<NormalizedCacheObject> {
   const httpLink = createHttpLink({
-    uri: process.env.NEXT_PUBLIC_GATEWAY_URL
+    uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
+    fetch
   })
 
   const authLink = setContext(async (_, { headers }) => {
@@ -45,7 +47,8 @@ export function createApolloClient({
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: from([retryLink, authLink, httpLink]),
-    cache: cache().restore(initialState ?? {})
+    cache: cache().restore(initialState ?? {}),
+    connectToDevTools: true
   })
 }
 

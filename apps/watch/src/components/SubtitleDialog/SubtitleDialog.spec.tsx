@@ -9,7 +9,7 @@ import videojs from 'video.js'
 import { MockedProvider } from '@apollo/client/testing'
 import { VideoProvider } from '../../libs/videoContext'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { SubtitleDialog } from './SubtitleDialog'
 import { getSubtitleMock } from './testData'
 

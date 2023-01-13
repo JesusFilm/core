@@ -4,6 +4,7 @@
 /coverage
 schema.graphql
 **/__generated__/**
+!apps/watch/src/components/Videos/__generated__/testData.ts
 /libs/locales/**/*.json
 .prettierignore
 .docusaurus/

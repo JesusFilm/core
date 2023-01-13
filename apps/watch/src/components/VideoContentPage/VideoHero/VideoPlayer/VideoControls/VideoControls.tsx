@@ -56,7 +56,8 @@ export function VideoControls({
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
-  const [openSubtitle, setOpenSubtitle] = useState(false)
+  const [openSubtitleDialog, setOpenSubtitleDialog] = useState(false)
+  const [loadSubtitleDialog, setLoadSubtitleDialog] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
@@ -159,6 +160,11 @@ export function VideoControls({
         onDblClick(event)
       }
     }
+  }
+
+  function handleClick(): void {
+    setOpenSubtitleDialog(true)
+    setLoadSubtitleDialog(true)
   }
 
   return (
@@ -355,7 +361,7 @@ export function VideoControls({
                   </Stack>
                   <AudioLanguageButton componentVariant="icon" />
                   <IconButton
-                    onClick={() => setOpenSubtitle(true)}
+                    onClick={handleClick}
                     disabled={variant?.subtitleCount === 0}
                   >
                     <SubtitlesOutlined />
@@ -369,11 +375,11 @@ export function VideoControls({
                   </IconButton>
                 </Stack>
               </Stack>
-              {openSubtitle && (
+              {loadSubtitleDialog && (
                 <DynamicSubtitleDialog
-                  open={openSubtitle}
+                  open={openSubtitleDialog}
                   player={player}
-                  onClose={() => setOpenSubtitle(false)}
+                  onClose={() => setOpenSubtitleDialog(false)}
                 />
               )}
             </Container>
