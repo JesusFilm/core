@@ -5,7 +5,7 @@ import { noop } from 'lodash'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { DownloadDialog } from './DownloadDialog'
 
 const DownloadDialogStory = {

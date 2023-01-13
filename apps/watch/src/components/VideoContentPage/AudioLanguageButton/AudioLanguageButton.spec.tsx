@@ -1,7 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { VideoProvider } from '../../../libs/videoContext'
-import { videos } from '../../Videos/testData'
+import { videos } from '../../Videos/__generated__/testData'
 import { AudioLanguageButton } from '.'
 
 describe('AudioLanguageButton', () => {
@@ -15,7 +15,7 @@ describe('AudioLanguageButton', () => {
     )
     await waitFor(() => fireEvent.click(getByRole('button')))
 
-    expect(getByText('3 Languages Available')).toBeInTheDocument()
+    expect(getByText('2026 Languages Available')).toBeInTheDocument()
   })
   it('renders audio language as an icon', async () => {
     const { getByTestId, getByText } = render(
@@ -26,6 +26,6 @@ describe('AudioLanguageButton', () => {
       </MockedProvider>
     )
     await waitFor(() => fireEvent.click(getByTestId('LanguageOutlinedIcon')))
-    expect(getByText('3 Languages Available')).toBeInTheDocument()
+    expect(getByText('2026 Languages Available')).toBeInTheDocument()
   })
 })

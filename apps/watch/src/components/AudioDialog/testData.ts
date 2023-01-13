@@ -1,4 +1,4 @@
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { GET_LANGUAGES_SLUG } from './AudioLanguageDialog'
 
 export const getLanguagesSlugMock = {
@@ -14,13 +14,13 @@ export const getLanguagesSlugMock = {
         variantLanguagesWithSlug: [
           {
             __typename: 'LanguageWithSlug',
-            slug: 'jesus/english',
+            slug: 'jesus/auhelawa',
             language: {
               id: '529',
               __typename: 'Language',
               name: [
                 {
-                  value: 'English',
+                  value: "'Auhelawa",
                   primary: true,
                   __typename: 'Translation'
                 }
@@ -29,18 +29,18 @@ export const getLanguagesSlugMock = {
           },
           {
             __typename: 'LanguageWithSlug',
-            slug: 'jesus/french',
+            slug: 'jesus/a-hmao',
             language: {
               id: '496',
               __typename: 'Language',
               name: [
                 {
-                  value: 'Français',
+                  value: 'A-Hmao',
                   primary: true,
                   __typename: 'Translation'
                 },
                 {
-                  value: 'French',
+                  value: 'A-Hmao',
                   primary: false,
                   __typename: 'Translation'
                 }
@@ -49,18 +49,18 @@ export const getLanguagesSlugMock = {
           },
           {
             __typename: 'LanguageWithSlug',
-            slug: 'jesus/Deutsch',
+            slug: 'jesus/aari',
             language: {
               id: '1106',
               __typename: 'Language',
               name: [
                 {
-                  value: 'Deutsch',
+                  value: 'Aari',
                   primary: true,
                   __typename: 'Translation'
                 },
                 {
-                  value: 'German, Standard',
+                  value: 'Aari',
                   primary: false,
                   __typename: 'Translation'
                 }

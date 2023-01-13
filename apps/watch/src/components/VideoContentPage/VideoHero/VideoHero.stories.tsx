@@ -6,8 +6,8 @@ import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../../libs/storybook'
 import { VideoProvider } from '../../../libs/videoContext'
-import { videos } from '../../Videos/testData'
 import { getLanguagesSlugMock } from '../../AudioDialog/testData'
+import { videos } from '../../Videos/__generated__/testData'
 import { VideoHero } from './VideoHero'
 
 const VideoHeroStory = {
