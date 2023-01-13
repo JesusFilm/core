@@ -89,4 +89,4 @@ jobs:
 
       - name: Restart task definition
         run: |
-          aws ecs update-service --force-new-deployment --service api-gateway-service --cluster jfp-ecs-cluster-prod
+          aws ecs update-service --force-new-deployment --service api-gateway-prod-service --cluster jfp-ecs-cluster-prod
