@@ -39,17 +39,6 @@ export const VIDEO_CONTENT_FIELDS = gql`
         }
       }
       slug
-      subtitle {
-        language {
-          name {
-            value
-            primary
-          }
-          bcp47
-          id
-        }
-        value
-      }
       subtitleCount
     }
     variantLanguagesCount
