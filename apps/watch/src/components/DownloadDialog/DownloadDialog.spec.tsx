@@ -4,7 +4,7 @@ import useDownloader from 'react-use-downloader'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../libs/videoContext'
 
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { DownloadDialog } from './DownloadDialog'
 
 jest.mock('react-use-downloader', () => ({
