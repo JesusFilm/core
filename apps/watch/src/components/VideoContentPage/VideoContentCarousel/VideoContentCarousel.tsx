@@ -40,7 +40,7 @@ export function VideoContentCarousel({
     return container != null
       ? container.children.findIndex((child) => child.id === id) + 1
       : -1
-  }, [videoChildren, container, id])
+  }, [container, id])
 
   const progressionLabel = useMemo(() => {
     if (container != null) {
@@ -58,7 +58,7 @@ export function VideoContentCarousel({
           return ''
       }
     }
-  }, [container, activeVideoIndex, videoChildren])
+  }, [container, activeVideoIndex])
 
   const buttonLink =
     container != null && router != null
