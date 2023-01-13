@@ -6,7 +6,7 @@ import {
 } from '../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../libs/videoContext'
 
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { ShareDialog } from './ShareDialog'
 
 const onClose = jest.fn()

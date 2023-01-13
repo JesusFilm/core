@@ -1,5 +1,6 @@
 import { render, fireEvent } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { MockedProvider } from '@apollo/client/testing'
 import { VideoContentFields } from '../../../../../__generated__/VideoContentFields'
 import {
   VideoLabel,
@@ -82,46 +83,26 @@ describe('VideoHeroOverlay', () => {
       ],
       subtitleCount: 1
     },
-
     title: [
       {
         value: 'The Story of Jesus for Children',
         __typename: 'Translation'
       }
     ],
-    variantLanguagesWithSlug: [
-      {
-        __typename: 'LanguageWithSlug',
-        slug: 'the-story-of-jesus-for-children/french',
-        language: {
-          id: '496',
-          __typename: 'Language',
-          name: [
-            {
-              value: 'Français',
-              primary: true,
-              __typename: 'Translation'
-            },
-            {
-              value: 'French',
-              primary: false,
-              __typename: 'Translation'
-            }
-          ]
-        }
-      }
-    ],
+    variantLanguagesCount: 1,
     slug: 'the-story-of-jesus-for-children',
     childrenCount: 0
   }
 
   it('should render the Video Hero Overlay', () => {
     const { getByRole, getByText, getByTestId } = render(
-      <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoHeroOverlay />
-        </VideoProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: video }}>
+            <VideoHeroOverlay />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(getByText('The Story of Jesus for Children')).toBeInTheDocument()
     expect(getByText('61 min')).toBeInTheDocument()
@@ -134,11 +115,13 @@ describe('VideoHeroOverlay', () => {
   it('should play video on the Play Video button click', () => {
     const handlePlay = jest.fn()
     const { getByRole } = render(
-      <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoHeroOverlay handlePlay={handlePlay} />
-        </VideoProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: video }}>
+            <VideoHeroOverlay handlePlay={handlePlay} />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Play Video' }))
     expect(handlePlay).toHaveBeenCalled()
@@ -147,11 +130,13 @@ describe('VideoHeroOverlay', () => {
   it('should play video on the Mute Icon click', () => {
     const handlePlay = jest.fn()
     const { getByTestId } = render(
-      <SnackbarProvider>
-        <VideoProvider value={{ content: video }}>
-          <VideoHeroOverlay handlePlay={handlePlay} />
-        </VideoProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: video }}>
+            <VideoHeroOverlay handlePlay={handlePlay} />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
     fireEvent.click(getByTestId('VolumeOffOutlinedIcon'))
     expect(handlePlay).toHaveBeenCalled()

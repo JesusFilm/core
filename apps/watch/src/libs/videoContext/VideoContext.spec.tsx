@@ -6,7 +6,7 @@ import {
   VideoLabel,
   VideoVariantDownloadQuality
 } from '../../../__generated__/globalTypes'
-import { videos } from '../../components/Videos/testData'
+import { videos } from '../../components/Videos/__generated__/testData'
 import { VideoProvider, useVideo } from './VideoContext'
 
 const chapter1: VideoContentFields = {
@@ -83,28 +83,7 @@ const chapter1: VideoContentFields = {
     ],
     subtitleCount: 1
   },
-  variantLanguagesWithSlug: [
-    {
-      __typename: 'LanguageWithSlug',
-      slug: 'the-beginning/french',
-      language: {
-        id: '496',
-        __typename: 'Language',
-        name: [
-          {
-            value: 'Français',
-            primary: true,
-            __typename: 'Translation'
-          },
-          {
-            value: 'French',
-            primary: false,
-            __typename: 'Translation'
-          }
-        ]
-      }
-    }
-  ],
+  variantLanguagesCount: 1,
   slug: 'the-beginning',
   children: [],
   childrenCount: 0
