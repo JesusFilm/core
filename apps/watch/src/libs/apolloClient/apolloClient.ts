@@ -47,7 +47,8 @@ export function createApolloClient({
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: from([retryLink, authLink, httpLink]),
-    cache: cache().restore(initialState ?? {})
+    cache: cache().restore(initialState ?? {}),
+    connectToDevTools: true
   })
 }
 

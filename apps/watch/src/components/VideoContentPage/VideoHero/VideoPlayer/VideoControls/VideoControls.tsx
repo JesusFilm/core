@@ -345,8 +345,8 @@ export function VideoControls({
                   <IconButton
                     onClick={() => setOpenSubtitle(true)}
                     disabled={
-                      variant?.subtitle === undefined ||
-                      variant?.subtitle.length < 1
+                      variant?.subtitleCount === undefined ||
+                      variant?.subtitleCount < 1
                     }
                   >
                     <SubtitlesOutlined />
