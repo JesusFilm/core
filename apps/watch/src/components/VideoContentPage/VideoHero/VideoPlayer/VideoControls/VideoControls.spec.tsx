@@ -7,6 +7,7 @@ import {
 } from '@testing-library/react'
 import videojs from 'video.js'
 import fscreen from 'fscreen'
+import { MockedProvider } from '@apollo/client/testing'
 import { VideoProvider } from '../../../../../libs/videoContext'
 import { videos } from '../../../../Videos/__generated__/testData'
 import { VideoControls } from './VideoControls'
@@ -58,9 +59,11 @@ describe('VideoControls', () => {
       play: jest.fn()
     }))
     const { getAllByTestId } = render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <VideoControls player={player} />
-      </VideoProvider>
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoControls player={player} />
+        </VideoProvider>
+      </MockedProvider>
     )
     fireEvent.click(getAllByTestId('PlayArrowRoundedIcon')[1])
     expect(playStub).toHaveBeenCalled()
@@ -74,9 +77,11 @@ describe('VideoControls', () => {
       pause: jest.fn()
     }))
     const { getAllByTestId } = render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <VideoControls player={player} />
-      </VideoProvider>
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoControls player={player} />
+        </VideoProvider>
+      </MockedProvider>
     )
     fireEvent.click(getAllByTestId('PauseRoundedIcon')[1])
     expect(pauseStub).toHaveBeenCalled()
@@ -87,22 +92,26 @@ describe('VideoControls', () => {
       muted: jest.fn()
     }))
     const { getByTestId } = render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <VideoControls player={player} />
-      </VideoProvider>
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoControls player={player} />
+        </VideoProvider>
+      </MockedProvider>
     )
     fireEvent.click(getByTestId('VolumeUpOutlinedIcon'))
     expect(mutedStub).toHaveBeenCalled()
   })
 
-  it('opens audio language dialog on language button click', () => {
+  it('opens audio language dialog on language button click', async () => {
     const { getByRole, getByTestId } = render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <VideoControls player={player} />
-      </VideoProvider>
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoControls player={player} />
+        </VideoProvider>
+      </MockedProvider>
     )
     fireEvent.click(getByTestId('LanguageOutlinedIcon'))
-    expect(getByRole('textbox')).toHaveValue('English')
+    await waitFor(() => expect(getByRole('textbox')).toHaveValue('English'))
   })
 
   it('fullscreens the video player on fullscreen icon click when mobile', () => {
@@ -113,9 +122,11 @@ describe('VideoControls', () => {
         requestFullscreen: jest.fn()
       }))
     const { getByTestId } = render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <VideoControls player={player} />
-      </VideoProvider>
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoControls player={player} />
+        </VideoProvider>
+      </MockedProvider>
     )
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
     expect(fullscreenStub).toHaveBeenCalled()
@@ -124,9 +135,11 @@ describe('VideoControls', () => {
   it('fullscreens the video player on fullscreen icon click when desktop', async () => {
     ;(global.navigator.userAgent as unknown as string) = 'Mac'
     const { getByTestId } = render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <VideoControls player={player} />
-      </VideoProvider>
+      <MockedProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoControls player={player} />
+        </VideoProvider>
+      </MockedProvider>
     )
     fireEvent.click(getByTestId('FullscreenOutlinedIcon'))
     expect(fscreen.requestFullscreen).toHaveBeenCalled()

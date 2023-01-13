@@ -1,8 +1,11 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
+import { getSubtitleMock } from '../SubtitleDialog/testData'
+import { getLanguagesSlugMock } from '../AudioLanguageDialog/testData'
 import { VideoContentPage } from '.'
 
 const VideoContentPageStory = {
@@ -18,9 +21,11 @@ const VideoContentPageStory = {
 const Template: Story<ComponentProps<typeof VideoContentPage>> = ({
   ...args
 }) => (
-  <VideoProvider value={{ content: videos[0] }}>
-    <VideoContentPage {...args} />
-  </VideoProvider>
+  <MockedProvider mocks={[getLanguagesSlugMock, getSubtitleMock]}>
+    <VideoProvider value={{ content: videos[0] }}>
+      <VideoContentPage {...args} />
+    </VideoProvider>
+  </MockedProvider>
 )
 
 export const Default = Template.bind({})
