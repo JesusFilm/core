@@ -10,6 +10,7 @@ import { VideoJsPlayer } from 'video.js'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 import { VideoContentFields_variant_subtitle } from '../../../__generated__/VideoContentFields'
+import { useVideo } from '../../libs/videoContext'
 
 interface SubtitleDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
@@ -23,6 +24,7 @@ export function SubtitleDialog({
   player,
   subtitles
 }: SubtitleDialogProps): ReactElement {
+  const { variant } = useVideo()
   const [selected, setSelected] = useState<Language | undefined>(undefined)
 
   const languages = subtitles?.map(
@@ -93,7 +95,9 @@ export function SubtitleDialog({
               hiddenLabel
               placeholder="Search Language"
               label="Language"
-              helperText={`${languages?.length ?? 0} Languages Available`}
+              helperText={`${
+                String(variant?.subtitleCount) ?? 0
+              } Languages Available`}
               sx={{
                 '> .MuiOutlinedInput-root': {
                   borderRadius: 2
