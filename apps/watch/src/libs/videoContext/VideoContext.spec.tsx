@@ -6,7 +6,7 @@ import {
   VideoLabel,
   VideoVariantDownloadQuality
 } from '../../../__generated__/globalTypes'
-import { videos } from '../../components/Videos/testData'
+import { videos } from '../../components/Videos/__generated__/testData'
 import { VideoProvider, useVideo } from './VideoContext'
 
 const chapter1: VideoContentFields = {

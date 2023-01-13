@@ -3,7 +3,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { languages } from './testData'
 import { VideosPage, GET_VIDEOS, limit, GET_LANGUAGES } from './VideosPage'
 

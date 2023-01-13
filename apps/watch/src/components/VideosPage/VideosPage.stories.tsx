@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../libs/storybook'
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { GET_VIDEOS, VideosPage } from './VideosPage'
 
 const VideosStory = {
