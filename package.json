@@ -78,7 +78,7 @@
     "formik": "^2.2.9",
     "fscreen": "^1.2.0",
     "graphql": "^15.5.3",
-    "graphql-modules": "^1.4.4",
+    "graphql-modules": "^2.1.0",
     "launchdarkly-node-server-sdk": "^6.4.2",
     "leaflet": "^1.7.1",
     "lodash": "^4.17.21",
