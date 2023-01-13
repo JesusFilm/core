@@ -2,7 +2,10 @@ import { readFileSync, writeFileSync } from 'fs'
 import { promisify } from 'util'
 import { exec } from 'child_process'
 import { gql } from '@apollo/client'
-import { GetVideosForTestData } from '../../../__generated__/GetVideosForTestData'
+import {
+  GetVideosForTestData,
+  GetVideosForTestData_videos as Videos
+} from '../../../__generated__/GetVideosForTestData'
 import { createApolloClient } from '../../libs/apolloClient'
 import { VIDEO_CONTENT_FIELDS } from '../../libs/videoContentFields'
 
@@ -53,8 +56,14 @@ async function testDataGenerator(): Promise<void> {
       languageId: '529'
     }
   })
+  const videos: Videos[] = []
+
+  data.videos.forEach((video) => {
+    videos[ids.indexOf(video.id)] = video
+  })
+
   console.log('replacing enums...')
-  const stringifiedData = JSON.stringify(data.videos)
+  const stringifiedData = JSON.stringify(videos)
     .replace(/"label":"(\w*)",/g, 'label: VideoLabel.$1,')
     .replace(/"quality":"(\w*)",/g, 'quality: VideoVariantDownloadQuality.$1,')
   console.log('printing to file...')
