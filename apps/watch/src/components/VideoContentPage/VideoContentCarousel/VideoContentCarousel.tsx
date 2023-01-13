@@ -36,6 +36,9 @@ export function VideoContentCarousel({
   const router = useRouter()
   const theme = useTheme()
 
+  console.log(id)
+  console.log(videoChildren)
+
   const activeVideoIndex = useMemo(() => {
     return container != null
       ? container.children.findIndex((child) => child.id === id) + 1

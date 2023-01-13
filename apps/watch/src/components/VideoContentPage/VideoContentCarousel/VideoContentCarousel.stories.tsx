@@ -42,6 +42,9 @@ const Template: Story<
 )
 
 export const Default = Template.bind({})
+Default.args = {
+  videoChildren: []
+}
 
 const PlayingTemplate: Story<ComponentProps<typeof VideoContentCarousel>> = ({
   ...args
@@ -60,7 +63,8 @@ const PlayingTemplate: Story<ComponentProps<typeof VideoContentCarousel>> = ({
 
 export const Playing = PlayingTemplate.bind({})
 Playing.args = {
-  playing: true
+  playing: true,
+  videoChildren: []
 }
 
 export default VideoContentCarouselStory as Meta
