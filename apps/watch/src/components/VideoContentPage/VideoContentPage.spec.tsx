@@ -1,7 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { MockedProvider } from '@apollo/client/testing'
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { VideoProvider } from '../../libs/videoContext'
 import { GET_VIDEO_CHILDREN } from '../VideoContainerPage/VideoContainerPage'
 import { VideoContentPage } from '.'

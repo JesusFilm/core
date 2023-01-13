@@ -5,7 +5,7 @@ import {
 } from '../../../../__generated__/VideoContentFields'
 import { GetVideoChildren_video_children as VideoSibling } from '../../../../__generated__/GetVideoChildren'
 import { VideoProvider } from '../../../libs/videoContext'
-import { videos } from '../../Videos/testData'
+import { videos } from '../../Videos/__generated__/testData'
 import { VideoContentCarousel } from '.'
 
 jest.mock('next/router', () => ({

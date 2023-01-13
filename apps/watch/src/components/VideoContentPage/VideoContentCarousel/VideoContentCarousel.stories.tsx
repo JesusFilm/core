@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import { watchConfig } from '../../../libs/storybook'
 import { VideoProvider } from '../../../libs/videoContext'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
-import { videos } from '../../Videos/testData'
+import { videos } from '../../Videos/__generated__/testData'
 import { VideoContentCarousel } from '.'
 
 const VideoContentCarouselStory = {
