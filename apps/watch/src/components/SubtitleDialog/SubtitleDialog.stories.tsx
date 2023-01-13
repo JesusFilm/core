@@ -4,7 +4,7 @@ import { noop } from 'lodash'
 import { VideoProvider } from '../../libs/videoContext'
 import { watchConfig } from '../../libs/storybook'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { SubtitleDialog } from './SubtitleDialog'
 
 const video: VideoContentFields = videos[0]

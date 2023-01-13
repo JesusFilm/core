@@ -1,7 +1,7 @@
 import { render, fireEvent, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { VideoProvider } from '../../libs/videoContext'
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { AudioLanguageDialog } from '.'
 
 jest.mock('next/router', () => ({

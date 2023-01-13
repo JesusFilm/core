@@ -8,7 +8,7 @@ import {
 import videojs from 'video.js'
 import fscreen from 'fscreen'
 import { VideoProvider } from '../../../../../libs/videoContext'
-import { videos } from '../../../../Videos/testData'
+import { videos } from '../../../../Videos/__generated__/testData'
 import { VideoControls } from './VideoControls'
 
 jest.mock('fscreen', () => ({
