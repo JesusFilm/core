@@ -78,4 +78,5 @@ module "arango-bigquery-etl" {
   doppler_token           = data.aws_ssm_parameter.doppler_arango_bigquery_etl_prod_token.value
   task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
   subnet_ids              = module.prod.vpc.internal_subnets
+  cluster_arn             = module.prod.ecs.ecs_cluster.arn
 }

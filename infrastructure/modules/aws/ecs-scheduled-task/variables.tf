@@ -45,3 +45,7 @@ variable "environment_variables" {
 variable "doppler_token" {
   type = string
 }
+
+variable "cluster_arn" {
+  type = string
+}

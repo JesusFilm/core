@@ -9,3 +9,7 @@ variable "subnet_ids" {
 variable "doppler_token" {
   type = string
 }
+
+variable "cluster_arn" {
+  type = string
+}

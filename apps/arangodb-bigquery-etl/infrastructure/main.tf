@@ -5,6 +5,7 @@ module "ecs-task" {
   subnet_ids                     = var.subnet_ids
   task_name                      = "jfp-arangodb-bigquery-etl"
   doppler_token                  = var.doppler_token
+  cluster_arn                    = var.cluster_arn
   environment_variables = [
     "DATABASE_DB",
     "DATABASE_PASS",
