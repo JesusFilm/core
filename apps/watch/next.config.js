@@ -3,7 +3,6 @@ const withNx = require('@nrwl/next/plugins/with-nx')
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 })
-const withPlugins = require('next-compose-plugins')
 /**
  * @type {import('@nrwl/next/plugins/with-nx').WithNxOptions}
  **/
@@ -33,4 +32,10 @@ const nextConfig = {
   trailingSlash: true,
   productionBrowserSourceMaps: true
 }
-module.exports = withPlugins([[withBundleAnalyzer], [withNx]], nextConfig)
+module.exports = (_phase, { defaultConfig }) => {
+  const plugins = [withBundleAnalyzer, withNx]
+  return plugins.reduce((acc, plugin) => plugin(acc), {
+    ...defaultConfig,
+    ...nextConfig
+  })
+}

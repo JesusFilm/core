@@ -29,7 +29,8 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "api-gateway:build"
+        "buildTarget": "api-gateway:build",
+        "inspect": false
       }
     },
     "serve-all": {
@@ -37,22 +38,12 @@
       "options": {
         "commands": [
           {
-            "command": "nx serve api-journeys"
+            "command": "echo 'This command is no longer supported. Please run `nf start` instead.'"
           },
           {
-            "command": "nx serve api-users"
-          },
-          {
-            "command": "nx serve api-languages"
-          },
-          {
-            "command": "nx serve api-videos"
-          },
-          {
-            "command": "nx serve api-gateway"
+            "command": "echo 'If `bash: nf: command not found` returns please run `npm i -g foreman` then try again.'"
           }
-        ],
-        "parallel": true
+        ]
       }
     },
     "lint": {
