@@ -129,7 +129,7 @@
     "@babel/preset-typescript": "7.12.13",
     "@commitlint/cli": "^16.1.0",
     "@docusaurus/module-type-aliases": "^2.2.0",
-    "@emotion/babel-plugin": "11.7.2",
+    "@emotion/babel-plugin": "11.10.5",
     "@graphql-codegen/add": "3.0.0",
     "@graphql-codegen/cli": "2.0.1",
     "@graphql-codegen/graphql-modules-preset": "2.0.1",
