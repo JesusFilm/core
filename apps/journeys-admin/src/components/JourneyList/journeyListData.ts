@@ -74,7 +74,7 @@ export const defaultJourney: Journey = {
   status: JourneyStatus.draft,
   seoTitle: null,
   seoDescription: null,
-  userJourneys: userJourneys
+  userJourneys
 }
 
 export const oldJourney: Journey = {

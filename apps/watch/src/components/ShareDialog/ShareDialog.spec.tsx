@@ -69,7 +69,8 @@ const video: VideoContentFields = {
   },
   description: videos[0].snippet,
   studyQuestions: [],
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 describe('ShareDialog', () => {
@@ -105,7 +106,8 @@ describe('ShareDialog', () => {
               ...video,
               children: [
                 { id: '1' }
-              ] as unknown as VideoContentFields_children[]
+              ] as unknown as VideoContentFields_children[],
+              childrenCount: 1
             }
           }}
         >
