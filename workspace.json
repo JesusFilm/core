@@ -20,6 +20,7 @@
       "targets": {},
       "tags": []
     },
+    "nest-common": "libs/nest/common",
     "nest-database": "libs/nest/database",
     "nest-decorators": "libs/nest/decorators",
     "nest/gqlAuthGuard": "libs/nest/gqlAuthGuard",

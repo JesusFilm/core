@@ -4,7 +4,7 @@ import {
   VideoContentFields_variant as Variant
 } from '../../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../../libs/videoContext'
-import { videos } from '../../Videos/testData'
+import { videos } from '../../Videos/__generated__/testData'
 import { VideoContentCarousel } from '.'
 
 jest.mock('next/router', () => ({
@@ -124,7 +124,7 @@ describe('VideoContentCarousel', () => {
 
       const relatedVideos = getAllByTestId('VideoCard')
 
-      expect(relatedVideos).toHaveLength(collection.children.length)
+      expect(relatedVideos).toHaveLength(collection.childrenCount)
       expect(relatedVideos[0]).toHaveAttribute(
         'href',
         `/lumo-the-gospel-of-luke/lumo-luke-1-1-56/english`
@@ -153,7 +153,7 @@ describe('VideoContentCarousel', () => {
 
       const relatedVideos = getAllByTestId('VideoCard')
 
-      expect(relatedVideos).toHaveLength(series.children.length + 1 + 1)
+      expect(relatedVideos).toHaveLength(series.childrenCount + 1 + 1)
 
       expect(relatedVideos[0]).toHaveAttribute(
         'href',

@@ -133,7 +133,7 @@ jobs:
       - name: Restart task definition
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: |
-          aws ecs update-service --force-new-deployment --service ${{ inputs.ecs_service }} --cluster $${{ inputs.ecs_cluster }}
+          aws ecs update-service --force-new-deployment --service ${{ inputs.ecs_service }} --cluster ${{ inputs.ecs_cluster }}
 
       - name: Update stage Apollo managed subgraph
         if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'stage')

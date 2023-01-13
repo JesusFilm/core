@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { noop } from 'lodash'
 import { watchConfig } from '../../libs/storybook/config'
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { VideoGrid } from './VideoGrid'
 
 const VideoGridStory: ComponentMeta<typeof VideoGrid> = {
