@@ -35,7 +35,7 @@
       "options": {
         "commands": [
           {
-            "command": "nx serve-all api-gateway"
+            "command": "nf start"
           },
           {
             "command": "nx serve watch-admin"

@@ -40,24 +40,17 @@
         "command": "npx ts-node apps/api-users/db/seed.ts"
       }
     },
-    "serve-nowatch": {
+    "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "api-users:build"
+        "buildTarget": "api-users:build",
+        "inspect": false
       }
     },
-    "serve": {
+    "watcher": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": [
-          {
-            "command": "nx serve-nowatch api-users"
-          },
-          {
-            "command": "npx ts-node apps/api-users/src/generate-typings.ts"
-          }
-        ],
-        "parallel": true
+        "command": "npx ts-node apps/api-users/src/generate-typings.ts"
       }
     },
     "lint": {
