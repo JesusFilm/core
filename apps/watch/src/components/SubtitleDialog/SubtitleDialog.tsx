@@ -122,9 +122,8 @@ export function SubtitleDialog({
               hiddenLabel
               placeholder="Search Language"
               label="Language"
-              helperText={`${
-                String(variant?.subtitleCount) ?? 0
-              } Languages Available`}
+              helperText={`${String(variant?.subtitleCount) ?? 0
+                } Languages Available`}
               sx={{
                 '> .MuiOutlinedInput-root': {
                   borderRadius: 2

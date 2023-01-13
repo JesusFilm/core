@@ -91,9 +91,8 @@ describe('ShareDialog', () => {
         </VideoProvider>
       </SnackbarProvider>
     )
-    const link = `${
-      process.env.NEXT_PUBLIC_WATCH_URL as string
-    }/the-story-of-jesus-for-children`
+    const link = `${process.env.NEXT_PUBLIC_WATCH_URL as string
+      }/the-story-of-jesus-for-children`
     expect(getByRole('textbox')).toHaveValue(link)
     expect(getByRole('button', { name: 'Copy Link' })).toBeInTheDocument()
     expect(queryAllByRole('tab')).toHaveLength(0)
@@ -112,9 +111,8 @@ describe('ShareDialog', () => {
     })
 
     it('should share video to facebook', () => {
-      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${
-        process.env.NEXT_PUBLIC_WATCH_URL as string
-      }/the-story-of-jesus-for-children`
+      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${process.env.NEXT_PUBLIC_WATCH_URL as string
+        }/the-story-of-jesus-for-children`
 
       const { getByRole } = render(
         <SnackbarProvider>
@@ -135,9 +133,8 @@ describe('ShareDialog', () => {
     })
 
     it('should share video to twitter', () => {
-      const facebookUrl = `https://twitter.com/intent/tweet?url=${
-        process.env.NEXT_PUBLIC_WATCH_URL as string
-      }/the-story-of-jesus-for-children`
+      const facebookUrl = `https://twitter.com/intent/tweet?url=${process.env.NEXT_PUBLIC_WATCH_URL as string
+        }/the-story-of-jesus-for-children`
 
       const { getByRole } = render(
         <SnackbarProvider>

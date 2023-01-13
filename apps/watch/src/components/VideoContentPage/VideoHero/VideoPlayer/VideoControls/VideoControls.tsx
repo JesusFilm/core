@@ -362,7 +362,10 @@ export function VideoControls({
                   <AudioLanguageButton componentVariant="icon" />
                   <IconButton
                     onClick={handleClick}
-                    disabled={variant?.subtitleCount === 0}
+                    disabled={
+                      variant?.subtitleCount === undefined ||
+                      variant?.subtitleCount < 1
+                    }
                   >
                     <SubtitlesOutlined />
                   </IconButton>
