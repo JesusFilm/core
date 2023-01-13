@@ -166,6 +166,7 @@ export interface GetVideosForTestData_videos {
   studyQuestions: GetVideosForTestData_videos_studyQuestions[];
   title: GetVideosForTestData_videos_title[];
   variant: GetVideosForTestData_videos_variant | null;
+  variantLanguagesCount: number;
   variantLanguagesWithSlug: GetVideosForTestData_videos_variantLanguagesWithSlug[];
   /**
    * slug is a permanent link to the video.
