@@ -46,8 +46,7 @@ describe('AudioLanguageDialog', () => {
     fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
     expect(queryAllByRole('option')[1]).toHaveTextContent('A-HmaoA-Hmao')
     fireEvent.click(queryAllByRole('option')[1])
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith('/jesus/french')
-    })
+    await waitFor(() => expect(push).toHaveBeenCalled())
+    expect(push).toHaveBeenCalledWith('/jesus/a-hmao')
   })
 })
