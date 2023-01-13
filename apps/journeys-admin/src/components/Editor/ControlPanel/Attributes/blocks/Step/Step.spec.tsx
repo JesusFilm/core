@@ -287,7 +287,7 @@ describe('Step', () => {
       expect(getByText('None')).toBeInTheDocument()
     })
   })
-  it('should open property drawr for variant', () => {
+  it('should open cards drawer for variant', () => {
     const step: TreeBlock<StepBlock> = {
       id: 'step1.id',
       __typename: 'StepBlock',
@@ -305,7 +305,7 @@ describe('Step', () => {
     render(<Step {...step} />)
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Properties
+      activeTab: ActiveTab.Cards
     })
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetSelectedAttributeIdAction',

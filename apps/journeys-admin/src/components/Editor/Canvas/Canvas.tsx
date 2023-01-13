@@ -86,7 +86,7 @@ export function Canvas(): ReactElement {
         dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
         dispatch({
           type: 'SetActiveTabAction',
-          activeTab: ActiveTab.Properties
+          activeTab: ActiveTab.Cards
         })
         dispatch({ type: 'SetSelectedAttributeIdAction', id: undefined })
       }}

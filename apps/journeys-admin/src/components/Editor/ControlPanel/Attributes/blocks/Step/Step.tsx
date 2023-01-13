@@ -36,7 +36,7 @@ export function Step({
   useEffect(() => {
     dispatch({
       type: 'SetActiveTabAction',
-      activeTab: ActiveTab.Properties
+      activeTab: ActiveTab.Cards
     })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
