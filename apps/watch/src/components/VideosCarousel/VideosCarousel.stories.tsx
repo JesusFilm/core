@@ -3,7 +3,7 @@ import { Story, Meta } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { watchConfig } from '../../libs/storybook'
 import { VideoCard } from '../VideoCard'
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { VideosCarousel } from './VideosCarousel'
 
 const VideosCarouselStory = {
