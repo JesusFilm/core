@@ -1,11 +1,5 @@
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  waitFor
-} from '@testing-library/react'
-import videojs from 'video.js'
+import { waitFor, fireEvent, render } from '@testing-library/react'
+import { VideoJsPlayer } from 'video.js'
 import { MockedProvider } from '@apollo/client/testing'
 import { VideoProvider } from '../../libs/videoContext'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
@@ -17,36 +11,14 @@ const onClose = jest.fn()
 const video: VideoContentFields = videos[0]
 
 describe('SubtitleDialog', () => {
-  let player
+  const player = {
+    addRemoteTextTrack: (textTrack: TextTrack) => textTracks.push(textTrack),
+    textTracks: () => textTracks
+  } as unknown as VideoJsPlayer
+  let textTracks: TextTrack[] = []
+
   beforeEach(() => {
-    const video = document.createElement('video')
-    document.body.appendChild(video)
-    player = videojs(video, {
-      autoplay: false,
-      controls: true,
-      userActions: {
-        hotkeys: true,
-        doubleClick: true
-      },
-      controlBar: {
-        playToggle: true,
-        remainingTimeDisplay: true,
-        progressControl: {
-          seekBar: true
-        },
-        fullscreenToggle: true,
-        volumePanel: {
-          inline: false
-        }
-      },
-      responsive: true
-    })
-    act(() => {
-      player.duration(250)
-    })
-  })
-  afterEach(() => {
-    cleanup()
+    textTracks = []
   })
 
   it('closes the modal on cancel icon click', () => {
@@ -93,7 +65,7 @@ describe('SubtitleDialog', () => {
         getByRole('option', { name: 'Arabic, Modern Standard اللغة العربية' })
       )
     )
-    const tracks = player.textTracks() ?? []
+    const tracks = player.textTracks()
     const ArabicId = '22658'
     const track = tracks[0]
     expect(track.id).toEqual(ArabicId)
