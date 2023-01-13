@@ -166,6 +166,7 @@ export interface GetVideoContainerAndVideoContent_container {
   studyQuestions: GetVideoContainerAndVideoContent_container_studyQuestions[];
   title: GetVideoContainerAndVideoContent_container_title[];
   variant: GetVideoContainerAndVideoContent_container_variant | null;
+  variantLanguagesCount: number;
   variantLanguagesWithSlug: GetVideoContainerAndVideoContent_container_variantLanguagesWithSlug[];
   /**
    * slug is a permanent link to the video.
@@ -335,6 +336,7 @@ export interface GetVideoContainerAndVideoContent_content {
   studyQuestions: GetVideoContainerAndVideoContent_content_studyQuestions[];
   title: GetVideoContainerAndVideoContent_content_title[];
   variant: GetVideoContainerAndVideoContent_content_variant | null;
+  variantLanguagesCount: number;
   variantLanguagesWithSlug: GetVideoContainerAndVideoContent_content_variantLanguagesWithSlug[];
   /**
    * slug is a permanent link to the video.

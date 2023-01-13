@@ -51,6 +51,7 @@ export const VIDEO_CONTENT_FIELDS = gql`
         value
       }
     }
+    variantLanguagesCount
     variantLanguagesWithSlug {
       slug
       language {
