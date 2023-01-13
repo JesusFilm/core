@@ -84,6 +84,7 @@ export interface GetVideoContent_content_variant {
    */
   slug: string;
   subtitle: GetVideoContent_content_variant_subtitle[];
+  subtitleCount: number;
 }
 
 export interface GetVideoContent_content_children_title {

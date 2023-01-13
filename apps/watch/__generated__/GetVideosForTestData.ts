@@ -84,6 +84,7 @@ export interface GetVideosForTestData_videos_variant {
    */
   slug: string;
   subtitle: GetVideosForTestData_videos_variant_subtitle[];
+  subtitleCount: number;
 }
 
 export interface GetVideosForTestData_videos_children_title {

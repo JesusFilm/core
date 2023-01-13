@@ -80,7 +80,8 @@ const chapter1: VideoContentFields = {
         value:
           'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
       }
-    ]
+    ],
+    subtitleCount: 1
   },
   variantLanguagesCount: 1,
   slug: 'the-beginning',
