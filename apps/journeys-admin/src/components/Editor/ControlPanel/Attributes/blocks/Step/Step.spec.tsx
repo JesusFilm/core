@@ -8,7 +8,6 @@ import {
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { render } from '@testing-library/react'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../__generated__/GetJourney'
-import { NextCard } from './NextCard'
 import { Step } from '.'
 
 jest.mock('react-i18next', () => ({
@@ -306,15 +305,6 @@ describe('Step', () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: 'SetActiveTabAction',
       activeTab: ActiveTab.Cards
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetSelectedAttributeIdAction',
-      id: 'step1.id-next-block'
-    })
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'SetDrawerPropsAction',
-      title: 'Next Card Properties',
-      children: <NextCard />
     })
   })
 })

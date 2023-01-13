@@ -38,15 +38,6 @@ export function Step({
       type: 'SetActiveTabAction',
       activeTab: ActiveTab.Cards
     })
-    dispatch({
-      type: 'SetSelectedAttributeIdAction',
-      id: `${id}-next-block`
-    })
-    dispatch({
-      type: 'SetDrawerPropsAction',
-      title: 'Next Card Properties',
-      children: <NextCard />
-    })
   }, [dispatch, id])
 
   return (
