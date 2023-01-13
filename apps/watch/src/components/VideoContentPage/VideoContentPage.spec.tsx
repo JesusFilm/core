@@ -1,7 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { MockedProvider } from '@apollo/client/testing'
-import { MockedProvider } from '@apollo/client/testing'
 import { videos } from '../Videos/__generated__/testData'
 import { VideoProvider } from '../../libs/videoContext'
 import { GET_VIDEO_CHILDREN } from '../VideoContainerPage/VideoContainerPage'
@@ -17,13 +16,6 @@ describe('VideoContentPage', () => {
           </VideoProvider>
         </SnackbarProvider>
       </MockedProvider>
-      <MockedProvider>
-        <SnackbarProvider>
-          <VideoProvider value={{ content: videos[0] }}>
-            <VideoContentPage />
-          </VideoProvider>
-        </SnackbarProvider>
-      </MockedProvider>
     )
 
     expect(getAllByRole('button', { name: 'Play' })).toHaveLength(1)
@@ -31,13 +23,6 @@ describe('VideoContentPage', () => {
 
   it('should render description', () => {
     const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <VideoProvider value={{ content: videos[0] }}>
-            <VideoContentPage />
-          </VideoProvider>
-        </SnackbarProvider>
-      </MockedProvider>
       <MockedProvider>
         <SnackbarProvider>
           <VideoProvider value={{ content: videos[0] }}>
@@ -92,13 +77,6 @@ describe('VideoContentPage', () => {
           </VideoProvider>
         </SnackbarProvider>
       </MockedProvider>
-      <MockedProvider>
-        <SnackbarProvider>
-          <VideoProvider value={{ content: videos[0] }}>
-            <VideoContentPage />
-          </VideoProvider>
-        </SnackbarProvider>
-      </MockedProvider>
     )
 
     expect(getByRole('heading', { name: 'JESUS Scenes' })).toBeInTheDocument()
@@ -106,13 +84,6 @@ describe('VideoContentPage', () => {
 
   it('should render share button', () => {
     const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <VideoProvider value={{ content: videos[0] }}>
-            <VideoContentPage />
-          </VideoProvider>
-        </SnackbarProvider>
-      </MockedProvider>
       <MockedProvider>
         <SnackbarProvider>
           <VideoProvider value={{ content: videos[0] }}>
@@ -130,13 +101,6 @@ describe('VideoContentPage', () => {
 
   it('should render download button', () => {
     const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <VideoProvider value={{ content: videos[0] }}>
-            <VideoContentPage />
-          </VideoProvider>
-        </SnackbarProvider>
-      </MockedProvider>
       <MockedProvider>
         <SnackbarProvider>
           <VideoProvider value={{ content: videos[0] }}>

@@ -1,7 +1,6 @@
 import { ComponentProps } from 'react'
 import { Story, Meta } from '@storybook/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { SnackbarProvider } from 'notistack'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
 import { getLanguagesSlugMock } from '../AudioLanguageDialog/testData'
