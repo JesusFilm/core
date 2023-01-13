@@ -10,7 +10,7 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true })
   app.useLogger(app.get(PinoLogger))
   await app.use(json({ limit: '50mb' }))
-  const port = process.env.PORT ?? '4003'
+  const port = '4003'
   await app.listen(port, () => {
     new Logger('main').log(`Listening on port: ${port}`)
   })
