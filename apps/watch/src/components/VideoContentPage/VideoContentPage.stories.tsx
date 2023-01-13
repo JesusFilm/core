@@ -4,6 +4,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { SnackbarProvider } from 'notistack'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
+import { getLanguagesSlugMock } from '../AudioLanguageDialog/testData'
 import { videos } from '../Videos/__generated__/testData'
 import { VideoContentPage } from '.'
 
@@ -20,12 +21,10 @@ const VideoContentPageStory = {
 const Template: Story<ComponentProps<typeof VideoContentPage>> = ({
   ...args
 }) => (
-  <MockedProvider>
-    <SnackbarProvider>
-      <VideoProvider value={{ content: videos[0] }}>
-        <VideoContentPage {...args} />
-      </VideoProvider>
-    </SnackbarProvider>
+  <MockedProvider mocks={[getLanguagesSlugMock]}>
+    <VideoProvider value={{ content: videos[0] }}>
+      <VideoContentPage {...args} />
+    </VideoProvider>
   </MockedProvider>
 )
 

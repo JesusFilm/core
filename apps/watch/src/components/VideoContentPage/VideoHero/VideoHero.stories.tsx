@@ -3,8 +3,10 @@ import { Meta, Story } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
+import { MockedProvider } from '@apollo/client/testing'
 import { watchConfig } from '../../../libs/storybook'
 import { VideoProvider } from '../../../libs/videoContext'
+import { getLanguagesSlugMock } from '../../AudioLanguageDialog/testData'
 import { videos } from '../../Videos/__generated__/testData'
 import { VideoHero } from './VideoHero'
 
@@ -17,11 +19,13 @@ const VideoHeroStory = {
 const Template: Story = () => {
   const [hasPlayed, setHasPlayed] = useState(false)
   return (
-    <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
-      <VideoProvider value={{ content: videos[0] }}>
-        <VideoHero onPlay={() => setHasPlayed(true)} hasPlayed={hasPlayed} />
-      </VideoProvider>
-    </ThemeProvider>
+    <MockedProvider mocks={[getLanguagesSlugMock]}>
+      <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoHero onPlay={() => setHasPlayed(true)} hasPlayed={hasPlayed} />
+        </VideoProvider>
+      </ThemeProvider>
+    </MockedProvider>
   )
 }
 

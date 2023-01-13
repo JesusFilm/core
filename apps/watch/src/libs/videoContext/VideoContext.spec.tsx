@@ -83,28 +83,6 @@ const chapter1: VideoContentFields = {
     ]
   },
   variantLanguagesCount: 1,
-  variantLanguagesWithSlug: [
-    {
-      __typename: 'LanguageWithSlug',
-      slug: 'the-beginning/french',
-      language: {
-        id: '496',
-        __typename: 'Language',
-        name: [
-          {
-            value: 'Français',
-            primary: true,
-            __typename: 'Translation'
-          },
-          {
-            value: 'French',
-            primary: false,
-            __typename: 'Translation'
-          }
-        ]
-      }
-    }
-  ],
   slug: 'the-beginning',
   children: [],
   childrenCount: 0

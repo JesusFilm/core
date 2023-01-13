@@ -8,8 +8,19 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import dynamic from 'next/dynamic'
 import { useVideo } from '../../../libs/videoContext'
-import { AudioLanguageDialog } from '../../AudioDialog'
+
+const DynamicAudioLanguageDialog = dynamic<{
+  open: boolean
+  onClose: () => void
+}>(
+  async () =>
+    await import(
+      /* webpackChunkName: "AudioLanguageDialog" */
+      '../../AudioLanguageDialog'
+    ).then((mod) => mod.AudioLanguageDialog)
+)
 
 interface AudioLanguageButtonProps {
   componentVariant: 'button' | 'icon'
@@ -19,7 +30,8 @@ export function AudioLanguageButton({
   componentVariant
 }: AudioLanguageButtonProps): ReactElement {
   const { variant, variantLanguagesCount } = useVideo()
-  const [openAudioLanguage, setOpenAudioLanguage] = useState(false)
+  const [openAudioLanguageDialog, setOpenAudioLanguageDialog] = useState(false)
+  const [loadAudioLanguageDialog, setLoadAudioLanguageDialog] = useState(false)
 
   const nativeName = variant?.language?.name.find(
     ({ primary }) => !primary
@@ -28,12 +40,17 @@ export function AudioLanguageButton({
     ({ primary }) => primary
   )?.value
 
+  function handleClick(): void {
+    setOpenAudioLanguageDialog(true)
+    setLoadAudioLanguageDialog(true)
+  }
+
   return (
     <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.light}>
       {componentVariant === 'button' ? (
         <Button
           size="small"
-          onClick={() => setOpenAudioLanguage(true)}
+          onClick={handleClick}
           sx={{
             gap: 1,
             display: 'flex',
@@ -72,14 +89,16 @@ export function AudioLanguageButton({
           <KeyboardArrowDownOutlined fontSize="small" />
         </Button>
       ) : (
-        <IconButton onClick={() => setOpenAudioLanguage(true)}>
+        <IconButton onClick={handleClick}>
           <LanguageOutlined sx={{ color: '#ffffff' }} />
         </IconButton>
       )}
-      <AudioLanguageDialog
-        open={openAudioLanguage}
-        onClose={() => setOpenAudioLanguage(false)}
-      />
+      {loadAudioLanguageDialog && (
+        <DynamicAudioLanguageDialog
+          open={openAudioLanguageDialog}
+          onClose={() => setOpenAudioLanguageDialog(false)}
+        />
+      )}
     </ThemeProvider>
   )
 }
