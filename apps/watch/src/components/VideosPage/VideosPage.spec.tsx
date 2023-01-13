@@ -51,7 +51,7 @@ describe('VideosPage', () => {
 
   describe('filters', () => {
     it('should handle audio language filter', async () => {
-      const { getAllByRole, getByText, getAllByTestId } = render(
+      const { getAllByRole, getByText, getByTestId } = render(
         <MockedProvider
           mocks={[
             {
@@ -112,12 +112,12 @@ describe('VideosPage', () => {
       fireEvent.click(option)
       const chip = getByText('audio: English')
       expect(chip).toBeInTheDocument()
-      fireEvent.click(getAllByTestId('CloseRoundedIcon')[0])
+      fireEvent.click(getByTestId('delete audio English filter'))
       expect(chip).not.toBeInTheDocument()
     })
 
     it('should handle subtitle language filter', async () => {
-      const { getAllByRole, getByText, getAllByTestId } = render(
+      const { getAllByRole, getByText, getByTestId } = render(
         <MockedProvider
           mocks={[
             {
@@ -178,7 +178,7 @@ describe('VideosPage', () => {
       fireEvent.click(option)
       const chip = getByText('sub: English')
       expect(chip).toBeInTheDocument()
-      fireEvent.click(getAllByTestId('CloseRoundedIcon')[0])
+      fireEvent.click(getByTestId('delete subtitle English filter'))
       expect(chip).not.toBeInTheDocument()
     })
   })
