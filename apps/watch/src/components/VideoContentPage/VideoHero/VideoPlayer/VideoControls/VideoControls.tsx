@@ -19,9 +19,21 @@ import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
 import CircularProgress from '@mui/material/CircularProgress'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import fscreen from 'fscreen'
-import { SubtitleDialog } from '../../../../SubtitleDialog'
+import dynamic from 'next/dynamic'
 import { useVideo } from '../../../../../libs/videoContext'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
+
+const DynamicSubtitleDialog = dynamic<{
+  open: boolean
+  player: VideoJsPlayer
+  onClose: () => void
+}>(
+  async () =>
+    await import(
+      /* webpackChunkName: "SubtitleDialog" */
+      '../../../../SubtitleDialog'
+    ).then((mod) => mod.SubtitleDialog)
+)
 
 interface VideoControlProps {
   player: VideoJsPlayer
@@ -357,12 +369,13 @@ export function VideoControls({
                   </IconButton>
                 </Stack>
               </Stack>
-              <SubtitleDialog
-                open={openSubtitle}
-                player={player}
-                subtitles={variant?.subtitle}
-                onClose={() => setOpenSubtitle(false)}
-              />
+              {openSubtitle && (
+                <DynamicSubtitleDialog
+                  open={openSubtitle}
+                  player={player}
+                  onClose={() => setOpenSubtitle(false)}
+                />
+              )}
             </Container>
           </Box>
         </Box>

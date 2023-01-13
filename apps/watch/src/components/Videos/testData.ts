@@ -48,30 +48,6 @@ const jesusFeatureFilm: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'JESUS' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '1_529-jf-0-0',
     duration: 7674,
@@ -3452,30 +3428,6 @@ const lifeOfJesus: VideoContentFields = {
   ],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '2_529-GOJ-0-0',
     duration: 10994,
@@ -6112,30 +6064,6 @@ const jesusCalmsTheStorm: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'Jesus Calms the Storm' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '1_529-jf6119-0-0',
     duration: 119,
@@ -6233,30 +6161,6 @@ const womanWithBlood: VideoContentFields = {
   ],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '1_529-wl604423-0-0',
     duration: 190,
@@ -6334,30 +6238,6 @@ const magdalena: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'Magdalena' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '1_529-wl60-0-0',
     duration: 3665,
@@ -8930,30 +8810,6 @@ const reflectionsOfHope: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'Reflections of Hope' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '1_529-wl7-0-0',
     duration: 0,
@@ -9429,30 +9285,6 @@ const jesusDiedForMe: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'Day 6: Jesus Died for Me' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '3_529-0-8DWJ-WIJ_06-0-0',
     duration: 488,
@@ -9536,30 +9368,6 @@ const bookOfActs: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'Book of Acts' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '2_529-Acts-0-0',
     duration: 11530,
@@ -13456,30 +13264,6 @@ const weddingInCana: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'Wedding in Cana' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '2_529-GOJ4904-0-0',
     duration: 213,
@@ -13547,30 +13331,6 @@ const lumo: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'LUMO' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '529-LUMOCollection',
     duration: 0,
@@ -13971,30 +13731,6 @@ const peterEscape: VideoContentFields = {
   ],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '2_529-Acts7331-0-0',
     duration: 298,
@@ -14076,30 +13812,6 @@ const whoIsJesus: VideoContentFields = {
   ],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '3_529-0-8DWJ-WIJ',
     duration: 0,
@@ -14617,30 +14329,6 @@ const chosenWitness: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'Chosen Witness' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '2_529-ChosenWitness',
     duration: 566,
@@ -14718,30 +14406,6 @@ const gospelOfLuke: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'LUMO - The Gospel of Luke' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '529-GOLukeCollection',
     duration: 0,
@@ -16152,30 +15816,6 @@ const jesusAndZacchaeus: VideoContentFields = {
   ],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '1_529-cl1309-0-0',
     duration: 124,
@@ -16266,30 +15906,6 @@ const birthOfJesus: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'Birth of Jesus' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '1_529-jf6102-0-0',
     duration: 223,
@@ -16387,30 +16003,6 @@ const fallingPlates: VideoContentFields = {
   title: [{ __typename: 'Translation', value: '#FallingPlates' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '2_529-0-FallingPlates',
     duration: 247,
@@ -16489,30 +16081,6 @@ const paulAndSilas: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'Paul and Silas in Prison' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '2_529-Acts7345-0-0',
     duration: 369,
@@ -16603,30 +16171,6 @@ const myLastDay: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'My Last Day' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '1_529-mld-0-0',
     duration: 554,
@@ -16755,30 +16299,6 @@ const theBegining: VideoContentFields = {
   title: [{ __typename: 'Translation', value: 'The Beginning' }],
   variant: {
     __typename: 'VideoVariant',
-    subtitle: [
-      {
-        __typename: 'Translation',
-        language: {
-          __typename: 'Language',
-          bcp47: 'ar',
-          id: '22658',
-          name: [
-            {
-              __typename: 'Translation',
-              value: ' اللغة العربية',
-              primary: true
-            },
-            {
-              __typename: 'Translation',
-              value: 'Arabic, Modern Standard',
-              primary: false
-            }
-          ]
-        },
-        value:
-          'https://d389zwyrhi20m0.cloudfront.net/22658/1_jf6119-0-0/0-0-OT6119-22658-32426.vtt'
-      }
-    ],
     subtitleCount: 1,
     id: '1_529-jf6101-0-0',
     duration: 488,

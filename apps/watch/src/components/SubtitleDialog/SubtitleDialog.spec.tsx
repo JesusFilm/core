@@ -1,9 +1,17 @@
-import { act, cleanup, fireEvent, render } from '@testing-library/react'
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  waitFor
+} from '@testing-library/react'
 import videojs from 'video.js'
+import { MockedProvider } from '@apollo/client/testing'
 import { VideoProvider } from '../../libs/videoContext'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { videos } from '../Videos/testData'
 import { SubtitleDialog } from './SubtitleDialog'
+import { getSubtitleMock } from './testData'
 
 const onClose = jest.fn()
 const video: VideoContentFields = videos[0]
@@ -43,52 +51,47 @@ describe('SubtitleDialog', () => {
 
   it('closes the modal on cancel icon click', () => {
     const { getByTestId } = render(
-      <VideoProvider value={{ content: video }}>
-        <SubtitleDialog
-          onClose={onClose}
-          open
-          player={player}
-          subtitles={video.variant?.subtitle}
-        />
-      </VideoProvider>
+      <MockedProvider mocks={[getSubtitleMock]}>
+        <VideoProvider value={{ content: video }}>
+          <SubtitleDialog onClose={onClose} open player={player} />
+        </VideoProvider>
+      </MockedProvider>
     )
     fireEvent.click(getByTestId('dialog-close-button'))
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('it offers subtitles if they exist', () => {
+  it('it offers subtitles if they exist', async () => {
     const { getByRole, queryAllByRole } = render(
-      <VideoProvider value={{ content: video }}>
-        <SubtitleDialog
-          onClose={onClose}
-          open
-          player={player}
-          subtitles={video.variant?.subtitle}
-        />
-      </VideoProvider>
+      <MockedProvider mocks={[getSubtitleMock]}>
+        <VideoProvider value={{ content: video }}>
+          <SubtitleDialog onClose={onClose} open player={player} />
+        </VideoProvider>
+      </MockedProvider>
     )
     fireEvent.focus(getByRole('textbox'))
     fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
-    expect(queryAllByRole('option')[0]).toHaveTextContent(
-      'Arabic, Modern Standard اللغة العربية'
+    await waitFor(() =>
+      expect(queryAllByRole('option')[0]).toHaveTextContent(
+        'Arabic, Modern Standard اللغة العربية'
+      )
     )
   })
 
-  it('selecting a subtitle results in the player using it', () => {
+  it('selecting a subtitle results in the player using it', async () => {
     const { getByRole } = render(
-      <VideoProvider value={{ content: video }}>
-        <SubtitleDialog
-          onClose={onClose}
-          open
-          player={player}
-          subtitles={video.variant?.subtitle}
-        />
-      </VideoProvider>
+      <MockedProvider mocks={[getSubtitleMock]}>
+        <VideoProvider value={{ content: video }}>
+          <SubtitleDialog onClose={onClose} open player={player} />
+        </VideoProvider>
+      </MockedProvider>
     )
     fireEvent.focus(getByRole('textbox'))
     fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
-    fireEvent.click(
-      getByRole('option', { name: 'Arabic, Modern Standard اللغة العربية' })
+    await waitFor(() =>
+      fireEvent.click(
+        getByRole('option', { name: 'Arabic, Modern Standard اللغة العربية' })
+      )
     )
     const tracks = player.textTracks() ?? []
     const ArabicId = '22658'
