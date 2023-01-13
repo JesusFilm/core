@@ -589,6 +589,7 @@ export const videos: VideoContentFields[] = [
         }
       ]
     },
+    variantLanguagesCount: 2026,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -16805,6 +16806,18 @@ export const videos: VideoContentFields[] = [
       },
       {
         __typename: 'LanguageWithSlug',
+        slug: 'jesus/flemish',
+        language: {
+          __typename: 'Language',
+          id: '21578',
+          name: [
+            { __typename: 'Translation', value: 'Flemish', primary: true },
+            { __typename: 'Translation', value: 'Flemish', primary: false }
+          ]
+        }
+      },
+      {
+        __typename: 'LanguageWithSlug',
         slug: 'jesus/pak-pak-dairi',
         language: {
           __typename: 'Language',
@@ -23499,7 +23512,18 @@ export const videos: VideoContentFields[] = [
           ]
         }
       },
-      { __typename: 'LanguageWithSlug', slug: 'jesus/kim', language: null },
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'jesus/kim',
+        language: {
+          __typename: 'Language',
+          id: '141333',
+          name: [
+            { __typename: 'Translation', value: 'Kim', primary: true },
+            { __typename: 'Translation', value: 'Kim', primary: false }
+          ]
+        }
+      },
       {
         __typename: 'LanguageWithSlug',
         slug: 'jesus/koalib',
@@ -25622,6 +25646,18 @@ export const videos: VideoContentFields[] = [
       },
       {
         __typename: 'LanguageWithSlug',
+        slug: 'jesus/abureni',
+        language: {
+          __typename: 'Language',
+          id: '144623',
+          name: [
+            { __typename: 'Translation', value: 'Abureni', primary: true },
+            { __typename: 'Translation', value: 'Abureni', primary: false }
+          ]
+        }
+      },
+      {
+        __typename: 'LanguageWithSlug',
         slug: 'jesus/mailu',
         language: {
           __typename: 'Language',
@@ -27731,7 +27767,22 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'LanguageWithSlug',
         slug: 'jesus/arabic-hijazi',
-        language: null
+        language: {
+          __typename: 'Language',
+          id: '184592',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Arabic, Hijazi',
+              primary: true
+            },
+            {
+              __typename: 'Translation',
+              value: 'Arabic, Hijazi',
+              primary: false
+            }
+          ]
+        }
       },
       {
         __typename: 'LanguageWithSlug',
@@ -30640,6 +30691,7 @@ export const videos: VideoContentFields[] = [
       slug: 'life-of-jesus-gospel-of-john/english',
       subtitle: []
     },
+    variantLanguagesCount: 23,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -32917,6 +32969,7 @@ export const videos: VideoContentFields[] = [
         }
       ]
     },
+    variantLanguagesCount: 1999,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -48709,6 +48762,18 @@ export const videos: VideoContentFields[] = [
       },
       {
         __typename: 'LanguageWithSlug',
+        slug: 'jesus-calms-the-storm/flemish',
+        language: {
+          __typename: 'Language',
+          id: '21578',
+          name: [
+            { __typename: 'Translation', value: 'Flemish', primary: true },
+            { __typename: 'Translation', value: 'Flemish', primary: false }
+          ]
+        }
+      },
+      {
+        __typename: 'LanguageWithSlug',
         slug: 'jesus-calms-the-storm/pak-pak-dairi',
         language: {
           __typename: 'Language',
@@ -55386,7 +55451,14 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'LanguageWithSlug',
         slug: 'jesus-calms-the-storm/kim',
-        language: null
+        language: {
+          __typename: 'Language',
+          id: '141333',
+          name: [
+            { __typename: 'Translation', value: 'Kim', primary: true },
+            { __typename: 'Translation', value: 'Kim', primary: false }
+          ]
+        }
       },
       {
         __typename: 'LanguageWithSlug',
@@ -57510,6 +57582,18 @@ export const videos: VideoContentFields[] = [
       },
       {
         __typename: 'LanguageWithSlug',
+        slug: 'jesus-calms-the-storm/abureni',
+        language: {
+          __typename: 'Language',
+          id: '144623',
+          name: [
+            { __typename: 'Translation', value: 'Abureni', primary: true },
+            { __typename: 'Translation', value: 'Abureni', primary: false }
+          ]
+        }
+      },
+      {
+        __typename: 'LanguageWithSlug',
         slug: 'jesus-calms-the-storm/mailu',
         language: {
           __typename: 'Language',
@@ -59607,7 +59691,22 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'LanguageWithSlug',
         slug: 'jesus-calms-the-storm/arabic-hijazi',
-        language: null
+        language: {
+          __typename: 'Language',
+          id: '184592',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Arabic, Hijazi',
+              primary: true
+            },
+            {
+              __typename: 'Translation',
+              value: 'Arabic, Hijazi',
+              primary: false
+            }
+          ]
+        }
       },
       {
         __typename: 'LanguageWithSlug',
@@ -61206,6 +61305,7 @@ export const videos: VideoContentFields[] = [
         }
       ]
     },
+    variantLanguagesCount: 214,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -64797,6 +64897,7 @@ export const videos: VideoContentFields[] = [
         }
       ]
     },
+    variantLanguagesCount: 215,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -69302,6 +69403,7 @@ export const videos: VideoContentFields[] = [
       slug: 'reflections-of-hope/english',
       subtitle: []
     },
+    variantLanguagesCount: 214,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -72648,6 +72750,7 @@ export const videos: VideoContentFields[] = [
       slug: 'day-6-jesus-died-for-me/english',
       subtitle: []
     },
+    variantLanguagesCount: 3,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -72755,6 +72858,7 @@ export const videos: VideoContentFields[] = [
       slug: 'book-of-acts/english',
       subtitle: []
     },
+    variantLanguagesCount: 9,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -75044,6 +75148,7 @@ export const videos: VideoContentFields[] = [
       slug: 'wedding-in-cana/english',
       subtitle: []
     },
+    variantLanguagesCount: 23,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -75390,6 +75495,7 @@ export const videos: VideoContentFields[] = [
       slug: 'lumo/english',
       subtitle: []
     },
+    variantLanguagesCount: 29,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -76083,6 +76189,7 @@ export const videos: VideoContentFields[] = [
       slug: 'peter-miraculous-escape-from-prison/english',
       subtitle: []
     },
+    variantLanguagesCount: 9,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -76267,6 +76374,7 @@ export const videos: VideoContentFields[] = [
       slug: '8-days-with-jesus-who-is-jesus/english',
       subtitle: []
     },
+    variantLanguagesCount: 3,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -76645,6 +76753,7 @@ export const videos: VideoContentFields[] = [
         }
       ]
     },
+    variantLanguagesCount: 42,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -77271,6 +77380,7 @@ export const videos: VideoContentFields[] = [
       slug: 'lumo-the-gospel-of-luke/english',
       subtitle: []
     },
+    variantLanguagesCount: 29,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -78466,6 +78576,7 @@ export const videos: VideoContentFields[] = [
       slug: 'storyclubs-jesus-and-zacchaeus/english',
       subtitle: []
     },
+    variantLanguagesCount: 184,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -79605,6 +79716,18 @@ export const videos: VideoContentFields[] = [
           name: [
             { __typename: 'Translation', value: '日本語', primary: true },
             { __typename: 'Translation', value: 'Japanese', primary: false }
+          ]
+        }
+      },
+      {
+        __typename: 'LanguageWithSlug',
+        slug: 'storyclubs-jesus-and-zacchaeus/rendille',
+        language: {
+          __typename: 'Language',
+          id: '7238',
+          name: [
+            { __typename: 'Translation', value: 'Rendille', primary: true },
+            { __typename: 'Translation', value: 'Rendille', primary: false }
           ]
         }
       },
@@ -81620,6 +81743,7 @@ export const videos: VideoContentFields[] = [
         }
       ]
     },
+    variantLanguagesCount: 1998,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -97400,6 +97524,18 @@ export const videos: VideoContentFields[] = [
       },
       {
         __typename: 'LanguageWithSlug',
+        slug: 'birth-of-jesus/flemish',
+        language: {
+          __typename: 'Language',
+          id: '21578',
+          name: [
+            { __typename: 'Translation', value: 'Flemish', primary: true },
+            { __typename: 'Translation', value: 'Flemish', primary: false }
+          ]
+        }
+      },
+      {
+        __typename: 'LanguageWithSlug',
         slug: 'birth-of-jesus/pak-pak-dairi',
         language: {
           __typename: 'Language',
@@ -104077,7 +104213,14 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'LanguageWithSlug',
         slug: 'birth-of-jesus/kim',
-        language: null
+        language: {
+          __typename: 'Language',
+          id: '141333',
+          name: [
+            { __typename: 'Translation', value: 'Kim', primary: true },
+            { __typename: 'Translation', value: 'Kim', primary: false }
+          ]
+        }
       },
       {
         __typename: 'LanguageWithSlug',
@@ -106201,6 +106344,18 @@ export const videos: VideoContentFields[] = [
       },
       {
         __typename: 'LanguageWithSlug',
+        slug: 'birth-of-jesus/abureni',
+        language: {
+          __typename: 'Language',
+          id: '144623',
+          name: [
+            { __typename: 'Translation', value: 'Abureni', primary: true },
+            { __typename: 'Translation', value: 'Abureni', primary: false }
+          ]
+        }
+      },
+      {
+        __typename: 'LanguageWithSlug',
         slug: 'birth-of-jesus/mailu',
         language: {
           __typename: 'Language',
@@ -108298,7 +108453,22 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'LanguageWithSlug',
         slug: 'birth-of-jesus/arabic-hijazi',
-        language: null
+        language: {
+          __typename: 'Language',
+          id: '184592',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Arabic, Hijazi',
+              primary: true
+            },
+            {
+              __typename: 'Translation',
+              value: 'Arabic, Hijazi',
+              primary: false
+            }
+          ]
+        }
       },
       {
         __typename: 'LanguageWithSlug',
@@ -109512,6 +109682,7 @@ export const videos: VideoContentFields[] = [
         }
       ]
     },
+    variantLanguagesCount: 39,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -110137,6 +110308,7 @@ export const videos: VideoContentFields[] = [
       slug: 'paul-and-silas-in-prison/english',
       subtitle: []
     },
+    variantLanguagesCount: 9,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -110458,6 +110630,7 @@ export const videos: VideoContentFields[] = [
         }
       ]
     },
+    variantLanguagesCount: 275,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -114904,6 +115077,7 @@ export const videos: VideoContentFields[] = [
         }
       ]
     },
+    variantLanguagesCount: 1993,
     variantLanguagesWithSlug: [
       {
         __typename: 'LanguageWithSlug',
@@ -130648,6 +130822,18 @@ export const videos: VideoContentFields[] = [
       },
       {
         __typename: 'LanguageWithSlug',
+        slug: 'the-beginning/flemish',
+        language: {
+          __typename: 'Language',
+          id: '21578',
+          name: [
+            { __typename: 'Translation', value: 'Flemish', primary: true },
+            { __typename: 'Translation', value: 'Flemish', primary: false }
+          ]
+        }
+      },
+      {
+        __typename: 'LanguageWithSlug',
         slug: 'the-beginning/pak-pak-dairi',
         language: {
           __typename: 'Language',
@@ -137273,7 +137459,14 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'LanguageWithSlug',
         slug: 'the-beginning/kim',
-        language: null
+        language: {
+          __typename: 'Language',
+          id: '141333',
+          name: [
+            { __typename: 'Translation', value: 'Kim', primary: true },
+            { __typename: 'Translation', value: 'Kim', primary: false }
+          ]
+        }
       },
       {
         __typename: 'LanguageWithSlug',
@@ -139397,6 +139590,18 @@ export const videos: VideoContentFields[] = [
       },
       {
         __typename: 'LanguageWithSlug',
+        slug: 'the-beginning/abureni',
+        language: {
+          __typename: 'Language',
+          id: '144623',
+          name: [
+            { __typename: 'Translation', value: 'Abureni', primary: true },
+            { __typename: 'Translation', value: 'Abureni', primary: false }
+          ]
+        }
+      },
+      {
+        __typename: 'LanguageWithSlug',
         slug: 'the-beginning/mailu',
         language: {
           __typename: 'Language',
@@ -141494,7 +141699,22 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'LanguageWithSlug',
         slug: 'the-beginning/arabic-hijazi',
-        language: null
+        language: {
+          __typename: 'Language',
+          id: '184592',
+          name: [
+            {
+              __typename: 'Translation',
+              value: 'Arabic, Hijazi',
+              primary: true
+            },
+            {
+              __typename: 'Translation',
+              value: 'Arabic, Hijazi',
+              primary: false
+            }
+          ]
+        }
       },
       {
         __typename: 'LanguageWithSlug',
