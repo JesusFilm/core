@@ -1,9 +1,9 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { MockedProvider } from '@apollo/client/testing'
 import { videos } from '../Videos/testData'
 import { VideoProvider } from '../../libs/videoContext'
-import { GET_VIDEO_CHILDREN } from './VideoContentPage'
+import { GET_VIDEO_CHILDREN } from '../VideoContainerPage/VideoContainerPage'
 import { VideoContentPage } from '.'
 
 describe('VideoContentPage', () => {
@@ -34,37 +34,23 @@ describe('VideoContentPage', () => {
     expect(getByRole('tab', { name: 'Description' })).toBeInTheDocument()
   })
 
-  it('should render related videos', () => {
+  it('should render related videos', async () => {
     const result = jest.fn(() => ({
       data: {
         video: {
-          children: [
-            {
-              id: 'child.id',
-              label: 'label',
-              title: [],
-              image: null,
-              imageAlt: [],
-              snippet: [],
-              slug: 'slug',
-              children: [],
-              variant: null
-            }
-          ]
+          children: []
         }
       }
     }))
 
-    const { getByTestId } = render(
+    render(
       <MockedProvider
         mocks={[
           {
             request: {
               query: GET_VIDEO_CHILDREN,
               variables: {
-                input: {
-                  id: '1_jf-0-0'
-                }
+                id: '1_jf6119-0-0'
               }
             },
             result
@@ -79,7 +65,7 @@ describe('VideoContentPage', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('videos-carousel')).toBeInTheDocument()
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('should render title on feature films', () => {

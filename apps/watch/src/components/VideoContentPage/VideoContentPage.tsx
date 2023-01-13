@@ -45,13 +45,6 @@ export function VideoContentPage(): ReactElement {
     }
   )
 
-  const { data: containerVideoData } = useQuery<GetVideoChildren>(
-    GET_VIDEO_CHILDREN,
-    {
-      variables: { id: container?.id ?? '' }
-    }
-  )
-
   const VideosCarousel = dynamic<VideosCarouselProps>(
     async () =>
       await import(
@@ -107,10 +100,10 @@ export function VideoContentPage(): ReactElement {
         }
       >
         <>
-          {containerVideoData?.video?.children != null && (
+          {videoData?.video?.children != null && (
             <VideoContentCarousel
               playing={hasPlayed}
-              videoChildren={containerVideoData.video.children}
+              videoChildren={videoData.video.children}
               onShareClick={() => setOpenShare(true)}
               onDownloadClick={() => setOpenDownload(true)}
             />

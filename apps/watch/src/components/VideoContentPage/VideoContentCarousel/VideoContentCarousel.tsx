@@ -38,7 +38,7 @@ export function VideoContentCarousel({
 
   const activeVideoIndex = useMemo(() => {
     return container != null
-      ? videoChildren.findIndex((child) => child.id === id) + 1
+      ? container.children.findIndex((child) => child.id === id) + 1
       : -1
   }, [videoChildren, container, id])
 
@@ -81,7 +81,7 @@ export function VideoContentCarousel({
 
   const siblings = useMemo(() => {
     if (container != null) {
-      return videoChildren.filter((siblingVideo) => {
+      return (container?.children ?? []).filter((siblingVideo) => {
         return (
           videoChildren.findIndex(
             (childVideo) => childVideo.id === siblingVideo.id
