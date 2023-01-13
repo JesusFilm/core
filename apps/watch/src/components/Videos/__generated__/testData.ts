@@ -587,7 +587,8 @@ export const videos: VideoContentFields[] = [
           value:
             'https://d389zwyrhi20m0.cloudfront.net/22500/1_jf-0-0/0-0-OT-22500-31643.vtt'
         }
-      ]
+      ],
+      subtitleCount: 32
     },
     variantLanguagesCount: 2026,
     slug: 'jesus',
@@ -2462,7 +2463,8 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'life-of-jesus-gospel-of-john/english',
-      subtitle: []
+      subtitle: [],
+      subtitleCount: 0
     },
     variantLanguagesCount: 23,
     slug: 'life-of-jesus-gospel-of-john',
@@ -4425,7 +4427,8 @@ export const videos: VideoContentFields[] = [
           value:
             'https://d389zwyrhi20m0.cloudfront.net/22500/1_jf6119-0-0/0-0-OT6119-22500-31643.vtt'
         }
-      ]
+      ],
+      subtitleCount: 32
     },
     variantLanguagesCount: 1999,
     slug: 'jesus-calms-the-storm',
@@ -4990,7 +4993,8 @@ export const videos: VideoContentFields[] = [
           value:
             'https://d389zwyrhi20m0.cloudfront.net/22500/1_wl604423-0-0/0-0-WL604423-22500-32564.vtt'
         }
-      ]
+      ],
+      subtitleCount: 31
     },
     variantLanguagesCount: 214,
     slug: 'the-woman-with-the-issue-of-blood',
@@ -5535,7 +5539,8 @@ export const videos: VideoContentFields[] = [
           value:
             'https://d389zwyrhi20m0.cloudfront.net/22500/1_wl60-0-0/0-0-WL60-22500-32564.vtt'
         }
-      ]
+      ],
+      subtitleCount: 31
     },
     variantLanguagesCount: 215,
     slug: 'magdalena',
@@ -6974,7 +6979,8 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'reflections-of-hope/english',
-      subtitle: []
+      subtitle: [],
+      subtitleCount: 0
     },
     variantLanguagesCount: 214,
     slug: 'reflections-of-hope',
@@ -7274,7 +7280,8 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'day-6-jesus-died-for-me/english',
-      subtitle: []
+      subtitle: [],
+      subtitleCount: 0
     },
     variantLanguagesCount: 3,
     slug: 'day-6-jesus-died-for-me',
@@ -7335,7 +7342,8 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'book-of-acts/english',
-      subtitle: []
+      subtitle: [],
+      subtitleCount: 0
     },
     variantLanguagesCount: 9,
     slug: 'book-of-acts',
@@ -9486,7 +9494,8 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'wedding-in-cana/english',
-      subtitle: []
+      subtitle: [],
+      subtitleCount: 0
     },
     variantLanguagesCount: 23,
     slug: 'wedding-in-cana',
@@ -9518,7 +9527,8 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'lumo/english',
-      subtitle: []
+      subtitle: [],
+      subtitleCount: 0
     },
     variantLanguagesCount: 29,
     slug: 'lumo',
@@ -9813,7 +9823,8 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'peter-miraculous-escape-from-prison/english',
-      subtitle: []
+      subtitle: [],
+      subtitleCount: 0
     },
     variantLanguagesCount: 9,
     slug: 'peter-miraculous-escape-from-prison',
@@ -9859,7 +9870,8 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: '8-days-with-jesus-who-is-jesus/english',
-      subtitle: []
+      subtitle: [],
+      subtitleCount: 0
     },
     variantLanguagesCount: 3,
     slug: '8-days-with-jesus-who-is-jesus',
@@ -10191,7 +10203,8 @@ export const videos: VideoContentFields[] = [
           value:
             'https://d389zwyrhi20m0.cloudfront.net/529/2_ChosenWitness/0-0-ChosenWitness-529-0.vtt'
         }
-      ]
+      ],
+      subtitleCount: 1
     },
     variantLanguagesCount: 42,
     slug: 'chosen-witness',
@@ -10235,7 +10248,8 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'lumo-the-gospel-of-luke/english',
-      subtitle: []
+      subtitle: [],
+      subtitleCount: 0
     },
     variantLanguagesCount: 29,
     slug: 'lumo-the-gospel-of-luke',
@@ -11032,7 +11046,8 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'storyclubs-jesus-and-zacchaeus/english',
-      subtitle: []
+      subtitle: [],
+      subtitleCount: 0
     },
     variantLanguagesCount: 184,
     slug: 'storyclubs-jesus-and-zacchaeus',
@@ -11612,7 +11627,8 @@ export const videos: VideoContentFields[] = [
           value:
             'https://d389zwyrhi20m0.cloudfront.net/22500/1_jf6102-0-0/0-0-OT6102-22500-31643.vtt'
         }
-      ]
+      ],
+      subtitleCount: 32
     },
     variantLanguagesCount: 1998,
     slug: 'birth-of-jesus',
@@ -11792,7 +11808,8 @@ export const videos: VideoContentFields[] = [
           value:
             'https://d389zwyrhi20m0.cloudfront.net/21028/2_0-FallingPlates/0-0-FallingPlates-21028-0.vtt'
         }
-      ]
+      ],
+      subtitleCount: 7
     },
     variantLanguagesCount: 39,
     slug: 'fallingplates',
@@ -11863,7 +11880,8 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'Translation', value: 'English', primary: true }]
       },
       slug: 'paul-and-silas-in-prison/english',
-      subtitle: []
+      subtitle: [],
+      subtitleCount: 0
     },
     variantLanguagesCount: 9,
     slug: 'paul-and-silas-in-prison',
@@ -12046,7 +12064,8 @@ export const videos: VideoContentFields[] = [
           value:
             'https://d389zwyrhi20m0.cloudfront.net/21028/1_mld-0-0/0-0-MLD-21028-32084.vtt'
         }
-      ]
+      ],
+      subtitleCount: 7
     },
     variantLanguagesCount: 275,
     slug: 'my-last-day',
@@ -12642,7 +12661,8 @@ export const videos: VideoContentFields[] = [
           value:
             'https://d389zwyrhi20m0.cloudfront.net/22500/1_jf6101-0-0/0-0-OT6101-22500-31643.vtt'
         }
-      ]
+      ],
+      subtitleCount: 32
     },
     variantLanguagesCount: 1993,
     slug: 'the-beginning',
