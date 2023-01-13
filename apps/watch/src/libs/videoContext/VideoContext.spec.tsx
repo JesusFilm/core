@@ -106,7 +106,8 @@ const chapter1: VideoContentFields = {
     }
   ],
   slug: 'the-beginning',
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const handleClick = jest.fn()
