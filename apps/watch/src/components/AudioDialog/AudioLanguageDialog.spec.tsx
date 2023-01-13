@@ -20,9 +20,9 @@ describe('AudioLanguageDialog', () => {
     )
     await waitFor(() => fireEvent.focus(getByRole('textbox')))
     fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
-    expect(queryAllByRole('option')[0]).toHaveTextContent('English')
-    expect(queryAllByRole('option')[1]).toHaveTextContent('French')
-    expect(queryAllByRole('option')[2]).toHaveTextContent('German')
+    expect(queryAllByRole('option')[0]).toHaveTextContent("'Auhelawa'Auhelawa")
+    expect(queryAllByRole('option')[1]).toHaveTextContent('A-HmaoA-Hmao')
+    expect(queryAllByRole('option')[2]).toHaveTextContent('AariAari')
   })
 
   it('should set default value', async () => {
@@ -44,10 +44,9 @@ describe('AudioLanguageDialog', () => {
     )
     await waitFor(() => fireEvent.focus(getByRole('textbox')))
     fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
-    expect(queryAllByRole('option')[1]).toHaveTextContent('French')
+    expect(queryAllByRole('option')[1]).toHaveTextContent('A-HmaoA-Hmao')
     fireEvent.click(queryAllByRole('option')[1])
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith('/jesus/french')
-    })
+    await waitFor(() => expect(push).toHaveBeenCalled())
+    expect(push).toHaveBeenCalledWith('/jesus/a-hmao')
   })
 })

@@ -29,25 +29,6 @@ export interface VideoChildFields_children {
   id: string;
 }
 
-export interface VideoChildFields_variant_subtitle_language_name {
-  __typename: "Translation";
-  value: string;
-  primary: boolean;
-}
-
-export interface VideoChildFields_variant_subtitle_language {
-  __typename: "Language";
-  name: VideoChildFields_variant_subtitle_language_name[];
-  bcp47: string | null;
-  id: string;
-}
-
-export interface VideoChildFields_variant_subtitle {
-  __typename: "Translation";
-  language: VideoChildFields_variant_subtitle_language;
-  value: string;
-}
-
 export interface VideoChildFields_variant {
   __typename: "VideoVariant";
   id: string;
@@ -57,7 +38,6 @@ export interface VideoChildFields_variant {
    * slug is a permanent link to the video variant.
    */
   slug: string;
-  subtitle: VideoChildFields_variant_subtitle[];
 }
 
 export interface VideoChildFields {
