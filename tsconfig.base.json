@@ -21,11 +21,11 @@
         "libs/journeys/ui/src/components/*",
         "libs/journeys/ui/src/libs/*"
       ],
+      "@core/nest/common/*": ["libs/nest/common/src/lib/*"],
       "@core/nest/database/*": ["libs/nest/database/src/lib/*"],
       "@core/nest/decorators/*": ["libs/nest/decorators/src/lib/*"],
       "@core/nest/gqlAuthGuard/*": ["libs/nest/gqlAuthGuard/src/lib/*"],
       "@core/nest/powerBi/*": ["libs/nest/powerBi/src/lib/*"],
-      // "@core/shared/storybook": [],
       "@core/shared/ui/*": [
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"

@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { VideoProvider } from '../../libs/videoContext'
 import { VideoContentPage } from '.'
 
@@ -38,6 +38,18 @@ describe('VideoContentPage', () => {
     )
 
     expect(getByTestId('videos-carousel')).toBeInTheDocument()
+  })
+
+  it('should render title on feature films', () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <VideoContentPage />
+        </VideoProvider>
+      </SnackbarProvider>
+    )
+
+    expect(getByRole('heading', { name: 'JESUS Scenes' })).toBeInTheDocument()
   })
 
   it('should render share button', () => {

@@ -3,17 +3,33 @@ import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import { gql, useQuery } from '@apollo/client'
+import { GetVideoChildren } from '../../../__generated__/GetVideoChildren'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 import { useVideo } from '../../libs/videoContext'
+import { VIDEO_CHILD_FIELDS } from '../../libs/videoChildFields'
 import { ContainerDescription } from './ContainerDescription'
 import { ContainerHero } from './ContainerHero'
 
+export const GET_VIDEO_CHILDREN = gql`
+  ${VIDEO_CHILD_FIELDS}
+  query GetVideoChildren($id: ID!, $languageId: ID) {
+    video(id: $id) {
+      children {
+        ...VideoChildFields
+      }
+    }
+  }
+`
+
 // Usually Series or Collection Videos
 export function VideoContainerPage(): ReactElement {
-  const video = useVideo()
-  const { snippet, children } = video
+  const { snippet, id, slug } = useVideo()
+  const { data } = useQuery<GetVideoChildren>(GET_VIDEO_CHILDREN, {
+    variables: { id }
+  })
   const router = useRouter()
   const [shareDialog, setShareDialog] = useState<boolean>(false)
   const routeArray: string[] = []
@@ -36,28 +52,28 @@ export function VideoContainerPage(): ReactElement {
 
   return (
     <PageWrapper hero={<ContainerHero openDialog={handleOpenDialog} />}>
-      {children != null && (
-        <Container maxWidth="xxl">
-          <Stack
-            spacing={{ xs: 4, md: 11 }}
-            py={{ xs: 7, md: 17 }}
-            direction="column"
-          >
-            <ContainerDescription
-              value={snippet[0].value}
-              openDialog={handleOpenDialog}
-            />
-            <ShareDialog open={shareDialog} onClose={handleCloseDialog} />
-            <Box>
+      <Container maxWidth="xxl">
+        <Stack
+          spacing={{ xs: 4, md: 11 }}
+          py={{ xs: 7, md: 17 }}
+          direction="column"
+        >
+          <ContainerDescription
+            value={snippet[0].value}
+            openDialog={handleOpenDialog}
+          />
+          <ShareDialog open={shareDialog} onClose={handleCloseDialog} />
+          <Box>
+            {data?.video?.children != null && (
               <VideoGrid
-                containerSlug={video.slug}
-                videos={children}
+                containerSlug={slug}
+                videos={data.video.children}
                 variant="expanded"
               />
-            </Box>
-          </Stack>
-        </Container>
-      )}
+            )}
+          </Box>
+        </Stack>
+      </Container>
     </PageWrapper>
   )
 }

@@ -94,62 +94,6 @@ jobs:
           targets: build
           projects: ${{ inputs.name }}
 
-      - name: Configure AWS credentials
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-
-      - name: Login to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build, tag, and push the image to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/${{ inputs.name }}/Dockerfile
-          echo "Pushing image to ECR..."
-          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-      - name: Deploy to Kubernetes cluster
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        uses: kodermax/kubectl-aws-eks@master
-        env:
-          KUBECTL_VERSION: 'v1.21.12'
-          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-        with:
-          args: set image deployment/${{ inputs.name }}-$ENV_SUFFIX $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }}
-
-      - name: Verify Kubernetes deployment
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        uses: kodermax/kubectl-aws-eks@master
-        env:
-          KUBECTL_VERSION: 'v1.21.12'
-        with:
-          args: rollout status deploy ${{ inputs.name }}-$ENV_SUFFIX
-
-      - name: Get affected app seed
-        run: echo "dbs=$(git diff --name-only HEAD~1 HEAD | grep 'apps/${{ inputs.name }}/db/seed.ts')" >> $GITHUB_OUTPUT
-        id: affected-dbs
-
-      - name: Seed Database
-        if: contains(steps.affected-dbs.outputs.dbs, inputs.name)
-        uses: mansagroup/nrwl-nx-action@v3
-        env:
-          DATABASE_DB: ${{ env.ENV_SUFFIX }}
-          ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
-        with:
-          targets: seed
-          projects: ${{ inputs.name }}
-
       # ECS Deployment
       - name: Install Open VPN
         run: sudo apt-get install openvpn
@@ -199,16 +143,21 @@ jobs:
           docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Download task definition
+      - name: Restart task definition
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: |
-          aws ecs describe-task-definition --task-definition ${{ inputs.repository }} --query taskDefinition > task-definition.json
+          aws ecs update-service --force-new-deployment --service ${{ inputs.ecs_service }} --cluster ${{ inputs.ecs_cluster }}
 
-      - name: Redeploy ECS service
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      - name: Get affected app seed
+        run: echo "dbs=$(git diff --name-only HEAD~1 HEAD | grep 'apps/${{ inputs.name }}/db/seed.ts')" >> $GITHUB_OUTPUT
+        id: affected-dbs
+
+      - name: Seed Database
+        if: contains(steps.affected-dbs.outputs.dbs, inputs.name)
+        uses: mansagroup/nrwl-nx-action@v2
+        env:
+          DATABASE_DB: ${{ env.ENV_SUFFIX }}
+          ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
         with:
-          task-definition: task-definition.json
-          service: ${{ inputs.ecs_service }}
-          cluster: ${{ inputs.ecs_cluster }}
-          wait-for-service-stability: true
+          targets: seed
+          projects: ${{ inputs.name }}

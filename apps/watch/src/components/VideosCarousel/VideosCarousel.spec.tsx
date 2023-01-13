@@ -1,6 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { VideosCarousel } from './VideosCarousel'
 
 describe('VideosCarousel', () => {

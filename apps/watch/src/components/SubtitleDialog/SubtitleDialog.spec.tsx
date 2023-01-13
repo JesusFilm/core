@@ -2,7 +2,7 @@ import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import videojs from 'video.js'
 import { VideoProvider } from '../../libs/videoContext'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { SubtitleDialog } from './SubtitleDialog'
 
 const onClose = jest.fn()

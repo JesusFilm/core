@@ -29,7 +29,7 @@ export function VideoContentCarousel({
   onShareClick,
   onDownloadClick
 }: VideoContentCarouselProps): ReactElement {
-  const { title, id, children, container } = useVideo()
+  const { title, id, children, container, childrenCount } = useVideo()
   const router = useRouter()
   const theme = useTheme()
 
@@ -45,12 +45,12 @@ export function VideoContentCarousel({
         case VideoLabel.collection:
           return `${getLabelDetails(
             container.label,
-            container.children.length
+            container.childrenCount
           ).childCountLabel.toLowerCase()}`
         case VideoLabel.featureFilm:
         case VideoLabel.series:
           return `${getLabelDetails(container.label).childLabel} 
-    ${activeVideoIndex} of ${container.children.length}`
+    ${activeVideoIndex} of ${container.childrenCount}`
         default:
           return ''
       }
@@ -220,8 +220,8 @@ export function VideoContentCarousel({
                 {activeVideoIndex}/
                 {container != null && relatedVideos.length > 0
                   ? relatedVideos.length
-                  : children.length > 0
-                  ? children.length
+                  : childrenCount > 0
+                  ? childrenCount
                   : 0}
               </Typography>
             </Stack>

@@ -18,6 +18,9 @@ npm install -g @nestjs/cli@^8.1.5
 # install Rover CLI tool
 npm install -g @apollo/rover@0.10.0
 
+# install Foreman CLI tool
+npm install -g foreman
+
 # install all dependencies
 npm i
 

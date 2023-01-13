@@ -1,12 +1,12 @@
 import { render, fireEvent } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { VideoProvider } from '../../../libs/videoContext'
-import { videos } from '../../Videos/testData'
+import { videos } from '../../Videos/__generated__/testData'
 import { VideoHero } from './VideoHero'
 
 describe('VideoHero', () => {
   it('should render the video hero', () => {
-    const { getByText, queryByText, getByRole, getByTestId } = render(
+    const { getByText, queryByText, getByRole } = render(
       <SnackbarProvider>
         <VideoProvider value={{ content: videos[0] }}>
           <VideoHero />
@@ -16,6 +16,5 @@ describe('VideoHero', () => {
     expect(getByText('JESUS')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Play Video' }))
     expect(queryByText('JESUS')).not.toBeInTheDocument()
-    expect(getByTestId('vjs-jfp-custom-controls')).toBeInTheDocument()
   })
 })

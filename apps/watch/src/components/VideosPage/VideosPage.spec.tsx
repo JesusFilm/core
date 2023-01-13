@@ -3,7 +3,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { languages } from './testData'
 import { VideosPage, GET_VIDEOS, limit, GET_LANGUAGES } from './VideosPage'
 
@@ -27,13 +27,13 @@ describe('VideosPage', () => {
                 variables: {
                   where: {},
                   offset: 0,
-                  limit: limit,
+                  limit,
                   languageId: '529'
                 }
               },
               result: {
                 data: {
-                  videos: videos
+                  videos
                 }
               }
             }
@@ -60,13 +60,13 @@ describe('VideosPage', () => {
                 variables: {
                   where: {},
                   offset: 0,
-                  limit: limit,
+                  limit,
                   languageId: '529'
                 }
               },
               result: {
                 data: {
-                  videos: videos
+                  videos
                 }
               }
             },
@@ -89,7 +89,7 @@ describe('VideosPage', () => {
                 variables: {
                   where: { availableVariantLanguageIds: ['529'] },
                   offset: 0,
-                  limit: limit,
+                  limit,
                   languageId: '529'
                 }
               },
@@ -126,13 +126,13 @@ describe('VideosPage', () => {
                 variables: {
                   where: {},
                   offset: 0,
-                  limit: limit,
+                  limit,
                   languageId: '529'
                 }
               },
               result: {
                 data: {
-                  videos: videos
+                  videos
                 }
               }
             },
@@ -155,7 +155,7 @@ describe('VideosPage', () => {
                 variables: {
                   where: { sutitleLanguageIds: ['529'] },
                   offset: 0,
-                  limit: limit,
+                  limit,
                   languageId: '529'
                 }
               },

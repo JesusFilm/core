@@ -4,7 +4,7 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:build",
+      "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api-videos",
@@ -40,24 +40,17 @@
         "command": "npx ts-node apps/api-videos/db/seed.ts"
       }
     },
-    "serve-nowatch": {
-      "executor": "@nrwl/node:execute",
+    "serve": {
+      "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "api-videos:build"
+        "buildTarget": "api-videos:build",
+        "inspect": false
       }
     },
-    "serve": {
+    "watcher": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "commands": [
-          {
-            "command": "nx serve-nowatch api-videos"
-          },
-          {
-            "command": "npx ts-node apps/api-videos/src/generate-typings.ts"
-          }
-        ],
-        "parallel": true
+        "command": "npx ts-node apps/api-videos/src/generate-typings.ts"
       }
     },
     "lint": {

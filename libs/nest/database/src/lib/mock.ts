@@ -12,7 +12,7 @@ export const mockDbQueryResult = async <T>(
       db,
       {
         extra: {},
-        result: result,
+        result,
         hasMore: false,
         id: '',
         count: result.length

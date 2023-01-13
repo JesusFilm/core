@@ -8,7 +8,7 @@ import {
 } from '../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../libs/storybook'
 import { VideoProvider } from '../../libs/videoContext'
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { ShareDialog } from './ShareDialog'
 
 const ShareDialogStory = {
@@ -67,7 +67,8 @@ const video: VideoContentFields = {
   },
   description: videos[0].snippet,
   studyQuestions: [],
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const routes = ['the-story-of-jesus-for-children']

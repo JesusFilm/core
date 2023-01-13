@@ -6,7 +6,7 @@ import {
   VideoLabel,
   VideoVariantDownloadQuality
 } from '../../../__generated__/globalTypes'
-import { videos } from '../../components/Videos/testData'
+import { videos } from '../../components/Videos/__generated__/testData'
 import { VideoProvider, useVideo } from './VideoContext'
 
 const chapter1: VideoContentFields = {
@@ -105,7 +105,8 @@ const chapter1: VideoContentFields = {
     }
   ],
   slug: 'the-beginning',
-  children: []
+  children: [],
+  childrenCount: 0
 }
 
 const handleClick = jest.fn()
