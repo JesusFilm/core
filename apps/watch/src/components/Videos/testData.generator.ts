@@ -31,7 +31,7 @@ const ids = [
 
 async function testDataGenerator(): Promise<void> {
   const template = readFileSync(
-    './apps/watch/src/components/Videos/testData.ts',
+    './apps/watch/src/components/Videos/__generated__/testData.ts',
     {
       encoding: 'utf8'
     }
@@ -59,12 +59,12 @@ async function testDataGenerator(): Promise<void> {
     .replace(/"quality":"(\w*)",/g, 'quality: VideoVariantDownloadQuality.$1,')
   console.log('printing to file...')
   writeFileSync(
-    './apps/watch/src/components/Videos/testData.ts',
+    './apps/watch/src/components/Videos/__generated__/testData.ts',
     template.replace(/\[\] = \[[\s\S]*\n\]/, `[] = ${stringifiedData}`)
   )
   console.log('running prettier...')
   await promisify(exec)(
-    './node_modules/.bin/prettier -w ./apps/watch/src/components/Videos/testData.ts'
+    './node_modules/.bin/prettier -w ./apps/watch/src/components/Videos/__generated__/testData.ts'
   )
   console.log('done')
 }

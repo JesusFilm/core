@@ -1,7 +1,7 @@
 import { render, fireEvent } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { VideoProvider } from '../../../libs/videoContext'
-import { videos } from '../../Videos/testData'
+import { videos } from '../../Videos/__generated__/testData'
 import { VideoHero } from './VideoHero'
 
 describe('VideoHero', () => {

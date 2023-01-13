@@ -2,7 +2,7 @@ import { Meta, Story } from '@storybook/react'
 import { userEvent, screen } from '@storybook/testing-library'
 import { VideoProvider } from '../../../libs/videoContext'
 import { watchConfig } from '../../../libs/storybook'
-import { videos } from '../../Videos/testData'
+import { videos } from '../../Videos/__generated__/testData'
 import { VideoContent } from './VideoContent'
 
 const VideoContentStory = {

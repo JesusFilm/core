@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { videos } from '../Videos/testData'
+import { videos } from '../Videos/__generated__/testData'
 import { VideoProvider } from '../../libs/videoContext'
 import { VideoContentPage } from '.'
 

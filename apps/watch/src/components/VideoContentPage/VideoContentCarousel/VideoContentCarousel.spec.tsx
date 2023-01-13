@@ -4,7 +4,7 @@ import {
   VideoContentFields_variant as Variant
 } from '../../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../../libs/videoContext'
-import { videos } from '../../Videos/testData'
+import { videos } from '../../Videos/__generated__/testData'
 import { VideoContentCarousel } from '.'
 
 jest.mock('next/router', () => ({
