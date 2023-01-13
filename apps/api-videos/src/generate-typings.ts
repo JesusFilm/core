@@ -14,6 +14,7 @@ definitionsFactory
     emitTypenameField: true,
     customScalarTypeMapping: {
       DateTime: 'String'
-    }
+    },
+    debug: false
   })
   .catch((err) => console.log(err))
