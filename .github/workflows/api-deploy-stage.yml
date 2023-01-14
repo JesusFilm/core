@@ -18,16 +18,10 @@ jobs:
       ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
       ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
       ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
-      CA_CRT: ${{ secrets.CA_CRT }}
-      USER_CRT: ${{ secrets.USER_CRT }}
-      USER_KEY: ${{ secrets.USER_KEY }}
   api-users:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
@@ -42,16 +36,10 @@ jobs:
       ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
       ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
       ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
-      CA_CRT: ${{ secrets.CA_CRT }}
-      USER_CRT: ${{ secrets.USER_CRT }}
-      USER_KEY: ${{ secrets.USER_KEY }}
   api-languages:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
@@ -66,16 +54,10 @@ jobs:
       ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
       ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
       ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
-      CA_CRT: ${{ secrets.CA_CRT }}
-      USER_CRT: ${{ secrets.USER_CRT }}
-      USER_KEY: ${{ secrets.USER_KEY }}
   api-videos:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
@@ -90,27 +72,14 @@ jobs:
       ARANGODB_URL: ${{ secrets.ARANGODB_URL }}
       ARANGODB_USER: ${{ secrets.ARANGODB_USER }}
       ARANGODB_PASS: ${{ secrets.ARANGODB_PASS }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
-      CA_CRT: ${{ secrets.CA_CRT }}
-      USER_CRT: ${{ secrets.USER_CRT }}
-      USER_KEY: ${{ secrets.USER_KEY }}
 
   api-gateway:
-    needs: [api-journeys, api-users, api-languages, api-videos]
     uses: JesusFilm/core/.github/workflows/api-gateway-stage-worker.yml@stage
     secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
-      CA_CRT: ${{ secrets.CA_CRT }}
-      USER_CRT: ${{ secrets.USER_CRT }}
-      USER_KEY: ${{ secrets.USER_KEY }}
