@@ -3,6 +3,7 @@ data "doppler_secrets" "app" {
 }
 
 data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy" "ecs_event" {
   arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole"
