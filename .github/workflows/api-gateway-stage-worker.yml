@@ -3,37 +3,24 @@ name: API Deployment
 on:
   workflow_call:
     secrets:
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        required: true
       AWS_DEFAULT_REGION:
-        required: true
-      KUBE_CONFIG_DATA:
         required: true
       JFP_AWS_ACCESS_KEY_ID:
         required: true
       JFP_AWS_SECRET_ACCESS_KEY:
-        required: true
-      CA_CRT:
-        required: true
-      USER_CRT:
-        required: true
-      USER_KEY:
         required: true
 
 jobs:
   build-and-deploy:
     environment: Production
     env:
-      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       IMAGE_TAG: ${{ github.sha }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v3
         with:
-          fetch-depth: 1
+          fetch-depth: 2
 
       - uses: actions/setup-node@v3
         with:
@@ -54,10 +41,12 @@ jobs:
       - name: nx Install
         run: npm install -g nx --silent
 
-      - name: rover Install
-        run: npm install -g @apollo/rover@0.10.0
+      - name: Get affected apps
+        run: echo "apps=$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)" >> $GITHUB_OUTPUT
+        id: affected-apps
 
       - name: Build api-gateway
+        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: build
@@ -66,6 +55,7 @@ jobs:
 
       #ECS Deployment
       - name: Configure ECS AWS credentials
+        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
@@ -73,10 +63,12 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Login to Amazon ECR
+        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         id: login-ecr-ecs
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push the image to Amazon ECR
+        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         id: build-image-ecs
         env:
           ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
@@ -88,5 +80,6 @@ jobs:
           echo "image=$ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Restart task definition
+        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         run: |
           aws ecs update-service --force-new-deployment --service api-gateway-stage-service --cluster jfp-ecs-cluster-stage
