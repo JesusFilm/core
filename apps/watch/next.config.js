@@ -1,19 +1,23 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const withNx = require('@nrwl/next/plugins/with-nx')
-const withPlugins = require('next-compose-plugins')
-const withImages = require('next-images')
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true'
+})
 /**
  * @type {import('@nrwl/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
+  swcMinify: true,
   images: {
-    domains: [
-      'images.unsplash.com',
-      'localhost',
-      'unsplash.com',
-      'd1wl257kev7hsz.cloudfront.net'
-    ],
-    disableStaticImages: true
+    domains: ['localhost', 'd1wl257kev7hsz.cloudfront.net'],
+    minimumCacheTTL: 31536000
+  },
+  experimental: {
+    modularizeImports: {
+      lodash: {
+        transform: 'lodash/{{member}}'
+      }
+    }
   },
   nx: {
     // Set this to true if you would like to to use SVGR
@@ -21,29 +25,17 @@ const nextConfig = {
     svgr: false
   },
   i18n: {
-    locales: [
-      'ar',
-      'de',
-      'en',
-      'es',
-      'fa',
-      'fr',
-      'he',
-      'hi',
-      'id',
-      'ja',
-      'ko',
-      'pt',
-      'ru',
-      'tr',
-      'ur',
-      'vi',
-      'zh-Hans',
-      'zh-Hant'
-    ],
+    locales: ['en'],
     defaultLocale: 'en',
     localeDetection: false
   },
-  trailingSlash: true
+  trailingSlash: true,
+  productionBrowserSourceMaps: true
 }
-module.exports = withPlugins([[withImages], [withNx]], nextConfig)
+module.exports = (_phase, { defaultConfig }) => {
+  const plugins = [withBundleAnalyzer, withNx]
+  return plugins.reduce((acc, plugin) => plugin(acc), {
+    ...defaultConfig,
+    ...nextConfig
+  })
+}

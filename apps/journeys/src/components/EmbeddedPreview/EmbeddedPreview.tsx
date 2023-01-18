@@ -16,7 +16,7 @@ import { ButtonWrapper } from './ButtonWrapper/ButtonWrapper'
 import { VideoWrapper } from './VideoWrapper/VideoWrapper'
 import { RadioOptionWrapper } from './RadioOptionWrapper/RadioOptionWrapper'
 
-export interface EmbeddedPreviewProps {
+interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
 }
 
@@ -118,10 +118,10 @@ export function EmbeddedPreview({
           data-testid="embedded-preview-block-renderer"
           block={blocks?.[0]}
           wrappers={{
-            ButtonWrapper: ButtonWrapper,
+            ButtonWrapper,
             ImageWrapper: NullWrapper,
-            RadioOptionWrapper: RadioOptionWrapper,
-            VideoWrapper: VideoWrapper
+            RadioOptionWrapper,
+            VideoWrapper
           }}
         />
       </Box>

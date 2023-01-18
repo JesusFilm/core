@@ -1,11 +1,8 @@
-import { readFileSync } from 'fs'
 import { EnvironmentConfig } from './types'
 
 export const config: EnvironmentConfig = {
   production: true,
-  gatewayConfig: {
-    supergraphSdl: readFileSync('./schema.graphql').toString()
-  },
+  gatewayConfig: {},
   listenOptions: {
     port: 4000,
     host: '0.0.0.0'
@@ -26,7 +23,9 @@ export const config: EnvironmentConfig = {
       'https://your.nextstep.is',
       'https://your-stage.nextstep.is',
       // watch
+      'https://watch-jesusfilm.vercel.app',
       'https://watch-one.vercel.app',
+      'https://watch.jesusfilm.org',
       // localhost
       /http:\/\/localhost:*/
     ]

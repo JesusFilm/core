@@ -46,6 +46,7 @@ describe('CardWrapper', () => {
           posterBlockId: 'image5.id',
           fullsize: null,
           action: null,
+          objectFit: null,
           children: [
             {
               id: 'image5.id',
@@ -103,6 +104,7 @@ describe('CardWrapper', () => {
             title: null,
             description: null,
             duration: null,
+            objectFit: null,
             image: null,
             video: null,
             videoId: null,
@@ -157,6 +159,7 @@ describe('CardWrapper', () => {
           posterBlockId: 'image5.id',
           fullsize: null,
           action: null,
+          objectFit: null,
           children: [
             {
               id: 'image5.id',
@@ -213,6 +216,7 @@ describe('CardWrapper', () => {
             source: VideoBlockSource.internal,
             title: null,
             description: null,
+            objectFit: null,
             duration: null,
             image: null,
             video: null,

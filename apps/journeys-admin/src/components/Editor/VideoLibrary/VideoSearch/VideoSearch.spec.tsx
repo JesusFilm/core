@@ -18,4 +18,18 @@ describe('VideoSearch', () => {
     })
     await waitFor(() => expect(onChange).toHaveBeenCalledWith('Jesus'))
   })
+
+  it('uses the search icon if tab is internal', () => {
+    const { getByTestId } = render(
+      <VideoSearch onChange={jest.fn()} icon="search" />
+    )
+    expect(getByTestId('SearchIcon')).toBeInTheDocument()
+  })
+
+  it('uses the link icon if tab is youtube', () => {
+    const { getByTestId } = render(
+      <VideoSearch onChange={jest.fn()} icon="link" />
+    )
+    expect(getByTestId('LinkRoundedIcon')).toBeInTheDocument()
+  })
 })

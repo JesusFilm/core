@@ -34,13 +34,19 @@
       "options": {
         "commands": [
           {
-            "command": "nx serve-all api-gateway"
+            "command": "nf start"
           },
           {
             "command": "nx serve watch"
           }
         ],
         "parallel": true
+      }
+    },
+    "generate-test-data": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "NEXT_PUBLIC_GATEWAY_URL=http://127.0.0.1:4000 npx ts-node apps/watch/src/components/Videos/testData.generator.ts"
       }
     },
     "export": {

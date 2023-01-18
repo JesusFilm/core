@@ -11,6 +11,7 @@ export const useBreakpoints = (): { [key in Breakpoint]: boolean } => {
     sm: useMediaQuery(theme.breakpoints.up('sm'), { noSsr: true }),
     md: useMediaQuery(theme.breakpoints.up('md'), { noSsr: true }),
     lg: useMediaQuery(theme.breakpoints.up('lg'), { noSsr: true }),
-    xl: useMediaQuery(theme.breakpoints.up('xl'), { noSsr: true })
+    xl: useMediaQuery(theme.breakpoints.up('xl'), { noSsr: true }),
+    xxl: useMediaQuery(theme.breakpoints.up('xxl'), { noSsr: true })
   }
 }

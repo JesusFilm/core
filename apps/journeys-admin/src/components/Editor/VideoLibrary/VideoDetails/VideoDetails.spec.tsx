@@ -128,7 +128,7 @@ describe('VideoDetails', () => {
     expect(getByText('Available Languages')).toBeInTheDocument()
   })
 
-  it('should call onSelect and onClose on select click', async () => {
+  it('should call onSelect select click', async () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
     const { getByRole } = render(
@@ -153,7 +153,6 @@ describe('VideoDetails', () => {
       videoId: '2_Acts7302-0-0',
       videoVariantLanguageId: '529'
     })
-    expect(onClose).toHaveBeenCalledWith(false)
   })
 
   it('should call onClose on changeVideo click', () => {
@@ -162,15 +161,39 @@ describe('VideoDetails', () => {
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
         <VideoDetails
-          id="2_Acts7302-0-0"
+          id="2_0-FallingPlates"
           source={VideoBlockSource.internal}
           open
           onClose={onClose}
           onSelect={onSelect}
+          activeVideo
         />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Change Video' }))
     expect(onClose).toHaveBeenCalled()
+  })
+
+  it('should clear the video on delete icon click', () => {
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider mocks={mocks}>
+        <VideoDetails
+          id="2_0-FallingPlates"
+          source={VideoBlockSource.internal}
+          open
+          onClose={onClose}
+          onSelect={onSelect}
+          activeVideo
+        />
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'clear-video' }))
+    expect(onSelect).toHaveBeenCalledWith({
+      source: VideoBlockSource.internal,
+      videoId: null,
+      videoVariantLanguageId: null
+    })
   })
 })

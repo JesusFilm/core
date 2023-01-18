@@ -8,19 +8,19 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '16'
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
@@ -28,12 +28,12 @@ jobs:
       - name: NPM Install
         run: npm install --silent
       - name: Codegen
-        uses: mansagroup/nrwl-nx-action@v2
+        uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: codegen
           all: true
       - name: lint and typecheck
-        uses: mansagroup/nrwl-nx-action@v2
+        uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: lint,type-check,extract-translations
       - name: Prettier
@@ -48,19 +48,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '16'
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
@@ -73,7 +73,7 @@ jobs:
           curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo apt-key add -
           echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
           sudo apt-get update && sudo apt-get -y install doppler
-      - uses: mansagroup/nrwl-nx-action@v2
+      - uses: mansagroup/nrwl-nx-action@v3
         env:
           DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
           DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
@@ -89,45 +89,44 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Fetch other branches
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '16'
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
           restore-keys: node-modules-
       - name: NPM Install
         run: npm install --silent
-      - uses: mansagroup/nrwl-nx-action@v2
+      - uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: generate,test
           args: --ci
   visual-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Fetch other branches
-        if: ${{ github.event_name == 'pull_request' }}
-        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - uses: actions/setup-node@v2
+      - name: Check branch up to date with base
+        run: ./tools/scripts/check-git-diff.sh
+      - uses: actions/setup-node@v3
         with:
           node-version: '16'
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
@@ -139,14 +138,8 @@ jobs:
       - name: Build Stories
         id: build-storybook
         run: nx build-storybook shared-storybook --webpack-stats-json
-      - name: Check for frontend changes
-        id: check_files
-        uses: andstor/file-existence-action@v1
-        with:
-          files: 'dist/storybook/shared-storybook'
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests
-        if: ${{ steps.check_files.outputs.files_exists == 'true' }}
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         # https://www.chromatic.com/docs/github-actions#available-options
@@ -156,9 +149,9 @@ jobs:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           token: ${{ secrets.GITHUB_TOKEN }}
           storybookBuildDir: 'dist/storybook/shared-storybook'
-          exitOnceUploaded: true,
+          exitOnceUploaded: 'true'
           autoAcceptChanges: 'main'
-          onlyChanged: '!(main)'
+          onlyChanged: 'true'
           skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
-          untraced: 'package.json,package-lock.json,.storybook/main.js,.storybook/preview.js,.storybook/preview-head.html,.storybook/static/*.js'
+          untraced: '@(package*.json|.storybook/**)'
           traceChanged: 'expanded'

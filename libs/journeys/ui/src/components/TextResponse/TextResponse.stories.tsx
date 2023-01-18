@@ -1,7 +1,7 @@
-import { ComponentStory, Meta } from '@storybook/react'
+import { ComponentProps, ReactElement } from 'react'
+import { Story, Meta } from '@storybook/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { screen, userEvent } from '@storybook/testing-library'
-import { ReactElement } from 'react'
 import { SnackbarProvider } from 'notistack'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
@@ -22,7 +22,7 @@ const Demo = {
   title: 'Journeys-Ui/TextResponse'
 }
 
-const typographyProps: Parameters<typeof Typography>[0] = {
+const typographyProps: ComponentProps<typeof Typography> = {
   __typename: 'TypographyBlock',
   id: 'id',
   parentOrder: 0,
@@ -34,7 +34,7 @@ const typographyProps: Parameters<typeof Typography>[0] = {
   children: []
 }
 
-const textResponseProps: Parameters<typeof TextResponse>[0] = {
+const textResponseProps: ComponentProps<typeof TextResponse> = {
   id: 'textResponseBlockId1',
   __typename: 'TextResponseBlock',
   parentBlockId: null,
@@ -72,7 +72,7 @@ const submitEventMock: MockedResponse = {
   }
 }
 
-const Template: ComponentStory<typeof TextResponse> = ({
+const Template: Story<ComponentProps<typeof TextResponse>> = ({
   ...args
 }): ReactElement => (
   <MockedProvider mocks={[submitEventMock]}>
@@ -128,7 +128,7 @@ SubmitError.play = () => {
   userEvent.click(submit)
 }
 
-const LoadingTemplate: ComponentStory<typeof TextResponse> = ({
+const LoadingTemplate: Story<ComponentProps<typeof TextResponse>> = ({
   ...args
 }): ReactElement => (
   <ApolloLoadingProvider>

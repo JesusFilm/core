@@ -3,48 +3,61 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideosFilter, VideoType } from "./globalTypes";
+import { VideosFilter, VideoLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetVideos
 // ====================================================
-
-export interface GetVideos_videos_snippet {
-  __typename: "Translation";
-  value: string;
-}
 
 export interface GetVideos_videos_title {
   __typename: "Translation";
   value: string;
 }
 
-export interface GetVideos_videos_variant {
-  __typename: "VideoVariant";
-  duration: number;
-}
-
-export interface GetVideos_videos_slug {
+export interface GetVideos_videos_imageAlt {
   __typename: "Translation";
   value: string;
+}
+
+export interface GetVideos_videos_snippet {
+  __typename: "Translation";
+  value: string;
+}
+
+export interface GetVideos_videos_children {
+  __typename: "Video";
+  id: string;
+}
+
+export interface GetVideos_videos_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  hls: string | null;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
 }
 
 export interface GetVideos_videos {
   __typename: "Video";
   id: string;
-  type: VideoType;
-  image: string | null;
-  snippet: GetVideos_videos_snippet[];
+  label: VideoLabel;
   title: GetVideos_videos_title[];
+  image: string | null;
+  imageAlt: GetVideos_videos_imageAlt[];
+  snippet: GetVideos_videos_snippet[];
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  children: GetVideos_videos_children[];
   variant: GetVideos_videos_variant | null;
   /**
-   * Episodes are child videos, currently only found in a playlist type
+   * the number value of the amount of children on a video
    */
-  episodeIds: string[];
-  /**
-   * slug is a permanent link to the video. It should only be appended, not edited or deleted
-   */
-  slug: GetVideos_videos_slug[];
+  childrenCount: number;
 }
 
 export interface GetVideos {

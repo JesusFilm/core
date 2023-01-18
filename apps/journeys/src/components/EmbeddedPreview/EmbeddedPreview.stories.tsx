@@ -1,3 +1,4 @@
+import { ComponentProps, ReactElement } from 'react'
 import { MockedProvider } from '@apollo/client/testing'
 import { Story, Meta } from '@storybook/react'
 
@@ -11,7 +12,7 @@ import {
   videoLoop
 } from '../../libs/testData/storyData'
 
-import { EmbeddedPreview, EmbeddedPreviewProps } from './EmbeddedPreview'
+import { EmbeddedPreview } from './EmbeddedPreview'
 
 const Demo = {
   ...journeysConfig,
@@ -23,38 +24,40 @@ const Demo = {
   }
 }
 
-const Template: Story<EmbeddedPreviewProps> = ({ ...props }) => (
+const Template: Story<ComponentProps<typeof EmbeddedPreview>> = ({
+  ...args
+}): ReactElement => (
   <MockedProvider>
-    <EmbeddedPreview {...props} />
+    <EmbeddedPreview {...args} />
   </MockedProvider>
 )
 
-export const Default: Story<EmbeddedPreviewProps> = Template.bind({})
+export const Default = Template.bind({})
 Default.args = {
   blocks: basic
 }
 
-export const WithContent: Story<EmbeddedPreviewProps> = Template.bind({})
+export const WithContent = Template.bind({})
 WithContent.args = {
   blocks: imageBlocks
 }
 
-export const WithVideo: Story<EmbeddedPreviewProps> = Template.bind({})
+export const WithVideo = Template.bind({})
 WithVideo.args = {
   blocks: videoBlocks
 }
 
-export const WithVideoNoPoster: Story<EmbeddedPreviewProps> = Template.bind({})
+export const WithVideoNoPoster = Template.bind({})
 WithVideoNoPoster.args = {
   blocks: videoBlocksNoPoster
 }
 
-export const WithVideoNoVideo: Story<EmbeddedPreviewProps> = Template.bind({})
+export const WithVideoNoVideo = Template.bind({})
 WithVideoNoVideo.args = {
   blocks: videoBlocksNoVideo
 }
 
-export const WithVideoLoop: Story<EmbeddedPreviewProps> = Template.bind({})
+export const WithVideoLoop = Template.bind({})
 WithVideoLoop.args = {
   blocks: videoLoop
 }

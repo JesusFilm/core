@@ -159,15 +159,24 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
+export enum VideoBlockObjectFit {
+  fill = "fill",
+  fit = "fit",
+  zoomed = "zoomed",
+}
+
 export enum VideoBlockSource {
   internal = "internal",
   youTube = "youTube",
 }
 
-export enum VideoType {
+export enum VideoLabel {
+  collection = "collection",
   episode = "episode",
-  playlist = "playlist",
-  standalone = "standalone",
+  featureFilm = "featureFilm",
+  segment = "segment",
+  series = "series",
+  shortFilm = "shortFilm",
 }
 
 /**
@@ -409,6 +418,7 @@ export interface VideoBlockCreateInput {
   isCover?: boolean | null;
   journeyId: string;
   muted?: boolean | null;
+  objectFit?: VideoBlockObjectFit | null;
   parentBlockId: string;
   posterBlockId?: string | null;
   source?: VideoBlockSource | null;
@@ -422,6 +432,7 @@ export interface VideoBlockUpdateInput {
   endAt?: number | null;
   fullsize?: boolean | null;
   muted?: boolean | null;
+  objectFit?: VideoBlockObjectFit | null;
   posterBlockId?: string | null;
   source?: VideoBlockSource | null;
   startAt?: number | null;
@@ -495,9 +506,10 @@ export interface VideoStartEventCreateInput {
 
 export interface VideosFilter {
   availableVariantLanguageIds?: string[] | null;
-  tagId?: string | null;
+  ids?: string[] | null;
+  labels?: VideoLabel[] | null;
+  subtitleLanguageIds?: string[] | null;
   title?: string | null;
-  types?: VideoType[] | null;
 }
 
 /**

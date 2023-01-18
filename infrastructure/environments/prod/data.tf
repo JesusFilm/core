@@ -29,3 +29,7 @@ data "aws_ssm_parameter" "doppler_api_users_prod_token" {
 data "aws_ssm_parameter" "doppler_api_videos_prod_token" {
   name = "/terraform/prd/DOPPLER_API_VIDEOS_PROD_TOKEN"
 }
+
+data "aws_ssm_parameter" "doppler_arango_bigquery_etl_prod_token" {
+  name = "/terraform/prd/DOPPLER_ARANGODB_BIGQUERY_ETL_PROD_TOKEN"
+}
