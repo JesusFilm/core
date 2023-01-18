@@ -34,19 +34,6 @@ resource "aws_route53_record" "acm_validation" {
   zone_id         = module.route53_stage_central_jesusfilm_org.zone_id
 }
 
-module "faktory" {
-  source        = "../../modules/aws/ecs-task-faktory"
-  doppler_token = data.aws_ssm_parameter.doppler_faktory_stage_token.value
-  vpc_id        = module.stage.vpc.id
-  alb_listener = {
-    alb_arn         = module.stage.public_alb.arn
-    port            = 443
-    protocol        = "HTTPS"
-    certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
-  }
-  alb_target_group = local.alb_target_group
-}
-
 locals {
   public_ecs_config = {
     vpc_id                  = module.stage.vpc.id
