@@ -41,8 +41,8 @@ describe('SubtitleDialog', () => {
         </VideoProvider>
       </MockedProvider>
     )
-    fireEvent.focus(getByRole('textbox'))
-    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     await waitFor(() =>
       expect(queryAllByRole('option')[0]).toHaveTextContent(
         'Arabic, Modern Standard اللغة العربية'
@@ -58,8 +58,8 @@ describe('SubtitleDialog', () => {
         </VideoProvider>
       </MockedProvider>
     )
-    fireEvent.focus(getByRole('textbox'))
-    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     await waitFor(() =>
       fireEvent.click(
         getByRole('option', { name: 'Arabic, Modern Standard اللغة العربية' })
