@@ -2,13 +2,6 @@ variable "task_execution_role_arn" {
   type = string
 }
 
-# variable "cluster" {
-#   type = object({
-#     id   = string
-#     name = string
-#   })
-# }
-
 variable "name" {
   type = string
 }
