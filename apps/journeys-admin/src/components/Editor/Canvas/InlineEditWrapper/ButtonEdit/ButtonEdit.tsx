@@ -20,16 +20,13 @@ export const BUTTON_BLOCK_UPDATE_CONTENT = gql`
     }
   }
 `
-interface ButtonEditProps extends TreeBlock<ButtonFields> {
-  visibleCaret?: boolean
-}
+interface ButtonEditProps extends TreeBlock<ButtonFields> {}
 
 export function ButtonEdit({
   id,
   buttonVariant,
   buttonColor,
   label,
-  visibleCaret,
   ...buttonProps
 }: ButtonEditProps): ReactElement {
   const [buttonBlockUpdate] = useMutation<ButtonBlockUpdateContent>(
@@ -72,7 +69,6 @@ export function ButtonEdit({
         setValue(e.currentTarget.value)
       }}
       onClick={(e) => e.stopPropagation()}
-      sx={visibleCaret ?? true ? {} : { caretColor: 'transparent' }}
     />
   )
 
