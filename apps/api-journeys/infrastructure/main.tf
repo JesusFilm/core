@@ -18,4 +18,5 @@ module "seed" {
     "DATABASE_USER"
   ]
   task_execution_role_arn = var.ecs_config.task_execution_role_arn
+  env                     = var.env
 }
