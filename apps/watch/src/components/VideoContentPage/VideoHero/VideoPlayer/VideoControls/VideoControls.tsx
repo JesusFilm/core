@@ -19,9 +19,21 @@ import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
 import CircularProgress from '@mui/material/CircularProgress'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import fscreen from 'fscreen'
-import { SubtitleDialog } from '../../../../SubtitleDialog'
+import dynamic from 'next/dynamic'
 import { useVideo } from '../../../../../libs/videoContext'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
+
+const DynamicSubtitleDialog = dynamic<{
+  open: boolean
+  player: VideoJsPlayer
+  onClose: () => void
+}>(
+  async () =>
+    await import(
+      /* webpackChunkName: "SubtitleDialog" */
+      '../../../../SubtitleDialog'
+    ).then((mod) => mod.SubtitleDialog)
+)
 
 interface VideoControlProps {
   player: VideoJsPlayer
@@ -44,7 +56,8 @@ export function VideoControls({
   const [volume, setVolume] = useState(0)
   const [mute, setMute] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
-  const [openSubtitle, setOpenSubtitle] = useState(false)
+  const [openSubtitleDialog, setOpenSubtitleDialog] = useState(false)
+  const [loadSubtitleDialog, setLoadSubtitleDialog] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const duration = secondsToTimeFormat(player.duration(), { trimZeroes: true })
@@ -147,6 +160,11 @@ export function VideoControls({
         onDblClick(event)
       }
     }
+  }
+
+  function handleClick(): void {
+    setOpenSubtitleDialog(true)
+    setLoadSubtitleDialog(true)
   }
 
   return (
@@ -343,7 +361,7 @@ export function VideoControls({
                   </Stack>
                   <AudioLanguageButton componentVariant="icon" />
                   <IconButton
-                    onClick={() => setOpenSubtitle(true)}
+                    onClick={handleClick}
                     disabled={
                       variant?.subtitleCount === undefined ||
                       variant?.subtitleCount < 1
@@ -360,12 +378,13 @@ export function VideoControls({
                   </IconButton>
                 </Stack>
               </Stack>
-              <SubtitleDialog
-                open={openSubtitle}
-                player={player}
-                subtitles={variant?.subtitle}
-                onClose={() => setOpenSubtitle(false)}
-              />
+              {loadSubtitleDialog && (
+                <DynamicSubtitleDialog
+                  open={openSubtitleDialog}
+                  player={player}
+                  onClose={() => setOpenSubtitleDialog(false)}
+                />
+              )}
             </Container>
           </Box>
         </Box>

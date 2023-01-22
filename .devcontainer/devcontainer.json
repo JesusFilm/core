@@ -34,7 +34,6 @@
   "remoteUser": "node",
   "features": {
     "docker-from-docker": "latest",
-    "kubectl-helm-minikube": "1.21",
     "git": "os-provided",
     "aws-cli": "latest",
     "python": "os-provided",
