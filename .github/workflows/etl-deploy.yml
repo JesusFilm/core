@@ -14,53 +14,37 @@ jobs:
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       - name: Verify Dockerfile changed
-        uses: tj-actions/verify-changed-files@v5.5
+        uses: tj-actions/changed-files@v35
         id: verify-changed-files
         with:
           files: |
-            resources/kube/arangodb-bigquery-etl/Dockerfile
-            resources/kube/arangodb-bigquery-etl/bqexport.sh
+            apps/arangodb-bigquery-etl/**
 
-      - name: Configure AWS credentials
-        if: steps.verify-changed-files.outputs.files_changed == 'true'
+      - name: Configure ECS AWS credentials
+        if: steps.verify-changed-files.outputs.any_changed  == 'true'
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Login to Amazon ECR
-        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        if: steps.verify-changed-files.outputs.any_changed  == 'true'
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push the image to Amazon ECR
-        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        if: steps.verify-changed-files.outputs.any_changed  == 'true'
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f resources/kube/arangodb-bigquery-etl/Dockerfile
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/arangodb-bigquery-etl/Dockerfile
           echo "Pushing image to ECR..."
           docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-
-      - name: Deploy to Kubernetes cluster
-        if: steps.verify-changed-files.outputs.files_changed == 'true'
-        uses: kodermax/kubectl-aws-eks@master
-        env:
-          KUBECTL_VERSION: 'v1.21.12'
-          RELEASE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-        with:
-          args: set image deployment/arangodb-bigquery-etl $ECR_REPOSITORY=${{ env.RELEASE_IMAGE }}
-
-      - name: Verify Kubernetes deployment
-        if: steps.verify-changed-files.outputs.files_changed == 'true'
-        uses: kodermax/kubectl-aws-eks@master
-        env:
-          KUBECTL_VERSION: 'v1.21.12'
-        with:
-          args: rollout status deploy arangodb-bigquery-etl

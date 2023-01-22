@@ -6,26 +6,53 @@ import {
   Language,
   LanguageAutocomplete
 } from '@core/shared/ui/LanguageAutocomplete'
+import { gql, useQuery } from '@apollo/client'
 import { VideoJsPlayer } from 'video.js'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
-import { VideoContentFields_variant_subtitle } from '../../../__generated__/VideoContentFields'
+import { GetSubtitles } from '../../../__generated__/GetSubtitles'
+import { useVideo } from '../../libs/videoContext'
+
+export const GET_SUBTITLES = gql`
+  query GetSubtitles($id: ID!) {
+    video(id: $id, idType: slug) {
+      variant {
+        subtitle {
+          language {
+            name {
+              value
+              primary
+            }
+            bcp47
+            id
+          }
+          value
+        }
+      }
+    }
+  }
+`
 
 interface SubtitleDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
   player: VideoJsPlayer
-  subtitles: VideoContentFields_variant_subtitle[] | undefined
 }
 
 export function SubtitleDialog({
   open,
   onClose,
-  player,
-  subtitles
+  player
 }: SubtitleDialogProps): ReactElement {
+  const { variant } = useVideo()
   const [selected, setSelected] = useState<Language | undefined>(undefined)
 
-  const languages = subtitles?.map(
+  const { data } = useQuery<GetSubtitles>(GET_SUBTITLES, {
+    variables: {
+      id: variant?.slug
+    }
+  })
+
+  const languages = data?.video?.variant?.subtitle?.map(
     ({ language }) => language
   ) as unknown as Language[]
 
@@ -35,7 +62,9 @@ export function SubtitleDialog({
   }
 
   function updateSubtitle(id): void {
-    const selected = subtitles?.find((subtitle) => subtitle.language.id === id)
+    const selected = data?.video?.variant?.subtitle?.find(
+      (subtitle) => subtitle.language.id === id
+    )
 
     player.addRemoteTextTrack(
       {
@@ -93,7 +122,9 @@ export function SubtitleDialog({
               hiddenLabel
               placeholder="Search Language"
               label="Language"
-              helperText={`${languages?.length ?? 0} Languages Available`}
+              helperText={`${
+                String(variant?.subtitleCount) ?? 0
+              } Languages Available`}
               sx={{
                 '> .MuiOutlinedInput-root': {
                   borderRadius: 2

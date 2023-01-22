@@ -3,37 +3,24 @@ name: API Deployment
 on:
   workflow_call:
     secrets:
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        required: true
       AWS_DEFAULT_REGION:
-        required: true
-      KUBE_CONFIG_DATA:
         required: true
       JFP_AWS_ACCESS_KEY_ID:
         required: true
       JFP_AWS_SECRET_ACCESS_KEY:
-        required: true
-      CA_CRT:
-        required: true
-      USER_CRT:
-        required: true
-      USER_KEY:
         required: true
 
 jobs:
   build-and-deploy:
     environment: Production
     env:
-      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       IMAGE_TAG: ${{ github.sha }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v3
         with:
-          fetch-depth: 1
+          fetch-depth: 2
 
       - uses: actions/setup-node@v3
         with:
@@ -54,10 +41,12 @@ jobs:
       - name: nx Install
         run: npm install -g nx --silent
 
-      - name: rover Install
-        run: npm install -g @apollo/rover@0.10.0
+      - name: Get affected apps
+        run: echo "apps=$(nx affected:apps --plain --base=HEAD~1 --head=HEAD)" >> $GITHUB_OUTPUT
+        id: affected-apps
 
       - name: Build api-gateway
+        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: build
@@ -65,38 +54,8 @@ jobs:
           args: --configuration="production"
 
       #ECS Deployment
-      - name: Install Open VPN
-        run: sudo apt-get install openvpn
-
-      - name: Setup VPN CONFIG
-        run: |
-          echo "${{ secrets.CA_CRT }}" > ca.crt
-          echo "${{ secrets.USER_CRT }}" > user.crt
-          echo "${{ secrets.USER_KEY }}" > user.key
-
-      - name: Connect VPN
-        run: sudo openvpn --config ".github/vpn/main.ovpn" --daemon
-
-      - name: Wait for a VPN connection
-        timeout-minutes: 1
-        run: until dig api-journeys.service.internal A +time=1; do sleep 2; done
-
-      - name: Build api-journeys-main schema
-        run: rover subgraph introspect http://api-journeys.service.internal:4001/graphql > dist/apps/api-gateway/api-journeys-schema.graphql
-
-      - name: Build api-users-main schema
-        run: rover subgraph introspect http://api-users.service.internal:4002/graphql > dist/apps/api-gateway/api-users-schema.graphql
-
-      - name: Build api-languages-main schema
-        run: rover subgraph introspect http://api-languages.service.internal:4003/graphql > dist/apps/api-gateway/api-languages-schema.graphql
-
-      - name: Build api-videos-main schema
-        run: rover subgraph introspect https://api-videos.service.internal:4004/graphql > dist/apps/api-gateway/api-videos-schema.graphql
-
-      - name: Build api-gateway schema
-        run: rover supergraph compose --config apps/api-gateway/supergraph-main-ecs.yml > dist/apps/api-gateway/schema.graphql
-
       - name: Configure ECS AWS credentials
+        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
@@ -104,10 +63,12 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Login to Amazon ECR
+        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         id: login-ecr-ecs
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push the image to Amazon ECR
+        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         id: build-image-ecs
         env:
           ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
@@ -119,5 +80,6 @@ jobs:
           echo "image=$ECR_REGISTRY/jfp-api-gateway-prod:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Restart task definition
+        if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         run: |
-          aws ecs update-service --force-new-deployment --service api-gateway-service --cluster jfp-ecs-cluster-prod
+          aws ecs update-service --force-new-deployment --service api-gateway-prod-service --cluster jfp-ecs-cluster-prod

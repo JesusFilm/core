@@ -4,5 +4,5 @@ COPY ./dist/apps/api-gateway .
 EXPOSE 4000
 # dependencies that apollo federation needs
 RUN npm install --production
-RUN npm install apollo-server-express @firebase/app-compat@0.1.12
+RUN npm install apollo-server-express @firebase/app-compat@0.1.12 pino-pretty@9.1.1
 CMD node ./main.js
