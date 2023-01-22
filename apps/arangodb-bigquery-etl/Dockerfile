@@ -11,6 +11,6 @@ ENV PATH $PATH:/root/google-cloud-sdk/bin
 
 ENV ARANGO_NO_AUTH=1
 
-COPY resources/kube/arangodb-bigquery-etl/bqexport.sh .
+COPY apps/arangodb-bigquery-etl/bqexport.sh .
 RUN chmod 775 /bqexport.sh
 RUN chmod u+x /bqexport.sh

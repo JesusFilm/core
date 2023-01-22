@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cp /etc/secrets/GCLOUD /gcloud.json
+printf "$GCLOUD" > /gcloud.json
 export GOOGLE_APPLICATION_CREDENTIALS="/gcloud.json"
 gcloud auth activate-service-account jfp-core@jfp-data-warehouse.iam.gserviceaccount.com --key-file="/gcloud.json" --project=jfp-data-warehouse
 

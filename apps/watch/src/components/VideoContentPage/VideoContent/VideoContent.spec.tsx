@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/react'
-import { videos } from '../../Videos/testData'
+import { videos } from '../../Videos/__generated__/testData'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../../libs/videoContext'
 import { VideoContent } from './VideoContent'
