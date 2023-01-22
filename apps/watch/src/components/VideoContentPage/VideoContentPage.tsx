@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import { NextSeo } from 'next-seo'
 
 import 'video.js/dist/video-js.css'
@@ -14,7 +14,7 @@ import { ShareDialog } from '../ShareDialog'
 import { DownloadDialog } from '../DownloadDialog'
 import { ShareButton } from '../ShareButton'
 import { VideoCard } from '../VideoCard'
-import { VideosCarousel } from '../VideosCarousel'
+import { VideosCarousel, getRelatedVideos } from '../VideosCarousel'
 import { DownloadButton } from './DownloadButton'
 import { VideoHero } from './VideoHero'
 import { VideoContent } from './VideoContent/VideoContent'
@@ -37,6 +37,13 @@ export function VideoContentPage(): ReactElement {
   const [hasPlayed, setHasPlayed] = useState(false)
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
+
+  const childVideos = useMemo(() => {
+    if (container == null && label === VideoLabel.featureFilm) {
+      return getRelatedVideos({ children })
+    }
+    return []
+  }, [container, label, children])
 
   return (
     <>
@@ -126,7 +133,7 @@ export function VideoContentPage(): ReactElement {
             <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
           </Container>
           {/* TODO: Replace with proper related video components */}
-          {container == null && label === VideoLabel.featureFilm && (
+          {childVideos.length !== 0 && (
             <Stack sx={{ mb: 14 }}>
               <Container maxWidth="xxl">
                 <Typography variant="h4" gutterBottom sx={{ mb: 6 }}>
@@ -134,7 +141,7 @@ export function VideoContentPage(): ReactElement {
                 </Typography>
               </Container>
               <VideosCarousel
-                videos={children}
+                videos={childVideos}
                 activeVideo={id}
                 renderItem={(props: Parameters<typeof VideoCard>[0]) => {
                   return (

@@ -9,10 +9,9 @@ import { useTheme } from '@mui/material/styles'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName, ThemeMode } from '@core/shared/ui/themes'
 
-import { VideoContentFields_children as VideoChildren } from '../../../../__generated__/VideoContentFields'
 import { VideoLabel } from '../../../../__generated__/globalTypes'
 import { useVideo } from '../../../libs/videoContext'
-import { VideosCarousel } from '../../VideosCarousel'
+import { getRelatedVideos, VideosCarousel } from '../../VideosCarousel'
 import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
 import { VideoCard } from '../../VideoCard'
 import { ShareButton } from '../../ShareButton'
@@ -76,52 +75,12 @@ export function VideoContentCarousel({
     }
   }, [container])
 
-  const siblings = useMemo(() => {
+  const relatedVideos = useMemo(() => {
     if (container != null) {
-      return (container?.children ?? []).filter((siblingVideo) => {
-        return (
-          children.findIndex(
-            (childVideo) => childVideo.id === siblingVideo.id
-          ) < 0
-        )
-      })
+      return getRelatedVideos({ children, siblings: container.children })
     }
     return []
-  }, [container, children])
-
-  const sortedChildren = useMemo(() => {
-    const sorted: Array<VideoChildren | VideoChildren[]> = []
-    const episodes: VideoChildren[] = []
-    const segments: VideoChildren[] = []
-
-    children.forEach((video) => {
-      switch (video.label) {
-        case VideoLabel.episode:
-          if (episodes.length === 0) {
-            sorted.push(episodes)
-          }
-          episodes.push(video)
-          break
-        case VideoLabel.segment:
-          if (segments.length === 0) {
-            sorted.push(segments)
-          }
-          segments.push(video)
-          break
-        default:
-          sorted.push(video)
-          break
-      }
-    })
-
-    return sorted
-  }, [children])
-
-  const relatedVideos = useMemo(
-    () =>
-      sortedChildren.length > 0 ? sortedChildren.concat(siblings) : siblings,
-    [siblings, sortedChildren]
-  )
+  }, [children, container])
 
   return (
     <ThemeProvider
