@@ -1,8 +1,4 @@
-FROM node:16-alpine
+FROM ghcr.io/apollographql/router:latest
 WORKDIR /app
-COPY ./dist/apps/api-gateway .
+COPY ./apps/api-gateway/router.yaml /dist/config/router.yaml
 EXPOSE 4000
-# dependencies that apollo federation needs
-RUN npm install --production
-RUN npm install apollo-server-express @firebase/app-compat@0.1.12 pino-pretty@9.1.1
-CMD node ./main.js
