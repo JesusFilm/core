@@ -225,7 +225,7 @@ function ListItem({ userJourney, disabled }: ListItemProps): ReactElement {
               typography: 'body2'
             }}
           >
-            {role === 'inviteRequested' && 'Manage'}
+            {role === 'inviteRequested' && 'Manage Access'}
             {role === 'owner' && 'Owner'}
             {role === 'editor' && 'Editor'}
           </Button>
