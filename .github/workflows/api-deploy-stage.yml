@@ -24,6 +24,7 @@ jobs:
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
   api-users:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
@@ -44,6 +45,7 @@ jobs:
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
   api-languages:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
@@ -64,6 +66,7 @@ jobs:
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
   api-videos:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
@@ -84,6 +87,7 @@ jobs:
       ARCLIGHT_API_KEY: ${{ secrets.ARCLIGHT_API_KEY }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
 
   api-gateway:
     uses: JesusFilm/core/.github/workflows/api-gateway-stage-worker.yml@stage

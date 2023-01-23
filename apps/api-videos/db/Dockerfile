@@ -1,8 +1,6 @@
 FROM node:16-alpine
 WORKDIR /app
-COPY ./package.json .
-COPY ./package-lock.json .
-COPY ./apps/api-videos/seed .
+COPY ./apps/api-videos .
 
-RUN npm install --silent
-CMD npx ts-node ./seed.ts
+RUN npm install --silent arangojs node-fetch
+CMD npx ts-node ./db/seed.ts

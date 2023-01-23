@@ -1,8 +1,6 @@
 FROM node:16-alpine
 WORKDIR /app
-COPY ./package.json .
-COPY ./package-lock.json .
-COPY ./apps/api-languages/seed .
+COPY ./apps/api-languages/db .
 
-RUN npm install --silent
+RUN npm install arangojs aws-sdk lodash node-fetch slugify
 CMD npx ts-node ./seed.ts

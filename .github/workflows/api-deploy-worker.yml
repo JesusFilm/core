@@ -44,6 +44,8 @@ on:
         required: true
       JFP_AWS_SECRET_ACCESS_KEY:
         required: true
+      AWS_NETWORK_CONFIG:
+        required: true
 
 jobs:
   build-and-deploy:
@@ -148,7 +150,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/${{ inputs.seed_repository }}:$IMAGE_TAG -t $ECR_REGISTRY/${{ inputs.seed_repository }}:latest . -f apps/${{ inputs.name }}/Dockerfile
+          docker build -t $ECR_REGISTRY/${{ inputs.seed_repository }}:$IMAGE_TAG -t $ECR_REGISTRY/${{ inputs.seed_repository }}:latest . -f apps/${{ inputs.name }}/db/Dockerfile
           echo "Pushing image to ECR..."
           docker push -a $ECR_REGISTRY/${{ inputs.seed_repository }}
           echo "image=$ECR_REGISTRY/${{ inputs.seed_repository }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
@@ -156,4 +158,4 @@ jobs:
       - name: Seed Database
         if: contains(steps.affected-dbs.outputs.dbs, inputs.name)
         run: |
-          aws ecs run-task --task-definition ${{ inputs.seed_task_name }} --cluster ${{ inputs.ecs_cluster }}
+          aws ecs run-task --task-definition ${{ inputs.seed_task_name }} --cluster ${{ inputs.ecs_cluster }} --launch-type FARGATE --network-configuration "${{ secrets.AWS_NETWORK_CONFIG }}"
