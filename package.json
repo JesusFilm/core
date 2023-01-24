@@ -118,7 +118,7 @@
     "swr": "^1.3.0",
     "ts-morph": "^13.0.2",
     "tslib": "^2.3.1",
-    "ua-parser-js": "1.0.32",
+    "ua-parser-js": "^1.0.33",
     "util": "^0.12.4",
     "video.js": "^7.14.3",
     "videojs-youtube": "^2.6.1",
