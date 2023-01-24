@@ -9,9 +9,9 @@ import {
   GET_CURRENT_USER,
   GET_JOURNEY_WITH_USER_JOURNEYS
 } from './AccessDialog'
-import { USER_JOURNEY_APPROVE } from './ApproveUser/ApproveUser'
-import { USER_JOURNEY_PROMOTE } from './PromoteUser/PromoteUser'
-import { USER_JOURNEY_REMOVE } from './RemoveUser/RemoveUser'
+import { USER_JOURNEY_APPROVE } from './UserJourneyList/UserJourneyItem/ApproveUser/ApproveUser'
+import { USER_JOURNEY_PROMOTE } from './UserJourneyList/UserJourneyItem/PromoteUser/PromoteUser'
+import { USER_JOURNEY_REMOVE } from './UserJourneyList/UserJourneyItem/RemoveUser/RemoveUser'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
