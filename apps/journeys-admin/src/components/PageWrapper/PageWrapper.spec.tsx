@@ -26,14 +26,14 @@ describe('PageWrapper', () => {
     })
 
     it('should show back button', () => {
-      const { getByRole } = render(
+      const { getAllByRole } = render(
         <MockedProvider>
           <FlagsProvider>
             <PageWrapper title="Page title" backHref="/" />
           </FlagsProvider>
         </MockedProvider>
       )
-      expect(getByRole('link')).toHaveAttribute('href', '/')
+      expect(getAllByRole('link')[0]).toHaveAttribute('href', '/')
     })
 
     it('should show custom menu', () => {

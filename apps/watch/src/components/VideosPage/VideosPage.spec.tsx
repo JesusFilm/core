@@ -105,7 +105,7 @@ describe('VideosPage', () => {
         </MockedProvider>
       )
 
-      const textbox = getAllByRole('textbox')[0]
+      const textbox = getAllByRole('combobox')[0]
       await waitFor(() => fireEvent.focus(textbox))
       await waitFor(() => fireEvent.keyDown(textbox, { key: 'ArrowDown' }))
       const option = getAllByRole('option')[2]
@@ -171,7 +171,7 @@ describe('VideosPage', () => {
         </MockedProvider>
       )
 
-      const textbox = getAllByRole('textbox')[1]
+      const textbox = getAllByRole('combobox')[1]
       await waitFor(() => fireEvent.focus(textbox))
       await waitFor(() => fireEvent.keyDown(textbox, { key: 'ArrowDown' }))
       const option = getAllByRole('option')[2]

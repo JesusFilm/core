@@ -111,7 +111,7 @@ describe('VideoControls', () => {
       </MockedProvider>
     )
     fireEvent.click(getByTestId('LanguageOutlinedIcon'))
-    await waitFor(() => expect(getByRole('textbox')).toHaveValue('English'))
+    await waitFor(() => expect(getByRole('combobox')).toHaveValue('English'))
   })
 
   it('fullscreens the video player on fullscreen icon click when mobile', () => {
