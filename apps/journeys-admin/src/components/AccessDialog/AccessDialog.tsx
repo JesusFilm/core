@@ -1,6 +1,7 @@
-import List from '@mui/material/List'
 import { ReactElement, useEffect } from 'react'
-import ListItem from '@mui/material/ListItem'
+import Stack from '@mui/material/Stack'
+// import List from '@mui/material/List'
+// import ListItem from '@mui/material/ListItem'
 import { gql, useLazyQuery, useQuery } from '@apollo/client'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
@@ -80,23 +81,21 @@ export function AccessDialog({
       divider
       fullscreen={!smUp}
     >
-      <List sx={{ pt: 0 }}>
-        <ListItem sx={{ p: 0 }}>
-          <CopyTextField
-            value={
-              typeof window !== 'undefined'
-                ? `${
-                    window.location.host.endsWith('.chromatic.com')
-                      ? 'https://admin.nextstep.is'
-                      : window.location.origin
-                  }/journeys/${journeyId}`
-                : undefined
-            }
-            messageText="Editor invite link copied"
-            helperText="Anyone with this link can see journey and ask for editing rights.
-              You can accept or reject every request."
-          />
-        </ListItem>
+      <Stack>
+        <CopyTextField
+          value={
+            typeof window !== 'undefined'
+              ? `${
+                  window.location.host.endsWith('.chromatic.com')
+                    ? 'https://admin.nextstep.is'
+                    : window.location.origin
+                }/journeys/${journeyId}`
+              : undefined
+          }
+          messageText="Editor invite link copied"
+          helperText="Anyone with this link can see journey and ask for editing rights.
+            You can accept or reject every request."
+        />
         {!loading && (
           <UserJourneyList
             title="Requested Editing Rights"
@@ -114,7 +113,7 @@ export function AccessDialog({
           )}
           disable={disable}
         />
-      </List>
+      </Stack>
     </Dialog>
   )
 }
