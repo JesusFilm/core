@@ -1,7 +1,5 @@
 import { ReactElement, useEffect } from 'react'
 import Stack from '@mui/material/Stack'
-// import List from '@mui/material/List'
-// import ListItem from '@mui/material/ListItem'
 import { gql, useLazyQuery, useQuery } from '@apollo/client'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
@@ -81,7 +79,7 @@ export function AccessDialog({
       divider
       fullscreen={!smUp}
     >
-      <Stack>
+      <Stack spacing={4}>
         <CopyTextField
           value={
             typeof window !== 'undefined'
@@ -96,21 +94,9 @@ export function AccessDialog({
           helperText="Anyone with this link can see journey and ask for editing rights.
             You can accept or reject every request."
         />
-        {!loading && (
-          <UserJourneyList
-            title="Requested Editing Rights"
-            userJourneys={data?.journey?.userJourneys?.filter(
-              ({ role }) => role === UserJourneyRole.inviteRequested
-            )}
-            disable={disable}
-          />
-        )}
         <UserJourneyList
-          title="Users With Access"
           loading={loading}
-          userJourneys={data?.journey?.userJourneys?.filter(
-            ({ role }) => role !== UserJourneyRole.inviteRequested
-          )}
+          userJourneys={data?.journey?.userJourneys}
           disable={disable}
         />
       </Stack>
