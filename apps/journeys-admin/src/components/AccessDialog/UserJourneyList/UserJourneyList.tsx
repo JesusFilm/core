@@ -3,6 +3,7 @@ import Divider from '@mui/material/Divider'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Skeleton from '@mui/material/Skeleton'
+import List from '@mui/material/List'
 import Typography from '@mui/material/Typography'
 import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneys'
@@ -87,13 +88,15 @@ function ListSubGroup({ title, users, disable }: Props): ReactElement {
         {title}
       </Typography>
 
-      {users.map((userJourney) => (
-        <UserJourneyItem
-          key={userJourney.id}
-          userJourney={userJourney}
-          disabled={disable}
-        />
-      ))}
+      <List>
+        {users.map((userJourney) => (
+          <UserJourneyItem
+            key={userJourney.id}
+            userJourney={userJourney}
+            disabled={disable}
+          />
+        ))}
+      </List>
     </Box>
   )
 }

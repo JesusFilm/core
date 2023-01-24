@@ -74,8 +74,10 @@ export function UserJourneyItem({
             {displayName.charAt(0)?.toUpperCase()}
           </Avatar>
         </ListItemAvatar>
+
         <ListItemText primary={displayName} secondary={user?.email} />
       </ListItem>
+
       <Menu
         anchorEl={anchorEl}
         open={open}
