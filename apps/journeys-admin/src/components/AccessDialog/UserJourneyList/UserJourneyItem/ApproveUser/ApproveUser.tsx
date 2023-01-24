@@ -1,9 +1,9 @@
 import { ReactElement } from 'react'
 import { useMutation, gql } from '@apollo/client'
 import BeenhereRoundedIcon from '@mui/icons-material/BeenhereRounded'
-import { MenuItem } from '../../MenuItem'
-import { UserJourneyApprove } from '../../../../__generated__/UserJourneyApprove'
-import { UserJourneyRole } from '../../../../__generated__/globalTypes'
+import { MenuItem } from '../../../../MenuItem'
+import { UserJourneyApprove } from '../../../../../../__generated__/UserJourneyApprove'
+import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
 
 interface ApproveUserProps {
   id: string
