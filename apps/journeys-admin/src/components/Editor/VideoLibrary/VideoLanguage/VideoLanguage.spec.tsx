@@ -84,9 +84,9 @@ describe('VideoLanguage', () => {
       />
     )
 
-    expect(getByRole('textbox')).toHaveValue('English')
-    fireEvent.focus(getByRole('textbox'))
-    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
+    expect(getByRole('combobox')).toHaveValue('English')
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     expect(handleChange).toHaveBeenCalledWith({
       id: '496',
