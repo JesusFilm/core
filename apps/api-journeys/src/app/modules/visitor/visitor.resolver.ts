@@ -102,6 +102,7 @@ export class VisitorResolver {
 
   @ResolveField()
   userAgent(@Parent() visitor): IResult | undefined {
+    console.log(visitor)
     if (visitor.userAgent != null)
       return new UAParser(visitor.userAgent).getResult()
   }
