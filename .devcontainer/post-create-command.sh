@@ -21,6 +21,9 @@ npm install -g @apollo/rover@0.10.0
 # install Foreman CLI tool
 npm install -g foreman
 
+# install Apollo CLI tool for codegen
+npm install -g apollo graphql
+
 # install all dependencies
 npm i
 
