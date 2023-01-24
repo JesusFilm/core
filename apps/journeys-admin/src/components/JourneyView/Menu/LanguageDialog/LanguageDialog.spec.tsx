@@ -78,15 +78,15 @@ describe('JourneyView/Menu/LanguageDialog', () => {
       </MockedProvider>
     )
 
-    await waitFor(() => expect(getByRole('textbox')).toHaveValue('English'))
-    fireEvent.focus(getByRole('textbox'))
-    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
+    await waitFor(() => expect(getByRole('combobox')).toHaveValue('English'))
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     await waitFor(() => getByRole('option', { name: 'French Français' }))
     fireEvent.click(getByRole('option', { name: 'French Français' }))
-    expect(getByRole('textbox')).toHaveValue('French')
+    expect(getByRole('combobox')).toHaveValue('French')
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     expect(onClose).toHaveBeenCalled()
-    await waitFor(() => expect(getByRole('textbox')).toHaveValue('English'))
+    await waitFor(() => expect(getByRole('combobox')).toHaveValue('English'))
   })
 
   it('should update journey language on submit', async () => {
@@ -141,8 +141,8 @@ describe('JourneyView/Menu/LanguageDialog', () => {
       </MockedProvider>
     )
 
-    fireEvent.focus(getByRole('textbox'))
-    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     await waitFor(() => getByRole('option', { name: 'French Français' }))
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     fireEvent.click(getByRole('button', { name: 'Save' }))
@@ -161,8 +161,8 @@ describe('JourneyView/Menu/LanguageDialog', () => {
       </MockedProvider>
     )
 
-    fireEvent.focus(getByRole('textbox'))
-    fireEvent.keyDown(getByRole('textbox'), { key: 'ArrowDown' })
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     await waitFor(() => getByRole('option', { name: 'French Français' }))
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     fireEvent.click(getByRole('button', { name: 'Save' }))
