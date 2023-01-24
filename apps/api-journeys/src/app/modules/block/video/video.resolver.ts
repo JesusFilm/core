@@ -2,7 +2,7 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { object, string } from 'yup'
 import fetch from 'node-fetch'
-import { UserInputError } from 'apollo-server'
+import { UserInputError } from 'apollo-server-errors'
 import { BlockService } from '../block.service'
 import {
   Action,

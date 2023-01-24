@@ -16,7 +16,6 @@
     "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
-      "@core/apollo/logging/*": ["libs/apollo/logging/src/lib/*"],
       "@core/journeys/ui/*": [
         "libs/journeys/ui/src/components/*",
         "libs/journeys/ui/src/libs/*"

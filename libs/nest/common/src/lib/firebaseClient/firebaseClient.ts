@@ -1,4 +1,7 @@
 import { initializeApp, credential } from 'firebase-admin'
+import { ExecutionContext } from '@nestjs/common'
+import { GqlExecutionContext } from '@nestjs/graphql'
+import { get } from 'lodash'
 
 export const firebaseClient = initializeApp(
   process.env.GOOGLE_APPLICATION_JSON != null &&
@@ -10,3 +13,12 @@ export const firebaseClient = initializeApp(
       }
     : undefined
 )
+
+export async function contextToUserId(
+  context: ExecutionContext
+): Promise<string | null> {
+  const ctx = GqlExecutionContext.create(context).getContext()
+  const token = get(ctx.headers, 'authorization')
+  const { uid } = await firebaseClient.auth().verifyIdToken(token)
+  return uid
+}

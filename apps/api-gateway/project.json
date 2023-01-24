@@ -6,7 +6,7 @@
     "serve": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "./apps/api-gateway/router --supergraph apps/api-gateway/schema.graphql --config apps/api-gateway/router.yaml --hot-reload"
+        "command": "./apps/api-gateway/router --supergraph apps/api-gateway/schema.graphql --config apps/api-gateway/router.yaml --dev"
       }
     },
     "serve-all": {

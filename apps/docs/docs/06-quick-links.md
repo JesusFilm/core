@@ -5,12 +5,12 @@
 
 ## Core Links
 
-| Resource       | Command                    | Port                          | Production                                                           |
-| -------------- | -------------------------- | ----------------------------- | -------------------------------------------------------------------- |
-| Documentation  | `nx serve docs`            | [3000](http://localhost:3000) | [docs.core.jesusfilm.org](https://docs.core.jesusfilm.org/)          |
-| GraphQL API    | `nf start`                 | [4000](http://localhost:4000) | [graphql.jesusfilm.org](https://graphql.jesusfilm.org/)              |
-| Journeys       | `nx serve journeys`        | [4100](http://localhost:4100) | [your.nextstep.is](https://your.nextstep.is/)                        |
-| Journeys Admin | `nx serve journeys-admin`  | [4200](http://localhost:4200) | [admin.nextstep.is](https://admin.nextstep.is/)                      |
-| Watch          | `nx serve watch`           | [4300](http://localhost:4300) | [watch-one.vercel.app](https://watch-one.vercel.app/)                |
-| Storybook      | `nx demo shared-storybook` | [4400](http://localhost:4400) | [storybook.core.jesusfilm.org](https://storybook.core.jesusfilm.org) |
-| ArangoDB       |                            | [8529](http://localhost:8529) | [arangodb.cloud](https://35d055613c5a.arangodb.cloud:8529/)          |
+| Resource       | Command                    | Port                          | Production                                                                      |
+| -------------- | -------------------------- | ----------------------------- | ------------------------------------------------------------------------------- |
+| Documentation  | `nx serve docs`            | [3000](http://localhost:3000) | [docs.core.jesusfilm.org](https://docs.core.jesusfilm.org/)                     |
+| GraphQL API    | `nf start`                 | [4000](http://localhost:4000) | [api-gateway.central.jesusfilm.org](https://api-gateway.central.jesusfilm.org/) |
+| Journeys       | `nx serve journeys`        | [4100](http://localhost:4100) | [your.nextstep.is](https://your.nextstep.is/)                                   |
+| Journeys Admin | `nx serve journeys-admin`  | [4200](http://localhost:4200) | [admin.nextstep.is](https://admin.nextstep.is/)                                 |
+| Watch          | `nx serve watch`           | [4300](http://localhost:4300) | [watch.jesusfilm.org](https://watch.jesusfilm.org/)                             |
+| Storybook      | `nx demo shared-storybook` | [4400](http://localhost:4400) | [storybook.core.jesusfilm.org](https://storybook.core.jesusfilm.org)            |
+| ArangoDB       |                            | [8529](http://localhost:8529) | [arangodb.cloud](https://35d055613c5a.arangodb.cloud:8529/)                     |

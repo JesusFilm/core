@@ -7,7 +7,7 @@ import {
   Parent,
   Mutation
 } from '@nestjs/graphql'
-import { ForbiddenError, UserInputError } from 'apollo-server'
+import { ForbiddenError, UserInputError } from 'apollo-server-errors'
 import { IResult, UAParser } from 'ua-parser-js'
 import { Event, Visitor, VisitorsConnection } from '../../__generated__/graphql'
 import { EventService } from '../event/event.service'

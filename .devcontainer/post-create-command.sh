@@ -29,6 +29,14 @@ curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
 sudo mv bin/act /usr/bin/
 rm -rf bin
 
+# install router to api gateways
+# when updating router version you'll need to:
+# - update .devcontainer/post-create-command.sh apollo router version (...nix/vX.X.X)
+# - update app/api-gateway/Dockerfile image version (...router/vX.X.X)
+# - inform all developers to rebuild their containers
+curl -sSL https://router.apollo.dev/download/nix/v1.9.0 | sh
+mv router apps/api-gateway/
+
 # install doppler
 sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
 curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo apt-key add -

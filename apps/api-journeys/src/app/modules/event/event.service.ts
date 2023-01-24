@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common'
 import { BaseService } from '@core/nest/database/BaseService'
 import { DocumentCollection } from 'arangojs/collection'
-import { UserInputError } from 'apollo-server'
+import { UserInputError } from 'apollo-server-errors'
 import { aql } from 'arangojs'
 import { KeyAsId } from '@core/nest/decorators/KeyAsId'
 import { BlockService } from '../block/block.service'

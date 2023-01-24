@@ -1,3 +1,5 @@
+supergraph:
+  listen: 0.0.0.0:4000
 cors:
   origins:
     # apollo studio
@@ -16,5 +18,9 @@ cors:
     - https://watch.jesusfilm.org
   match_origins:
     # any project deployed on the jesusfilm vercel account
-    - "/-jesusfilm\.vercel\.app$/"
-    - "^https://([a-z0-9]+\.)*-jesusfilm\.vercel\.app$
+    - '^https://([a-z0-9]+[.])*-jesusfilm[.]vercel[.]app$'
+headers:
+  all:
+    request:
+      - propagate:
+          named: authorization
