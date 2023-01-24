@@ -146,7 +146,7 @@
     "@nrwl/next": "13.9.7",
     "@nrwl/node": "13.9.7",
     "@nrwl/nx-cloud": "13.1.1",
-    "@nrwl/react": "13.9.7",
+    "@nrwl/react": "15.6.0",
     "@nrwl/storybook": "13.9.7",
     "@nrwl/web": "13.9.7",
     "@nrwl/workspace": "13.9.7",
