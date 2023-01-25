@@ -352,7 +352,7 @@ describe('AccessDialog', () => {
   })
 
   it('opens email invite input on click', async () => {
-    const { getByRole, getAllByTestId, queryByText } = render(
+    const { getByRole, queryByRole, queryByText } = render(
       <SnackbarProvider>
         <MockedProvider mocks={mocks}>
           <AccessDialog journeyId="journeyId" open onClose={noop} />
@@ -362,12 +362,14 @@ describe('AccessDialog', () => {
     expect(queryByText('Invite By Email')).not.toBeInTheDocument()
 
     fireEvent.click(getByRole('button', { name: 'Add User With Email' }))
-    expect(queryByText('Invite By Email')).toBeInTheDocument()
-
-    // this is bad - fix this once design is done for this component
-    fireEvent.click(getAllByTestId('dialog-close-button')[1])
+    expect(
+      queryByRole('textbox', { name: 'Email Address' })
+    ).toBeInTheDocument()
+    fireEvent.click(getByRole('button', { name: 'Close' }))
     await waitFor(() =>
-      expect(queryByText('Invite By Email')).not.toBeInTheDocument()
+      expect(
+        queryByRole('textbox', { name: 'Email Address' })
+      ).not.toBeInTheDocument()
     )
   })
 

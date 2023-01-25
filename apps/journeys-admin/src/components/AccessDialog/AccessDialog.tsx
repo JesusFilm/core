@@ -102,6 +102,9 @@ export function AccessDialog({
           <Button onClick={() => setOpenEmailInviteInput(true)}>
             Add User With Email
           </Button>
+          {openEmailInviteInput && (
+            <EmailInviteInput onClose={() => setOpenEmailInviteInput(false)} />
+          )}
           <MuiListItem sx={{ p: 0 }}>
             <CopyTextField
               value={
@@ -137,10 +140,6 @@ export function AccessDialog({
           />
         </List>
       </Dialog>
-      <EmailInviteInput
-        open={openEmailInviteInput}
-        onClose={() => setOpenEmailInviteInput(false)}
-      />
     </>
   )
 }
