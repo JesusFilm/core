@@ -3,16 +3,6 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import TextField from '@mui/material/TextField'
 import List from '@mui/material/List'
 import Button from '@mui/material/Button'
-// import { gql, useQuery } from '@apollo/client'
-// import { GetUser } from '../../../__generated__/GetUser'
-
-// export const GET_USER = gql`
-//   query GetUser {
-//     me {
-//       id
-//     }
-//   }
-// `
 
 interface EmailInviteInputProps {
   open?: boolean
@@ -23,8 +13,6 @@ export function EmailInviteInput({
   open,
   onClose
 }: EmailInviteInputProps): ReactElement {
-  // const { data: id } = useQuery<GetUser>(GET_USER)
-  // console.log(id)
   const handleAddUser = (): void => {}
   const [email, setEmail] = useState('')
   return (
