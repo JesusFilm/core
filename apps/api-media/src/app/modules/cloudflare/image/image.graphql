@@ -1,0 +1,8 @@
+type CloudflareDirectCreatorUploadResponse {
+  id: String
+  uploadURL: String
+}
+
+extend type Query {
+  getCloudflareUploadInfo: CloudflareDirectCreatorUploadResponse
+}
