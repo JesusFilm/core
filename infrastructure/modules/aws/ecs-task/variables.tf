@@ -31,7 +31,7 @@ variable "service_config" {
       protocol          = string
       path_pattern      = list(string)
       health_check_path = string
-      health_check_port = number
+      health_check_port = optional(number)
       priority          = number
     })
 

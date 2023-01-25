@@ -239,7 +239,7 @@ resource "aws_alb_target_group" "alb_target_group" {
     interval          = 5
     timeout           = 4
     path              = var.service_config.alb_target_group.health_check_path
-    port              = coalesce(var.service_config.alb_target_group.health_check_port, var.service_config.alb_target_group.port)
+    port              = var.service_config.alb_target_group.health_check_port
     protocol          = var.service_config.alb_target_group.protocol
   }
 }
