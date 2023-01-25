@@ -182,7 +182,7 @@
     "@typescript-eslint/eslint-plugin": "5.10.2",
     "@typescript-eslint/parser": "5.10.2",
     "@vidavidorra/commitlint-config": "^4.0.4",
-    "babel-jest": "27.2.3",
+    "babel-jest": "29.4.0",
     "babel-loader": "8.1.0",
     "chromatic": "^6.11.4",
     "copy-webpack-plugin": "^9.0.1",
