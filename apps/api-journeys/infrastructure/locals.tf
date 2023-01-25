@@ -13,7 +13,8 @@ locals {
     "POWER_BI_JOURNEYS_SINGLE_FULL_REPORT_ID",
     "POWER_BI_JOURNEYS_SINGLE_SUMMARY_REPORT_ID",
     "POWER_BI_TENANT_ID",
-    "POWER_BI_WORKSPACE_ID"
+    "POWER_BI_WORKSPACE_ID",
+    "GOOGLE_APPLICATION_JSON"
   ]
   service_config = {
     name           = "api-journeys"

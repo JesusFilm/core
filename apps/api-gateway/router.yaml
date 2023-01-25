@@ -1,0 +1,20 @@
+supergraph:
+  listen: 0.0.0.0:4000
+cors:
+  match_origins:
+    # any localhost
+    - '^http://localhost:\d+$'
+headers:
+  all:
+    request:
+      - propagate:
+          named: authorization
+      - propagate:
+          named: 'user-agent'
+      - propagate:
+          named: 'x-forwarded-for'
+health-check:
+  listen: 0.0.0.0:8088
+  enabled: true
+include_subgraph_errors:
+  all: true

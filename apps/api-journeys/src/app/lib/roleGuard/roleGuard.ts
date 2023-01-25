@@ -6,9 +6,9 @@ import {
   Type,
   Inject
 } from '@nestjs/common'
-import { GqlExecutionContext } from '@nestjs/graphql'
 import { get, includes, reduce } from 'lodash'
 import { AuthenticationError } from 'apollo-server-errors'
+import { contextToUserId } from '@core/nest/common/firebaseClient'
 import { UserJourneyService } from '../../modules/userJourney/userJourney.service'
 import {
   Journey,
@@ -144,8 +144,7 @@ export const RoleGuard = (
     }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-      const ctx = GqlExecutionContext.create(context).getContext()
-      const userId = get(ctx.headers, 'user-id')
+      const userId = await contextToUserId(context)
 
       if (userId == null) return false
 

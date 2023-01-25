@@ -3,34 +3,10 @@
   "sourceRoot": "apps/api-gateway/src",
   "projectType": "application",
   "targets": {
-    "build": {
-      "executor": "@nrwl/node:webpack",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/apps/api-gateway",
-        "main": "apps/api-gateway/src/main.ts",
-        "tsConfig": "apps/api-gateway/tsconfig.app.json",
-        "generatePackageJson": true
-      },
-      "configurations": {
-        "production": {
-          "optimization": true,
-          "extractLicenses": true,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/api-gateway/src/environments/environment.ts",
-              "with": "apps/api-gateway/src/environments/environment.prod.ts"
-            }
-          ]
-        }
-      }
-    },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "buildTarget": "api-gateway:build",
-        "inspect": false
+        "command": "./apps/api-gateway/router --supergraph apps/api-gateway/schema.graphql --config apps/api-gateway/router.yaml --dev"
       }
     },
     "serve-all": {
@@ -46,19 +22,6 @@
         ]
       }
     },
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": ["apps/api-gateway/**/*.ts"]
-      },
-      "outputs": ["{options.outputFile}"]
-    },
-    "type-check": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "command": "npx tsc -b apps/api-gateway/tsconfig.json"
-      }
-    },
     "generate-graphql": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
@@ -69,12 +32,15 @@
         ]
       }
     },
-    "fetch-secrets": {
+    "update-router-schema": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
         "commands": [
           {
-            "command": "DOPPLER_TOKEN=$DOPPLER_API_GATEWAY_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-gateway > apps/api-gateway/.env"
+            "command": "./apps/api-gateway/router config schema > apps/api-gateway/routerSchema.json"
+          },
+          {
+            "command": "npx prettier apps/api-gateway/routerSchema.json -w"
           }
         ]
       }
