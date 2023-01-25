@@ -19,6 +19,7 @@ export async function contextToUserId(
 ): Promise<string | null> {
   const ctx = GqlExecutionContext.create(context).getContext()
   const token = get(ctx.headers, 'authorization')
+  if (token == null || token === '') return null
   const { uid } = await firebaseClient.auth().verifyIdToken(token)
   return uid
 }
