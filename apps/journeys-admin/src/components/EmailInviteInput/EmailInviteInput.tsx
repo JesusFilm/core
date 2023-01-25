@@ -29,7 +29,6 @@ export function EmailInviteInput({
           variant="outlined"
         />
         <TextField
-          autoFocus
           margin="normal"
           id="name"
           label="Display Name"
