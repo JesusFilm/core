@@ -179,9 +179,9 @@ describe('AccessDialog', () => {
       </SnackbarProvider>
     )
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Manage' })).toBeInTheDocument()
+      expect(getByRole('button', { name: 'Manage Access' })).toBeInTheDocument()
     )
-    fireEvent.click(getByRole('button', { name: 'Manage' }))
+    fireEvent.click(getByRole('button', { name: 'Manage Access' }))
     fireEvent.click(getByRole('menuitem', { name: 'Approve' }))
     await waitFor(() =>
       expect(cache.extract()['UserJourney:userJourneyId3']?.role).toEqual(
@@ -332,7 +332,7 @@ describe('AccessDialog', () => {
       </SnackbarProvider>
     )
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Manage' })).toBeDisabled()
+      expect(getByRole('button', { name: 'Manage Access' })).toBeDisabled()
     )
     expect(getByRole('button', { name: 'Editor' })).toBeDisabled()
     expect(getByRole('button', { name: 'Owner' })).toBeDisabled()

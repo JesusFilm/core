@@ -49,7 +49,6 @@
     "@mui/material": "5.8.7",
     "@mui/styles": "5.8.7",
     "@mui/system": "5.8.7",
-    "@mui/x-data-grid": "5.8.0",
     "@nestjs/apollo": "^10.1.7",
     "@nestjs/common": "^9.2.1",
     "@nestjs/core": "^9.2.1",
@@ -120,8 +119,6 @@
     "util": "^0.12.4",
     "video.js": "^7.14.3",
     "videojs-youtube": "^2.6.1",
-    "winston": "^3.4.0",
-    "winston-cloudwatch": "3.1.1",
     "yup": "^0.32.9"
   },
   "devDependencies": {
