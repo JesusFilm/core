@@ -7,7 +7,6 @@
     "api-media": "apps/api-media",
     "api-users": "apps/api-users",
     "api-videos": "apps/api-videos",
-    "apollo-logging": "libs/apollo/logging",
     "docs": "apps/docs",
     "journeys": "apps/journeys",
     "journeys-admin": "apps/journeys-admin",
