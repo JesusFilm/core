@@ -1,1 +1,1 @@
-export { EmailInviteDialog as EmailInviteInput } from './EmailInviteInput'
+export { EmailInviteInput } from './EmailInviteInput'
