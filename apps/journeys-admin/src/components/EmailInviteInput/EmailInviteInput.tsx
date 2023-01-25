@@ -1,27 +1,23 @@
 import { ReactElement, useState } from 'react'
-import { Dialog } from '@core/shared/ui/Dialog'
 import TextField from '@mui/material/TextField'
-import List from '@mui/material/List'
 import Button from '@mui/material/Button'
+import { Form, Formik } from 'formik'
 
 interface EmailInviteInputProps {
-  open?: boolean
   onClose: () => void
 }
 
 export function EmailInviteInput({
-  open,
   onClose
 }: EmailInviteInputProps): ReactElement {
-  const handleAddUser = (): void => {}
+  const handleAddUser = (): void => {
+    console.log('Blank... for now')
+  }
   const [email, setEmail] = useState('')
+
   return (
-    <Dialog
-      open={open ?? false}
-      onClose={onClose}
-      dialogTitle={{ title: 'Add User With Email', closeButton: true }}
-    >
-      <List>
+    <Formik initialValues={{}} onSubmit={handleAddUser}>
+      <Form>
         <TextField
           autoFocus
           margin="normal"
@@ -40,8 +36,9 @@ export function EmailInviteInput({
           fullWidth
           variant="outlined"
         />
-        <Button onClick={handleAddUser}>Submit</Button>
-      </List>
-    </Dialog>
+        <Button type="submit">Submit</Button>
+        <Button onClick={onClose}>Close</Button>
+      </Form>
+    </Formik>
   )
 }
