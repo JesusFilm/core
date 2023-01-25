@@ -21,6 +21,7 @@ import {
 } from '../../../__generated__/GetJourneyWithUserJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { GetCurrentUser } from '../../../__generated__/GetCurrentUser'
+import { EmailInviteInput } from '../EmailInviteInput/EmailInviteInput'
 import { RemoveUser } from './RemoveUser'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
@@ -64,6 +65,8 @@ export function AccessDialog({
   open,
   onClose
 }: AccessDialogProps): ReactElement {
+  const [openEmailInviteInput, setOpenEmailInviteInput] = useState(false)
+
   const [loadJourney, { loading, data }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
       variables: { id: journeyId }
@@ -84,52 +87,61 @@ export function AccessDialog({
   }, [open, loadJourney])
 
   return (
-    <Dialog
-      open={open ?? false}
-      onClose={onClose}
-      dialogTitle={{
-        title: 'Invite Other Editors',
-        closeButton: true
-      }}
-      divider
-      fullscreen={!smUp}
-    >
-      <List sx={{ pt: 0 }}>
-        <MuiListItem sx={{ p: 0 }}>
-          <CopyTextField
-            value={
-              typeof window !== 'undefined'
-                ? `${
-                    window.location.host.endsWith('.chromatic.com')
-                      ? 'https://admin.nextstep.is'
-                      : window.location.origin
-                  }/journeys/${journeyId}`
-                : undefined
-            }
-            messageText="Editor invite link copied"
-            helperText="Anyone with this link can see journey and ask for editing rights.
+    <>
+      <Dialog
+        open={open ?? false}
+        onClose={onClose}
+        dialogTitle={{
+          title: 'Invite Other Editors',
+          closeButton: true
+        }}
+        divider
+        fullscreen={!smUp}
+      >
+        <List sx={{ pt: 0 }}>
+          <Button onClick={() => setOpenEmailInviteInput(true)}>
+            Add User With Email
+          </Button>
+          <MuiListItem sx={{ p: 0 }}>
+            <CopyTextField
+              value={
+                typeof window !== 'undefined'
+                  ? `${
+                      window.location.host.endsWith('.chromatic.com')
+                        ? 'https://admin.nextstep.is'
+                        : window.location.origin
+                    }/journeys/${journeyId}`
+                  : undefined
+              }
+              messageText="Editor invite link copied"
+              helperText="Anyone with this link can see journey and ask for editing rights.
               You can accept or reject every request."
-          />
-        </MuiListItem>
-        {!loading && (
+            />
+          </MuiListItem>
+          {!loading && (
+            <UserJourneyList
+              title="Requested Editing Rights"
+              userJourneys={data?.journey?.userJourneys?.filter(
+                ({ role }) => role === UserJourneyRole.inviteRequested
+              )}
+              disable={disable}
+            />
+          )}
           <UserJourneyList
-            title="Requested Editing Rights"
+            title="Users With Access"
+            loading={loading}
             userJourneys={data?.journey?.userJourneys?.filter(
-              ({ role }) => role === UserJourneyRole.inviteRequested
+              ({ role }) => role !== UserJourneyRole.inviteRequested
             )}
             disable={disable}
           />
-        )}
-        <UserJourneyList
-          title="Users With Access"
-          loading={loading}
-          userJourneys={data?.journey?.userJourneys?.filter(
-            ({ role }) => role !== UserJourneyRole.inviteRequested
-          )}
-          disable={disable}
-        />
-      </List>
-    </Dialog>
+        </List>
+      </Dialog>
+      <EmailInviteInput
+        open={openEmailInviteInput}
+        onClose={() => setOpenEmailInviteInput(false)}
+      />
+    </>
   )
 }
 
