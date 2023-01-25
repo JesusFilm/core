@@ -38,6 +38,9 @@
         "commands": [
           {
             "command": "./apps/api-gateway/router config schema > apps/api-gateway/routerSchema.json"
+          },
+          {
+            "command": "npx prettier apps/api-gateway/routerSchema.json -w"
           }
         ]
       }

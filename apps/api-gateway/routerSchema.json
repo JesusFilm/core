@@ -7,23 +7,17 @@
     "authentication": {
       "description": "Authentication",
       "type": "object",
-      "required": [
-        "experimental"
-      ],
+      "required": ["experimental"],
       "properties": {
         "experimental": {
           "description": "The experimental configuration",
           "type": "object",
-          "required": [
-            "jwt"
-          ],
+          "required": ["jwt"],
           "properties": {
             "jwt": {
               "description": "The JWT configuration",
               "type": "object",
-              "required": [
-                "jwks_url"
-              ],
+              "required": ["jwks_url"],
               "properties": {
                 "cooldown": {
                   "description": "JWKS retrieval cooldown",
@@ -57,15 +51,9 @@
         "allow_credentials": false,
         "allow_headers": [],
         "expose_headers": null,
-        "origins": [
-          "https://studio.apollographql.com"
-        ],
+        "origins": ["https://studio.apollographql.com"],
         "match_origins": null,
-        "methods": [
-          "GET",
-          "POST",
-          "OPTIONS"
-        ]
+        "methods": ["GET", "POST", "OPTIONS"]
       },
       "type": "object",
       "properties": {
@@ -107,11 +95,7 @@
         },
         "methods": {
           "description": "Allowed request methods. Defaults to GET, POST, OPTIONS.",
-          "default": [
-            "GET",
-            "POST",
-            "OPTIONS"
-          ],
+          "default": ["GET", "POST", "OPTIONS"],
           "type": "array",
           "items": {
             "type": "string"
@@ -119,9 +103,7 @@
         },
         "origins": {
           "description": "The origin(s) to allow requests from. Defaults to `https://studio.apollographql.com/` for Apollo Studio.",
-          "default": [
-            "https://studio.apollographql.com"
-          ],
+          "default": ["https://studio.apollographql.com"],
           "type": "array",
           "items": {
             "type": "string"
@@ -136,10 +118,7 @@
       "properties": {
         "required_headers": {
           "description": "Override the headers to check for by setting custom_headers Note that if you set required_headers here, you may also want to have a look at your `CORS` configuration, and make sure you either: - did not set any `allow_headers` list (so it defaults to `mirror_request`) - added your required headers to the allow_headers list, as shown in the `examples/cors-and-csrf/custom-headers.router.yaml` files.",
-          "default": [
-            "x-apollo-operation-name",
-            "apollo-require-preflight"
-          ],
+          "default": ["x-apollo-operation-name", "apollo-require-preflight"],
           "type": "array",
           "items": {
             "type": "string"
@@ -164,9 +143,7 @@
         "all": {
           "description": "Rules to apply to all subgraphs",
           "type": "object",
-          "required": [
-            "request"
-          ],
+          "required": ["request"],
           "properties": {
             "request": {
               "description": "Propagate/Insert/Remove headers from request",
@@ -175,9 +152,7 @@
                 "oneOf": [
                   {
                     "type": "object",
-                    "required": [
-                      "insert"
-                    ],
+                    "required": ["insert"],
                     "properties": {
                       "insert": {
                         "description": "Insert header",
@@ -185,10 +160,7 @@
                           {
                             "description": "Insert static header",
                             "type": "object",
-                            "required": [
-                              "name",
-                              "value"
-                            ],
+                            "required": ["name", "value"],
                             "properties": {
                               "name": {
                                 "description": "The name of the header",
@@ -204,10 +176,7 @@
                           {
                             "description": "Insert header with a value coming from context key (works only for a string in the context)",
                             "type": "object",
-                            "required": [
-                              "from_context",
-                              "name"
-                            ],
+                            "required": ["from_context", "name"],
                             "properties": {
                               "from_context": {
                                 "description": "Specify context key to fetch value",
@@ -223,10 +192,7 @@
                           {
                             "description": "Insert header with a value coming from body",
                             "type": "object",
-                            "required": [
-                              "name",
-                              "path"
-                            ],
+                            "required": ["name", "path"],
                             "properties": {
                               "default": {
                                 "description": "The default if the path in the body did not resolve to an element",
@@ -251,9 +217,7 @@
                   },
                   {
                     "type": "object",
-                    "required": [
-                      "remove"
-                    ],
+                    "required": ["remove"],
                     "properties": {
                       "remove": {
                         "description": "Remove header",
@@ -261,9 +225,7 @@
                           {
                             "description": "Remove a header given a header name",
                             "type": "object",
-                            "required": [
-                              "named"
-                            ],
+                            "required": ["named"],
                             "properties": {
                               "named": {
                                 "description": "Remove a header given a header name",
@@ -275,9 +237,7 @@
                           {
                             "description": "Remove a header given a regex matching header name",
                             "type": "object",
-                            "required": [
-                              "matching"
-                            ],
+                            "required": ["matching"],
                             "properties": {
                               "matching": {
                                 "description": "Remove a header given a regex matching against the header name",
@@ -293,9 +253,7 @@
                   },
                   {
                     "type": "object",
-                    "required": [
-                      "propagate"
-                    ],
+                    "required": ["propagate"],
                     "properties": {
                       "propagate": {
                         "description": "Propagate header",
@@ -303,9 +261,7 @@
                           {
                             "description": "Propagate header given a header name",
                             "type": "object",
-                            "required": [
-                              "named"
-                            ],
+                            "required": ["named"],
                             "properties": {
                               "default": {
                                 "description": "Default value for the header.",
@@ -327,9 +283,7 @@
                           {
                             "description": "Propagate header given a regex to match header name",
                             "type": "object",
-                            "required": [
-                              "matching"
-                            ],
+                            "required": ["matching"],
                             "properties": {
                               "matching": {
                                 "description": "The regex on header name",
@@ -355,9 +309,7 @@
           "type": "object",
           "additionalProperties": {
             "type": "object",
-            "required": [
-              "request"
-            ],
+            "required": ["request"],
             "properties": {
               "request": {
                 "description": "Propagate/Insert/Remove headers from request",
@@ -366,9 +318,7 @@
                   "oneOf": [
                     {
                       "type": "object",
-                      "required": [
-                        "insert"
-                      ],
+                      "required": ["insert"],
                       "properties": {
                         "insert": {
                           "description": "Insert header",
@@ -376,10 +326,7 @@
                             {
                               "description": "Insert static header",
                               "type": "object",
-                              "required": [
-                                "name",
-                                "value"
-                              ],
+                              "required": ["name", "value"],
                               "properties": {
                                 "name": {
                                   "description": "The name of the header",
@@ -395,10 +342,7 @@
                             {
                               "description": "Insert header with a value coming from context key (works only for a string in the context)",
                               "type": "object",
-                              "required": [
-                                "from_context",
-                                "name"
-                              ],
+                              "required": ["from_context", "name"],
                               "properties": {
                                 "from_context": {
                                   "description": "Specify context key to fetch value",
@@ -414,10 +358,7 @@
                             {
                               "description": "Insert header with a value coming from body",
                               "type": "object",
-                              "required": [
-                                "name",
-                                "path"
-                              ],
+                              "required": ["name", "path"],
                               "properties": {
                                 "default": {
                                   "description": "The default if the path in the body did not resolve to an element",
@@ -442,9 +383,7 @@
                     },
                     {
                       "type": "object",
-                      "required": [
-                        "remove"
-                      ],
+                      "required": ["remove"],
                       "properties": {
                         "remove": {
                           "description": "Remove header",
@@ -452,9 +391,7 @@
                             {
                               "description": "Remove a header given a header name",
                               "type": "object",
-                              "required": [
-                                "named"
-                              ],
+                              "required": ["named"],
                               "properties": {
                                 "named": {
                                   "description": "Remove a header given a header name",
@@ -466,9 +403,7 @@
                             {
                               "description": "Remove a header given a regex matching header name",
                               "type": "object",
-                              "required": [
-                                "matching"
-                              ],
+                              "required": ["matching"],
                               "properties": {
                                 "matching": {
                                   "description": "Remove a header given a regex matching against the header name",
@@ -484,9 +419,7 @@
                     },
                     {
                       "type": "object",
-                      "required": [
-                        "propagate"
-                      ],
+                      "required": ["propagate"],
                       "properties": {
                         "propagate": {
                           "description": "Propagate header",
@@ -494,9 +427,7 @@
                             {
                               "description": "Propagate header given a header name",
                               "type": "object",
-                              "required": [
-                                "named"
-                              ],
+                              "required": ["named"],
                               "properties": {
                                 "default": {
                                   "description": "Default value for the header.",
@@ -518,9 +449,7 @@
                             {
                               "description": "Propagate header given a regex to match header name",
                               "type": "object",
-                              "required": [
-                                "matching"
-                              ],
+                              "required": ["matching"],
                               "properties": {
                                 "matching": {
                                   "description": "The regex on header name",
@@ -633,9 +562,7 @@
         "experimental.external": {
           "description": "Configures the externalization plugin",
           "type": "object",
-          "required": [
-            "url"
-          ],
+          "required": ["url"],
           "properties": {
             "stages": {
               "description": "The stages request/response configuration",
@@ -839,16 +766,12 @@
                 "redis": null
               },
               "type": "object",
-              "required": [
-                "in_memory"
-              ],
+              "required": ["in_memory"],
               "properties": {
                 "in_memory": {
                   "description": "Configures the in memory cache (always active)",
                   "type": "object",
-                  "required": [
-                    "limit"
-                  ],
+                  "required": ["limit"],
                   "properties": {
                     "limit": {
                       "description": "Number of entries in the Least Recently Used cache",
@@ -862,9 +785,7 @@
                 "redis": {
                   "description": "Configures and activates the Redis cache",
                   "type": "object",
-                  "required": [
-                    "urls"
-                  ],
+                  "required": ["urls"],
                   "properties": {
                     "urls": {
                       "description": "List of URLs to the Redis cluster",
@@ -969,23 +890,17 @@
             "warmed_up_queries": 0
           },
           "type": "object",
-          "required": [
-            "experimental_cache"
-          ],
+          "required": ["experimental_cache"],
           "properties": {
             "experimental_cache": {
               "description": "Cache configuration",
               "type": "object",
-              "required": [
-                "in_memory"
-              ],
+              "required": ["in_memory"],
               "properties": {
                 "in_memory": {
                   "description": "Configures the in memory cache (always active)",
                   "type": "object",
-                  "required": [
-                    "limit"
-                  ],
+                  "required": ["limit"],
                   "properties": {
                     "limit": {
                       "description": "Number of entries in the Least Recently Used cache",
@@ -999,9 +914,7 @@
                 "redis": {
                   "description": "Configures and activates the Redis cache",
                   "type": "object",
-                  "required": [
-                    "urls"
-                  ],
+                  "required": ["urls"],
                   "properties": {
                     "urls": {
                       "description": "List of URLs to the Redis cluster",
@@ -1131,16 +1044,12 @@
                     {
                       "description": "Always sample",
                       "type": "string",
-                      "enum": [
-                        "always_on"
-                      ]
+                      "enum": ["always_on"]
                     },
                     {
                       "description": "Never sample",
                       "type": "string",
-                      "enum": [
-                        "always_off"
-                      ]
+                      "enum": ["always_off"]
                     }
                   ]
                 }
@@ -1152,23 +1061,17 @@
                 {
                   "description": "Don't send any headers",
                   "type": "string",
-                  "enum": [
-                    "none"
-                  ]
+                  "enum": ["none"]
                 },
                 {
                   "description": "Send all headers",
                   "type": "string",
-                  "enum": [
-                    "all"
-                  ]
+                  "enum": ["all"]
                 },
                 {
                   "description": "Send only the headers specified",
                   "type": "object",
-                  "required": [
-                    "only"
-                  ],
+                  "required": ["only"],
                   "properties": {
                     "only": {
                       "description": "Send only the headers specified",
@@ -1183,9 +1086,7 @@
                 {
                   "description": "Send all headers except those specified",
                   "type": "object",
-                  "required": [
-                    "except"
-                  ],
+                  "required": ["except"],
                   "properties": {
                     "except": {
                       "description": "Send all headers except those specified",
@@ -1205,23 +1106,17 @@
                 {
                   "description": "Dont send any variables",
                   "type": "string",
-                  "enum": [
-                    "none"
-                  ]
+                  "enum": ["none"]
                 },
                 {
                   "description": "Send all variables",
                   "type": "string",
-                  "enum": [
-                    "all"
-                  ]
+                  "enum": ["all"]
                 },
                 {
                   "description": "Send only the variables specified",
                   "type": "object",
-                  "required": [
-                    "only"
-                  ],
+                  "required": ["only"],
                   "properties": {
                     "only": {
                       "description": "Send only the variables specified",
@@ -1236,9 +1131,7 @@
                 {
                   "description": "Send all variables except those specified",
                   "type": "object",
-                  "required": [
-                    "except"
-                  ],
+                  "required": ["except"],
                   "properties": {
                     "except": {
                       "description": "Send all variables except those specified",
@@ -1276,16 +1169,12 @@
                 {
                   "description": "Pretty text format (default if you're running from a tty)",
                   "type": "string",
-                  "enum": [
-                    "pretty"
-                  ]
+                  "enum": ["pretty"]
                 },
                 {
                   "description": "Json log format",
                   "type": "string",
-                  "enum": [
-                    "json"
-                  ]
+                  "enum": ["json"]
                 }
               ]
             },
@@ -1297,10 +1186,7 @@
                   {
                     "description": "Match header value given a regex to display logs",
                     "type": "object",
-                    "required": [
-                      "match",
-                      "name"
-                    ],
+                    "required": ["match", "name"],
                     "properties": {
                       "body": {
                         "description": "Display request/response body (default: false)",
@@ -1326,10 +1212,7 @@
                   {
                     "description": "Match header value given a value to display logs",
                     "type": "object",
-                    "required": [
-                      "name",
-                      "value"
-                    ],
+                    "required": ["name", "value"],
                     "properties": {
                       "body": {
                         "description": "Display request/response body (default: false)",
@@ -1385,9 +1268,7 @@
                               "items": {
                                 "description": "Configuration to forward context values in metric attributes/labels",
                                 "type": "object",
-                                "required": [
-                                  "named"
-                                ],
+                                "required": ["named"],
                                 "properties": {
                                   "default": {
                                     "description": "The optional default value",
@@ -1418,10 +1299,7 @@
                                   "items": {
                                     "description": "Configuration to forward body values in metric attributes/labels",
                                     "type": "object",
-                                    "required": [
-                                      "name",
-                                      "path"
-                                    ],
+                                    "required": ["name", "path"],
                                     "properties": {
                                       "default": {
                                         "description": "The optional default value",
@@ -1460,10 +1338,7 @@
                                   "items": {
                                     "description": "Configuration to forward body values in metric attributes/labels",
                                     "type": "object",
-                                    "required": [
-                                      "name",
-                                      "path"
-                                    ],
+                                    "required": ["name", "path"],
                                     "properties": {
                                       "default": {
                                         "description": "The optional default value",
@@ -1492,9 +1367,7 @@
                                       {
                                         "description": "Match via header name",
                                         "type": "object",
-                                        "required": [
-                                          "named"
-                                        ],
+                                        "required": ["named"],
                                         "properties": {
                                           "default": {
                                             "description": "The optional default value",
@@ -1516,9 +1389,7 @@
                                       {
                                         "description": "Match via rgex",
                                         "type": "object",
-                                        "required": [
-                                          "matching"
-                                        ],
+                                        "required": ["matching"],
                                         "properties": {
                                           "matching": {
                                             "description": "Using a regex on the header name",
@@ -1545,10 +1416,7 @@
                                   "items": {
                                     "description": "Configuration to forward body values in metric attributes/labels",
                                     "type": "object",
-                                    "required": [
-                                      "name",
-                                      "path"
-                                    ],
+                                    "required": ["name", "path"],
                                     "properties": {
                                       "default": {
                                         "description": "The optional default value",
@@ -1577,9 +1445,7 @@
                                       {
                                         "description": "Match via header name",
                                         "type": "object",
-                                        "required": [
-                                          "named"
-                                        ],
+                                        "required": ["named"],
                                         "properties": {
                                           "default": {
                                             "description": "The optional default value",
@@ -1601,9 +1467,7 @@
                                       {
                                         "description": "Match via rgex",
                                         "type": "object",
-                                        "required": [
-                                          "matching"
-                                        ],
+                                        "required": ["matching"],
                                         "properties": {
                                           "matching": {
                                             "description": "Using a regex on the header name",
@@ -1626,10 +1490,7 @@
                               "items": {
                                 "description": "Configuration to insert custom attributes/labels in metrics",
                                 "type": "object",
-                                "required": [
-                                  "name",
-                                  "value"
-                                ],
+                                "required": ["name", "value"],
                                 "properties": {
                                   "name": {
                                     "description": "The name of the attribute to insert",
@@ -1661,9 +1522,7 @@
                                 "items": {
                                   "description": "Configuration to forward context values in metric attributes/labels",
                                   "type": "object",
-                                  "required": [
-                                    "named"
-                                  ],
+                                  "required": ["named"],
                                   "properties": {
                                     "default": {
                                       "description": "The optional default value",
@@ -1694,10 +1553,7 @@
                                     "items": {
                                       "description": "Configuration to forward body values in metric attributes/labels",
                                       "type": "object",
-                                      "required": [
-                                        "name",
-                                        "path"
-                                      ],
+                                      "required": ["name", "path"],
                                       "properties": {
                                         "default": {
                                           "description": "The optional default value",
@@ -1736,10 +1592,7 @@
                                     "items": {
                                       "description": "Configuration to forward body values in metric attributes/labels",
                                       "type": "object",
-                                      "required": [
-                                        "name",
-                                        "path"
-                                      ],
+                                      "required": ["name", "path"],
                                       "properties": {
                                         "default": {
                                           "description": "The optional default value",
@@ -1768,9 +1621,7 @@
                                         {
                                           "description": "Match via header name",
                                           "type": "object",
-                                          "required": [
-                                            "named"
-                                          ],
+                                          "required": ["named"],
                                           "properties": {
                                             "default": {
                                               "description": "The optional default value",
@@ -1792,9 +1643,7 @@
                                         {
                                           "description": "Match via rgex",
                                           "type": "object",
-                                          "required": [
-                                            "matching"
-                                          ],
+                                          "required": ["matching"],
                                           "properties": {
                                             "matching": {
                                               "description": "Using a regex on the header name",
@@ -1821,10 +1670,7 @@
                                     "items": {
                                       "description": "Configuration to forward body values in metric attributes/labels",
                                       "type": "object",
-                                      "required": [
-                                        "name",
-                                        "path"
-                                      ],
+                                      "required": ["name", "path"],
                                       "properties": {
                                         "default": {
                                           "description": "The optional default value",
@@ -1853,9 +1699,7 @@
                                         {
                                           "description": "Match via header name",
                                           "type": "object",
-                                          "required": [
-                                            "named"
-                                          ],
+                                          "required": ["named"],
                                           "properties": {
                                             "default": {
                                               "description": "The optional default value",
@@ -1877,9 +1721,7 @@
                                         {
                                           "description": "Match via rgex",
                                           "type": "object",
-                                          "required": [
-                                            "matching"
-                                          ],
+                                          "required": ["matching"],
                                           "properties": {
                                             "matching": {
                                               "description": "Using a regex on the header name",
@@ -1902,10 +1744,7 @@
                                 "items": {
                                   "description": "Configuration to insert custom attributes/labels in metrics",
                                   "type": "object",
-                                  "required": [
-                                    "name",
-                                    "value"
-                                  ],
+                                  "required": ["name", "value"],
                                   "properties": {
                                     "name": {
                                       "description": "The name of the attribute to insert",
@@ -1939,9 +1778,7 @@
                           "items": {
                             "description": "Configuration to forward context values in metric attributes/labels",
                             "type": "object",
-                            "required": [
-                              "named"
-                            ],
+                            "required": ["named"],
                             "properties": {
                               "default": {
                                 "description": "The optional default value",
@@ -1972,10 +1809,7 @@
                               "items": {
                                 "description": "Configuration to forward body values in metric attributes/labels",
                                 "type": "object",
-                                "required": [
-                                  "name",
-                                  "path"
-                                ],
+                                "required": ["name", "path"],
                                 "properties": {
                                   "default": {
                                     "description": "The optional default value",
@@ -2014,10 +1848,7 @@
                               "items": {
                                 "description": "Configuration to forward body values in metric attributes/labels",
                                 "type": "object",
-                                "required": [
-                                  "name",
-                                  "path"
-                                ],
+                                "required": ["name", "path"],
                                 "properties": {
                                   "default": {
                                     "description": "The optional default value",
@@ -2046,9 +1877,7 @@
                                   {
                                     "description": "Match via header name",
                                     "type": "object",
-                                    "required": [
-                                      "named"
-                                    ],
+                                    "required": ["named"],
                                     "properties": {
                                       "default": {
                                         "description": "The optional default value",
@@ -2070,9 +1899,7 @@
                                   {
                                     "description": "Match via rgex",
                                     "type": "object",
-                                    "required": [
-                                      "matching"
-                                    ],
+                                    "required": ["matching"],
                                     "properties": {
                                       "matching": {
                                         "description": "Using a regex on the header name",
@@ -2099,10 +1926,7 @@
                               "items": {
                                 "description": "Configuration to forward body values in metric attributes/labels",
                                 "type": "object",
-                                "required": [
-                                  "name",
-                                  "path"
-                                ],
+                                "required": ["name", "path"],
                                 "properties": {
                                   "default": {
                                     "description": "The optional default value",
@@ -2131,9 +1955,7 @@
                                   {
                                     "description": "Match via header name",
                                     "type": "object",
-                                    "required": [
-                                      "named"
-                                    ],
+                                    "required": ["named"],
                                     "properties": {
                                       "default": {
                                         "description": "The optional default value",
@@ -2155,9 +1977,7 @@
                                   {
                                     "description": "Match via rgex",
                                     "type": "object",
-                                    "required": [
-                                      "matching"
-                                    ],
+                                    "required": ["matching"],
                                     "properties": {
                                       "matching": {
                                         "description": "Using a regex on the header name",
@@ -2180,10 +2000,7 @@
                           "items": {
                             "description": "Configuration to insert custom attributes/labels in metrics",
                             "type": "object",
-                            "required": [
-                              "name",
-                              "value"
-                            ],
+                            "required": ["name", "value"],
                             "properties": {
                               "name": {
                                 "description": "The name of the attribute to insert",
@@ -2231,9 +2048,7 @@
             "otlp": {
               "description": "Open Telemetry native exporter configuration",
               "type": "object",
-              "required": [
-                "endpoint"
-              ],
+              "required": ["endpoint"],
               "properties": {
                 "batch_processor": {
                   "description": "Batch processor settings",
@@ -2358,10 +2173,7 @@
                   "description": "The protocol to use when sending data",
                   "default": "grpc",
                   "type": "string",
-                  "enum": [
-                    "grpc",
-                    "http"
-                  ]
+                  "enum": ["grpc", "http"]
                 }
               },
               "additionalProperties": false,
@@ -2370,9 +2182,7 @@
             "prometheus": {
               "description": "Prometheus exporter configuration",
               "type": "object",
-              "required": [
-                "enabled"
-              ],
+              "required": ["enabled"],
               "properties": {
                 "enabled": {
                   "description": "Set to true to enable",
@@ -2412,9 +2222,7 @@
             "datadog": {
               "description": "Datadog exporter configuration",
               "type": "object",
-              "required": [
-                "endpoint"
-              ],
+              "required": ["endpoint"],
               "properties": {
                 "batch_processor": {
                   "description": "batch processor configuration",
@@ -2503,16 +2311,12 @@
               "anyOf": [
                 {
                   "type": "object",
-                  "required": [
-                    "agent"
-                  ],
+                  "required": ["agent"],
                   "properties": {
                     "agent": {
                       "description": "Agent configuration",
                       "type": "object",
-                      "required": [
-                        "endpoint"
-                      ],
+                      "required": ["endpoint"],
                       "properties": {
                         "endpoint": {
                           "description": "The endpoint to send to",
@@ -2583,9 +2387,7 @@
                 },
                 {
                   "type": "object",
-                  "required": [
-                    "collector"
-                  ],
+                  "required": ["collector"],
                   "properties": {
                     "batch_processor": {
                       "description": "Batch processor configuration",
@@ -2646,9 +2448,7 @@
                     "collector": {
                       "description": "Collector configuration",
                       "type": "object",
-                      "required": [
-                        "endpoint"
-                      ],
+                      "required": ["endpoint"],
                       "properties": {
                         "endpoint": {
                           "description": "The endpoint to send reports to",
@@ -2677,9 +2477,7 @@
             "otlp": {
               "description": "OpenTelemetry native exporter configuration",
               "type": "object",
-              "required": [
-                "endpoint"
-              ],
+              "required": ["endpoint"],
               "properties": {
                 "batch_processor": {
                   "description": "Batch processor settings",
@@ -2804,10 +2602,7 @@
                   "description": "The protocol to use when sending data",
                   "default": "grpc",
                   "type": "string",
-                  "enum": [
-                    "grpc",
-                    "http"
-                  ]
+                  "enum": ["grpc", "http"]
                 }
               },
               "additionalProperties": false,
@@ -2835,9 +2630,7 @@
                 "request": {
                   "description": "Select a custom request header to set your own trace_id (header value must be convertible from hexadecimal to set a correct trace_id)",
                   "type": "object",
-                  "required": [
-                    "header_name"
-                  ],
+                  "required": ["header_name"],
                   "properties": {
                     "header_name": {
                       "description": "Choose the header name to expose trace_id (default: apollo-trace-id)",
@@ -2978,16 +2771,12 @@
                         {
                           "description": "Always sample",
                           "type": "string",
-                          "enum": [
-                            "always_on"
-                          ]
+                          "enum": ["always_on"]
                         },
                         {
                           "description": "Never sample",
                           "type": "string",
-                          "enum": [
-                            "always_off"
-                          ]
+                          "enum": ["always_off"]
                         }
                       ]
                     }
@@ -3159,23 +2948,17 @@
                 {
                   "description": "gzip",
                   "type": "string",
-                  "enum": [
-                    "gzip"
-                  ]
+                  "enum": ["gzip"]
                 },
                 {
                   "description": "deflate",
                   "type": "string",
-                  "enum": [
-                    "deflate"
-                  ]
+                  "enum": ["deflate"]
                 },
                 {
                   "description": "brotli",
                   "type": "string",
-                  "enum": [
-                    "br"
-                  ]
+                  "enum": ["br"]
                 }
               ],
               "nullable": true
@@ -3219,10 +3002,7 @@
             "global_rate_limit": {
               "description": "Enable global rate limiting",
               "type": "object",
-              "required": [
-                "capacity",
-                "interval"
-              ],
+              "required": ["capacity", "interval"],
               "properties": {
                 "capacity": {
                   "description": "Number of requests allowed",
@@ -3259,10 +3039,7 @@
             "global_rate_limit": {
               "description": "Enable global rate limiting",
               "type": "object",
-              "required": [
-                "capacity",
-                "interval"
-              ],
+              "required": ["capacity", "interval"],
               "properties": {
                 "capacity": {
                   "description": "Number of requests allowed",
@@ -3300,23 +3077,17 @@
                   {
                     "description": "gzip",
                     "type": "string",
-                    "enum": [
-                      "gzip"
-                    ]
+                    "enum": ["gzip"]
                   },
                   {
                     "description": "deflate",
                     "type": "string",
-                    "enum": [
-                      "deflate"
-                    ]
+                    "enum": ["deflate"]
                   },
                   {
                     "description": "brotli",
                     "type": "string",
-                    "enum": [
-                      "br"
-                    ]
+                    "enum": ["br"]
                   }
                 ],
                 "nullable": true
@@ -3360,10 +3131,7 @@
               "global_rate_limit": {
                 "description": "Enable global rate limiting",
                 "type": "object",
-                "required": [
-                  "capacity",
-                  "interval"
-                ],
+                "required": ["capacity", "interval"],
                 "properties": {
                   "capacity": {
                     "description": "Number of requests allowed",
