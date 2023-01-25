@@ -1,0 +1,30 @@
+type UserInvite @key(fields: "id") {
+  id: ID!
+  inviteId: ID!
+  journeyId: ID!
+  sentBy: ID!
+  name: String!
+  email: String!
+  acceptedBy: ID
+  expireAt: String
+}
+
+extend type Query {
+  # userId is the senderId
+  userInvites(userId: ID!): [UserInvite]
+}
+
+input UserInviteCreateInput {
+  email: String!
+  name: String!
+  sentBy: ID!
+}
+
+input UserInviteUpdateInput {
+  acceptedBy: ID!
+}
+
+extend type Mutation {
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
+  userInviteUpdate(id: ID!, input: UserInviteUpdateInput): UserInvite!
+}

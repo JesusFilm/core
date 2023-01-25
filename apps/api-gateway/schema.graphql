@@ -652,6 +652,8 @@ type Mutation {
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent! @join__field(graph: JOURNEYS)
   typographyBlockCreate(input: TypographyBlockCreateInput!): TypographyBlock! @join__field(graph: JOURNEYS)
   typographyBlockUpdate(id: ID!, input: TypographyBlockUpdateInput!, journeyId: ID!): TypographyBlock! @join__field(graph: JOURNEYS)
+  userInviteCreate(input: UserInviteCreateInput, journeyId: ID!): UserInvite @join__field(graph: JOURNEYS)
+  userInviteUpdate(id: ID!, input: UserInviteUpdateInput): UserInvite! @join__field(graph: JOURNEYS)
   userJourneyApprove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyPromote(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
   userJourneyRemove(id: ID!): UserJourney! @join__field(graph: JOURNEYS)
@@ -755,6 +757,7 @@ type Query {
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   languages(limit: Int, offset: Int): [Language!]! @join__field(graph: LANGUAGES)
   me: User @join__field(graph: USERS)
+  userInvites(userId: ID!): [UserInvite] @join__field(graph: JOURNEYS)
   video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)
   videos(limit: Int, offset: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
 
@@ -1153,6 +1156,30 @@ type UserAgent {
   browser: Browser!
   device: Device!
   os: OperatingSystem!
+}
+
+type UserInvite
+  @join__owner(graph: JOURNEYS)
+  @join__type(graph: JOURNEYS, key: "id")
+{
+  acceptedBy: ID @join__field(graph: JOURNEYS)
+  email: String! @join__field(graph: JOURNEYS)
+  expireAt: String @join__field(graph: JOURNEYS)
+  id: ID! @join__field(graph: JOURNEYS)
+  inviteId: ID! @join__field(graph: JOURNEYS)
+  journeyId: ID! @join__field(graph: JOURNEYS)
+  name: String! @join__field(graph: JOURNEYS)
+  sentBy: ID! @join__field(graph: JOURNEYS)
+}
+
+input UserInviteCreateInput {
+  email: String!
+  name: String!
+  sentBy: ID!
+}
+
+input UserInviteUpdateInput {
+  acceptedBy: ID!
 }
 
 type UserJourney

@@ -1,0 +1,13 @@
+import { Global, Module } from '@nestjs/common'
+import { DatabaseModule } from '@core/nest/database/DatabaseModule'
+import { JourneyService } from '../journey/journey.service'
+import { UserInviteService } from './userInvite.service'
+import { UserInviteResolver } from './userInvite.resolver'
+
+@Global()
+@Module({
+  imports: [DatabaseModule],
+  providers: [UserInviteService, UserInviteResolver, JourneyService],
+  exports: [UserInviteService]
+})
+export class UserInviteModule {}
