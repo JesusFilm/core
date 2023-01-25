@@ -19,7 +19,7 @@ cors:
     - https://watch.jesusfilm.org
   match_origins:
     # any project deployed on the jesusfilm vercel account
-    - '^https://([a-z0-9]+[.])*-jesusfilm[.]vercel[.]app$'
+    - '^https://([a-z0-9-]+)-jesusfilm[.]vercel[.]app$'
 headers:
   all:
     request:

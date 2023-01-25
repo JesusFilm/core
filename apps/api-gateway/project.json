@@ -27,7 +27,7 @@
       "options": {
         "commands": [
           {
-            "command": "rover supergraph compose --config apps/api-gateway/supergraph.yml > apps/api-gateway/schema.graphql"
+            "command": "rover supergraph compose --config apps/api-gateway/supergraph.yml --elv2-license=accept > apps/api-gateway/schema.graphql"
           }
         ]
       }
