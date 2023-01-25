@@ -64,7 +64,7 @@ export function ImageBlockEditor({
 
   return (
     <>
-      <ImageBlockHeader
+      {/* <ImageBlockHeader
         selectedBlock={selectedBlock}
         header={selectedBlock == null ? 'Select Image File' : selectedBlock.alt}
         caption={
@@ -75,7 +75,7 @@ export function ImageBlockEditor({
         showDelete={showDelete && selectedBlock != null}
         onDelete={handleImageDelete}
         loading={loading}
-      />
+      /> */}
       <Stack direction="column" sx={{ pt: 3 }}>
         <form>
           <TextField
