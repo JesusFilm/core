@@ -119,8 +119,6 @@
     "util": "^0.12.4",
     "video.js": "^7.14.3",
     "videojs-youtube": "^2.6.1",
-    "winston": "^3.4.0",
-    "winston-cloudwatch": "3.1.1",
     "yup": "^0.32.9"
   },
   "devDependencies": {
