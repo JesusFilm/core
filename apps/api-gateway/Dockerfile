@@ -3,4 +3,4 @@
 # - update app/api-gateway/Dockerfile image version (...router/vX.X.X)
 # - inform all developers to rebuild their containers
 FROM ghcr.io/apollographql/router:v1.9.0
-COPY ./apps/api-gateway/router.yaml /dist/config/router.yaml
+COPY ./apps/api-gateway/router.prod.yaml /dist/config/router.yaml

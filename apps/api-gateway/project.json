@@ -31,6 +31,16 @@
           }
         ]
       }
+    },
+    "update-router-schema": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "./apps/api-gateway/router config schema > apps/api-gateway/routerSchema.json"
+          }
+        ]
+      }
     }
   },
   "tags": []
