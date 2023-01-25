@@ -13,3 +13,6 @@ headers:
           named: 'user-agent'
       - propagate:
           named: 'x-forwarded-for'
+health-check:
+  listen: 0.0.0.0:8088
+  enabled: true
