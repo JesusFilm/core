@@ -88,7 +88,7 @@ function ListSubGroup({ title, users, disable }: Props): ReactElement {
         {title}
       </Typography>
 
-      <List>
+      <List sx={{ py: 0 }}>
         {users.map((userJourney) => (
           <UserJourneyItem
             key={userJourney.id}
