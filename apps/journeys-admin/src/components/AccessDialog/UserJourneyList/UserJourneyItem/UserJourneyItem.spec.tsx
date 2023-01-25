@@ -76,7 +76,7 @@ describe('UserJourneyItem', () => {
         <UserJourneyItem userJourney={invitee} disabled={false} />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Manage' }))
+    fireEvent.click(getByRole('button', { name: 'Manage Access' }))
     fireEvent.click(getByRole('menuitem', { name: 'Approve' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
