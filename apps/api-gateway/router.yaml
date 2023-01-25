@@ -9,3 +9,7 @@ headers:
     request:
       - propagate:
           named: authorization
+      - propagate:
+          named: 'user-agent'
+      - propagate:
+          named: 'x-forwarded-for'
