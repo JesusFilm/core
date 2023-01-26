@@ -18,7 +18,7 @@ interface UnsplashImage {
   color: string | null
 }
 
-export function UnsplashLibrary(): ReactElement {
+export function UnsplashGallery(): ReactElement {
   const [results, setResults] = useState<UnsplashImage[]>()
   const accessKey = ''
 
