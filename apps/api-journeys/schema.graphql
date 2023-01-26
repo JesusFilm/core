@@ -1514,6 +1514,7 @@ extend type Query {
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
+  userInvite(id: ID!): UserInvite
   userInvites(userId: ID!): [UserInvite]
   getUserRole: UserRole
 
@@ -1586,23 +1587,20 @@ type UserInvite
   @key(fields: "id")
 {
   id: ID!
-  inviteId: ID!
   journeyId: ID!
-  sentBy: ID!
   name: String!
   email: String!
-  acceptedBy: ID
+  accepted: Boolean!
   expireAt: String
 }
 
 input UserInviteCreateInput {
   email: String!
   name: String!
-  sentBy: ID!
 }
 
 input UserInviteUpdateInput {
-  acceptedBy: ID!
+  accepted: Boolean!
 }
 
 enum UserJourneyRole {

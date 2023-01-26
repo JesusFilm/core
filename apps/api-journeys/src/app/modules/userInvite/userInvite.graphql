@@ -1,15 +1,14 @@
 type UserInvite @key(fields: "id") {
   id: ID!
-  inviteId: ID!
   journeyId: ID!
-  sentBy: ID!
   name: String!
   email: String!
-  acceptedBy: ID
+  accepted: Boolean!
   expireAt: String
 }
 
 extend type Query {
+  userInvite(id: ID!): UserInvite
   # userId is the senderId
   userInvites(userId: ID!): [UserInvite]
 }
@@ -17,11 +16,10 @@ extend type Query {
 input UserInviteCreateInput {
   email: String!
   name: String!
-  sentBy: ID!
 }
 
 input UserInviteUpdateInput {
-  acceptedBy: ID!
+  accepted: Boolean!
 }
 
 extend type Mutation {

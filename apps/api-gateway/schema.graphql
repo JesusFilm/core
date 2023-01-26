@@ -896,6 +896,7 @@ type Query
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
+  userInvite(id: ID!): UserInvite @join__field(graph: JOURNEYS)
   userInvites(userId: ID!): [UserInvite] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
 
@@ -1388,12 +1389,10 @@ type UserInvite
   @join__type(graph: JOURNEYS, key: "id")
 {
   id: ID!
-  inviteId: ID!
   journeyId: ID!
-  sentBy: ID!
   name: String!
   email: String!
-  acceptedBy: ID
+  accepted: Boolean!
   expireAt: String
 }
 
@@ -1402,13 +1401,12 @@ input UserInviteCreateInput
 {
   email: String!
   name: String!
-  sentBy: ID!
 }
 
 input UserInviteUpdateInput
   @join__type(graph: JOURNEYS)
 {
-  acceptedBy: ID!
+  accepted: Boolean!
 }
 
 type UserJourney

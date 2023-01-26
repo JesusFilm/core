@@ -552,11 +552,10 @@ export class JourneyTemplateInput {
 export class UserInviteCreateInput {
     email: string;
     name: string;
-    sentBy: string;
 }
 
 export class UserInviteUpdateInput {
-    acceptedBy: string;
+    accepted: boolean;
 }
 
 export class VisitorUpdateInput {
@@ -990,6 +989,8 @@ export abstract class IQuery {
 
     abstract journey(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 
+    abstract userInvite(id: string): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
+
     abstract userInvites(userId: string): Nullable<Nullable<UserInvite>[]> | Promise<Nullable<Nullable<UserInvite>[]>>;
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
@@ -1012,12 +1013,10 @@ export class UserJourney {
 export class UserInvite {
     __typename?: 'UserInvite';
     id: string;
-    inviteId: string;
     journeyId: string;
-    sentBy: string;
     name: string;
     email: string;
-    acceptedBy?: Nullable<string>;
+    accepted: boolean;
     expireAt?: Nullable<string>;
 }
 

@@ -17,18 +17,15 @@ describe('UserInviteResolver', () => {
 
   const createInput = {
     email: 'email@test.com',
-    name: 'Tester McTestFace',
-    sentBy: 'ownerId'
+    name: 'Tester McTestFace'
   }
 
   const userInvite = {
     key: '1',
-    inviteId: 'inviteId',
     journeyId: 'journeyId',
     email: 'email@test.com',
     name: 'Tester McTestFace',
-    sentBy: 'ownerId',
-    acceptedBy: null,
+    accepted: false,
     expireAt: new Date()
   }
 
@@ -56,17 +53,27 @@ describe('UserInviteResolver', () => {
     service = await module.resolve(UserInviteService)
   })
 
+  describe('userInvite', () => {
+    it('should return user invites by id', async () => {
+      await resolver.userInvite('1')
+
+      expect(service.get).toHaveBeenCalledWith('1')
+    })
+  })
+
   describe('userInvites', () => {
     it('should return all user invites sent by a user', async () => {
       await resolver.userInvites('userId')
 
-      expect(service.getAllUserInvitesBySender).toHaveBeenCalledWith('userId')
+      expect(service.getAllUserInvitesByJourney).toHaveBeenCalledWith(
+        'journeyId'
+      )
     })
   })
 
   describe('userInviteCreate', () => {
     it('should create user invite', async () => {
-      mockUuidv4.mockReturnValueOnce('inviteId')
+      mockUuidv4.mockReturnValueOnce('1')
 
       await resolver.userInviteCreate('journeyId', createInput)
 
@@ -74,12 +81,10 @@ describe('UserInviteResolver', () => {
       const expireAt = currentDate.setDate(currentDate.getDate() + 30)
 
       expect(service.save).toHaveBeenCalledWith({
-        inviteId: 'inviteId',
         journeyId: 'journeyId',
-        sentBy: createInput.sentBy,
         name: createInput.name,
         email: createInput.email,
-        acceptedBy: null,
+        accepted: false,
         expireAt: new Date(expireAt).toISOString()
       })
     })
@@ -87,13 +92,13 @@ describe('UserInviteResolver', () => {
 
   describe('userInviteUpdate', () => {
     it('should update user invite', async () => {
-      const updatedInvite = await resolver.userInviteUpdate('inviteId', {
-        acceptedBy: 'invitedUserId'
+      const updatedInvite = await resolver.userInviteUpdate('1', {
+        accepted: true
       })
 
       expect(updatedInvite).toEqual({
         ...userInvite,
-        acceptedBy: 'invitedUserId'
+        accepted: true
       })
     })
   })

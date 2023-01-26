@@ -30,12 +30,10 @@ describe('userInviteService', () => {
 
   const userInvite = {
     _key: '1',
-    inviteId: 'inviteId',
     journeyId: 'journeyId',
-    sentBy: 'senderId',
     name: 'username',
     email: 'email@test.com',
-    acceptedBy: null,
+    accepted: false,
     expireAt: 'UTCDateTimeString'
   }
 
@@ -46,7 +44,7 @@ describe('userInviteService', () => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
         mockDbQueryResult(service.db, [userInvite])
       )
-      expect(await service.getAllUserInvitesBySender('senderId')).toEqual([
+      expect(await service.getAllUserInvitesByJourney('journeyId')).toEqual([
         userInviteWithId
       ])
     })

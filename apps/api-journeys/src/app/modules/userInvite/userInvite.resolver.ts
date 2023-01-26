@@ -1,7 +1,6 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { v4 as uuidv4 } from 'uuid'
 
 import {
   UserInvite,
@@ -16,27 +15,34 @@ export class UserInviteResolver {
 
   @Query()
   @UseGuards(GqlAuthGuard)
-  async userInvites(userId: string): Promise<UserInvite[]> {
-    return await this.userInviteService.getAllUserInvitesBySender(userId)
+  async userInvite(@Args('id') id: string): Promise<UserInvite> {
+    return await this.userInviteService.get(id)
   }
 
+  // Possibly add RoleGuard here. Add or remove comment after UX reply
+  @Query()
+  @UseGuards(GqlAuthGuard)
+  async userInvites(
+    @Args('journeyId') journeyId: string
+  ): Promise<UserInvite[]> {
+    return await this.userInviteService.getAllUserInvitesByJourney(journeyId)
+  }
+
+  // Possibly add RoleGuard here. Add or remove comment after UX reply
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async userInviteCreate(
     @Args('journeyId') journeyId: string,
     @Args('input') input: UserInviteCreateInput
   ): Promise<UserInvite | null> {
-    const inviteId = uuidv4()
     const currentDate = new Date()
     const expireAt = currentDate.setDate(currentDate.getDate() + 30)
 
     return await this.userInviteService.save({
-      inviteId,
       journeyId,
-      sentBy: input.sentBy,
       name: input.name,
       email: input.email,
-      acceptedBy: null,
+      accepted: false,
       expireAt: new Date(expireAt).toISOString()
     })
   }
