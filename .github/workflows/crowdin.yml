@@ -13,7 +13,7 @@ jobs:
         with:
           upload_translations: true
           download_translations: true
-          create_pull_request: true
+          create_pull_request: false
           localization_branch_name: 00-00-CI-chore-update-translations
           pull_request_title: 'chore: update translations from crowdin'
           commit_message: 'chore: update translations from crowdin'
