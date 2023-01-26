@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/react'
 import { ImageSelectionDialog } from '.'
 
 describe('ImageSelectionDialog', () => {
-  it('shoudl switch tabs', () => {
+  it('should switch tabs', () => {
     const { getByRole } = render(
       <ImageSelectionDialog open onClose={jest.fn()} />
     )
