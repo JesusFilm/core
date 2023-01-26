@@ -8,7 +8,6 @@ import { useSnackbar } from 'notistack'
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
 import { ImageBlockEditor } from '../../../../../ImageBlockEditor'
 import { ImageBlockUpdate } from '../../../../../../../../__generated__/ImageBlockUpdate'
-import { ImageUpload } from '../Upload/ImageUpload'
 
 export const IMAGE_BLOCK_UPDATE = gql`
   mutation ImageBlockUpdate(
@@ -67,7 +66,6 @@ export function ImageOptions(): ReactElement {
 
   return (
     <Box sx={{ pt: 4, pb: 3, px: 6 }}>
-      <ImageUpload />
       <ImageBlockEditor
         selectedBlock={imageBlock}
         onChange={updateImageBlock}
