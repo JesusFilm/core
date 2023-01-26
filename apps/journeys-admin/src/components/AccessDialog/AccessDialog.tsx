@@ -111,7 +111,6 @@ export function AccessDialog({
 
         <UserJourneyList
           title="Requested Editing Rights"
-          loading={loading}
           userJourneys={requestsList}
           disable={disable}
         />
