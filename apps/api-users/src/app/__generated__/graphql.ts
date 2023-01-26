@@ -18,6 +18,8 @@ export class User {
 }
 
 export abstract class IQuery {
+    __typename?: 'IQuery';
+
     abstract me(): Nullable<User> | Promise<Nullable<User>>;
 }
 
