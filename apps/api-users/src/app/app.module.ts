@@ -7,7 +7,6 @@ import {
 import { GraphQLModule } from '@nestjs/graphql'
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
-import { ApolloServerPluginInlineTraceDisabled } from 'apollo-server-core'
 import { UserModule } from './modules/user/user.module'
 
 @Module({
@@ -20,11 +19,7 @@ import { UserModule } from './modules/user/user.module'
         join(process.cwd(), 'assets/**/*.graphql')
       ],
       cors: true,
-      context: ({ req }) => ({ headers: req.headers }),
-      plugins:
-        process.env.NODE_ENV !== 'production'
-          ? [ApolloServerPluginInlineTraceDisabled]
-          : undefined
+      context: ({ req }) => ({ headers: req.headers })
     }),
     LoggerModule.forRoot({
       pinoHttp: {
