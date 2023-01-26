@@ -49,7 +49,7 @@ export function EmailInviteInput({
             onChange={handleChange}
             onBlur={handleBlur}
             error={errors.email != null && touched.email}
-            helperText={touched?.email != null && errors.email}
+            helperText={touched?.email != null ? errors.email : ' '}
           />
           <TextField
             margin="normal"
@@ -62,7 +62,7 @@ export function EmailInviteInput({
             onChange={handleChange}
             onBlur={handleBlur}
             error={errors.name != null && touched.name}
-            helperText={touched?.name != null && errors.name}
+            helperText={touched?.name != null ? errors.name : ' '}
           />
           <Button type="submit">Submit</Button>
           <Button onClick={onClose}>Close</Button>
