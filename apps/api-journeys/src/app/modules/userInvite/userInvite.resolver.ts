@@ -47,7 +47,7 @@ export class UserInviteResolver {
     @Args('id') id: string,
     @Args('input') input: UserInviteUpdateInput
   ): Promise<UserInvite> {
-    const userInvite = await this.userInviteService.getUserInviteByInviteId(id)
+    const userInvite = await this.userInviteService.get<UserInvite>(id)
 
     return await this.userInviteService.update(userInvite.id, { ...input })
   }

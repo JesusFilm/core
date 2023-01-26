@@ -10,18 +10,6 @@ export class UserInviteService extends BaseService {
   collection: DocumentCollection = this.db.collection('userInvites')
 
   @KeyAsId()
-  async getUserInviteByInviteId(id: string): Promise<UserInvite> {
-    const response = await this.db.query(aql`
-      FOR userInvite in ${this.collection}
-        FILTER userInvite.inviteId == ${id}
-        LIMIT 1
-        RETURN userInvite
-    `)
-
-    return await response.next()
-  }
-
-  @KeyAsId()
   async getAllUserInvitesBySender(userId: string): Promise<UserInvite[]> {
     const response = await this.db.query(aql`
       FOR userInvite in ${this.collection}
