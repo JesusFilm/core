@@ -72,7 +72,6 @@ export function initAuth(): void {
           process.env.NEXT_PUBLIC_VERCEL_URL
         ]
         const allowed = allowedHosts.includes(new URL(redirectUrl).host)
-        console.log(new URL(redirectUrl).host)
         if (allowed) {
           return redirectUrl
         }
