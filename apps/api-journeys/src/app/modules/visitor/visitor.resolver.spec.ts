@@ -202,7 +202,7 @@ describe('VisitorResolver', () => {
         })
       ).toMatchObject({
         browser: { major: '106', name: 'Chrome', version: '106.0.0.0' },
-        device: { model: undefined, type: undefined, vendor: undefined },
+        device: { model: 'Macintosh', type: undefined, vendor: 'Apple' },
         os: { name: 'Mac OS', version: '10.15.7' }
       })
     })

@@ -70,6 +70,14 @@ export class Video {
     variant?: Nullable<VideoVariant>;
 }
 
+export abstract class IQuery {
+    __typename?: 'IQuery';
+
+    abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
+
+    abstract video(id: string, idType?: Nullable<IdType>): Nullable<Video> | Promise<Nullable<Video>>;
+}
+
 export class VideoVariantDownload {
     __typename?: 'VideoVariantDownload';
     quality: VideoVariantDownloadQuality;
@@ -91,12 +99,6 @@ export class VideoVariant {
 
 export class Language {
     id: string;
-}
-
-export abstract class IQuery {
-    abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
-
-    abstract video(id: string, idType?: Nullable<IdType>): Nullable<Video> | Promise<Nullable<Video>>;
 }
 
 type Nullable<T> = T | null;
