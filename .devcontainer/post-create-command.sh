@@ -21,6 +21,9 @@ npm install -g @apollo/rover@0.10.0
 # install Foreman CLI tool
 npm install -g foreman
 
+# install Apollo CLI tool for codegen
+npm install -g apollo graphql
+
 # install all dependencies
 npm i
 
@@ -28,6 +31,14 @@ npm i
 curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
 sudo mv bin/act /usr/bin/
 rm -rf bin
+
+# install router to api gateways
+# when updating router version you'll need to:
+# - update .devcontainer/post-create-command.sh apollo router version (...nix/vX.X.X)
+# - update app/api-gateway/Dockerfile image version (...router/vX.X.X)
+# - inform all developers to rebuild their containers
+curl -sSL https://router.apollo.dev/download/nix/v1.9.0 | sh
+mv router apps/api-gateway/
 
 # install doppler
 sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg

@@ -26,7 +26,9 @@ export function createApolloClient(
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: authLink.concat(httpLink),
-    cache: cache()
+    cache: cache(),
+    name: 'watch-admin',
+    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA
   })
 }
 
