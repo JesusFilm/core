@@ -3,6 +3,10 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import ImageList from '@mui/material/ImageList'
 import ImageListItem from '@mui/material/ImageListItem'
+import Link from '@mui/material/Link'
+import Typography from '@mui/material/Typography'
+import InputAdornment from '@mui/material/InputAdornment'
+import ZoomInTwoToneIcon from '@mui/icons-material/ZoomInTwoTone'
 import Image from 'next/image'
 import fetch from 'node-fetch'
 import { Formik, Form } from 'formik'
@@ -14,6 +18,11 @@ interface UnsplashImage {
   alt_description: string
   urls: {
     small: string
+  }
+  user: {
+    first_name: string
+    last_name: string
+    username: string
   }
   color: string | null
 }
@@ -33,7 +42,6 @@ export function UnsplashGallery(): ReactElement {
         `https://api.unsplash.com/collections/4924556/photos?page=1&per_page=20&client_id=${accessKey}`
       )
     ).json()
-
     setResults(collectionData)
   }
 
@@ -43,7 +51,6 @@ export function UnsplashGallery(): ReactElement {
         `https://api.unsplash.com/search/photos?query=${image}&page=1&per_page=20&client_id=${accessKey}`
       )
     ).json()
-
     setResults(searchData.results)
   }
 
@@ -65,10 +72,17 @@ export function UnsplashGallery(): ReactElement {
               id="src"
               name="src"
               variant="filled"
-              label="Search free images"
+              placeholder="Search free images"
               value={values.src}
               onChange={handleChange}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <ZoomInTwoToneIcon />
+                  </InputAdornment>
+                )
+              }}
             />
           </Form>
         )}
@@ -76,13 +90,26 @@ export function UnsplashGallery(): ReactElement {
       {results != null && (
         <ImageList variant="masonry" cols={3}>
           {results?.map((item) => (
-            <ImageListItem key={item?.id}>
-              <Image
-                src={item.urls.small}
-                alt={item.alt_description}
-                width={item.width}
-                height={item.height}
-              />
+            <ImageListItem key={item?.id} sx={{ pb: 1 }}>
+              <Stack spacing={1}>
+                <Image
+                  src={item.urls.small}
+                  alt={item.alt_description}
+                  width={item.width}
+                  height={item.height}
+                  style={{
+                    borderRadius: 2
+                  }}
+                />
+                <Link
+                  href={`https://unsplash.com/@${item.user.username}?utm_source=your_app_name&utm_medium=referral`}
+                  color="secondary.light"
+                >
+                  <Typography variant="caption">
+                    {item.user.first_name} {item.user.last_name}
+                  </Typography>
+                </Link>
+              </Stack>
             </ImageListItem>
           ))}
         </ImageList>
