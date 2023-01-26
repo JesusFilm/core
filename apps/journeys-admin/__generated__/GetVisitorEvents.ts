@@ -10,7 +10,7 @@ import { VideoBlockSource, MessagePlatform } from "./globalTypes";
 // ====================================================
 
 export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
-  __typename: "ButtonClickEvent" | "RadioQuestionSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "TextResponseSubmissionEvent" | "VideoPlayEvent" | "VideoPauseEvent" | "VideoExpandEvent" | "VideoCollapseEvent" | "VideoProgressEvent";
+  __typename: "ButtonClickEvent" | "RadioQuestionSubmissionEvent" | "StepNextEvent" | "StepViewEvent" | "TextResponseSubmissionEvent" | "VideoCollapseEvent" | "VideoExpandEvent" | "VideoPauseEvent" | "VideoPlayEvent" | "VideoProgressEvent";
   id: string;
   journeyId: string;
   label: string | null;

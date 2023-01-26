@@ -7,8 +7,8 @@ import ImageIcon from '@mui/icons-material/Image'
 import Box from '@mui/material/Box'
 
 export function ImageUpload(): ReactElement {
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    // TODO: Cloudflare Implementation
+  const onDrop = useCallback((acceptedFiles) => {
+    console.log(acceptedFiles[0].name)
   }, [])
 
   const { getRootProps, open, isDragActive, isDragAccept, isDragReject } =
@@ -46,34 +46,35 @@ export function ImageUpload(): ReactElement {
   return (
     <Box
       {...getRootProps({ style })}
+      data-testid="drop zone"
       sx={{
         mt: 3,
+        minHeight: '217px',
         borderWidth: '2px',
         backgroundColor: 'background.paper',
         borderColor: 'divider',
         borderStyle: 'dashed',
         borderRadius: '0.5rem',
+        justifyContent: 'center',
+        flexDirection: 'column',
         textAlign: 'center',
         alignItems: 'center',
-        display: 'flex',
-        justifyContent: 'center'
+        display: 'flex'
       }}
     >
-      <Box>
-        <CloudUploadIcon fontSize="large" sx={{ color: 'secondary.light' }} />
-        <Typography variant="body1" sx={{ pb: 4 }}>
-          Drop an image here or
-        </Typography>
-        <Button
-          size="small"
-          variant="outlined"
-          color="secondary"
-          onClick={open}
-          startIcon={<ImageIcon />}
-        >
-          Browse files
-        </Button>
-      </Box>
+      <CloudUploadIcon fontSize="large" sx={{ color: 'secondary.light' }} />
+      <Typography variant="body1" sx={{ pb: 4 }}>
+        Drop an image here or
+      </Typography>
+      <Button
+        size="small"
+        variant="outlined"
+        color="secondary"
+        onClick={open}
+        startIcon={<ImageIcon />}
+      >
+        Choose a file
+      </Button>
     </Box>
   )
 }
