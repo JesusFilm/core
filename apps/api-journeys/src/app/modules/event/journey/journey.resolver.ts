@@ -5,7 +5,7 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { CurrentUserAgent } from '@core/nest/decorators/CurrentUserAgent'
-import { UserInputError } from 'apollo-server'
+import { UserInputError } from 'apollo-server-errors'
 import {
   JourneyViewEvent,
   JourneyViewEventCreateInput

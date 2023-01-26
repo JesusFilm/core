@@ -3,10 +3,7 @@ locals {
   environment_variables = [
     "APOLLO_GRAPH_REF",
     "APOLLO_KEY",
-    "AWS_ACCESS_KEY_ID",
-    "AWS_SECRET_ACCESS_KEY",
     "GOOGLE_APPLICATION_JSON",
-    "LOGGING_LEVEL"
   ]
   service_config = {
     name           = "api-gateway"
