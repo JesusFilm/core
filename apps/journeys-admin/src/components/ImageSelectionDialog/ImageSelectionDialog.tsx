@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { ImageLink } from './ImageLink'
 
 interface ImageSelectionDialogProps
-  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> { }
+  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
 
 export function ImageSelectionDialog({
   ...dialogProps
