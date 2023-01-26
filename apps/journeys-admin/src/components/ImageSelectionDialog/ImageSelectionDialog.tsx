@@ -5,6 +5,7 @@ import Tab from '@mui/material/Tab'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Typography from '@mui/material/Typography'
 import { ImageLink } from './ImageLink'
+import { UnsplashGallery } from './UnsplashGallery'
 
 interface ImageSelectionDialogProps
   extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
@@ -50,7 +51,7 @@ export function ImageSelectionDialog({
           />
         </Tabs>
         <TabPanel name="unsplash" value={tabValue} index={0}>
-          {/* insert unsplash component */}
+          <UnsplashGallery />
         </TabPanel>
         <TabPanel name="upload" value={tabValue} index={1}>
           {/* insert upload component */}

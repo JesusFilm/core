@@ -24,35 +24,35 @@ export function UnsplashGallery(): ReactElement {
 
   // TODO:
   // Move accessKey to doppler
+  // 7MUdE7NO3RSHYD3gefyyPD3nSBOK4vziireH3tnj9L0
   // On Image Click - Sets the unsplash image to be in the image block
 
   const getCollection = async (): Promise<void> => {
-    const data = await fetch(
-      `https://api.unsplash.com/collections/4924556/photos?page=1&per_page=20&client_id=${accessKey}`
-    )
-    const results = await data.json()
-    if (results != null) {
-      setResults(results)
-    }
+    const collectionData = await (
+      await fetch(
+        `https://api.unsplash.com/collections/4924556/photos?page=1&per_page=20&client_id=${accessKey}`
+      )
+    ).json()
+
+    setResults(collectionData)
+  }
+
+  const fetchSearchRequest = async (image: string): Promise<void> => {
+    const searchData = await (
+      await fetch(
+        `https://api.unsplash.com/search/photos?query=${image}&page=1&per_page=20&client_id=${accessKey}`
+      )
+    ).json()
+
+    setResults(searchData.results)
   }
 
   useEffect(() => {
     void getCollection()
   }, [])
 
-  const fetchSearchRequest = async (image: string): Promise<void> => {
-    const data = await fetch(
-      `https://api.unsplash.com/search/photos?page=1&query=${image}&client_id=${accessKey}&per_page=20`
-    )
-    const formatData = await data.json()
-    const results = formatData.results
-    if (results != null) {
-      setResults(results)
-    }
-  }
-
   return (
-    <Stack>
+    <Stack sx={{ pt: 3 }}>
       <Formik
         initialValues={{
           src: ''
@@ -74,7 +74,7 @@ export function UnsplashGallery(): ReactElement {
         )}
       </Formik>
       {results != null && (
-        <ImageList variant="masonry">
+        <ImageList variant="masonry" cols={3}>
           {results?.map((item) => (
             <ImageListItem key={item?.id}>
               <Image
