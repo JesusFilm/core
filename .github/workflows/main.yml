@@ -27,6 +27,8 @@ jobs:
           restore-keys: node-modules-
       - name: NPM Install
         run: npm install --silent
+      - name: NPM apollo and graphql for codegen
+        run: npm i -g apollo graphql
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:

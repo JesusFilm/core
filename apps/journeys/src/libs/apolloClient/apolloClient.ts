@@ -30,7 +30,9 @@ export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
-    cache: cache()
+    cache: cache(),
+    name: 'journeys',
+    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA
   })
 }
 

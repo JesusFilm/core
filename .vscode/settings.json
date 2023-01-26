@@ -19,5 +19,11 @@
     "editor.defaultFormatter": "hashicorp.terraform",
     "editor.formatOnSave": true,
     "editor.formatOnSaveMode": "file"
+  },
+  "yaml.schemas": {
+    "./apps/api-gateway/routerSchema.json": [
+      "apps/api-gateway/router.yaml",
+      "apps/api-gateway/router.prod.yaml"
+    ]
   }
 }
