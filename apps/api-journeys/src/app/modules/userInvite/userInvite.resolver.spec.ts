@@ -35,12 +35,12 @@ describe('UserInviteResolver', () => {
   const userInviteService = {
     provide: UserInviteService,
     useFactory: () => ({
+      get: jest.fn((id) => {
+        return { ...userInvite, id }
+      }),
       save: jest.fn((input) => input),
       update: jest.fn((id, input) => {
         return { ...userInvite, ...input }
-      }),
-      getUserInviteByInviteId: jest.fn((inviteId) => {
-        return { ...userInvite, inviteId }
       }),
       getAllUserInvitesBySender: jest.fn((userId) => {
         return { ...userInvite, sentBy: userId }
