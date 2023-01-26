@@ -5,7 +5,10 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
-import { GetJourneyWithUserJourneys } from '../../../__generated__/GetJourneyWithUserJourneys'
+import {
+  GetJourneyWithUserJourneys,
+  GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
+} from '../../../__generated__/GetJourneyWithUserJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { GetCurrentUser } from '../../../__generated__/GetCurrentUser'
 import { UserJourneyList } from './UserJourneyList'
@@ -62,6 +65,17 @@ export function AccessDialog({
       (userJourney) => userJourney.user?.email === currentUserData?.me?.email
     )?.role !== UserJourneyRole.owner
 
+  const usersList: UserJourney[] = []
+  const requestsList: UserJourney[] = []
+
+  data?.journey?.userJourneys?.forEach((userJourney) => {
+    if (userJourney.role === UserJourneyRole.inviteRequested) {
+      requestsList.push(userJourney)
+    } else {
+      usersList.push(userJourney)
+    }
+  })
+
   useEffect(() => {
     if (open === true) {
       void loadJourney()
@@ -94,9 +108,18 @@ export function AccessDialog({
           helperText="Anyone with this link can see journey and ask for editing rights.
             You can accept or reject every request."
         />
+
         <UserJourneyList
+          title="Requested Editing Rights"
           loading={loading}
-          userJourneys={data?.journey?.userJourneys}
+          userJourneys={requestsList}
+          disable={disable}
+        />
+
+        <UserJourneyList
+          title="Users With Access"
+          loading={loading}
+          userJourneys={usersList}
           disable={disable}
         />
       </Stack>

@@ -4,7 +4,7 @@ import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '
 import { UserJourneyList } from '.'
 
 describe('UserJourneyList', () => {
-  it('should display users with access', () => {
+  it('should display title and list of users', () => {
     const userJourneys: UserJourney[] = [
       {
         id: 'userJourney1.id',
@@ -34,32 +34,13 @@ describe('UserJourneyList', () => {
       }
     ]
     const { getAllByRole, getByText } = render(
-      <UserJourneyList userJourneys={userJourneys} disable={false} />
+      <UserJourneyList
+        title="Users With Access"
+        userJourneys={userJourneys}
+        disable={false}
+      />
     )
     expect(getByText('Users With Access')).toBeInTheDocument()
     expect(getAllByRole('listitem')).toHaveLength(2)
-  })
-
-  it('should display users requesting editor rights', () => {
-    const userJourneys: UserJourney[] = [
-      {
-        id: 'userJourney.id',
-        __typename: 'UserJourney',
-        role: UserJourneyRole.inviteRequested,
-        user: {
-          __typename: 'User',
-          id: 'user.id',
-          firstName: 'firstName',
-          lastName: 'lastName',
-          email: 'name@email.com',
-          imageUrl: null
-        }
-      }
-    ]
-    const { getByRole, getByText } = render(
-      <UserJourneyList userJourneys={userJourneys} disable={false} />
-    )
-    expect(getByText('Requested Editing Rights')).toBeInTheDocument()
-    expect(getByRole('listitem')).toBeInTheDocument()
   })
 })

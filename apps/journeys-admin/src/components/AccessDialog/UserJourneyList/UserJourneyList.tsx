@@ -5,31 +5,22 @@ import Stack from '@mui/material/Stack'
 import Skeleton from '@mui/material/Skeleton'
 import List from '@mui/material/List'
 import Typography from '@mui/material/Typography'
-import { UserJourneyRole } from '../../../../__generated__/globalTypes'
 import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneys'
 import { UserJourneyItem } from './UserJourneyItem'
 
 interface UserJourneyListProps {
+  title: string
   loading?: boolean
   userJourneys?: UserJourney[] | null
   disable: boolean
 }
 
 export function UserJourneyList({
+  title,
   loading,
   userJourneys,
   disable
 }: UserJourneyListProps): ReactElement {
-  const usersList: UserJourney[] = []
-  const requestsList: UserJourney[] = []
-
-  userJourneys?.forEach((userJourney) => {
-    if (userJourney.role === UserJourneyRole.inviteRequested) {
-      requestsList.push(userJourney)
-    } else {
-      usersList.push(userJourney)
-    }
-  })
   return (
     <>
       {loading === true ? (
@@ -53,50 +44,26 @@ export function UserJourneyList({
         </Box>
       ) : (
         <>
-          {requestsList.length > 0 && (
-            <ListSubGroup
-              title="Requested Editing Rights"
-              users={requestsList}
-              disable={disable}
-            />
-          )}
+          {userJourneys != null && userJourneys.length > 0 && (
+            <Box>
+              <Divider />
+              <Typography sx={{ pt: 4 }} variant="body1">
+                {title}
+              </Typography>
 
-          {usersList.length > 0 && (
-            <ListSubGroup
-              title="Users With Access"
-              users={usersList}
-              disable={disable}
-            />
+              <List sx={{ py: 0 }}>
+                {userJourneys.map((userJourney) => (
+                  <UserJourneyItem
+                    key={userJourney.id}
+                    userJourney={userJourney}
+                    disabled={disable}
+                  />
+                ))}
+              </List>
+            </Box>
           )}
         </>
       )}
     </>
-  )
-}
-
-interface Props {
-  title: string
-  users: UserJourney[]
-  disable: boolean
-}
-
-function ListSubGroup({ title, users, disable }: Props): ReactElement {
-  return (
-    <Box>
-      <Divider />
-      <Typography sx={{ pt: 4 }} variant="body1">
-        {title}
-      </Typography>
-
-      <List sx={{ py: 0 }}>
-        {users.map((userJourney) => (
-          <UserJourneyItem
-            key={userJourney.id}
-            userJourney={userJourney}
-            disabled={disable}
-          />
-        ))}
-      </List>
-    </Box>
   )
 }
