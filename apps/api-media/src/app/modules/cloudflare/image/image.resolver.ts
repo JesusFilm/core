@@ -2,10 +2,11 @@ import { Resolver, Query } from '@nestjs/graphql'
 import fetch from 'node-fetch'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { CloudflareDirectCreatorUploadResponse } from '../../../__generated__/graphql'
+import { ImageService } from './image.service'
 
 @Resolver('Image')
 export class ImageResolver {
-  constructor() {}
+  constructor(private readonly imageService: ImageService) {}
 
   @Query()
   async getCloudflareUploadInfo(
@@ -26,6 +27,14 @@ export class ImageResolver {
       }
     )
     const result = await response.json()
+    if (!result.result.success) {
+      throw new Error(result.result.error)
+    }
+    await this.imageService.save({
+      userId,
+      imageId: result.result.id,
+      createdAt: new Date().toISOString()
+    })
     return {
       id: result.result.id,
       uploadURL: result.result.uploadURL
