@@ -78,7 +78,7 @@ module "api-videos" {
 module "api-media" {
   source        = "../../../apps/api-media/infrastructure"
   ecs_config    = local.internal_ecs_config
-  doppler_token = data.aws_ssm_parameter.doppler_api_videos_prod_token.value
+  doppler_token = data.aws_ssm_parameter.doppler_api_media_prod_token.value
 }
 
 module "arango-bigquery-etl" {
