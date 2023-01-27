@@ -157,7 +157,7 @@ extend type Mutation {
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
-  userInviteUpdate(id: ID!, input: UserInviteUpdateInput): UserInvite!
+  userInviteAccept(id: ID!, userId: ID!): UserInvite!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
@@ -1514,7 +1514,6 @@ extend type Query {
   adminJourney(id: ID!, idType: IdType): Journey
   journeys(where: JourneysFilter): [Journey!]!
   journey(id: ID!, idType: IdType): Journey
-  userInvite(id: ID!): UserInvite
   userInvites(userId: ID!): [UserInvite]
   getUserRole: UserRole
 
@@ -1597,10 +1596,6 @@ type UserInvite
 input UserInviteCreateInput {
   email: String!
   name: String!
-}
-
-input UserInviteUpdateInput {
-  accepted: Boolean!
 }
 
 enum UserJourneyRole {

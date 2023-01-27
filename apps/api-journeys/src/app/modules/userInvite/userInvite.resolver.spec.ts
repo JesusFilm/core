@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
+import { UserJourneyRole } from '../../__generated__/graphql'
+import { UserJourneyResolver } from '../userJourney/userJourney.resolver'
 
 import { UserInviteResolver } from './userInvite.resolver'
 import { UserInviteService } from './userInvite.service'
@@ -12,8 +14,9 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('UserInviteResolver', () => {
-  let resolver: UserInviteResolver
-  let service: UserInviteService
+  let resolver: UserInviteResolver,
+    service: UserInviteService,
+    ujResolver: UserJourneyResolver
 
   const createInput = {
     email: 'email@test.com',
@@ -45,20 +48,32 @@ describe('UserInviteResolver', () => {
     })
   }
 
+  const userJourney = {
+    id: 'userJourneyId',
+    userId: 'userId',
+    journeyId: 'journeyId',
+    role: UserJourneyRole.editor
+  }
+
+  const userJourneyResolver = {
+    provide: UserJourneyResolver,
+    useFactory: () => ({
+      userJourneyRequest: jest.fn((journeyId, idType, userId) => {
+        return { ...userJourney, journeyId, userId, role: 'inviteRequested' }
+      }),
+      userJourneyApprove: jest.fn((id, userId) => {
+        return userJourney
+      })
+    })
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserInviteResolver, userInviteService]
+      providers: [UserInviteResolver, userInviteService, userJourneyResolver]
     }).compile()
     resolver = module.get(UserInviteResolver)
     service = await module.resolve(UserInviteService)
-  })
-
-  describe('userInvite', () => {
-    it('should return user invites by id', async () => {
-      await resolver.userInvite('1')
-
-      expect(service.get).toHaveBeenCalledWith('1')
-    })
+    ujResolver = await module.resolve(UserJourneyResolver)
   })
 
   describe('userInvites', () => {
@@ -90,13 +105,22 @@ describe('UserInviteResolver', () => {
     })
   })
 
-  describe('userInviteUpdate', () => {
-    it('should update user invite', async () => {
-      const updatedInvite = await resolver.userInviteUpdate('1', {
-        accepted: true
-      })
+  describe('userInviteAccept', () => {
+    it('should accept user invite', async () => {
+      const acceptedInvite = await resolver.userInviteAccept('1', 'userId')
 
-      expect(updatedInvite).toEqual({
+      expect(service.get).toHaveBeenCalledWith('1')
+      expect(ujResolver.userJourneyRequest).toHaveBeenCalledWith(
+        'journeyId',
+        undefined,
+        'userId'
+      )
+      expect(ujResolver.userJourneyApprove).toHaveBeenCalledWith(
+        'userJourneyId',
+        'userId'
+      )
+
+      expect(acceptedInvite).toEqual({
         ...userInvite,
         accepted: true
       })

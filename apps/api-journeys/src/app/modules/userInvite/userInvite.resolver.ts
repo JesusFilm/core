@@ -1,23 +1,18 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 
-import {
-  UserInvite,
-  UserInviteCreateInput,
-  UserInviteUpdateInput
-} from '../../__generated__/graphql'
+import { UserInvite, UserInviteCreateInput } from '../../__generated__/graphql'
+import { UserJourneyResolver } from '../userJourney/userJourney.resolver'
 import { UserInviteService } from './userInvite.service'
 
 @Resolver('UserInvite')
 export class UserInviteResolver {
-  constructor(private readonly userInviteService: UserInviteService) {}
-
-  @Query()
-  @UseGuards(GqlAuthGuard)
-  async userInvite(@Args('id') id: string): Promise<UserInvite> {
-    return await this.userInviteService.get(id)
-  }
+  constructor(
+    private readonly userInviteService: UserInviteService,
+    private readonly userJourneyResolver: UserJourneyResolver
+  ) {}
 
   // Possibly add RoleGuard here. Add or remove comment after UX reply
   @Query()
@@ -49,12 +44,20 @@ export class UserInviteResolver {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  async userInviteUpdate(
+  async userInviteAccept(
     @Args('id') id: string,
-    @Args('input') input: UserInviteUpdateInput
+    @CurrentUserId() userId: string
   ): Promise<UserInvite> {
-    const userInvite = await this.userInviteService.get<UserInvite>(id)
+    const { journeyId } = await this.userInviteService.get<UserInvite>(id)
 
-    return await this.userInviteService.update(userInvite.id, { ...input })
+    const userJourney = await this.userJourneyResolver.userJourneyRequest(
+      journeyId,
+      undefined,
+      userId
+    )
+
+    await this.userJourneyResolver.userJourneyApprove(userJourney.id, userId)
+
+    return await this.userInviteService.update(id, { accepted: true })
   }
 }

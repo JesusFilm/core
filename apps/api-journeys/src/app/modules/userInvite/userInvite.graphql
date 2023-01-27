@@ -8,7 +8,6 @@ type UserInvite @key(fields: "id") {
 }
 
 extend type Query {
-  userInvite(id: ID!): UserInvite
   # userId is the senderId
   userInvites(userId: ID!): [UserInvite]
 }
@@ -18,11 +17,7 @@ input UserInviteCreateInput {
   name: String!
 }
 
-input UserInviteUpdateInput {
-  accepted: Boolean!
-}
-
 extend type Mutation {
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
-  userInviteUpdate(id: ID!, input: UserInviteUpdateInput): UserInvite!
+  userInviteAccept(id: ID!, userId: ID!): UserInvite!
 }

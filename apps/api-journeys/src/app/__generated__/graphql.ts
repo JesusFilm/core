@@ -554,10 +554,6 @@ export class UserInviteCreateInput {
     name: string;
 }
 
-export class UserInviteUpdateInput {
-    accepted: boolean;
-}
-
 export class VisitorUpdateInput {
     email?: Nullable<string>;
     messagePlatformId?: Nullable<string>;
@@ -989,8 +985,6 @@ export abstract class IQuery {
 
     abstract journey(id: string, idType?: Nullable<IdType>): Nullable<Journey> | Promise<Nullable<Journey>>;
 
-    abstract userInvite(id: string): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
-
     abstract userInvites(userId: string): Nullable<Nullable<UserInvite>[]> | Promise<Nullable<Nullable<UserInvite>[]>>;
 
     abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
@@ -1199,7 +1193,7 @@ export abstract class IMutation {
 
     abstract userInviteCreate(journeyId: string, input?: Nullable<UserInviteCreateInput>): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
 
-    abstract userInviteUpdate(id: string, input?: Nullable<UserInviteUpdateInput>): UserInvite | Promise<UserInvite>;
+    abstract userInviteAccept(id: string, userId: string): UserInvite | Promise<UserInvite>;
 
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 

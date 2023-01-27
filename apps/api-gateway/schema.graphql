@@ -781,7 +781,7 @@ type Mutation
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
-  userInviteUpdate(id: ID!, input: UserInviteUpdateInput): UserInvite!
+  userInviteAccept(id: ID!, userId: ID!): UserInvite!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
@@ -896,7 +896,6 @@ type Query
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
-  userInvite(id: ID!): UserInvite @join__field(graph: JOURNEYS)
   userInvites(userId: ID!): [UserInvite] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
 
@@ -1401,12 +1400,6 @@ input UserInviteCreateInput
 {
   email: String!
   name: String!
-}
-
-input UserInviteUpdateInput
-  @join__type(graph: JOURNEYS)
-{
-  accepted: Boolean!
 }
 
 type UserJourney
