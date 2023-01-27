@@ -14,6 +14,10 @@ type UserJourney @key(fields: "id") {
   journeyId: ID!
   role: UserJourneyRole!
   user: User
+  """
+  Date time of when the journey was first viewed TODO: clarify if we want to update this each time a user views a journey
+  """
+  viewedAt: DateTime
 }
 extend type User @key(fields: "id") {
   id: ID! @external
@@ -33,4 +37,5 @@ extend type Mutation {
   """
   userJourneyRemoveAll(id: ID!): [UserJourney!]!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
+  userJourneyView(id: ID!): UserJourney!
 }

@@ -995,6 +995,7 @@ export class UserJourney {
     journeyId: string;
     role: UserJourneyRole;
     user?: Nullable<User>;
+    viewedAt?: Nullable<DateTime>;
 }
 
 export class UserRole {
@@ -1183,6 +1184,8 @@ export abstract class IMutation {
     abstract userJourneyRemoveAll(id: string): UserJourney[] | Promise<UserJourney[]>;
 
     abstract userJourneyRequest(journeyId: string, idType?: Nullable<IdType>): UserJourney | Promise<UserJourney>;
+
+    abstract userJourneyView(id: string): UserJourney | Promise<UserJourney>;
 
     abstract visitorUpdate(id: string, input: VisitorUpdateInput): Visitor | Promise<Visitor>;
 }
