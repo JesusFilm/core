@@ -10,23 +10,17 @@ directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFAC
 
 directive @extends on OBJECT | INTERFACE
 
-type User
-  @key(fields: "id")
-{
-  id: ID!
-  firstName: String!
-  lastName: String
-  email: String!
-  imageUrl: String
+type CloudflareDirectCreatorUploadResponse {
+  id: String
+  uploadURL: String
 }
 
 type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
 }
 
 extend type Query {
-  me: User
+  getCloudflareUploadInfo: CloudflareDirectCreatorUploadResponse
 }
 
 scalar _FieldSet
@@ -36,5 +30,3 @@ scalar _Any
 type _Service {
   sdl: String
 }
-
-union _Entity = User

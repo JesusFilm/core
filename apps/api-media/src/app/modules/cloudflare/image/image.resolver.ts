@@ -9,7 +9,7 @@ export class ImageResolver {
   constructor(private readonly imageService: ImageService) {}
 
   @Query()
-  async getCloudflareUploadInfo(
+  async getCloudflareImageUploadInfo(
     @CurrentUserId() userId: string
   ): Promise<CloudflareDirectCreatorUploadResponse> {
     const response = await fetch(
@@ -19,7 +19,7 @@ export class ImageResolver {
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${process.env.CLOUDFLARE_API_TOKEN ?? ''}`
+          Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
         },
         body: new URLSearchParams(
           'requireSignedURL=true&metadata={"key":"value"}'

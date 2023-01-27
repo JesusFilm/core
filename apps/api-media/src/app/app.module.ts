@@ -7,10 +7,11 @@ import {
 } from '@nestjs/apollo'
 import { LoggerModule } from 'nestjs-pino'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
-import { ApolloServerPluginInlineTraceDisabled } from 'apollo-server-core'
+import { ImageModule } from './modules/cloudflare/image/image.module'
 
 @Module({
   imports: [
+    ImageModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths: [
@@ -18,11 +19,7 @@ import { ApolloServerPluginInlineTraceDisabled } from 'apollo-server-core'
         join(process.cwd(), 'assets/**/*.graphql')
       ],
       cors: true,
-      context: ({ req }) => ({ headers: req.headers }),
-      plugins:
-        process.env.NODE_ENV !== 'production'
-          ? [ApolloServerPluginInlineTraceDisabled]
-          : undefined
+      context: ({ req }) => ({ headers: req.headers })
     }),
     LoggerModule.forRoot({
       pinoHttp: {

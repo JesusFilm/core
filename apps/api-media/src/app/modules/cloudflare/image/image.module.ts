@@ -8,4 +8,4 @@ import { ImageService } from './image.service'
   providers: [ImageResolver, ImageService],
   exports: [ImageService]
 })
-export class LanguageModule {}
+export class ImageModule {}
