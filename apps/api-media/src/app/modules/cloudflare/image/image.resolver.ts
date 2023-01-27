@@ -27,7 +27,7 @@ export class ImageResolver {
       }
     )
     const result = await response.json()
-    if (!result.result.success) {
+    if (!(result.result.success as boolean)) {
       throw new Error(result.result.error)
     }
     await this.imageService.save({
