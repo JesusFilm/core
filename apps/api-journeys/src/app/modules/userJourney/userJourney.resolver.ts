@@ -152,6 +152,20 @@ export class UserJourneyResolver {
     return await this.userJourneyService.removeAll(userJourneyIds)
   }
 
+  @Mutation()
+  async userJourneyView(
+    @Args('id') id: string,
+    @CurrentUserId() currentUserId: string
+  ): Promise<UserJourney> {
+    const userId = (await this.getUserJourney(id)).userId
+    if (currentUserId === userId) {
+      const input = { viewedAt: new Date().toISOString() }
+      return await this.userJourneyService.update(id, input)
+    } else {
+      throw new Error('Invalid user')
+    }
+  }
+
   @ResolveField()
   async journey(@Parent() userJourney: UserJourney): Promise<Journey> {
     return await this.journeyService.get(userJourney.journeyId)
