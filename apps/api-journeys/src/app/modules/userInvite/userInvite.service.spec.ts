@@ -39,7 +39,7 @@ describe('userInviteService', () => {
 
   const userInviteWithId = keyAsId(userInvite)
 
-  describe('getAllUserInvitesBySender', () => {
+  describe('getAllUserInvitesByJourney', () => {
     it('should return a userInvite array', async () => {
       ;(service.db as DeepMockProxy<Database>).query.mockReturnValue(
         mockDbQueryResult(service.db, [userInvite])

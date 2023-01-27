@@ -39,8 +39,8 @@ describe('UserInviteResolver', () => {
       update: jest.fn((id, input) => {
         return { ...userInvite, ...input }
       }),
-      getAllUserInvitesBySender: jest.fn((userId) => {
-        return { ...userInvite, sentBy: userId }
+      getAllUserInvitesByJourney: jest.fn((journeyId) => {
+        return [{ ...userInvite, journeyId }]
       })
     })
   }
@@ -62,8 +62,8 @@ describe('UserInviteResolver', () => {
   })
 
   describe('userInvites', () => {
-    it('should return all user invites sent by a user', async () => {
-      await resolver.userInvites('userId')
+    it('should return all user invites sent for a journey', async () => {
+      await resolver.userInvites('journeyId')
 
       expect(service.getAllUserInvitesByJourney).toHaveBeenCalledWith(
         'journeyId'
