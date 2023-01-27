@@ -90,10 +90,10 @@ describe('UserInviteResolver', () => {
     it('should create user invite', async () => {
       mockUuidv4.mockReturnValueOnce('1')
 
-      await resolver.userInviteCreate('journeyId', createInput)
-
       const currentDate = new Date()
       const expireAt = currentDate.setDate(currentDate.getDate() + 30)
+
+      await resolver.userInviteCreate('journeyId', createInput)
 
       expect(service.save).toHaveBeenCalledWith({
         journeyId: 'journeyId',
