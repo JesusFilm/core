@@ -108,6 +108,15 @@ describe('UserJourneyResolver', () => {
     })
   }
 
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -216,6 +225,21 @@ describe('UserJourneyResolver', () => {
         userJourney.id,
         userJourney.id
       ])
+    })
+  })
+
+  describe('UserJourneyView', () => {
+    it('should update viewAt for userJourney', async () => {
+      await resolver.userJourneyView(userJourney.id, userJourney.userId)
+      expect(service.update).toHaveBeenCalledWith(userJourney.id, {
+        viewedAt: new Date().toISOString()
+      })
+    })
+
+    it('should throw error if current user is not userJourney user', async () => {
+      await expect(
+        resolver.userJourneyView(userJourney.id, 'another.id')
+      ).rejects.toThrow('Invalid User')
     })
   })
 })
