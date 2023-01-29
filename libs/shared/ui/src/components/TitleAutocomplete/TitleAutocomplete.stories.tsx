@@ -3,12 +3,12 @@ import { Story, Meta } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import Box from '@mui/material/Box'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { LanguageAutocomplete, LanguageOption, Language } from '.'
+import { TitleAutocomplete, TitleOption, Title } from '.'
 
-const LanguageAutocompleteStory = {
+const TitleAutocompleteStory = {
   ...simpleComponentConfig,
-  component: LanguageAutocomplete,
-  title: 'Shared-Ui/LanguageAutocomplete',
+  component: TitleAutocomplete,
+  title: 'Shared-Ui/TitleAutocomplete',
   argTypes: { onChange: { action: 'onChange' } },
   parameters: {
     ...simpleComponentConfig.parameters,
@@ -16,7 +16,7 @@ const LanguageAutocompleteStory = {
   }
 }
 
-const languages: Language[] = [
+const titles: Title[] = [
   {
     id: '529',
     name: [
@@ -55,23 +55,23 @@ const languages: Language[] = [
 ]
 
 const Template: Story = ({ onChange }) => {
-  const [value, setValue] = useState<LanguageOption | null>({
+  const [value, setValue] = useState<TitleOption | undefined>({
     id: '529',
     localName: undefined,
     nativeName: 'English'
   })
 
-  const handleChange = (value?: LanguageOption): void => {
+  const handleChange = (value?: TitleOption): void => {
     setValue(value)
     onChange(value)
   }
 
   return (
     <Box sx={{ m: 4 }}>
-      <LanguageAutocomplete
+      <TitleAutocomplete
         onChange={handleChange}
         value={value}
-        languages={languages}
+        titles={titles}
         loading={false}
       />
     </Box>
@@ -84,4 +84,4 @@ Default.play = () => {
   userEvent.click(button)
 }
 
-export default LanguageAutocompleteStory as Meta
+export default TitleAutocompleteStory as Meta
