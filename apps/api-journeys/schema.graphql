@@ -163,7 +163,7 @@ extend type Mutation {
   """Removes all userJourneys associated with a journeyId"""
   userJourneyRemoveAll(id: ID!): [UserJourney!]!
   userJourneyRequest(journeyId: ID!, idType: IdType): UserJourney!
-  userJourneyView(id: ID!): UserJourney!
+  userJourneyOpen(id: ID!): UserJourney!
 
   """Update a visitor"""
   visitorUpdate(id: ID!, input: VisitorUpdateInput!): Visitor!
@@ -1575,10 +1575,8 @@ type UserJourney
   role: UserJourneyRole!
   user: User
 
-  """
-  Date time of when the journey was first viewed TODO: clarify if we want to update this each time a user views a journey
-  """
-  viewedAt: DateTime
+  """Date time of when the journey was first opened"""
+  openAt: DateTime
 }
 
 input JourneyTemplateInput {

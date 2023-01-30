@@ -230,15 +230,15 @@ describe('UserJourneyResolver', () => {
 
   describe('UserJourneyView', () => {
     it('should update viewAt for userJourney', async () => {
-      await resolver.userJourneyView(userJourney.id, userJourney.userId)
+      await resolver.userJourneyOpen(userJourney.id, userJourney.userId)
       expect(service.update).toHaveBeenCalledWith(userJourney.id, {
-        viewedAt: new Date().toISOString()
+        openAt: new Date().toISOString()
       })
     })
 
     it('should throw error if current user is not userJourney user', async () => {
       await expect(
-        resolver.userJourneyView(userJourney.id, 'another.id')
+        resolver.userJourneyOpen(userJourney.id, 'another.id')
       ).rejects.toThrow('Invalid User')
     })
   })

@@ -153,13 +153,13 @@ export class UserJourneyResolver {
   }
 
   @Mutation()
-  async userJourneyView(
+  async userJourneyOpen(
     @Args('id') id: string,
     @CurrentUserId() currentUserId: string
   ): Promise<UserJourney> {
     const userId = (await this.getUserJourney(id)).userId
     if (currentUserId === userId) {
-      const input = { viewedAt: new Date().toISOString() }
+      const input = { openAt: new Date().toISOString() }
       return await this.userJourneyService.update(id, input)
     } else {
       throw new Error('Invalid User')
