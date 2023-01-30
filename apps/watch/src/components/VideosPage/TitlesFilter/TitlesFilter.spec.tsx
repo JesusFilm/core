@@ -7,38 +7,13 @@ describe('TitlesFilter', () => {
     const titles = [
       {
         id: '529',
-        name: [
-          {
-            value: 'English',
-            primary: true
-          }
-        ]
+        title: [{ value: 'JESUS' }],
+        label: 'segment'
       },
       {
-        id: '496',
-        name: [
-          {
-            value: 'Français',
-            primary: true
-          },
-          {
-            value: 'French',
-            primary: false
-          }
-        ]
-      },
-      {
-        id: '1106',
-        name: [
-          {
-            value: 'Deutsch',
-            primary: true
-          },
-          {
-            value: 'German, Standard',
-            primary: false
-          }
-        ]
+        id: '529',
+        title: [{ value: 'Magdelena' }],
+        label: 'segment'
       }
     ]
 
@@ -47,6 +22,6 @@ describe('TitlesFilter', () => {
     )
 
     expect(getByRole('combobox', { name: 'Search Titles' })).toBeInTheDocument()
-    expect(getByText('+2000 titles')).toBeInTheDocument()
+    expect(getByText('+724 titles')).toBeInTheDocument()
   })
 })

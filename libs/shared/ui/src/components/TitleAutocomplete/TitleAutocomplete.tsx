@@ -10,7 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 export interface Title {
   id: string
   title: Translation[]
-  lable: string
+  label: string
 }
 
 export interface Translation {
@@ -20,7 +20,7 @@ export interface Translation {
 export interface TitleOption {
   id: string
   label: string
-  name?: string
+  name: string
 }
 
 export interface TitleAutocompleteProps {
