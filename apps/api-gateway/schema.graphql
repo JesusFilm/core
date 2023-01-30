@@ -246,8 +246,8 @@ input ChatOpenEventCreateInput
 type CloudflareDirectCreatorUploadResponse
   @join__type(graph: MEDIA)
 {
-  id: String
-  uploadURL: String
+  imageId: String
+  uploadUrl: String
 }
 
 type Country

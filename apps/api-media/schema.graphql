@@ -11,8 +11,8 @@ directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFAC
 directive @extends on OBJECT | INTERFACE
 
 type CloudflareDirectCreatorUploadResponse {
-  id: String
-  uploadURL: String
+  imageId: String
+  uploadUrl: String
 }
 
 type Query {
