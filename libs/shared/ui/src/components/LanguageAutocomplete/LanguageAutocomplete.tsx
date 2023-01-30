@@ -92,7 +92,7 @@ export function LanguageAutocomplete({
     { localName, nativeName }: LanguageOption
   ): ReactNode => {
     return (
-      <li {...props} role="option">
+      <li {...props}>
         <Stack>
           <Typography>{localName ?? nativeName}</Typography>
           {localName != null && nativeName != null && (

@@ -4,6 +4,7 @@ import { ReactElement } from 'react'
 import { Videos } from '../src/components/VideosPage'
 import {
   GET_LANGUAGES,
+  GET_TITLES,
   GET_VIDEOS,
   limit
 } from '../src/components/VideosPage/VideosPage'
@@ -33,6 +34,10 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async () => {
       languageId: '529'
     }
   })
+  await apolloClient.query({
+    query: GET_TITLES
+  })
+
   return {
     revalidate: 3600,
     props: {
