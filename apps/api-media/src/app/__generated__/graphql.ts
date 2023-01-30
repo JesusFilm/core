@@ -10,8 +10,8 @@
 
 export class CloudflareDirectCreatorUploadResponse {
     __typename?: 'CloudflareDirectCreatorUploadResponse';
-    id?: Nullable<string>;
-    uploadURL?: Nullable<string>;
+    imageId?: Nullable<string>;
+    uploadUrl?: Nullable<string>;
 }
 
 export abstract class IQuery {

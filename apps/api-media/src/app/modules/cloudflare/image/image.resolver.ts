@@ -36,8 +36,8 @@ export class ImageResolver {
       createdAt: new Date().toISOString()
     })
     return {
-      id: result.result.id,
-      uploadURL: result.result.uploadURL
+      imageId: result.result.id,
+      uploadUrl: result.result.uploadURL
     }
   }
 }

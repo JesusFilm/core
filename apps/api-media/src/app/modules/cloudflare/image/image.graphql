@@ -1,6 +1,6 @@
 type CloudflareDirectCreatorUploadResponse {
-  id: String
-  uploadURL: String
+  imageId: String
+  uploadUrl: String
 }
 
 extend type Query {
