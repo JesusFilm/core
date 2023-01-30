@@ -1,3 +1,4 @@
+import { URLSearchParams } from 'url'
 import { Test, TestingModule } from '@nestjs/testing'
 import fetch, { Response } from 'node-fetch'
 
@@ -61,12 +62,16 @@ describe('ImageResolver', () => {
         uploadUrl: 'https://upload.com'
       })
       expect(request).toHaveBeenCalledWith(
-        'https://api.cloudflare.com/client/v4/accounts//images/v2/direct_upload',
+        `https://api.cloudflare.com/client/v4/accounts/${
+          process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
+        }/images/v2/direct_upload`,
         {
           body: new URLSearchParams(
             'requireSignedURL=true&metadata={"key":"value"}'
           ),
-          headers: { Authorization: 'Bearer ' },
+          headers: {
+            Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
+          },
           method: 'POST'
         }
       )

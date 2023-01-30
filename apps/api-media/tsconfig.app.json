@@ -5,9 +5,7 @@
     "module": "commonjs",
     "types": ["node"],
     "emitDecoratorMetadata": true,
-    "target": "es2015",
-    "lib": ["dom.iterable"],
-    "downlevelIteration": true
+    "target": "es2015"
   },
   "exclude": ["**/*.spec.ts", "**/*.test.ts"],
   "include": ["**/*.ts"]
