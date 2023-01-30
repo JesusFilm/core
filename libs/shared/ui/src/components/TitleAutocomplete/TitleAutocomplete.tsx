@@ -17,15 +17,9 @@ export interface Translation {
   value: string
 }
 
-export interface TitleOption {
-  id: string
-  label: string
-  name: string
-}
-
 export interface TitleAutocompleteProps {
-  onChange: (value?: TitleOption) => void
-  value?: TitleOption
+  onChange: (value?: Title) => void
+  value?: Title
   titles?: Title[]
   loading: boolean
   renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
@@ -45,7 +39,7 @@ export function TitleAutocomplete({
       titles?.map(({ title, id, label }) => {
         return {
           id,
-          name: title[0].value,
+          title,
           label
         }
       }) ?? []
@@ -56,10 +50,12 @@ export function TitleAutocomplete({
     if (options.length > 0) {
       return options
         .sort((a, b) => {
-          return (a.name ?? '').localeCompare(b.name ?? '')
+          return (a.title[0].value ?? '').localeCompare(b.title[0].value ?? '')
         })
         .filter(function (item, pos, ary) {
-          return pos === 0 || item.name !== ary[pos - 1].name
+          return (
+            pos === 0 || item.title[0].value !== ary[pos - 1].title[0].value
+          )
         })
     }
     return []
@@ -88,13 +84,13 @@ export function TitleAutocomplete({
 
   const defaultRenderOption = (
     props: HTMLAttributes<HTMLLIElement>,
-    { name, label }: TitleOption
+    { title, label }: Title
   ): ReactNode => {
     return (
       <li {...props}>
         <Stack>
-          <Typography>{name}</Typography>
-          {name != null && (
+          <Typography>{title[0].value}</Typography>
+          {title[0].value != null && (
             <Typography variant="body2" color="text.secondary">
               {label}
             </Typography>
@@ -109,7 +105,7 @@ export function TitleAutocomplete({
       disableClearable
       value={value}
       isOptionEqualToValue={(option, value) => option.id === value.id}
-      getOptionLabel={({ name }) => name ?? ''}
+      getOptionLabel={({ title }) => title[0].value ?? ''}
       onChange={(_event, option) => handleChange(option)}
       options={sortedOptions}
       loading={loading}

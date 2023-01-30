@@ -55,7 +55,7 @@ const languages: Language[] = [
 ]
 
 const Template: Story = ({ onChange }) => {
-  const [value, setValue] = useState<LanguageOption | null>({
+  const [value, setValue] = useState<LanguageOption | undefined>({
     id: '529',
     localName: undefined,
     nativeName: 'English'

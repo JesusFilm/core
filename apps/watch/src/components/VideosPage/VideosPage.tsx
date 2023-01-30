@@ -5,7 +5,7 @@ import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
-import { TitleOption } from '@core/shared/ui/TitleAutocomplete'
+import { Title } from '@core/shared/ui/TitleAutocomplete'
 import Typography from '@mui/material/Typography'
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { GetTitles } from '../../../__generated__/GetTitles'
@@ -185,7 +185,9 @@ export function VideosPage(): ReactElement {
             />
             <Typography>Titles</Typography>
             <TitlesFilter
-              onChange={(title: TitleOption) => handleTitleChange(title.name)}
+              onChange={(title: Title) =>
+                handleTitleChange(title.title[0].value)
+              }
               titles={titlesData?.videos}
               loading={titlesLoading}
             />

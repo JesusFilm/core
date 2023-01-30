@@ -8,39 +8,19 @@ import { TitleAutocomplete, Title } from '.'
 describe('TitleAutocomplete', () => {
   const titles: Title[] = [
     {
-      id: '496',
-      name: [
-        {
-          value: 'Français',
-          primary: true
-        },
-        {
-          value: 'French',
-          primary: false
-        }
-      ]
+      id: '2_GOJ4925-0-0',
+      label: 'segment',
+      title: [{ value: 'The Good Shepherd' }]
     },
     {
-      id: '529',
-      name: [
-        {
-          value: 'English',
-          primary: true
-        }
-      ]
+      id: '2_GOJ4927-0-0',
+      label: 'segment',
+      title: [{ value: 'Lazarus Dies' }]
     },
     {
-      id: '1106',
-      name: [
-        {
-          value: 'Deutsch',
-          primary: true
-        },
-        {
-          value: 'German, Standard',
-          primary: false
-        }
-      ]
+      id: '2_GOJ4926-0-0',
+      label: 'segment',
+      title: [{ value: 'Are You Messiah?' }]
     }
   ]
 
@@ -49,16 +29,24 @@ describe('TitleAutocomplete', () => {
     const { getByRole, queryAllByRole } = render(
       <TitleAutocomplete
         onChange={handleChange}
-        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        value={{
+          id: '2_GOJ4927-0-0',
+          label: 'segment',
+          title: [{ value: 'Lazarus Dies' }]
+        }}
         titles={titles}
         loading={false}
       />
     )
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
-    expect(queryAllByRole('option')[0]).toHaveTextContent('English')
-    expect(queryAllByRole('option')[1]).toHaveTextContent('French')
-    expect(queryAllByRole('option')[2]).toHaveTextContent('German')
+    expect(queryAllByRole('option')[0]).toHaveTextContent(
+      'Are You Messiah?segment'
+    )
+    expect(queryAllByRole('option')[1]).toHaveTextContent('Lazarus Diessegment')
+    expect(queryAllByRole('option')[2]).toHaveTextContent(
+      'The Good Shepherdsegment'
+    )
   })
 
   it('should select titles via option click', async () => {
@@ -66,42 +54,34 @@ describe('TitleAutocomplete', () => {
     const { getByRole } = render(
       <TitleAutocomplete
         onChange={handleChange}
-        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        value={{
+          id: '2_GOJ4927-0-0',
+          label: 'segment',
+          title: [{ value: 'Lazarus Dies' }]
+        }}
         titles={titles}
         loading={false}
       />
     )
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
-    fireEvent.click(getByRole('option', { name: 'French Français' }))
+    fireEvent.click(getByRole('option', { name: 'Lazarus Dies segment' }))
     expect(handleChange).toHaveBeenCalledWith({
-      id: '496',
-      localName: 'French',
-      nativeName: 'Français'
+      id: '2_GOJ4927-0-0',
+      label: 'segment',
+      title: [{ value: 'Lazarus Dies' }]
     })
-  })
-
-  it('should set default value', async () => {
-    const { getByRole } = render(
-      <TitleAutocomplete
-        onChange={jest.fn()}
-        value={{
-          id: '1106',
-          localName: 'German, Standard',
-          nativeName: 'Deutsch'
-        }}
-        titles={titles}
-        loading={false}
-      />
-    )
-    expect(getByRole('combobox')).toHaveValue('German, Standard')
   })
 
   it('should show loading animation if loading', async () => {
     const { getByRole } = render(
       <TitleAutocomplete
         onChange={jest.fn()}
-        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        value={{
+          id: '2_GOJ4927-0-0',
+          label: 'segment',
+          title: [{ value: 'Lazarus Dies' }]
+        }}
         titles={titles}
         loading
       />
@@ -128,7 +108,11 @@ describe('TitleAutocomplete', () => {
     const { getAllByTestId, getByTestId, getByRole } = render(
       <TitleAutocomplete
         onChange={jest.fn()}
-        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        value={{
+          id: '2_GOJ4927-0-0',
+          label: 'segment',
+          title: [{ value: 'Lazarus Dies' }]
+        }}
         titles={titles}
         loading={false}
         renderInput={renderInput}
