@@ -24,21 +24,40 @@ describe('UserInviteResolver', () => {
     email: 'test@email.com',
     name: 'Tester McTestFace',
     accepted: false,
-    expireAt: new Date()
+    expireAt: '2021-03-20T00:00:00.000Z'
+  }
+
+  const acceptedInvite = {
+    ...userInvite,
+    key: '2',
+    journeyId: 'acceptedJourneyId',
+    accepted: true
+  }
+
+  const expiredInvite = {
+    ...userInvite,
+    key: '3',
+    journeyId: 'expiredJourneyId',
+    expireAt: '2021-01-18T00:00:00.000Z'
   }
 
   const userInviteService = {
     provide: UserInviteService,
     useFactory: () => ({
-      get: jest.fn((id) => {
-        return { ...userInvite, id }
-      }),
       save: jest.fn((input) => input),
       update: jest.fn((id, input) => {
         return { ...userInvite, ...input }
       }),
       getAllUserInvitesByJourney: jest.fn((journeyId) => {
         return [{ ...userInvite, journeyId }]
+      }),
+      getUserInviteByJourneyAndEmail: jest.fn((journeyId, email) => {
+        if (email === userInvite.email) {
+          if (journeyId === userInvite.journeyId) return userInvite
+          if (journeyId === acceptedInvite.journeyId) return acceptedInvite
+          if (journeyId === expiredInvite.journeyId) return expiredInvite
+        }
+        return null
       })
     })
   }
@@ -73,6 +92,15 @@ describe('UserInviteResolver', () => {
     })
   }
 
+  beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(new Date('2021-02-18'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -98,15 +126,6 @@ describe('UserInviteResolver', () => {
   })
 
   describe('userInviteCreate', () => {
-    beforeAll(() => {
-      jest.useFakeTimers('modern')
-      jest.setSystemTime(new Date('2021-02-18'))
-    })
-
-    afterAll(() => {
-      jest.useRealTimers()
-    })
-
     it('should create user invite', async () => {
       const currentDate = new Date()
       const expireAt = new Date(
@@ -128,11 +147,12 @@ describe('UserInviteResolver', () => {
 
   describe('userInviteAccept', () => {
     it('should accept user invite', async () => {
-      const acceptedInvite = await resolver.userInviteAccept('1', 'userId', {
-        email: 'test@email.com'
-      })
+      const acceptedInvite = await resolver.userInviteAccept(
+        'journeyId',
+        'userId',
+        { email: 'test@email.com' }
+      )
 
-      expect(service.get).toHaveBeenCalledWith('1')
       expect(ujResolver.userJourneyRequest).toHaveBeenCalledWith(
         'journeyId',
         'databaseId',
@@ -147,6 +167,56 @@ describe('UserInviteResolver', () => {
         ...userInvite,
         accepted: true
       })
+    })
+
+    it('should show no invite if journey does not match', async () => {
+      const rejectedInvite = await resolver.userInviteAccept(
+        'wrongJourneyId',
+        'userId',
+        { email: 'test@email.com' }
+      )
+
+      expect(ujResolver.userJourneyRequest).not.toHaveBeenCalled()
+      expect(ujResolver.userJourneyApprove).not.toHaveBeenCalled()
+      expect(rejectedInvite).toEqual(null)
+    })
+
+    it('should show no invite if email does not match', async () => {
+      const rejectedInvite = await resolver.userInviteAccept(
+        'journeyId',
+        'userId',
+        { email: 'doesnotexist@email.com' }
+      )
+
+      expect(ujResolver.userJourneyRequest).not.toHaveBeenCalled()
+      expect(ujResolver.userJourneyApprove).not.toHaveBeenCalled()
+      expect(rejectedInvite).toEqual(null)
+    })
+
+    it('should ignore invite if already accepted', async () => {
+      const invite = await resolver.userInviteAccept(
+        'acceptedJourneyId',
+        'userId',
+        { email: 'test@email.com' }
+      )
+
+      expect(ujResolver.userJourneyRequest).not.toHaveBeenCalled()
+      expect(ujResolver.userJourneyApprove).not.toHaveBeenCalled()
+      expect(invite).toEqual(acceptedInvite)
+    })
+
+    it('should ignore invite if expired', async () => {
+      const invite = await resolver.userInviteAccept(
+        'expiredJourneyId',
+        'userId',
+        {
+          email: 'test@email.com'
+        }
+      )
+
+      expect(ujResolver.userJourneyRequest).not.toHaveBeenCalled()
+      expect(ujResolver.userJourneyApprove).not.toHaveBeenCalled()
+      expect(invite).toEqual(expiredInvite)
     })
   })
 })

@@ -65,15 +65,17 @@ export class UserInviteResolver {
     @Args('journeyId') journeyId: string,
     @CurrentUserId() userId: string,
     @Args('input') input: UserInviteAcceptInput
-  ): Promise<UserInvite> {
+  ): Promise<UserInvite | null> {
     const userInvite =
       await this.userInviteService.getUserInviteByJourneyAndEmail(
         journeyId,
         input.email
       )
 
+    if (userInvite == null) return null
+
     // TODO: Get email from user in db when we can call api-users
-    if (userInvite != null && input.email === userInvite.email) {
+    if (!userInvite.accepted && new Date() < new Date(userInvite.expireAt)) {
       const userJourney = await this.userJourneyResolver.userJourneyRequest(
         userInvite.journeyId,
         IdType.databaseId,
