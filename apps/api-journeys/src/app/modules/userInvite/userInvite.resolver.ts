@@ -9,9 +9,11 @@ import {
   Journey,
   UserInvite,
   UserInviteCreateInput,
-  UserInviteAcceptInput
+  UserInviteAcceptInput,
+  UserJourneyRole
 } from '../../__generated__/graphql'
 import { UserJourneyResolver } from '../userJourney/userJourney.resolver'
+import { RoleGuard } from '../../lib/roleGuard/roleGuard'
 import { JourneyService } from '../journey/journey.service'
 import { UserInviteService } from './userInvite.service'
 
@@ -23,18 +25,22 @@ export class UserInviteResolver {
     private readonly journeyService: JourneyService
   ) {}
 
-  // Possibly add RoleGuard here. Need UX clarification
   @Query()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(
+    GqlAuthGuard,
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  )
   async userInvites(
     @Args('journeyId') journeyId: string
   ): Promise<UserInvite[]> {
     return await this.userInviteService.getAllUserInvitesByJourney(journeyId)
   }
 
-  // Possibly add RoleGuard here. Need UX clarifications
   @Mutation()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(
+    GqlAuthGuard,
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  )
   async userInviteCreate(
     @Args('journeyId') journeyId: string,
     @CurrentUserId() senderId: string,
@@ -57,6 +63,18 @@ export class UserInviteResolver {
       accepted: false,
       expireAt
     })
+  }
+
+  @Mutation()
+  @UseGuards(
+    GqlAuthGuard,
+    RoleGuard('journeyId', [UserJourneyRole.owner, UserJourneyRole.editor])
+  )
+  async userInviteRemove(
+    @Args('id') id: string,
+    @Args('journeyId') journeyId: string
+  ): Promise<UserInvite> {
+    return await this.userInviteService.remove(id)
   }
 
   @Mutation()

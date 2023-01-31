@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { UserJourneyRole } from '../../__generated__/graphql'
+import { Role, UserJourneyRole } from '../../__generated__/graphql'
 import { JourneyService } from '../journey/journey.service'
 import { UserJourneyResolver } from '../userJourney/userJourney.resolver'
+import { UserJourneyService } from '../userJourney/userJourney.service'
+import { UserRoleService } from '../userRole/userRole.service'
 
 import { UserInviteResolver } from './userInvite.resolver'
 import { UserInviteService } from './userInvite.service'
@@ -48,6 +50,7 @@ describe('UserInviteResolver', () => {
       update: jest.fn((id, input) => {
         return { ...userInvite, ...input }
       }),
+      remove: jest.fn((id) => userInvite),
       getAllUserInvitesByJourney: jest.fn((journeyId) => {
         return [{ ...userInvite, journeyId }]
       }),
@@ -81,6 +84,24 @@ describe('UserInviteResolver', () => {
     })
   }
 
+  const userJourneyService = {
+    provide: UserJourneyService,
+    useFactory: () => ({ get: jest.fn((key) => userJourney) })
+  }
+
+  const userRole = {
+    id: 'userRoleId',
+    userId: 'userId',
+    roles: [Role.publisher]
+  }
+
+  const userRoleService = {
+    provide: UserRoleService,
+    useFactory: () => ({
+      getUserRoleById: jest.fn(() => userRole)
+    })
+  }
+
   const journey = {
     id: 'journeyId'
   }
@@ -107,6 +128,8 @@ describe('UserInviteResolver', () => {
         UserInviteResolver,
         userInviteService,
         userJourneyResolver,
+        userJourneyService,
+        userRoleService,
         journeyService
       ]
     }).compile()
@@ -142,6 +165,15 @@ describe('UserInviteResolver', () => {
         accepted: false,
         expireAt
       })
+    })
+  })
+
+  describe('userInviteRemove', () => {
+    it('should remove user invite', async () => {
+      const removedInvite = await resolver.userInviteRemove('1', 'journeyId')
+
+      expect(service.remove).toHaveBeenCalledWith('1')
+      expect(removedInvite).toEqual(userInvite)
     })
   })
 

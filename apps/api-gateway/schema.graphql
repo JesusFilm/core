@@ -781,6 +781,7 @@ type Mutation
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   userInviteCreate(journeyId: ID!, senderId: ID!, input: UserInviteCreateInput): UserInvite
+  userInviteRemove(id: ID!, journeyId: ID!): UserInvite
   userInviteAccept(journeyId: ID!, userId: ID!, input: UserInviteAcceptInput): UserInvite
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
