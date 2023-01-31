@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
 
 export interface Title {
-  id: string
   title: Translation[]
   label: string
 }
@@ -36,9 +35,8 @@ export function TitleAutocomplete({
 }: TitleAutocompleteProps): ReactElement {
   const options = useMemo(() => {
     return (
-      titles?.map(({ title, id, label }) => {
+      titles?.map(({ title, label }) => {
         return {
-          id,
           title,
           label
         }
@@ -104,7 +102,9 @@ export function TitleAutocomplete({
     <Autocomplete
       disableClearable
       value={value}
-      isOptionEqualToValue={(option, value) => option.id === value.id}
+      isOptionEqualToValue={(option, value) =>
+        option.title[0].value === value.title[0].value
+      }
       getOptionLabel={({ title }) => title[0].value ?? ''}
       onChange={(_event, option) => handleChange(option)}
       options={sortedOptions}

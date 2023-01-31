@@ -18,17 +18,14 @@ const TitleAutocompleteStory = {
 
 const titles: Title[] = [
   {
-    id: '2_GOJ4925-0-0',
     label: 'segment',
     title: [{ value: 'The Good Shepherd' }]
   },
   {
-    id: '2_GOJ4926-0-0',
     label: 'segment',
     title: [{ value: 'Are You Messiah?' }]
   },
   {
-    id: '2_GOJ4927-0-0',
     label: 'segment',
     title: [{ value: 'Lazarus Dies' }]
   }
@@ -52,7 +49,6 @@ const titles: Title[] = [
 
 const Template: Story = ({ onChange }) => {
   const [value, setValue] = useState<Title | undefined>({
-    id: '2_GOJ4925-0-0',
     label: 'segment',
     title: [{ value: 'The Good Shepherd' }]
   })

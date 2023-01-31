@@ -49,7 +49,6 @@ export const GET_LANGUAGES = gql`
 export const GET_TITLES = gql`
   query GetTitles {
     videos(limit: 1000) {
-      id
       label
       title(primary: true) {
         value

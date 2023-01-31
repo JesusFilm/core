@@ -8,17 +8,14 @@ import { TitleAutocomplete, Title } from '.'
 describe('TitleAutocomplete', () => {
   const titles: Title[] = [
     {
-      id: '2_GOJ4925-0-0',
       label: 'segment',
       title: [{ value: 'The Good Shepherd' }]
     },
     {
-      id: '2_GOJ4927-0-0',
       label: 'segment',
       title: [{ value: 'Lazarus Dies' }]
     },
     {
-      id: '2_GOJ4926-0-0',
       label: 'segment',
       title: [{ value: 'Are You Messiah?' }]
     }
@@ -30,7 +27,6 @@ describe('TitleAutocomplete', () => {
       <TitleAutocomplete
         onChange={handleChange}
         value={{
-          id: '2_GOJ4927-0-0',
           label: 'segment',
           title: [{ value: 'Lazarus Dies' }]
         }}
@@ -55,7 +51,6 @@ describe('TitleAutocomplete', () => {
       <TitleAutocomplete
         onChange={handleChange}
         value={{
-          id: '2_GOJ4927-0-0',
           label: 'segment',
           title: [{ value: 'Lazarus Dies' }]
         }}
@@ -67,7 +62,6 @@ describe('TitleAutocomplete', () => {
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     fireEvent.click(getByRole('option', { name: 'Lazarus Dies segment' }))
     expect(handleChange).toHaveBeenCalledWith({
-      id: '2_GOJ4927-0-0',
       label: 'segment',
       title: [{ value: 'Lazarus Dies' }]
     })
@@ -78,7 +72,6 @@ describe('TitleAutocomplete', () => {
       <TitleAutocomplete
         onChange={jest.fn()}
         value={{
-          id: '2_GOJ4927-0-0',
           label: 'segment',
           title: [{ value: 'Lazarus Dies' }]
         }}
@@ -109,7 +102,6 @@ describe('TitleAutocomplete', () => {
       <TitleAutocomplete
         onChange={jest.fn()}
         value={{
-          id: '2_GOJ4927-0-0',
           label: 'segment',
           title: [{ value: 'Lazarus Dies' }]
         }}

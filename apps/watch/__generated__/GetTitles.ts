@@ -16,7 +16,6 @@ export interface GetTitles_videos_title {
 
 export interface GetTitles_videos {
   __typename: "Video";
-  id: string;
   label: VideoLabel;
   title: GetTitles_videos_title[];
 }
