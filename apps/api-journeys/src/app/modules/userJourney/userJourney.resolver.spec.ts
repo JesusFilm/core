@@ -87,8 +87,14 @@ describe('UserJourneyResolver', () => {
       save: jest.fn((input) => input),
       update: jest.fn((input) => input),
       forJourneyUser: jest.fn((key, userId) => {
-        if (userId === actorUserJourney.userId) return actorUserJourney
-        return userJourney
+        switch (userId) {
+          case userJourney.userId:
+            return userJourney
+          case actorUserJourney.userId:
+            return actorUserJourney
+          default:
+            return null
+        }
       }),
       forJourney: jest.fn(() => [userJourney, userJourney])
     })

@@ -155,10 +155,12 @@ export class UserJourneyResolver {
   @Mutation()
   async userJourneyOpen(
     @Args('id') id: string,
-    @CurrentUserId() currentUserId: string
+    @CurrentUserId() userId: string
   ): Promise<UserJourney> {
-    const userId = (await this.getUserJourney(id)).userId
-    if (currentUserId === userId) {
+    const userJourney: UserJourney =
+      await this.userJourneyService.forJourneyUser(id, userId)
+
+    if (userJourney != null) {
       const input = { openAt: new Date().toISOString() }
       return await this.userJourneyService.update(id, input)
     } else {
