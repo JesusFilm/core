@@ -1393,7 +1393,7 @@ type UserJourney
   user: User
 
   """Date time of when the journey was first opened"""
-  openAt: DateTime
+  openedAt: DateTime
 }
 
 enum UserJourneyRole

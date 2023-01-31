@@ -161,7 +161,7 @@ export class UserJourneyResolver {
       await this.userJourneyService.forJourneyUser(id, userId)
 
     if (userJourney != null) {
-      const input = { openAt: new Date().toISOString() }
+      const input = { openedAt: new Date().toISOString() }
       return await this.userJourneyService.update(userJourney.id, input)
     } else {
       throw new Error('Invalid User')

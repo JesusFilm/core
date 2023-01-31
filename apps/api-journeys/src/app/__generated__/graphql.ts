@@ -995,7 +995,7 @@ export class UserJourney {
     journeyId: string;
     role: UserJourneyRole;
     user?: Nullable<User>;
-    openAt?: Nullable<DateTime>;
+    openedAt?: Nullable<DateTime>;
 }
 
 export class UserRole {

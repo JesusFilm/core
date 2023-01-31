@@ -17,7 +17,7 @@ type UserJourney @key(fields: "id") {
   """
   Date time of when the journey was first opened
   """
-  openAt: DateTime
+  openedAt: DateTime
 }
 extend type User @key(fields: "id") {
   id: ID! @external
