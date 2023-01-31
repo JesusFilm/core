@@ -37,11 +37,10 @@ export class UserInviteResolver {
   @UseGuards(GqlAuthGuard)
   async userInviteCreate(
     @Args('journeyId') journeyId: string,
+    @CurrentUserId() senderId: string,
     @Args('input') input: UserInviteCreateInput
   ): Promise<UserInvite> {
     const journey = await this.journeyService.get<Journey>(journeyId)
-
-    console.log('journey', journey)
 
     if (journey == null) throw new UserInputError('journey does not exist')
 
@@ -52,7 +51,7 @@ export class UserInviteResolver {
 
     return await this.userInviteService.save({
       journeyId: journey.id,
-      senderId: input.senderId,
+      senderId,
       name: input.name,
       email: input.email,
       accepted: false,

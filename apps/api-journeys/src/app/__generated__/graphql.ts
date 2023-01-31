@@ -556,8 +556,6 @@ export class UserInviteAcceptInput {
 export class UserInviteCreateInput {
     email: string;
     name: string;
-    senderId: string;
-    expireAt: DateTime
 }
 
 export class VisitorUpdateInput {
@@ -1198,7 +1196,7 @@ export abstract class IMutation {
 
     abstract journeyTemplate(id: string, input: JourneyTemplateInput): Journey | Promise<Journey>;
 
-    abstract userInviteCreate(journeyId: string, input?: Nullable<UserInviteCreateInput>): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
+    abstract userInviteCreate(journeyId: string, senderId: string, input?: Nullable<UserInviteCreateInput>): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
 
     abstract userInviteAccept(id: string, userId: string, input?: Nullable<UserInviteAcceptInput>): UserInvite | Promise<UserInvite>;
 

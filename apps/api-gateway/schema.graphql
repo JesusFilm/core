@@ -780,7 +780,7 @@ type Mutation
 
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
-  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
+  userInviteCreate(journeyId: ID!, senderId: ID!, input: UserInviteCreateInput): UserInvite
   userInviteAccept(id: ID!, userId: ID!, input: UserInviteAcceptInput): UserInvite!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
@@ -1407,7 +1407,6 @@ input UserInviteCreateInput
 {
   email: String!
   name: String!
-  senderId: ID!
 }
 
 type UserJourney

@@ -19,13 +19,17 @@ input UserInviteAcceptInput {
 input UserInviteCreateInput {
   email: String!
   name: String!
-  senderId: ID!
 }
 
 extend type Mutation {
-  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
+  userInviteCreate(
+    journeyId: ID!
+    senderId: ID!
+    input: UserInviteCreateInput
+  ): UserInvite
   userInviteAccept(
     id: ID!
+    # Id of the invited user
     userId: ID!
     input: UserInviteAcceptInput
   ): UserInvite!

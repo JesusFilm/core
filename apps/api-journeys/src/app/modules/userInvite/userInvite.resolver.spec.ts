@@ -12,7 +12,6 @@ describe('UserInviteResolver', () => {
     ujResolver: UserJourneyResolver
 
   const createInput = {
-    senderId: 'senderId',
     email: 'test@email.com',
     name: 'Tester McTestFace',
     expireAt: null
@@ -114,7 +113,7 @@ describe('UserInviteResolver', () => {
         currentDate.setDate(currentDate.getDate() + 30)
       ).toISOString()
 
-      await resolver.userInviteCreate('journeyId', { ...createInput, expireAt })
+      await resolver.userInviteCreate('journeyId', 'senderId', createInput)
 
       expect(service.save).toHaveBeenCalledWith({
         journeyId: 'journeyId',
