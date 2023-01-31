@@ -29,7 +29,7 @@ interface UnsplashImage {
 
 export function UnsplashGallery(): ReactElement {
   const [results, setResults] = useState<UnsplashImage[]>()
-  const accessKey = ''
+  const accessKey = '7MUdE7NO3RSHYD3gefyyPD3nSBOK4vziireH3tnj9L0'
 
   // TODO:
   // Move accessKey to doppler
@@ -88,7 +88,7 @@ export function UnsplashGallery(): ReactElement {
         )}
       </Formik>
       {results != null && (
-        <ImageList variant="masonry" cols={3}>
+        <ImageList variant="masonry">
           {results?.map((item) => (
             <ImageListItem key={item?.id} sx={{ pb: 1 }}>
               <Stack spacing={1}>
