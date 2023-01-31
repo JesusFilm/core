@@ -99,6 +99,15 @@ describe('UserInviteResolver', () => {
   })
 
   describe('userInviteCreate', () => {
+    beforeAll(() => {
+      jest.useFakeTimers('modern')
+      jest.setSystemTime(new Date('2021-02-18'))
+    })
+
+    afterAll(() => {
+      jest.useRealTimers()
+    })
+
     it('should create user invite', async () => {
       const currentDate = new Date()
       const expireAt = new Date(
@@ -107,15 +116,14 @@ describe('UserInviteResolver', () => {
 
       await resolver.userInviteCreate('journeyId', { ...createInput, expireAt })
 
-      expect(service.save).toHaveBeenCalledWith(
-        expect.objectContaining({
-          journeyId: 'journeyId',
-          senderId: 'senderId',
-          name: createInput.name,
-          email: createInput.email,
-          accepted: false
-        })
-      )
+      expect(service.save).toHaveBeenCalledWith({
+        journeyId: 'journeyId',
+        senderId: 'senderId',
+        name: createInput.name,
+        email: createInput.email,
+        accepted: false,
+        expireAt
+      })
     })
   })
 

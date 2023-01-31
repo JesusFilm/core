@@ -69,23 +69,18 @@ export class UserInviteResolver {
   ): Promise<UserInvite> {
     const userInvite = await this.userInviteService.get<UserInvite>(id)
 
-    console.log('JOURNEY ID', userInvite)
-
     const userJourney = await this.userJourneyResolver.userJourneyRequest(
       userInvite.journeyId,
       IdType.databaseId,
       userId
     )
-    console.log('userJourney - request', userJourney)
 
-    // TODO: Get email from user in db
+    // TODO: Get email from user in db when we can call api-users
     if (input.email === userInvite.email) {
       await this.userJourneyResolver.userJourneyApprove(
         userJourney.id,
         userInvite.senderId
       )
-
-      console.log('userJourney - approve', userJourney)
 
       return await this.userInviteService.update(id, { accepted: true })
     }
