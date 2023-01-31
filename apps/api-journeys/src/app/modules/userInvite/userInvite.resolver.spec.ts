@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { omit } from 'lodash'
 import { UserJourneyRole } from '../../__generated__/graphql'
 import { JourneyService } from '../journey/journey.service'
 import { UserJourneyResolver } from '../userJourney/userJourney.resolver'
