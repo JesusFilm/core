@@ -1,9 +1,15 @@
-import { Resolver, Query, ResolveReference } from '@nestjs/graphql'
+import {
+  Resolver,
+  Query,
+  ResolveReference,
+  Mutation,
+  Args
+} from '@nestjs/graphql'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { UseGuards } from '@nestjs/common'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { firebaseClient } from '@core/nest/common/firebaseClient'
-import { User } from '../../__generated__/graphql'
+import { UserUpdateInput, User } from '../../__generated__/graphql'
 import { UserService } from './user.service'
 
 @Resolver('User')
@@ -33,6 +39,20 @@ export class UserResolver {
       email,
       imageUrl
     })
+  }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async userUpdate(
+    @CurrentUserId() userId: string,
+    @Args('input') input: UserUpdateInput
+  ): Promise<User | undefined> {
+    const existingUser: User = await this.userService.getByUserId(userId)
+
+    if (existingUser != null)
+      return await this.userService.update(existingUser.id, input)
+
+    return undefined
   }
 
   @ResolveReference()

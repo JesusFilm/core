@@ -4,8 +4,17 @@ type User @key(fields: "id") {
   lastName: String
   email: String!
   imageUrl: String
+  acceptedTermsAt: String
 }
 
 extend type Query {
   me: User
+}
+
+input UserUpdateInput {
+  acceptedTermsAt: String
+}
+
+extend type Mutation {
+  userUpdate(id: ID!, input: UserUpdateInput): User!
 }
