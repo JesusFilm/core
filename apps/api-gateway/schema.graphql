@@ -781,7 +781,7 @@ type Mutation
   """Updates template"""
   journeyTemplate(id: ID!, input: JourneyTemplateInput!): Journey!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
-  userInviteAccept(id: ID!, userId: ID!): UserInvite!
+  userInviteAccept(id: ID!, userId: ID!, input: UserInviteAcceptInput): UserInvite!
   userJourneyApprove(id: ID!): UserJourney!
   userJourneyPromote(id: ID!): UserJourney!
   userJourneyRemove(id: ID!): UserJourney!
@@ -896,7 +896,7 @@ type Query
   adminJourney(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
   journeys(where: JourneysFilter): [Journey!]! @join__field(graph: JOURNEYS)
   journey(id: ID!, idType: IdType): Journey @join__field(graph: JOURNEYS)
-  userInvites(userId: ID!): [UserInvite] @join__field(graph: JOURNEYS)
+  userInvites(journeyId: ID!): [UserInvite] @join__field(graph: JOURNEYS)
   getUserRole: UserRole @join__field(graph: JOURNEYS)
 
   """A list of visitors that are connected with a specific team."""
@@ -1389,10 +1389,17 @@ type UserInvite
 {
   id: ID!
   journeyId: ID!
+  senderId: ID!
   name: String!
   email: String!
   accepted: Boolean!
-  expireAt: String
+  expireAt: String!
+}
+
+input UserInviteAcceptInput
+  @join__type(graph: JOURNEYS)
+{
+  email: String!
 }
 
 input UserInviteCreateInput
@@ -1400,6 +1407,7 @@ input UserInviteCreateInput
 {
   email: String!
   name: String!
+  senderId: ID!
 }
 
 type UserJourney

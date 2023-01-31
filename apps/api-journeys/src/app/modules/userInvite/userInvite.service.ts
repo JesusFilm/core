@@ -11,12 +11,12 @@ export class UserInviteService extends BaseService {
 
   @KeyAsId()
   async getAllUserInvitesByJourney(journeyId: string): Promise<UserInvite[]> {
-    const response = await this.db.query(aql`
+    const res = await this.db.query(aql`
       FOR userInvite in ${this.collection}
         FILTER userInvite.journeyId == ${journeyId}
         RETURN userInvite
     `)
 
-    return await response.all()
+    return await res.all()
   }
 }

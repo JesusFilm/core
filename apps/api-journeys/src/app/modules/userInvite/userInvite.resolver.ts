@@ -2,19 +2,28 @@ import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { UseGuards } from '@nestjs/common'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+import { UserInputError } from 'apollo-server-errors'
 
-import { UserInvite, UserInviteCreateInput } from '../../__generated__/graphql'
+import {
+  IdType,
+  Journey,
+  UserInvite,
+  UserInviteCreateInput,
+  UserInviteAcceptInput
+} from '../../__generated__/graphql'
 import { UserJourneyResolver } from '../userJourney/userJourney.resolver'
+import { JourneyService } from '../journey/journey.service'
 import { UserInviteService } from './userInvite.service'
 
 @Resolver('UserInvite')
 export class UserInviteResolver {
   constructor(
     private readonly userInviteService: UserInviteService,
-    private readonly userJourneyResolver: UserJourneyResolver
+    private readonly userJourneyResolver: UserJourneyResolver,
+    private readonly journeyService: JourneyService
   ) {}
 
-  // Possibly add RoleGuard here. Add or remove comment after UX reply
+  // Possibly add RoleGuard here. Need UX clarification
   @Query()
   @UseGuards(GqlAuthGuard)
   async userInvites(
@@ -23,22 +32,31 @@ export class UserInviteResolver {
     return await this.userInviteService.getAllUserInvitesByJourney(journeyId)
   }
 
-  // Possibly add RoleGuard here. Add or remove comment after UX reply
+  // Possibly add RoleGuard here. Need UX clarifications
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async userInviteCreate(
     @Args('journeyId') journeyId: string,
     @Args('input') input: UserInviteCreateInput
-  ): Promise<UserInvite | null> {
+  ): Promise<UserInvite> {
+    const journey = await this.journeyService.get<Journey>(journeyId)
+
+    console.log('journey', journey)
+
+    if (journey == null) throw new UserInputError('journey does not exist')
+
     const currentDate = new Date()
-    const expireAt = currentDate.setDate(currentDate.getDate() + 30)
+    const expireAt = new Date(
+      currentDate.setDate(currentDate.getDate() + 30)
+    ).toISOString()
 
     return await this.userInviteService.save({
-      journeyId,
+      journeyId: journey.id,
+      senderId: input.senderId,
       name: input.name,
       email: input.email,
       accepted: false,
-      expireAt: new Date(expireAt).toISOString()
+      expireAt
     })
   }
 
@@ -46,18 +64,32 @@ export class UserInviteResolver {
   @UseGuards(GqlAuthGuard)
   async userInviteAccept(
     @Args('id') id: string,
-    @CurrentUserId() userId: string
+    @CurrentUserId() userId: string,
+    @Args('input') input: UserInviteAcceptInput
   ): Promise<UserInvite> {
-    const { journeyId } = await this.userInviteService.get<UserInvite>(id)
+    const userInvite = await this.userInviteService.get<UserInvite>(id)
+
+    console.log('JOURNEY ID', userInvite)
 
     const userJourney = await this.userJourneyResolver.userJourneyRequest(
-      journeyId,
-      undefined,
+      userInvite.journeyId,
+      IdType.databaseId,
       userId
     )
+    console.log('userJourney - request', userJourney)
 
-    await this.userJourneyResolver.userJourneyApprove(userJourney.id, userId)
+    // TODO: Get email from user in db
+    if (input.email === userInvite.email) {
+      await this.userJourneyResolver.userJourneyApprove(
+        userJourney.id,
+        userInvite.senderId
+      )
 
-    return await this.userInviteService.update(id, { accepted: true })
+      console.log('userJourney - approve', userJourney)
+
+      return await this.userInviteService.update(id, { accepted: true })
+    }
+
+    return userInvite
   }
 }

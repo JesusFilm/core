@@ -1,17 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { v4 as uuidv4 } from 'uuid'
+import { omit } from 'lodash'
 import { UserJourneyRole } from '../../__generated__/graphql'
+import { JourneyService } from '../journey/journey.service'
 import { UserJourneyResolver } from '../userJourney/userJourney.resolver'
 
 import { UserInviteResolver } from './userInvite.resolver'
 import { UserInviteService } from './userInvite.service'
-
-jest.mock('uuid', () => ({
-  __esModule: true,
-  v4: jest.fn()
-}))
-
-const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('UserInviteResolver', () => {
   let resolver: UserInviteResolver,
@@ -19,14 +13,17 @@ describe('UserInviteResolver', () => {
     ujResolver: UserJourneyResolver
 
   const createInput = {
-    email: 'email@test.com',
-    name: 'Tester McTestFace'
+    senderId: 'senderId',
+    email: 'test@email.com',
+    name: 'Tester McTestFace',
+    expireAt: null
   }
 
   const userInvite = {
     key: '1',
     journeyId: 'journeyId',
-    email: 'email@test.com',
+    senderId: 'senderId',
+    email: 'test@email.com',
     name: 'Tester McTestFace',
     accepted: false,
     expireAt: new Date()
@@ -67,9 +64,25 @@ describe('UserInviteResolver', () => {
     })
   }
 
+  const journey = {
+    id: 'journeyId'
+  }
+
+  const journeyService = {
+    provide: JourneyService,
+    useFactory: () => ({
+      get: jest.fn((id) => (id === journey.id ? journey : undefined))
+    })
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserInviteResolver, userInviteService, userJourneyResolver]
+      providers: [
+        UserInviteResolver,
+        userInviteService,
+        userJourneyResolver,
+        journeyService
+      ]
     }).compile()
     resolver = module.get(UserInviteResolver)
     service = await module.resolve(UserInviteService)
@@ -88,36 +101,40 @@ describe('UserInviteResolver', () => {
 
   describe('userInviteCreate', () => {
     it('should create user invite', async () => {
-      mockUuidv4.mockReturnValueOnce('1')
-
       const currentDate = new Date()
-      const expireAt = currentDate.setDate(currentDate.getDate() + 30)
+      const expireAt = new Date(
+        currentDate.setDate(currentDate.getDate() + 30)
+      ).toISOString()
 
-      await resolver.userInviteCreate('journeyId', createInput)
+      await resolver.userInviteCreate('journeyId', { ...createInput, expireAt })
 
-      expect(service.save).toHaveBeenCalledWith({
-        journeyId: 'journeyId',
-        name: createInput.name,
-        email: createInput.email,
-        accepted: false,
-        expireAt: new Date(expireAt).toISOString()
-      })
+      expect(service.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          journeyId: 'journeyId',
+          senderId: 'senderId',
+          name: createInput.name,
+          email: createInput.email,
+          accepted: false
+        })
+      )
     })
   })
 
   describe('userInviteAccept', () => {
     it('should accept user invite', async () => {
-      const acceptedInvite = await resolver.userInviteAccept('1', 'userId')
+      const acceptedInvite = await resolver.userInviteAccept('1', 'userId', {
+        email: 'test@email.com'
+      })
 
       expect(service.get).toHaveBeenCalledWith('1')
       expect(ujResolver.userJourneyRequest).toHaveBeenCalledWith(
         'journeyId',
-        undefined,
+        'databaseId',
         'userId'
       )
       expect(ujResolver.userJourneyApprove).toHaveBeenCalledWith(
         'userJourneyId',
-        'userId'
+        'senderId'
       )
 
       expect(acceptedInvite).toEqual({
