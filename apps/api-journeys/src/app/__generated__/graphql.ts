@@ -1198,7 +1198,7 @@ export abstract class IMutation {
 
     abstract userInviteCreate(journeyId: string, senderId: string, input?: Nullable<UserInviteCreateInput>): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
 
-    abstract userInviteAccept(id: string, userId: string, input?: Nullable<UserInviteAcceptInput>): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
+    abstract userInviteAccept(journeyId: string, userId: string, input?: Nullable<UserInviteAcceptInput>): Nullable<UserInvite> | Promise<Nullable<UserInvite>>;
 
     abstract userJourneyApprove(id: string): UserJourney | Promise<UserJourney>;
 
