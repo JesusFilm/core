@@ -153,6 +153,7 @@ export class UserJourneyResolver {
   }
 
   @Mutation()
+  @UseGuards(GqlAuthGuard)
   async userJourneyOpen(
     @Args('id') id: string,
     @CurrentUserId() userId: string
