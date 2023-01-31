@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useMemo } from 'react'
+import { ReactElement, useCallback, useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Typography from '@mui/material/Typography'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
@@ -8,7 +8,7 @@ import Box from '@mui/material/Box'
 
 export function ImageUpload(): ReactElement {
   const onDrop = useCallback((acceptedFiles) => {
-    console.log(acceptedFiles[0].name)
+    handleMessage(acceptedFiles[0].name)
   }, [])
 
   const { getRootProps, open, isDragActive, isDragAccept, isDragReject } =
@@ -22,6 +22,12 @@ export function ImageUpload(): ReactElement {
         'image/jpg': []
       }
     })
+
+  function handleMessage(fileName: string): void {
+    setMessage(fileName)
+  }
+
+  const [message, setMessage] = useState('Drop an image here or')
 
   const style = useMemo(() => {
     const activeStyle = {
@@ -64,7 +70,7 @@ export function ImageUpload(): ReactElement {
     >
       <CloudUploadIcon fontSize="large" sx={{ color: 'secondary.light' }} />
       <Typography variant="body1" sx={{ pb: 4 }}>
-        Drop an image here or
+        {message}
       </Typography>
       <Button
         size="small"
