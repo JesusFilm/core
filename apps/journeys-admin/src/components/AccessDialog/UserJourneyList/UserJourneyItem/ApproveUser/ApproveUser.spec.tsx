@@ -1,29 +1,27 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { UserJourneyRole } from '../../../../__generated__/globalTypes'
-import { USER_JOURNEY_REMOVE } from './RemoveUser'
-import { RemoveUser } from '.'
+import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
+import { USER_JOURNEY_APPROVE } from './ApproveUser'
+import { ApproveUser } from '.'
 
-describe('RemoveUser', () => {
-  it('should remove user journey', async () => {
+describe('ApproveUser', () => {
+  it('should approve user journey', async () => {
     const handleClick = jest.fn()
     const result = jest.fn(() => ({
       data: {
-        userJourneyRemove: {
+        userJourneyApprove: {
           id: 'userId',
-          role: UserJourneyRole.editor,
-          journey: {
-            id: 'journeyId'
-          }
+          role: UserJourneyRole.editor
         }
       }
     }))
     const { getByRole } = render(
       <MockedProvider
+        addTypename={false}
         mocks={[
           {
             request: {
-              query: USER_JOURNEY_REMOVE,
+              query: USER_JOURNEY_APPROVE,
               variables: {
                 id: 'userId'
               }
@@ -32,7 +30,7 @@ describe('RemoveUser', () => {
           }
         ]}
       >
-        <RemoveUser id="userId" onClick={handleClick} />
+        <ApproveUser id="userId" onClick={handleClick} />
       </MockedProvider>
     )
     fireEvent.click(getByRole('menuitem'))
