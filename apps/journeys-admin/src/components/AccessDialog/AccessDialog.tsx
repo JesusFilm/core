@@ -110,28 +110,6 @@ export function AccessDialog({
         fullscreen={!smUp}
       >
         <List sx={{ pt: 0 }}>
-          <Button onClick={handleClick}>{selectedInviteMethod}</Button>
-          <Menu anchorEl={anchorEl} open={menuOpen}>
-            <MenuItem onClick={handleMenuItemClick}>Link</MenuItem>
-            <MenuItem onClick={handleMenuItemClick}>Email</MenuItem>
-          </Menu>
-          <MuiListItem sx={{ p: 0 }}>
-            {selectedInviteMethod === 'Link' ?
-              <CopyTextField
-              value={
-                typeof window !== 'undefined'
-                  ? `${
-                      window.location.host.endsWith('.chromatic.com')
-                        ? 'https://admin.nextstep.is'
-                        : window.location.origin
-                    }/journeys/${journeyId}`
-                  : undefined
-              }
-              messageText="Editor invite link copied"
-              helperText="Anyone with this link can see journey and ask for editing rights.
-              You can accept or reject every request."
-            /> : <EmailInviteInput/>}
-          </MuiListItem>
           {!loading && (
             <UserJourneyList
               title="Requested Editing Rights"
@@ -149,6 +127,31 @@ export function AccessDialog({
             )}
             disable={disable}
           />
+          <Button onClick={handleClick}>{selectedInviteMethod}</Button>
+          <Menu anchorEl={anchorEl} open={menuOpen}>
+            <MenuItem onClick={handleMenuItemClick}>Link</MenuItem>
+            <MenuItem onClick={handleMenuItemClick}>Email</MenuItem>
+          </Menu>
+          <MuiListItem sx={{ p: 0 }}>
+            {selectedInviteMethod === 'Link' ? (
+              <CopyTextField
+                value={
+                  typeof window !== 'undefined'
+                    ? `${
+                        window.location.host.endsWith('.chromatic.com')
+                          ? 'https://admin.nextstep.is'
+                          : window.location.origin
+                      }/journeys/${journeyId}`
+                    : undefined
+                }
+                messageText="Editor invite link copied"
+                helperText="Anyone with this link can see journey and ask for editing rights.
+              You can accept or reject every request."
+              />
+            ) : (
+              <EmailInviteInput />
+            )}
+          </MuiListItem>
         </List>
       </Dialog>
     </>
@@ -173,7 +176,6 @@ function UserJourneyList({
       {((userJourneys?.length != null && userJourneys.length > 0) ||
         loading === true) && (
         <>
-          <Divider sx={{ my: 2 }} />
           <MuiListItem sx={{ px: 0 }}>{title}</MuiListItem>
         </>
       )}
@@ -196,6 +198,7 @@ function UserJourneyList({
           disabled={disable}
         />
       ))}
+      <Divider sx={{ my: 2 }} />
     </>
   )
 }
