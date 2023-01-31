@@ -1,9 +1,11 @@
 import { ReactElement } from 'react'
 import Divider from '@mui/material/Divider'
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import Skeleton from '@mui/material/Skeleton'
 import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { GetJourneyWithUserJourneys_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithUserJourneys'
 import { UserJourneyItem } from './UserJourneyItem'
@@ -26,21 +28,28 @@ export function UserJourneyList({
       {loading === true ? (
         <Box>
           <Divider />
-          <Skeleton variant="text" width="30%" sx={{ mt: 4 }} />
-          {[0, 1, 2].map((i) => (
-            <Stack key={i} direction="row" spacing={2} sx={{ mt: 3 }}>
-              <Skeleton
-                variant="circular"
-                width={40}
-                height={40}
-                sx={{ alignSelf: 'center' }}
-              />
-              <Stack direction="column" sx={{ width: '100%' }}>
-                <Skeleton variant="text" width="60%" />
-                <Skeleton variant="text" width="30%" />
-              </Stack>
-            </Stack>
-          ))}
+          <Typography sx={{ pt: 4 }} variant="body1">
+            {title}
+          </Typography>
+          <List>
+            {[0, 1, 2].map((i) => (
+              <ListItem key={i} sx={{ px: 0 }}>
+                <ListItemAvatar>
+                  <Skeleton
+                    variant="circular"
+                    width={40}
+                    height={40}
+                    sx={{ alignSelf: 'center' }}
+                  />
+                </ListItemAvatar>
+
+                <ListItemText
+                  primary={<Skeleton variant="text" width="60%" />}
+                  secondary={<Skeleton variant="text" width="30%" />}
+                />
+              </ListItem>
+            ))}
+          </List>
         </Box>
       ) : (
         <>
