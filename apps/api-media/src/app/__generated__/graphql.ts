@@ -17,7 +17,7 @@ export class CloudflareDirectCreatorUploadResponse {
 export abstract class IQuery {
     __typename?: 'IQuery';
 
-    abstract getCloudflareUploadInfo(): Nullable<CloudflareDirectCreatorUploadResponse> | Promise<Nullable<CloudflareDirectCreatorUploadResponse>>;
+    abstract getCloudflareImageUploadInfo(): Nullable<CloudflareDirectCreatorUploadResponse> | Promise<Nullable<CloudflareDirectCreatorUploadResponse>>;
 }
 
 type Nullable<T> = T | null;

@@ -20,7 +20,7 @@ type Query {
 }
 
 extend type Query {
-  getCloudflareUploadInfo: CloudflareDirectCreatorUploadResponse
+  getCloudflareImageUploadInfo: CloudflareDirectCreatorUploadResponse
 }
 
 scalar _FieldSet

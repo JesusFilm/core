@@ -923,7 +923,7 @@ type Query
   country(id: ID!, idType: IdType): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
-  getCloudflareUploadInfo: CloudflareDirectCreatorUploadResponse @join__field(graph: MEDIA)
+  getCloudflareImageUploadInfo: CloudflareDirectCreatorUploadResponse @join__field(graph: MEDIA)
   me: User @join__field(graph: USERS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)

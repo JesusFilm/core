@@ -4,5 +4,5 @@ type CloudflareDirectCreatorUploadResponse {
 }
 
 extend type Query {
-  getCloudflareUploadInfo: CloudflareDirectCreatorUploadResponse
+  getCloudflareImageUploadInfo: CloudflareDirectCreatorUploadResponse
 }
