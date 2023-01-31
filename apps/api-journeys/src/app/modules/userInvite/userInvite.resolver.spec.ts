@@ -15,7 +15,6 @@ describe('UserInviteResolver', () => {
 
   const createInput = {
     email: 'test@email.com',
-    name: 'Tester McTestFace',
     expireAt: null
   }
 
@@ -24,7 +23,6 @@ describe('UserInviteResolver', () => {
     journeyId: 'journeyId',
     senderId: 'senderId',
     email: 'test@email.com',
-    name: 'Tester McTestFace',
     accepted: false,
     expireAt: '2021-03-20T00:00:00.000Z'
   }
@@ -160,7 +158,6 @@ describe('UserInviteResolver', () => {
       expect(service.save).toHaveBeenCalledWith({
         journeyId: 'journeyId',
         senderId: 'senderId',
-        name: createInput.name,
         email: createInput.email,
         accepted: false,
         expireAt

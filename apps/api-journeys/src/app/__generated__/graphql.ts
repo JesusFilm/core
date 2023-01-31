@@ -555,7 +555,6 @@ export class UserInviteAcceptInput {
 
 export class UserInviteCreateInput {
     email: string;
-    name: string;
 }
 
 export class VisitorUpdateInput {
@@ -1013,7 +1012,6 @@ export class UserInvite {
     id: string;
     journeyId: string;
     senderId: string;
-    name: string;
     email: string;
     accepted: boolean;
     expireAt: string;

@@ -1391,7 +1391,6 @@ type UserInvite
   id: ID!
   journeyId: ID!
   senderId: ID!
-  name: String!
   email: String!
   accepted: Boolean!
   expireAt: String!
@@ -1407,7 +1406,6 @@ input UserInviteCreateInput
   @join__type(graph: JOURNEYS)
 {
   email: String!
-  name: String!
 }
 
 type UserJourney

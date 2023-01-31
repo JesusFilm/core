@@ -58,7 +58,6 @@ export class UserInviteResolver {
     return await this.userInviteService.save({
       journeyId: journey.id,
       senderId,
-      name: input.name,
       email: input.email,
       accepted: false,
       expireAt

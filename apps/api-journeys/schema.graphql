@@ -1589,7 +1589,6 @@ type UserInvite
   id: ID!
   journeyId: ID!
   senderId: ID!
-  name: String!
   email: String!
   accepted: Boolean!
   expireAt: String!
@@ -1601,7 +1600,6 @@ input UserInviteAcceptInput {
 
 input UserInviteCreateInput {
   email: String!
-  name: String!
 }
 
 enum UserJourneyRole {
