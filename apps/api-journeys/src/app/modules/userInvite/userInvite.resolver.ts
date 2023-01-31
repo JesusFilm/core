@@ -62,26 +62,32 @@ export class UserInviteResolver {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async userInviteAccept(
-    @Args('id') id: string,
+    @Args('journeyId') journeyId: string,
     @CurrentUserId() userId: string,
     @Args('input') input: UserInviteAcceptInput
   ): Promise<UserInvite> {
-    const userInvite = await this.userInviteService.get<UserInvite>(id)
-
-    const userJourney = await this.userJourneyResolver.userJourneyRequest(
-      userInvite.journeyId,
-      IdType.databaseId,
-      userId
-    )
+    const userInvite =
+      await this.userInviteService.getUserInviteByJourneyAndEmail(
+        journeyId,
+        input.email
+      )
 
     // TODO: Get email from user in db when we can call api-users
-    if (input.email === userInvite.email) {
+    if (userInvite != null && input.email === userInvite.email) {
+      const userJourney = await this.userJourneyResolver.userJourneyRequest(
+        userInvite.journeyId,
+        IdType.databaseId,
+        userId
+      )
+
       await this.userJourneyResolver.userJourneyApprove(
         userJourney.id,
         userInvite.senderId
       )
 
-      return await this.userInviteService.update(id, { accepted: true })
+      return await this.userInviteService.update(userInvite.id, {
+        accepted: true
+      })
     }
 
     return userInvite
