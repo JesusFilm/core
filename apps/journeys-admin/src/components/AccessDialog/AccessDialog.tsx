@@ -15,13 +15,14 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { Theme } from '@mui/material/styles'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
+import MenuItem from '@mui/material/MenuItem'
 import {
   GetJourneyWithUserJourneys,
   GetJourneyWithUserJourneys_journey_userJourneys as UserJourney
 } from '../../../__generated__/GetJourneyWithUserJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 import { GetCurrentUser } from '../../../__generated__/GetCurrentUser'
-import { EmailInviteInput } from '../EmailInviteInput/EmailInviteInput'
+import { EmailInviteInput } from '../EmailInviteInput'
 import { RemoveUser } from './RemoveUser'
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
@@ -65,7 +66,17 @@ export function AccessDialog({
   open,
   onClose
 }: AccessDialogProps): ReactElement {
-  const [openEmailInviteInput, setOpenEmailInviteInput] = useState(false)
+  const [selectedInviteMethod, setSelectedInviteMethod] = useState('Link')
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const menuOpen = Boolean(anchorEl)
+
+  const handleClick = (event: MouseEvent<HTMLElement>): void => {
+    setAnchorEl(event.currentTarget)
+  }
+  const handleMenuItemClick = (event: MouseEvent<HTMLElement>): void => {
+    setAnchorEl(null)
+    setSelectedInviteMethod(event.currentTarget.innerText)
+  }
 
   const [loadJourney, { loading, data }] =
     useLazyQuery<GetJourneyWithUserJourneys>(GET_JOURNEY_WITH_USER_JOURNEYS, {
@@ -99,14 +110,14 @@ export function AccessDialog({
         fullscreen={!smUp}
       >
         <List sx={{ pt: 0 }}>
-          <Button onClick={() => setOpenEmailInviteInput(true)}>
-            Add User With Email
-          </Button>
-          {openEmailInviteInput && (
-            <EmailInviteInput onClose={() => setOpenEmailInviteInput(false)} />
-          )}
+          <Button onClick={handleClick}>{selectedInviteMethod}</Button>
+          <Menu anchorEl={anchorEl} open={menuOpen}>
+            <MenuItem onClick={handleMenuItemClick}>Link</MenuItem>
+            <MenuItem onClick={handleMenuItemClick}>Email</MenuItem>
+          </Menu>
           <MuiListItem sx={{ p: 0 }}>
-            <CopyTextField
+            {selectedInviteMethod === 'Link' ?
+              <CopyTextField
               value={
                 typeof window !== 'undefined'
                   ? `${
@@ -119,7 +130,7 @@ export function AccessDialog({
               messageText="Editor invite link copied"
               helperText="Anyone with this link can see journey and ask for editing rights.
               You can accept or reject every request."
-            />
+            /> : <EmailInviteInput/>}
           </MuiListItem>
           {!loading && (
             <UserJourneyList

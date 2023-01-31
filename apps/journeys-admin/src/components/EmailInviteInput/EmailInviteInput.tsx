@@ -5,13 +5,7 @@ import { Form, Formik } from 'formik'
 import { object, string } from 'yup'
 import { useTranslation } from 'react-i18next'
 
-interface EmailInviteInputProps {
-  onClose: () => void
-}
-
-export function EmailInviteInput({
-  onClose
-}: EmailInviteInputProps): ReactElement {
+export function EmailInviteInput(): ReactElement {
   const handleAddUser = (): void => {
     console.log('Blank... for now')
   }
@@ -51,21 +45,7 @@ export function EmailInviteInput({
             error={errors.email != null && touched.email}
             helperText={touched?.email != null ? errors.email : ' '}
           />
-          <TextField
-            margin="normal"
-            id="name"
-            name="name"
-            label="Display Name"
-            fullWidth
-            variant="outlined"
-            value={values.name}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={errors.name != null && touched.name}
-            helperText={touched?.name != null ? errors.name : ' '}
-          />
           <Button type="submit">Submit</Button>
-          <Button onClick={onClose}>Close</Button>
         </Form>
       )}
     </Formik>
