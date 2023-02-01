@@ -192,8 +192,7 @@ export function AccessDialog({
                 : undefined
             }
             messageText="Editor invite link copied"
-            helperText="Anyone with this link can see journey and ask for editing rights.
-          You can accept or reject every request."
+            helperText="Approval required for every user who clicks on the link."
           />
         ) : (
           <EmailInviteInput />
